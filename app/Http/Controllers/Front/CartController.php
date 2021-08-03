@@ -62,8 +62,9 @@ class CartController extends FrontController
         try {
             $cart_detail = [];
             $user = Auth::user();
-            $addon_ids = $request->addonID;
-            $addon_options_ids = $request->addonoptID;
+            // $addon_ids = $request->addonID;
+            // $addon_options_ids = $request->addonoptID;
+            $langId = Session::get('customerLanguage');
             $new_session_token = session()->get('_token');
             $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
             $user_id = $user ? $user->id : '';
@@ -83,52 +84,129 @@ class CartController extends FrontController
             } else {
                 $cart_detail = Cart::updateOrCreate(['unique_identifier' => $new_session_token], $cart_detail);
             }
+            $addonSets = $addon_ids = $addon_options = array();
+            if($request->has('addonID')){
+                $addon_ids = $request->addonID;
+            }
+            if($request->has('addonoptID')){
+                $addon_options = $request->addonoptID;
+            }
+            foreach($addon_options as $key => $opt){
+                $addonSets[$addon_ids[$key]][] = $opt;
+            }
+            foreach($addonSets as $key => $value){
+                $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
+                            ->select('addon_sets.id', 'addon_sets.min_select', 'addon_sets.max_select', 'ast.title')
+                            ->where('ast.language_id', $langId)
+                            ->where('addon_sets.status', '!=', '2')
+                            ->where('addon_sets.id', $key)->first();
+                if(!$addon){
+                    return $this->errorResponse('Invalid addon or delete by admin. Try again with remove some.', 404);
+                }
+                if($addon->min_select > count($value)){
+                    return response()->json([
+                        "status" => "Error",
+                        'message' => 'Select minimum ' . $addon->min_select .' options of ' .$addon->title,
+                        'data' => $addon
+                    ], 404);
+                }
+                if($addon->max_select < count($value)){
+                    return response()->json([
+                        "status" => "Error",
+                        'message' => 'You can select maximum ' . $addon->min_select .' options of ' .$addon->title,
+                        'data' => $addon
+                    ], 404);
+                }
+            }
             if ($luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
                 if ($checkCartLuxuryOption) {
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
-            }
-            if ($luxury_option->id == 2 || $luxury_option->id == 3) {
-                $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
-                if ($checkVendorId) {
-                    CartProduct::where('cart_id', $cart_detail->id)->delete();
-                }
-            }
-            $checkIfExist = CartProduct::where('product_id', $request->product_id)->where('variant_id', $request->variant_id)->where('cart_id', $cart_detail->id)->first();
-            if ($checkIfExist) {
-                $checkIfExist->quantity = (int)$checkIfExist->quantity + $request->quantity;
-                $cart_detail->cartProducts()->save($checkIfExist);
-            } else {
-                $productForVendor = Product::where('id', $request->product_id)->first();
-                $cart_product_detail = [
-                    'status'  => '0',
-                    'is_tax_applied'  => '1',
-                    'created_by'  => $user_id,
-                    'cart_id'  => $cart_detail->id,
-                    'quantity'  => $request->quantity,
-                    'vendor_id'  => $request->vendor_id,
-                    'product_id' => $request->product_id,
-                    'variant_id'  => $request->variant_id,
-                    'currency_id' => $client_currency->currency_id,
-                    'luxury_option_id' => $luxury_option->id,
-                ];
-                $cart_product = CartProduct::updateOrCreate(['cart_id' =>  $cart_detail->id, 'product_id' => $request->product_id], $cart_product_detail);
-                $create_cart_addons = [];
-                if ($addon_options_ids) {
-                    foreach ($addon_options_ids as $k => $addon_options_id) {
-                        $create_cart_addons[] = [
-                            'addon_id' => $addon_ids[$k],
-                            'cart_id' => $cart_detail->id,
-                            'option_id' => $addon_options_id,
-                            'cart_product_id' => $cart_product->id,
-                        ];
+                if ($luxury_option->id == 2 || $luxury_option->id == 3) {
+                    $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
+                    if ($checkVendorId) {
+                        CartProduct::where('cart_id', $cart_detail->id)->delete();
                     }
                 }
-                CartAddon::insert($create_cart_addons);
+            }           
+            $oldquantity = $isnew = 0;
+            $cart_product_detail = [
+                'status'  => '0',
+                'is_tax_applied'  => '1',
+                'created_by'  => $user_id,
+                'cart_id'  => $cart_detail->id,
+                'quantity'  => $request->quantity,
+                'vendor_id'  => $request->vendor_id,
+                'product_id' => $request->product_id,
+                'variant_id'  => $request->variant_id,
+                'currency_id' => $client_currency->currency_id,
+                'luxury_option_id' => $luxury_option->id,
+            ];
+            $cartProduct = CartProduct::where('product_id', $request->product_id)->where('variant_id', $request->variant_id)->where('cart_id', $cart_detail->id)->first();
+            if(!$cartProduct){
+                $isnew = 1;
+            }else{
+                $checkaddonCount = CartAddon::where('cart_product_id', $cartProduct->id)->count();
+                if(count($addon_ids) != $checkaddonCount){
+                    $isnew = 1;
+                }else{
+                    foreach ($addon_options as $key => $opts) {
+                        $cart_addon = CartAddon::where('cart_product_id', $cartProduct->id)
+                                    ->where('addon_id', $addon_ids[$key])
+                                    ->where('option_id', $opts)->first();
+
+                        if(!$cart_addon){
+                            $isnew = 1;
+                        }
+                    }
+                }
             }
+
+            if($isnew == 1){
+                $cartProduct = CartProduct::create($cart_product_detail);
+                if(!empty($addon_ids) && !empty($addon_options)){
+                    $saveAddons = array();
+                    foreach ($addon_options as $key => $opts) {
+                        $saveAddons[] = [
+                            'option_id' => $opts,
+                            'cart_id' => $cart_detail->id,
+                            'addon_id' => $addon_ids[$key],
+                            'cart_product_id' => $cartProduct->id,
+                        ];
+                    }
+                    if(!empty($saveAddons)){
+                        CartAddon::insert($saveAddons);
+                    }
+                }
+            }else{
+                $cartProduct->quantity = $cartProduct->quantity + $request->quantity;
+                $cartProduct->save();
+            }
+
+            // if ($checkIfExist) {
+            //     $checkIfExist->quantity = (int)$checkIfExist->quantity + $request->quantity;
+            //     $cart_detail->cartProducts()->save($checkIfExist);
+            // } else {
+                // $productForVendor = Product::where('id', $request->product_id)->first();
+                
+                // $cart_product = CartProduct::updateOrCreate(['cart_id' =>  $cart_detail->id, 'product_id' => $request->product_id], $cart_product_detail);
+                // $create_cart_addons = [];
+                // if ($addon_options_ids) {
+                //     foreach ($addon_options_ids as $k => $addon_options_id) {
+                //         $create_cart_addons[] = [
+                //             'addon_id' => $addon_ids[$k],
+                //             'cart_id' => $cart_detail->id,
+                //             'option_id' => $addon_options_id,
+                //             'cart_product_id' => $cart_product->id,
+                //         ];
+                //     }
+                // }
+                // CartAddon::insert($create_cart_addons);
+            // }
             return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!']);
         } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
     /**

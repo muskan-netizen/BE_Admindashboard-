@@ -182,13 +182,15 @@
                                                 @foreach($product->addOn as $row => $addon)
                                                 <tr>
                                                     <td>
-                                                        <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddon">{{$addon->title}}</h4>
+                                                        <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet">{{$addon->title}} <small>(You can choose max {{$addon->max_select}} options)</small></h4>
                                                     </td>
+                                                </tr>
+                                                <tr class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}">
                                                     <td>
                                                         @foreach($addon->setoptions as $k => $option)
                                                         <div class="checkbox checkbox-success form-check-inline">
-                                                            <input type="checkbox" id="inlineCheckbox{{$k}}" class="chkPassport" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
-                                                            <label class="pl-2" for="inlineCheckbox{{$k}}">
+                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
+                                                            <label class="pl-2" for="inlineCheckbox_{{$row.'_'.$k}}">
                                                                 {{$option->title .' ($'.$option->price.')' }}</label>
                                                         </div>
                                                         @endforeach
@@ -550,16 +552,23 @@
     var addonids = [];
     var addonoptids = [];
     $(function() {
-        0
-        $(".chkPassport").click(function() {
-            var addonId = $(this).attr("addonId");
-            var addonOptId = $(this).attr("addonOptId");
-            if ($(this).is(":checked")) {
-                addonids.push(addonId);
-                addonoptids.push(addonOptId);
-            } else {
-                addonids.splice(addonids.indexOf(addonId), 1);
-                addonoptids.splice(addonoptids.indexOf(addonOptId), 1);
+        $(".productAddonOption").click(function(e) {
+            // e.preventDefault();
+            var addon_elem = $(this).closest('tr');
+            var addon_minlimit = addon_elem.data('min');
+            var addon_maxlimit = addon_elem.data('max');
+            if(addon_elem.find(".productAddonOption:checked").length > addon_maxlimit) {
+                this.checked = false;
+            }else{
+                var addonId = $(this).attr("addonId");
+                var addonOptId = $(this).attr("addonOptId");
+                if ($(this).is(":checked")) {
+                    addonids.push(addonId);
+                    addonoptids.push(addonOptId);
+                } else {
+                    addonids.splice(addonids.indexOf(addonId), 1);
+                    addonoptids.splice(addonoptids.indexOf(addonOptId), 1);
+                }
             }
         });
     });

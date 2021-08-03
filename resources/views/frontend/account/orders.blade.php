@@ -203,15 +203,16 @@ $timezone = Auth::user()->timezone;
                                                             <ul class="price_box_bottom m-0 pl-0 pt-1">
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Sub Total')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_amount + $order->total_delivery_fee)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_amount)</span>
                                                                 </li>
+                                                               
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Wallet')}}</label>
                                                                     <span>--</span>
                                                                 </li>
                                                                 <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{__('Loyalty')}}</label>
-                                                                    <span>{{$order->loyalty_points_used ? $order->loyalty_points_used : 0}}</span>
+                                                                    <label class="m-0">{{__('Loyalty Used')}}</label>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->loyalty_amount_saved ? $order->loyalty_amount_saved : 0)</span>
                                                                 </li>
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Tax')}}</label>
@@ -227,6 +228,12 @@ $timezone = Auth::user()->timezone;
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Subscription Discount')}}</label>
                                                                     <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount)</span>
+                                                                </li>
+                                                                @endif
+                                                                @if($order->total_delivery_fee > 0)
+                                                                <li class="d-flex align-items-center justify-content-between">
+                                                                    <label class="m-0">{{__('Delivery Fee')}}</label>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_delivery_fee)</span>
                                                                 </li>
                                                                 @endif
                                                                 <li class="grand_total d-flex align-items-center justify-content-between">

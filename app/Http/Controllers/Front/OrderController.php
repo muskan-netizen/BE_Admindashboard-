@@ -171,6 +171,7 @@ class OrderController extends FrontController
                 $OrderVendor->order_id = $order->id;
                 $OrderVendor->vendor_id = $vendor_id;
                 $OrderVendor->save();
+                $vendorProductIds = array();
                 foreach ($vendor_cart_products as $vendor_cart_product) {
                     $variant = $vendor_cart_product->product->variants->where('id', $vendor_cart_product->variant_id)->first();
                     $quantity_price = 0;
@@ -192,19 +193,17 @@ class OrderController extends FrontController
                             $payable_amount = $payable_amount + $product_tax;
                         }
                     }
-                    if (!empty($vendor_cart_product->product->Requires_last_mile) && $vendor_cart_product->product->Requires_last_mile == 1) {
-                       // $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
-
-                        $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
+                    if ( (!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1) ) {
+                       $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
                         if(!empty($delivery_fee) && $delivery_count == 0)
                         {
                             $delivery_count = 1;
                             $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2);
-                            $payable_amount = $payable_amount + $delivery_fee;
+                            // $payable_amount = $payable_amount + $delivery_fee;
                             $delivery_fee_charges = $delivery_fee;
                         }
 
-                    }
+                    } 
                     $total_amount += $vendor_cart_product->quantity * $variant->price;
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;

@@ -62,6 +62,7 @@
                         <ul>
                             <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}@money($order->total_amount * $clientCurrency->doller_compare)</span></li>
                             <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * $clientCurrency->doller_compare)</span></li>
+                            <li>{{__('Delivery Fee')}} <span>{{Session::get('currencySymbol')}}@money($order->total_delivery_fee * $clientCurrency->doller_compare)</span></li>
                             @if($order->tip_amount > 0)
                                 <li>{{__('Tip Amount')}} <span>{{Session::get('currencySymbol')}}@money($order->tip_amount * $clientCurrency->doller_compare)</span></li>
                             @endif

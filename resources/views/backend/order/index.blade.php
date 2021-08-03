@@ -107,12 +107,16 @@
                                         <span>$<%= order.total_amount %></span>
                                     </li>
                                     <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">Loyalty</label>
-                                        <span><%= order.loyalty_points_earned %></span>
+                                        <label class="m-0">Loyalty Used</label>
+                                        <span>$<%= order.loyalty_amount_saved %></span>
                                     </li>
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">Tax</label>
                                         <span>$<%= order.taxable_amount %></span>
+                                    </li>
+                                    <li class="d-flex align-items-center justify-content-between">
+                                        <label class="m-0">Delivery Fee</label>
+                                        <span>$<%= order.total_delivery_fee %></span>
                                     </li>
                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                         <label class="m-0">Payable </label>

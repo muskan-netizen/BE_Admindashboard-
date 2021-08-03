@@ -143,13 +143,13 @@ class OrderController extends Controller {
                                     $vendor_payable_amount = $vendor_payable_amount;
                                 }
                             }
-                            if (!empty($vendor_cart_product->product->Requires_last_mile) && $vendor_cart_product->product->Requires_last_mile == 1) {
+                            if ( (!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1) ) {
                                 $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
                                 if(!empty($delivery_fee) && $delivery_count == 0)
                                 {
                                     $delivery_count = 1;
                                     $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2);
-                                    $payable_amount = $payable_amount + $delivery_fee;
+                                    // $payable_amount = $payable_amount + $delivery_fee;
                                     $delivery_fee_charges = $delivery_fee;
                                 }
                             }

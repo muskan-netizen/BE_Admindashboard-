@@ -19,7 +19,7 @@ class CartAddon extends Model
     public function set(){
        return $this->belongsTo('App\Models\AddonSet', 'addon_id', 'id')
        			->join('addon_set_translations as ast', 'addon_sets.id', 'ast.addon_id')
-				->select('addon_sets.id', 'ast.title', 'ast.language_id')
+				->select('addon_sets.id', 'ast.title', 'ast.language_id', 'addon_sets.min_select', 'addon_sets.max_select')
 				->orderBy('addon_sets.position', 'asc'); 
     }
 }
