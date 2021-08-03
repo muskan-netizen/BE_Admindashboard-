@@ -82,7 +82,7 @@ $timezone = Auth::user()->timezone;
                                         if($dispatcher_status_option->vendorOrderDispatcherStatus && $dispatcher_status_option->id == $dispatcher_status_option->vendorOrderDispatcherStatus->dispatcher_status_option_id??'')
                                         $class = 'disabled';
                                         
-                                        if($dispatcher_status_option->id == $order->vendors->first()->dispatcher_status_option)
+                                        if($dispatcher_status_option->id == $order->vendors->first()->dispatcher_status_option_id)
                                         $glow = '';
                                         else
                                         $glow = 'completed';
