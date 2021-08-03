@@ -26,7 +26,6 @@ class DatabaseSeeder extends Seeder
               CommonDataSeeder::class,
               BannerDataSeeder::class,
               TimezoneSeeder::class,
-              AppStylingSeeder::class,
               PermissionSeeder::class,
               ReturnReasonSeeder::class,
               LuxuryOptionsSeeder::class,
@@ -40,6 +39,6 @@ class DatabaseSeeder extends Seeder
               HomePageLabelSeeder::class
           ]);
         // $this->call(UsersTableSeeder::class);
-        $this->call(AppStylingOptionsTableSeeder::class);
+       // $this->call(AppStylingOptionsTableSeeder::class);
     }
 }
