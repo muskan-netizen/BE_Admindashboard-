@@ -244,7 +244,7 @@ class OrderController extends BaseController{
                     $customer = User::find($order->user_id);
                     $cus_address = UserAddress::find($order->address_id);
                     $tasks = array();
-                    if ($order->payment_method == 2) {
+                    if ($order->payment_method == 1) {
                         $cash_to_be_collected = 'Yes';
                         $payable_amount = $order->payable_amount;
                     } else {
