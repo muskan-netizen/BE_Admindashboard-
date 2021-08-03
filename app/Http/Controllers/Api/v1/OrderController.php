@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\OrderStoreRequest;
@@ -33,7 +33,7 @@ class OrderController extends Controller {
                                               'longitude' => $cus_address->longitude??''
                                             );
                             $postdata =  ['locations' => $location];
-                            $client = new Client(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key,
+                            $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key,
                                                         'shortcode' => $dispatch_domain->delivery_service_key_code,
                                                         'content-type' => 'application/json']
                                                             ]);

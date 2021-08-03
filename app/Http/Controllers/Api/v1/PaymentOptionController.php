@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 use DB;
 use Auth;
 use Carbon\Carbon;
+use GuzzleHttp\Client as GCLIENT;
 use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use App\Models\PaymentOption;
