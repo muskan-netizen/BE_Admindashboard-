@@ -105,7 +105,7 @@ class OrderController extends Controller {
                     $order->address_id = $request->address_id;
                     $order->payment_option_id = $request->payment_option_id;
                     $order->save();
-                    $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+                    $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                     $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate','coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0,1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
                     $total_delivery_fee = 0;
