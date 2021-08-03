@@ -251,7 +251,7 @@ class AuthController extends BaseController{
             UserDevice::insert($user_device);
             if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
                 $response['send_otp'] = 1;
-                $to = $user->phone_number;
+                $to = '+'.$user->dial_code.$user->phone_number;
                 $provider = $prefer->sms_provider;
                 $body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
                 $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
@@ -262,23 +262,47 @@ class AuthController extends BaseController{
                 $client_name = $client->name;
                 $mail_from = $prefer->mail_from;
                 $sendto = $signReq->email;
-                try{
-                    Mail::send('email.verify',[
-                            'customer_name' => ucwords($signReq->name),
-                            'code_text' => 'Enter below code to verify yoour account',
-                            'code' => 'qweqwewqe',
-                            'logo' => $client->logo['original'],
-                            'link'=>"link"
-                    ],
-                    function ($message) use($sendto, $client_name, $mail_from) {
-                        $message->from($mail_from, $client_name);
-                        $message->to($sendto)->subject('OTP to verify account');
-                    });
-                    $response['send_email'] = 1;
+                try {
+                    $email_template_content = '';
+                    $email_template = EmailTemplate::where('id', 2)->first();
+                    if($email_template){
+                        $email_template_content = $email_template->content;
+                        $email_template_content = str_ireplace("{code}", $emailCode, $email_template_content);
+                        $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
+                    }
+                    $data = [
+                        'code' => $emailCode,
+                        'link' => "link",
+                        'email' => $sendto,
+                        'mail_from' => $mail_from,
+                        'client_name' => $client_name,
+                        'logo' => $client->logo['original'],
+                        'subject' => $email_template->subject,
+                        'customer_name' => ucwords($user->name),
+                        'email_template_content' => $email_template_content,
+                    ];
+                    dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
+                    $notified = 1;
+                } catch (\Exception $e) {
+                    $user->save();
                 }
-                catch(\Exception $e){
-                    return response()->json(['data' => $response]);
-                }
+                // try{
+                //     Mail::send('email.verify',[
+                //             'customer_name' => ucwords($signReq->name),
+                //             'code_text' => 'Enter below code to verify yoour account',
+                //             'code' => 'qweqwewqe',
+                //             'logo' => $client->logo['original'],
+                //             'link'=>"link"
+                //     ],
+                //     function ($message) use($sendto, $client_name, $mail_from) {
+                //         $message->from($mail_from, $client_name);
+                //         $message->to($sendto)->subject('OTP to verify account');
+                //     });
+                //     $response['send_email'] = 1;
+                // }
+                // catch(\Exception $e){
+                //     return response()->json(['data' => $response]);
+                // }
             }
             return response()->json(['data' => $response]);
         }else{

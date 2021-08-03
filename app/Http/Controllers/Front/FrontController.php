@@ -239,7 +239,6 @@ class FrontController extends Controller
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
         $newDateTime = \Carbon\Carbon::now()->addMinutes(10)->toDateTimeString();
             $message = __('An otp has been sent to your phone. Please check.');
-            if ($user->is_phone_verified == 0) {
                 $otp = mt_rand(100000, 999999);
                 $user->phone_token = $otp;
                 $user->phone_token_valid_till = $newDateTime;
@@ -252,7 +251,6 @@ class FrontController extends Controller
                         $notified = 1;
                     }
                 }
-            }
             if ($user->is_email_verified == 0) {
                 $message = __('An otp has been sent to your email. Please check.');
                 $otp = mt_rand(100000, 999999);
