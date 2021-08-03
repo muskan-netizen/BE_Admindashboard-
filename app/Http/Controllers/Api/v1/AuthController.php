@@ -419,6 +419,7 @@ class AuthController extends BaseController{
                     return $this->errorResponse(__('OTP has been expired.'), 404);
                 }
                 $user->phone_token = NULL;
+                $user->phone_number = $request->phone_number;
                 $user->is_phone_verified = 1;
                 $user->phone_token_valid_till = NULL;
                 $user->save();

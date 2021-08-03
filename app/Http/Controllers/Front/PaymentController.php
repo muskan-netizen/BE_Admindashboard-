@@ -56,20 +56,20 @@ class PaymentController extends FrontController{
                         }
                     }
                 }
-                if($vendor_detail){
-                    if($vendor_detail->order_min_amount > 0){
-                        if($vendor_payable_amount < $vendor_detail->order_min_amount){
-                            $vendor_min_amount_errors[]= array(
-                                'vendor_id' => $vendor_detail->id,
-                                'message' => "Minimum order should be more than  $currency_symbol $vendor_detail->order_min_amount",
-                            );
-                        }
-                    }
-                }
+                // if($vendor_detail){
+                //     if($vendor_detail->order_min_amount > 0){
+                //         if($vendor_payable_amount < $vendor_detail->order_min_amount){
+                //             $vendor_min_amount_errors[]= array(
+                //                 'vendor_id' => $vendor_detail->id,
+                //                 'message' => "Minimum order should be more than  $currency_symbol $vendor_detail->order_min_amount",
+                //             );
+                //         }
+                //     }
+                // }
             }
-            if(count($vendor_min_amount_errors) > 0){
-                return $this->errorResponse($vendor_min_amount_errors, 402);
-            }
+            // if(count($vendor_min_amount_errors) > 0){
+            //     return $this->errorResponse($vendor_min_amount_errors, 402);
+            // }
         }
         $ex_codes = ['cod'];
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->get();
