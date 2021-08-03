@@ -20,8 +20,8 @@ class HomePageLabelSeeder extends Seeder
         DB::table('home_page_label_transaltions')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');   
         $home_page = HomePageLabel::insertGetId([
-            'title' => 'Featured Vendors',
-            'slug' => 'featured_vendors',
+            'title' => 'Featured Products',
+            'slug' => 'featured_products',
         ]);
         $home_page = HomePageLabel::insertGetId([
             'title' => 'Vendors',

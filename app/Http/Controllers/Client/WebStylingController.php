@@ -48,10 +48,10 @@ class WebStylingController extends BaseController{
             $home_translation->language_id = $request->languages[$key];
             $home_translation->save();
         }
-        $featured_vendor = HomePageLabel::where('slug', 'featured_vendors')->first();
-        if($featured_vendor){
-            $featured_vendor->is_active = $request->has('featured_vendors') && $request->featured_vendors == "on" ? 1 : 0;
-            $featured_vendor->save(); 
+        $featured_products = HomePageLabel::where('slug', 'featured_products')->first();
+        if($featured_products){
+            $featured_products->is_active = $request->has('featured_products') && $request->featured_products == "on" ? 1 : 0;
+            $featured_products->save(); 
         }
         $vendors = HomePageLabel::where('slug', 'vendors')->first();
         if($vendors){

@@ -160,7 +160,7 @@ $actives=array();
             </div>
         </div>
     @endif
-    @if(in_array("featured_vendors", $actives))
+    @if(in_array("featured_products", $actives))
         <div class="row d-none mt-4" id="featured_products_wrapper">
             <div class="col-12 text-center d-flex align-items-center justify-content-between mb-4">
                 <div class="title1">

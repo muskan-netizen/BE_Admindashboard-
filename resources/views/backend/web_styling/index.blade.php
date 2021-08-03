@@ -82,7 +82,7 @@
                         </div>
                     </li>
                     <li class="d-flex align-items-center justify-content-between mt-2">
-                        <h4 class="header-title mb-2">Show icons in navigation</h4>
+                        <h4 class="header-title mb-2">Show Icons in navigation</h4>
                         <div class="mb-0">
                             <input type="checkbox" id="show_icons" data-plugin="switchery" name="show_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_icons == 1 ? 'checked' : ''}}>
                         </div>
