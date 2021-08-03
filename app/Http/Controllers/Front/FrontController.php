@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, ClientPreference, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser};
+use App\Models\{Client, Category, Product, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser};
 
 class FrontController extends Controller
 {
@@ -226,6 +226,79 @@ class FrontController extends Controller
         $payment_method->save();
     }
 
+    public function newUserSendToken($domain = '', $uid = 0){
+        $notified = 0;
+        $user = User::where('id', Auth::user()->id)->first();
+        if (!$user) {
+            return redirect()->back()->with('err_user', __('User not found.'));
+        }
+        if ($user->is_email_verified == 1 && $user->is_phone_verified == 1) {
+            return redirect()->back()->with('err_user', __('Account already verified.'));
+        }
+        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+        $newDateTime = \Carbon\Carbon::now()->addMinutes(10)->toDateTimeString();
+            $message = __('An otp has been sent to your phone. Please check.');
+            if ($user->is_phone_verified == 0) {
+                $otp = mt_rand(100000, 999999);
+                $user->phone_token = $otp;
+                $user->phone_token_valid_till = $newDateTime;
+                $provider = $data->sms_provider;
+                $to = '+'.$user->dial_code.$user->phone;
+                $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
+                if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
+                    $send = $this->sendSms($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                    if ($send) {
+                        $notified = 1;
+                    }
+                }
+            }
+            if ($user->is_email_verified == 0) {
+                $message = __('An otp has been sent to your email. Please check.');
+                $otp = mt_rand(100000, 999999);
+                $user->email_token = $otp;
+                $user->email_token_valid_till = $newDateTime;
+                if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+                    $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+                    $sendto = $user->email;
+                    $client_name = $client->name;
+                    $mail_from = $data->mail_from;
+                    try {
+                        $email_template_content = '';
+                        $email_template = EmailTemplate::where('id', 2)->first();
+                        if($email_template){
+                            $email_template_content = $email_template->content;
+                            $email_template_content = str_ireplace("{code}", $otp, $email_template_content);
+                            $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
+                        }
+                        $data = [
+                            'code' => $otp,
+                            'link' => "link",
+                            'email' => $sendto,
+                            'mail_from' => $mail_from,
+                            'client_name' => $client_name,
+                            'logo' => $client->logo['original'],
+                            'subject' => $email_template->subject,
+                            'customer_name' => ucwords($user->name),
+                            'email_template_content' => $email_template_content,
+                        ];
+                        dispatch(new \App\Jobs\SendVerifyEmailJob($data))->onQueue('verify_email');
+                        $notified = 1;
+                    } catch (\Exception $e) {
+                        $user->save();
+                    }
+                }
+            }
+        $user->save();
+        if ($notified == 1) {
+            return response()->json([
+                'status' => 'success',
+                'message' => $message,
+            ]);
+        } else {
+            return redirect()->back()->with('err_user', __('Provider service is not configured. Please contact administration.'));
+        }
+    }
     /* Get Saved user payment method */
     public function getSavedUserPaymentMethod($request)
     {

@@ -48,14 +48,15 @@ class HomeController extends BaseController{
                     }
                     if(!empty($value->link) && $value->link == 'vendor'){
                         $bannerLink = $value->redirect_vendor_id;
-                        $vendor_type = Vendor::where('id', $value->redirect_vendor_id)->first();
-                        if($vendor_type){
-                            $is_show_category = ($vendor_type->vendor_templete_id == 1) ? 0 : 1;
-                        }
+                        // $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')->where('status', '!=', $this->field_status)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit);
+                        // foreach ($vendorData as $vendor) {
+                        //     unset($vendor->products);
+                        //     $vendor->is_show_category = ($vendor->vendor_templete_id == 1) ? 0 : 1;
+                        // }
+                        // $value->vendor = $vendor;
                     }
                     $value->redirect_to = ucwords($value->link);
                     $value->redirect_id = $bannerLink;
-                    $value->is_show_category = $is_show_category;
                     unset($value->redirect_category_id);
                     unset($value->redirect_vendor_id);
                 }

@@ -58,8 +58,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 
                             </div>
                         </div>
-                            
-                        
                         <script type="text/template" id="search_box_main_div_template">
                             <div class="row mx-0">
                                 <% _.each(results, function(result, k){ %>
@@ -70,6 +68,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <% }); %>
                             </div>
                         </script>
+                        @if(auth()->user())
+                        @if($client_preference_detail->show_wishlist == 1)
+                            <div class="icon-nav">
+                                <a href="{{route('user.wishlists')}}">
+                                    <img src="{{asset('front-assets/images/icon/wishlist.png')}}" class="img-fluid">
+                                </a>
+                            </div>
+                        @endif
+                        @endif
                         <div class="icon-nav">
                             <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}">
                                 @csrf

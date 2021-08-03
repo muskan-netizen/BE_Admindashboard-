@@ -160,6 +160,7 @@ class CustomerAuthController extends FrontController
                 Auth::login($user);
                 $this->checkCookies($user->id);
                 Session::forget('referrer');
+                $this->newUserSendToken();
                 return redirect()->route('user.verify');
             }
         } catch (Exception $e) {

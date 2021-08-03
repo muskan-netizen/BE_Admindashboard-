@@ -58,7 +58,7 @@
             <div class="card card-box">
                 <ul class="pl-0 mb-0">
                     <li class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title mb-2">Show Wishlist</h4>
+                        <h4 class="header-title mb-2">Show Wishlist Icon</h4>
                         <div class="mb-0">
                             <input type="checkbox" id="show_wishlist" data-plugin="switchery" name="show_wishlist" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_wishlist == 1 ? 'checked' : ''}}>
                         </div>
