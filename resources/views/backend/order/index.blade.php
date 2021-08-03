@@ -82,7 +82,11 @@
                                                     </li>
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">Delivery</label>
-                                                        <span>--</span>
+                                                        <% if(vendor.delivery_fee !== null) { %>
+                                                        <span>$<%= vendor.delivery_fee %></span>
+                                                        <% }else { %>
+                                                            <span>$ 0.00</span>
+                                                        <% } %> 
                                                     </li>
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">Amount</label>

@@ -42,14 +42,20 @@ class HomeController extends BaseController{
             if($banners){
                 foreach ($banners as $key => $value) {
                     $bannerLink = '';
+                    $is_show_category = null;
                     if(!empty($value->link) && $value->link == 'category'){
                         $bannerLink = $value->redirect_category_id;
                     }
                     if(!empty($value->link) && $value->link == 'vendor'){
                         $bannerLink = $value->redirect_vendor_id;
+                        $vendor_type = Vendor::where('id', $value->redirect_vendor_id)->first();
+                        if($vendor_type){
+                            $is_show_category = ($vendor_type->vendor_templete_id == 1) ? 0 : 1;
+                        }
                     }
                     $value->redirect_to = ucwords($value->link);
                     $value->redirect_id = $bannerLink;
+                    $value->is_show_category = $is_show_category;
                     unset($value->redirect_category_id);
                     unset($value->redirect_vendor_id);
                 }

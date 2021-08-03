@@ -68,6 +68,15 @@
                     <div class="countdownholder alert-danger" id="min_order_validation_error_<%= product.vendor.id %>" style="display:none;">Your cart will be expired in
                 </th>
             </tr>
+            <% if( (product.isDeliverable != undefined) && (product.isDeliverable == 0) ) { %>
+            <tr class="border_0">
+                <th colspan="7">
+                    <div class="text-danger">
+                        Products for this vendor are not deliverable at your area. Please change address or remove product.
+                    </div>
+                </th>
+            </tr>
+            <% } %>
         </thead>
         <tbody id="tbody_<%= product.vendor.id %>">
             <% _.each(product.vendor_products, function(vendor_product, vp){%>
@@ -121,7 +130,7 @@
                 </tr>
                 <% if(vendor_product.addon.length != 0) { %>
                     <tr>
-                         <td colspan="6" class="border_0 p-0 border-0">
+                         <td colspan="7" class="border_0 p-0 border-0">
                            <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                         </td>
                     </tr>
@@ -130,11 +139,12 @@
                          
                             <td></td>
                             <td class="items-details text-left">
-                                <p class="m-0"><%= addon.set.title %></p>
+                                <p class="m-0"><%= addon.option.title %></p>
                             </td>
                             <td>
                                 <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= addon.option.price_in_cart %></div>
                             </td>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td class="text-right pl-lg-2">

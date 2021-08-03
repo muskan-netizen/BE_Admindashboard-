@@ -21,4 +21,11 @@ class Banner extends Model
 
       return $values;
     }
+
+    public function category(){
+      return $this->hasOne('App\Models\Category', 'id', 'redirect_category_id'); 
+    }
+    public function vendor(){
+      return $this->hasOne('App\Models\Vendor', 'id', 'redirect_vendor_id'); 
+    }
 }

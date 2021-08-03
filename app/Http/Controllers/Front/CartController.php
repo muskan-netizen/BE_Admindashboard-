@@ -325,14 +325,25 @@ class CartController extends FrontController
      * Get Cart Items
      *
      */
-    public function getCart($cart)
+    public function getCart($cart, $address_id=0)
     {
         $cart_id = $cart->id;
+        $user = Auth::user();
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $pharmacy = ClientPreference::first();
         $cart->pharmacy_check = $pharmacy->pharmacy_check;
         $customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
+        $latitude = '';
+        $longitude = '';
+        if($address_id > 0){
+            $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->first();
+        }else{
+            $address = UserAddress::where('user_id', $user->id)->where('is_primary', 1)->first();
+            $address_id = ($address) ? $address->id : 0;
+        }
+        $latitude = ($address) ? $address->latitude : '';
+        $longitude = ($address) ? $address->longitude : '';
         $cartData = CartProduct::with([
             'vendor', 'coupon' => function ($qry) use ($cart_id) {
                 $qry->where('cart_id', $cart_id);
@@ -357,7 +368,6 @@ class CartController extends FrontController
                 $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
         ])->select('vendor_id', 'luxury_option_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        $user = Auth::user();
         $loyalty_amount_saved = 0;
         $redeem_points_per_primary_currency = '';
         $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -390,9 +400,17 @@ class CartController extends FrontController
         }
         $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = 0.00;
         if ($cartData) {
+            $delivery_status = 1;
             foreach ($cartData as $ven_key => $vendorData) {
                 $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
+                if($address_id > 0){
+                    $serviceArea = $vendorData->vendor->whereHas('serviceArea', function($query) use($latitude, $longitude){
+                        $query->select('vendor_id')
+                        ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+                    })
+                    ->where('id', $vendorData->vendor->id)->get();
+                }
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
                     $quantity_price = 0;
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
@@ -460,6 +478,14 @@ class CartController extends FrontController
                 if (in_array(1, $subscription_features)) {
                     $subscription_discount = $subscription_discount + $delivery_fee_charges;
                 }
+                if(isset($serviceArea)){
+                    if($serviceArea->isEmpty()){
+                        $vendorData->isDeliverable = 0;
+                        $delivery_status = 0;
+                    }else{
+                        $vendorData->isDeliverable = 1;
+                    }
+                }
                 $vendorData->delivery_fee_charges = number_format($delivery_fee_charges, 2);
                 $vendorData->payable_amount = number_format($payable_amount, 2);
                 $vendorData->discount_amount = number_format($discount_amount, 2);
@@ -515,6 +541,7 @@ class CartController extends FrontController
             $cart->tip_5_percent = number_format((0.05 * $total_payable_amount), 2);
             $cart->tip_10_percent = number_format((0.1 * $total_payable_amount), 2);
             $cart->tip_15_percent = number_format((0.15 * $total_payable_amount), 2);
+            $cart->deliver_status = $delivery_status;
             $cart->products = $cartData->toArray();
         }
         return $cart;
@@ -581,17 +608,19 @@ class CartController extends FrontController
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
+        $address_id = 0;
         if ($user) {
             $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
         } else {
             $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
         }
         if (isset($request->address_id) && !empty($request->address_id)) {
-            $address = UserAddress::where('user_id', Auth::user()->id)->update(['is_primary' => 0]);
-            $address = UserAddress::where('user_id', Auth::user()->id)->where('id', $request->address_id)->update(['is_primary' => 1]);
+            $address_id = $request->address_id;
+            $address = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
+            $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->update(['is_primary' => 1]);
         }
         if ($cart) {
-            $cart_details = $this->getCart($cart);
+            $cart_details = $this->getCart($cart, $address_id);
         }
         return response()->json(['status' => 'success', 'cart_details' => $cart_details]);
     }

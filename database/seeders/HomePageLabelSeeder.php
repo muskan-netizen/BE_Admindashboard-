@@ -39,5 +39,9 @@ class HomePageLabelSeeder extends Seeder
             'title' => 'Brands',
             'slug' => 'brands',
         ]);
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Best Sellers',
+            'slug' => 'best_sellers',
+        ]);
     }
 }

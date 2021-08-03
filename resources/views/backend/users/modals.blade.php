@@ -46,7 +46,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group" id="phone_numberInput">
                                         {!! Form::label('title', 'Phone Number',['class' => 'control-label']) !!}
-                                        <input type="tel" class="form-control phone" id="phone" placeholder="Phone Number" name="phone_number" value="{{ old('phone_number')}}">
+                                        <input type="tel" class="form-control phone" id="phone" placeholder="Phone Number" name="phone_number" value="{{ old('full_number')}}">
 
                                         <input type="hidden" id="addphoneHidden" name="phoneHidden">
                                         <span class="invalid-feedback" role="alert">
@@ -160,7 +160,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group" id="phone_numberInputEdit">
                                         {!! Form::label('title', 'Phone Number',['class' => 'control-label']) !!}
-                                        <input type="tel" class="form-control phone" id="phone" placeholder="Phone Number" name="phone_number" value="{{ old('phone_number')}}">
+                                        <input type="tel" class="form-control phone" id="phone" placeholder="Phone Number" name="phone_number" value="{{ old('full_number')}}">
 
                                         <input type="hidden" id="addphoneHidden" name="phoneHidden">
                                         <span class="invalid-feedback" role="alert">

@@ -32,7 +32,8 @@ class DispatcherController extends FrontController
             {
                 $update_tr = OrderVendor::where('web_hook_code',$web_hook_code)->update(['dispatch_traking_url' =>  $request->dispatch_traking_url]);
             }
-            
+            OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
+              
                     DB::commit();
                     $message = "Order status updated.";
                     return $this->successResponse($update, $message);
@@ -67,6 +68,10 @@ class DispatcherController extends FrontController
             {
                 $update_tr = OrderVendor::where('web_hook_code',$web_hook_code)->update(['dispatch_traking_url' =>  $request->dispatch_traking_url]);
             }
+
+            OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
+          
+              
             
                     DB::commit();
                     $message = "Order status updated.";

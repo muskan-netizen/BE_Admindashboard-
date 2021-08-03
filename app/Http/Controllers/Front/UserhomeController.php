@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Contracts\Session\Session as SessionSession;
-use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, ClientCurrency, ClientPreference, Page, VendorRegistrationDocument, Language};
+use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, ClientCurrency, ClientPreference, HomePageLabel, Page, VendorRegistrationDocument, Language};
 
 class UserhomeController extends FrontController{
     use ApiResponser;
@@ -81,8 +81,9 @@ class UserhomeController extends FrontController{
                                 $q2->whereDate('start_date_time', '<=', Carbon::now())
                                     ->whereDate('end_date_time', '>=', Carbon::now());
                             });
-                        })->orderBy('sorting', 'asc')->get();
-            return view('frontend.home')->with(['home' => $home, 'count' => $count, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+                        })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
+            $home_page_labels = HomePageLabel::with('translations')->get();
+            return view('frontend.home')->with(['home' => $home, 'count' => $count, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
         } catch (Exception $e) {
             pr($e->getCode());die;
         }
@@ -189,11 +190,13 @@ class UserhomeController extends FrontController{
                 'price' => Session::get('currencySymbol').' '.(number_format($on_sale_product_detail->variant->first()->price * $multiply,2)),
             );
         }
+        $home_page_labels = HomePageLabel::with('translations')->get();
         $data = [
             'brands' => $brands, 
             'vendors' => $vendors,
             'new_products' => $new_products, 
             'navCategories' => $navCategories,
+            'homePageLabels' => $home_page_labels,
             'feature_products' => $feature_products,
             'on_sale_products' => $on_sale_products, 
         ];

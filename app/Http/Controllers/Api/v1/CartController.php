@@ -529,7 +529,7 @@ class CartController extends BaseController{
                 $vendorData->discount_amount = $discount_amount;
                 $vendorData->discount_percent = $discount_percent;
                 $vendorData->taxable_amount = $taxable_amount;
-                $vendorData->payable_amount = $payable_amount - $discount_amount + $deliver_charge;
+                $vendorData->payable_amount = $payable_amount - $discount_amount;
                 $total_paying = $total_paying + $payable_amount;
                 $total_tax = $total_tax + $taxable_amount;
                 $total_disc_amount = $total_disc_amount + $discount_amount;
@@ -552,11 +552,11 @@ class CartController extends BaseController{
         }
         $cart->products = $cartData;
         $cart->item_count = $item_count;
-        $temp_total_paying = $total_paying + $total_delivery_amount + $total_tax - $total_disc_amount;
+        $temp_total_paying = $total_paying  + $total_tax - $total_disc_amount;
         if($cart->loyalty_amount  >= $temp_total_paying){
            $cart->total_payable_amount = 0.00;
         }else{
-            $cart->total_payable_amount = $total_paying + $total_delivery_amount + $total_tax - $total_disc_amount - $cart->loyalty_amount;
+            $cart->total_payable_amount = $total_paying  + $total_tax - $total_disc_amount - $cart->loyalty_amount;
         }
         $cart->tip_5_percent = number_format((0.05 * $total_payable_amount), 2);
         $cart->tip_10_percent = number_format((0.1 * $total_payable_amount), 2);

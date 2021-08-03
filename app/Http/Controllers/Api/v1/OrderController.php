@@ -105,7 +105,8 @@ class OrderController extends Controller {
                     $order->address_id = $request->address_id;
                     $order->payment_option_id = $request->payment_option_id;
                     $order->save();
-                    $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+                    $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+                    $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                     $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate','coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0,1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
                     $total_delivery_fee = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
@@ -163,7 +164,7 @@ class OrderController extends Controller {
                             $order_product->product_id = $vendor_cart_product->product_id;
                             $order_product->created_by = $vendor_cart_product->created_by;
                             $order_product->variant_id = $vendor_cart_product->variant_id;
-                            $order_product->product_name = $vendor_cart_product->product->sku;
+                            $order_product->product_name = $vendor_cart_product->product->title??$vendor_cart_product->product->sku;
                             $order_product->product_dispatcher_tag = $vendor_cart_product->product->tags;
                             if($vendor_cart_product->product->pimage){
                                 $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
@@ -243,15 +244,16 @@ class OrderController extends Controller {
                     $order->total_discount = $total_discount;
                     $order->taxable_amount = $taxable_amount;
                     if ($loyalty_amount_saved > 0) {
-                        if ($payable_amount < $loyalty_amount_saved) {
-                            $loyalty_amount_saved =  $payable_amount;
+                        if ($loyalty_amount_saved > $payable_amount) {
+                            $loyalty_amount_saved = $payable_amount;
                             $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                         }
                     }
                     $tip_amount = 0;
                     if ( (isset($request->tip)) && ($request->tip != '') && ($request->tip > 0) ) {
                         $tip_amount = $request->tip;
-                        $order->tip_amount = $tip_amount;
+                        $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
+                        $order->tip_amount = number_format($tip_amount, 2);
                     }
                     $order->total_delivery_fee = $total_delivery_fee;
                     $order->loyalty_points_used = $loyalty_points_used;

@@ -1,4 +1,14 @@
 @extends('layouts.store', ['title' => __('Home')])
+@php
+$actives=array();
+@endphp
+@foreach($homePageLabels as $homePageLabel)
+@php
+    if($homePageLabel->is_active == 1){
+        array_push($actives,$homePageLabel->slug);
+    }
+@endphp
+@endforeach
 @section('css')
 <style type="text/css">
     .main-menu .brand-logo {
@@ -16,10 +26,29 @@
 <section class="p-0 small-slider">
     <div class="slide-1 home-slider">
         @foreach($banners as $banner)
+            @php
+            $url = '';
+            if($banner->link == 'category'){
+                if($banner->category != null){
+                    $url = route('categoryDetail', $banner->category->slug);
+                }
+            }
+            else if($banner->link == 'vendor'){
+                if($banner->vendor != null){
+                    $url = route('vendorDetail', $banner->vendor->slug);
+                } 
+            }
+            @endphp
             <div>
-                <div class="home text-center">
-                    <img src="{{$banner->image['image_fit'] . '1500/600' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
-                </div>
+                @if($url)
+                <a href="{{$url}}">
+                @endif
+                    <div class="home text-center">
+                        <img src="{{$banner->image['image_fit'] . '1500/600' . $banner->image['image_path']}}" class="bg-img blur-up lazyload">
+                    </div>
+                @if($url)
+                </a>
+                @endif
             </div>
         @endforeach
     </div>
@@ -98,6 +127,7 @@
     <% }); %>
 </script>
 
+@if(in_array("vendors", $actives))
 <section class="section-b-space p-t-0 pt-5 ratio_asos pb-0 d-none" id="our_vendor_main_div">
     <div class="container">
         <div class="row">
@@ -115,8 +145,10 @@
         </div>
     </div>
 </section>
+@endif
 <section class="section-b-space">
     <div class="container">
+    @if(in_array("new_products", $actives))
         <div class="row d-none" id="new_products_wrapper">
             <div class="col-12 text-center d-flex align-items-center justify-content-between mb-4">
                 <div class="title1">
@@ -127,6 +159,8 @@
                 <div class="vendor-product common_card" id="new_product_main_div"></div>
             </div>
         </div>
+    @endif
+    @if(in_array("featured_vendors", $actives))
         <div class="row d-none mt-4" id="featured_products_wrapper">
             <div class="col-12 text-center d-flex align-items-center justify-content-between mb-4">
                 <div class="title1">
@@ -137,7 +171,8 @@
                 <div class="vendor-product common_card" id="feature_product_main_div"></div>
             </div>
         </div>
-
+    @endif
+    @if(in_array("best_sellers", $actives))
         <div class="row d-none mt-md-5 mt-4" id="bestseller_products_wrapper">
             <div class="col-12 text-center d-flex align-items-center justify-content-between mb-4">
                 <div class="title1">
@@ -150,6 +185,8 @@
                 </div>
             </div>
         </div>
+    @endif
+    @if(in_array("on_sale", $actives))
         <div class="row d-none mt-4" id="onsale_products_wrapper">
             <div class="col-12 text-center d-flex align-items-center justify-content-between mb-4">
                 <div class="title1">
@@ -160,8 +197,10 @@
                 <div class="vendor-product common_card" id="on_sale_product_main_div"></div>
             </div>
         </div>
+    @endif
     </div>
 </section>
+@if(in_array("brands", $actives))
 <section class="section-b-space pt-0">
     <div class="container">
         <div class="row">
@@ -176,6 +215,7 @@
         </div>
     </div>
 </section>
+@endif
 
 <!-- Modal -->
 <div class="modal fade" id="age_restriction" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

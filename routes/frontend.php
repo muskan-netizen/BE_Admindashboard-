@@ -145,5 +145,13 @@ Route::group(['middleware' => ['domain', 'webAuth']], function() {
 		Route::get('get-return-products', 'Front\ReturnOrderController@getReturnProducts')->name('get-return-products');
 		Route::post('update-product-return', 'Front\ReturnOrderController@updateProductReturn')->name('update.order.return');
 	});
+
+
+	// Return product 
+	Route::group(['prefix' => 'looking'], function () {
+		Route::get('/', 'Front\BookingController@index')->name('bookingIndex');
+	});
+
+	
 	Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');
 });

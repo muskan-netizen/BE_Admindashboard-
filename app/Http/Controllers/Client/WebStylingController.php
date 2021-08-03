@@ -73,6 +73,11 @@ class WebStylingController extends BaseController{
             $brands->is_active = $request->has('brands') && $request->brands == "on" ? 1 : 0;
             $brands->save(); 
         }
+        $best_sellers = HomePageLabel::where('slug', 'best_sellers')->first();
+        if($best_sellers){
+            $best_sellers->is_active = $request->has('best_sellers') && $request->best_sellers == "on" ? 1 : 0;
+            $best_sellers->save(); 
+        }
         $client_preferences = ClientPreference::first();
         if($client_preferences){
             if($request->has('favicon')){
