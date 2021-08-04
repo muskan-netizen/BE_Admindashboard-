@@ -679,6 +679,10 @@ form .btn{
     line-height: 35px;
 } */
 
+.mobile-account{
+    top: 3px;
+}
+
 .remove-item-modal .btn {
     width: 50%;
     height: 35px;

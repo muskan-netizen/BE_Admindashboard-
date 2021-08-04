@@ -1039,10 +1039,16 @@ $(document).ready(function() {
                 "variant_id": $('#prod_variant_id').val(),
             },
             success: function(response) {
-                cartHeader();
+                if(response.status == 'success'){
+                    cartHeader();
+                }else{
+                    alert(response.message);
+                }
             },
-            error: function(data) {
-                console.log(data);
+            error: function(error) {
+                var response = $.parseJSON(error.responseText);
+                let error_messages = response.message;
+                alert(error_messages);
             },
         });
     }

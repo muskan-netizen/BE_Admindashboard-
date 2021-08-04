@@ -101,21 +101,21 @@ class CartController extends FrontController
                             ->where('addon_sets.status', '!=', '2')
                             ->where('addon_sets.id', $key)->first();
                 if(!$addon){
-                    return $this->errorResponse('Invalid addon or delete by admin. Try again with remove some.', 404);
+                    return response()->json(["status" => "error", 'message' => 'Invalid addon or delete by admin. Try again with remove some.'], 404);
                 }
                 if($addon->min_select > count($value)){
                     return response()->json([
-                        "status" => "Error",
+                        "status" => "error",
                         'message' => 'Select minimum ' . $addon->min_select .' options of ' .$addon->title,
                         'data' => $addon
-                    ], 404);
+                    ], 400);
                 }
                 if($addon->max_select < count($value)){
                     return response()->json([
-                        "status" => "Error",
+                        "status" => "error",
                         'message' => 'You can select maximum ' . $addon->min_select .' options of ' .$addon->title,
                         'data' => $addon
-                    ], 404);
+                    ], 400);
                 }
             }
             if ($luxury_option) {

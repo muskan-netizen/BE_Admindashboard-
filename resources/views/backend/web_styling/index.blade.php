@@ -220,5 +220,16 @@
             }
         });
     }
+    $("#homepage-datatable tbody").sortable({
+        placeholder: "ui-state-highlight",
+        update: function(event, ui) {
+            var post_order_ids = new Array();
+            $('#post_list tr').each(function() {
+                post_order_ids.push($(this).data("row-id"));
+            });
+            console.log(post_order_ids);
+            saveOrder(post_order_ids);
+        }
+    });
 </script>
 @endsection

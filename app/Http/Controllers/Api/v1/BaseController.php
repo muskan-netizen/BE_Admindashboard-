@@ -43,13 +43,29 @@ class BaseController extends Controller{
         return $branch;
     }
 
-    public function categoryNav($lang_id) {
+    public function categoryNav($lang_id, $vends=[]) {
+        $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id')->first();
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-                        ->leftjoin('types', 'types.id', 'categories.type_id')
-                        ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
+                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')->distinct('categories.slug');
+        
+        $status = $this->field_status;
+        if ($preferences) {
+            if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
+                $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
+                    ->where(function ($q1) use ($vends, $status, $lang_id) {
+                        $q1->whereIn('vct.vendor_id', $vends)
+                            ->where('vct.status', 1)
+                            ->orWhere(function ($q2) {
+                                $q2->whereIn('categories.type_id', [4, 5]);
+                            });
+                    });
+            }
+        }
+        $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
                         ->where('categories.id', '>', '1')
+                        ->whereNotNull('categories.type_id')
                         ->where('categories.is_visible', 1)
-                        ->where('categories.status', '!=', $this->field_status)
+                        ->where('categories.status', '!=', $status)
                         ->where('categories.is_core', 1)
                         ->where('cts.language_id', $lang_id)
                         ->orderBy('categories.parent_id', 'asc')
@@ -168,7 +184,7 @@ class BaseController extends Controller{
     public function getLoyaltyPoints($userid, $multiplier){
         $loyalty_earned_amount = 0;
         $redeem_points_per_primary_currency = '';
-        $loyalty_card = LoyaltyCard::first();
+        $loyalty_card = LoyaltyCard::where('status', '0')->first();
         if ($loyalty_card) {
             $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
         }

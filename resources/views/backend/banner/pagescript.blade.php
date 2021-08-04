@@ -199,7 +199,7 @@
     }
 
     $("#banner-datatable tbody").sortable({
-        placeholder : "ui-state-highlight",
+        placeholder : "ui- state-highlight",
         handle: ".dragula-handle",
         update  : function(event, ui)
         {

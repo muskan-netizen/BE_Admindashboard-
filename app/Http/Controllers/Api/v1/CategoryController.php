@@ -21,6 +21,7 @@ class CategoryController extends BaseController
         try{
             $paginate = $request->has('limit') ? $request->limit : 12;
             $product_list = $request->has('product_list') ? $request->product_list : 'false';
+            $mod_type = $request->has('type') ? $request->type : 'delivery';
             if($cid == 0){
                 return response()->json(['error' => 'No record found.'], 404);
             }
@@ -55,7 +56,7 @@ class CategoryController extends BaseController
             }
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
-            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $paginate, $userid, $product_list);
+            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $paginate, $userid, $product_list, $mod_type);
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -63,7 +64,7 @@ class CategoryController extends BaseController
         
     }
 
-    public function listData($langId, $category_id, $type = '', $limit = 12, $userid, $product_list){
+    public function listData($langId, $category_id, $type = '', $limit = 12, $userid, $product_list, $mod_type){
         if($type == 'vendor' && $product_list == 'false'){
             $vendor_ids = [];
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
@@ -72,7 +73,7 @@ class CategoryController extends BaseController
                     $vendor_ids[] = $vendor_category->vendor_id;
                }
             }
-            $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')->where('status', '!=', $this->field_status)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit);
+            $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')->where($mod_type,1)->where('status', '!=', $this->field_status)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit);
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 1) ? 0 : 1;

@@ -103,7 +103,7 @@ class HomeController extends BaseController{
             }
             $isVendorArea = 0;
             $langId = $user->language;
-            $categories = $this->categoryNav($langId);
+            $categories = $this->categoryNav($langId, $vends);
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
             $homeData['reqData'] = $request->all();
@@ -112,7 +112,7 @@ class HomeController extends BaseController{
                                 }])->select('id', 'image')->where('status', '!=', $this->field_status)
                                 ->orderBy('position', 'asc')->get();
             $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
-            $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;                  
+            $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

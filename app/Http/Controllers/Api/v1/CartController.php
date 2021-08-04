@@ -11,7 +11,7 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Product, Cart, ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet,UserAddress, ClientPreference, LuxuryOption, Vendor};
+use App\Models\{User, Product, Cart, ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet,UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser};
 use GuzzleHttp\Client as GCLIENT;
 class CartController extends BaseController{
     use ApiResponser;
@@ -345,12 +345,27 @@ class CartController extends BaseController{
                         $qry->where('language_id', $langId);
                     }, 'vendorProducts.product.taxCategory.taxRate', 
                 ])->select('vendor_id')->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        $total_payable_amount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = 0.00;
+        $loyalty_amount_saved = 0;
+        $subscription_features = array();
+        if($cart->user_id){
+            $now = Carbon::now()->toDateTimeString();
+            $user_subscription = SubscriptionInvoicesUser::with('features')
+                ->select('id', 'user_id', 'subscription_id')
+                ->where('user_id', $cart->user_id)
+                ->where('end_date', '>', $now)
+                ->orderBy('end_date', 'desc')->first();
+            if ($user_subscription) {
+                foreach ($user_subscription->features as $feature) {
+                    $subscription_features[] = $feature->feature_id;
+                }
+            }
+        }
+        $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = 0.00;
         $total_tax = $total_paying = $total_disc_amount = 0.00; $item_count = 0; $total_delivery_amount = 0;
         if($cartData){
             $tax_details = [];
             foreach ($cartData as $ven_key => $vendorData) {
-                $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
+                $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
                 $ttAddon = $payable_amount = $is_coupon_applied = $coupon_removed = 0; $coupon_removed_msg = '';$deliver_charge = 0;
                 $delivery_fee_charges = 0.00;
@@ -539,28 +554,35 @@ class CartController extends BaseController{
                 }
             }
         }
+        $cart_product_luxury_id = CartProduct::where('cart_id', $cartID)->select('luxury_option_id', 'vendor_id')->first();
+        if($cart_product_luxury_id->luxury_option_id == 2 || $cart_product_luxury_id->luxury_option_id == 3){
+            $vendor_address = Vendor::where('id', $cart_product_luxury_id->vendor_id)->select('address')->first();
+            $cart->address = $vendor_address->address;
+        }
         $cart->total_tax = $total_tax;
         $cart->tax_details = $tax_details;
         $cart->gross_paybale_amount = $total_paying;
         $cart->total_discount_amount = $total_disc_amount;
+        $cart->products = $cartData;
+        $cart->item_count = $item_count;
+        $temp_total_paying = $total_paying  + $total_tax - $total_disc_amount;
         if($cart->user_id > 0){
-            $cart->loyalty_amount = $this->getLoyaltyPoints($cart->user_id, $clientCurrency->doller_compare);
+            $loyalty_amount_saved = $this->getLoyaltyPoints($cart->user_id, $clientCurrency->doller_compare);
             // if($total_paying > $cart->loyalty_amount){
             //    $cart->loyalty_amount = 0.00; 
             // }
             // $cart->wallet = $this->getWallet($cart->user_id, $clientCurrency->doller_compare, $currency);
         }
-        $cart->products = $cartData;
-        $cart->item_count = $item_count;
-        $temp_total_paying = $total_paying  + $total_tax - $total_disc_amount;
-        if($cart->loyalty_amount  >= $temp_total_paying){
-           $cart->total_payable_amount = 0.00;
+        if($loyalty_amount_saved  >= $temp_total_paying){
+            $loyalty_amount_saved = $temp_total_paying;
+            $cart->total_payable_amount = 0.00;
         }else{
-            $cart->total_payable_amount = $total_paying  + $total_tax - $total_disc_amount - $cart->loyalty_amount;
+            $cart->total_payable_amount = $total_paying  + $total_tax - $total_disc_amount - $loyalty_amount_saved;
         }
-        $cart->tip_5_percent = number_format((0.05 * $total_payable_amount), 2);
-        $cart->tip_10_percent = number_format((0.1 * $total_payable_amount), 2);
-        $cart->tip_15_percent = number_format((0.15 * $total_payable_amount), 2);
+        $cart->loyalty_amount = $loyalty_amount_saved;
+        $cart->tip_5_percent = number_format((0.05 * $total_payable_amount), 2, '.', '');
+        $cart->tip_10_percent = number_format((0.1 * $total_payable_amount), 2, '.', '');
+        $cart->tip_15_percent = number_format((0.15 * $total_payable_amount), 2, '.', '');
         return $cart;
     }
 
