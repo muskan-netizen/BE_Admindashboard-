@@ -414,11 +414,13 @@ class CartController extends FrontController
         $customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
         $latitude = '';
         $longitude = '';
-        if($address_id > 0){
-            $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->first();
-        }else{
-            $address = UserAddress::where('user_id', $user->id)->where('is_primary', 1)->first();
-            $address_id = ($address) ? $address->id : 0;
+        if($user){
+            if($address_id > 0){
+                $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->first();
+            }else{
+                $address = UserAddress::where('user_id', $user->id)->where('is_primary', 1)->first();
+                $address_id = ($address) ? $address->id : 0;
+            }
         }
         $latitude = ($address) ? $address->latitude : '';
         $longitude = ($address) ? $address->longitude : '';
