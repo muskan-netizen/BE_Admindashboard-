@@ -30,7 +30,7 @@ class UserController extends BaseController{
     public function index(){
         $roles = Role::all();
         $countries = Country::all();
-        $active_users = User::where('status', 1)->count();
+        $active_users = User::where('status', 1)->where('is_superadmin', '!=', 1)->count();
         $inactive_users = User::where('status', 3)->count();
         $users = User::withCount(['orders', 'activeOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc')->paginate(10);
         $social_logins = 0;

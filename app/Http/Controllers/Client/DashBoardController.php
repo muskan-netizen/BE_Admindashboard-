@@ -141,13 +141,15 @@ class DashBoardController extends BaseController{
             }else{
                 $orders = $orders_query->whereMonth('created_at', Carbon::now()->month)->select('id')->get();
             }
+            $temp_array = [];
             foreach ($orders as $order) {
                 foreach ($order->products as $product) {
                     $category = Category::with('english')->where('id', $product->category_id)->first();
                     if ($category) {
-                        if (array_key_exists($category->slug, $categories)) {
+                        if (in_array($category->slug, $temp_array)) {
                             $categories[Str::limit($category->english->name, 5, '..')] += 1;
                         } else {
+                            $temp_array[] = $category->slug;
                             $categories[Str::limit($category->english->name, 5, '..')] = 1;
                         }
                     }

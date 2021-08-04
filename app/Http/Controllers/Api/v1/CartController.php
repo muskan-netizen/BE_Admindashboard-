@@ -179,7 +179,6 @@ class CartController extends BaseController{
                             $cart_addon = CartAddon::where('cart_product_id', $cartProduct->id)
                                         ->where('addon_id', $addon_ids[$key])
                                         ->where('option_id', $opts)->first();
-
                             if(!$cart_addon){
                                 $isnew = 1;
                             }
