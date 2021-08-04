@@ -405,6 +405,7 @@ class CartController extends FrontController
      */
     public function getCart($cart, $address_id=0)
     {
+        $address = [];
         $cart_id = $cart->id;
         $user = Auth::user();
         $langId = Session::get('customerLanguage');
