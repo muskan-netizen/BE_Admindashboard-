@@ -430,7 +430,7 @@
                         </div>
                         <div class="col-12 form-group checkbox-input">
                             <input type="checkbox" id="agree" name="agree" required>
-                            <label for="agree">{{__('I accept the')}} <a href="{{url('extra-page/terms-conditions')}}" target="_blank">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('extra-page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy')}}</a></label>
+                            <label for="agree">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy')}}</a></label>
                             <span class="d-block text-danger error-text agreeError"></span>
                         </div>
                         <div class="col-12 mt-2">
