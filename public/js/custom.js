@@ -809,12 +809,6 @@ $(document).ready(function() {
             type: "get",
             dataType: 'json',
             url: cart_product_url,
-            // beforeSend: function() {
-            //     if($("#cart_table").length > 0){
-            //         $(".spinner-box").show();
-            //         $("#cart_table").hide();
-            //     }
-            // },
             success: function(response) {
                 if (response.status == "success") {
                     $("#cart_table").html('');
@@ -827,11 +821,13 @@ $(document).ready(function() {
                             if($('#cart_main_page').length != 0){
                                 let cart_template = _.template($('#cart_template').html());
                                 $("#cart_table").append(cart_template({cart_details:cart_details}));
-                                // if(cart_details.deliver_status == 0){
-                                //     $("#order_palced_btn").attr("disabled", true);
-                                // }else{
-                                //     $("#order_palced_btn").removeAttr("disabled");
-                                // }
+                                if(cart_details.deliver_status == 0){
+                                    $("#order_palced_btn").attr("disabled", true);
+                                    $("#order_palced_btn").addClass("d-none");
+                                }else{
+                                    $("#order_palced_btn").removeAttr("disabled");
+                                    $("#order_palced_btn").removeClass("d-none");
+                                }
                             }
                             cartTotalProductCount();
                         }else{

@@ -84,12 +84,6 @@ class HomeController extends BaseController{
             $preferences = ClientPreference::select('is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $latitude = $request->latitude;
             $longitude = $request->longitude;
-            if( (empty($latitude)) && (empty($longitude)) ){
-                $address = $preferences->Default_location_name;
-                $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
-                $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
-                $request->request->add(['latitude' => $latitude, 'longitude' => $longitude, 'address' => $address]);
-            }
             $user_geo[] = $latitude;
             $user_geo[] = $longitude;
             if($request->has('type')){
@@ -98,6 +92,12 @@ class HomeController extends BaseController{
                 $vendorData = Vendor::select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount');
             }
             if($preferences->is_hyperlocal == 1){
+                if( (empty($latitude)) && (empty($longitude)) ){
+                    $address = $preferences->Default_location_name;
+                    $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
+                    $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
+                    $request->request->add(['latitude' => $latitude, 'longitude' => $longitude, 'address' => $address]);
+                }
                 $vendorData = $vendorData->whereHas('serviceArea', function($query) use($latitude, $longitude){
                         $query->select('vendor_id')
                         ->whereRaw("ST_Contains(polygon, ST_GeomFromText('POINT(".$latitude." ".$longitude.")'))");

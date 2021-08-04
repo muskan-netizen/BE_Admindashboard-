@@ -1,5 +1,6 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Vendor'])
 @section('css')
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 <link href="{{asset('assets/libs/nestable2/nestable2.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/ion-rangeslider/ion-rangeslider.min.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
@@ -29,138 +30,137 @@
 </style>
 @endsection
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box">
-                    <h4 class="page-title">{{ucfirst($vendor->name)}} profile</h4>
-                </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">{{ucfirst($vendor->name)}} profile</h4>
             </div>
         </div>
-        <div class="row mb-1">
-            <div class="col-sm-12">
-                <div class="text-sm-left">
-                    @if (\Session::has('success'))
-                    <div class="alert alert-success">
-                        <span>{!! \Session::get('success') !!}</span>
-                    </div>
-                    @endif
-                    @if (\Session::has('error_delete'))
-                    <div class="alert alert-danger">
-                        <span>{!! \Session::get('error_delete') !!}</span>
-                    </div>
-                    @endif
+    </div>
+    <div class="row mb-1">
+        <div class="col-sm-12">
+            <div class="text-sm-left">
+                @if (\Session::has('success'))
+                <div class="alert alert-success">
+                    <span>{!! \Session::get('success') !!}</span>
                 </div>
+                @endif
+                @if (\Session::has('error_delete'))
+                <div class="alert alert-danger">
+                    <span>{!! \Session::get('error_delete') !!}</span>
+                </div>
+                @endif
             </div>
         </div>
-        <div class="row ipad-view">
-            <div class="col-lg-3 col-xl-3">
-                @include('backend.vendor.show-md-3')
-            </div>
-            <div class="col-lg-9 col-xl-9">
-                <div class="">
-                    <ul class="nav nav-pills navtab-bg nav-justified">
-                        <li class="nav-item">
-                            <a href="{{ route('vendor.catalogs', $vendor->id) }}"  aria-expanded="false" class="nav-link {{($tab == 'catalog') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                                Catalog
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('vendor.show', $vendor->id) }}"  aria-expanded="false" class="nav-link {{($tab == 'configuration') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                                Configuration
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('vendor.categories', $vendor->id) }}"  aria-expanded="true" class="nav-link {{($tab == 'category') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                                Categories & Add Ons
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane {{($tab == 'configuration') ? 'active show' : '' }} card-body" id="configuration">
-                        </div>
-                        <div class="tab-pane {{($tab == 'category') ? 'active show' : '' }}" id="category">
-                            <div class="row">
-                                <div class="col-xl-4">
-                                    <div class="card-box">
-                                        <div class="row" style="max-height: 600px; overflow-x: auto">
-                                            <div class="col-sm-6">
-                                                <h4 class="mb-4"> Categories</h4>
-                                            </div>
-                                            <div class="col-sm-6 text-right">
-                                                @if($vendor->add_category == 1)
-                                                <button class="btn btn-info waves-effect waves-light text-sm-right openCategoryModal" dataid="0" is_vendor="1" {{$vendor->status == 1 ? '' : 'disabled'}}><i class="mdi mdi-plus-circle mr-1"></i> Add
-                                                </button>
-                                                @endif
-                                            </div> 
-                                            <div class="col-md-12">
-                                                <div class="row mb-2">
-                                                    <div class="col-md-12">
+    </div>
+    <div class="row ipad-view">
+        <div class="col-lg-3 col-xl-3">
+            @include('backend.vendor.show-md-3')
+        </div>
+        <div class="col-lg-9 col-xl-9">
+            <div class="">
+                <ul class="nav nav-pills navtab-bg nav-justified">
+                    <li class="nav-item">
+                        <a href="{{ route('vendor.catalogs', $vendor->id) }}"  aria-expanded="false" class="nav-link {{($tab == 'catalog') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
+                            Catalog
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('vendor.show', $vendor->id) }}"  aria-expanded="false" class="nav-link {{($tab == 'configuration') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
+                            Configuration
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('vendor.categories', $vendor->id) }}"  aria-expanded="true" class="nav-link {{($tab == 'category') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
+                            Categories & Add Ons
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane {{($tab == 'configuration') ? 'active show' : '' }} card-body" id="configuration">
+                    </div>
+                    <div class="tab-pane {{($tab == 'category') ? 'active show' : '' }}" id="category">
+                        <div class="row">
+                            <div class="col-xl-4">
+                                <div class="card-box">
+                                    <div class="row" style="max-height: 600px; overflow-x: auto">
+                                        <div class="col-sm-6">
+                                            <h4 class="mb-4"> Categories</h4>
+                                        </div>
+                                        <div class="col-sm-6 text-right">
+                                            @if($vendor->add_category == 1)
+                                            <button class="btn btn-info waves-effect waves-light text-sm-right openCategoryModal" dataid="0" is_vendor="1" {{$vendor->status == 1 ? '' : 'disabled'}}><i class="mdi mdi-plus-circle mr-1"></i> Add
+                                            </button>
+                                            @endif
+                                        </div> 
+                                        <div class="col-md-12">
+                                            <div class="row mb-2">
+                                                <div class="col-md-12">
 
-                                                        <div class="custom-dd-empty dd" id="nestable_list_3">
-                                                            <?php print_r($html); ?>
-                                                        </div>
-                                                    </div>                                                        
-                                                </div>
+                                                    <div class="custom-dd-empty dd" id="nestable_list_3">
+                                                        <?php print_r($html); ?>
+                                                    </div>
+                                                </div>                                                        
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xl-8">
-                                    <div class="card-box">
-                                        <div class="row" style="max-height: 600px; overflow-x: auto">
-                                            <div class="col-sm-8">
-                                                <h4 class="mb-4"> Addon Set</h4>
-                                            </div>
-                                            <div class="col-sm-4 text-right">
-                                                <button class="btn btn-info waves-effect waves-light text-sm-right openAddonModal" dataid="0" {{$vendor->status == 1 ? '' : 'disabled'}}>
-                                                    <i class="mdi mdi-plus-circle mr-1"></i> Add 
-                                                </button>
-                                            </div> 
-                                            <div class="col-md-12">
-                                                <div class="row addon-row">
-                                                    <div class="col-md-12">
-                                                        <form name="addon_order" id="addon_order" action="" method="post">
-                                                            @csrf
-                                                            <input type="hidden" name="orderData" id="orderVariantData" value="" />
-                                                        </form>
-                                                        <table class="table table-centered table-nowrap table-striped" id="varient-datatable">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>#</th>
-                                                                    <th>Title</th>
-                                                                    <th>Select(Min - Max)</th>
-                                                                    <th>Options</th>
-                                                                    <th>Action</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach($addon_sets as $set)
-                                                                <tr>
-                                                                    <td>{{$set->id}}</td>
-                                                                    <td>{{$set->title}}</td>
-                                                                    <td>{{$set->min_select}} - {{$set->max_select}}</td>
-                                                                    <td>
-                                                                        @foreach($set->option as $opt)
-                                                                            <span>{{$opt->title}} - ${{$opt->price}}</span><br/>
-                                                                            <span></span>
-                                                                        @endforeach
-                                                                    </td>
-                                                                    <td>
-                                                                        <a class="action-icon editAddonBtn" dataid="{{$set->id}}" href="javascript:void(0);" > <h3> <i class="mdi mdi-square-edit-outline"></i> </h3></a>
+                            </div>
+                            <div class="col-xl-8">
+                                <div class="card-box">
+                                    <div class="row" style="max-height: 600px; overflow-x: auto">
+                                        <div class="col-sm-8">
+                                            <h4 class="mb-4"> Addon Set</h4>
+                                        </div>
+                                        <div class="col-sm-4 text-right">
+                                            <button class="btn btn-info waves-effect waves-light text-sm-right openAddonModal" dataid="0" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                                                <i class="mdi mdi-plus-circle mr-1"></i> Add 
+                                            </button>
+                                        </div> 
+                                        <div class="col-md-12">
+                                            <div class="row addon-row">
+                                                <div class="col-md-12">
+                                                    <form name="addon_order" id="addon_order" action="" method="post">
+                                                        @csrf
+                                                        <input type="hidden" name="orderData" id="orderVariantData" value="" />
+                                                    </form>
+                                                    <table class="table table-centered table-nowrap table-striped" id="varient-datatable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Title</th>
+                                                                <th>Select(Min - Max)</th>
+                                                                <th>Options</th>
+                                                                <th>Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($addon_sets as $set)
+                                                            <tr>
+                                                                <td>{{$set->id}}</td>
+                                                                <td>{{$set->title}}</td>
+                                                                <td>{{$set->min_select}} - {{$set->max_select}}</td>
+                                                                <td>
+                                                                    @foreach($set->option as $opt)
+                                                                        <span>{{$opt->title}} - ${{$opt->price}}</span><br/>
+                                                                        <span></span>
+                                                                    @endforeach
+                                                                </td>
+                                                                <td>
+                                                                    <a class="action-icon editAddonBtn" dataid="{{$set->id}}" href="javascript:void(0);" > <h3> <i class="mdi mdi-square-edit-outline"></i> </h3></a>
 
-                                                                        <a class="action-icon deleteAddon" dataid="{{$set->id}}" href="javascript:void(0);"> <i class="mdi mdi-delete"></i></a>
-                                                                        <form action="{{route('addon.destroy', $set->id)}}" method="POST" style="display: none;" id="addonDeleteForm{{$set->id}}">
-                                                                            @csrf
-                                                                            @method('DELETE')
-                                                                            
-                                                                        </form>
-                                                                    </td>
-                                                                </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
+                                                                    <a class="action-icon deleteAddon" dataid="{{$set->id}}" href="javascript:void(0);"> <i class="mdi mdi-delete"></i></a>
+                                                                    <form action="{{route('addon.destroy', $set->id)}}" method="POST" style="display: none;" id="addonDeleteForm{{$set->id}}">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        
+                                                                    </form>
+                                                                </td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
@@ -168,14 +168,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane {{($tab == 'catalog') ? 'active show' : '' }}" id="catalog">  
-                        </div>
+                    </div>
+                    <div class="tab-pane {{($tab == 'catalog') ? 'active show' : '' }}" id="catalog">  
                     </div>
                 </div>
-            </div> 
-        </div>
+            </div>
+        </div> 
     </div>
-<!--   Add On    modals   -->
+</div>
 <div id="addAddonmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -352,6 +352,7 @@
 <link rel="stylesheet" href="{{ asset('assets/css/jquery.tagsinput-revisited.css') }}" />
 <script src="{{ asset('assets/js/jquery.tagsinput-revisited.js') }}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
 @include('backend.vendor.pagescript')
 @include('backend.common.category-script')
 <script type="text/javascript">

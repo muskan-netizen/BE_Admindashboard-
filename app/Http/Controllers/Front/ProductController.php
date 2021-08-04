@@ -98,7 +98,7 @@ class ProductController extends FrontController{
         $is_inwishlist_btn = 0;
         if($product->category){
             $category_detail = Category::select()->where('id',$product->category->category_id)->first();
-            if($category_detail){
+            if($category_detail && $user){
                 $is_inwishlist_btn = $category_detail ? $category_detail->show_wishlist : 0;
             }
         }

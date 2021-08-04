@@ -475,7 +475,7 @@
                     <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
                 </div>
                 <div class="offset-lg-6 offset-md-4 col-lg-3 col-md-4 text-md-right">
-                    <button id="order_palced_btn" class="btn btn-solid" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Continue')}}</button>
+                    <button id="order_palced_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Continue')}}</button>
                 </div>
             </div>
         </div>
