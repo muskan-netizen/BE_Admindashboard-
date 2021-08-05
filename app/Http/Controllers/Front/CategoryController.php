@@ -171,8 +171,11 @@ class CategoryController extends FrontController
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
                         },
-                    ])->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only')->where('products.is_live', 1)->where('category_id', $category_id)->whereIn('products.vendor_id', $vendors)->paginate($pagiNate);
-
+                    ])->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only')->where('products.is_live', 1)->where('category_id', $category_id);
+            if(count($vendors) > 0){
+                $products = $products->whereIn('products.vendor_id', $vendors);
+            }
+            $products = $products->paginate($pagiNate);
             if(!empty($products)){
                 foreach ($products as $key => $value) {
                     $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
