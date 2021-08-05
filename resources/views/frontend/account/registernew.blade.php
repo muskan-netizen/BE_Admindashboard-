@@ -65,8 +65,8 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="">{{ __('Phone No.') }}</label>
                                     <input type="tel" class="form-control phone @error('phone_number') is-invalid @enderror" id="phone" placeholder="{{ __('Phone No.') }}" name="phone_number" value="{{old('full_number')}}">
-                                    <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode')}}">
-                                    <input type="hidden" id="countryData" name="countryData" value="{{ old('countryData')}}">
+                                    <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode') ? old('dialCode') : '1' }}">
+                                    <input type="hidden" id="countryData" name="countryData" value="{{ old('countryData') ? old('countryData') : 'us'}}">
                                     @error('phone_number')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
