@@ -115,13 +115,13 @@ class AppStylingSeeder extends Seeder{
             'template_id' => '1',
         ]);
 
-        $app_styling_option = AppStylingOption::insert([
-            'app_styling_id' => $app_styling,
-            'name' => 'Home Page 2',
-            'image' => 'home_two.png',
-            'is_selected' => '0',
-            'template_id' => '2',
-        ]);
+        // $app_styling_option = AppStylingOption::insert([
+        //     'app_styling_id' => $app_styling,
+        //     'name' => 'Home Page 2',
+        //     'image' => 'home_two.png',
+        //     'is_selected' => '0',
+        //     'template_id' => '2',
+        // ]);
 
         $app_styling_option = AppStylingOption::insert([
             'app_styling_id' => $app_styling,
