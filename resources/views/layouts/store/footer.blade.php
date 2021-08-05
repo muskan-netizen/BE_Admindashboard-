@@ -5,8 +5,9 @@
 </div>
 @php 
     $mapKey = '1234';
-    if(isset(Session::get('preferences')->map_key) && !empty(Session::get('preferences')->map_key)){
-        $mapKey = session('preferences')->map_key;
+    $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
+    if($theme && !empty($theme->map_key)){
+        $mapKey = $theme->map_key;
     }
     $webColor = '#ff4c3b';
     $darkMode = '';
