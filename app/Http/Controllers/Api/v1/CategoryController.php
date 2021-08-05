@@ -73,7 +73,7 @@ class CategoryController extends BaseController
                     $vendor_ids[] = $vendor_category->vendor_id;
                }
             }
-            $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')->with('slot')->withAvg('product', 'averageRating')->whereIn('id', $vendor_ids)->where($mod_type,1)->where('status', '!=', $this->field_status)->paginate($limit);
+            $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')->with('slot')->withAvg('product', 'averageRating')->where('id', 2)->where($mod_type, 1)->where('status', '!=', $this->field_status)->paginate($limit);
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 1) ? 0 : 1;
