@@ -554,9 +554,11 @@ class CartController extends BaseController{
             }
         }
         $cart_product_luxury_id = CartProduct::where('cart_id', $cartID)->select('luxury_option_id', 'vendor_id')->first();
-        if($cart_product_luxury_id->luxury_option_id == 2 || $cart_product_luxury_id->luxury_option_id == 3){
-            $vendor_address = Vendor::where('id', $cart_product_luxury_id->vendor_id)->select('address')->first();
-            $cart->address = $vendor_address->address;
+        if($cart_product_luxury_id){
+            if($cart_product_luxury_id->luxury_option_id == 2 || $cart_product_luxury_id->luxury_option_id == 3){
+                $vendor_address = Vendor::where('id', $cart_product_luxury_id->vendor_id)->select('address')->first();
+                $cart->address = $vendor_address->address;
+            }
         }
         $cart->total_tax = $total_tax;
         $cart->tax_details = $tax_details;
