@@ -78,8 +78,12 @@ class ProductController extends FrontController{
             ->where('url_slug', $url_slug)
             ->where('is_live', 1)
             ->firstOrFail();
+        $doller_compare = 1;
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
-        $product->related_products = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
+        if($clientCurrency){
+            $doller_compare = $clientCurrency->doller_compare;
+        }
+        $product->related_products = $this->metaProduct($langId, $doller_compare, 'relate', $product->related);
         foreach ($product->variant as $key => $value) {
             if(isset($product->variant[$key])){
             $product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';

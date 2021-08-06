@@ -34,7 +34,15 @@ class ClientPreferenceController extends BaseController{
         }else{
             $reffer_to = $preference->reffered_to_amount;
         }
-        return view('backend/setting/config')->with(['client' => $client, 'preference' => $preference, 'mapTypes'=> $mapTypes, 'smsTypes' => $smsTypes, 'client_languages' => $client_languages, 'file_types' => $file_types, 'vendor_registration_documents' => $vendor_registration_documents, 'reffer_by' => $reffer_by, 'reffer_to' => $reffer_to,]);
+
+        $last_mile_teams = [];
+        if(isset($preference) && $preference->need_delivery_service == '1') # if last mile on
+        {
+            $last_mile_teams = $this->getLastMileTeams(); 
+            
+        }
+
+        return view('backend/setting/config')->with(['last_mile_teams' => $last_mile_teams,'client' => $client, 'preference' => $preference, 'mapTypes'=> $mapTypes, 'smsTypes' => $smsTypes, 'client_languages' => $client_languages, 'file_types' => $file_types, 'vendor_registration_documents' => $vendor_registration_documents, 'reffer_by' => $reffer_by, 'reffer_to' => $reffer_to,]);
     }
 
     public function getCustomizePage(ClientPreference $clientPreference){
@@ -181,6 +189,12 @@ class ClientPreferenceController extends BaseController{
             $preference->need_dispacher_ride = ($request->has('need_dispacher_ride') && $request->need_dispacher_ride == 'on') ? 1 : 0;
           
             if($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on'){
+                if( (!$request->has('Default_location_name')) || ($request->Default_location_name == '')
+                    || (!$request->has('Default_latitude')) || ($request->Default_latitude == '')
+                    || (!$request->has('Default_longitude')) || ($request->Default_longitude == '')
+                ){
+                    return redirect()->route('configure.index')->with('error', 'Invalid Hyperlocal Data');
+                }
                 $preference->Default_location_name = $request->Default_location_name;
                 $preference->Default_latitude = $request->Default_latitude;
                 $preference->Default_longitude = $request->Default_longitude;
@@ -303,5 +317,42 @@ class ClientPreferenceController extends BaseController{
         $client->custom_domain = $request->custom_domain;
         $client->save();
         return redirect()->route('configure.customize')->with('success', 'Client customize data updated successfully!');
+    }
+
+
+
+
+     # get last mile teams 
+     public function getLastMileTeams(){
+        try {   
+            $dispatch_domain = $this->checkIfLastMileOn();
+                if ($dispatch_domain && $dispatch_domain != false) {
+
+                    $unique = Auth::user()->code;
+                   
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key,
+                                                        'shortcode' => $dispatch_domain->delivery_service_key_code,
+                                                        'content-type' => 'application/json']
+                                                            ]);
+                            $url = $dispatch_domain->delivery_service_key_url;                      
+                            $res = $client->get($url.'/api/get-all-teams');
+                            $response = json_decode($res->getBody(), true); 
+                            if($response && $response['message'] == 'success'){
+                                return $response['teams'];
+                            }
+                    
+                }
+            }    
+            catch(\Exception $e){
+               
+            }
+    }
+    # check if last mile delivery on 
+    public function checkIfLastMileOn(){
+        $preference = ClientPreference::first();
+        if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+            return $preference;
+        else
+            return false;
     }
 }

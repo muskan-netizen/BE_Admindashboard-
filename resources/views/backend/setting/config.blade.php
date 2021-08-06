@@ -135,6 +135,23 @@
                         </span>
                         @endif
                      </div>
+                     
+                     @if($last_mile_teams != null && count($last_mile_teams))
+                     <div class="form-group mt-3 mb-0" style="{{(isset($preference) && $preference->need_delivery_service == '1') ? '' : 'display: none;'}}" id="lastMileTeamListDiv">
+                        <div class="form-group">
+                            {!! Form::label('title', 'Team Tag For Last Mile',['class' => 'control-label']) !!}
+                            <select class="form-control" id="lastMileTeamList" name="last_mile_team" data-toggle="select2" >
+                              <option value="0">{{__('Select Team Tag')}}</option>
+                              @foreach($last_mile_teams as $nm)
+                                 <option value="{{$nm['name']}}" @if($preference->last_mile_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
+                              @endforeach
+                              
+                            </select>
+                        </div>
+                     </div>
+                     @endif
+
+
                   </div>
                </div>
             </div>
@@ -774,7 +791,11 @@
                            <tbody id="post_list">
                               @forelse($vendor_registration_documents as $vendor_registration_document)
                               <tr>
-                                 <td>{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</td>
+                                 <td>
+                                    <a class="edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">   
+                                       {{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}
+                                    </a>   
+                                 </td>
                                  <td>{{$vendor_registration_document->file_type}}</td>
                                  <td>
                                     <div>

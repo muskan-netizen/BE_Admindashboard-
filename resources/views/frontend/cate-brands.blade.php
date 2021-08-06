@@ -138,7 +138,7 @@
                                                             <div class="text-center">
                                                                 <a href="{{ $data->redirect_url }}">
                                                                     <?php //print_r($data->image);?>
-                                                                    <img width="100%" src="{{ $data->image['image_fit'] }}150/150{{ $data->image['image_path'] }}" alt="">
+                                                                    <img src="{{ $data->image['image_fit'] }}150/150{{ $data->image['image_path'] }}" alt="">
                                                                 </a>
                                                             </div>
                                                         </div>

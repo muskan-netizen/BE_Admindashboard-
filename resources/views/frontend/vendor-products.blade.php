@@ -168,47 +168,43 @@
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
-                                <div class="top-banner-wrapper">
+                                <div class="top-banner-wrapper mb-4">
                                     @if(!empty($vendor->banner))
                                         <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1000/200' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
                                     @endif
                                     <div class="row mt-n5">
-                                        <div class="col-md-8 offset-md-2">
+                                        <div class="col-12">
                                             <form action="">
                                                 <div class="row">
-                                                <div class="col-sm-12 text-center">
-                                                    <div class="file file--upload">
-                                                        <label>
-                                                            <span class="update_pic border-0">
-                                                            <img src="{{$vendor->logo['proxy_url'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
-                                                            </span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="name_location d-block py-0">
-                                                        <h5 class="mt-0 mb-1">{{$vendor->name}}</h5>
-                                                    </div>
-                                                    @if($vendor->is_show_vendor_details == 1)
-                                                        <div class="">
-                                                            @if($vendor->email)
-                                                                <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
-                                                            @endif
-                                                            <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
-                                                            @if($vendor->website)
-                                                                <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
-                                                            @endif
+                                                    <div class="col-sm-12 text-center">
+                                                        <div class="file file--upload">
+                                                            <label>
+                                                                <span class="update_pic border-0">
+                                                                <img src="{{$vendor->logo['proxy_url'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
+                                                                </span>
+                                                            </label>
                                                         </div>
+                                                        <div class="name_location d-block py-0">
+                                                            <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
+                                                        </div>
+                                                        @if($vendor->is_show_vendor_details == 1)
+                                                            <div class="">
+                                                                @if($vendor->email)
+                                                                    <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
+                                                                @endif
+                                                                <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
+                                                                @if($vendor->website)
+                                                                    <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
+                                                                @endif
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    @if($vendor->desc)
+                                                        <div class="col-md-12 text-center">
+                                                            <p>{{$vendor->desc}}</p>
+                                                        </div>                                                  
                                                     @endif
                                                 </div>
-                                                </div>
-                                                @if($vendor->desc)
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group" id="">
-                                                            <p>{{$vendor->desc}}</p>
-                                                        </div>
-                                                    </div>                                                  
-                                                </div>
-                                                @endif
                                             </form>
                                         </div>
                                     </div>
@@ -266,35 +262,34 @@
                                                         }
                                                         $imagePath2 = $data->media[$i]->image->path['proxy_url'] . '300/300' . $data->media[$i]->image->path['image_path'];
                                                     } ?>
-                                                    <div class="col-xl-3 col-6 col-grid-box">
-                                                        <div class="product-box scale-effect">
-                                                            <div class="img-wrapper">
-                                                                <div class="front">
-                                                                    <a href="{{route('productDetail', $data->url_slug)}}"><img class="img-fluid blur-up lazyload" src="{{$imagePath}}" alt=""></a>
-                                                                </div>
+                                                    <div class="col-xl-4 col-6 col-grid-box mt-3">
+                                                        <a href="{{route('productDetail', $data->url_slug)}}" class="product-box scale-effect d-block mt-0">
+                                                            <div class="product-image p-0">
+                                                                <img class="img-fluid blur-up lazyload" src="{{$imagePath}}" alt="">
                                                             </div>
-                                                            <div class="product-detail">
-                                                                <div class="inner_spacing">
-                                                                    <a href="{{route('productDetail', $data->url_slug)}}">
-                                                                        <h3>{{ $data->translation_title }}</h3>
-                                                                        @if($data['inquiry_only'] == 0)
-                                                                            <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
-                                                                        @endif
-                                                                        @if($client_preference_detail)
-                                                                            @if($client_preference_detail->rating_check == 1)  
-                                                                            <div class="custom_rating mt-0">
-                                                                                @if($data->averageRating > 0)
-                                                                                    @for($i = 1; $i < 6; $i++)
-                                                                                        <i class="fa fa-star{{ ($i <= $data->averageRating) ? ' filled ' : '' }}"></i>
-                                                                                    @endfor
-                                                                                @endif
-                                                                            </div>
+                                                            <div class="media-body align-self-center">
+                                                                <div class="inner_spacing w-100">
+                                                                    <h3 class="d-flex align-items-center justify-content-between">
+                                                                        <label class="mb-0">{{ $data->translation_title }}</label> <span class="rating">4.2</span>
+                                                                    </h3>
+                                                                    <p>Lorem ipsum dolor sit amet.</p>
+                                                                    @if($data['inquiry_only'] == 0)
+                                                                        <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                    @endif
+                                                                    @if($client_preference_detail)
+                                                                        @if($client_preference_detail->rating_check == 1)  
+                                                                        <div class="custom_rating mt-0">
+                                                                            @if($data->averageRating > 0)
+                                                                                @for($i = 1; $i < 6; $i++)
+                                                                                    <i class="fa fa-star{{ ($i <= $data->averageRating) ? ' filled ' : '' }}"></i>
+                                                                                @endfor
                                                                             @endif
+                                                                        </div>
                                                                         @endif
-                                                                    </a>
+                                                                    @endif
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </a>
                                                     </div>
                                                     @endforeach
                                                 @else

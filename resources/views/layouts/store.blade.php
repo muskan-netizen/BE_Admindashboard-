@@ -13,11 +13,7 @@
   </style>
 </head>
 <body class="{{session()->has('config_theme') ? session()->get('config_theme') : ''}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
-  @if (Auth::check())
-   @include('layouts.store/topbar-auth')
-  @else
-    @include('layouts.store/topbar-guest')
-  @endif
+  
   @yield('content')
   @include('layouts.store/footer-content')
   @include('layouts.store/footer')

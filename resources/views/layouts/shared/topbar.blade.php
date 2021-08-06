@@ -44,9 +44,9 @@
             <li class="m-hide"><a href="#" target="_blank"><i class="fab fa-android" aria-hidden="true"></i><span class="align-middle">Android App</span></a></li> -->
             
             @if(Auth::user()->is_superadmin == 1)
-            @if($clientData->getPreference->need_delivery_service  == 1 && isset($clientData->getPreference->delivery_service_key_url))
+            <!-- @if($clientData->getPreference->need_delivery_service  == 1 && isset($clientData->getPreference->delivery_service_key_url))
                 <li class="m-hide"><a href="{{ $clientData->getPreference->delivery_service_key_url }}" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __('Last Mile Delivery Dashboard')}}</span></a></li>
-            @endif
+            @endif -->
             @if($clientData->getPreference->need_dispacher_ride == 1 && isset($clientData->getPreference->pickup_delivery_service_key_url))
                 <li class="m-hide"><a href="{{ $clientData->getPreference->pickup_delivery_service_key_url }}" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __('Pickup & Delivery  Dashboard')}}</span></a></li>
             @endif

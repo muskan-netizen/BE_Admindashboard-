@@ -82,7 +82,7 @@ class UserhomeController extends FrontController{
                                     ->whereDate('end_date_time', '>=', Carbon::now());
                             });
                         })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
-            $home_page_labels = HomePageLabel::with('translations')->get();
+            $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
             return view('frontend.home')->with(['home' => $home, 'count' => $count, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
         } catch (Exception $e) {
             pr($e->getCode());die;

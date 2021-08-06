@@ -1,7 +1,7 @@
 @extends('layouts.store', ['title' => 'Product'])
 @section('content')
 
-    
+
 
     <section class="cab-booking pt-0">
         <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d4850.865733603189!2d76.82393041076074!3d30.716149768967526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1627015845978!5m2!1sen!2sin" width="100%" height="100vh" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
@@ -20,7 +20,8 @@
                     </ul>
                     <a class="add-more-location position-relative pl-2" href="javascript:void(0)">Add Destination</a>
                 </div>
-                <div class="location-list style-4">
+
+                <div class="location-list style-4 d-none">
                     <a class="search-location-result position-relative d-block" href="#">
                         <h4 class="mt-0 mb-1"><b>Sector 14 first</b></h4>
                         <p class="ellips mb-0">Panchkula, Haryana, India</p>
@@ -70,10 +71,142 @@
                         <p class="ellips mb-0">Sector 14, BEL Colony, Budanpur, Panchkula, Haryana, India</p>
                     </a>
                 </div>
+                
+                <div class="cab-button d-flex align-items-center py-2">
+                    <a class="btn btn-solid ml-2" href="#">uber</a>
+                    <a class="btn btn-solid ml-2" href="#">ola</a>
+                </div>
+                
+                <div class="vehical-container style-4">
+                    <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
+                        <div class="col-3 vehicle-icon">
+                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                        </div>
+                        <div class="col-9">
+                            <div class="row no-gutters">
+                                <div class="col-8 vehicle-details">
+                                    <h4 class="m-0"><b>Go Intercity</b></h4>
+                                    <p class="station-rides ellips">Affordable outstation rides</p>
+                                    <p class="waiting-time m-0"><span class="mr-1">In 2 mins.</span><span>03:04 pm</span></p>
+                                </div>
+                                <div class="col-4 ride-price pl-2">
+                                    <p class="mb-0"><b>₹2,634.37</b></p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <hr class="m-0">
+                    <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
+                        <div class="col-3 vehicle-icon">
+                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                        </div>
+                        <div class="col-9">
+                            <div class="row no-gutters">
+                                <div class="col-8 vehicle-details">
+                                    <h4 class="m-0"><b>Go Intercity</b></h4>
+                                    <p class="station-rides ellips">Affordable outstation rides</p>
+                                    <p class="waiting-time m-0"><span class="mr-1">In 2 mins.</span><span>03:04 pm</span></p>
+                                </div>
+                                <div class="col-4 ride-price pl-2">
+                                    <p class="mb-0"><b>₹2,634.37</b></p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <hr class="m-0">
+                    <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
+                        <div class="col-3 vehicle-icon">
+                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                        </div>
+                        <div class="col-9">
+                            <div class="row no-gutters">
+                                <div class="col-8 vehicle-details">
+                                    <h4 class="m-0"><b>Go Intercity</b></h4>
+                                    <p class="station-rides ellips">Affordable outstation rides</p>
+                                    <p class="waiting-time m-0"><span class="mr-1">In 2 mins.</span><span>03:04 pm</span></p>
+                                </div>
+                                <div class="col-4 ride-price pl-2">
+                                    <p class="mb-0"><b>₹2,634.37</b></p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <hr class="m-0">
+                    <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
+                        <div class="col-3 vehicle-icon">
+                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                        </div>
+                        <div class="col-9">
+                            <div class="row no-gutters">
+                                <div class="col-8 vehicle-details">
+                                    <h4 class="m-0"><b>Go Intercity</b></h4>
+                                    <p class="station-rides ellips">Affordable outstation rides</p>
+                                    <p class="waiting-time m-0"><span class="mr-1">In 2 mins.</span><span>03:04 pm</span></p>
+                                </div>
+                                <div class="col-4 ride-price pl-2">
+                                    <p class="mb-0"><b>₹2,634.37</b></p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <hr class="m-0">
+                    <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
+                        <div class="col-3 vehicle-icon">
+                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                        </div>
+                        <div class="col-9">
+                            <div class="row no-gutters">
+                                <div class="col-8 vehicle-details">
+                                    <h4 class="m-0"><b>Go Intercity</b></h4>
+                                    <p class="station-rides ellips">Affordable outstation rides</p>
+                                    <p class="waiting-time m-0"><span class="mr-1">In 2 mins.</span><span>03:04 pm</span></p>
+                                </div>
+                                <div class="col-4 ride-price pl-2">
+                                    <p class="mb-0"><b>₹2,634.37</b></p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <hr class="m-0">
+                    <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
+                        <div class="col-3 vehicle-icon">
+                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                        </div>
+                        <div class="col-9">
+                            <div class="row no-gutters">
+                                <div class="col-8 vehicle-details">
+                                    <h4 class="m-0"><b>Go Intercity</b></h4>
+                                    <p class="station-rides ellips">Affordable outstation rides</p>
+                                    <p class="waiting-time m-0"><span class="mr-1">In 2 mins.</span><span>03:04 pm</span></p>
+                                </div>
+                                <div class="col-4 ride-price pl-2">
+                                    <p class="mb-0"><b>₹2,634.37</b></p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <hr class="m-0">
+                    <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
+                        <div class="col-3 vehicle-icon">
+                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                        </div>
+                        <div class="col-9">
+                            <div class="row no-gutters">
+                                <div class="col-8 vehicle-details">
+                                    <h4 class="m-0"><b>Go Intercity</b></h4>
+                                    <p class="station-rides ellips">Affordable outstation rides</p>
+                                    <p class="waiting-time m-0"><span class="mr-1">In 2 mins.</span><span>03:04 pm</span></p>
+                                </div>
+                                <div class="col-4 ride-price pl-2">
+                                    <p class="mb-0"><b>₹2,634.37</b></p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
             </form>
         </div>
     </section>
-
     
     <div class="search-list">
         <div class="container">
@@ -291,12 +424,10 @@
                 </div>
             </div>
         </div>
-    </div> 
-
-
+    </div>  
 
     <!-- Vendor Sign Up Form -->
-    <!-- <section class="vendor-signup">
+    <section class="vendor-signup">
         <div class="container">
 
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
@@ -436,10 +567,10 @@
                 </div>
             </div>
         </div>
-    </section> -->
+    </section>
 
     <!-- Order Return Page -->
-    <!-- <section class="return-page">
+    <section class="return-page">
         <div class="container">
             <h2 >Choose items to return</h2>
             <form class="" action="">
@@ -496,11 +627,10 @@
                 <button class="btn btn-solid mt-3 ">Request</button>
             </form>
         </div>
-    </section> -->
-
+    </section>
 
     <!-- Return List Page -->
-    <!-- <section class="return-list-page">
+    <section class="return-list-page">
         <div class="container">
             <h2></h2>
             <div class="row">
@@ -509,13 +639,9 @@
                 </div>
             </div>
         </div>
-    </section> -->
+    </section>
 
-
-
-
-
-    <!-- <div class="container-fluid px-0 py-5">
+    <div class="container-fluid px-0 py-5">
         <div class="row no-gutters">
             <div class="col-12">
                 <div class="full-banner custom-space p-right text-end">
@@ -566,16 +692,16 @@
                         </div>
                         <div class="card border-0 bg-transparent">
                             <div class="card-header bg-transparent border-0 p-0" id="headingTwo">
-                            <h2 class="my-0">
-                                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                Bakery
-                                </button>
-                            </h2>
+                                <h2 class="my-0">
+                                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Bakery
+                                    </button>
+                                </h2>
                             </div>
                             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                            <div class="card-body pr-0 pl-2 pb-0 pt-2">
-                                Some placeholder content for the second accordion panel. This panel is hidden by default.
-                            </div>
+                                <div class="card-body pr-0 pl-2 pb-0 pt-2">
+                                    Some placeholder content for the second accordion panel. This panel is hidden by default.
+                                </div>
                             </div>
                         </div>
                         <div class="card border-0 bg-transparent">
@@ -1094,8 +1220,8 @@
                                         <i class="mdi mdi-truck-fast h2 text-muted"></i>
                                         <h5><b>UPS Delivery</b></h5>
                                         <p class="mb-1"><span class="fw-semibold">Order ID :</span> #43985703</p>
-                                                                    <p class="mb-0"><span class="fw-semibold">Payment Mode :</span> Stripe</p>
-                                                                </div>
+                                        <p class="mb-0"><span class="fw-semibold">Payment Mode :</span> Stripe</p>
+                                    </div>
                                     <div class="text-center mt-2">
                                         <a href="javascript::void(0);" class="btn btn-solid" id="delivery_info_button">Delivery Info</a>
                                     </div>
@@ -1106,7 +1232,7 @@
                 </div>
             </div>
         </div>
-    </section> -->
+    </section>
 
 
     <!-- Modal -->
@@ -1164,6 +1290,25 @@
         </div>
     </div>
 
+
+
+    <script src="{{asset('front-assets/js/popper.min.js')}}"></script>
+    <script src="{{asset('front-assets/js/slick.js')}}"></script>
+    <script src="{{asset('front-assets/js/menu.js')}}"></script>
+    <script src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
+    <script src="{{asset('front-assets/js/bootstrap.js')}}"></script>
+    <script src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
+    <script src="{{asset('front-assets/js/underscore.min.js')}}"></script>
+    <script src="{{asset('front-assets/js/script.js')}}"></script>
+    <script src="{{asset('js/custom.js')}}"></script>
+    <script src="{{asset('js/location.js')}}"></script>
+    <script src="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>
+    <script src="{{asset('assets/libs/bootstrap-colorpicker/bootstrap-colorpicker.min.js')}}"></script>
+    <script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
+    <script src="{{asset('assets/libs/clockpicker/clockpicker.min.js')}}"></script>
+
+    <script src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 
     <script>
         // Example starter JavaScript for disabling form submissions if there are invalid fields

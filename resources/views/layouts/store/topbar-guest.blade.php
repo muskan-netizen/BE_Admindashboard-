@@ -13,7 +13,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="header-contact">
                     <ul>
                         <li>{{session('client_config') ? session('client_config')->company_name : ''}}</li>
-                        <li><i class="fa fa-phone" aria-hidden="true"></i>{{__('Call Us')}}: {{session('client_config') ? session('client_config')->phone_number : ''}}</li>
+                        <!-- <li><i class="fa fa-phone" aria-hidden="true"></i>{{__('Call Us')}}: {{session('client_config') ? session('client_config')->phone_number : ''}}</li> -->
                     </ul>
                 </div>
             @endif

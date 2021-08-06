@@ -8,12 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Category_translation extends Model
 {
     protected $table='category_translations';
-    //use Searchable;
-
- //    public function toSearchableArray()
-	// {
-	//   $array = $this->toArray();
-	     
-	//   return array('id' => $array['id'], 'name' => $array['name'], 'trans-slug' => $array['trans-slug'], 'meta_description' => $array['meta_description'], 'meta_keywords' => $array['meta_keywords']);
-	// }
+   	protected $fillable = ['language_id', 'name', 'category_id'];
 }

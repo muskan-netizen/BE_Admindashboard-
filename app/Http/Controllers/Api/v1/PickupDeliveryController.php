@@ -477,7 +477,7 @@ class PickupDeliveryController extends BaseController{
                                                     'cash_to_be_collected' => $payable_amount??0.00,
                                                     'barcode' => '',
                                                     'call_back_url' => $call_back_url??null,
-                                                    'order_team_tag' => $team_tag,
+                                                    'order_team_tag' => $team_tag, 
                                                     'order_agent_tag' => $order_agent_tag,
                                                     'task' => $request->tasks,
                                                     'order_time_zone' => $request->order_time_zone??null

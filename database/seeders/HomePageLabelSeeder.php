@@ -22,26 +22,32 @@ class HomePageLabelSeeder extends Seeder
         $home_page = HomePageLabel::insertGetId([
             'title' => 'Featured Products',
             'slug' => 'featured_products',
+            'order_by' => 1,
         ]);
         $home_page = HomePageLabel::insertGetId([
             'title' => 'Vendors',
             'slug' => 'vendors',
+            'order_by' => 2,
         ]);
         $home_page = HomePageLabel::insertGetId([
             'title' => 'New Products',
             'slug' => 'new_products',
+            'order_by' => 3,
         ]);
         $home_page = HomePageLabel::insertGetId([
             'title' => 'On Sale',
             'slug' => 'on_sale',
+            'order_by' => 4,
         ]);
         $home_page = HomePageLabel::insertGetId([
             'title' => 'Brands',
             'slug' => 'brands',
+            'order_by' => 5,
         ]);
         $home_page = HomePageLabel::insertGetId([
             'title' => 'Best Sellers',
             'slug' => 'best_sellers',
+            'order_by' => 6,
         ]);
     }
 }

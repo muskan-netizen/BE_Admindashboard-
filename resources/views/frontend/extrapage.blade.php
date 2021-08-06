@@ -17,8 +17,8 @@
         </div>
         @if($page_detail->id == 3)
             <form class="vendor-signup" id="vendor_signup_form">
-                <div class="row">
-                    <div class="col-lg-8 offset-lg-2">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
                         <div class="alert alert-success" role="alert" id="success_msg" style="display:none;"></div>
                         <div class="row">
                             <div class="col-12">

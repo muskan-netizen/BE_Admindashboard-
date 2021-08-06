@@ -5,6 +5,7 @@ use App\Http\Controllers\Client\CMS\PageController;
 use App\Http\Controllers\Client\CMS\EmailController;
 use App\Http\Controllers\Client\SocialMediaController;
 use App\Http\Controllers\Client\DownloadFileController;
+use App\Http\Controllers\Client\ProductImportController;
 use App\Http\Controllers\Client\Accounting\TaxController;
 use App\Http\Controllers\Client\Accounting\OrderController;
 use App\Http\Controllers\Client\Accounting\VendorController;
@@ -42,6 +43,7 @@ Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'],
     Route::post('cms/emails/update', [EmailController::class, 'update'])->name('cms.emails.update');
     Route::get('account/orders', [OrderController::class, 'index'])->name('account.orders');
     Route::get('account/promo-code', [PromoCodeController::class, 'index'])->name('account.promo.code');
+    Route::get('product/import', [ProductImportController::class, 'getProductImport'])->name('product.import');
     Route::get('account/promo-code/filter', [PromoCodeController::class, 'filter'])->name('account.promo-code.filter');
     Route::get('account/promo-code/export', [PromoCodeController::class, 'export'])->name('account.promo-code.export');
     Route::get('social/media', [SocialMediaController::class, 'index'])->name('social.media.index');
@@ -74,6 +76,7 @@ Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'],
     Route::post('banner/toggle', 'Client\BannerController@toggleAllBanner')->name('banner.toggle');
     Route::get('web-styling', 'Client\WebStylingController@index')->name('webStyling.index');
     Route::post('web-styling/updateWebStyles', 'Client\WebStylingController@updateWebStyles')->name('styling.updateWebStyles');
+    Route::post('homepagelabel/saveOrder', 'Client\WebStylingController@saveOrder');
     Route::get('app-styling', 'Client\AppStylingController@index')->name('appStyling.index');
     Route::post('app-styling/updateFont', 'Client\AppStylingController@updateFont')->name('styling.updateFont');
     Route::post('app-styling/updateColor', 'Client\AppStylingController@updateColor')->name('styling.updateColor');

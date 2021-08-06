@@ -45,6 +45,17 @@ $timezone = Auth::user()->timezone;
                                     <i class="mdi mdi-close"></i>
                                  </button> -->
                                 <ul class="list-unstyled" id="order_statuses">
+                                    @php
+                                        if($order->vendors->first()->order_status_option_id == 2)
+                                        $open_option = ['4'];
+                                        elseif ($order->vendors->first()->order_status_option_id == 3)
+                                        $open_option = ['0'];
+                                        elseif ($order->vendors->first()->order_status_option_id == 1)
+                                        $open_option = ['2','3'];
+                                        else
+                                        $open_option = [$order->vendors->first()->order_status_option_id + 1];
+                                    @endphp
+
                                     @foreach($order_status_options as $order_status_option)
                                     @php
                                         $class = in_array($order_status_option->id, $vendor_order_status_option_ids) ? 'disabled': '';
@@ -60,7 +71,8 @@ $timezone = Auth::user()->timezone;
                                         @if (in_array(2, $vendor_order_status_option_ids) && $order_status_option->id == 3)
                                             @continue
                                         @endif
-                                        <li class="{{$class}} {{$glow}}" data-status_option_id="{{$order_status_option->id}}" data-order_vendor_id="{{$order_status_option->order_vendor_id}}">
+
+                                        <li class="{{$class}} {{$glow}}  @if(in_array($order_status_option->id, $open_option))open-for-update-status @else disabled @endif" data-status_option_id="{{$order_status_option->id}}" data-order_vendor_id="{{$order_status_option->order_vendor_id}}">
                                             <h5 class="mt-0 mb-1">{{$order_status_option->title}}</h5>
                                             <p class="text-muted" id="text_muted_{{$order_status_option->id}}">
                                                 @if($date)
@@ -74,9 +86,10 @@ $timezone = Auth::user()->timezone;
                                     @endforeach
                                 </ul>
                             </div>
+
                             @if(isset($order->vendors) && isset($order->vendors->first()->delivery_fee) && $order->vendors->first()->delivery_fee > 0.00)
                                 <div class="col-lg-6">
-                                    <ul class="list-unstyled">
+                                    <ul class="list-unstyled remove-curser">
                                         @foreach($dispatcher_status_options as $dispatcher_status_option)
                                         @php
                                         if($dispatcher_status_option->vendorOrderDispatcherStatus && $dispatcher_status_option->id == $dispatcher_status_option->vendorOrderDispatcherStatus->dispatcher_status_option_id??'')
@@ -261,6 +274,7 @@ $timezone = Auth::user()->timezone;
                     $('#text_muted_'+status_option_id).html('<small class="text-muted">'+response.created_date+'</small>');
                     if(status_option_id == 2)
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                    location.reload();
                 },
             });
         }

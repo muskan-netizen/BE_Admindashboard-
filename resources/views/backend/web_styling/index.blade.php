@@ -106,10 +106,10 @@
                     </div>
                 </div>
 
-                <div class="custom-dd-empty dd" id="nestable_list_1">
-                    <ol class="dd-list p-0">
+                <div class="custom-dd-empty dd" id="homepage_datatable">
+                    <ol class="dd-list p-0" id="homepage_ol">
                         @foreach($home_page_labels as $home_page_label)
-                        <li class="dd-item dd3-item d-flex align-items-center" data-id="1">
+                        <li class="dd-item dd3-item d-flex align-items-center" data-id="1" data-row-id="{{$home_page_label->id}}">
                             <a herf="#" class="dd-handle dd3-handle d-block mr-auto">
                                 {{$home_page_label->title}}
                             </a>
@@ -117,19 +117,19 @@
                                 <div class="row no-gutters flex-nowrap align-items-center my-2">
                                     @foreach($langs as $lang)
                                     @php
-                                        $exist = 0;
-                                        $value = '';
+                                    $exist = 0;
+                                    $value = '';
                                     @endphp
                                     <div class="col-3 pl-1">
                                         <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="home_labels[]">
                                         <input class="form-control" type="hidden" value="{{$lang->langId}}" name="languages[]">
                                         @foreach($home_page_label->translations as $translation)
-                                            @if($translation->language_id == $lang->langId)
-                                                @php
-                                                    $exist = 1;
-                                                    $value = $translation->title;
-                                                @endphp
-                                            @endif
+                                        @if($translation->language_id == $lang->langId)
+                                        @php
+                                        $exist = 1;
+                                        $value = $translation->title;
+                                        @endphp
+                                        @endif
                                         @endforeach
                                         <input class="form-control" value="{{$exist == 1 ? $value : '' }}" type="text" name="names[]" placeholder="{{ $lang->langName }}">
                                     </div>
@@ -220,16 +220,37 @@
             }
         });
     }
-    $("#homepage-datatable tbody").sortable({
+    $("#homepage_datatable ol").sortable({
         placeholder: "ui-state-highlight",
         update: function(event, ui) {
             var post_order_ids = new Array();
-            $('#post_list tr').each(function() {
+            $('#homepage_ol li').each(function() {
                 post_order_ids.push($(this).data("row-id"));
             });
             console.log(post_order_ids);
             saveOrder(post_order_ids);
         }
     });
+
+    function saveOrder(orderVal) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{{ url('client/homepagelabel/saveOrder') }}",
+            data: {
+                order: orderVal
+            },
+            success: function(response) {
+                if (response.status == 'success') {
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                }
+            },
+        });
+    }
 </script>
 @endsection

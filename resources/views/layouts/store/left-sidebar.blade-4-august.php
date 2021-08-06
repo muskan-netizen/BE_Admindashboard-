@@ -5,17 +5,12 @@ $languageList = \App\Models\ClientLanguage::with('language')->where('is_active',
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
 <header class="site-header">
-@if (Auth::check())
-   @include('layouts.store/topbar-auth')
-  @else
-    @include('layouts.store/topbar-guest')
-  @endif
         <div class="container main-menu d-block">
-            <div class="row align-items-center py-2 position-initial">
+            <div class="row align-items-center py-2">
                 <div class="col-lg-1 col-2">
                     <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                 </div>
-                <div class="col-lg-4 main-menu d-block order-lg-1 order-2">
+                <div class="col-lg-6 main-menu d-block order-lg-1 order-2">
                     <div class="d-md-flex mr-auto">  
                         @if( (Session::get('preferences')))
                             @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
@@ -31,7 +26,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             @endif
                         @endif
                         @if($mod_count > 1)
-                            <ul class="nav nav-tabs navigation-tab nav-material tab-icons mx-auto order-0 mt-2 mt-lg-0 vendor_mods" id="top-tab" role="tablist">
+                            <ul class="nav nav-tabs navigation-tab nav-material tab-icons mx-auto order-0 mt-3 mt-md-0 vendor_mods" id="top-tab" role="tablist">
                                 @if($client_preference_detail->delivery_check == 1)
                                 <li class="navigation-tab-item" role="presentation">
                                     <a class="nav-link {{$mod_count == 1 ? 'active' : 'active'}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">{{ __('Delivery') }}</a>
@@ -52,9 +47,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         @endif 
                     </div>
                 </div>
-                <div class="col-lg-7 col-10 order-lg-2 order-1 position-initial">                
+                <div class="col-lg-5 col-10 order-lg-2 order-1">                
                     <div class="search_bar menu-right d-flex align-items-center justify-content-end justify-content-lg-between w-100 ">
-                        <div class="radius-bar">
+                        <div class="radius-bar d-none d-lg-block">
                             <div class="search_form d-flex align-items-center justify-content-between">
                                 <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
                                 <input class="form-control border-0 typeahead" type="search" placeholder="{{__('Search')}}" id="main_search_box">
@@ -75,7 +70,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </script>
                         @if(auth()->user())
                         @if($client_preference_detail->show_wishlist == 1)
-                            <div class="icon-nav mx-2 d-none d-sm-block">
+                            <div class="icon-nav mx-2">
                                 <a href="{{route('user.wishlists')}}">
                                     <i class="fa fa-heart" aria-hidden="true"></i>
                                 </a>
@@ -89,7 +84,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}">
                             </form>
                             <ul>
-                                <li class="onhover-div pl-0 d-sm-inline-block d-none">
+                                <li class="onhover-div pl-0">
                                     @if($client_preference_detail)
                                         @if($client_preference_detail->cart_enable == 1)
                                             <a class="btn btn-solid" href="{{route('showCart')}}">
@@ -130,93 +125,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <li class="d-inline-block d-lg-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li>
                             </ul>
                         </div>
-                        
-                        <div class="icon-nav d-sm-none d-block">
-                            <ul>
-                                <li class="onhover-div mobile-search">
-                                    <a href="javascript:void(0);" id="mobile_search_box_btn"><img src="../assets/images/icon/search.png"  class="img-fluid blur-up lazyloaded" alt=""> <i class="ti-search"></i></a>
-                                    <div id="search-overlay" class="search-overlay">
-                                        <div> <span class="closebtn" onclick="closeSearch()" title="Close Overlay">×</span>
-                                            <div class="overlay-content">
-                                                <div class="container">
-                                                    <div class="row">
-                                                        <div class="col-xl-12">
-                                                            <form>
-                                                                <div class="form-group">
-                                                                    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Search a Product">
-                                                                </div>
-                                                                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="onhover-div mobile-setting">
-                                    <div><img src="../assets/images/icon/setting.png" class="img-fluid blur-up lazyloaded" alt=""> <i class="ti-settings"></i></div>
-                                    <div class="show-div setting">
-                                        <h6>language</h6>
-                                        <ul>
-                                            <li><a href="#">english</a></li>
-                                            <li><a href="#">french</a></li>
-                                        </ul>
-                                        <h6>currency</h6>
-                                        <ul class="list-inline">
-                                            <li><a href="#">euro</a></li>
-                                            <li><a href="#">rupees</a></li>
-                                            <li><a href="#">pound</a></li>
-                                            <li><a href="#">doller</a></li>
-                                        </ul>
-                                        <h6>Change Theme</h6>
-                                        <ul class="list-inline">
-                                            <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
-                                        </ul>
-                                    </div>
-                                </li>
-                                <li class="onhover-div mobile-cart">
-                                    <a href="{{route('showCart')}}"><img src="../assets/images/icon/cart.png" class="img-fluid blur-up lazyloaded" alt=""> <i class="ti-shopping-cart"></i></a>
-                                    <span class="cart_qty_cls">2</span>
-                                    <ul class="show-div shopping-cart">
-                                        <li>
-                                            <div class="media">
-                                                <a href="#"><img alt="" class="me-3" src="../assets/images/fashion/product/1.jpg"></a>
-                                                <div class="media-body">
-                                                    <a href="#">
-                                                        <h4>item name</h4>
-                                                    </a>
-                                                    <h4><span>1 x $ 299.00</span></h4>
-                                                </div>
-                                            </div>
-                                            <div class="close-circle"><a href="#"><i class="fa fa-times" aria-hidden="true"></i></a></div>
-                                        </li>
-                                        <li>
-                                            <div class="media">
-                                                <a href="#"><img alt="" class="me-3" src="../assets/images/fashion/product/2.jpg"></a>
-                                                <div class="media-body">
-                                                    <a href="#">
-                                                        <h4>item name</h4>
-                                                    </a>
-                                                    <h4><span>1 x $ 299.00</span></h4>
-                                                </div>
-                                            </div>
-                                            <div class="close-circle"><a href="#"><i class="fa fa-times" aria-hidden="true"></i></a></div>
-                                        </li>
-                                        <li>
-                                            <div class="total">
-                                                <h5>subtotal : <span>$299.00</span></h5>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="buttons"><a href="cart.html" class="view-cart">view
-                                                    cart</a> <a href="#" class="checkout">checkout</a></div>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-
                     </div>
                 </div>
             </div>

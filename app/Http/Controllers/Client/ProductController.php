@@ -57,6 +57,7 @@ class ProductController extends BaseController
     {
         $rules = array(
             'sku' => 'required|unique:products',
+            'url_slug' => 'required',
             'category' => 'required',
         );
         $validation = Validator::make($request->all(), $rules)->validate();
@@ -78,27 +79,22 @@ class ProductController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         $rule = array(
             'sku' => 'required|unique:products',
+            'url_slug' => 'required',
             'category' => 'required',
         );
-
         $validation  = Validator::make($request->all(), $rule);
-
-        // dd($request->category);
         if ($validation->fails()) {
             return redirect()->back()->withInput()->withErrors($validation);
         }
-
         $product = new Product();
         $product->sku = $request->sku;
         $product->url_slug = empty($request->url_slug) ? $request->sku : $request->url_slug;
         $product->type_id = $request->type_id;
         $product->category_id = $request->category;
         $product->vendor_id = $request->vendor_id;
-
         $client_lang = ClientLanguage::where('is_primary', 1)->first();
         if (!$client_lang) {
             $client_lang = ClientLanguage::where('is_active', 1)->first();
@@ -114,12 +110,10 @@ class ProductController extends BaseController
                 'product_id' => $product->id,
                 'language_id' => $client_lang->language_id
             ];
-
             $product_category = new ProductCategory();
             $product_category->product_id = $product->id;
             $product_category->category_id = $request->category;
             $product_category->save();
-
             $proVariant = new ProductVariant();
             $proVariant->sku = $request->sku;
             $proVariant->product_id = $product->id;
@@ -127,7 +121,6 @@ class ProductController extends BaseController
             $proVariant->barcode = $this->generateBarcodeNumber();
             $proVariant->save();
             ProductTranslation::insert($datatrans);
-
             return redirect('client/product/' . $product->id . '/edit')->with('success', 'Product added successfully!');
         }
     }

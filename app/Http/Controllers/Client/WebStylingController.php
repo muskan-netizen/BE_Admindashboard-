@@ -18,7 +18,7 @@ class WebStylingController extends BaseController{
     public function index()
     { 
         $client_preferences = ClientPreference::first();
-        $home_page_labels = HomePageLabel::with('translations')->get();
+        $home_page_labels = HomePageLabel::with('translations')->orderBy('order_by')->get();
         // pr($home_page_labels->toArray());die;
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
@@ -97,6 +97,26 @@ class WebStylingController extends BaseController{
         return response()->json([
             'status' => 'success',
             'message' => 'Web Styling Updated Successfully!'
+        ]);
+    }
+
+    /**
+     * save the order of banner.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Banner  $banner
+     * @return \Illuminate\Http\Response
+     */
+    public function saveOrder(Request $request)
+    {
+        foreach ($request->order as $key => $value) {
+            $home_page = HomePageLabel::where('id', $value)->first();
+            $home_page->order_by = $key + 1;
+            $home_page->save();
+        }
+        return response()->json([
+            'status'=>'success',
+            'message' => 'Home Page Labels order updated Successfully!',
         ]);
     }
 }

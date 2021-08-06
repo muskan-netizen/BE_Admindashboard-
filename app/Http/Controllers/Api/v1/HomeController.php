@@ -91,8 +91,12 @@ class HomeController extends BaseController{
             $longitude = $request->longitude;
             $user_geo[] = $latitude;
             $user_geo[] = $longitude;
-            if($request->has('type')){
-                $vendorData = Vendor::select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount')->where($request->type, 1);
+            if($request->has('type') ){
+                if($request->type == ''){
+                    $vendorData = Vendor::select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount');
+                }else{
+                    $vendorData = Vendor::select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount')->where($request->type, 1);
+                }
             }else{
                 $vendorData = Vendor::select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount');
             }

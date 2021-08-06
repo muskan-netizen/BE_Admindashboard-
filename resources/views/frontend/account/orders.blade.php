@@ -174,15 +174,15 @@ $timezone = Auth::user()->timezone;
                                                                         <ul class="price_box_bottom m-0 p-0">
                                                                             <li class="d-flex align-items-center justify-content-between">
                                                                                 <label class="m-0">{{__('Product Total')}}</label>
-                                                                                <span>{{Session::get('currencySymbol')}}@money($vendor->subtotal_amount)</span>
+                                                                                <span>{{Session::get('currencySymbol')}}@money($vendor->subtotal_amount * $clientCurrency->doller_compare)</span>
                                                                             </li>
                                                                             <li class="d-flex align-items-center justify-content-between">
                                                                                 <label class="m-0">{{__('Coupon Discount')}}</label>
-                                                                                <span>{{Session::get('currencySymbol')}}@money($vendor->discount_amount)</span>
+                                                                                <span>{{Session::get('currencySymbol')}}@money($vendor->discount_amount * $clientCurrency->doller_compare)</span>
                                                                             </li>
                                                                             <li class="d-flex align-items-center justify-content-between">
                                                                                 <label class="m-0">{{__('Delivery Fee')}}</label>
-                                                                                <span>{{Session::get('currencySymbol')}}@money($vendor->delivery_fee)</span>
+                                                                                <span>{{Session::get('currencySymbol')}}@money($vendor->delivery_fee * $clientCurrency->doller_compare)</span>
                                                                             </li>
                                                                             <li class="grand_total d-flex align-items-center justify-content-between">
                                                                                 <label class="m-0">{{__('Amount')}}</label>
@@ -190,7 +190,7 @@ $timezone = Auth::user()->timezone;
                                                                                     $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
                                                                                     $subtotal_order_price += $product_subtotal_amount;
                                                                                 @endphp
-                                                                                <span>{{Session::get('currencySymbol')}}@money($vendor->payable_amount)</span>
+                                                                                <span>{{Session::get('currencySymbol')}}@money($vendor->payable_amount * $clientCurrency->doller_compare)</span>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -203,7 +203,7 @@ $timezone = Auth::user()->timezone;
                                                             <ul class="price_box_bottom m-0 pl-0 pt-1">
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Sub Total')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_amount)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_amount * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                
                                                                 <li class="d-flex align-items-center justify-content-between">
@@ -212,33 +212,33 @@ $timezone = Auth::user()->timezone;
                                                                 </li>
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Loyalty Used')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->loyalty_amount_saved ? $order->loyalty_amount_saved : 0)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->loyalty_amount_saved ? $order->loyalty_amount_saved * $clientCurrency->doller_compare : 0)</span>
                                                                 </li>
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Tax')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 @if($order->tip_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Tip Amount')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->tip_amount)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->tip_amount * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 @endif
                                                                 @if($order->subscription_discount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Subscription Discount')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 @endif
                                                                 @if($order->total_delivery_fee > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Delivery Fee')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_delivery_fee)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_delivery_fee * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 @endif
                                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Total Payable')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->payable_amount)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->payable_amount * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                             </ul>
                                                         </div>
@@ -339,15 +339,15 @@ $timezone = Auth::user()->timezone;
                                                                         <ul class="price_box_bottom m-0 p-0">
                                                                             <li class="d-flex align-items-center justify-content-between">
                                                                                 <label class="m-0">{{__('Product Total')}}</label>
-                                                                                <span>{{Session::get('currencySymbol')}}@money($product_total_count)</span>
+                                                                                <span>{{Session::get('currencySymbol')}}@money($product_total_count * $clientCurrency->doller_compare)</span>
                                                                             </li>
                                                                             <li class="d-flex align-items-center justify-content-between">
                                                                                 <label class="m-0">{{__('Coupon Discount')}}</label>
-                                                                                <span>{{Session::get('currencySymbol')}}@money($vendor->discount_amount)</span>
+                                                                                <span>{{Session::get('currencySymbol')}}@money($vendor->discount_amount * $clientCurrency->doller_compare)</span>
                                                                             </li>
                                                                             <li class="d-flex align-items-center justify-content-between">
                                                                                 <label class="m-0">{{__('Delivery Fee')}}</label>
-                                                                                <span>{{Session::get('currencySymbol')}}@money($vendor->delivery_fee)</span>
+                                                                                <span>{{Session::get('currencySymbol')}}@money($vendor->delivery_fee * $clientCurrency->doller_compare)</span>
                                                                             </li>
                                                                             <li class="grand_total d-flex align-items-center justify-content-between">
                                                                                 <label class="m-0">{{__('Amount')}}</label>
@@ -355,7 +355,7 @@ $timezone = Auth::user()->timezone;
                                                                                     $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
                                                                                     $subtotal_order_price += $product_subtotal_amount;
                                                                                 @endphp
-                                                                                <span>{{Session::get('currencySymbol')}}@money($product_subtotal_amount)</span>
+                                                                                <span>{{Session::get('currencySymbol')}}@money($product_subtotal_amount * $clientCurrency->doller_compare)</span>
                                                                             </li>
                                                                             <button class="return-order-product btn btn-solid" data-id="{{$order->id??0}}"  data-vendor_id="{{$vendor->vendor_id??0}}"><td class="text-center" colspan="3">{{__('Return')}}</button>
                                                                         </ul>
@@ -369,7 +369,7 @@ $timezone = Auth::user()->timezone;
                                                             <ul class="price_box_bottom m-0 pl-0 pt-1">
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Sub Total')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_amount + $order->total_delivery_fee)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_amount + $order->total_delivery_fee * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Wallet')}}</label>
@@ -381,23 +381,23 @@ $timezone = Auth::user()->timezone;
                                                                 </li>
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Tax')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 @if($order->tip_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Tip Amount')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->tip_amount)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->tip_amount * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 @endif
                                                                 @if($order->subscription_discount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Subscription Discount')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 @endif
                                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Total Payable')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->payable_amount)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->payable_amount * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                             </ul>
                                                         </div>
@@ -493,15 +493,15 @@ $timezone = Auth::user()->timezone;
                                                                     <ul class="price_box_bottom m-0 p-0">
                                                                         <li class="d-flex align-items-center justify-content-between">
                                                                             <label class="m-0">{{__('Product Total')}}</label>
-                                                                            <span>{{Session::get('currencySymbol')}}@money($vendor->subtotal_amount)</span>
+                                                                            <span>{{Session::get('currencySymbol')}}@money($vendor->subtotal_amount * $clientCurrency->doller_compare)</span>
                                                                         </li>
                                                                         <li class="d-flex align-items-center justify-content-between">
                                                                             <label class="m-0">{{__('Coupon Discount')}}</label>
-                                                                            <span>{{Session::get('currencySymbol')}}@money($vendor->discount_amount)</span>
+                                                                            <span>{{Session::get('currencySymbol')}}@money($vendor->discount_amount * $clientCurrency->doller_compare)</span>
                                                                         </li>
                                                                         <li class="d-flex align-items-center justify-content-between">
                                                                             <label class="m-0">{{__('Delivery Fee')}}</label>
-                                                                            <span>{{Session::get('currencySymbol')}}@money($vendor->delivery_fee)</span>
+                                                                            <span>{{Session::get('currencySymbol')}}@money($vendor->delivery_fee * $clientCurrency->doller_compare)</span>
                                                                         </li>
                                                                         <li class="grand_total d-flex align-items-center justify-content-between">
                                                                             <label class="m-0">{{__('Amount')}}</label>
@@ -510,7 +510,7 @@ $timezone = Auth::user()->timezone;
                                                                                 $subtotal_order_price += $product_subtotal_amount;
                                                                                 $total_order_price += $product_subtotal_amount + $total_tax_order_price;
                                                                             @endphp
-                                                                            <span>{{Session::get('currencySymbol')}}@money($vendor->payable_amount)</span>
+                                                                            <span>{{Session::get('currencySymbol')}}@money($vendor->payable_amount * $clientCurrency->doller_compare)</span>
                                                                         </li>
 
                                                                        
@@ -525,7 +525,7 @@ $timezone = Auth::user()->timezone;
                                                         <ul class="price_box_bottom m-0 pl-0 pt-1">
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{('Sub Total')}}</label>
-                                                                <span>{{Session::get('currencySymbol')}}@money($order->total_amount + $order->total_delivery_fee)</span>
+                                                                <span>{{Session::get('currencySymbol')}}@money($order->total_amount + $order->total_delivery_fee * $clientCurrency->doller_compare)</span>
                                                             </li>
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{__('Wallet')}}</label>
@@ -537,23 +537,23 @@ $timezone = Auth::user()->timezone;
                                                             </li>
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{__('Tax')}}</label>
-                                                                <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount)</span>
+                                                                <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * $clientCurrency->doller_compare)</span>
                                                             </li>
                                                             @if($order->tip_amount > 0)
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{__('Tip Amount')}}</label>
-                                                                <span>{{Session::get('currencySymbol')}}@money($order->tip_amount)</span>
+                                                                <span>{{Session::get('currencySymbol')}}@money($order->tip_amount * $clientCurrency->doller_compare)</span>
                                                             </li>
                                                             @endif
                                                             @if($order->subscription_discount > 0)
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{__('Subscription Discount')}}</label>
-                                                                <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount)</span>
+                                                                <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount * $clientCurrency->doller_compare)</span>
                                                             </li>
                                                             @endif
                                                             <li class="grand_total d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{__('Total Payable')}}</label>
-                                                                <span>{{Session::get('currencySymbol')}}@money($order->payable_amount)</span>
+                                                                <span>{{Session::get('currencySymbol')}}@money($order->payable_amount * $clientCurrency->doller_compare)</span>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -593,7 +593,6 @@ $timezone = Auth::user()->timezone;
         <div id="review-rating-form-modal">
         </div>
       </div>
-     
     </div>
   </div>
 </div>
@@ -604,11 +603,7 @@ $timezone = Auth::user()->timezone;
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                     </button>
-                <div id="return-order-form-modal">
-
-                </div>    
-               
-
+                <div id="return-order-form-modal"></div>    
             </div>
         </div>
     </div>

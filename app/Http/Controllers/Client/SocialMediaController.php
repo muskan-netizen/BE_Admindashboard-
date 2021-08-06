@@ -22,7 +22,7 @@ class SocialMediaController extends BaseController{
             ],
             ['social_media_url.url' => 'Invalid URL format']);
 
-            SocialMedia::create(['icon' => $request->social_media_icon, 'url' => $request->social_media_url]);
+            SocialMedia::create(['icon' => $request->social_media_icon, 'title' => $request->social_media_icon, 'url' => $request->social_media_url]);
             return $this->successResponse([], 'Social Media Added Successfully.');
         } catch (Exception $e) {
             return $this->errorResponse([], $e->getMessage());

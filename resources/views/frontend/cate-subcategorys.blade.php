@@ -145,19 +145,17 @@
                                             <div class="row margin-res">
                                                 @if(!empty($category->childs) && count($category->childs) > 0)
                                                     @foreach($category->childs->toArray() as $cate)
-                                                    <div class="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-xs-6">
-                                                        <div class="product-box">
-                                                            <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                                <div class="category-image text-center"><img width="100%" alt="" src="{{$cate['icon']['proxy_url'] . '150/150' . $cate['icon']['image_path']}}" ></div>
-                                                            </a>
-                                                            <div class="category-details">
-                                                                <div class="inner_spacing">
-                                                                    <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                                        <h5 class="text-center">{{$cate['translation_name']}}</h5>
-                                                                    </a>
+                                                    <div class="col-xl-3 col-6 col-grid-box">
+                                                        <a href="{{route('categoryDetail', $cate['slug'])}}"  class="product-box scale-effect d-block  mt-3">
+                                                            <div class="product-image p-0"><img width="100%" alt="" src="{{$cate['icon']['proxy_url'] . '150/150' . $cate['icon']['image_path']}}" ></div>                                                        
+                                                            <div class="media-body align-self-center">
+                                                                <div class="inner_spacing w-100">
+                                                                    <h3 class="d-flex align-items-center justify-content-between">
+                                                                        <label class="mb-0">{{$cate['translation_name']}}</label>
+                                                                    </h3>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </a>
                                                     </div>
                                                     @endforeach
                                                 @else

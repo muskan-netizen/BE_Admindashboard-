@@ -68,8 +68,8 @@
 </header>
 <section class="register-page section-b-space">
     <div class="container">
-        <div class="row">
-            <div class="offset-xl-4 col-xl-4 offset-lg-3 col-lg-6">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-xl-4">
                 <h3>{{__('Change Password')}}</h3>
                   <div class="outer-box"> 
                     <form name="register" id="register" action="{{route('user.submitChangePassword')}}" class="theme-form" method="post"> @csrf

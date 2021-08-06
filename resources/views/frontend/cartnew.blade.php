@@ -283,7 +283,7 @@
         <tr class="border_0">
             <td colspan="3"></td>
             <td colspan="4" class="pt-0 pr-0">
-                <div class="row d-flex align-items-center no-gutters" id="dateredio">
+                <div class="row d-flex align-items-center arabic-lng no-gutters" id="dateredio">
                     <div class="col-md-5 pr-2">
                         <div class="login-form">
                             <ul class="list-inline">
@@ -342,7 +342,7 @@
         @csrf
         <div class="card-box">
             <div class="row">
-                <div class="col-4 left_box">
+                <div class="col-sm-4 left_box">
                     <div class="row">
                         <div class="col-12 mb-2">
                             <h4 class="page-title">{{__('Delivery Address')}}</h4>
@@ -455,7 +455,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-8">
+                <div class="col-sm-8">
                     <div class="spinner-box">
                         <div class="circle-border">
                             <div class="circle-core"></div>
@@ -471,11 +471,11 @@
             </div>
 
             <div class="row mb-4">
-                <div class="col-lg-3 col-md-4">
+                <div class="col-sm-6 mb-2 mb-sm-0">
                     <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
                 </div>
-                <div class="offset-lg-6 offset-md-4 col-lg-3 col-md-4 text-md-right">
-                    <button id="order_palced_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Continue')}}</button>
+                <div class="col-sm-6 text-md-right">
+                    <button id="order_palced_btn" class="btn btn-solid" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Continue')}}</button>
                 </div>
             </div>
         </div>
@@ -577,12 +577,12 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body p-0">
-                <div class="row no-gutters pr-3">
+                <div class="row no-gutters">
                     <div class="col-4">
                         <div class="nav flex-column nav-pills" id="v_pills_tab" role="tablist" aria-orientation="vertical"></div>
                     </div>
                     <div class="col-8">
-                        <div class="tab-content-box pl-3">
+                        <div class="tab-content-box px-3">
                             <div class="d-flex align-items-center justify-content-between pt-3">
                                 <h5 class="modal-title" id="pay-billLabel">{{__('Total Amount')}}: <span id="total_amt"></span></h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

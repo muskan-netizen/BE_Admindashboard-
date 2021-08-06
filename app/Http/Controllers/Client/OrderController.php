@@ -89,34 +89,61 @@ class OrderController extends BaseController{
                 $query->where('user_id', Auth::user()->id);
             });
         }
+
+        $order_count = OrderVendor::orderBy('id','asc');
+        if (Auth::user()->is_superadmin == 0) {
+            $order_count = $order_count->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $pending_orders = clone $order_count;
+        $active_orders = clone $order_count;
+        $orders_history = clone $order_count;
+        
         if($filter_order_status){
             switch ($filter_order_status) { 
                 case 'pending_orders':
                     $orders = $orders->with('vendors', function ($query){
                         $query->where('order_status_option_id', 1);
                    });
+                   
                 break;
                 case 'active_orders':
                     $order_status_options = [2,4,5];
                     $orders = $orders->whereHas('vendors', function ($query) use($order_status_options){
                         $query->whereIn('order_status_option_id', $order_status_options);
                     });
+                    
                 break;
                 case 'orders_history':
                     $order_status_options = [6,3];
                     $orders = $orders->whereHas('vendors', function ($query) use($order_status_options){
                         $query->whereIn('order_status_option_id', $order_status_options);
                     });
+                   
                 break;
             }
         }
         $orders = $orders->whereHas('vendors')->paginate(50);
+
+
+        $pending_orders = $pending_orders->where('order_status_option_id', 1)->count();
+
+        $order_status_optionsa = [2,4,5];
+        $active_orders = $active_orders->whereIn('order_status_option_id', $order_status_optionsa)->count();
+
+        $order_status_optionsd = [6,3];
+        $orders_history = $orders_history->whereIn('order_status_option_id', $order_status_optionsd)->count();
+        
+      
         foreach ($orders as $key => $order) {
             $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, H:i A');
             foreach ($order->vendors as $vendor) {
                 $vendor->vendor_detail_url = route('order.show.detail', [$order->id, $vendor->vendor_id]);
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? $vendor_order_status->OrderStatusOption->title : '';
+                $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
+                $vendor->vendor_name = $vendor ? $vendor->vendor->name : '';
                 $product_total_count = 0;
                 foreach ($vendor->products as $product) {
                         $product_total_count += $product->quantity * $product->price;
@@ -129,7 +156,8 @@ class OrderController extends BaseController{
                 $orders->forget($key);
             }
         }
-        return $this->successResponse($orders,'',201);
+
+        return $this->successResponse(['orders'=> $orders,'pending_orders' => $pending_orders,'active_orders' => $active_orders,'orders_history' => $orders_history],'',201);
     }
     /**
      * Display the order.
@@ -250,13 +278,18 @@ class OrderController extends BaseController{
                     } else {
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
-                    }
+                    }   
                         $dynamic = uniqid($order->id.$vendor);
                         $call_back_url = route('dispatch-order-update',$dynamic);
-
                         $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'longitude', 'address')->first();
                         $tasks = array();
                         $meta_data = '';
+
+                        $team_tag = null;
+                        if(!empty($dispatch_domain->last_mile_team))
+                        $team_tag = $dispatch_domain->last_mile_team;
+
+
                         $tasks[] = array('task_type_id' => 1,
                                                         'latitude' => $vendor_details->latitude??'',
                                                         'longitude' => $vendor_details->longitude??'',
@@ -285,6 +318,7 @@ class OrderController extends BaseController{
                                                         'task_type' => 'now',
                                                         'cash_to_be_collected' => $payable_amount??0.00,
                                                         'barcode' => '',
+                                                        'order_team_tag' => $team_tag,
                                                         'call_back_url' => $call_back_url??null,
                                                         'task' => $tasks
                                                         ];
