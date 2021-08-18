@@ -42,7 +42,11 @@ class PromoCodeController extends Controller{
                         }])->where('vendor_id', $request->vendor_id)->where('cart_id', $request->cart_id)->get();
             $total_minimum_spend = 0;
             foreach ($cart_products as $cart_product) {
-                $total_minimum_spend += $cart_product->product->variant->first() ? $cart_product->product->variant->first()->price * $cart_product->quantity : 0;
+                if(isset($cart_product->product->variant) && !empty($cart_product->product->variant->first()))
+                {
+                    $total_price = $cart_product->product->variant->first()->price ?? 0;
+                }
+                $total_minimum_spend += $total_price * $cart_product->quantity;
             }
             if($product_ids){
                 $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');

@@ -10292,7 +10292,7 @@ header.header-style .onhover-dropdown:before {
 }
 
 .onhover-dropdown.mobile-account .onhover-show-div {
-    top: calc(100% - 10px);
+    top: calc(100% - 7px);
 }
 
 .onhover-dropdown .onhover-show-div.product-page-full {

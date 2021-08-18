@@ -54,7 +54,7 @@
             <div class="page-title-box">
                 <h4 class="page-title text-uppercase">{{__('Cart')}}</h4>
             </div>
-            <div class="cart_response mt-3 mb-3">
+            <div class="cart_response mt-3 mb-3 d-none">
                 <div class="alert" role="alert"></div>
             </div>
         </div>
@@ -276,7 +276,7 @@
             </div>
             <hr class="my-2">
             <div class="row d-flex align-items-center arabic-lng no-gutters mt-2 mb-4" id="dateredio">
-                <div class="col-md-5 pr-2">
+                <div class="col-md-5 pr-md-2 mb-2 mb-md-0">
                     <div class="login-form">
                         <ul class="list-inline">
                             <li class="d-inline-block mr-1">
@@ -290,7 +290,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-7 datenow align-items-center justify-content-between" id="schedule_div" style="display:flex!important">
+                <div class="col-md-7 datenow align-items-center justify-content-between" id="schedule_div" style="display:none!important">
                         <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value=" ">
                     <!-- <button type="button" class="btn btn-solid"><i class="fa fa-check" aria-hidden="true"></i></button> -->
                 </div>
@@ -351,10 +351,10 @@
             </div>
 
             <div class="row mb-4">
-                <div class="col-sm-6 mb-2 mb-sm-0">
+                <div class="col-6 mb-2 mb-sm-0">
                     <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
                 </div>
-                <div class="col-sm-6 text-md-right">
+                <div class="col-6 text-right">
                     <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
                 </div>
             </div>

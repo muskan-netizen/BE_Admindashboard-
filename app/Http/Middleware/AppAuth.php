@@ -21,7 +21,7 @@ class AppAuth{
      */
     public function handle($request, Closure $next){
         $header = $request->header();
-        $token = $header['authorization'][0];
+        $token = $header['authorization'][0]??null;
         if (!Token::check($token, 'royoorders-jwt')){
             return response()->json(['error' => 'Invalid Token', 'message' => 'Session Expired'], 401);
             abort(404);

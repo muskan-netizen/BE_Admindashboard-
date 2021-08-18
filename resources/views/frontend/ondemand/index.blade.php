@@ -362,25 +362,23 @@
                                                     </th>
                                                 </li>
                                                 <% } %>
-                                        <% _.each(product.vendor_products, function(vendor_product, vp){%>
-                                                
-
-                                             <li id="cart_product_<%= vendor_product.id %>" data-qty="<%= vendor_product.quantity %>">
-                                                <a class='media' href='<%= show_cart_url %>'>
-                                                     <div class='media-body'>                                                                
-                                                        <h6 class="d-flex align-items-center justify-content-between">
-                                                            <span class="ellips"><%= vendor_product.quantity %>x <%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></span>
-                                                            <span>{{Session::get('currencySymbol')}}<%= vendor_product.pvariant.price %></span>
-                                                        </h6>
-                                                    </div>
-                                                </a>
-                                                <div class='close-circle'>
-                                                    <a  class="action-icon d-block mb-3 remove_product_via_cart" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
-                                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                            <% _.each(product.vendor_products, function(vendor_product, vp){%>  
+                                                <li id="cart_product_<%= vendor_product.id %>" data-qty="<%= vendor_product.quantity %>">
+                                                    <a class='media' href='<%= show_cart_url %>'>
+                                                        <div class='media-body'>                                                                
+                                                            <h6 class="d-flex align-items-center justify-content-between">
+                                                                <span class="ellips"><%= vendor_product.quantity %>x <%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></span>
+                                                                <span>{{Session::get('currencySymbol')}}<%= vendor_product.pvariant.price %></span>
+                                                            </h6>
+                                                        </div>
                                                     </a>
-                                                </div>
-                                            </li>
-                                        <% }); %>
+                                                    <div class='close-circle'>
+                                                        <a  class="action-icon d-block mb-3 remove_product_via_cart" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
+                                                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                        </a>
+                                                    </div>
+                                                </li>
+                                            <% }); %>
                                         <% }); %>
 
                                         <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('DATE & TIME')}} </h5>
@@ -392,6 +390,7 @@
                                                 </h6>
                                             </div>
                                         </li>
+
                                         <li>
                                             <div class='media-body'>                                                                
                                                 <h6 class="d-flex align-items-center justify-content-between">
@@ -400,7 +399,6 @@
                                                 </h6>
                                             </div>
                                         </li>
-
 
                                         <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('PRICE DETAILS')}} </h5>
                                         <li>
@@ -441,8 +439,6 @@
                                             </div>
                                         </li>
 
-                                       
-                                        
                                  </script>
                                  <ul class="show-div shopping-cart" id="header_cart_main_ul_ondemand">
                                  </ul>
