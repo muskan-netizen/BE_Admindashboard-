@@ -16,16 +16,16 @@
                         <p>Service Details</p>
                     </div>
 
-                    <div class="indicator-line  @if(app('request')->input('step') >= '1' || !empty(app('request')->input('step'))) active @endif"></div>
+                    <div class="indicator-line  @if(app('request')->input('step') >= '1' && !empty(app('request')->input('step'))) active @endif"></div>
 
-                    <div class="step step2  @if(app('request')->input('step') >= '2' || !empty(app('request')->input('step'))) active @endif">
+                    <div class="step step2  @if(app('request')->input('step') >= '2' && !empty(app('request')->input('step'))) active @endif">
                         <div class="step-icon">2</div>
                         <p>Date & Time</p>
                     </div>
 
-                    <div class="indicator-line  @if(app('request')->input('step') >= '2' || !empty(app('request')->input('step'))) active @endif"></div>
+                    <div class="indicator-line  @if(app('request')->input('step') == '3' && !empty(app('request')->input('step'))) active @endif"></div>
 
-                    <div class="step step3   @if(app('request')->input('step') >= '3' || !empty(app('request')->input('step'))) active @endif"">
+                    <div class="step step3   @if(app('request')->input('step') == '3' && !empty(app('request')->input('step'))) active @endif">
                         <div class="step-icon">3</div>
                         <p>Payment</p>
                     </div>
@@ -35,156 +35,205 @@
                 <div class="row mt-4">
 
                     <div class="col-md-8">
+                        @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
+                                     
                          <!-- Start Main Nav -->
                          <nav id='main-nav'>
                             <ul id='main-nav-list'>
-                                <li>
-                                    <a href='#main-header'>Apartment</a>
-                                </li>
-                                <li>
-                                    <a href='#section01'>Villa</a>
-                                </li>
-                                <li>
-                                    <a href='#section02'>Office</a>
-                                </li>
-                                <li>
-                                    <a href='#section03'>Add-on</a>
-                                </li>
-                                <li>
-                                    <a href='#section04'>Section 4</a>
-                                </li>
+                               @if(!empty($category->childs) && count($category->childs) > 0)
+                                    @foreach ($category->childs as $key => $childs)
+                                        <li><a href="#section_set{{$key}}">{{ $childs['translation_name'] ?? ''}}</a></li>
+                                    @endforeach
+                                @endif
                             </ul>
                         </nav>
                         <!-- End Main Nav -->
+
+                        @endif
                         
                         <div class="card-box">
-                            <ul>
-                                 @if(!empty($category->childs) && count($category->childs) > 0)
-                                    @foreach ($category->childs as $childs)
-                                        <li><a class="btn btn-solid" href="#">{{ $childs['translation_name'] ?? ''}}</a></li>
-                                    @endforeach
-                                    
-                                 @endif
-                            </ul>
-
-                            <!-- static html -->
+                                     <!-- static html -->
                                
                                     <!-- Start Conent Wrapper -->
                                     <div id='main-wrapper'>
-                                        <!-- Start Header -->
-                                        <header class='wrapper' id='main-header'>
-                                            <h1>Header</h1>
-                                        </header>
-                                        
-                                        <!-- Start Section 01 -->
-                                        <section class='wrapper' id='section01'>
-                                            <h1>Section 1</h1>
-                                        </section>
-                                        
-                                        <!-- Start Section 02 -->
-                                        <section class='wrapper' id='section02'>
-                                            <h1>Section 2</h1>
-                                        </section>
-                                        
-                                        <!-- Start Section 03 -->
-                                        <section class='wrapper' id='section03'>
-                                            <h1>Section 3</h1>
-                                        </section>
-                                        
-                                        <!-- Start Section 04 -->
-                                        <section class='wrapper' id='section04'>
-                                            <h1>Section 4</h1>
-                                        </section>
+                                        @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
+                                            @if(!empty($category->childs) && count($category->childs) > 0)
+                                                @foreach ($category->childs as $key => $childs)
+                                                <h4><b>{{ $childs->translation_name }}</b></h4>
+                                                      <div class='' id='section_set{{$key}}'>
+                                                        @if(!empty($childs))
+                                                        <div class="service-img mb-3">
+                                                            <img class="img-fluid" src="{{$childs->image['proxy_url'] . '1000/200' . $childs->image['image_path']}}" alt="">
+                                                        </div>
+                                                        @endif
+                                               
+                                                        
+                                                            @foreach ($childs->products as $data)
+
+                                                            @php
+                                                            $data->translation_title = (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku;
+                                                                $data->translation_description = (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku;
+                                                                $data->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                                                                $data->variant_price = (!empty($data->variant->first())) ? $data->variant->first()->price : 0;
+                                                            @endphp
+
+                                                            <div class="row classes_wrapper no-gutters align-items-center" href="#">                                       
+                                                                <div class="col-md-9 col-sm-8 pr-md-2">
+                                                                    <h5 class="mb-1"><b>{!! (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku !!}</b></h5>
+                                                                    <p class="mb-1">{!! (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku !!}</p>
+                                                                    <div class="d-flex align-items-center justify-content-between">
+                                                                        <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
+                                                                            {{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}
+                                                                        @endif</h5>
+                                                                        
+                        
+                                                                        @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
+                                                                        @php
+                                                                            $cartcount = 1;
+                                                                        @endphp
+                                                                        <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                        <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
+                                                                            <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                            </span>
+                                                                            <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
+                                                                            <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                            </span>
+                                                                        </div>
+                                                                        @else
+                                                                        <a class="btn btn-solid add_on_demand" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                        <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
+                                                                            <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                            </span>
+                                                                            <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
+                                                                            <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                            </span>
+                                                                        </div>
+                                                                        
+                                                                        @endif
+                        
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
+                                                                    <?php $imagePath = $imagePath2 = '';
+                                                                        $mediaCount = count($data->media);
+                                                                        for ($i = 0; $i < $mediaCount && $i < 2; $i++) { 
+                                                                            if($i == 0){
+                                                                                $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
+                                                                            }
+                                                                            $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
+                                                                        } ?>
+                                                                    <div class="class_img">
+                                                                        <img src="{{$imagePath}}" alt="">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <hr>
+                                                            @endforeach
+                                                            
+                                                        </div>
+                                                @endforeach
+                                            @endif
+
+                                        @endif                
                                         
                                     </div>
                                     <!-- End Content Wrapper -->
                             
                             <!-- end statis html -->
-                            
-                            @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
-                            <div class="service-data-wrapper mb-5" id="step-1-ondemand">
-                                <div class="service-data mt-4">
-                                    <h4><b>{{ $category->translation_name }}</b></h4>
-
-                                   
-                                    @if(!empty($category->image))
-                                    <div class="service-img mb-3">
-                                        <img class="img-fluid" src="{{$category->image['proxy_url'] . '1000/200' . $category->image['image_path']}}" alt="">
-                                    </div>
-                                    @endif
-                                    @if($listData->isNotEmpty())
-                                    @foreach($listData as $key => $data)
-                                    {{-- new product design  --}}
-                                          <div class="row classes_wrapper no-gutters" href="#">                                       
-                                        <div class="col-md-9 col-sm-8 pr-md-2">
-                                            <h5 class="mb-1"><b>{!! $data->translation_title !!}</b></h5>
-                                            <p class="mb-1">{!! $data->translation_description !!}</p>
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
-                                                    {{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}
-                                                @endif</h5>
-                                                
-
-                                                @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
-                                                @php
-                                                    $cartcount = 1;
-                                                @endphp
-                                                <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
-                                                <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
-                                                    <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                        <i class="fa fa-minus" aria-hidden="true"></i>
-                                                    </span>
-                                                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
-                                                    <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                                    </span>
-                                                </div>
-                                                @else
-                                                <a class="btn btn-solid add_on_demand" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
-                                                <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
-                                                    <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                        <i class="fa fa-minus" aria-hidden="true"></i>
-                                                    </span>
-                                                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
-                                                    <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                                    </span>
-                                                </div>
-                                                
-                                                @endif
-
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
-                                            <?php $imagePath = $imagePath2 = '';
-                                                $mediaCount = count($data->media);
-                                                for ($i = 0; $i < $mediaCount && $i < 2; $i++) { 
-                                                    if($i == 0){
-                                                        $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                    }
-                                                    $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                } ?>
-                                            <div class="class_img">
-                                                <img src="{{$imagePath}}" alt="">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr>
                                     
+                                    <!-- for single level category -->
 
-                                  
-                                    @endforeach
-                                  @else
-                                    <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">No Product Found</h5></div>
-                                  @endif
+                            @if(!empty($category->childs) && count($category->childs) == 0)
 
-                                  
+                                        @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
+                                        <div class="service-data-wrapper mb-5" id="step-1-ondemand">
+                                            <div class="service-data mt-4">
+                                                <h4><b>{{ $category->translation_name }}</b></h4>
 
-                                </div>
-                            </div>
-                            <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid">Next</span></a>
+                                            
+                                                @if(!empty($category->image))
+                                                <div class="service-img mb-3">
+                                                    <img class="img-fluid" src="{{$category->image['proxy_url'] . '1000/200' . $category->image['image_path']}}" alt="">
+                                                </div>
+                                                @endif
+                                                @if($listData->isNotEmpty())
+                                                @foreach($listData as $key => $data)
+                                                {{-- new product design  --}}
+                                                <div class="row classes_wrapper no-gutters" href="#">                                       
+                                                    <div class="col-md-9 col-sm-8 pr-md-2">
+                                                        <h5 class="mb-1"><b>{!! $data->translation_title !!}</b></h5>
+                                                        <p class="mb-1">{!! $data->translation_description !!}</p>
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
+                                                                {{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}
+                                                            @endif</h5>
+                                                            
+
+                                                            @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
+                                                            @php
+                                                                $cartcount = 1;
+                                                            @endphp
+                                                            <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                            <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
+                                                                <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                </span>
+                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
+                                                                <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            @else
+                                                            <a class="btn btn-solid add_on_demand" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                            <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
+                                                                <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                </span>
+                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
+                                                                <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            
+                                                            @endif
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
+                                                        <?php $imagePath = $imagePath2 = '';
+                                                            $mediaCount = count($data->media);
+                                                            for ($i = 0; $i < $mediaCount && $i < 2; $i++) { 
+                                                                if($i == 0){
+                                                                    $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
+                                                                }
+                                                                $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
+                                                            } ?>
+                                                        <div class="class_img">
+                                                            <img src="{{$imagePath}}" alt="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                
+
+                                            
+                                                @endforeach
+                                            @else
+                                                <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">No Product Found</h5></div>
+                                            @endif
+
+                                            
+
+                                            </div>
+                                        </div>
+                                        
+                                        @endif
                             @endif
-                            
+                            <!-- end single level category -->
 
                             
                            
@@ -231,8 +280,6 @@
                                     <textarea class="form-control" name="" id="" cols="30" rows="7"></textarea>
                                 </div> 
                             </div>
-                            <a href="?step=2"><span class="btn btn-solid"><</span></a>
-                            <a href="?step=3" id="next-button-ondemand-3" style="display: none;"><span class="btn btn-solid">Continue</span></a>
                             @endif
                             <!--end step 2 html -->
 
@@ -266,117 +313,23 @@
                                 </div>
                                
                             @endif    
-                            <!-- end step 3 payment page -->
-                            <!-- Step Three Start From Here -->
-
-                            {{-- <div class="step-three">
-                                <h4 class="mt-4 mb-2"><b>How many hours do you need your professional to stay? <i class="fa fa-info-circle" aria-hidden="true"></i></b></h4>
-                                <div class="hours-slot radio-btns">
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='hours-radio' id='h-1'/>
-                                            <label for='h-1'><span class="customCheckbox" aria-hidden="true">1</span></label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='hours-radio' id='h-2'/>
-                                            <label for='h-2'><span class="customCheckbox" aria-hidden="true">2</span></label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='hours-radio' id='h-3'/>
-                                            <label for='h-3'><span class="customCheckbox" aria-hidden="true">3</span></label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='hours-radio' id='h-4'/>
-                                            <label for='h-4'><span class="customCheckbox" aria-hidden="true">4</span></label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='hours-radio' id='h-5'/>
-                                            <label for='h-5'><span class="customCheckbox" aria-hidden="true">5</span></label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='hours-radio' id='h-6'/>
-                                            <label for='h-6'><span class="customCheckbox" aria-hidden="true">6</span></label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='hours-radio' id='h-7'/>
-                                            <label for='h-7'><span class="customCheckbox" aria-hidden="true">7</span></label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <h4 class="mt-4 mb-2"><b>How many professionals do you need?</b></h4>
-                                <div class="hours-slot radio-btns">
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='pro-radio' id='p-1'/>
-                                            <label for='p-1'><span class="customCheckbox" aria-hidden="true">1</span></label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='pro-radio' id='p-2'/>
-                                            <label for='p-2'><span class="customCheckbox" aria-hidden="true">2</span></label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='pro-radio' id='p-3'/>
-                                            <label for='p-3'><span class="customCheckbox" aria-hidden="true">3</span></label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='pro-radio' id='p-4'/>
-                                            <label for='p-4'><span class="customCheckbox" aria-hidden="true">4</span></label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <h4 class="mt-4 mb-2"><b>Do you require cleaning materials? <i class="fa fa-info-circle" aria-hidden="true"></i></b></h4>
-                                <div class="materials-slide radio-btns long-radio">
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='materials-radio' id='mat1'/>
-                                            <label for='mat1'><span class="customCheckbox" aria-hidden="true">No, I have them</span></label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="radios">
-                                            <input type="radio" value='1' name='materials-radio' id='mat2'/>
-                                            <label for='mat2'><span class="customCheckbox" aria-hidden="true">Yes, please</span></label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="booking-time-wrapper">
-                                <h4 class="mt-4 mb-2"><b>When would you like your service?</b> </h4>
-                                <textarea class="form-control" name="" id="" cols="30" rows="7"></textarea>
-                            </div>
-
-                            <hr>
-                            <div class="card-footer bg-transparent px-0">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <a href="#"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
-                                    <button class="btn btn-solid">Next</button>
-                                </div>
-                            </div> --}}
+                           
                         </div>
                     
                         <div class="footer-card">
-                            <a href="#" id="next-button-ondemand-2"><span class="btn btn-solid">Next</span></a> 
+                            @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
+                            <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid">Next</span></a>
+                            @elseif(app('request')->input('step') == '2')
+                            <a href="?step=1"><span class="btn btn-solid"><</span></a>
+                            <a href="?step=3" id="next-button-ondemand-3" style="display: none;"><span class="btn btn-solid">Continue</span></a>
+                            @elseif(app('request')->input('step') == '3')
+                            <a href="?step=2"><span class="btn btn-solid"><</span></a>
+                            <a href="?step=3" id="next-button-ondemand-3" style="display: none;"><span class="btn btn-solid">Continue</span></a>
+                            @else
+                           
+                            @endif
+                          
+                            
                         </div>
 
                     </div>

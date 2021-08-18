@@ -14,6 +14,8 @@ use App\Http\Requests\OrderProductRatingRequest;
 use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile};
 use App\Http\Traits\ApiResponser;
 
+use App\Http\Requests\Web\CheckImageRequest;
+
 class RatingController extends BaseController{
 	
     use ApiResponser;
@@ -73,6 +75,36 @@ class RatingController extends BaseController{
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
+
+     /**
+     * update image
+
+     */
+    public function uploadFile(CheckImageRequest $request){
+        try {
+                  $files_set = [];
+                  $folder =$request->folder ??'';
+                  if ($image = $request->file('images')) {
+                       foreach ($image as $key => $files) {
+                       $file =  substr(md5(microtime()), 0, 15).'_'.$files->getClientOriginalName();
+                       $storage = Storage::disk('s3')->put($folder, $files, 'public');
+                       $files_set[$key]['name'] = $storage;
+                       $files_set[$key]['ids'] = uniqid();
+                       $proxy_url = env('IMG_URL1');
+                       $image_path = env('IMG_URL2').'/'.\Storage::disk('s3')->url($storage);
+                       $files_set[$key]['img_path'] = $proxy_url.'300/300'.$image_path;
+                       }
+                   }
+                 
+                if(isset($files_set)) {
+                   return $this->successResponse($files_set,'Files Submitted.');
+               }
+               return $this->errorResponse('Invalid data', 200);
+               
+           } catch (Exception $e) {
+               return $this->errorResponse($e->getMessage(), 400);
+           }
+       }
 
 
 }

@@ -52,6 +52,14 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('update-product-rating', 'Api\v1\RatingController@updateProductRating');
             Route::get('get-product-rating', 'Api\v1\RatingController@getProductRating');
         });
+        Route::post('upload-file', 'Api\v1\RatingController@uploadFile');
+         // Return order
+        Route::group(['prefix' => 'return-order'], function () {
+            Route::get('get-order-data-in-model', 'Api\v1\ReturnOrderController@getOrderDatainModel');
+            Route::get('get-return-products', 'Api\v1\ReturnOrderController@getReturnProducts');
+            Route::post('update-product-return', 'Api\v1\ReturnOrderController@updateProductReturn');
+        });
+
         // pickup & delivery 
         Route::group(['prefix' => 'pickup-delivery'], function () {
             Route::post('get-list-of-vehicles-old/{id}', 'Api\v1\PickupDeliveryController@getListOfVehicles');

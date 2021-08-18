@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace App\Http\Controllers\Api\v1;
 
 use DB;
 use Config;
@@ -16,7 +16,7 @@ use App\Models\{Client, ClientPreference, EmailTemplate, NotificationTemplate, O
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
 
-class ReturnOrderController extends FrontController{
+class ReturnOrderController extends BaseController{
 	
     use ApiResponser;
     
@@ -38,12 +38,9 @@ class ReturnOrderController extends FrontController{
             ->where('orders.user_id', Auth::user()->id)->where('orders.id', $request->id)->orderBy('orders.id', 'DESC')->first();
            
             if(isset($order_details)){
-              
-                if ($request->ajax()) {
-                 return \Response::json(\View::make('frontend.modals.return-product-order', array('order' => $order_details))->render());
-                }
-            }
-            return $this->errorResponse('Invalid order', 404);
+                return $this->successResponse($order_details,'Return Data.');
+           }
+           return $this->errorResponse('Invalid order', 404);
             
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -56,9 +53,6 @@ class ReturnOrderController extends FrontController{
     */
     public function getReturnProducts(Request $request, $domain = ''){
         try {
-            
-            $langId = Session::get('customerLanguage');
-            $navCategories = $this->categoryNav($langId);
             $reasons = ReturnReason::where('status','Active')->orderBy('order','asc')->get();
             $order_details = Order::with(['vendors.products' => function ($q1)use($request){
                 $q1->where('id', $request->return_ids);
@@ -70,7 +64,8 @@ class ReturnOrderController extends FrontController{
             })->where('orders.user_id', Auth::user()->id)->where('id', $request->order_id)->orderBy('orders.id', 'DESC')->first();
             
             if(isset($order_details)){
-              return view('frontend.account.return-order')->with(['order' => $order_details,'navCategories' => $navCategories,'reasons' => $reasons]);
+                $data = ['order' => $order_details,'reasons' => $reasons];
+                return $this->successResponse($data,'Return Product.');
             }
             return $this->errorResponse('Invalid order', 404);
             
@@ -96,18 +91,7 @@ class ReturnOrderController extends FrontController{
                 'order_id' => $order_details->order_id,
                 'return_by' => Auth::id()],['reason' => $request->reason??null,'coments' => $request->coments??null]);
 
-            //    if ($image = $request->file('images')) { 
-            //         foreach ($image as $files) {
-            //         $file =  substr(md5(microtime()), 0, 15).'_'.$files->getClientOriginalName();
-            //         $storage = Storage::disk('s3')->put('/return', $files, 'public');
-            //         $img = new OrderReturnRequestFile();
-            //         $img->order_return_request_id = $returns->id;
-            //         $img->file = $storage;
-            //         $img->save();
-                   
-            //         }
-            //     }
-
+          
             if(isset($request->add_files) && is_array($request->add_files))    # send  array of insert images 
                 {
                     foreach ($request->add_files as $storage) {

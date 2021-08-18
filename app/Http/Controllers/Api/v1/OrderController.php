@@ -376,6 +376,8 @@ class OrderController extends Controller {
                     'price' => $product->price,
                     'qty' => $product->quantity,
                     'category_type' => $product->product->category->categoryDetail->type->title??'',
+                    'product_id' => $product->product_id,
+                    'title' => $product->product_name,
                 );
             }
             $order->product_details = $product_details;
@@ -401,7 +403,7 @@ class OrderController extends Controller {
                 'vendors' => function($q) use($vendor_id){$q->where('vendor_id', $vendor_id);},
                 'vendors.products' => function($q) use($vendor_id){$q->where('vendor_id', $vendor_id);},
                 'vendors.products.translation' => function($q) use($language_id){
-                    $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                    $q->select('id','product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                     $q->where('language_id', $language_id);
                 },
                 'vendors.products.pvariant.vset.optionData.trans','vendors.products.addon','vendors.coupon','address','vendors.products.productRating'
@@ -409,7 +411,7 @@ class OrderController extends Controller {
             }else{
                 $order = Order::with(['vendors.vendor',
                     'vendors.products.translation' => function($q) use($language_id){
-                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                        $q->select('id','product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                         $q->where('language_id', $language_id);
                     },
                     'vendors.products.pvariant.vset.optionData.trans','vendors.products.addon','vendors.coupon','address','vendors.products.productRating']

@@ -26,6 +26,7 @@
                             @else
                             @php $continue = 1; @endphp
                             <input id="item_one{{$key}}" type="radio" name="return_ids" value="{{ $product->id }}" required>
+                            <input id="item_{{$key}}" type="hidden" name="order_id" value="{{ $order->id }}">
                             @endif
                             <label class="order-items d-flex" for="item_one{{$key}}">  
                                 <div class="item-img mx-1">
