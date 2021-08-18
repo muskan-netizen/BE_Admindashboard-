@@ -67,12 +67,45 @@
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
-                                <div class="top-banner-wrapper text-center">
-                                    @if(!empty($vendor->logo))
-                                      <a href="#"><img alt="" src="{{$vendor->logo['proxy_url'] . '300/300' . $vendor->logo['image_path']}}" class="img-fluid blur-up lazyload" style="max-height: 200px;overflow: hidden; width: auto"></a>
+                            <div class="top-banner-wrapper mb-4">
+                                    @if(!empty($vendor->banner))
+                                        <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1000/200' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
                                     @endif
-                                    <div class="top-banner-content small-section">
-                                        <h4>{{ $vendor->name }}</h4>
+                                    <div class="row mt-n5">
+                                        <div class="col-12">
+                                            <form action="">
+                                                <div class="row">
+                                                    <div class="col-sm-12 text-center">
+                                                        <div class="file file--upload">
+                                                            <label>
+                                                                <span class="update_pic border-0">
+                                                                <img src="{{$vendor->logo['proxy_url'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
+                                                                </span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="name_location d-block py-0">
+                                                            <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
+                                                        </div>
+                                                        @if($vendor->is_show_vendor_details == 1)
+                                                            <div class="">
+                                                                @if($vendor->email)
+                                                                    <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
+                                                                @endif
+                                                                <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
+                                                                @if($vendor->website)
+                                                                    <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
+                                                                @endif
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    @if($vendor->desc)
+                                                        <div class="col-md-12 text-center">
+                                                            <p>{{$vendor->desc}}</p>
+                                                        </div>                                                  
+                                                    @endif
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="collection-product-wrapper">
