@@ -154,6 +154,9 @@ $(document).ready(function () {
     $(".close_btn").click(function () {
         $(".search_warpper").slideUp("slow");
     });
+    $(document).delegate(".mobile-back","click", function () {
+        $(".sm-horizontal").css("right", "-410px");
+    });
     function settingData(type = '', v1 = '', v2 = '') {
         $.ajax({
             type: "post",
