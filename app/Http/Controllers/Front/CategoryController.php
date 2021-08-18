@@ -145,10 +145,6 @@ class CategoryController extends FrontController{
     }
     
 
-
-   
-
-
     public function listData($langId, $category_id, $type = ''){
 
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;

@@ -545,7 +545,7 @@ function closeCart() {
     document.getElementById("cart_side").classList.remove("open-side");
 }
 body_event.on("click", ".theme-layout-version", function () {
-    if ($(".theme-layout-version").text() == 'Dark') {
+    if ($(".theme-layout-version").text() == 'DarkDark') {
         localStorage['theme_color'] = 'dark';
         $("body").addClass("dark"),
         window.sessionStorage.setItem("theme", "dark");
@@ -582,7 +582,6 @@ body_event.on("click", ".theme-layout-version", function () {
 
     $(window).on("load", function () {
         $('[data-toggle="tooltip"]').tooltip();
-        console.log(localStorage['theme_color']);
         if(localStorage['theme_color'] == "dark"){
             $(".theme-layout-version").text("Light");
         }

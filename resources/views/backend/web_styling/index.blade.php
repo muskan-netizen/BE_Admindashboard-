@@ -87,6 +87,12 @@
                             <input type="checkbox" id="show_icons" data-plugin="switchery" name="show_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_icons == 1 ? 'checked' : ''}}>
                         </div>
                     </li>
+                    <li class="d-flex align-items-center justify-content-between mt-2">
+                        <h4 class="header-title mb-2">Show Payment Icons</h4>
+                        <div class="mb-0">
+                            <input type="checkbox" id="show_payment_icons" data-plugin="switchery" name="show_payment_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -170,6 +176,9 @@
         submitData();
     });
     $("#show_wishlist").change(function() {
+        submitData();
+    });
+    $("#show_payment_icons").change(function() {
         submitData();
     });
     $("#save_home_page").click(function(event) {

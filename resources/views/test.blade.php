@@ -2,6 +2,44 @@
 @section('content')
 
 
+    <section>
+        <div class="container">
+            <nav id="navbar-example2" class="navbar navbar-light bg-light">
+                <a class="navbar-brand" href="#">Navbar</a>
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                    <a class="nav-link" href="#fat">@fat</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="#mdo">@mdo</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#one">one</a>
+                        <a class="dropdown-item" href="#two">two</a>
+                        <div role="separator" class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#three">three</a>
+                    </div>
+                    </li>
+                </ul>
+                </nav>
+                <div data-spy="scroll" data-target="#navbar-example2" data-offset="0">
+                <h4 id="fat">@fat</h4>
+                <p>...</p>
+                <h4 id="mdo">@mdo</h4>
+                <p>...</p>
+                <h4 id="one">one</h4>
+                <p>...</p>
+                <h4 id="two">two</h4>
+                <p>...</p>
+                <h4 id="three">three</h4>
+                <p>...</p>
+                </div>
+        </div>
+    </section>
+
+
     <section class="home-serivces d-none">
         <div class="container">
             <div class="row mb-5">
@@ -416,19 +454,22 @@
         </div>
     </section>
 
-    <section class="cab-booking pt-0">
+    <section class="cab-booking pt-0 d-none">
         <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d4850.865733603189!2d76.82393041076074!3d30.716149768967526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1627015845978!5m2!1sen!2sin" width="100%" height="100vh" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
         <div class="booking-experience ds bc" style="top: 80px;">
-            <form class="address-form">
+            <div class="address-form">
 
-                <div class="loader-outer">
+                <div class="loader-outer d-none">
                     <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
                 </div>
 
-                <div class="location-box d-none">
-                    <ul class="location-inputs position-relative pl-2">
+                <div class="location-box">
+                    <div class="where-to-go">
+                        <div class="title title-36">Where can we pick you up?</div>
+                    </div>
+                    <!-- <ul class="location-inputs position-relative pl-2">
                         <li class="d-block mb-3 dots">
-                            <input class="form-control pickup-text" type="text" placeholder="From CH Devi Lal Centre of Learning" />
+                            <div class="pickup-text text-36">Where from?</div>
                             <i class="fa fa-times ml-1" aria-hidden="true"></i>
                         </li>
                         <li class="d-block mb-3 dots">
@@ -436,7 +477,55 @@
                             <i class="fa fa-times ml-1" aria-hidden="true"></i>
                         </li>
                     </ul>
-                    <a class="add-more-location position-relative pl-2" href="javascript:void(0)">Add Destination</a>
+                    <a class="add-more-location position-relative pl-2" href="javascript:void(0)">Add Destination</a> -->
+                </div>
+
+                <div class="location-container">
+                    <div class="location-search d-flex align-items-center">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                        <input placeholder="Add a pickup location" value="" class="form-control">
+                    </div>
+                    <div class="scheduled-ride">
+                        <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="mx-2">Now</span> <i class="fa fa-angle-down" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="list-container style-4">
+                        <a class="select-location row align-items-center" href="#">
+                            <div class="col-2 text-center pl-4">
+                                <div class="round-shape active-location">
+                                    <i class="fa fa-crosshairs" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                            <div class="col-10 pl-3">
+                                <h4><b>Allow location Access</b></h4>
+                                <div class="current-location ellips text-color mb-2">Your current location</div>
+                                <hr class="m-0">
+                            </div>
+                        </a>
+                        <a class="select-location row align-items-center" href="#">
+                            <div class="col-2 text-center pl-4">
+                                <div class="round-shape">
+                                    <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                            <div class="col-10 pl-3">
+                                <h4><b>CTU Depot-I</b></h4>
+                                <div class="current-location ellips mb-2">Industrial Area Phase I, Chandigarh</div>
+                                <hr class="m-0">
+                            </div>
+                        </a>
+                        <a class="select-location row align-items-center" href="#">
+                            <div class="col-2 text-center pl-4">
+                                <div class="round-shape">
+                                    <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                            <div class="col-10 pl-3">
+                                <h4><b>CTU Depot-I</b></h4>
+                                <div class="current-location ellips mb-2">Industrial Area Phase I, Chandigarh Industrial Area Phase I, Chandigarh</div>
+                                <hr class="m-0">
+                            </div>
+                        </a>
+                    </div>
                 </div>
 
                 <div class="location-list style-4 d-none">
@@ -809,7 +898,7 @@
                     </div>    
                 </div>
 
-            </form>
+        </div>
         </div>
     </section>
 

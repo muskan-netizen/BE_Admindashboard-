@@ -27433,29 +27433,26 @@ body.dark {
 }
 
 .theme-layout-version:before {
-    content: "\f013";
+    content: "\f186";
     font-family: 'FontAwesome';
     position: absolute;
     left: 8px;
     color: #fff;
-    top: calc(50% - 10px);
+    top: 50%;
     transform: translateY(-50%);
     animation-name: spin;
-    animation-duration: 5000ms;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
 }
 
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
+.dark .theme-layout-version:before {
+    content: "\f185";
+    font-family: 'FontAwesome';
+    position: absolute;
+    left: 8px;
+    color: #fff;
+    top: 50%;
+    transform: translateY(-50%);
+    animation-name: spin;
 }
-
 
 .setting-sidebar {
     z-index: 9;

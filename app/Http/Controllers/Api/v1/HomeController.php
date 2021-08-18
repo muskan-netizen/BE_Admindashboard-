@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use DB;
+use App;
 use Config;
 use Validation;
 use Carbon\Carbon;
@@ -10,7 +11,9 @@ use ConvertCurrency;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{User, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling};
 
@@ -264,5 +267,73 @@ class HomeController extends BaseController{
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+
+    public function contactUs(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name'    => 'required',
+            'email' => 'required',
+            'message' => 'required'
+        ]);
+        if($validator->fails()){
+            foreach($validator->errors()->toArray() as $error_key => $error_value){
+                return $this->errorResponse($error_value[0], 400);
+            }
+        }
+        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+        $superAdmin = User::where('is_superadmin', 1)->first();
+        if($superAdmin){
+            try{
+                if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+                    $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+                }else{
+                    return $this->errorResponse('We are sorry for inconvenience. Please contact us later', 400);
+                }
+                $mail_from = $request->email;
+                $sendto = $superAdmin->email;
+                $customer_name = $request->name;
+                $data = [
+                    'logo' => $client->logo['original'],
+                    'superadmin_name' => $superAdmin->name,
+                    'customer_name' => $customer_name,
+                    'customer_email' => $mail_from,
+                    'customer_phone_number' => $request->phone_number,
+                    'customer_message' => $request->message,
+                ];
+                Mail::send('email.contactUs', ['mailData'=>$data],
+                function ($message) use($sendto, $customer_name, $mail_from) {
+                    $message->from($mail_from, $customer_name);
+                    $message->to($sendto)->subject('Customer Request for Contact');
+                });
+                return $this->successResponse('', 'Thank you for contacting us. We will get to you shortly');
+            }
+            catch(\Exception $e){
+                return $this->errorResponse($e->getMessage(), $e->getCode());
+            }
+        }else{
+            return $this->errorResponse('We are sorry for inconvenience. Please contact us later', 400);
+        }
+    }
+    public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption)
+    {
+        $config = array(
+            'driver' => $mail_driver,
+            'host' => $mail_host,
+            'port' => $mail_port,
+            'encryption' => $mail_encryption,
+            'username' => $mail_username,
+            'password' => $mail_password,
+            'sendmail' => '/usr/sbin/sendmail -bs',
+            'pretend' => false,
+        );
+
+        Config::set('mail', $config);
+        $app = App::getInstance();
+        $app->register('Illuminate\Mail\MailServiceProvider');
+        return '1';
+
+        // return '2';
     }
 }

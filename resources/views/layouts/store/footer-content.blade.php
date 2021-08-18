@@ -83,6 +83,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <p><i class="fa fa-copyright" aria-hidden="true"></i> 2020-21</p>
                     </div>
                 </div>
+                @if($client_preference_detail->show_payment_icons == 1)
                 <div class="col-xl-6 col-md-6 col-sm-12">
                     <div class="payment-card-bottom">
                         <ul>
@@ -104,6 +105,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         </ul>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
     </div>

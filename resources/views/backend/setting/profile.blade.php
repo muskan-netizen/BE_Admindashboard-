@@ -63,7 +63,7 @@
                         <div class="row mb-2 d-flex align-items-center">
                             <div class="col-md-4 positoin-relative">
                                 <label>Upload Logo</label>
-                                <input type="file" accept="image/*" data-plugins="dropify" name="logo" data-default-file="{{$client->logo['proxy_url'] . '300/100' . $client->logo['image_path']}}" />
+                                <input type="file" accept="image/png, image/gif, image/jpeg, image/jpg" data-plugins="dropify" name="logo" data-default-file="{{$client->logo['proxy_url'] . '300/100' . $client->logo['image_path']}}" />
                                 <label class="logo-size d-block text-right mt-1">Image Size 300x100</label>
                             </div>
                             <div class="offset-2 col-md-6">

@@ -128,6 +128,7 @@
                                     <div class="valid-feedback"></div>
                                 </div>
                             </div>
+                            @if($mod_count > 1)
                             @if($client_preferences)
                                 <div class="form-row">
                                     @if($client_preferences->dinein_check == 1)
@@ -155,6 +156,7 @@
                                         </div>
                                     @endif
                                 </div>
+                            @endif
                             @endif
                             <div class="form-row">
                                 @foreach($vendor_registration_documents as $vendor_registration_document)

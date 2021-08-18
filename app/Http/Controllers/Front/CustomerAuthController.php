@@ -32,6 +32,11 @@ class CustomerAuthController extends FrontController
         return view('test');
     }
 
+    public function getDemoCabBookingPage()
+    {
+        return view('cabdemo');
+    }
+
     public function fcm()
     {
         return view('firebase');
@@ -334,9 +339,22 @@ class CustomerAuthController extends FrontController
                 $user->save();
             }
             $vendor = new Vendor();
-            $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-            $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-            $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+            $count = 0;
+            if($client_preference){
+                if($client_preference->dinein_check == 1){$count++;}
+                if($client_preference->takeaway_check == 1){$count++;}
+                if($client_preference->delivery_check == 1){$count++;}
+            }
+            if($count > 1){
+                $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
+                $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
+                $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+            }
+            else{
+                $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
+                $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
+                $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
+            }
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
             if ($request->hasFile('upload_logo')) {

@@ -30,6 +30,11 @@ class AppStylingSeeder extends Seeder{
             'name' => 'SFProText-Regular',
             'is_selected' => '0'
         ]);
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Futura-Normal',
+            'is_selected' => '0'
+        ]);
         $app_styling = AppStyling::insertGetId([
             'name' => 'Medium Font',
             'type' => '2'
@@ -44,6 +49,11 @@ class AppStylingSeeder extends Seeder{
             'name' => 'SFProText-Medium',
             'is_selected' => '0'
         ]);
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Futura-Medium',
+            'is_selected' => '0'
+        ]);
         $app_styling = AppStyling::insertGetId([
             'name' => 'Bold Font',
             'type' => '2'
@@ -56,6 +66,11 @@ class AppStylingSeeder extends Seeder{
         $app_styling_option = AppStylingOption::insert([
             'app_styling_id' => $app_styling,
             'name' => 'SFProText-Bold',
+            'is_selected' => '0'
+        ]);
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'FuturaBT-Heavy',
             'is_selected' => '0'
         ]);
         $app_styling = AppStyling::insertGetId([

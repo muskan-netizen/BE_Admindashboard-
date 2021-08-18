@@ -21,6 +21,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('celebrity/filters/{id?}', 'Api\v1\CelebrityController@celebrityFilters');
         Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
         Route::post('productByVariant/{id}','Api\v1\ProductController@getVariantData')->name('productVariant');
+        Route::post('contact-us', 'Api\v1\HomeController@contactUs');
     });
     Route::group(['middleware' => ['dbCheck','systemAuth', 'apilogger']], function() {
         Route::get('cart/empty', 'Api\v1\CartController@emptyCart');

@@ -15,7 +15,7 @@
     @include('layouts.store/left-sidebar')
 </header>
 <section class="p-0 small-slider">
-    <div class="slide-1 home-slider"> 
+    <div class="slide-1 home-slider">
         @foreach($banners as $banner)
         @php
         $url = '';
@@ -164,4 +164,15 @@
 @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script>
+    $(document).ready(function() {
+        $("#doneeee").click(function(){
+            console.log("nejhbfe");
+            // $(".hide_div").hide();
+        });
+    });
+    // $(".mobile-back").on("click", function() {
+    //     $(".sm-horizontal").css("right", "-410px");
+    // });
+</script>
 @endsection

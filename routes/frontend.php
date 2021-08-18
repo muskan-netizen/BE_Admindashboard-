@@ -9,6 +9,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
 	Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
 	Route::get('cabbooking', 'Front\CustomerAuthController@getTestHtmlPage');
+	Route::get('demo/cabBooking', 'Front\CustomerAuthController@getDemoCabBookingPage');
 	Route::get('fcm', 'Front\CustomerAuthController@fcm');
 	Route::get('send-notification', 'Front\CustomerAuthController@sendNotification');
 	Route::get('test/email', function(){
