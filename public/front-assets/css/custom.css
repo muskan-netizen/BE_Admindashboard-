@@ -392,21 +392,39 @@ td.items-details h4 {
 
 .minus,
 .plus {
-    width: 20px;
+    /* width: 20px;
     height: 20px;
     display: inline-block;
     vertical-align: middle;
+    text-align: center; */
+    display: inline-block;
+    height: 30px;
     text-align: center;
+    line-height: 30px;
+    padding: 0 8px;
+    cursor: pointer;
+    color: var(--theme-deafult);
 }
 
 .number input {
-    height: 34px;
-    width: 50px;
-    text-align: center;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    height: 30px;
+    min-width: 30px;
+    max-width: fit-content;
+    width: 100%;
     display: inline-block;
-    vertical-align: middle;
+    /* width: 50px; */
+    text-align: center;
+    border: none;
+    border-left: 1px solid var(--theme-deafult);
+    border-right: 1px solid var(--theme-deafult);
+    /* border-radius: 4px; */
+    /* display: inline-block; */
+    /* vertical-align: middle; */
+}
+.number .counter-container{
+    border: 1px solid var(--theme-deafult);
+    border-radius: 1rem;
+    width: fit-content;
 }
 
 .left_box .checkround {
@@ -952,7 +970,7 @@ label:hover~input:checked~.rate label
     background: white;
     border: 1px solid var(--theme-deafult);
     border-radius: 5px;
-    padding: 5px 20px;
+    padding: 5px 10px;
     margin-bottom: 1rem;
     text-align: center;
     /* box-shadow: 0px 3px 10px -2px var(--theme-deafult); */
