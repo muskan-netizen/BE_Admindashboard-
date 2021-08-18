@@ -111,6 +111,7 @@
                         </div>
                         @endforeach
                         @endif
+                        @if($show_range == 1)
                         <div class="collection-collapse-block border-0 open">
                             <h3 class="collapse-block-title">{{__('Price')}}</h3>
                             <div class="collection-collapse-block-content">
@@ -121,6 +122,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     </div>
                     <div class="theme-card">
                         <h5 class="title-border">{{__('New Product')}}</h5>
@@ -279,7 +281,7 @@
                                                                             @endif
                                                                         @endif
                                                                     </h3>
-                                                                    <p>Lorem ipsum dolor sit amet.</p>
+                                                                    <p>{{$data->description}}</p>
                                                                     @if($data['inquiry_only'] == 0)
                                                                         <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
                                                                     @endif

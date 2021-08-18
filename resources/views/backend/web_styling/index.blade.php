@@ -117,7 +117,11 @@
                         @foreach($home_page_labels as $home_page_label)
                         <li class="dd-item dd3-item d-flex align-items-center" data-id="1" data-row-id="{{$home_page_label->id}}">
                             <a herf="#" class="dd-handle dd3-handle d-block mr-auto">
-                                {{$home_page_label->title}}
+                                @if($home_page_label->slug == "vendors")
+                                    {{getNomenclatureName('Vendors', true)}}
+                                @else
+                                    {{$home_page_label->title}}
+                                @endif
                             </a>
                             <div class="language-inputs style-4">
                                 <div class="row no-gutters flex-nowrap align-items-center my-2">

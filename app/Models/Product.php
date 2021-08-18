@@ -65,7 +65,7 @@ class Product extends Model{
     }
 
   	public function category(){
-  	    return $this->hasOne('App\Models\ProductCategory')->select('product_id', 'category_id'); 
+  	    return $this->hasOne('App\Models\/category/Supermarket')->select('product_id', 'category_id'); 
   	}
 
   	public function variantSet(){

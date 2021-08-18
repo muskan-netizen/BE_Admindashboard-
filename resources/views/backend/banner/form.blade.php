@@ -4,7 +4,7 @@
             <div class="col-12" id="imageInput">
                 <label>Upload banner image</label>
                 @if(isset($banner->id))
-                    <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$banner->image['proxy_url'].'600/400'.$banner->image['image_path']}}" />
+                    <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$banner->image['proxy_url'].'1900/500'.$banner->image['image_path']}}" />
                 @else
                     <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify"/>
                 @endif

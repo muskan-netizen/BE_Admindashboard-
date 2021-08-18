@@ -8,7 +8,7 @@
             </div> 
             <div class="col-md-6">     
                 <label>Upload banner image</label>           
-                <input type="file" accept="image/*" data-plugins="dropify" data-default-file="{{$vendor->banner['proxy_url'] . '90/90' . $vendor->banner['image_path']}}" name="banner" class="dropify" />
+                <input type="file" accept="image/*" data-plugins="dropify" data-default-file="{{$vendor->banner['proxy_url'] . '700/200' . $vendor->banner['image_path']}}" name="banner" class="dropify" />
                 <label class="logo-size text-right w-100">Image Size 830x200</label>
             </div>
              @if(isset($vendor_docs))

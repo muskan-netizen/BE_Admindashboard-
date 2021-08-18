@@ -222,8 +222,12 @@ class UserhomeController extends FrontController{
         if($where !== ''){
             $products = $products->where($where, 1);
         }
+        $pndCategories = Category::where('type_id', 7)->pluck('id');
         if(is_array($venderIds)){
             $products = $products->whereIn('vendor_id', $venderIds);
+        }
+        if($pndCategories){
+            $products = $products->whereNotIn('category_id', $pndCategories);
         }
         $products = $products->where('is_live', 1)->take(10)->inRandomOrder()->get();
         if(!empty($products)){

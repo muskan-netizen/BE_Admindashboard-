@@ -9,7 +9,7 @@
             </div> 
             <div class="col-sm-4">                
                 <label>Upload Category image</label>
-                <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$category->image['proxy_url'].'400/400'.$category->image['image_path']}}" />
+                <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$category->image['proxy_url'].'1000/200'.$category->image['image_path']}}" />
                 <label class="logo-size d-block text-right mt-1">Image Size 1026x200</label>
             </div>
             <div class="col-md-6">

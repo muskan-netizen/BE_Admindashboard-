@@ -87,9 +87,21 @@ class VendorController extends FrontController
         }
         $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
         $listData = $this->listData($langId, $vendor->id, $vendor->vendor_templete_id);
+        $inqury_count = 0;
+        foreach($listData as $ld){
+            if($ld->inquiry_only == 1){
+                $inqury_count++;
+            }
+        }
+        if($listData->count() == $inqury_count){
+            $show_range = 0;
+        }
+        else{
+            $show_range = 1;
+        }
         $range_products = Product::join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
         $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
-        return view('frontend/vendor-'.$page)->with(['range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
+        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
     }
 
     /**
@@ -175,7 +187,7 @@ class VendorController extends FrontController
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
                         },
-                    ])->select('id', 'sku', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+                    ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
             if(!empty($categorySlug)){
                 $category = Category::select('id')->where('slug', $categorySlug)->firstOrFail();
                 $products = $products->where('category_id', $category->id);
