@@ -156,9 +156,21 @@ class VendorController extends FrontController
             $vendor->vendor_templete_id = '';
         }
         $listData = $this->listData($langId, $vendor->id, $vendor->vendor_templete_id, $slug2);
+        $inqury_count = 0;
+        foreach($listData as $ld){
+            if($ld->inquiry_only == 1){
+                $inqury_count++;
+            }
+        }
+        if($listData->count() == $inqury_count){
+            $show_range = 0;
+        }
+        else{
+            $show_range = 1;
+        }
         $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
         $range_products = Product::join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
-        return view('frontend/vendor-'.$page)->with(['vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands, 'range_products' => $range_products]);
+        return view('frontend/vendor-'.$page)->with(['vendor' => $vendor, 'show_range' => $show_range, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands, 'range_products' => $range_products]);
     }
 
     public function listData($langId, $vid, $type = '', $categorySlug = ''){
