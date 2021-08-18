@@ -343,10 +343,10 @@ $(document).ready(function () {
             url: home_page_data_url,
             success: function (response) {
                 if (response.status == "Success") {
-                    // $("#main-menu").html('');
-                    // let nav_categories_template = _.template($('#nav_categories_template').html());
-                    // $("#main-menu").append(nav_categories_template({ nav_categories: response.data.navCategories }));
-                    // $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
+                    $("#main-menu").html('');
+                    let nav_categories_template = _.template($('#nav_categories_template').html());
+                    $("#main-menu").append(nav_categories_template({ nav_categories: response.data.navCategories }));
+                    $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
                     var path = window.location.pathname;
                     if (path == '/') {
                         $(".slide-6").slick('destroy');
