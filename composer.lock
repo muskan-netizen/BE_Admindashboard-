@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab73236b27a4b1801c87e551616102e2",
+    "content-hash": "d080631285d6823ab70ac2202fc46807",
     "packages": [
         {
             "name": "99designs/phumbor",
@@ -273,16 +273,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.190.2",
+            "version": "3.190.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "8ca6a5f9834de3eb3fb84b28fc12c9088bc01293"
+                "reference": "c2063c78310b45e378f1bdad9fe6e9191f36439c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/8ca6a5f9834de3eb3fb84b28fc12c9088bc01293",
-                "reference": "8ca6a5f9834de3eb3fb84b28fc12c9088bc01293",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c2063c78310b45e378f1bdad9fe6e9191f36439c",
+                "reference": "c2063c78310b45e378f1bdad9fe6e9191f36439c",
                 "shasum": ""
             },
             "require": {
@@ -354,16 +354,7 @@
                 "s3",
                 "sdk"
             ],
-<<<<<<< HEAD
-            "time": "2021-08-12T18:14:37+00:00"
-=======
-            "support": {
-                "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
-                "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.190.2"
-            },
-            "time": "2021-08-13T18:12:28+00:00"
->>>>>>> c0dc70447d4b697948b0901586ce77aef3ff99df
+            "time": "2021-08-18T18:24:08+00:00"
         },
         {
             "name": "awt/apilogger",
@@ -575,13 +566,6 @@
                 "brick",
                 "math"
             ],
-<<<<<<< HEAD
-=======
-            "support": {
-                "issues": "https://github.com/brick/math/issues",
-                "source": "https://github.com/brick/math/tree/0.9.3"
-            },
->>>>>>> c0dc70447d4b697948b0901586ce77aef3ff99df
             "funding": [
                 {
                     "url": "https://github.com/BenMorel",
@@ -923,15 +907,7 @@
                 "dot",
                 "notation"
             ],
-<<<<<<< HEAD
-            "time": "2021-01-01T22:08:42+00:00"
-=======
-            "support": {
-                "issues": "https://github.com/dflydev/dflydev-dot-access-data/issues",
-                "source": "https://github.com/dflydev/dflydev-dot-access-data/tree/v3.0.1"
-            },
             "time": "2021-08-13T13:06:58+00:00"
->>>>>>> c0dc70447d4b697948b0901586ce77aef3ff99df
         },
         {
             "name": "dg/mysql-dump",
@@ -2028,16 +2004,16 @@
         },
         {
             "name": "google/auth",
-            "version": "v1.16.0",
+            "version": "v1.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-auth-library-php.git",
-                "reference": "c747738d2dd450f541f09f26510198fbedd1c8a0"
+                "reference": "4da3a850e9d1045918099b6561165d829efbe2b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/c747738d2dd450f541f09f26510198fbedd1c8a0",
-                "reference": "c747738d2dd450f541f09f26510198fbedd1c8a0",
+                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/4da3a850e9d1045918099b6561165d829efbe2b7",
+                "reference": "4da3a850e9d1045918099b6561165d829efbe2b7",
                 "shasum": ""
             },
             "require": {
@@ -2053,8 +2029,7 @@
                 "kelvinmo/simplejwt": "^0.2.5|^0.5.1",
                 "phpseclib/phpseclib": "^2.0.31",
                 "phpunit/phpunit": "^4.8.36|^5.7",
-                "sebastian/comparator": ">=1.2.3",
-                "squizlabs/php_codesniffer": "^3.5"
+                "sebastian/comparator": ">=1.2.3"
             },
             "suggest": {
                 "phpseclib/phpseclib": "May be used in place of OpenSSL for signing strings or for token management. Please require version ^2."
@@ -2076,7 +2051,7 @@
                 "google",
                 "oauth2"
             ],
-            "time": "2021-06-22T18:06:03+00:00"
+            "time": "2021-08-18T16:10:00+00:00"
         },
         {
             "name": "google/cloud-core",
@@ -2805,6 +2780,65 @@
             "time": "2021-02-04T16:20:16+00:00"
         },
         {
+            "name": "jorenvanhocht/laravel-share",
+            "version": "4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jorenvh/laravel-share.git",
+                "reference": "9ad09ee5f65a64cf993169636366d9fa0b6a993c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jorenvh/laravel-share/zipball/9ad09ee5f65a64cf993169636366d9fa0b6a993c",
+                "reference": "9ad09ee5f65a64cf993169636366d9fa0b6a993c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "~6.7",
+                "phpunit/phpunit": "9.4.*"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Jorenvh\\Share\\Providers\\ShareServiceProvider"
+                    ],
+                    "aliases": {
+                        "Share": "Jorenvh\\Share\\ShareFacade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Jorenvh\\Share\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joren Van Hocht",
+                    "email": "joren@codeswitch.be",
+                    "homepage": "https://codeswitch.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Optional package for Laravel to generate social share links.",
+            "homepage": "https://github.com/jorenvh/laravel-share",
+            "keywords": [
+                "laravel",
+                "share",
+                "social links",
+                "social share links"
+            ],
+            "time": "2021-08-09T18:48:08+00:00"
+        },
+        {
             "name": "kawankoding/laravel-fcm",
             "version": "0.2.5",
             "source": {
@@ -3255,16 +3289,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v8.54.0",
+            "version": "v8.55.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "7b88554cd1aeb52b7f82689bf244182e7a81894b"
+                "reference": "997e2aa23e9103137715018ae926c52f8a1703f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/7b88554cd1aeb52b7f82689bf244182e7a81894b",
-                "reference": "7b88554cd1aeb52b7f82689bf244182e7a81894b",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/997e2aa23e9103137715018ae926c52f8a1703f2",
+                "reference": "997e2aa23e9103137715018ae926c52f8a1703f2",
                 "shasum": ""
             },
             "require": {
@@ -3337,7 +3371,7 @@
                 "illuminate/view": "self.version"
             },
             "require-dev": {
-                "aws/aws-sdk-php": "^3.186.4",
+                "aws/aws-sdk-php": "^3.189.0",
                 "doctrine/dbal": "^2.6|^3.0",
                 "filp/whoops": "^2.8",
                 "guzzlehttp/guzzle": "^6.5.5|^7.0.1",
@@ -3350,7 +3384,7 @@
                 "symfony/cache": "^5.1.4"
             },
             "suggest": {
-                "aws/aws-sdk-php": "Required to use the SQS queue driver, DynamoDb failed job storage and SES mail driver (^3.186.4).",
+                "aws/aws-sdk-php": "Required to use the SQS queue driver, DynamoDb failed job storage and SES mail driver (^3.189.0).",
                 "brianium/paratest": "Required to run tests in parallel (^6.0).",
                 "doctrine/dbal": "Required to rename columns and drop SQLite columns (^2.6|^3.0).",
                 "ext-ftp": "Required to use the Flysystem FTP driver.",
@@ -3415,20 +3449,20 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2021-08-10T14:25:51+00:00"
+            "time": "2021-08-17T14:13:34+00:00"
         },
         {
             "name": "laravel/scout",
-            "version": "v9.2.5",
+            "version": "v9.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/scout.git",
-                "reference": "86c406cc1211237cff29e349851b21121c29d776"
+                "reference": "35db193a88f150e64951ebd29b4a294a91d87dbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/scout/zipball/86c406cc1211237cff29e349851b21121c29d776",
-                "reference": "86c406cc1211237cff29e349851b21121c29d776",
+                "url": "https://api.github.com/repos/laravel/scout/zipball/35db193a88f150e64951ebd29b4a294a91d87dbd",
+                "reference": "35db193a88f150e64951ebd29b4a294a91d87dbd",
                 "shasum": ""
             },
             "require": {
@@ -3483,7 +3517,7 @@
                 "laravel",
                 "search"
             ],
-            "time": "2021-08-10T17:36:33+00:00"
+            "time": "2021-08-17T16:06:22+00:00"
         },
         {
             "name": "laravel/socialite",
@@ -4046,16 +4080,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.1.4",
+            "version": "1.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "f3ad69181b8afed2c9edf7be5a2918144ff4ea32"
+                "reference": "18634df356bfd4119fe3d6156bdb990c414c14ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/f3ad69181b8afed2c9edf7be5a2918144ff4ea32",
-                "reference": "f3ad69181b8afed2c9edf7be5a2918144ff4ea32",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/18634df356bfd4119fe3d6156bdb990c414c14ea",
+                "reference": "18634df356bfd4119fe3d6156bdb990c414c14ea",
                 "shasum": ""
             },
             "require": {
@@ -4132,7 +4166,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2021-06-23T21:56:05+00:00"
+            "time": "2021-08-17T13:49:42+00:00"
         },
         {
             "name": "league/flysystem-aws-s3-v3",
@@ -4449,15 +4483,7 @@
                 "tumblr",
                 "twitter"
             ],
-<<<<<<< HEAD
-            "time": "2021-08-03T23:29:01+00:00"
-=======
-            "support": {
-                "issues": "https://github.com/thephpleague/oauth1-client/issues",
-                "source": "https://github.com/thephpleague/oauth1-client/tree/v1.10.0"
-            },
             "time": "2021-08-15T23:05:49+00:00"
->>>>>>> c0dc70447d4b697948b0901586ce77aef3ff99df
         },
         {
             "name": "league/omnipay",
@@ -5257,16 +5283,16 @@
         },
         {
             "name": "nette/utils",
-            "version": "v3.2.2",
+            "version": "v3.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/utils.git",
-                "reference": "967cfc4f9a1acd5f1058d76715a424c53343c20c"
+                "reference": "5c36cc1ba9bb6abb8a9e425cf054e0c3fd5b9822"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/utils/zipball/967cfc4f9a1acd5f1058d76715a424c53343c20c",
-                "reference": "967cfc4f9a1acd5f1058d76715a424c53343c20c",
+                "url": "https://api.github.com/repos/nette/utils/zipball/5c36cc1ba9bb6abb8a9e425cf054e0c3fd5b9822",
+                "reference": "5c36cc1ba9bb6abb8a9e425cf054e0c3fd5b9822",
                 "shasum": ""
             },
             "require": {
@@ -5334,7 +5360,7 @@
                 "utility",
                 "validation"
             ],
-            "time": "2021-03-03T22:53:25+00:00"
+            "time": "2021-08-16T21:05:00+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -7001,16 +7027,16 @@
         },
         {
             "name": "punic/punic",
-            "version": "3.6.0",
+            "version": "3.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/punic/punic.git",
-                "reference": "09e770d16d080d499233e6d8ee9c4225bca2e68b"
+                "reference": "046917d7bb931ab944c0995898608491820fcdf9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/punic/punic/zipball/09e770d16d080d499233e6d8ee9c4225bca2e68b",
-                "reference": "09e770d16d080d499233e6d8ee9c4225bca2e68b",
+                "url": "https://api.github.com/repos/punic/punic/zipball/046917d7bb931ab944c0995898608491820fcdf9",
+                "reference": "046917d7bb931ab944c0995898608491820fcdf9",
                 "shasum": ""
             },
             "require": {
@@ -7080,7 +7106,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-06-23T13:27:07+00:00"
+            "time": "2021-08-18T16:25:23+00:00"
         },
         {
             "name": "r0bdiablo/laravel5-phumbor",
@@ -8182,16 +8208,16 @@
         },
         {
             "name": "staudenmeir/laravel-adjacency-list",
-            "version": "v1.7",
+            "version": "v1.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/staudenmeir/laravel-adjacency-list.git",
-                "reference": "6edd164c70a6329a5baa33fa82c712c1f40e9233"
+                "reference": "404635500028609c011d89bf65d435e804d7db3c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/staudenmeir/laravel-adjacency-list/zipball/6edd164c70a6329a5baa33fa82c712c1f40e9233",
-                "reference": "6edd164c70a6329a5baa33fa82c712c1f40e9233",
+                "url": "https://api.github.com/repos/staudenmeir/laravel-adjacency-list/zipball/404635500028609c011d89bf65d435e804d7db3c",
+                "reference": "404635500028609c011d89bf65d435e804d7db3c",
                 "shasum": ""
             },
             "require": {
@@ -8220,33 +8246,26 @@
                 }
             ],
             "description": "Recursive Laravel Eloquent relationships with CTEs",
-<<<<<<< HEAD
-=======
-            "support": {
-                "issues": "https://github.com/staudenmeir/laravel-adjacency-list/issues",
-                "source": "https://github.com/staudenmeir/laravel-adjacency-list/tree/v1.7"
-            },
->>>>>>> c0dc70447d4b697948b0901586ce77aef3ff99df
             "funding": [
                 {
                     "url": "https://paypal.me/JonasStaudenmeir",
                     "type": "custom"
                 }
             ],
-            "time": "2021-08-15T15:49:55+00:00"
+            "time": "2021-08-18T07:27:42+00:00"
         },
         {
             "name": "staudenmeir/laravel-cte",
-            "version": "v1.4.1",
+            "version": "v1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/staudenmeir/laravel-cte.git",
-                "reference": "7d67ba48fc3165640d1ac028e2d0605f634cc679"
+                "reference": "edb3968cf636ef861125834a643cefb725590769"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/staudenmeir/laravel-cte/zipball/7d67ba48fc3165640d1ac028e2d0605f634cc679",
-                "reference": "7d67ba48fc3165640d1ac028e2d0605f634cc679",
+                "url": "https://api.github.com/repos/staudenmeir/laravel-cte/zipball/edb3968cf636ef861125834a643cefb725590769",
+                "reference": "edb3968cf636ef861125834a643cefb725590769",
                 "shasum": ""
             },
             "require": {
@@ -8254,8 +8273,9 @@
                 "php": "^7.3|^8.0"
             },
             "require-dev": {
-                "laravel/homestead": "^11.0",
-                "orchestra/testbench": "^6.0"
+                "laravel/homestead": "^11.0|^12.0",
+                "orchestra/testbench": "^6.0",
+                "scrutinizer/ocular": "^1.8"
             },
             "type": "library",
             "extra": {
@@ -8281,7 +8301,7 @@
                 }
             ],
             "description": "Laravel queries with common table expressions",
-            "time": "2020-11-25T19:09:26+00:00"
+            "time": "2021-08-18T19:46:22+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -11533,16 +11553,16 @@
         },
         {
             "name": "facade/ignition",
-            "version": "2.11.2",
+            "version": "2.11.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/facade/ignition.git",
-                "reference": "7c4e7a7da184cd00c7ce6eacc590200bb9672de7"
+                "reference": "1b8d83c5dac7c5ee8429daf284ce3f19b1d17ea2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/facade/ignition/zipball/7c4e7a7da184cd00c7ce6eacc590200bb9672de7",
-                "reference": "7c4e7a7da184cd00c7ce6eacc590200bb9672de7",
+                "url": "https://api.github.com/repos/facade/ignition/zipball/1b8d83c5dac7c5ee8429daf284ce3f19b1d17ea2",
+                "reference": "1b8d83c5dac7c5ee8429daf284ce3f19b1d17ea2",
                 "shasum": ""
             },
             "require": {
@@ -11599,7 +11619,7 @@
                 "laravel",
                 "page"
             ],
-            "time": "2021-07-20T14:01:22+00:00"
+            "time": "2021-08-17T11:45:33+00:00"
         },
         {
             "name": "facade/ignition-contracts",

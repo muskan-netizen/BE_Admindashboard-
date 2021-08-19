@@ -640,6 +640,7 @@ class OrderController extends FrontController
             $order->subscription_discount = $total_subscription_discount;
             $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
             $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
+            $order->scheduled_date_time = $cart->scheduled_date_time;
             $order->payable_amount = $payable_amount;
             $order->save();
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
@@ -647,6 +648,7 @@ class OrderController extends FrontController
             }
             // $this->sendOrderNotification($user->id, $vendor_ids);
             $this->sendSuccessEmail($request, $order);
+            Cart::where('id', $cart->id)->update(['schedule_type'=>NULL, 'scheduled_date_time'=>NULL]);
             CartAddon::where('cart_id', $cart->id)->delete();
             CartCoupon::where('cart_id', $cart->id)->delete();
             CartProduct::where('cart_id', $cart->id)->delete();

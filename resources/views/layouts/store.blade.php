@@ -12,7 +12,24 @@
     }
   </style>
 </head>
-<body class="{{session()->has('config_theme') ? session()->get('config_theme') : ''}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
+@php
+$dark_mode = '';
+if($client_preference_detail->show_dark_mode == 0){
+  $dark_mode = '';
+}
+else if($client_preference_detail->show_dark_mode == 1){
+  $dark_mode = 'dark';
+}
+else if($client_preference_detail->show_dark_mode == 2){
+  if(session()->has('config_theme')){
+    $dark_mode = session()->get('config_theme');
+  }
+  else{
+    $dark_mode = '';
+  }
+}
+@endphp
+<body class="{{$dark_mode}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
   
   @yield('content')
   @include('layouts.store/footer-content')

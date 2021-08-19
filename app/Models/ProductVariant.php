@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
+use Auth;
+use Session;
 
 class ProductVariant extends Model
 {
@@ -67,7 +70,16 @@ class ProductVariant extends Model
     }
 
     public function checkIfInCart()
-    {
-        return $this->hasMany('App\Models\CartProduct', 'variant_id', 'id');
+    { 
+        $user = Auth::user();
+        if ($user) {
+            $column = 'user_id';
+            $value = $user->id;
+        } else {
+            $column = 'unique_identifier';
+            $value = session()->get('_token');
+        }
+
+        return $this->hasMany('App\Models\CartProduct', 'variant_id', 'id')->whereHas('cart',function($qset)use($column,$value){$qset->where($column,$value);});;
     }
 }

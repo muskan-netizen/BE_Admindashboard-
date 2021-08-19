@@ -39,7 +39,35 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card card-box">
+                <ul class="pl-0 mb-0">
+                    <li class="d-flex flex-column justify-content-start mt-2">
+                        <h4 class="header-title mb-2">Show Dark Mode</h4>
+                        <div class="form-group">
+                            <ul class="list-inline">
+                                <li class="d-inline-block ml-3 mr-4">
+                                    <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('0')" id="option1" name="show_dark_mode" {{$client_preferences->show_dark_mode == 0 ? 'checked' : ''}}>
+                                    <label class="custom-control-label" for="option1">Day</label>
+                                </li>
+                                <li class="d-inline-block mr-4">
+                                    <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('1')" id="option2" name="show_dark_mode" {{$client_preferences->show_dark_mode == 1 ? 'checked' : ''}}>
+                                    <label class="custom-control-label" for="option2">Night</label>
+                                </li>
+                                <li class="d-inline-block mr-4">
+                                    <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('2')" id="option3" name="show_dark_mode" {{$client_preferences->show_dark_mode == 2 ? 'checked' : ''}}>
+                                    <label class="custom-control-label" for="option3">Day with Toggle</label>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- <div class="mb-0">
+                            <input type="checkbox" id="show_dark_mode" data-plugin="switchery" name="show_dark_mode" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_dark_mode == 1 ? 'checked' : ''}}>
+                        </div> -->
+                    </li>
+                </ul>
+            </div>
         </div>
+        
 
         <div class="col-md-4 col-xl-3">
             <div class="card card-box">
@@ -97,6 +125,9 @@
             </div>
         </div>
     </div>
+
+   
+
     <div class="row">
         <div class="col-xl-8">
             <div class="card-box home-options-list">
@@ -118,9 +149,9 @@
                         <li class="dd-item dd3-item d-flex align-items-center" data-id="1" data-row-id="{{$home_page_label->id}}">
                             <a herf="#" class="dd-handle dd3-handle d-block mr-auto">
                                 @if($home_page_label->slug == "vendors")
-                                    {{getNomenclatureName('Vendors', true)}}
+                                {{getNomenclatureName('Vendors', true)}}
                                 @else
-                                    {{$home_page_label->title}}
+                                {{$home_page_label->title}}
                                 @endif
                             </a>
                             <div class="language-inputs style-4">
@@ -204,6 +235,33 @@
     $("#image").change(function() {
         submitData();
     });
+
+    function submitDarkMmode(id) {
+        var data_uri = "{{route('styling.updateDarkMode')}}";
+        console.log(id);
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: data_uri,
+            data: {
+                show_dark_mode: id
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status == 'success') {
+                    console.log(response.message);
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                }
+            }
+        });
+    }
 
     function submitData() {
         var form = document.getElementById('favicon-form');

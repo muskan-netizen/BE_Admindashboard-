@@ -120,4 +120,22 @@ class WebStylingController extends BaseController{
             'message' => 'Home Page Labels order updated Successfully!',
         ]);
     }
+
+     /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateDarkMode(Request $request){
+        $client_preferences = ClientPreference::first();
+        if($client_preferences){
+            $client_preferences->show_dark_mode = $request->show_dark_mode;
+            $client_preferences->save();
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Web Styling Updated Successfully!'
+        ]);
+    }
 }

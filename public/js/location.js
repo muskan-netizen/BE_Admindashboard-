@@ -326,15 +326,16 @@ $(document).ready(function () {
         if(vtype != ''){
             vendor_type = vtype;
         }
-        // console.log(vendor_type);
         let selected_address = $("#address-input").val();
-        $("#location_search_wrapper .homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
+        let selected_place_id = $("#address-place-id").val();
+        $(".homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
         $("#edit-address").modal('hide');
         let ajaxData = { type: vendor_type };
         if ((latitude) && (longitude) && (selected_address)) {
             ajaxData.latitude = latitude;
             ajaxData.longitude = longitude;
             ajaxData.selectedAddress = selected_address;
+            ajaxData.selectedPlaceId = selected_place_id;
         }
         $.ajax({
             data: ajaxData,
@@ -431,12 +432,9 @@ $(document).ready(function () {
         }
         let lat = $("#address-latitude").val();
         let long = $("#address-longitude").val();
-        displayLocation(lat, long);
+        let placeId = $("#address-place-id").val();
+        displayLocation(lat, long, placeId);
     }
-
-    // $(document).on('click', '#location_search_wrapper .dropdown-menu', function (e) {
-    //     e.stopPropagation();
-    // });
 
     $(document).delegate(".confirm_address_btn", "click", function () {
         let latitude = $("#address-latitude").val();
@@ -454,6 +452,8 @@ $(document).ready(function () {
                         $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
                     } else {
                         getHomePage(latitude, longitude);
+                        let selected_address = $("#address-input").val();
+                        $(".homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
                     }
                 } else {
                     getHomePage(latitude, longitude);
@@ -488,7 +488,7 @@ $(document).ready(function () {
         });
     }
 
-    function displayLocation(latitude, longitude) {
+    function displayLocation(latitude, longitude, placeId='') {
         var geocoder;
         geocoder = new google.maps.Geocoder();
         var latlng = new google.maps.LatLng(latitude, longitude);
@@ -503,8 +503,12 @@ $(document).ready(function () {
             position: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
         });
 
-        geocoder.geocode(
-            { 'latLng': latlng },
+        var geodata = { 'latLng': latlng };
+        if(placeId != ''){
+            geodata.placeId = placeId;
+        }
+
+        geocoder.geocode(geodata,
             function (results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
                     if (results[0]) {
@@ -515,9 +519,9 @@ $(document).ready(function () {
                         country = value[count - 1];
                         state = value[count - 2];
                         city = value[count - 3];
-                        $("#address-input").val(add);
-                        $("#location_search_wrapper .homepage-address span").text(value).attr({ "title": value, "data-original-title": value });
                         if (!selected_address) {
+                            $("#address-input").val(add);
+                            $(".homepage-address span").text(value).attr({ "title": value, "data-original-title": value });
                             getHomePage(latitude, longitude);
                         }
                     }
@@ -589,7 +593,8 @@ function initMap() {
                 if (status === google.maps.GeocoderStatus.OK) {
                     const lat = results[0].geometry.location.lat();
                     const lng = results[0].geometry.location.lng();
-                    $(".homepage-address span").text(place.formatted_address);
+                    $("#address-place-id").val(place.place_id);
+                    // $(".homepage-address span").text(place.formatted_address);
                     setLocationCoordinates(autocomplete.key, lat, lng);
                 }
             });

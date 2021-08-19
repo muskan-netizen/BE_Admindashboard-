@@ -195,11 +195,11 @@
                         @if($product->category->categoryDetail->type_id != 8)
                         <div class="col-sm-4">
                             {!! Form::label('title', 'Track Inventory') !!} <br>
-                            <input type="checkbox" bid="" id="has_inventory" data-plugin="switchery" name="has_inventory" class="chk_box" data-color="#43bee1" checked>
+                            <input type="checkbox" bid="" id="has_inventory" data-plugin="switchery" name="has_inventory" class="chk_box" data-color="#43bee1" {{$product->has_inventory == 1 ? 'checked' : ''}}>
                         </div>
                         @endif
 
-                        <div class="col-sm-8 check_inventory">
+                        <div class="col-sm-8 check_inventory {{$product->has_inventory == 0 ? 'd-none' : ''}}">
                             <div class="row">
                                 @if($product->category->categoryDetail->type_id != 8)
                                 @if($product->has_variant == 0)
@@ -673,7 +673,7 @@
             height: 120,
             toolbar: [
                 ['style', ['style']],
-                ['color', ['color']],
+                // ['color', ['color']],
                 ['table', ['table']],
                 ['para', ['ul', 'ol', 'paragraph']],
                 ['font', ['bold', 'underline', 'clear']],

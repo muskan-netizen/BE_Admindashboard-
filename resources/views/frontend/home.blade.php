@@ -121,9 +121,9 @@
                     <div class="title1">
                         <!-- <h2 class="title-inner1 mb-0">{{ $homePageLabel->slug == 'vendors' ? getNomenclatureName('vendors', true) :  __($homePageLabel->title) }}</h2> -->
                     </div>
-                    <!-- @if($homePageLabel->slug == 'vendors')
+                    @if($homePageLabel->slug == 'vendors')
                     <a class="view_more_items" href="{{route('vendor.all')}}">{{__('View More')}}</a>
-                    @endif -->
+                    @endif
                 </div>
             </div>
             <div class="row">

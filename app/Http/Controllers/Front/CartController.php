@@ -400,9 +400,9 @@ class CartController extends FrontController
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         if ($user) {
-            $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
         } else {
-            $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
         }
         if ($cart) {
             $cart_details = $this->getCart($cart);
@@ -500,6 +500,8 @@ class CartController extends FrontController
                     $subscription_features[] = $feature->feature_id;
                 }
             }
+
+            $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
         }
         $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = 0.00;
         if ($cartData) {
@@ -769,9 +771,9 @@ class CartController extends FrontController
         $langId = Session::get('customerLanguage');
         $address_id = 0;
         if ($user) {
-            $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
         } else {
-            $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
         }
         if (isset($request->address_id) && !empty($request->address_id)) {
             $address_id = $request->address_id;
@@ -862,6 +864,30 @@ class CartController extends FrontController
                 $cartData = CartProduct::where('cart_id', $cart->id)->where('vendor_id', $request->vendor)->update(['vendor_dinein_table_id' => $request->table]);
                 DB::commit();
                 return response()->json(['status'=>'Success', 'message'=>'Table has been selected']);
+            }
+            else{
+                return response()->json(['status'=>'Error', 'message'=>'Invalid user']);
+            }
+        }
+        catch(\Exception $ex){
+            DB::rollback();
+            return response()->json(['status'=>'Error', 'message'=>$ex->getMessage()]);
+        }
+    }
+
+    public function updateSchedule(Request $request, $domain = ''){
+        try{
+            $user = Auth::user();
+            if ($user) {
+                DB::beginTransaction();
+                if($request->task_type == 'now'){
+                    $request->schedule_dt = Carbon::now()->format('Y-m-d H:i:s');
+                }else{
+                    $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
+                Cart::where('status', '0')->where('user_id', $user->id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt]);
+                DB::commit();
+                return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
             }
             else{
                 return response()->json(['status'=>'Error', 'message'=>'Invalid user']);

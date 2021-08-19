@@ -26,6 +26,11 @@ class UserhomeController extends FrontController{
             Session::forget('config_theme'); 
         }
     }
+    public function getConfig(){
+        $client_preferences = ClientPreference::first();
+        return response()->json(['success'=>true, 'client_preferences' => $client_preferences]);
+       dd("neskjbf");
+    }
     /**
      * Display a listing of the resource.
      *
@@ -106,6 +111,7 @@ class UserhomeController extends FrontController{
             $longitude = Session::get('longitude');
         }
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
+        $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
         $preferences = Session::get('preferences');
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
@@ -124,6 +130,10 @@ class UserhomeController extends FrontController{
                 Session::put('latitude', $latitude);
                 Session::put('longitude', $longitude);
                 Session::put('selectedAddress', $selectedAddress);
+            }else{
+                if( ($latitude == $preferences->Default_latitude) && ($longitude == $preferences->Default_longitude) ){
+                    Session::put('selectedAddress', $preferences->Default_location_name);
+                }
             }
             if(($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude) ){
                 $vendors = $vendors->whereHas('serviceArea', function($query) use($latitude, $longitude){

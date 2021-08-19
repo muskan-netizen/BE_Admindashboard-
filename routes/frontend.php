@@ -52,6 +52,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('page/{slug}','Front\UserhomeController@getExtraPage')->name('extrapage');
 	Route::post('/homePageData','Front\UserhomeController@postHomePageData')->name('homePageData');
 	Route::post('/theme','Front\UserhomeController@setTheme')->name('config.update');
+	Route::get('/getConfig','Front\UserhomeController@getConfig')->name('config.get');
 	Route::post('getClientPreferences', 'Front\UserhomeController@getClientPreferences')->name('getClientPreferences');
 	Route::post('validateEmail','Front\CustomerAuthController@validateEmail')->name('validateEmail');
 	Route::post('user/loginData','Front\CustomerAuthController@login')->name('customer.loginData');
@@ -70,6 +71,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('add/wishlist/cart','Front\CartController@addWishlistToCart')->name('addWishlistToCart');
 	Route::post('add/vendorTable/cart','Front\CartController@addVendorTableToCart')->name('addVendorTableToCart');
 	Route::post('add/product/prescription','Front\CartController@uploadPrescription')->name('cart.uploadPrescription');
+	Route::post('cart/schedule/update','Front\CartController@updateSchedule')->name('cart.updateSchedule');
 	Route::get('cartProducts','Front\CartController@getCartData')->name('getCartProducts');
 	Route::get('cartDetails','Front\CartController@getCartProducts')->name('cartDetails');
 	Route::post('cartDelete','Front\CartController@emptyCartData')->name('emptyCartData');

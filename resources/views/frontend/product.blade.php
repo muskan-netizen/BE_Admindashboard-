@@ -146,6 +146,9 @@
                                     <h2 class="mb-0">
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                     </h2>
+                                    <h6 class="sold-by">
+                                        <b> <img src="{{$product->vendor->logo['proxy_url']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="#"><b> {{$product->vendor->name}} </b></a>
+                                    </h6>
                                     @if($client_preference_detail)
                                         @if($client_preference_detail->rating_check == 1)  
                                             @if($product->averageRating > 0)
@@ -201,7 +204,7 @@
                                     </div>
                                     <div id="product_variant_quantity_wrapper">
                                         @if($product->inquiry_only == 0)
-                                        <div class="product-description border-product">
+                                        <div class="product-description border-product pb-0">
                                             <h6 class="product-title mt-0">{{__('Quantity')}}:
                                                 @if(!$product->variant[0]->quantity > 0)
                                                     <span id="outofstock" style="color: red;">{{__('Out of Stock')}}</span>
@@ -227,6 +230,7 @@
                                             @endif
                                         </div>
                                         @endif
+                                       
                                     </div>
                                     
                                     @if(!empty($product->addOn) && $product->addOn->count() > 0)
@@ -285,12 +289,13 @@
                                     <div class="border-product">
                                         <h6 class="product-title">{{__('Share It')}}</h6>
                                         <div class="product-icon w-100">
-                                            <ul class="product-social">
-                                                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                                                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                                                <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-                                                <li><a href="#"><i class="fa fa-instagram"></i></a></li>
-                                            </ul>
+                                            <!-- <ul class="product-social"> -->
+                                                {!! $shareComponent !!}
+                                                <!-- <li><a href="#"><i class="fa fa-twitter"></i></a></li> -->
+                                                <!-- <li><a href="#"><i class="fa fa-facebook"></i></a></li> -->
+                                                <!-- <li><a href="#"><i class="fa fa-google-plus"></i></a></li> -->
+                                                <!-- <li><a href="#"><i class="fa fa-instagram"></i></a></li> -->
+                                            <!-- </ul>   -->
                                         </div>
                                     </div>
                                 </div>
@@ -571,6 +576,8 @@
 </div>
 @endsection
 @section('script')
+<!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script> -->
+<script src="{{ asset('js/share.js') }}"></script>
 <script>
     $(document).on('click', '.submitInquiryForm', function(e) {
         e.preventDefault();

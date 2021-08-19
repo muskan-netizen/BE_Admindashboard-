@@ -1,65 +1,61 @@
-<div class="modal fade" id="standard-modal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg" style="min-width: 530px;">
+<div class="modal fade standard_modal" id="standard-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header py-3 px-4 border-bottom-0 d-block">
+            <div class="modal-header py-3 px-3 border-bottom-0 d-block">
                 <button type="button" class="close" data-dismiss="modal"
                     aria-hidden="true">&times;</button>
                 <h5 class="modal-title" id="modal-title">Book Slot</h5>
             </div>
-            <div class="modal-body p-4">
+            <div class="modal-body px-3 pb-3 pt-0">
                 <form class="needs-validation" name="slot-form" id="slot-event" action="{{ route('vendor.saveSlot', $vendor->id) }}" method="post">
                     @csrf
                     <div class="row mb-2">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label">Start Time(24 hours format)</label>
                                 <input class="form-control" placeholder="Start Time" type="text" name="start_time" id="start_time" required />
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label">End Time(24 hours format)</label>
                                 <input class="form-control" placeholder="End Time" type="text" name="end_time" id="end_time" required />
                             </div>
                         </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-md-2"></div>
-                        <div class="col-md-10 slotForDiv">
+
+                        <div class="col-md-6 slotForDiv">
                             {!! Form::label('title', 'Slot For',['class' => 'control-label']) !!} 
                             <div class="form-group">
                                 <ul class="list-inline">
-                                    <li class="d-inline-block mr-2">
+                                    <li class="d-inline-block ml-3 mb-1 custom-radio-design">
                                         <input type="radio" class="custom-control-input check slotTypeRadio" id="slotDay" name="stot_type" value="day" checked="">
                                         <label class="custom-control-label" for="slotDay">Days&nbsp;&nbsp;&nbsp;&nbsp;</label>
                                     </li>
-                                    <li class="d-inline-block">
+                                    <li class="d-inline-block ml-3 mb-1 custom-radio-design">
                                         <input type="radio" class="custom-control-input check slotTypeRadio" id="slotDate" name="stot_type" value="date">
                                         <label class="custom-control-label" for="slotDate">Date</label>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="">
                                 {!! Form::label('title', 'Slot Type',['class' => 'control-label']) !!} 
                             </div>
                             @if($vendor->dine_in == 1)
-                                <div class="checkbox checkbox-success form-check-inline"  @if($client_preferences->dinein_check == 0) style="display: none;" @endif>
+                                <div class="checkbox checkbox-success form-check pl-0 mb-1"  @if($client_preferences->dinein_check == 0) style="display: none;" @endif>
                                     <input name="slot_type[]" type="checkbox" id="dine_in" checked value="dine_in">
                                     <label for="dine_in"> Dine in </label>
                                 </div>
                             @endif
                             @if($vendor->takeaway == 1)
-                                <div class="checkbox checkbox-success form-check-inline"  @if($client_preferences->takeaway_check == 0) style="display: none;" @endif >
+                                <div class="checkbox checkbox-success form-check pl-0 mb-1"  @if($client_preferences->takeaway_check == 0) style="display: none;" @endif >
                                     <input name="slot_type[]" type="checkbox" id="takeaway" checked value="takeaway">
                                     <label for="takeaway"> Takeaway </label>
                                 </div>
                             @endif
                             @if($vendor->delivery == 1)
-                                <div class="checkbox checkbox-success form-check-inline"  @if($client_preferences->delivery_check == 0) style="display: none;" @endif>
+                                <div class="checkbox checkbox-success form-check pl-0 mb-1"  @if($client_preferences->delivery_check == 0) style="display: none;" @endif>
                                     <input name="slot_type[]" type="checkbox" id="delivery" checked value="delivery">
                                     <label for="delivery"> Delivery </label>
                                 </div>
@@ -71,31 +67,31 @@
                             <div class="">
                             {!! Form::label('title', 'Select days of week',['class' => 'control-label']) !!} 
                             </div>
-                            <div class="checkbox checkbox-success form-check-inline">
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
                                 <input name="week_day[]" type="checkbox" id="day_1" value="1">
                                 <label for="day_1"> Sunday </label>
                             </div>
-                            <div class="checkbox checkbox-success form-check-inline">
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
                                 <input name="week_day[]" type="checkbox" id="day_2" value="2">
                                 <label for="day_2"> Monday </label>
                             </div>
-                            <div class="checkbox checkbox-success form-check-inline">
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
                                 <input name="week_day[]" type="checkbox" id="day_3" value="3">
                                 <label for="day_3"> Tuesday </label>
                             </div>
-                            <div class="checkbox checkbox-success form-check-inline">
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
                                 <input name="week_day[]" type="checkbox" id="day_4" value="4">
                                 <label for="day_4"> Wednesday </label>
                             </div>
-                            <div class="checkbox checkbox-success form-check-inline">
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
                                 <input name="week_day[]" type="checkbox" id="day_5" value="5">
                                 <label for="day_5"> Thursday </label>
                             </div>
-                            <div class="checkbox checkbox-success form-check-inline">
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
                                 <input name="week_day[]" type="checkbox" id="day_6" value="6">
                                 <label for="day_6"> Friday </label>
                             </div>
-                            <div class="checkbox checkbox-success form-check-inline">
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
                                 <input name="week_day[]" type="checkbox" id="day_7" value="7">
                                 <label for="day_7"> Saturday </label>
                             </div>
@@ -123,9 +119,8 @@
                             </div>
                         </div> -->
                     </div>
-                    <div class="row mt-2">
-                        
-                        <div class="col-12 text-right">
+                    <div class="row mt-2">                        
+                        <div class="col-12 d-sm-flex justify-content-between">
                             <button type="button" class="btn btn-light mr-1" data-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-info" id="btn-save-slot">Save</button>
                         </div>

@@ -1,6 +1,6 @@
 @php
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
-$urlImg =  $clientData ? $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'] : " ";
+$urlImg =  $clientData ? $clientData->logo['image_fit'].'200/140'.$clientData->logo['image_path'] : " ";
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
@@ -12,7 +12,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
   @endif
         <div class="container main-menu d-block">
             <div class="row align-items-center py-md-2 position-initial">
-                <div class="col-lg-1 col-3">
+                <div class="col-lg-2 col-3">
                     <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                 </div>
                 <div class="col-lg-5 main-menu d-block order-lg-1 order-2">
@@ -52,7 +52,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         @endif 
                     </div>
                 </div>
-                <div class="col-lg-6 col-9 order-lg-2 order-1 position-initial">                
+                <div class="col-lg-5 col-9 order-lg-2 order-1 position-initial">                
                     <div class="search_bar menu-right d-flex align-items-center justify-content-end justify-content-lg-between w-100 ">
                         <div class="radius-bar">
                             <div class="search_form d-flex align-items-center justify-content-between">
@@ -171,9 +171,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                             <li><a href="#">doller</a></li>
                                         </ul>
                                         <h6>Change Theme</h6>
+                                        @if($client_preference_detail->show_dark_mode == 1)
                                         <ul class="list-inline">
                                             <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
                                         </ul>
+                                        @endif
                                     </div>
                                 </li>
                                 <li class="onhover-div mobile-cart">
@@ -280,6 +282,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <input class="form-control border-0 map-input" type="text" name="address-input" id="address-input" value="{{session('selectedAddress')}}">
                     <input type="hidden" name="address_latitude" id="address-latitude" value="{{session('latitude')}}" />
                     <input type="hidden" name="address_longitude" id="address-longitude" value="{{session('longitude')}}" />
+                    <input type="hidden" name="address_place_id" id="address-place-id" value="{{session('selectedPlaceId')}}" />
                 </div>
             </div>
             <div class="text-center">

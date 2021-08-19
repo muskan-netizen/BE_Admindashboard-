@@ -469,6 +469,7 @@ class VendorController extends BaseController
             $vendor->add_category = $request->can_add_category == 'true' ? 1 : 0;
             $vendor->save();
         } elseif ($request->has('assignTo')) {
+            // dd($request->all());
             $vendor = Vendor::where('id', $request->vendor_id)->firstOrFail();
             $vendor->vendor_templete_id = $request->assignTo;
             $vendor->save();

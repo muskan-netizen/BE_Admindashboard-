@@ -8,6 +8,7 @@ use App\Models\Client;
 use Illuminate\Bus\Queueable;
 use App\Models\ClientPreference;
 use App\Mail\VendorRegistrationMail;
+use Exception;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -42,7 +43,11 @@ class sendVendorRegistrationEmail implements ShouldQueue{
      */
     public function handle(){
         $email = new VendorRegistrationMail($this->details);
-        Mail::to($this->details['email'])->send($email);
+        try{
+            Mail::to($this->details['email'])->send($email);
+        }catch(Exception $e){
+
+        }
     }
     public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){
         $config = array(

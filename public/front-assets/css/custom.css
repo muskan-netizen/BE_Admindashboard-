@@ -719,6 +719,12 @@ form .btn {
     margin: auto;
 }
 
+.sold-by img {
+    height: 30px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
 /* .remove-item-modal .close {
     position: absolute;
     right: -25px;
@@ -2279,7 +2285,6 @@ footer .form-control {
 }
 
 .text-36 {
-    color: #1F2431;
     font-size: 30px;
     font-weight: 800;
     letter-spacing: 0;
@@ -4357,6 +4362,11 @@ input.form-control.pac-target-input.gm-err-autocomplete {
 
   
 /* Classes Page Css */
+.product-order span.ellips {
+    width: 170px;
+    max-width: 100%;
+}
+
 .class_img {
     height: 120px;
     width: 100%;
@@ -4547,8 +4557,13 @@ input.form-control.pac-target-input.gm-err-autocomplete {
 }
 
 
+#social-links li {
+    margin-right: 20px;
+}
 
-
+#social-links li:last-child {
+    margin-right: 0;
+}
 
 
 

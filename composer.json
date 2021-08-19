@@ -25,6 +25,7 @@
         "guzzlehttp/guzzle": "^6.3.1|^7.0.1",
         "intervention/image": "^2.5",
         "jackiedo/timezonelist": "5.*",
+        "jorenvanhocht/laravel-share": "^4.1",
         "kawankoding/laravel-fcm": "^0.2.0",
         "kreait/laravel-firebase": "^3.1",
         "kutia-software-company/larafirebase": "^1.3",

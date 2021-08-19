@@ -97,12 +97,12 @@ class HomeController extends BaseController{
             $user_geo[] = $longitude;
             if($request->has('type') ){
                 if($request->type == ''){
-                    $vendorData = Vendor::select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount');
+                    $vendorData = Vendor::select('id', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')->withAvg('product', 'averageRating');
                 }else{
-                    $vendorData = Vendor::select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount')->where($request->type, 1);
+                    $vendorData = Vendor::select('id', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')->withAvg('product', 'averageRating')->where($request->type, 1);
                 }
             }else{
-                $vendorData = Vendor::select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount');
+                $vendorData = Vendor::select('id', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')->withAvg('product', 'averageRating');
             }
             if($preferences->is_hyperlocal == 1){
                 if( (empty($latitude)) && (empty($longitude)) ){
@@ -119,7 +119,7 @@ class HomeController extends BaseController{
             $vendorData = $vendorData->where('status', '!=', $this->field_status)->get();
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
-                $vendor->is_show_category = ($vendor->vendor_templete_id == 1) ? 0 : 1;
+                $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
             }
             foreach ($vendorData as $key => $value) {
                 $vends[] = $value->id;

@@ -147,7 +147,29 @@ class ProductController extends FrontController{
                 $vendor_info->show_slot_option = 0;
             }
         }
-        return view('frontend.product')->with(['sets' => $sets, 'vendor_info' => $vendor_info, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn]);
+        if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')   
+                $url = "https://";   
+        else  
+                $url = "http://";   
+        // Append the host(domain name, ip) to the URL.   
+        $url.= $_SERVER['HTTP_HOST'];   
+        
+        // Append the requested resource location to the URL   
+        $url.= $_SERVER['REQUEST_URI'];    
+            
+        $shareComponent = \Share::page(
+            $url,
+            'Your share text comes here',
+        )
+        ->facebook()
+        ->twitter()
+        // ->linkedin()
+        // ->telegram()
+        ->whatsapp();      
+        // ->reddit();
+
+        // dd($shareComponent);
+        return view('frontend.product')->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor_info, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn]);
     }
     public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = []){
         if(empty($productArray)){

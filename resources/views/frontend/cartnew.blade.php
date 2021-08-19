@@ -9,6 +9,14 @@
 @endsection
 
 @section('content')
+@php
+    $now = \Carbon\Carbon::now()->format('Y-m-d\TH:i');
+    if(Auth::user()){
+        $timezone = Auth::user()->timezone;
+        $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
+    }
+@endphp
+
 <style type="text/css">
     .swal2-title {
         margin: 0px;
@@ -280,18 +288,18 @@
                     <div class="login-form">
                         <ul class="list-inline">
                             <li class="d-inline-block mr-1">
-                                <input type="radio" class="custom-control-input check" id="tasknow" name="task_type" value="now" checked="">
+                                <input type="radio" class="custom-control-input check" id="tasknow" name="task_type" value="now" <%= ((cart_details.schedule_type == 'now' || cart_details.schedule_type == '' || cart_details.schedule_type == null) ? 'checked' : '') %> >
                                 <label class="custom-control-label" for="tasknow">Now</label>
                             </li>
                             <li class="d-inline-block">
-                                <input type="radio" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule">
+                                <input type="radio" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" <%= ((cart_details.schedule_type == 'schedule') ? 'checked' : '') %> >
                                 <label class="custom-control-label" for="taskschedule">Schedule</label>
                             </li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-7 datenow align-items-center justify-content-between" id="schedule_div" style="display:none!important">
-                        <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value=" ">
+                <div class="col-md-7 datenow align-items-center justify-content-between" id="schedule_div" style="<%= ((cart_details.schedule_type == 'now' || cart_details.schedule_type == '' || cart_details.schedule_type == null) ? 'display:none!important' : '') %>">
+                        <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>" min="{{ $now }}">
                     <!-- <button type="button" class="btn btn-solid"><i class="fa fa-check" aria-hidden="true"></i></button> -->
                 </div>
             </div>
@@ -551,6 +559,7 @@
     var payment_option_list_url = "{{route('payment.option.list')}}";
     var apply_promocode_coupon_url = "{{ route('verify.promocode') }}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
+    var update_cart_schedule = "{{route('cart.updateSchedule')}}";
 
     $(document).on('click', '.showMapHeader', function(){
         var lats = document.getElementById('latitude').value;

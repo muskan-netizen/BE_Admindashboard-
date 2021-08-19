@@ -29,11 +29,10 @@ class LoyaltyController extends BaseController
             $loyalty_points_earned = $loyalty_points_used = 0;
             $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
             if ($order_loyalty_points_earned_detail) {
-                $loyalty_points_earned = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned;
-                $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                $loyalty_points_earned = (!empty($order_loyalty_points_earned_detail->sum_of_loyalty_points_earned)) ? $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned : 0;
+                $loyalty_points_used = (!empty($order_loyalty_points_earned_detail->sum_of_loyalty_points_used)) ? $order_loyalty_points_earned_detail->sum_of_loyalty_points_used : 0;
             }
-            $current_loyalty = LoyaltyCard::select('name', 'image')->where('minimum_points', '<', $loyalty_points_earned)->orderBy('minimum_points', 'desc')->first();
-            // $current_loyalty = ($user_loyalty->name) ? $user_loyalty->name : '';
+            $current_loyalty = LoyaltyCard::select('name', 'image')->where('minimum_points', '<=', $loyalty_points_earned)->orderBy('minimum_points', 'desc')->first();
             $upcoming_loyalty = LoyaltyCard::select('name', 'image', 'minimum_points')->where('minimum_points', '>', $loyalty_points_earned)->get();
             if($upcoming_loyalty){
                 foreach($upcoming_loyalty as $loyalty){

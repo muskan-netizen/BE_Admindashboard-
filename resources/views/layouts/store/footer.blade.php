@@ -41,6 +41,7 @@
     var delete_cart_product_url= "{{ route('deleteCartProduct') }}";
     var change_primary_data_url = "{{ route('changePrimaryData') }}";
     var url1 = "{{ route('config.update') }}";
+    var url2 = "{{ route('config.get') }}";
     var featured_product_language = "{{ __('Featured Product') }}";
     var new_product_language = "{{ __('New Product') }}";
     var on_sale_product_language = "{{ __('On Sale') }}";
@@ -72,7 +73,6 @@
 <script src="{{asset('front-assets/js/script.js')}}"></script>
 <script src="{{asset('js/custom.js')}}"></script>
 <script src="{{asset('js/location.js')}}"></script>
-<script src="{{asset('js/cab_booking.js')}}"></script>
 <script src="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>
 <script src="{{asset('assets/libs/bootstrap-colorpicker/bootstrap-colorpicker.min.js')}}"></script>
 <script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>

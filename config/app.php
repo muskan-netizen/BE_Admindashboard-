@@ -173,6 +173,7 @@ return [
         Yajra\DataTables\DataTablesServiceProvider::class,
         Orangehill\Iseed\IseedServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
+        Jorenvh\Share\Providers\ShareServiceProvider::class,
 
 
         /*
@@ -255,6 +256,7 @@ return [
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+        'Share' => Jorenvh\Share\ShareFacade::class,
     ],
 
 ];

@@ -5,7 +5,7 @@
     </div>
     <div class="col-sm-4">
         <div class="round_img">
-            <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$user->image['proxy_url'].'1000/1000'.$user->image['image_path']}}" />
+            <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$user->image['image_fit'].'1000/1000'.$user->image['image_path']}}" />
         </div>
         <p class="text-muted text-center mt-2 mb-0">{{ __('Upload Profile Picture') }}</p>
     </div>
