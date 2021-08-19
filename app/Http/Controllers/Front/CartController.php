@@ -598,13 +598,15 @@ class CartController extends FrontController
                     } else {
                         $prod->cartImg = (isset($prod->product->media[0]) && !empty($prod->product->media[0])) ? $prod->product->media[0]->image : '';
                     }
-                    if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
-                        $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
-                        if (!empty($deliver_charge) && $delivery_count == 0) {
-                            $delivery_count = 1;
-                            $prod->deliver_charge = number_format($deliver_charge, 2, '.', '');
-                            $payable_amount = $payable_amount + $deliver_charge;
-                            $delivery_fee_charges = $deliver_charge;
+                    if($action == 'delivery'){
+                        if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
+                            $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
+                            if (!empty($deliver_charge) && $delivery_count == 0) {
+                                $delivery_count = 1;
+                                $prod->deliver_charge = number_format($deliver_charge, 2, '.', '');
+                                $payable_amount = $payable_amount + $deliver_charge;
+                                $delivery_fee_charges = $deliver_charge;
+                            }
                         }
                     }
                 }
