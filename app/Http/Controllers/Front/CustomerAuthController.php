@@ -441,8 +441,12 @@ class CustomerAuthController extends FrontController
                 'logo' => $client_detail->logo['original'],
                 'mail_from' => $client_preference->mail_from,
             ];
-            dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
-            dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
+            try{
+                dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
+                dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
+            }catch(Exception $e) {
+                
+            }
             DB::commit();
             return response()->json([
                 'status' => 'success',
