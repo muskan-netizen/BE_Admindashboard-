@@ -205,19 +205,24 @@ $timezone = Auth::user()->timezone;
                                                                     <label class="m-0">{{__('Sub Total')}}</label>
                                                                     <span>{{Session::get('currencySymbol')}}@money($order->total_amount * $clientCurrency->doller_compare)</span>
                                                                 </li>
-                                                               
+                                                                @if($order->wallet_amount_used > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Wallet')}}</label>
-                                                                    <span>--</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->wallet_amount_used * $clientCurrency->doller_compare)</span>
                                                                 </li>
+                                                                @endif
+                                                                @if($order->loyalty_amount_saved > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Loyalty Used')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->loyalty_amount_saved ? $order->loyalty_amount_saved * $clientCurrency->doller_compare : 0)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->loyalty_amount_saved * $clientCurrency->doller_compare)</span>
                                                                 </li>
+                                                                @endif
+                                                                @if($order->taxable_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Tax')}}</label>
                                                                     <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * $clientCurrency->doller_compare)</span>
                                                                 </li>
+                                                                @endif
                                                                 @if($order->tip_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Tip Amount')}}</label>
@@ -371,18 +376,24 @@ $timezone = Auth::user()->timezone;
                                                                     <label class="m-0">{{__('Sub Total')}}</label>
                                                                     <span>{{Session::get('currencySymbol')}}@money($order->total_amount + $order->total_delivery_fee * $clientCurrency->doller_compare)</span>
                                                                 </li>
+                                                                @if($order->wallet_amount_used > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Wallet')}}</label>
-                                                                    <span>--</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->wallet_amount_used * $clientCurrency->doller_compare)</span>
                                                                 </li>
+                                                                @endif
+                                                                @if($order->loyalty_amount_saved > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
-                                                                    <label class="m-0">{{__('Loyalty')}}</label>
-                                                                    <span>{{$order->loyalty_points_used ? $order->loyalty_points_used : 0}}</span>
+                                                                    <label class="m-0">{{__('Loyalty Used')}}</label>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->loyalty_amount_saved * $clientCurrency->doller_compare)</span>
                                                                 </li>
+                                                                @endif
+                                                                @if($order->taxable_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Tax')}}</label>
                                                                     <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * $clientCurrency->doller_compare)</span>
                                                                 </li>
+                                                                @endif
                                                                 @if($order->tip_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Tip Amount')}}</label>
@@ -393,6 +404,12 @@ $timezone = Auth::user()->timezone;
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Subscription Discount')}}</label>
                                                                     <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount * $clientCurrency->doller_compare)</span>
+                                                                </li>
+                                                                @endif
+                                                                @if($order->total_delivery_fee > 0)
+                                                                <li class="d-flex align-items-center justify-content-between">
+                                                                    <label class="m-0">{{__('Delivery Fee')}}</label>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_delivery_fee * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 @endif
                                                                 <li class="grand_total d-flex align-items-center justify-content-between">
@@ -527,18 +544,24 @@ $timezone = Auth::user()->timezone;
                                                                 <label class="m-0">{{('Sub Total')}}</label>
                                                                 <span>{{Session::get('currencySymbol')}}@money($order->total_amount + $order->total_delivery_fee * $clientCurrency->doller_compare)</span>
                                                             </li>
+                                                            @if($order->wallet_amount_used > 0)
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{__('Wallet')}}</label>
-                                                                <span>--</span>
+                                                                <span>{{Session::get('currencySymbol')}}@money($order->wallet_amount_used * $clientCurrency->doller_compare)</span>
                                                             </li>
+                                                            @endif
+                                                            @if($order->loyalty_amount_saved > 0)
                                                             <li class="d-flex align-items-center justify-content-between">
-                                                                <label class="m-0">{{__('Loyalty')}}</label>
-                                                                <span>{{$order->loyalty_points_used ? $order->loyalty_points_used : 0}}</span>
+                                                                <label class="m-0">{{__('Loyalty Used')}}</label>
+                                                                <span>{{Session::get('currencySymbol')}}@money($order->loyalty_amount_saved * $clientCurrency->doller_compare)</span>
                                                             </li>
+                                                            @endif
+                                                            @if($order->taxable_amount > 0)
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{__('Tax')}}</label>
                                                                 <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * $clientCurrency->doller_compare)</span>
                                                             </li>
+                                                            @endif
                                                             @if($order->tip_amount > 0)
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{__('Tip Amount')}}</label>
@@ -549,6 +572,12 @@ $timezone = Auth::user()->timezone;
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{__('Subscription Discount')}}</label>
                                                                 <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount * $clientCurrency->doller_compare)</span>
+                                                            </li>
+                                                            @endif
+                                                            @if($order->total_delivery_fee > 0)
+                                                            <li class="d-flex align-items-center justify-content-between">
+                                                                <label class="m-0">{{__('Delivery Fee')}}</label>
+                                                                <span>{{Session::get('currencySymbol')}}@money($order->total_delivery_fee * $clientCurrency->doller_compare)</span>
                                                             </li>
                                                             @endif
                                                             <li class="grand_total d-flex align-items-center justify-content-between">

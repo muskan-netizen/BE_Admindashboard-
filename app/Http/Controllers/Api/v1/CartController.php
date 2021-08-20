@@ -616,6 +616,21 @@ class CartController extends BaseController{
         }else{
             $cart->total_payable_amount = $total_paying  + $total_tax - $total_disc_amount - $loyalty_amount_saved;
         }
+        $wallet_amount_used = 0;
+        if($cart->user_id){
+            $user = User::find($cart->user_id);
+            if($user->balanceFloat > 0){
+                $wallet_amount_used = $user->balanceFloat;
+                if($clientCurrency){
+                    $wallet_amount_used = $user->balanceFloat * $clientCurrency->doller_compare;
+                }
+                if($wallet_amount_used > $cart->total_payable_amount){
+                    $wallet_amount_used = $cart->total_payable_amount;
+                }
+                $cart->total_payable_amount = $cart->total_payable_amount - $wallet_amount_used;
+                $cart->wallet_amount_used = $wallet_amount_used;
+            }
+        }
         $cart->deliver_status = $delivery_status;
         $cart->loyalty_amount = $loyalty_amount_saved;
         $cart->tip = array(
