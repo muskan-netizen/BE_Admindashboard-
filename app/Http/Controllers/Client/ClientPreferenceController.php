@@ -249,7 +249,7 @@ class ClientPreferenceController extends BaseController{
                     $client_language->language_id = $lan;
                     $client_language->is_active = 1;
                     $client_language->save();
-                    $exist_language_id[] = $client_language;
+                    $exist_language_id[] = $client_language->language_id;
                 }
             }
             $deactivateLanguages = ClientLanguage::where('client_code',Auth::user()->code)->whereNotIn('language_id', $exist_language_id)->where('is_primary', 0)->update(['is_active' => 0]);
