@@ -24,7 +24,7 @@ class StripeGatewayController extends FrontController{
         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
         $this->gateway = Omnipay::create('Stripe');
         $this->gateway->setApiKey($api_key);
-        $this->gateway->setTestMode(true); //set it to 'false' when go live
+        $this->gateway->setTestMode(false); //set it to 'false' when go live
 
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';

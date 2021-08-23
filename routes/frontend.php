@@ -154,8 +154,12 @@ Route::group(['middleware' => ['domain', 'webAuth']], function() {
 		Route::post('update-product-return', 'Front\ReturnOrderController@updateProductReturn')->name('update.order.return');
 	});
 	// Return product 
-	Route::group(['prefix' => 'looking'], function () {
+	Route::group(['prefix' => 'looking'], function () {	
 		Route::get('/', 'Front\BookingController@index')->name('bookingIndex');
+		Route::get('details/{id}', 'Front\BookingController@bookingDetails')->name('front.booking.details');
+		Route::post('orderPlaceDetails/{id}', 'Front\BookingController@orderPlaceDetails')->name('front.booking.orderplacedetails');
+		
+		
 		Route::post('create-order', 'Front\PickupDeliveryController@createOrder');
 		Route::post('cart/updateQuantity', 'Front\CartController@updateQuantity');
 		Route::post('promo-code/list', 'Front\PickupDeliveryController@postPromoCodeList');

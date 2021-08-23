@@ -184,7 +184,7 @@ class ProductController extends BaseController
                 $celeb_ids[] = $value->celebrity_id;
             }
         }
-        $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->get();
+        $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
         $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service')->first();
         $celebrities = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
         
@@ -580,7 +580,7 @@ class ProductController extends BaseController
         $product_variant = ProductVariant::where('id', $request->product_variant_id)->where('product_id', $request->product_id)->first();
         $product_variant->status = 0;
         $product_variant->save();
-        if ($request->is_product_delete) {
+        if ($request->is_product_delete > 0) {
             Product::where('id', $request->product_id)->delete();
         }
         return response()->json(array('success' => true, 'msg' => 'Product variant deleted successfully.'));

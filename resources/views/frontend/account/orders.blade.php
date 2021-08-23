@@ -134,7 +134,7 @@ $timezone = Auth::user()->timezone;
                                                                 <div class="row">
                                                                     <div class="col-5 col-sm-3">
                                                                         <h5 class="m-0">{{__('Order Status')}}</h5>
-                                                                        <ul class="status_box mt-3 pl-0">
+                                                                        <ul class="status_box mt-3 pl-0"> 
                                                                         @if(!empty($vendor->order_status))
                                                                             <li>
                                                                                 @if($vendor->order_status == 'placed')
@@ -149,6 +149,12 @@ $timezone = Auth::user()->timezone;
                                                                                 <label class="m-0 in-progress">{{ ucfirst($vendor->order_status) }}</label>
                                                                             </li>
                                                                         @endif
+                                                                        
+                                                                        @if(!empty($vendor->dispatch_traking_url))
+                                                                            <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
+                                                                            <a href="{{route('front.booking.details',$order->order_number)}}" target="_blank">{{ __('Details') }}</a>
+                                                                        @endif
+
                                                                         </ul>
                                                                     </div>
                                                                     <div class="col-7 col-sm-4">

@@ -1,3 +1,53 @@
+   ////////   **************  cab details page  *****************  ////////
+
+   function setOrderDetailsPage() {
+    $('.address-form').addClass('d-none');
+    $('.cab-detail-box').removeClass('d-none');
+     $.ajax({
+        type: "POST",
+        dataType: 'json',
+        url: order_place_driver_details_url,
+        success: function(response) {
+            $('#pickup_now').attr('disabled', false);
+            $('#pickup_later').attr('disabled', false);
+            if(response.status == '200'){
+                $('#cab_detail_box').html('');
+                let order_success_template = _.template($('#order_success_template').html());
+                $("#cab_detail_box").append(order_success_template({result: response.data, product_image: response.data.product_image})).show();
+                setInterval(function(){
+                    getOrderDriverDetails(response.data.dispatch_traking_url)
+                },3000);
+            }
+        }
+    });
+}
+
+
+
+
+function getOrderDriverDetails(dispatch_traking_url) {
+    var new_dispatch_traking_url = dispatch_traking_url.replace('/order/','/order-details/')
+    $.ajax({
+        type:"POST",
+        dataType: "json",
+        url: order_tracking_details_url,
+        data:{new_dispatch_traking_url:new_dispatch_traking_url},
+        success: function( response ) {
+            if(response.data.agent_location != null){
+                $('#searching_main_div').remove();
+                $('#driver_details_main_div').show();
+                $('#driver_name').html(response.data.order.name).show();
+                $('#driver_image').attr('src', response.data.agent_image).show();
+                $('#driver_phone_number').html(response.data.order.phone_number).show();
+            }
+        }
+    });
+}
+
+// get driver details 
+
+
+
 $(document).ready(function () {
     var selected_address = '';
     const styles = [{"stylers":[{"visibility":"on"},{"saturation":-100},{"gamma":0.54}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"water","stylers":[{"color":"#4d4946"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"gamma":0.48}]},{"featureType":"transit.station","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"gamma":7.18}]}];
@@ -38,7 +88,7 @@ $(document).ready(function () {
         $(destination_location_latitudes).each(function(index, latitude) {
             var sample_array = {};
             sample_array.barcode = null;
-            sample_array.task_type_id = 1;
+            sample_array.task_type_id = 2;
             sample_array.post_code = null;
             sample_array.short_name = null;
             sample_array.latitude = latitude;
@@ -62,6 +112,7 @@ $(document).ready(function () {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
                 if(response.status == '200'){
+                    window.location.replace(response.data.route);
                     $('#cab_detail_box').html('');
                     let order_success_template = _.template($('#order_success_template').html());
                     $("#cab_detail_box").append(order_success_template({result: response.data, product_image: product_image})).show();
@@ -72,6 +123,10 @@ $(document).ready(function () {
             }
         });
     });
+
+ 
+ 
+
     function getDriverDetails(dispatch_traking_url) {
         var new_dispatch_traking_url = dispatch_traking_url.replace('/order/','/order-details/')
         $.ajax({
@@ -133,7 +188,7 @@ $(document).ready(function () {
         $('#pickup_location').val($(this).data('address'));
         var latitude = $(this).data('latitude');
         var longitude = $(this).data('longitude');
-        displayLocation(latitude, longitude);
+        displayLocationCab(latitude, longitude);
     });
     function getVendorList(){
         var locations = [];
@@ -440,15 +495,15 @@ $(document).ready(function () {
         let long = position.coords.longitude;
         $('#addHeader1-latitude').val(lat);
         $('#addHeader1-longitude').val(long);
-        displayLocation(lat, long);
+        displayLocationCab(lat, long);
     }
     if (!selected_address) {
         getLocation();
     }
     let lat = $("#booking-latitude").val();
     let long = $("#booking-longitude").val();
-    displayLocation(lat, long);
-    function displayLocation(latitude, longitude) {
+    displayLocationCab(lat, long);
+    function displayLocationCab(latitude, longitude) {
         var geocoder;
         geocoder = new google.maps.Geocoder();
         var latlng = new google.maps.LatLng(latitude, longitude);
@@ -565,3 +620,8 @@ function setLocationCoordinates(key, lat, lng) {
     longitudeField.value = lng;
 }
 google.maps.event.addDomListener(window, 'load', initMap);
+
+
+
+
+

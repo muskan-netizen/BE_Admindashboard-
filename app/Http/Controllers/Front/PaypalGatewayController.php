@@ -29,7 +29,7 @@ class PaypalGatewayController extends FrontController
         $this->gateway->setUsername($username);
         $this->gateway->setPassword($password);
         $this->gateway->setSignature($signature);
-        $this->gateway->setTestMode(true); //set it to 'false' when go live
+        $this->gateway->setTestMode(false); //set it to 'false' when go live
         
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';

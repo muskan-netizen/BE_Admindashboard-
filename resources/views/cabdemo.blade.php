@@ -17,18 +17,7 @@
                     <div class="where-to-go">
                         <div class="title title-36">Where can we pick you up?</div>
                     </div>
-                    <!-- <ul class="location-inputs position-relative pl-2">
-                        <li class="d-block mb-3 dots">
-                            <div class="pickup-text text-36">Where from?</div>
-                            <i class="fa fa-times ml-1" aria-hidden="true"></i>
-                        </li>
-                        <li class="d-block mb-3 dots">
-                            <input class="form-control pickup-text" type="text" placeholder="To Sector 14" />
-                            <i class="fa fa-times ml-1" aria-hidden="true"></i>
-                        </li>
-                    </ul>
-                    <a class="add-more-location position-relative pl-2" href="javascript:void(0)">Add Destination</a> -->
-                </div>
+                   </div>
 
                 <div class="location-container">
                     <div class="location-search d-flex align-items-center">

@@ -439,6 +439,7 @@ class PickupDeliveryController extends FrontController{
                 $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                 $order->save();
             }
+            $order['route'] = route('front.booking.details',$order->order_number);
             $data = [];
             $data['status'] = 200;
             $data['message'] =  'Order Placed';
@@ -469,6 +470,7 @@ class PickupDeliveryController extends FrontController{
                 $product = Product::find($request->product_id);
                 $client_do = Client::where('code',$unique)->first();
                 $call_back_url = "https://".$client_do->sub_domain.env('SUBMAINDOMAIN')."/dispatch-pickup-delivery/".$dynamic; 
+
                 $postdata =  [
                     'barcode' => '',
                     'allocation_type' => 'a',

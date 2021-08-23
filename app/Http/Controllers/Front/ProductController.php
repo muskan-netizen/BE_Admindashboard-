@@ -298,6 +298,6 @@ class ProductController extends FrontController{
                 return response()->json(array('status' => 'Success', 'variant' => $variantData, 'availableSets' => $availableSets->variantSet));
             }
         }
-        return response()->json(array('status' => 'Error', 'message' => 'This variant is currenty not available', 'availableSets' => $availableSets->variantSet));
+        return response()->json(array('status' => 'Error', 'message' => 'This option is currenty not available', 'availableSets' => $availableSets->variantSet));
     }
 }

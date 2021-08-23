@@ -274,7 +274,8 @@
                                     </div>
                                     <P id="message_of_time"></P>
                                 </div>
-
+                                <input type="hidden" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" checked>
+                          
                                 <div class="booking-time-wrapper">
                                     <h4 class="mt-4 mb-2"><b>When would you like your service?</b></h4>
                                     <textarea class="form-control" name="" id="" cols="30" rows="7"></textarea>
@@ -314,7 +315,7 @@
                                
                             @endif    
                            
-                        </div>
+                        </div> 
                     
                         <div class="footer-card">
                             @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
@@ -324,7 +325,7 @@
                             <a href="?step=3" id="next-button-ondemand-3" style="display: none;"><span class="btn btn-solid">Continue</span></a>
                             @elseif(app('request')->input('step') == '3')
                             <a href="?step=2"><span class="btn btn-solid"><</span></a>
-                            <a href="?step=3" id="next-button-ondemand-3" style="display: none;"><span class="btn btn-solid">Continue</span></a>
+                            <a href="?step=3" id="next-button-ondemand-4" style="display: none;"><span class="btn btn-solid">Continue</span></a>
                             @else
                            
                             @endif
@@ -564,7 +565,7 @@
     var apply_promocode_coupon_url = "{{ route('verify.promocode') }}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
     var getTimeSlotsForOndemand = "{{route('getTimeSlotsForOndemand')}}";
-
+    var update_cart_schedule = "{{route('cart.updateSchedule')}}";
     $(document).on('click', '.showMapHeader', function(){
         var lats = document.getElementById('latitude').value;
         var lngs = document.getElementById('longitude').value;

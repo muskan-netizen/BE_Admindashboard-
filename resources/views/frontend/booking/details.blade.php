@@ -33,17 +33,7 @@
         <div class="address-form">
             <div class="location-box">
                 <ul class="location-inputs position-relative pl-2" id="location_input_main_div">
-                    <li class="d-block mb-3 dots">
-                        <input class="form-control pickup-text" type="text" name="pickup_location_name[]" placeholder="{{__('Add A Pick-Up Location')}}" id="pickup_location"/>
-                        <input type="hidden" name="pickup_location_latitude[]" value="" id="pickup_location_latitude"/>
-                        <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude" />
-                    </li>
-                    <li class="d-block mb-3 dots">
-                        <input class="form-control pickup-text" name="destination_location_name[]" type="text" placeholder="{{__('Add A Stop')}}" id="destination_location"/>
-                        <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude" />
-                        <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude" />
-                        <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel="{{Carbon\Carbon::now()->timestamp}}"></i>
-                    </li>
+                   
                 </ul>
 
                 <a class="add-more-location position-relative pl-2" href="javascript:void(0)">{{__('Add Destination')}}</a>
@@ -238,5 +228,9 @@ var no_coupon_available_message = "{{__('No Other Coupons Available.')}}";
 var order_tracking_details_url = "{{url('looking/order-tracking-details')}}";
 var cab_booking_promo_code_remove_url = "{{url('looking/promo-code/remove')}}";
 var apply_cab_booking_promocode_coupon_url = "{{ route('verify.cab.booking.promo-code') }}";
+var order_place_driver_details_url = "{{$route}}";
+$(document).ready(function (){
+    setOrderDetailsPage();
+});
 </script>
 @endsection

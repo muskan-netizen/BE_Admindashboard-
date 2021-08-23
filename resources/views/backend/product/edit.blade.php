@@ -516,7 +516,7 @@
                             {!! Form::label('title', 'Up Cell Products',['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="up_cell[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
                                 @foreach($otherProducts as $otherProduct)
-                                <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $upSell_ids)) selected @endif>{{$otherProduct->sku}}</option>
+                                <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $upSell_ids)) selected @endif>{{$otherProduct->primary->title}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -525,7 +525,7 @@
                             {!! Form::label('title', 'Cross Cell Products',['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="cross_cell[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
                                 @foreach($otherProducts as $otherProduct)
-                                <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $crossSell_ids)) selected @endif>{{$otherProduct->sku}}</option>
+                                <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $crossSell_ids)) selected @endif>{{$otherProduct->primary->title}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -628,13 +628,13 @@
         var product_variant_id = $(this).data('varient_id');
         var rowCount = $('#product_tbody_' + product_id + ' tr').length;
         if (rowCount == 1) {
-            var is_product_delete = true;
+            var is_product_delete = 1;
             if (confirm("Are you sure? You want to delete this variant.")) {
                 removeVariant(product_id, product_variant_id, is_product_delete);
             }
         } else {
-            var is_product_delete = false;
-            if (confirm("Are you sure? You want to delete this brand.")) {
+            var is_product_delete = 0;
+            if (confirm("Are you sure? You want to delete this variant.")) {
                 removeVariant(product_id, product_variant_id, is_product_delete);
             }
         }

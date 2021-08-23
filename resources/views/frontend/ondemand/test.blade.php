@@ -88,6 +88,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
                                     <div class="service-data mt-4">
                                         <h4><b>Group</b></h4>
                                         <div class="service-img mb-3">
@@ -268,7 +269,6 @@
                                     <h4 class="mt-4 mb-2"><b>When would you like your service?</b></h4>
                                     <textarea class="form-control" name="" id="" cols="30" rows="7"></textarea>
                                 </div>
-
 
                                 <!-- Step Three Start From Here -->
                                 <div class="step-three">

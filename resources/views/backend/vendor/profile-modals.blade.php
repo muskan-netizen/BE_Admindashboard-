@@ -131,15 +131,15 @@
     </div>
 </div>
 
-<div class="modal fade" id="edit-slot-modal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg" style="min-width: 530px;">
+<div class="modal standard_modal fade" id="edit-slot-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header py-3 px-4 border-bottom-0 d-block">
+            <div class="modal-header py-3 px-3 border-bottom-0 d-block">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h5 class="modal-title" id="modal-title">Edit Slot</h5>
                 <form method="post" action="{{ route('vendor.deleteSlot', $vendor->id) }}" id="deleteSlotForm">
                     @csrf
-                    <div class="form-group">
+                    <div>
                         <input type="hidden" name="slot_day_id" id="deleteSlotDayid" value="" >
                         <input type="hidden" name="slot_id" id="deleteSlotId" value="" >
                         <input type="hidden" name="slot_type" id="deleteSlotType" value="" >
@@ -147,17 +147,17 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-body p-4">
+            <div class="modal-body px-3 pb-3 pt-0">
                 <form class="needs-validation" name="slot-form" id="update-event" action="{{ route('vendor.updateSlot', $vendor->id) }}" method="post">
                     @csrf
                     <div class="row mb-2">
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label class="control-label">Start Time(24 hours format)</label>
                                 <input class="form-control" placeholder="Start Time" type="text" name="start_time" id="edit_start_time" required />
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label class="control-label">End Time(24 hours format)</label>
                                 <input class="form-control" placeholder="End Time" type="text" name="end_time" id="edit_end_time" required />
@@ -165,16 +165,15 @@
                         </div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-md-2"></div>
-                        <div class="col-md-10 slotForDiv">
+                        <div class="col-12 slotForDiv">
                             {!! Form::label('title', 'Slot For',['class' => 'control-label']) !!} 
                             <div class="form-group">
                                 <ul class="list-inline">
-                                    <li class="d-inline-block mr-2">
+                                    <li class="d-block ml-3 mb-1 custom-radio-design">
                                         <input type="radio" class="custom-control-input check slotTypeEdit" id="edit_slotDay" name="slot_type_edit" value="day" checked="">
                                         <label class="custom-control-label" id="edit_slotlabel" for="edit_slotDay">Days</label>
                                     </li>
-                                    <li class="d-inline-block"> &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <li class="d-block ml-1 mb-1 custom-radio-design"> &nbsp;&nbsp;&nbsp;&nbsp;
                                         <input type="radio" class="custom-control-input check slotTypeEdit" id="edit_slotDate" name="slot_type_edit" value="date">
                                         <label class="custom-control-label" for="edit_slotDate">Date</label>
                                     </li>
@@ -184,24 +183,24 @@
                         </div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-md-12">
+                        <div class="col-md-12 weekDays">
                             <div class="">
                             {!! Form::label('title', 'Slot Type',['class' => 'control-label']) !!} 
                             </div>
                             @if($vendor->dine_in == 1)
-                            <div class="checkbox checkbox-success form-check-inline">
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
                                 <input name="slot_type[]" type="checkbox" id="edit_dine_in" checked value="dine_in">
                                 <label for="dine_in"> Dine in </label>
                             </div>
                             @endif
                             @if($vendor->takeaway == 1)
-                            <div class="checkbox checkbox-success form-check-inline">
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
                                 <input name="slot_type[]" type="checkbox" id="edit_takeaway" checked value="takeaway">
                                 <label for="takeaway"> Takeaway </label>
                             </div>
                             @endif
                             @if($vendor->delivery == 1)
-                            <div class="checkbox checkbox-success form-check-inline">
+                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
                                 <input name="slot_type[]" type="checkbox" id="edit_delivery" checked value="delivery">
                                 <label for="delivery"> Delivery </label>
                             </div>
@@ -258,9 +257,10 @@
 
 
                     <div class="row mt-2">
-                        
-                        <div class="col-12 text-right">
-                            <a type="button" class="btn btn-danger mr-1" id="deleteSlotBtn">Delete Slot</a> 
+                        <div class="col-12 mb-2">
+                            <button type="button" class="btn btn-danger w-100" id="deleteSlotBtn">Delete Slot</button> 
+                        </div>
+                        <div class="col-12 d-sm-flex justify-content-between">
                             <button type="button" class="btn btn-light mr-1" data-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-info" id="btn-update-slot">Save</button>
                         </div>
