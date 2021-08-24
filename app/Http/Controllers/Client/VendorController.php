@@ -420,11 +420,20 @@ class VendorController extends BaseController
             $build = $this->buildTree($categories->toArray());
             $categoryToggle = $this->printTreeToggle($build, $active);
         }
-        $product_categories = VendorCategory::with('category')->where('status', 1)->where('vendor_id', $id)->get();
+        $product_categories = VendorCategory::with('category', 'category.translation_one')->where('status', 1)->where('vendor_id', $id)->get();
+        $p_categories = collect();
+        $product_categories_heirarchy = '';
+        if ($product_categories) {
+            foreach($product_categories as $pc){
+                $p_categories->push($pc->category);
+            }
+            $product_categories_build = $this->buildTree($p_categories->toArray());
+            $product_categories_heirarchy = $this->printCategoryOptionsHeirarchy($product_categories_build);
+        }
         $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
         $client_preferences = ClientPreference::first();
         $woocommerce_detail = Woocommerce::first();
-        return view('backend.vendor.vendorCatalog')->with(['new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail]);
+        return view('backend.vendor.vendorCatalog')->with(['new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_heirarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail]);
     }
 
     /**       delete vendor       */

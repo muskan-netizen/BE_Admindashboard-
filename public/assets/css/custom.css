@@ -2377,8 +2377,8 @@ button.update-status {
 
   @media(min-width:320px) {
       .custom-cols>.col {
-          flex: 0 0 100%;
-          max-width: 100%;
+        flex: 0 0 100%;
+        max-width: 100%;
       }
   }
 
@@ -2431,7 +2431,6 @@ button.update-status {
           max-width: 100%;
       }
 
-
       .mobile-toggle,
       .d_none {
           display: none;
@@ -2458,37 +2457,37 @@ button.update-status {
   }
 
   @media(max-width:1199px) {
+    .navbar-custom {
+        padding: 0;
+    }
+    .logo-box.m-hide,
+    .m-hide {
+        display: none !important;
+    }
 
-      .logo-box.m-hide,
-      .m-hide {
-          display: none !important;
-      }
+    .mobile-toggle {
+        display: block;
+    }
 
-      .mobile-toggle {
-          display: block;
-      }
+    .top-site-links li {
+        padding: 0 0 0 10px;
+    }
 
-      .top-site-links li {
-          padding: 0 0 0 10px;
-      }
-
-      .auth-fluid .auth-fluid-form-box {
-          max-width: 100%;
-      }
+    .auth-fluid .auth-fluid-form-box {
+        max-width: 100%;
+    }
+    .language-inputs {
+        width: 65%;
+        overflow-x: auto;
+    }
 
   }
 
   @media(max-width: 991px) {
-      .navbar-custom {
-          padding: 0;
-      }
-
       .content-page {
           margin-top: 70px;
       }
   }
-
-
 
   @media(max-width:1600px) {
       .card-box {

@@ -277,8 +277,8 @@
                                 <input type="hidden" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" checked>
                           
                                 <div class="booking-time-wrapper">
-                                    <h4 class="mt-4 mb-2"><b>When would you like your service?</b></h4>
-                                    <textarea class="form-control" name="" id="" cols="30" rows="7"></textarea>
+                                    <h4 class="mt-4 mb-2"><b>Do you have any specific instructions?</b></h4>
+                                    <textarea class="form-control" name="specific_instructions" id="specific_instructions" cols="30" rows="7"></textarea>
                                 </div> 
                             </div>
                             @endif
@@ -322,7 +322,7 @@
                             <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid">Next</span></a>
                             @elseif(app('request')->input('step') == '2')
                             <a href="?step=1"><span class="btn btn-solid"><</span></a>
-                            <a href="?step=3" id="next-button-ondemand-3" style="display: none;"><span class="btn btn-solid">Continue</span></a>
+                            <a href="#" id="next-button-ondemand-3" style="display: none;"><span class="btn btn-solid">Continue</span></a>
                             @elseif(app('request')->input('step') == '3')
                             <a href="?step=2"><span class="btn btn-solid"><</span></a>
                             <a href="?step=3" id="next-button-ondemand-4" style="display: none;"><span class="btn btn-solid">Continue</span></a>
@@ -566,6 +566,8 @@
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
     var getTimeSlotsForOndemand = "{{route('getTimeSlotsForOndemand')}}";
     var update_cart_schedule = "{{route('cart.updateSchedule')}}";
+    var showCart = "{{route('showCart')}}";
+  
     $(document).on('click', '.showMapHeader', function(){
         var lats = document.getElementById('latitude').value;
         var lngs = document.getElementById('longitude').value;

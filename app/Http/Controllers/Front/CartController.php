@@ -887,7 +887,7 @@ class CartController extends FrontController
                 }else{
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-                Cart::where('status', '0')->where('user_id', $user->id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt]);
+                Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions??null,'schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt]);
                 DB::commit();
                 return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
             }

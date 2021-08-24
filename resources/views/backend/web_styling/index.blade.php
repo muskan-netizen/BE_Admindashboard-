@@ -5,6 +5,7 @@
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.css">
 @endsection
 @section('content')
+
 <div class="row">
     <div class="col-12">
         <div class="page-title-box">
@@ -12,9 +13,10 @@
         </div>
     </div>
 </div>
+
 <form id="favicon-form" method="post" enctype="multipart/form-data">
     <div class="row">
-        <div class="col-md-4 col-xl-3">
+        <div class="col-md-6 col-xl-3">
             <div class="card card-box">
                 <div class="row">
                     <div class="col-5">
@@ -46,15 +48,15 @@
                         <h4 class="header-title mb-2">Show Dark Mode</h4>
                         <div class="form-group">
                             <ul class="list-inline">
-                                <li class="d-inline-block ml-3 mr-4">
+                                <li class="d-inline-block ml-3 mr-2">
                                     <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('0')" id="option1" name="show_dark_mode" {{$client_preferences->show_dark_mode == 0 ? 'checked' : ''}}>
                                     <label class="custom-control-label" for="option1">Day</label>
                                 </li>
-                                <li class="d-inline-block mr-4">
+                                <li class="d-inline-block ml-3 mr-2 mb-2 mb-lg-0">
                                     <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('1')" id="option2" name="show_dark_mode" {{$client_preferences->show_dark_mode == 1 ? 'checked' : ''}}>
                                     <label class="custom-control-label" for="option2">Night</label>
                                 </li>
-                                <li class="d-inline-block mr-4">
+                                <li class="d-inline-block ml-3">
                                     <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('2')" id="option3" name="show_dark_mode" {{$client_preferences->show_dark_mode == 2 ? 'checked' : ''}}>
                                     <label class="custom-control-label" for="option3">Day with Toggle</label>
                                 </li>
@@ -66,10 +68,9 @@
                     </li>
                 </ul>
             </div>
-        </div>
-        
+        </div>        
 
-        <div class="col-md-4 col-xl-3">
+        <div class="col-md-6 col-xl-3">
             <div class="card card-box">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h4 class="header-title mb-0">Age Restriction Popup</h4>
@@ -82,7 +83,7 @@
             </div>
         </div>
 
-        <div class="col-md-4 col-xl-3">
+        <div class="col-md-6 col-xl-3">
             <div class="card card-box">
                 <ul class="pl-0 mb-0">
                     <li class="d-flex align-items-center justify-content-between">
@@ -124,9 +125,7 @@
                 </ul>
             </div>
         </div>
-    </div>
-
-   
+    </div>   
 
     <div class="row">
         <div class="col-xl-8">

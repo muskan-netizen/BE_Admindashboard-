@@ -4,7 +4,7 @@
     @if($key+1 < count($time_slots))
     <div>
         <div class="radios">
-            <input type="radio" value='{{$date}}' name='booking-radio' id='time{{$key+1}}'/>
+            <input type="radio" value='{{$date}}' name='booking_time' id='time{{$key+1}}'/>
             <label for='time{{$key+1}}'><span class="customCheckbox selected-time" aria-hidden="true">{{$date}} - {{@$time_slots[$key+1]}}</span></label>
         </div>
     </div>

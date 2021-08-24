@@ -147,7 +147,7 @@
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                     </h2>
                                     <h6 class="sold-by">
-                                        <b> <img src="{{$product->vendor->logo['proxy_url']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="#"><b> {{$product->vendor->name}} </b></a>
+                                        <b> <img src="{{$product->vendor->logo['proxy_url']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
                                     </h6>
                                     @if($client_preference_detail)
                                         @if($client_preference_detail->rating_check == 1)  

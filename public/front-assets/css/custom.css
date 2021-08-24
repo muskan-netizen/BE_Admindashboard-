@@ -3784,9 +3784,6 @@ header .homepage-address h2 {
     background-color: #ef6e52;
     animation: load 2s linear infinite;
 }
-  
-
-
 
 .down-arrow::after{
     font-family: FontAwesome;
@@ -3982,10 +3979,6 @@ a.vehical-view-box.row.no-gutters {
     max-width: 400px;
     margin: auto;
 }
-
-/* .select-payment-option .modal-dialog .modal-content {
-    left: -8px;
-} */
 
 .payment-modal-width .modal-title {
     font-size: 20px;
@@ -5096,9 +5089,9 @@ body[dir="rtl"] .inner_spacing h3 {
 }
 
 @media(max-width:767px) {
-    .site-header{
+    /* .site-header{
         padding: 10px 0 0;
-    }
+    } */
     .main-menu{
         margin-top: 10px;
     }

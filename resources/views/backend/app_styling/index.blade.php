@@ -51,7 +51,6 @@
                                 </select>
                             </div>
                         </div>
-
                     </div>
                 </div>
                 <div class="col-lg-4">
@@ -109,7 +108,7 @@
                     <h4 class="header-title">Home Page Style</h4>
                     <div class="row">
                         @foreach($homepage_style_options as $homepage_style)
-                        <div class="col-lg-4">
+                        <div class="col-sm-6 col-md-4 col-lg-3">
                             <div class="card mb-0">
                                 <div class="card-body">
                                     <div class="row">

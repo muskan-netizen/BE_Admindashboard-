@@ -303,13 +303,15 @@
                                         {!! Form::label('title', 'Category',['class' => 'control-label']) !!}
                                         <select class="form-control selectizeInput" id="category_list" name="category">
                                             <option value="">Select Category...</option>
-                                            @foreach($product_categories as $product_category)
+                                            <?php echo($product_categories); ?>
+                                                
+                                            {{--@foreach($product_categories as $product_category)
                                                 @if($product_category->category)
                                                     @if( ($product_category->category->type_id == 1) || ($product_category->category->type_id == 3) || ($product_category->category->type_id == 7))
                                                         <option value="{{$product_category->category_id}}">{{(isset($product_category->category->primary->name)) ? $product_category->category->primary->name : $product_category->category->slug}}</option>
                                                     @endif
                                                 @endif
-                                            @endforeach
+                                            @endforeach--}}
                                         </select>
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>

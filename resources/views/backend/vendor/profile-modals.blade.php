@@ -255,7 +255,6 @@
                         </div>
                     </div>
 
-
                     <div class="row mt-2">
                         <div class="col-12 mb-2">
                             <button type="button" class="btn btn-danger w-100" id="deleteSlotBtn">Delete Slot</button> 
@@ -318,7 +317,7 @@
                     <div class="row mt-1">
                         <!-- <div class="col-md-6">
                             <button type="button"
-                                class="btn btn-block btn-outline-blue waves-effect waves-light">Cancel</button>
+                            class="btn btn-block btn-outline-blue waves-effect waves-light">Cancel</button>
                         </div> -->
                         <div class="col-12">
                             <button type="submit" class="btn btn-block btn-blue waves-effect waves-light">Save</button>

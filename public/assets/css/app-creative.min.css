@@ -2042,6 +2042,7 @@ body[data-layout-mode=two-column][data-layout-width=boxed]:not([data-sidebar-siz
   background-color: #f86262;
   border-color: #f86262;
 }
+
 .checkbox-danger input[type=checkbox]:checked + label::after {
   border-color: #fff;
 }
@@ -2050,6 +2051,7 @@ body[data-layout-mode=two-column][data-layout-width=boxed]:not([data-sidebar-siz
   background-color: #f3f7f9;
   border-color: #f3f7f9;
 }
+
 .checkbox-light input[type=checkbox]:checked + label::after {
   border-color: #fff;
 }
@@ -2058,6 +2060,7 @@ body[data-layout-mode=two-column][data-layout-width=boxed]:not([data-sidebar-siz
   background-color: #323a46;
   border-color: #323a46;
 }
+
 .checkbox-dark input[type=checkbox]:checked + label::after {
   border-color: #fff;
 }
@@ -2066,6 +2069,7 @@ body[data-layout-mode=two-column][data-layout-width=boxed]:not([data-sidebar-siz
   background-color: #f672a7;
   border-color: #f672a7;
 }
+
 .checkbox-pink input[type=checkbox]:checked + label::after {
   border-color: #fff;
 }
