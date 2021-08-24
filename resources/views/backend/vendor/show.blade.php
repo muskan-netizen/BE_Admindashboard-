@@ -1,7 +1,7 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Vendor'])
 
 @section('css')
-<link href="{{asset('assets/css/calender_main.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/css/calendar_main-5.9.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .fc-v-event {
         border-color: #43bee1;
@@ -680,7 +680,7 @@
 
 <script src="{{asset('assets/libs/moment/moment.min.js')}}"></script>
 
-<script src="{{asset('assets/js/calender_main.js')}}"></script>
+<script src="{{asset('assets/js/calendar_main-5.9.js')}}"></script>
 <script src="{{ asset('assets/js/pages/jquery.cookie.js') }}"></script>
 <script>
     $( document ).ready(function() {
@@ -1078,14 +1078,15 @@
             height: 'auto',
             editable: false,
             nowIndicator: true,
+            eventMaxStack: 1,
             select: function(arg) {
 
-                calendar.addEvent({
-                    title: '',
-                    start: arg.start,
-                    end: arg.end,
-                    allDay: arg.allDay
-                })
+                // calendar.addEvent({
+                //     title: '',
+                //     start: arg.start,
+                //     end: arg.end,
+                //     allDay: arg.allDay
+                // })
                 $('#standard-modal').modal({
                     //backdrop: 'static',
                     keyboard: false
@@ -1114,17 +1115,17 @@
                 url: "{{route('vendor.calender.data', $vendor->id)}}"
             },
             eventResize: function(arg) {
-                console.log(arg.event.extendedProps);
+                // console.log(arg.event.extendedProps);
 
             },
             eventClick: function(ev) {
-
+console.log(ev.event.extendedProps.type);
                 $('#edit-slot-modal').modal({
                     //backdrop: 'static',
                     keyboard: false
                 });
                 var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-                var day = ev.event.start.getDay();
+                var day = ev.event.start.getDay() + 1;
 
                 document.getElementById('edit_type').value = ev.event.extendedProps.type;
                 document.getElementById('edit_day').value = day;
@@ -1134,9 +1135,18 @@
                 document.getElementById('deleteSlotDayid').value = ev.event.extendedProps.type_id;
                 document.getElementById('deleteSlotId').value = ev.event.extendedProps.slot_id;
                 document.getElementById('deleteSlotType').value = ev.event.extendedProps.type;
+                
+                if(ev.event.extendedProps.type == 'date'){
+                    $("#edit_slotDate").prop("checked", true);
+                    $(".modal .forDateEdit").show();
+                }else{
+                    $("#edit_slotDay").prop("checked", true);
+                    $(".modal .forDateEdit").hide();
+                }
 
                 $('#edit_slot_date').flatpickr({
-                    minDate: "today"
+                    minDate: "today",
+                    defaultDate: (ev.event.extendedProps.type == 'date') ? ev.event.start : ''
                 });
 
                 $('#edit-slot-modal #edit_slotlabel').text('Edit For All ' + days[day] + '   ');

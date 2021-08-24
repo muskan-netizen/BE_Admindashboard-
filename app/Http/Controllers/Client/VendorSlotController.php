@@ -88,9 +88,28 @@ class VendorSlotController extends BaseController
             $sday->save();
 
         }else{
-            $dateSlot = VendorSlotDate::whereDate('specific_date', $request->slot_date)->first();
+            $dateSlot = VendorSlotDate::whereDate('specific_date', $request->slot_date)->where('id', $request->edit_type_id)->first();
             if(!$dateSlot){
                 $dateSlot = new VendorSlotDate();
+            }else{
+                if( ($request->edit_type == 'date') && ($request->slot_type_edit == 'day') ){
+                    $vendor_id = $dateSlot->vendor_id;
+                    $dateSlot->delete();
+                    $slot = new VendorSlot();
+                    $slot->vendor_id    = $vendor->id;
+                    $slot->start_time   = $request->start_time;
+                    $slot->end_time     = $request->end_time;
+                    $slot->dine_in      = $dine_in;
+                    $slot->takeaway     = $takeaway;
+                    $slot->delivery     = $delivery;
+                    $slot->save();
+
+                    $sday = new SlotDay();
+                    $sday->slot_id =  $slot->id;
+                    $sday->day = $request->edit_day;
+                    $sday->save();
+                    return redirect()->back()->with('success', 'Slot saved successfully!');
+                }
             }
             $dateSlot->vendor_id        = $vendor->id;
             $dateSlot->start_time       = $request->start_time;
@@ -182,11 +201,11 @@ class VendorSlotController extends BaseController
 
         foreach ($day as $key => $value) {
             $exist = 0;
-            $title = $start = $end = $color = '';
+            $start = $end = $color = '';
 
             if($slotDate){
                 foreach ($slotDate as $k => $v) {
-
+                    $title = '';
                     if($date[$key] == $v->specific_date){
                         $exist = 1;
                         $title .= ($dinein_check == 1 && $v->dine_in == 1 && $vendor->dine_in == 1) ? ' Dine' : '';
@@ -205,9 +224,9 @@ class VendorSlotController extends BaseController
                 }
             }
 
-            if($exist == 0){
-
+            // if($exist == 0){
                 foreach ($slot as $k => $v) {
+                    $title = '';
                     if($value == $v->day){
 
                         $title .= ($dinein_check == 1 && $v->dine_in == 1 && $vendor->dine_in == 1) ? ' Dine' : '';
@@ -224,7 +243,7 @@ class VendorSlotController extends BaseController
                         $count++;
                     }
                 }
-            } 
+            // } 
         }
         echo $json  = json_encode($showData);
     }

@@ -256,7 +256,7 @@ class UserController extends BaseController{
         foreach ($request->only('name', 'phone_number', 'company_name', 'company_address', 'country_id', 'timezone') as $key => $value) {
             $data[$key] = $value;
         }
-        $client = Client::where('code', Auth::user()->code)->first();
+        $client = Client::where('code', $user->code)->first();
         if ($request->hasFile('logo')) {
             $file = $request->file('logo');
             $file_name = 'Clientlogo/' . uniqid() . '.' .  $file->getClientOriginalExtension();
@@ -265,12 +265,12 @@ class UserController extends BaseController{
         } else {
             $data['logo'] = $client->getRawOriginal('logo');
         }
-        $client = Client::where('code', Auth::user()->code)->update($data);
+        $client = Client::where('code', $user->code)->update($data);
         $userdata = array();
         foreach ($request->only('name', 'phone_number', 'timezone') as $key => $value) {
             $userdata[$key] = $value;
         }
-        $user = User::where('id', Auth::id())->update($userdata);
+        $user = $user->update($userdata);
         return redirect()->back()->with('success', 'Client Updated successfully!');
     }
     public function changePassword(Request $request){

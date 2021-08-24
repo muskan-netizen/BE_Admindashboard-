@@ -169,11 +169,11 @@
                             {!! Form::label('title', 'Slot For',['class' => 'control-label']) !!} 
                             <div class="form-group">
                                 <ul class="list-inline">
-                                    <li class="d-block ml-3 mb-1 custom-radio-design">
+                                    <li class="d-block pl-1 ml-3 mb-1 custom-radio-design">
                                         <input type="radio" class="custom-control-input check slotTypeEdit" id="edit_slotDay" name="slot_type_edit" value="day" checked="">
                                         <label class="custom-control-label" id="edit_slotlabel" for="edit_slotDay">Days</label>
                                     </li>
-                                    <li class="d-block ml-1 mb-1 custom-radio-design"> &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <li class="d-block pl-1 ml-1 mb-1 custom-radio-design"> &nbsp;&nbsp;&nbsp;&nbsp;
                                         <input type="radio" class="custom-control-input check slotTypeEdit" id="edit_slotDate" name="slot_type_edit" value="date">
                                         <label class="custom-control-label" for="edit_slotDate">Date</label>
                                     </li>
@@ -188,19 +188,19 @@
                             {!! Form::label('title', 'Slot Type',['class' => 'control-label']) !!} 
                             </div>
                             @if($vendor->dine_in == 1)
-                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
+                            <div class="checkbox checkbox-success form-check pl-1 mb-1">
                                 <input name="slot_type[]" type="checkbox" id="edit_dine_in" checked value="dine_in">
                                 <label for="dine_in"> Dine in </label>
                             </div>
                             @endif
                             @if($vendor->takeaway == 1)
-                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
+                            <div class="checkbox checkbox-success form-check pl-1 mb-1">
                                 <input name="slot_type[]" type="checkbox" id="edit_takeaway" checked value="takeaway">
                                 <label for="takeaway"> Takeaway </label>
                             </div>
                             @endif
                             @if($vendor->delivery == 1)
-                            <div class="checkbox checkbox-success form-check pl-0 mb-1">
+                            <div class="checkbox checkbox-success form-check pl-1 mb-1">
                                 <input name="slot_type[]" type="checkbox" id="edit_delivery" checked value="delivery">
                                 <label for="delivery"> Delivery </label>
                             </div>

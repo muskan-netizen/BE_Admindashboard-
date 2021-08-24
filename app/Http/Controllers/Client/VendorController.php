@@ -88,9 +88,9 @@ class VendorController extends BaseController
         $vendor_docs = collect(new VendorDocs);
         $client_preferences = ClientPreference::first();
         $vendors = Vendor::withCount(['products', 'orders', 'activeOrders'])->with('slot')->orderBy('id', 'desc');
-        if (Auth::user()->is_superadmin == 0) {
-            $vendors = $vendors->whereHas('permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
+        if ($user->is_superadmin == 0) {
+            $vendors = $vendors->whereHas('permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
             });
         }
         $vendors = $vendors->get();
