@@ -57,7 +57,11 @@ class StoreController extends Controller{
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
                     	},
-                    ])->where('category_id', $is_selected_category_id)->where('is_live', 1)->paginate($paginate);
+                    ])->where('category_id', $is_selected_category_id);
+			if($selected_vendor_id > 0){
+				$products = $products->where('vendor_id', $selected_vendor_id);
+			}
+			$products = $products->where('is_live', 1)->paginate($paginate);
 			foreach ($products as $product) {
                 foreach ($product->variant as $k => $v) {
                     $product->variant[$k]->multiplier = $client_currency_detail->doller_compare;

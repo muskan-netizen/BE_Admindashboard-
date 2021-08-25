@@ -321,7 +321,8 @@
                             @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
                             <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid">Next</span></a>
                             @elseif(app('request')->input('step') == '2')
-                            <a href="?step=1"><span class="btn btn-solid"><</span></a>
+                            <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>   
+
                             <a href="#" id="next-button-ondemand-3" style="display: none;"><span class="btn btn-solid">Continue</span></a>
                             @elseif(app('request')->input('step') == '3')
                             <a href="?step=2"><span class="btn btn-solid"><</span></a>
@@ -339,7 +340,7 @@
                         <div class="card-box p-2">
                             <div class="product-order">
                                 <div class="total-sec border-0 py-0 my-0">
-                                    <h5 class="d-flex align-items-center justify-content-between pb-2 border-bottom"><b>City</b><b>Dubai</b></h5>
+                                    {{-- <h5 class="d-flex align-items-center justify-content-between pb-2 border-bottom"><b>City</b><b>Dubai</b></h5> --}}
                                     <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('SERVICE DETAILS')}} </h5>
                                 </div>
                                 <div class="spinner-box">

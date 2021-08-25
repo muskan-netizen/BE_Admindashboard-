@@ -36,4 +36,11 @@ class OrderVendor extends Model{
 	public function scopeBetween($query, $from, $to){
         $query->whereBetween('created_at', [$from, $to]);
     }
+
+	# get dispatcher status title 
+	public function getDispatcherStatusAttribute($value)
+    {
+		$title = DispatcherStatusOption::where('id',$value)->value('title');
+        return ucfirst($title);
+    }
 }

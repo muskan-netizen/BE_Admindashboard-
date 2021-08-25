@@ -21,9 +21,13 @@ class PickupDeliveryController extends FrontController{
 	
     use ApiResponser;
     public function getOrderTrackingDetails(Request $request, $domain = ''){
+
+        $order = OrderVendor::where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
         $response = Http::get($request->new_dispatch_traking_url);
         if($response->status() == 200){
-           return $this->successResponse($response->json()); 
+           $response = $response->json();
+           $response['order_details'] = $order;
+           return $this->successResponse($response); 
         }
     }
     

@@ -15,7 +15,7 @@
                 let order_success_template = _.template($('#order_success_template').html());
                 $("#cab_detail_box").append(order_success_template({result: response.data, product_image: response.data.product_image})).show();
                 setInterval(function(){
-                    getOrderDriverDetails(response.data.dispatch_traking_url)
+                    getOrderDriverDetails(response.data.dispatch_traking_url,response.data.id)
                 },3000);
             }
         }
@@ -25,13 +25,13 @@
 
 
 
-function getOrderDriverDetails(dispatch_traking_url) {
-    var new_dispatch_traking_url = dispatch_traking_url.replace('/order/','/order-details/')
+function getOrderDriverDetails(dispatch_traking_url,order_id) {
+    var new_dispatch_traking_url = dispatch_traking_url.replace('/order/','/order-details/');
     $.ajax({
         type:"POST",
         dataType: "json",
         url: order_tracking_details_url,
-        data:{new_dispatch_traking_url:new_dispatch_traking_url},
+        data:{new_dispatch_traking_url:new_dispatch_traking_url,order_id:order_id},
         success: function( response ) {
             if(response.data.agent_location != null){
                 $('#searching_main_div').remove();
@@ -39,6 +39,7 @@ function getOrderDriverDetails(dispatch_traking_url) {
                 $('#driver_name').html(response.data.order.name).show();
                 $('#driver_image').attr('src', response.data.agent_image).show();
                 $('#driver_phone_number').html(response.data.order.phone_number).show();
+                $("#dispatcher_status_show").html(response.data.order_details.dispatcher_status);
             }
         }
     });
