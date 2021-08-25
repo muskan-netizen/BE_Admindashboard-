@@ -6,12 +6,12 @@ use Auth;
 use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use Omnipay\Common\CreditCard;
-use App\Models\{PaymentOption};
 use App\Http\Traits\ApiResponser;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Front\FrontController;
+use App\Models\{PaymentOption, Client, ClientPreference, ClientCurrency};
 
-class PaystackGatewayController extends Controller
+class PaystackGatewayController extends FrontController
 {
     use ApiResponser;
     public $gateway;
@@ -26,27 +26,32 @@ class PaystackGatewayController extends Controller
         $this->gateway->setSecretKey($secret_key);
         $this->gateway->setPublicKey($public_key);
         $this->gateway->setTestMode(true); //set it to 'false' when go live
-        dd($this->gateway);
+        // dd($this->gateway);
     }
 
     public function paystackPurchase(Request $request){
         try{
             $user = Auth::user();
-            // $token = $request->paystack_token;
+            $amount = $this->getDollarCompareAmount($request->amount);
+            $returnUrlParams = '?amount='.$amount;
+            if($request->has('tip')){
+                $returnUrlParams = $returnUrlParams.'&tip='.$request->tip.'&gateway=paystack';
+            }
             $response = $this->gateway->purchase([
-                'amount' => $request->amount,
-                'currency' => 'USD',
+                'amount' => $amount,
+                'currency' => 'ZAR',
                 'email' => $user->email,
-                // 'callback_url' => $request->returnUrl,
+                'returnUrl' => url($request->returnUrl . $returnUrlParams),
+                'cancelUrl' => url($request->cancelUrl),
                 'metadata' => ['user_id' => $user->id],
                 'description' => 'This is a test purchase transaction.',
             ])->send();
             if ($response->isSuccessful()) {
                 return $this->successResponse($response->getData());
-            } 
-            // elseif ($response->isRedirect()) {
-            //     return $this->errorResponse($response->getRedirectUrl(), 400);
-            // } 
+            }
+            elseif ($response->isRedirect()) {
+                return $this->successResponse($response->getRedirectUrl());
+            }
             else {
                 return $this->errorResponse($response->getMessage(), 400);
             }
@@ -56,17 +61,23 @@ class PaystackGatewayController extends Controller
         }
     }
 
-    /**
-     * Obtain Paystack payment information
-     * @return void
-     */
-    public function handleGatewayCallback()
+    public function paystackCompletePurchase(Request $request)
     {
-        // $paymentDetails = Paystack::getPaymentData();
-
-        // dd($paymentDetails);
-        // Now you have the payment details,
-        // you can store the authorization_code in your db to allow for recurrent subscriptions
-        // you can then redirect or do whatever you want
+        // Once the transaction has been approved, we need to complete it.
+        if($request->has(['reference'])){
+            $amount = $this->getDollarCompareAmount($request->amount);
+            $transaction = $this->gateway->completePurchase(array(
+                'amount'                => $amount,
+                'transactionReference'  => $request->reference
+            ));
+            $response = $transaction->send();
+            if ($response->isSuccessful()){
+                return $this->successResponse($response->getTransactionReference());
+            } else {
+                return $this->errorResponse($response->getMessage(), 400);
+            }
+        } else {
+            return $this->errorResponse('Transaction has been declined', 400);
+        }
     }
 }

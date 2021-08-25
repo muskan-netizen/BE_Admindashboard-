@@ -18,8 +18,24 @@ class VendorController extends FrontController
     
     public function viewAll(){
         $langId = Session::get('customerLanguage');
+        $preferences = Session::get('preferences');
         $navCategories = $this->categoryNav($langId);
-        $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount', 'logo','slug')->where('status', 1)->get();
+
+        $ses_vendors = array();
+        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+            if(Session::has('vendors')){
+                $ses_vendors = Session::get('vendors');
+                }
+        }
+
+        $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount', 'logo','slug')->where('status', 1);
+        
+        if (count($ses_vendors) > 0) {
+            $vendors = $vendors->whereIn('id', $ses_vendors);
+        }
+
+        $vendors = $vendors->get();
+
         foreach ($vendors as $key => $value) {
             $value->vendorRating = $this->vendorRating($value->products);
         }

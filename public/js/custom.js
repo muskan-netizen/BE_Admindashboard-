@@ -385,6 +385,7 @@ $(document).ready(function () {
         $.ajax({
             type: "POST",
             dataType: 'json',
+            async: false,
             url: update_cart_schedule,
             data: { task_type: task_type, schedule_dt: schedule_dt },
             success: function (response) {
@@ -633,7 +634,8 @@ $(document).ready(function () {
             }
         });
     }
-    function placeOrder(address_id = 0, payment_option_id, transaction_id, tip = 0) {
+    
+    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id, tip = 0) {
         var task_type = $("input[name='task_type']:checked").val();
         var schedule_dt = $("#schedule_datetime").val();
         if( (task_type == 'schedule') && (schedule_dt == '') ){
@@ -679,6 +681,9 @@ $(document).ready(function () {
             });
         } else if (payment_option_id == 3) {
             paymentViaPaypal(address_id, payment_option_id);
+        }
+        else if (payment_option_id == 5) {
+            paymentViaPaystack(address_id, payment_option_id);
         }
     });
     function creditWallet(amount, payment_option_id, transaction_id) {
@@ -934,6 +939,7 @@ $(document).ready(function () {
             data: { address_id: address_id },
             type: "get",
             dataType: 'json',
+            async: false,
             url: cart_product_url,
             success: function (response) {
                 if (response.status == "success") {
@@ -1480,7 +1486,7 @@ $(document).ready(function () {
         }
     });
 
-    function success_error_alert(responseClass, message, element) {
+    window.success_error_alert = function success_error_alert(responseClass, message, element) {
         $(element).find(".alert").html('');
         $(element).removeClass('d-none');
         if (responseClass == 'success') {

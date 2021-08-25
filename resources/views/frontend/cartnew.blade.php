@@ -554,6 +554,8 @@
     var user_store_address_url = "{{route('address.store')}}";
     var promo_code_remove_url = "{{ route('remove.promocode') }}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
+    var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
+    var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";;
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";
@@ -612,4 +614,5 @@
         });
     });
 </script>
+<script src="{{asset('js/payment.js')}}"></script>
 @endsection

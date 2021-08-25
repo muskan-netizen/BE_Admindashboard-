@@ -17,7 +17,7 @@ class ManageContentController extends BaseController
         try {
             DB::beginTransaction();
             $pro = Product::onlyTrashed()->forceDelete();
-            $cat = Category::onlyTrashed()->forceDelete();
+            $cat = Category::where('slug','!=','root')->onlyTrashed()->forceDelete();
             $user = User::where('status', 3)->forceDelete();
             $ven = Vendor::where('status', 2)->forceDelete();
             $banners = Banner::where('status', 2)->forceDelete();
@@ -113,6 +113,35 @@ class ManageContentController extends BaseController
                 $user->forceDelete();
             }
             DB::statement("SET foreign_key_checks=1");
+            $categories = array(
+                array(
+                    'id' => '1',
+                    'slug' => 'Root',
+                    'type_id' => 3,
+                    'is_visible' => 0,
+                    'status' => 1,
+                    'position' => 1,
+                    'is_core' => 1,
+                    'can_add_products' => 0,
+                    'display_mode' => 1,
+                    'parent_id' => NULL
+                )
+            ); 
+            DB::table('categories')->insert($categories);
+            DB::table('category_translations')->delete();
+            $category_translations = array(
+                array(
+                    'id' => 1,
+                    'name' => 'root',
+                    'trans-slug' => '',
+                    'meta_title' => 'root',
+                    'meta_description' => '',
+                    'meta_keywords' => '',
+                    'category_id' => 1,
+                    'language_id' => 1,
+                )
+            );
+            DB::table('category_translations')->insert($category_translations);
             DB::commit();
             return response()->json(['success' => 'Deleted Successfully']);
         } catch (\PDOException $e) {
