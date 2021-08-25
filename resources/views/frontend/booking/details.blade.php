@@ -25,37 +25,12 @@
     @include('layouts.store/left-sidebar')
 </header>
 <section class="cab-booking pt-0">
-    <div id="booking-map" style="width: 100%; height: 100%;"></div>
-    <input id="booking-latitude" type="hidden" value="-34">
-    <input id="booking-longitude"  type="hidden" value="151">
-
+    <div id="map_canvas" style="width: 100%; height: 100%;"></div>
+   
     <div class="booking-experience ds bc">
         <div class="address-form">
-            <div class="location-box">
-                <ul class="location-inputs position-relative pl-2" id="location_input_main_div">
-                   
-                </ul>
-
-                <a class="add-more-location position-relative pl-2" href="javascript:void(0)">{{__('Add Destination')}}</a>
-            </div>
-            <script type="text/template" id="destination_location_template">
-                <li class="d-block mb-3 dots" id="dots_<%= random_id %>">
-                    <input class="form-control pickup-text" type="text" name="destination_location_name[]" placeholder="{{__('Add A Stop')}}" id="destination_location_<%= random_id %>" data-rel="<%= random_id %>"/>
-                    <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude_<%= random_id %>" data-rel="<%= random_id %>"/>
-                    <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude_<%= random_id %>" data-rel="<%= random_id %>"/>
-                    <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel="<%= random_id %>"></i>
-                </li>
-            </script>
-            <div class="spinner-border avatar-lg text-primary m-2 cab-booking-main-loader" role="status" style="display:none;"></div>
-            <div class="location-list style-4"> 
-                @forelse($user_addresses as $user_address)
-                    <a class="search-location-result position-relative d-block" href="javascript:void(0);" data-address="{{$user_address->address}}" data-latitude="{{$user_address->latitude}}" data-longitude="{{$user_address->longitude}}">
-                        <h4 class="mt-0 mb-1"><b>{{$user_address->address}}</b></h4>
-                        <p class="ellips mb-0">{{$user_address->city}}, {{$user_address->state}}, {{$user_address->country}}</p>
-                    </a>
-                @empty
-                @endforelse
-            </div>
+            
+           
             <div class="table-responsive style-4">
                 <div class="cab-button d-flex flex-nowrap align-items-center py-2" id="vendor_main_div"></div>
             </div>
@@ -170,7 +145,11 @@
                     <img src="<%= product_image %>" alt="">
                 </div>
                 <div class="cab-location-details" id="searching_main_div">
+                    <% if(result.user_name !== null) { %>
+                    <h4><b></b></h4>
+                    <% }else { %>
                     <h4><b>Searching For Nearby Drivers</b></h4>
+                    <% } %> 
                     <img src="{{url('images/cabbooking-loader.gif')}}">
                 </div>
                 <div class="cab-location-details" id="driver_details_main_div" style="display:none;">
@@ -218,7 +197,7 @@
 
 @section('script')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="{{asset('js/cab_booking.js')}}"></script>
+<script src="{{asset('js/cab_booking_details.js') }}"></script>
 <script>
 var autocomplete_urls = "{{url('looking/vendor/list/14')}}";
 var get_product_detail = "{{url('looking/product-detail')}}";

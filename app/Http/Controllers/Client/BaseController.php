@@ -19,13 +19,17 @@ class BaseController extends Controller
     {
         $branch = array();
         foreach ($elements as $element) {
-            if ($element['parent_id'] == $parentId) {
-                $children = $this->buildTree($elements, $element['id']);
-                if ($children) {
-                    $element['children'] = $children;
+            if(isset($element['parent_id']) && !empty($element['parent_id'])){
+                if ($element['parent_id'] == $parentId) {
+                    $children = $this->buildTree($elements, $element['id']);
+                    if ($children) {
+                        $element['children'] = $children;
+                    }
+                    $branch[] = $element;
                 }
-                $branch[] = $element;
-            }
+            }   
+            
+
         }
         return $branch;
     }

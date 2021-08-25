@@ -12,7 +12,7 @@ use Session;
 use DB;
 use App\Http\Traits\ApiResponser;
 use App\Models\{Currency, Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order};
-
+use Illuminate\Support\Facades\Http;
 class BookingController extends FrontController
 {
     use ApiResponser;
@@ -34,8 +34,21 @@ class BookingController extends FrontController
         $user_addresses = UserAddress::get();
         $order = Order::where('order_number',$order_id)->where('user_id',Auth::id())->first();
         $route = route('front.booking.orderplacedetails',$order->id);
-           
-        return view('frontend.booking.details')->with(['user_addresses' => $user_addresses, 'navCategories' => $navCategories,'order' => $order,'route' => $route]);
+
+
+        $order['dispatch_traking_url'] = $order->vendors->first()->dispatch_traking_url ?? null;
+        $order['dispatch_traking_url'] = str_replace("/order/","/order-details/",$order['dispatch_traking_url']);
+        $response = Http::get($order['dispatch_traking_url']);
+        $tasks = array();
+        $agent_location = '';
+        if($response->status() == 200){
+           $response = $response->json();
+           $order['dispatch_order'] = $response;
+           $tasks = $response['tasks'];
+           $agent_location = $response['agent_location'];
+        }
+       
+        return view('frontend.booking.details')->with(['user_addresses' => $user_addresses, 'navCategories' => $navCategories,'order' => $order,'route' => $route,'tasks' => $tasks,'agent_location' => $agent_location]);
        
     }
 
