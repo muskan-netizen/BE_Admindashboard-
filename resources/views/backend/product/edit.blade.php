@@ -1,7 +1,9 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Edit Product'])
 
 @section('css')
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<!-- <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet"> -->
+<link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/css/samples.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/toolbarconfigurator/lib/codemirror/neo.css') }}">
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
@@ -571,7 +573,13 @@
 
 <link href="{{asset('assets/css/dropzone.css')}}" rel="stylesheet" />
 <script src="{{asset('assets/js/dropzone.js')}}"></script>
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script> -->
+<script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
+<script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
+<script>
+    CKEDITOR.replace('body_html');
+    CKEDITOR.config.height = 150;
+</script>
 
 <script type="text/javascript">
     $('#requiredShipping').change(function() {
@@ -667,19 +675,19 @@
     var uploadedDocumentMap = {};
     Dropzone.autoDiscover = false;
     $(document).ready(function() {
-        $('#body_html').summernote({
-            placeholder: 'Description',
-            tabsize: 2,
-            height: 120,
-            toolbar: [
-                ['style', ['style']],
-                // ['color', ['color']],
-                ['table', ['table']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ]
-        });
+        // $('#body_html').summernote({
+        //     placeholder: 'Description',
+        //     tabsize: 2,
+        //     height: 120,
+        //     toolbar: [
+        //         ['style', ['style']],
+        //         // ['color', ['color']],
+        //         ['table', ['table']],
+        //         ['para', ['ul', 'ol', 'paragraph']],
+        //         ['font', ['bold', 'underline', 'clear']],
+        //         ['view', ['fullscreen', 'codeview', 'help']]
+        //     ]
+        // });
         $("div#my-awesome-dropzone").dropzone({
             acceptedFiles: ".jpeg,.jpg,.png",
             addRemoveLinks: true,
@@ -874,7 +882,8 @@
             success: function(resp) {
                 if (resp) {
                     $('#product_name').val(resp.data.title);
-                    $('#body_html').val(resp.data.body_html);
+                    // $('#body_html').val(resp.data.body_html);
+                    CKEDITOR.instances.body_html.setData(resp.data.body_html);
                     $('#meta_title').val(resp.data.meta_title);
                     $('#meta_keyword').val(resp.data.meta_keyword);
                     $('#meta_description').val(resp.data.meta_description);

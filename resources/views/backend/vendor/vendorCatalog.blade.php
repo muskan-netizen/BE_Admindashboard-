@@ -303,7 +303,7 @@
                                         {!! Form::label('title', 'Category',['class' => 'control-label']) !!}
                                         <select class="form-control selectizeInput" id="category_list" name="category">
                                             <option value="">Select Category...</option>
-                                            <?php echo($product_categories); ?>
+                                            {!! $product_categories !!}
                                                 
                                             {{--@foreach($product_categories as $product_category)
                                                 @if($product_category->category)

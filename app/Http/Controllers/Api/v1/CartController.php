@@ -11,7 +11,7 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Product, Cart, ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet,UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser};
+use App\Models\{User, Product, Cart, ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet,UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation};
 use GuzzleHttp\Client as GCLIENT;
 class CartController extends BaseController{
     use ApiResponser;
@@ -28,7 +28,7 @@ class CartController extends BaseController{
             }
             $cart = $cart->first();
             if($cart){
-                $cartData = $this->getCart($cart, $user->language, $user->currency);
+                $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type);
                 return $this->successResponse($cartData);
             }
             return $this->successResponse($cart);
@@ -139,14 +139,12 @@ class CartController extends BaseController{
             if ($luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
                 if ($checkCartLuxuryOption) {
-                    return $this->errorResponse(['error' => 'You are adding products in different mods',
-                                                 'alert' => '1'], 404);
+                    return $this->errorResponse(['error' => 'You are adding products in different mods', 'alert' => '1'], 404);
                 }
                 if ($luxury_option->id == 2 || $luxury_option->id == 3) {
                     $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $product->vendor_id)->first();
                     if ($checkVendorId) {
-                        return $this->errorResponse(['error' => 'Your cart has existing items from another vendor',
-                                                     'alert' => '1'], 404);
+                        return $this->errorResponse(['error' => 'Your cart has existing items from another vendor', 'alert' => '1'], 404);
                     }
                 }
             }
@@ -206,7 +204,7 @@ class CartController extends BaseController{
                     $cartProduct->save();
                 }
             }
-            $cartData = $this->getCart($cart_detail, $user->language, $user->currency);
+            $cartData = $this->getCart($cart_detail, $user->language, $user->currency, $request->type);
             if($cartData && !empty($cartData)){
                 return $this->successResponse($cartData);
             }else{
@@ -238,7 +236,7 @@ class CartController extends BaseController{
         $totalProducts = CartProduct::where('cart_id', $cart->id)->sum('quantity');
         $cart->item_count = $totalProducts;
         $cart->save();
-        $cartData = $this->getCart($cart, $user->language, $user->currency);
+        $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type);
         return response()->json([
             'data' => $cartData,
         ]);
@@ -289,7 +287,7 @@ class CartController extends BaseController{
         }
         $cart->item_count = $totalProducts;
         $cart->save();
-        $cartData = $this->getCart($cart, $user->language, $user->currency);
+        $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type);
         return response()->json([
             "message" => "Product removed from cart successfully.",
             'data' => $cartData,
@@ -315,7 +313,7 @@ class CartController extends BaseController{
     }
 
     /**         *       Empty cart       *          */
-    public function getCart($cart, $langId = '1', $currency = '1'){
+    public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery'){
         $preferences = ClientPreference::first();
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         if(!$cart){
@@ -372,18 +370,44 @@ class CartController extends BaseController{
         $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = 0.00;
         $total_tax = $total_paying = $total_disc_amount = 0.00; $item_count = 0; $total_delivery_amount = 0;
         if($cartData){
+            $cart_dinein_table_id = NULL;
+            $action = $type;
+            $vendor_details = [];
             $tax_details = [];
             foreach ($cartData as $ven_key => $vendorData) {
-                if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-                    if($address_id > 0){
-                        $serviceArea = $vendorData->vendor->whereHas('serviceArea', function($query) use($latitude, $longitude){
-                            $query->select('vendor_id')
-                            ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
-                        })->where('id', $vendorData->vendor_id)->get();
-                    }
-                }
                 $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
+
+                // if(Session::has('vendorTable')){
+                //     if((Session::has('vendorTableVendorId')) && (Session::get('vendorTableVendorId') == $vendorData->vendor_id)){
+                //         $cart_dinein_table_id = Session::get('vendorTable');
+                //     }
+                //     Session::forget(['vendorTable', 'vendorTableVendorId']);
+                // }else{
+                    $cart_dinein_table_id = $vendorData->vendor_dinein_table_id;
+                // }
+
+                if($action != 'delivery'){
+                    $vendor_details['vendor_address'] = $vendorData->vendor->select('id','latitude','longitude','address')->where('id', $vendorData->vendor_id)->first();
+                    if($action == 'dine_in'){
+                        $vendor_tables = VendorDineinTable::where('vendor_id', $vendorData->vendor_id)->with('category')->get();
+                        foreach ($vendor_tables as $vendor_table) {
+                            $vendor_table->qr_url = url('/vendor/'.$vendorData->vendor->slug.'/?table='.$vendor_table->id);
+                        }
+                        $vendor_details['vendor_tables'] = $vendor_tables;
+                    }
+                }
+                else{
+                    if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+                        if($address_id > 0){
+                            $serviceArea = $vendorData->vendor->whereHas('serviceArea', function($query) use($latitude, $longitude){
+                                $query->select('vendor_id')
+                                ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+                            })->where('id', $vendorData->vendor_id)->get();
+                        }
+                    }
+                }
+
                 $ttAddon = $payable_amount = $is_coupon_applied = $coupon_removed = 0; $coupon_removed_msg = '';$deliver_charge = 0;
                 $delivery_fee_charges = 0.00;
                 $couponData = $couponProducts = array();
@@ -638,6 +662,8 @@ class CartController extends BaseController{
             ['label'=>'10%', 'value' => number_format((0.1 * $cart->total_payable_amount), 2, '.', '')],
             ['label'=>'15%', 'value' => number_format((0.15 * $cart->total_payable_amount), 2, '.', '')]
         );
+        $cart->vendor_details = $vendor_details;
+        $cart->cart_dinein_table_id = $cart_dinein_table_id;
         return $cart;
     }
 
@@ -681,5 +707,51 @@ class CartController extends BaseController{
             return $preference;
         else
             return false;
+    }
+
+    public function addVendorTableToCart(Request $request, $domain = '')
+    {
+        DB::beginTransaction();
+        try{
+            $user = Auth::user();
+            if ($user) {
+                $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->firstOrFail();
+                $cartData = CartProduct::where('cart_id', $cart->id)->where('vendor_id', $request->vendor_id)->update(['vendor_dinein_table_id' => $request->table]);
+                DB::commit();
+                return response()->json(['status'=>'Success', 'message'=>'Table has been selected']);
+            }
+            else{
+                return response()->json(['status'=>'Error', 'message'=>'Invalid user']);
+            }
+        }
+        catch(\Exception $ex){
+            DB::rollback();
+            return response()->json(['status'=>'Error', 'message'=>$ex->getMessage()]);
+        }
+    }
+
+    public function updateSchedule(Request $request, $domain = '')
+    {
+        DB::beginTransaction();
+        try{
+            $user = Auth::user();
+            if ($user) {
+                if($request->task_type == 'now'){
+                    $request->schedule_dt = Carbon::now()->format('Y-m-d H:i:s');
+                }else{
+                    $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
+                Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions??null,'schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt]);
+                DB::commit();
+                return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
+            }
+            else{
+                return response()->json(['status'=>'Error', 'message'=>'Invalid user']);
+            }
+        }
+        catch(\Exception $ex){
+            DB::rollback();
+            return response()->json(['status'=>'Error', 'message'=>$ex->getMessage()]);
+        }
     }
 }

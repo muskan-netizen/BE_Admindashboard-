@@ -1,7 +1,9 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Emails'])
 @section('css')
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.8.0/bootstrap-tagsinput.css" rel="stylesheet">
+<!-- <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.8.0/bootstrap-tagsinput.css" rel="stylesheet"> -->
+<link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/css/samples.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/toolbarconfigurator/lib/codemirror/neo.css') }}">
 @endsection
 @section('content')
 <div class="container-fluid">
@@ -18,8 +20,8 @@
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h4>List</h4>
-                    </div> 
-                   <div class="table-responsive pages-list-data">
+                    </div>
+                    <div class="table-responsive pages-list-data">
                         <table class="table table-striped w-100">
                             <thead>
                                 <tr>
@@ -28,17 +30,17 @@
                             </thead>
                             <tbody>
                                 @forelse($email_templates as $email_template)
-                                    <tr class="page-title active-page email-page-detail" data-email_template_id="{{$email_template->id}}" data-show_url="{{route('cms.emails.show', ['id'=> $email_template->id])}}">
-                                        <td>
-                                            <a class="text-body d-block" href="javascript:void(0)">{{$email_template->label}}</a>
-                                        </td>
-                                    </tr>
+                                <tr class="page-title active-page email-page-detail" data-email_template_id="{{$email_template->id}}" data-show_url="{{route('cms.emails.show', ['id'=> $email_template->id])}}">
+                                    <td>
+                                        <a class="text-body d-block" href="javascript:void(0)">{{$email_template->label}}</a>
+                                    </td>
+                                </tr>
                                 @empty
                                 @endforelse
                             </tbody>
                         </table>
-                   </div>
-                </div>            
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-lg-7 col-xl-9 mb-2">
@@ -60,67 +62,77 @@
                                 </div>
                                 <div class="col-md-10 mb-3">
                                     <label for="title" class="control-label">Content</label>
-                                    <textarea class="form-control" id="content" placeholder="Meta Keyword" rows="6" name="meta_keyword" cols="10"></textarea>
+                                    <textarea class="form-control" id="editor" placeholder="Meta Keyword" rows="6" name="meta_keyword" cols="10"></textarea>
                                 </div>
                                 <div class="col-md-2 mb-3">
                                     <label for="title" class="control-label">Tags:-<div id="tags" disabled=""></div></label>
                                 </div>
-                            </div>         
+                            </div>
                         </div>
                     </div>
-                </div>            
+                </div>
             </div>
-        </div>         
+        </div>
     </div>
 </div>
+<script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
+<script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-         $.ajaxSetup({
+        $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        setTimeout(function(){ 
+        setTimeout(function() {
             $('tr.page-title:first').trigger('click');
         }, 500);
-        $(document).on("click","#client_language",function() {
+        $(document).on("click", "#client_language", function() {
             $('tr.page-title:first').trigger('click');
         });
-        $(document).on("click",".email-page-detail",function() {
-            $('#edit_page_content #content').val('');
-            $('#edit_page_content #content').summernote('destroy');
+        $(document).on("click", ".email-page-detail", function() {
+            // $('#edit_page_content #content').val('');
+            // $('#edit_page_content #content').summernote('destroy');
             let url = $(this).data('show_url');
             let language_id = $('#edit_page_content #client_language :selected').val();
-            $.get(url,function(response) {
-              if(response.status == 'Success'){
-                if(response.data){
-                    $('#edit_page_content #email_template_id').val(response.data.id);
-                    if(response.data){
-                        $('#edit_page_content #tags').html(response.data.tags);
-                        $('#edit_page_content #subject').val(response.data.subject);
-                        $('#edit_page_content #content').val(response.data.content);
-                        $('#edit_page_content #content').summernote({'height':450});
-                    }else{
-                      $(':input:text').val('');
-                      $('textarea').val('');
+            $.get(url, function(response) {
+                if (response.status == 'Success') {
+                    if (response.data) {
+                        $('#edit_page_content #email_template_id').val(response.data.id);
+                        if (response.data) {
+                            $('#edit_page_content #tags').html(response.data.tags);
+                            $('#edit_page_content #subject').val(response.data.subject);
+                            // $('#edit_page_content #content').val(response.data.content);
+                            // $('#edit_page_content #content').summernote({
+                            //     'height': 450
+                            // });
+                            CKEDITOR.instances.editor.setData(response.data.content);
+                        } else {
+                            $(':input:text').val('');
+                            $('textarea').val('');
+                        }
+                    } else {
+                        $('textarea').val('');
+                        $(':input:text').val('');
+                        $('#edit_page_content #page_id').val('');
                     }
-                }else{
-                    $('textarea').val('');
-                    $(':input:text').val('');
-                    $('#edit_page_content #page_id').val('');
                 }
-              }
             });
         });
-        $(document).on("click","#update_email_template",function() {
+        $(document).on("click", "#update_email_template", function() {
             var update_url = "{{route('cms.emails.update')}}";
             let subject = $('#edit_page_content #subject').val();
-            let content = $('#edit_page_content #content').val();
+            // let content = $('#edit_page_content #content').val();
+            let content = CKEDITOR.instances.editor.getData();
             let email_template_id = $('#edit_page_content #email_template_id').val();
-            var data = { subject: subject, content: content, email_template_id:email_template_id};
+            var data = {
+                subject: subject,
+                content: content,
+                email_template_id: email_template_id
+            };
             $.post(update_url, data, function(response) {
-              $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-              setTimeout(function() {
+                $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                setTimeout(function() {
                     location.reload()
                 }, 2000);
             }).fail(function(response) {
@@ -132,6 +144,10 @@
 </script>
 @endsection
 @section('script')
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+<script>
+    CKEDITOR.replace('editor');
+    CKEDITOR.config.height = 450;
+</script>
 @endsection

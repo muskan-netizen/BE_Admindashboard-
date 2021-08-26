@@ -12,7 +12,9 @@ class BaseController extends Controller
 {
     private $htmlData = '';
     private $toggleData = '';
+    private $optionData = '';
     private $successCount = 0;
+    private $parent_cat_id = 0;
     private $makeArray = array();
 
     public function buildTree($elements, $parentId = "1")
@@ -116,24 +118,28 @@ class BaseController extends Controller
     /*      Category options heirarchy      */
     public function printCategoryOptionsHeirarchy($tree, $parentCategory = [])
     {
-        $this->optionData = '';
         if (!is_null($tree) && count($tree) > 0) {
-            foreach ($tree as $node) {
+            foreach ($tree as $key => $node) {
+                if($node['parent_id'] == 1){
+                    $parentCategory = array($node['translation_one']['name']);
+                }
                 // type_id 1 means product in type table
                 if (isset($node['children']) && count($node['children']) > 0) {
-                    $parentCategory[] = $node['translation_one']['name'];
+                    if($node['parent_id'] != 1){
+                        $parentCategory[] = $node['translation_one']['name'];
+                    }
                     $this->printCategoryOptionsHeirarchy($node['children'], $parentCategory);
                 }else{
                     if ($node['type_id'] == 1 || $node['type_id'] == 3 || $node['type_id'] == 7) {
                         $category = (isset($node['translation_one']['name'])) ? $node['translation_one']['name'] : $node['slug'];
                         if($node['parent_id'] == 1){
                             $parentCategory = [];
-                            $heirarchyName = $category;
+                            $hierarchyName = $category;
                         }else{
-                            $heirarchyName = implode(' > ', $parentCategory);
-                            $heirarchyName = $heirarchyName.' > '.$category;
+                            $hierarchyName = implode(' > ', $parentCategory);
+                            $hierarchyName = $hierarchyName.' > '.$category;
                         }
-                        $this->optionData .= '<option value="'.$node['id'].'">'.$heirarchyName.'</option>';
+                        $this->optionData .= '<option value="'.$node['id'].'">'.$hierarchyName.'</option>';
                     }
                 }
             }
