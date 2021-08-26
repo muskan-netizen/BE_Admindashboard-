@@ -130,7 +130,7 @@ class BaseController extends Controller
                     }
                     $this->printCategoryOptionsHeirarchy($node['children'], $parentCategory);
                 }else{
-                    if ($node['type_id'] == 1 || $node['type_id'] == 3 || $node['type_id'] == 7) {
+                    if ($node['type_id'] == 1 || $node['type_id'] == 3 || $node['type_id'] == 7 || $node['type_id'] == 8) {
                         $category = (isset($node['translation_one']['name'])) ? $node['translation_one']['name'] : $node['slug'];
                         if($node['parent_id'] == 1){
                             $parentCategory = [];
