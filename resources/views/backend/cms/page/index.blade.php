@@ -3,7 +3,9 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<!-- <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet"> -->
+<link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/css/samples.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/toolbarconfigurator/lib/codemirror/neo.css') }}">
 @endsection
 @section('content')
 <div class="container-fluid">
@@ -121,6 +123,8 @@
         </div>         
     </div>
 </div>
+<script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
+<script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
          $.ajaxSetup({
@@ -136,8 +140,8 @@
             $('#text_body_'+page_id).trigger('click');
         });
         $(document).on("click",".page-detail",function() {
-            $('#edit_page_content #edit_description').val('');
-            $('#edit_page_content #edit_description').summernote('destroy');
+            // $('#edit_page_content #edit_description').val('');
+            // $('#edit_page_content #edit_description').summernote('destroy');
             let url = $(this).data('show_url');
             let language_id = $('#edit_page_content #client_language :selected').val();
             $.get(url, {language_id:language_id},function(response) {
@@ -148,10 +152,12 @@
                         $('#edit_page_content #edit_title').val(response.data.translation.title);
                         $("#edit_page_content #published").val(response.data.translation.is_published);
                         $('#edit_page_content #edit_meta_title').val(response.data.translation.meta_title);
-                        $('#edit_page_content #edit_description').val(response.data.translation.description);
+                        // $('#edit_page_content #edit_description').val(response.data.translation.description);
+                        CKEDITOR.instances.edit_description.setData(response.data.translation.description);
                         $('#edit_page_content #edit_meta_keyword').val(response.data.translation.meta_keyword);
                         $('#edit_page_content #edit_meta_description').val(response.data.translation.meta_description);
-                        $('#edit_page_content #edit_description').summernote({'height':450});
+                        $("#update_page_btn").html('Update');
+                        // $('#edit_page_content #edit_description').summernote({'height':450});
                     }else{
                       $(':input:text').val('');
                       $('textarea').val('');
@@ -170,7 +176,8 @@
             $('#edit_page_content #page_id').val('');
             $('#edit_page_content #edit_title').val('');
             $('#edit_page_content #edit_meta_title').val('');
-            $('#edit_page_content #edit_description').summernote('reset');
+            // $('#edit_page_content #edit_description').summernote('reset');
+            CKEDITOR.instances.edit_description.setData("");
             $('#edit_page_content #edit_meta_keyword').val('');
             $('#edit_page_content #edit_meta_description').val('');
         });  
@@ -204,7 +211,8 @@
             let is_published = $('#edit_page_content #published option:selected').val();
             let language_id = $('#edit_page_content #client_language :selected').val();
             let edit_meta_title = $('#edit_page_content #edit_meta_title').val();
-            let edit_description = $('#edit_page_content #edit_description').val();
+            // let edit_description = $('#edit_page_content #edit_description').val();
+            let edit_description = CKEDITOR.instances.edit_description.getData();
             let edit_meta_keyword = $('#edit_page_content #edit_meta_keyword').val();
             let edit_meta_description = $('#edit_page_content #edit_meta_description').val();
             var data = { page_id: page_id, is_published: is_published, edit_title: edit_title,edit_meta_title:edit_meta_title, edit_description:edit_description, edit_meta_keyword:edit_meta_keyword, edit_meta_description:edit_meta_description,language_id:language_id};
@@ -223,5 +231,9 @@
 </script>
 @endsection
 @section('script')
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script> -->
+<script>
+    CKEDITOR.replace('edit_description');
+    CKEDITOR.config.height = 450;
+</script>
 @endsection

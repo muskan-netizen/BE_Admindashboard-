@@ -347,7 +347,7 @@ class CartController extends BaseController{
                     'vendorProducts.addon.option' => function($qry) use($langId){
                         $qry->where('language_id', $langId);
                     }, 'vendorProducts.product.taxCategory.taxRate', 
-                ])->select('vendor_id')->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+                ])->select('vendor_id', 'vendor_dinein_table_id')->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         $loyalty_amount_saved = 0;
         $subscription_features = array();
         if($cart->user_id){
@@ -587,6 +587,7 @@ class CartController extends BaseController{
                 $vendorData->discount_percent = $discount_percent;
                 $vendorData->taxable_amount = $taxable_amount;
                 $vendorData->payable_amount = $payable_amount - $discount_amount;
+                $vendorData->isDeliverable = 1;
                 $total_paying = $total_paying + $payable_amount;
                 $total_tax = $total_tax + $taxable_amount;
                 $total_disc_amount = $total_disc_amount + $discount_amount;
@@ -603,8 +604,6 @@ class CartController extends BaseController{
                     if($serviceArea->isEmpty()){
                         $vendorData->isDeliverable = 0;
                         $delivery_status = 0;
-                    }else{
-                        $vendorData->isDeliverable = 1;
                     }
                 }
             }

@@ -71,7 +71,7 @@ class TypeSeeder extends Seeder
                 'title' => 'On Demand Service',
                 'image' => 'ondemand.png',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-            ],
+            ]
         );
         foreach ($types as $type) {
            Type::upsert($type, ['id', 'title','description', 'sequence','image']);

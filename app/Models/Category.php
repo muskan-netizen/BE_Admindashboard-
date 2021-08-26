@@ -85,4 +85,8 @@ class Category extends Model
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }
+
+    public function parent(){
+      return $this->belongsTo('App\Models\Category','parent_id','id'); 
+   }
 }

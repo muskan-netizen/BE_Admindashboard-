@@ -321,10 +321,13 @@
                             @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
                             <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid">Next</span></a>
                             @elseif(app('request')->input('step') == '2')
-                            <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>   
-
-                            <a href="#" id="next-button-ondemand-3" style="display: none;"><span class="btn btn-solid">Continue</span></a>
-                            @elseif(app('request')->input('step') == '3')
+                            <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
+                            @if(Auth::guest())
+                             <a href="{{route('customer.login')}}" id="next-button-ondemand-3" style="display: none;"><span class="btn btn-solid">Continue</span></a>
+                             @else
+                             <a href="#" id="next-button-ondemand-3" style="display: none;"><span class="btn btn-solid">Continue</span></a>
+                             @endif
+                             @elseif(app('request')->input('step') == '3')
                             <a href="?step=2"><span class="btn btn-solid"><</span></a>
                             <a href="?step=3" id="next-button-ondemand-4" style="display: none;"><span class="btn btn-solid">Continue</span></a>
                             @else

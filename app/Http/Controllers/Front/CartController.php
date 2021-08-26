@@ -447,6 +447,9 @@ class CartController extends FrontController
         }
         $latitude = ($address) ? $address->latitude : '';
         $longitude = ($address) ? $address->longitude : '';
+
+        $delifproductnotexist = CartProduct::where('cart_id', $cart_id)->doesntHave('product')->delete();
+      
         $cartData = CartProduct::with([
             'vendor', 'coupon' => function ($qry) use ($cart_id) {
                 $qry->where('cart_id', $cart_id);
@@ -623,22 +626,21 @@ class CartController extends FrontController
                 if (in_array(1, $subscription_features)) {
                     $subscription_discount = $subscription_discount + $delivery_fee_charges;
                 }
-                if(isset($serviceArea)){
-                    if($serviceArea->isEmpty()){
-                        $vendorData->isDeliverable = 0;
-                        $delivery_status = 0;
-                    }else{
-                        $vendorData->isDeliverable = 1;
-                    }
-                }
                 $vendorData->delivery_fee_charges = number_format($delivery_fee_charges, 2, '.', '');
                 $vendorData->payable_amount = number_format($payable_amount, 2, '.', '');
                 $vendorData->discount_amount = number_format($discount_amount, 2, '.', '');
                 $vendorData->discount_percent = number_format($discount_percent, 2, '.', '');
                 $vendorData->taxable_amount = number_format($taxable_amount, 2, '.', '');
                 $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount), 2, '.', '');
+                $vendorData->isDeliverable = 1;
                 if (!empty($subscription_features)) {
                     $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount - $subscription_discount), 2, '.', '');
+                }
+                if(isset($serviceArea)){
+                    if($serviceArea->isEmpty()){
+                        $vendorData->isDeliverable = 0;
+                        $delivery_status = 0;
+                    }
                 }
                 $total_payable_amount = $total_payable_amount + $payable_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
