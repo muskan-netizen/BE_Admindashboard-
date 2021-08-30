@@ -182,7 +182,7 @@
                                                         <div class="file file--upload">
                                                             <label>
                                                                 <span class="update_pic border-0">
-                                                                <img src="{{$vendor->logo['proxy_url'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
+                                                                <img src="{{$vendor->logo['image_fit'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
                                                                 </span>
                                                             </label>
                                                         </div>
@@ -316,10 +316,10 @@
     $('.js-range-slider').ionRangeSlider({
         type: 'double',
         grid: false,
-        min: "{{$range_products->last() ? $range_products->last()->price : 0}}",
-        max: "{{$range_products->first() ? $range_products->first()->price : 1000}}",
-        from: "{{$range_products->last() ? $range_products->last()->price : 0}}",
-        to: "{{$range_products->first() ? $range_products->first()->price : 1000}}",
+        min: "{{$range_products->last() ? $range_products->last()->price * (!empty(Session::get('currencyMultiplier'))?Session::get('currencyMultiplier'):1) : 0}}",
+        max: "{{$range_products->first() ? $range_products->first()->price * (!empty(Session::get('currencyMultiplier'))?Session::get('currencyMultiplier'):1) : 1000}}",
+        from: "{{$range_products->last() ? $range_products->last()->price * (!empty(Session::get('currencyMultiplier'))?Session::get('currencyMultiplier'):1) : 0}}",
+        to: "{{$range_products->first() ? $range_products->first()->price * (!empty(Session::get('currencyMultiplier'))?Session::get('currencyMultiplier'):1) : 1000}}",
         prefix: ""
     });
 

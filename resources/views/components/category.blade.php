@@ -3,7 +3,8 @@
         @if(isset($first_child['translation_one']))
             <li class="dd-item dd3-item" data-id="{{$first_child['id']}}">
                 <div class="dd3-content"> 
-                    <img class="rounded-circle mr-1" src="{{$first_child['icon']['proxy_url']}}30/30{{$first_child['icon']['image_path']}}"> {{$first_child['translation_one']['name']}} 
+                    <img class="rounded-circle mr-1" src="{{$first_child['icon']['proxy_url']}}30/30{{$first_child['icon']['image_path']}}">
+                    {{$first_child['translation_one']['name']}} 
                     <span class="inner-div text-right">
                         <a class="action-icon" data-id="6" href="javascript:void(0)">
                             @if(in_array($first_child['id'], $vendorcategory))

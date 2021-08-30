@@ -20,6 +20,9 @@
     <div class="mobile-fix-option"></div>
     @include('layouts.store/left-sidebar')
 </header>
+@if(!empty($category))
+@include('frontend.included_files.categories_breadcrumb')
+@endif
 <section class="section-b-space ratio_asos">
     <div class="collection-wrapper">
         <div class="container">

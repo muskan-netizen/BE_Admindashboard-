@@ -239,7 +239,6 @@
 
   span.inner-div {
       float: right;
-      margin-top: 5px;
       /*position: absolute;
     top: -5px;
     right: 16px;*/
@@ -255,8 +254,12 @@
   }
 
   .dd-list .dd3-content {
-      padding: 8px 10px 8px 16px;
-  }
+    padding: 8px 20px 8px 16px;
+    /* white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+    overflow: hidden; */
+}
 
   .nestable_list_1>.dd-list {
       padding: 0;

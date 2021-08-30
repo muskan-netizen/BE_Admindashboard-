@@ -64,7 +64,7 @@ class DashBoardController extends BaseController{
                 $total_products->whereBetween('created_at', [$from_date, $end_date]);
             }
             $total_products = $total_products->where('deleted_at', NULL)->count();
-            $total_categories = Category::where('status', 1);
+            $total_categories = Category::whereHas('parent')->where('status', 1);
             if($date_filter){
                 $total_categories->whereBetween('created_at', [$from_date, $end_date]);
             }
@@ -118,7 +118,7 @@ class DashBoardController extends BaseController{
             $total_delivered_order = $total_delivered_order->count();
             $dates = $sales = $labels = $series = $categories = $revenue = $address_ids = $markers =[];
              #total_active_order
-            $total_active_order = OrderVendor::whereNotIn('order_status_option_id',[3,6]);
+            $total_active_order = OrderVendor::whereIn('order_status_option_id',[2,4,5]);
             if (Auth::user()->is_superadmin == 0) {
                 $total_active_order = $total_active_order->whereHas('vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);

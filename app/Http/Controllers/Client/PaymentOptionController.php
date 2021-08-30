@@ -23,7 +23,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $code = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack');
+        $code = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast');
         $payOption = PaymentOption::whereIn('code', $code)->get();
         return view('backend/payoption/index')->with(['payOption' => $payOption]);
     }
@@ -124,6 +124,17 @@ class PaymentOptionController extends BaseController
                     $json_creds = json_encode(array(
                         'secret_key' => $request->paystack_secret_key,
                         'public_key' => $request->paystack_public_key
+                    ));
+                }
+                else if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'payfast') ){
+                    $validatedData = $request->validate([
+                        'payfast_merchant_id'=> 'required',
+                        'payfast_merchant_key'=> 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'merchant_id' => $request->payfast_merchant_id,
+                        'merchant_key' => $request->payfast_merchant_key,
+                        'passphrase' => $request->payfast_passphrase
                     ));
                 }
             }

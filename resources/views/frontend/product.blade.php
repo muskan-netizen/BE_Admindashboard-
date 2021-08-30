@@ -11,6 +11,10 @@
         opacity:0.5;
         pointer-events: none;
     }
+    .fab {
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: inherit;
+    }
 </style>
 
 @endsection

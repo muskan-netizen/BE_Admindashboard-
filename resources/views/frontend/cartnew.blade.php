@@ -555,7 +555,9 @@
     var promo_code_remove_url = "{{ route('remove.promocode') }}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
-    var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";;
+    var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
+    var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
+    var payment_success_payfast_url = "{{route('payment.payfastCompletePurchase')}}";;
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";

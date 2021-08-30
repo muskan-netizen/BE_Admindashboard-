@@ -530,7 +530,7 @@ class CartController extends FrontController
                     if($action == 'dine_in'){
                         $vendor_tables = VendorDineinTable::where('vendor_id', $vendorData->vendor_id)->with('category')->get();
                         foreach ($vendor_tables as $vendor_table) {
-                            $vendor_table->qr_url = url('/vendor/'.$vendorData->vendor->slug.'/?table='.$vendor_table->id);
+                            $vendor_table->qr_url = url('/vendor/'.$vendorData->vendor->slug.'/?id='.$vendorData->vendor_id.'&table='.$vendor_table->id);
                         }
                         $vendor_details['vendor_tables'] = $vendor_tables;
                     }
@@ -692,7 +692,7 @@ class CartController extends FrontController
                         $wallet_amount_used = $total_payable_amount;
                     }
                     $total_payable_amount = $total_payable_amount - $wallet_amount_used;
-                    $cart->wallet_amount_used = $wallet_amount_used;
+                    $cart->wallet_amount_used = number_format($wallet_amount_used, 2, '.', '');
                 }
             }
             $cart->loyalty_amount = number_format($loyalty_amount_saved, 2, '.', '');

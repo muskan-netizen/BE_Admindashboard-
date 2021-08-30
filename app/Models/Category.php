@@ -45,7 +45,7 @@ class Category extends Model
 
     public function childs()
     {
-        return $this->hasMany(Category::class, 'parent_id', 'id')->select('id', 'slug', 'parent_id', 'icon','image');
+        return $this->hasMany(Category::class, 'parent_id', 'id')->select('id', 'slug', 'parent_id', 'icon','image','type_id');
     }
     public function products()
     {
@@ -89,4 +89,10 @@ class Category extends Model
     public function parent(){
       return $this->belongsTo('App\Models\Category','parent_id','id'); 
    }
+
+  public function allParentsAccount()
+  {
+    return $this->parent()->select('id', 'slug', 'parent_id')->with('allParentsAccount');
+  }
+
 }

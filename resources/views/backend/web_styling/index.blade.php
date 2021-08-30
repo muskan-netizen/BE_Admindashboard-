@@ -32,11 +32,13 @@
                     </div>
                     <div class="col-7">
                         <h4 class="header-title">Color</h4>
-                        <div class="mb-0">
-                            <div class="form-group mb-0">
-                                <label for="primary_color">Primary Color</label>
-                                <input type="text" id="primary_color_option" name="primary_color" class="form-control" value="{{ old('primary_color', $client_preferences->web_color ?? 'cccccc')}}">
-                            </div>
+                        <div class="form-group">
+                            <label for="primary_color">Primary Color</label>
+                            <input type="text" id="primary_color_option" name="primary_color" class="form-control" value="{{ old('primary_color', $client_preferences->web_color ?? 'cccccc')}}">
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Top Header Color</label>
+                            <input type="text" id="site_top_header_color" name="site_top_header_color" class="form-control" value="{{ old('site_top_header_color', $client_preferences->site_top_header_color ?? '#4c4c4c')}}">
                         </div>
                     </div>
                 </div>
@@ -199,10 +201,15 @@
     $(document).ready(function() {
         var color1 = new jscolor('#primary_color_option', options);
     });
+    
+    $(document).ready(function() {
+        var color1 = new jscolor('#site_top_header_color', options);
+    });
 
-    $("#primary_color_option").change(function() {
+    $("#primary_color_option, #site_top_header_color").change(function() {
         submitData();
     });
+
     $("#show_contact_us").change(function() {
         submitData();
     });

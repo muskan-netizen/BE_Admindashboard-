@@ -252,8 +252,8 @@ class VendorController extends FrontController
         if($request->has('range') && !empty($request->range)){
             $range = explode(';', $request->range);
             $clientCurrency->doller_compare;
-            $startRange = $range[0] * $clientCurrency->doller_compare;
-            $endRange = $range[1] * $clientCurrency->doller_compare;
+            $startRange = $range[0] / $clientCurrency->doller_compare;
+            $endRange = $range[1] / $clientCurrency->doller_compare;
         }
         $multiArray = array();
         if($request->has('options') && !empty($request->options)){

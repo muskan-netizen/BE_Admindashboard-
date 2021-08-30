@@ -362,6 +362,8 @@ class CartController extends BaseController{
                     $subscription_features[] = $feature->feature_id;
                 }
             }
+            $user = User::find($cart->user_id);
+            $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
             $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
             $address_id = ($address) ? $address->id : 0;
         }
@@ -392,7 +394,7 @@ class CartController extends BaseController{
                     if($action == 'dine_in'){
                         $vendor_tables = VendorDineinTable::where('vendor_id', $vendorData->vendor_id)->with('category')->get();
                         foreach ($vendor_tables as $vendor_table) {
-                            $vendor_table->qr_url = url('/vendor/'.$vendorData->vendor->slug.'/?table='.$vendor_table->id);
+                            $vendor_table->qr_url = url('/vendor/'.$vendorData->vendor->slug.'/?id='.$vendorData->vendor_id.'&table='.$vendor_table->id);
                         }
                         $vendor_details['vendor_tables'] = $vendor_tables;
                     }
@@ -640,8 +642,7 @@ class CartController extends BaseController{
             $cart->total_payable_amount = $total_paying  + $total_tax - $total_disc_amount - $loyalty_amount_saved;
         }
         $wallet_amount_used = 0;
-        if($cart->user_id){
-            $user = User::find($cart->user_id);
+        if(isset($user)){
             if($user->balanceFloat > 0){
                 $wallet_amount_used = $user->balanceFloat;
                 if($clientCurrency){

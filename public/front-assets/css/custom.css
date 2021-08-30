@@ -1128,7 +1128,6 @@ body.dark .spinner-box .circle-core {
     background-size: cover;
     overflow: hidden;
     display: block;
-    padding: 10px;
 }
 
 .top-banner-wrapper .file .update_pic {
@@ -4558,7 +4557,12 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     margin-right: 0;
 }
 
-
+.breadcrumb-item+.breadcrumb-item::before {
+    content: "/";
+    font-size: 18px;
+    top: -2px;
+    position: relative;
+}
 
 
 

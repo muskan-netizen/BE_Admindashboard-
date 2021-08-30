@@ -92,6 +92,7 @@ class WebStylingController extends BaseController{
             $client_preferences->show_wishlist = $request->show_wishlist == 'on' ? 1 : 0;
             $client_preferences->show_payment_icons = $request->show_payment_icons == 'on' ? 1 : 0;
             $client_preferences->age_restriction_title = $request->age_restriction_title;
+            $client_preferences->site_top_header_color = $request->site_top_header_color;
             $client_preferences->save();
         }
 

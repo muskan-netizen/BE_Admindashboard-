@@ -10439,7 +10439,8 @@ header.header-style .onhover-dropdown:before {
 .top-header {
     /* background-color: #f8f8f8;  */
     /*background-color: #000;*/
-    background-color: rgba(0, 0, 0, 0.7);
+    /* background-color: rgba(0, 0, 0, 0.7); */
+    background-color: var(--top-header-color);
 }
 
 .top-header .header-contact {

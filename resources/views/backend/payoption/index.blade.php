@@ -54,10 +54,10 @@
         </div>
         <div class="row">
             @foreach($payOption as $key => $opt)
-            <div class="col-md-4">
+            <div class="col-md-4 mb-3">
             
                 <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
-                <input type="hidden" name="method_name[]" id="{{$opt->title}}" value="{{$opt->title}}">
+                <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
                 
                 <?php 
                 $creds = json_decode($opt->credentials);
@@ -68,6 +68,9 @@
                 $publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
                 $secret_key = (isset($creds->secret_key)) ? $creds->secret_key : '';
                 $public_key = (isset($creds->public_key)) ? $creds->public_key : '';
+                $merchant_id = (isset($creds->merchant_id)) ? $creds->merchant_id : '';
+                $merchant_key = (isset($creds->merchant_key)) ? $creds->merchant_key : '';
+                $passphrase = (isset($creds->passphrase)) ? $creds->passphrase : '';
                 ?>
 
                 <div class="card-box h-100">
@@ -76,10 +79,10 @@
                     </div>
                     <div class="form-group mb-0 switchery-demo">
                         <label for="" class="mr-3">Enable</label>
-                        <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->title}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
+                        <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
                     </div>
 
-                    @if ( (strtolower($opt->title) == 'stripe') )
+                    @if ( (strtolower($opt->code) == 'stripe') )
                     <div id="stripe_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
                             <div class="col-12">
@@ -98,7 +101,7 @@
                     </div>
                     @endif
 
-                    @if ( (strtolower($opt->title) == 'paypal') )
+                    @if ( (strtolower($opt->code) == 'paypal') )
                     <div id="paypal_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
                             <div class="col-12">
@@ -123,7 +126,7 @@
                     </div>
                     @endif
 
-                    @if ( (strtolower($opt->title) == 'paystack') )
+                    @if ( (strtolower($opt->code) == 'paystack') )
                     <div id="paystack_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
                             <div class="col-12">
@@ -136,6 +139,31 @@
                                 <div class="form-group mb-0">
                                     <label for="paystack_public_key" class="mr-3">Publishable Key</label>
                                     <input type="password" name="paystack_public_key" id="paystack_public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'payfast') )
+                    <div id="payfast_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="payfast_merchant_id" class="mr-3">Merchant ID</label>
+                                    <input type="text" name="payfast_merchant_id" id="payfast_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="payfast_merchant_key" class="mr-3">Merchant Key</label>
+                                    <input type="password" name="payfast_merchant_key" id="payfast_merchant_key" class="form-control" value="{{$merchant_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="payfast_passphrase" class="mr-3">Passphrase</label>
+                                    <input type="text" name="payfast_passphrase" id="payfast_passphrase" class="form-control" value="{{$passphrase}}">
                                 </div>
                             </div>
                         </div>
@@ -195,6 +223,16 @@
                 else{
                     $("#paystack_fields_wrapper").hide();
                     $("#paystack_fields_wrapper").find('input').removeAttr('required');
+                }
+            }
+            if( title.toLowerCase() == 'payfast' ){
+                if($(this).is(":checked")){
+                    $("#payfast_fields_wrapper").show();
+                    $("#payfast_fields_wrapper").find('input').attr('required', true);
+                }
+                else{
+                    $("#payfast_fields_wrapper").hide();
+                    $("#payfast_fields_wrapper").find('input').removeAttr('required');
                 }
             }
 

@@ -42,7 +42,9 @@
                             <ul id='main-nav-list'>
                                @if(!empty($category->childs) && count($category->childs) > 0)
                                     @foreach ($category->childs as $key => $childs)
+                                        @if($childs->type_id == 8)
                                         <li><a href="#section_set{{$key}}">{{ $childs['translation_name'] ?? ''}}</a></li>
+                                        @endif
                                     @endforeach
                                 @endif
                             </ul>
@@ -59,6 +61,8 @@
                                         @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
                                             @if(!empty($category->childs) && count($category->childs) > 0)
                                                 @foreach ($category->childs as $key => $childs)
+                                                @if($childs->type_id == 8)
+
                                                 <h4><b>{{ $childs->translation_name }}</b></h4>
                                                       <div class='' id='section_set{{$key}}'>
                                                         @if(!empty($childs))
@@ -135,6 +139,7 @@
                                                             @endforeach
                                                             
                                                         </div>
+                                                @endif
                                                 @endforeach
                                             @endif
 

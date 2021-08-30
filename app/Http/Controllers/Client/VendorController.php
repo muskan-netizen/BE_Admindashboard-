@@ -241,7 +241,7 @@ class VendorController extends BaseController
         $dinein_categories = VendorDineinCategory::where('vendor_id', $id)->get();
         $vendor_tables = VendorDineinTable::where('vendor_id', $id)->with('category')->get();
         foreach ($vendor_tables as $vendor_table) {
-            $vendor_table->qr_url = url('/vendor/'.$vendor->slug.'/?table='.$vendor_table->id);
+            $vendor_table->qr_url = url('/vendor/'.$vendor->slug.'/?id='.$vendor->id.'&table='.$vendor_table->id);
         }
         $co_ordinates = $all_coordinates = array();
         $areas = ServiceArea::where('vendor_id', $id)->orderBy('created_at', 'DESC')->get();
@@ -399,6 +399,7 @@ class VendorController extends BaseController
         $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
             ->where('id', '>', '1')
             ->where('is_core', 1)
+            ->whereNotIn('type_id', [4, 5])
             ->where(function ($q) use ($id) {
                 $q->whereNull('vendor_id')->orWhere('vendor_id', $id);
             })->orderBy('position', 'asc')
