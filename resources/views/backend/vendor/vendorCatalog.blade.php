@@ -382,45 +382,47 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <table class="table table-centered table-nowrap table-striped" id="">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>File Name</th>
-                                        <th colspan="2">Status</th>
-                                        <th>Link</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="post_list">
-                                    @foreach($csvProducts as $csv)
-                                    <tr data-row-id="{{$csv->id}}">
-                                        <td> {{ $loop->iteration }}</td>
-                                        <td> {{ $csv->name }}</td>
-                                        @if($csv->status == 1)
-                                        <td>Pending</td>
-                                        <td></td>
-                                        @elseif($csv->status == 2)
-                                        <td>Success</td>
-                                        <td></td>
-                                        @else
-                                        <td>Errors</td>
-                                        <td class="position-relative text-center">
-                                            <i class="mdi mdi-exclamation-thick"></i>
-                                            <ul class="tooltip_error">
-                                                <?php $error_csv = json_decode($csv->error); ?>
-                                                @foreach($error_csv as $err)
-                                                <li>
-                                                    {{$err}}
-                                                </li>
-                                                @endforeach
-                                            </ul>
-                                        </td>
-                                        @endif
-                                        <td> <a href="{{ $csv->path }}">Download</a> </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+                                <table class="table table-centered table-nowrap table-striped" id="">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>File Name</th>
+                                            <th colspan="2">Status</th>
+                                            <th>Link</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="post_list">
+                                        @foreach($csvProducts as $csv)
+                                        <tr data-row-id="{{$csv->id}}">
+                                            <td> {{ $loop->iteration }}</td>
+                                            <td> {{ $csv->name }}</td>
+                                            @if($csv->status == 1)
+                                            <td>Pending</td>
+                                            <td></td>
+                                            @elseif($csv->status == 2)
+                                            <td>Success</td>
+                                            <td></td>
+                                            @else
+                                            <td>Errors</td>
+                                            <td class="position-relative text-center">
+                                                <i class="mdi mdi-exclamation-thick"></i>
+                                                <ul class="tooltip_error">
+                                                    <?php $error_csv = json_decode($csv->error); ?>
+                                                    @foreach($error_csv as $err)
+                                                    <li>
+                                                        {{$err}}
+                                                    </li>
+                                                    @endforeach
+                                                </ul>
+                                            </td>
+                                            @endif
+                                            <td> <a href="{{ $csv->path }}">Download</a> </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
