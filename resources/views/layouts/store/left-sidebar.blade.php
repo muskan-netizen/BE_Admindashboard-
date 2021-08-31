@@ -132,7 +132,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </ul>
                         </div>
                         
-                        <div class="icon-nav d-sm-none d-block">
+                        <div class="icon-nav d-sm-none d-none">
                             <ul>
                                 <li class="onhover-div mobile-search">
                                     <a href="javascript:void(0);" id="mobile_search_box_btn"><i class="ti-search"></i></a>
@@ -234,6 +234,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
         </div>
     @endif
+
+   
+
+
 </header>
 <script type="text/template" id="nav_categories_template">
     <li>

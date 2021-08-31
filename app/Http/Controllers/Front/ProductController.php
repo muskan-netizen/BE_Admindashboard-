@@ -70,6 +70,7 @@ class ProductController extends FrontController{
                 $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                 $q2->where('apt.language_id', $langId);
             },
+            'category.categoryDetail.allParentsAccount'
         ]);
         if($user){
             $product = $product->with('inwishlist', function ($query) use($user) {
@@ -175,7 +176,8 @@ class ProductController extends FrontController{
             // ->reddit();
     
             // dd($shareComponent);
-            return view('frontend.product')->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor_info, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn]);
+            $category = $product->category->categoryDetail;
+            return view('frontend.product')->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor_info, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category]);
         
         }
    }

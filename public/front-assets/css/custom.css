@@ -4426,6 +4426,49 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     color: #fff;
 }
 
+
+.radio-btns input[type="radio"] {
+    z-index: -1;
+    position: absolute;
+    display: none;
+}
+
+.radio-btns input[type="checkbox"] {
+    z-index: -1;
+    position: absolute;
+    display: none;
+}
+
+.radio-btns input[type="checkbox"]+label .customCheckbox {
+    display: inline-block;
+    box-sizing: border-box;
+    position: relative;
+    width: 49px;
+    height: 49px;
+    line-height: 49px;
+    text-align: center;
+    padding: 0;
+    border-radius: 50%;
+    z-index: 1;
+    color: #1F2431;
+    background: #F3F3F3;
+    overflow: hidden;
+    transition: all 0.5s;
+    cursor: pointer;
+}
+
+
+.radio-btns input[type="checkbox"]:checked+label .customCheckbox {
+    background-color: var(--theme-deafult);
+    color: #fff;
+}
+
+.radio-btns input[type="checkbox"] {
+    z-index: -1;
+    position: absolute;
+    display: none;
+}
+
 .radios{
     text-align: center;
 }
@@ -4459,6 +4502,16 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     line-height: normal;
     padding: 10px 14px;
 }
+
+.radio-btns.long-radio input[type="checkbox"]+label .customCheckbox {
+    width: auto;
+    border-radius: 50px;
+    height: auto;
+    line-height: normal;
+    padding: 10px 14px;
+}
+
+
 
 .hours-slot .slick-track,.materials-slide .slick-track{
     margin-left: 0;
@@ -4495,8 +4548,37 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     top: 24px;
     padding: 15px 20px;
     margin-left: 0;
-    
+    overflow: auto;
 }
+
+ul#main-nav-list {
+    display: flex;
+    align-items: center;
+    overflow: auto;
+    width: max-content;
+}
+
+
+
+#main-nav::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+#main-nav::-webkit-scrollbar
+{
+	width: 10px;
+	background-color: #F5F5F5;
+	height:2px
+}
+
+#main-nav::-webkit-scrollbar-thumb
+{
+	background-color: #000000;
+	border: 2px solid #555555;
+}
+
 
 #main-nav.fixed	{ position: fixed; top:0;background: #fff;box-shadow: 0 4px 4px 0 rgb(0 0 0 / 6%);}
 #main-nav li{
@@ -4522,7 +4604,7 @@ input.form-control.pac-target-input.gm-err-autocomplete {
 #main-nav a:hover { background: #ddd;}
 
 /* Main Content */
-#main-wrapper { width: 100%; margin: 70px auto 0;}
+#main-wrapper { width: 100%; margin: 100px auto 0;}
 
 #main-wrapper .wrapper { height: 375px; text-align: center; font-weight: bold; padding: 150px 0 0 0;} /* Height of nav bar added to total height: 300 */
 
@@ -5167,29 +5249,42 @@ body[dir="rtl"] .inner_spacing h3 {
     .search_bar .onhover-div.pl-0.shake-effect {
         display: none;
     }
-     .main-menu .menu-right .icon-nav .mobile-search {
-        right: 86% !important;
+
+    .mobile-menu {
+        position: fixed;
+        bottom: 0;
+        background: #fff;
+        -webkit-box-shadow: 0 2px 5px 0 #a8a8a8;
+        box-shadow: 0 2px 5px 0 #a8a8a8;
+        width: 100%;
+        padding: 0 10px;
     }
-    .top-header .header-dropdown .mobile-wishlist {
-        right: 64% !important;
+    
+    .main-menu .menu-right .icon-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        width: 100%;
     }
-    .top-header .header-dropdown .mobile-wishlist {
-        right: 10%;
-        bottom: 7px !important;
+
+    .main-menu .menu-right .header-dropdown > li{
+        padding: 15px 0 5px !important;
     }
-    .main-menu .menu-right .icon-nav .mobile-cart {
-        right: 27% !important;
+    
+    .menu-right {
+        width: 100%;
     }
-    .top-header .header-dropdown .mobile-account{
-        right: 66% !important;
-    }
-    .top-header .header-dropdown .mobile-wishlist {
-        right: 8% !important;
-    }
-    .main-menu .menu-right .icon-nav .mobile-setting {
-        right: 47%;
+    .main-menu .menu-right .icon-nav li {
+        padding: 0;
+        position: relative;
+        top: auto;
+        right: initial;
+        bottom: auto;
     }
     .top-header .header-dropdown .mobile-account .onhover-show-div, .top-header .header-dropdown .mobile-wishlist .onhover-show-div {
+        top: unset;
+        bottom: 100%;
+        right: 0;
         left: 0;
     }
 }

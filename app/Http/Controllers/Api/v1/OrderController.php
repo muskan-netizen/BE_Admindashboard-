@@ -293,6 +293,7 @@ class OrderController extends Controller {
                     $order->loyalty_amount_saved = $loyalty_amount_saved;
                     $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                     $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
+                    $order->scheduled_date_time = $cart->scheduled_date_time;
                     $order->subscription_discount = $total_subscription_discount;
                     $order->payable_amount = $payable_amount;
                     $order->save();

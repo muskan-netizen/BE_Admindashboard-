@@ -41,6 +41,7 @@ class AppAuth{
             return response()->json(['error' => 'Invalid Session', 'message' => 'Invalid Token or session has been expired.'], 401);
             abort(404);
         }
+        $timezone = $user->timezone;
         $languages = ClientLanguage::where('is_primary', 1)->first();
         $primary_cur = ClientCurrency::where('is_primary', 1)->first();
         $language_id = $languages->language_id;
@@ -57,8 +58,12 @@ class AppAuth{
                 $currency_id = $checkCur->currency_id;
             }
         }
+        if(isset($header['timezone'][0]) && !empty($header['timezone'][0])){
+            $timezone = $header['timezone'][0];
+        }
         $user->language = $language_id;
         $user->currency = $currency_id;
+        $user->timezone = $timezone;
         Auth::login($user);
         return $next($request);
     }

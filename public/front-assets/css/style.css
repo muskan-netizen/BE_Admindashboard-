@@ -14386,7 +14386,7 @@ header.stickycls {
 
     .top-header .header-dropdown .mobile-account,
     .top-header .header-dropdown .mobile-wishlist {
-        position: fixed;
+        position: initial;
         bottom: 20px;
         right: 32%;
         font-size: 0;
@@ -14442,7 +14442,7 @@ header.stickycls {
     .main-menu .menu-right .icon-nav .mobile-setting,
     .main-menu .menu-right .icon-nav .mobile-cart,
     .main-menu .menu-right .icon-nav .mobile-search {
-        position: fixed;
+        position: initial;
         bottom: 20px;
         right: 16%;
         font-size: 0;
@@ -18785,9 +18785,19 @@ header.stickycls {
     padding-right: 0;
 }
 
-.breadcrumb-section .breadcrumb a {
+.breadcrumb-section .breadcrumb a,.breadcrumb-section .breadcrumb {
     color: #555555;
-    font-weight: 600;
+    font-weight: 400;
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+    padding-right: .3rem;
+}
+
+.breadcrumb-item+.breadcrumb-item {
+    padding-left: .3rem;
 }
 
 .about-head {

@@ -19,12 +19,12 @@ trait ApiResponser{
 		], $code);
 	}
 
-	protected function errorResponse($message = null, $code)
+	protected function errorResponse($message = null, $code, $data = null)
 	{
 		return response()->json([
 			'status'=>'Error',
 			'message' => $message,
-			'data' => null
+			'data' => $data
 		], $code);
 	}
 

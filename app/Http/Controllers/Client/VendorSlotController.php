@@ -224,7 +224,7 @@ class VendorSlotController extends BaseController
                 }
             }
 
-            // if($exist == 0){
+            if($exist == 0){
                 foreach ($slot as $k => $v) {
                     $title = '';
                     if($value == $v->day){
@@ -243,7 +243,7 @@ class VendorSlotController extends BaseController
                         $count++;
                     }
                 }
-            // } 
+            } 
         }
         echo $json  = json_encode($showData);
     }

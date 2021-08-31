@@ -97,6 +97,7 @@
                         <table class="table table-centered table-nowrap table-striped" id="user_datatable" width="100%">
                             <thead>
                                 <tr>
+                                    <th>#</th>
                                     <th>Image</th>
                                     <th>Name</th>
                                     <th>Login Type</th>
@@ -182,6 +183,7 @@
                     });
                 },
                 columns: [
+                    {data: 'id', name: 'id', orderable: false, searchable: false},
                     {data: 'image_url', name: 'image_url', orderable: false, searchable: false,"mRender": function ( data, type, full ) {
                         return "<img src='"+full.image_url+"' class='rounded-circle' alt='"+full.id+"' >";
                     }},
@@ -196,7 +198,7 @@
                             return "<i class='mdi mdi-email-remove mr-1 mdi-icons'></i>"+full.login_type_value;
                         }
                     }},
-                    {data: 'is_phone_verified', name: 'is_phone_verified', orderable: false, searchable: false, "mRender": function ( data, type, full) {
+                    {data: 'is_phone_verified', name: 'is_phone_verified', orderable: false, searchable: true, "mRender": function ( data, type, full) {
                         if(full.is_phone_verified == 1){
                             if(full.phone_number){
                                 return "<i class='mdi mdi-phone-check mr-1 mdi-icons'></i>"+full.phone_number;

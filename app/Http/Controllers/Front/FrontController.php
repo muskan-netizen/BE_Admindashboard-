@@ -339,9 +339,8 @@ class FrontController extends Controller
             $addresses = collect();
         }
         if ($cart) {
-            $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+            $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
         }
-        // dd($cartData->toArray());
         $navCategories = $this->categoryNav($langId);
         $subscription_features = array();
         if ($user) {

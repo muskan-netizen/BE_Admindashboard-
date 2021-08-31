@@ -80,6 +80,8 @@ class UserController extends BaseController{
                         return true;
                     }elseif (Str::contains(Str::lower($row['email']), Str::lower($request->get('search')))) {
                         return true;
+                    }elseif (Str::contains(Str::lower($row['phone_number']), Str::lower($request->get('search')))) {
+                        return true;
                     }
                     return false;
                 });

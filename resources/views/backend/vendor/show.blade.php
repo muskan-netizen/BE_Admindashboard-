@@ -1108,7 +1108,8 @@
                 }
 
                 $('#slot_date').flatpickr({
-                    minDate: "today"
+                    minDate: "today",
+                    defaultDate: arg.start
                 });
             },
             events: {
@@ -1119,7 +1120,7 @@
 
             },
             eventClick: function(ev) {
-console.log(ev.event.extendedProps.type);
+// console.log(ev.event.extendedProps.type);
                 $('#edit-slot-modal').modal({
                     //backdrop: 'static',
                     keyboard: false
@@ -1149,7 +1150,7 @@ console.log(ev.event.extendedProps.type);
                     defaultDate: (ev.event.extendedProps.type == 'date') ? ev.event.start : ''
                 });
 
-                $('#edit-slot-modal #edit_slotlabel').text('Edit For All ' + days[day] + '   ');
+                $('#edit-slot-modal #edit_slotlabel').text('Edit For All ' + days[day-1] + '   ');
 
                 var startTime = ("0" + ev.event.start.getHours()).slice(-2) + ":" + ("0" + ev.event.start.getMinutes()).slice(-2);
                 document.getElementById('edit_start_time').value = startTime;

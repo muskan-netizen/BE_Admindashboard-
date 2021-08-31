@@ -727,6 +727,7 @@ class CartController extends FrontController
         $cartProduct = CartProduct::find($request->cartproduct_id);
         $cartProduct->quantity = $request->quantity;
         $cartProduct->save();
+       
         return response()->json("Successfully Updated");
     }
 

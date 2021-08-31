@@ -20,7 +20,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('celebrityProducts/{id?}', 'Api\v1\CelebrityController@celebrityProducts');
         Route::post('celebrity/filters/{id?}', 'Api\v1\CelebrityController@celebrityFilters');
         Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
-        Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
+        // Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
         Route::get('vendor/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProducts');
         // Route::get('vendor/category/productsFilter/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProductsFilter');
         Route::post('productByVariant/{id}','Api\v1\ProductController@getVariantData')->name('productVariant');

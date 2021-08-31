@@ -16,4 +16,10 @@ class ProductAddon extends Model
        return $this->hasMany('App\Models\AddonOption', 'addon_id', 'addon_id')->select('id', 'addon_id', 'title', 'price', 'position')->orderBy('id', 'asc'); 
     }
 
+
+    public function addOnName(){
+      return $this->belongsTo('App\Models\AddonSet', 'addon_id', 'id')->select('id', 'title', 'min_select', 'max_select', 'position'); 
+   }
+    
+
 }

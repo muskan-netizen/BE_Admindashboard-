@@ -316,7 +316,7 @@ class ProductController extends BaseController
             }
 
             if(empty($pv_ids)){
-                return $this->errorResponse('Invalid product sets or product has been removed.', 404);
+                return $this->errorResponse('Invalid product sets or product has been removed.', 404, ['variant_empty'=>true]);
             }
 
             $variantData = ProductVariant::join('products as pro', 'product_variants.product_id', 'pro.id')

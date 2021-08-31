@@ -55,11 +55,12 @@
                         
                         <div class="card-box">
                                      <!-- static html -->
-                               
+                                
+                                @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
+                                     @if(!empty($category->childs) && count($category->childs) > 0)
+                             
                                     <!-- Start Conent Wrapper -->
                                     <div id='main-wrapper'>
-                                        @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
-                                            @if(!empty($category->childs) && count($category->childs) > 0)
                                                 @foreach ($category->childs as $key => $childs)
                                                 @if($childs->type_id == 8)
 
@@ -75,7 +76,7 @@
                                                             @foreach ($childs->products as $data)
 
                                                             @php
-                                                            $data->translation_title = (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku;
+                                                                $data->translation_title = (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku;
                                                                 $data->translation_description = (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku;
                                                                 $data->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                                                                 $data->variant_price = (!empty($data->variant->first())) ? $data->variant->first()->price : 0;
@@ -121,6 +122,10 @@
                         
                                                                     </div>
                                                                 </div>
+                                                                
+
+                                                               
+
                                                                 <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
                                                                     <?php $imagePath = $imagePath2 = '';
                                                                         $mediaCount = count($data->media);
@@ -134,6 +139,47 @@
                                                                         <img src="{{$imagePath}}" alt="">
                                                                     </div>
                                                                 </div>
+
+                                                                  <!-- show add ons -->
+                                                         @if(!empty($data->addOn) && $data->addOn->count() > 0)
+                                                         <div class="border-product addons-div" style="@if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0) display:none; @endif
+                                                            ">
+                                                             <h6 class="product-title">Addon List</h6>
+                                                               @foreach($data->addOn as $row => $addon)
+                                                                    
+                                                                             <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet">{{$addon->title}}
+                                                                                 @php
+                                                                                     $min_select = '';
+                                                                                     if($addon->min_select > 0){
+                                                                                         $min_select = 'Minimun '.$addon->min_select;
+                                                                                     }
+                                                                                     $max_select = '';
+                                                                                     if($addon->max_select > 0){
+                                                                                         $max_select = 'Maximum '.$addon->max_select;
+                                                                                     }
+                                                                                     if( ($min_select != '') && ($max_select != '') ){
+                                                                                         $min_select = $min_select.' and ';
+                                                                                     }
+                                                                                 @endphp
+                                                                                 @if( ($min_select != '') || ($max_select != '') )
+                                                                                     <small>({{$min_select.$max_select}} Selections allowed)</small>
+                                                                                 @endif
+                                                                             </h4>
+                                                                         
+                                                                     <span class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
+                                                                        @foreach($addon->setoptions as $k => $option)
+                                                                             <div class="checkbox checkbox-success form-check-inline">
+                                                                                 <input type="checkbox" id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}" class="productAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
+                                                                                 <label class="pl-2" for="inlineCheckbox_{{$key}}{{$row.'_'.$k}}">
+                                                                                     {{$option->title .' ($'.$option->price.')' }}</label>
+                                                                             </div>
+                                                                             @endforeach
+                                                                         </span>
+                                                                     @endforeach
+                                                                
+                                                            </div>
+                                                         @endif
+                                                         <!-- end show add ons -->
                                                             </div>
                                                             <hr>
                                                             @endforeach
@@ -141,12 +187,13 @@
                                                         </div>
                                                 @endif
                                                 @endforeach
-                                            @endif
-
-                                        @endif                
-                                        
+                                         
                                     </div>
                                     <!-- End Content Wrapper -->
+                                    @endif 
+                                @endif                
+                                
+
                             
                             <!-- end statis html -->
                                     
@@ -176,7 +223,6 @@
                                                             <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
                                                                 {{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}
                                                             @endif</h5>
-                                                            
 
                                                             @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                             @php
@@ -207,6 +253,49 @@
                                                             @endif
 
                                                         </div>
+
+                                                       <!-- show add ons -->
+                                                         @if(!empty($data->addOn) && $data->addOn->count() > 0)
+                                                         <div class="border-product addons-div" style="@if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0) display:none; @endif
+                                                            ">
+                                                             <h6 class="product-title">Addon List</h6>
+                                                               @foreach($data->addOn as $row => $addon)
+                                                                    
+                                                                             <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet">{{$addon->title}}
+                                                                                 @php
+                                                                                     $min_select = '';
+                                                                                     if($addon->min_select > 0){
+                                                                                         $min_select = 'Minimun '.$addon->min_select;
+                                                                                     }
+                                                                                     $max_select = '';
+                                                                                     if($addon->max_select > 0){
+                                                                                         $max_select = 'Maximum '.$addon->max_select;
+                                                                                     }
+                                                                                     if( ($min_select != '') && ($max_select != '') ){
+                                                                                         $min_select = $min_select.' and ';
+                                                                                     }
+                                                                                 @endphp
+                                                                                 @if( ($min_select != '') || ($max_select != '') )
+                                                                                     <small>({{$min_select.$max_select}} Selections allowed)</small>
+                                                                                 @endif
+                                                                             </h4>
+                                                                         
+                                                                     <span class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
+                                                                        @foreach($addon->setoptions as $k => $option)
+                                                                             <div class="checkbox checkbox-success form-check-inline">
+                                                                                 <input type="checkbox" id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}" class="productAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
+                                                                                 <label class="pl-2" for="inlineCheckbox_{{$key}}{{$row.'_'.$k}}">
+                                                                                     {{$option->title .' ($'.$option->price.')' }}</label>
+                                                                             </div>
+                                                                             @endforeach
+                                                                         </span>
+                                                                     @endforeach
+                                                                
+                                                            </div>
+                                                         @endif
+                                                         <!-- end show add ons -->
+                                                       
+
                                                     </div>
                                                     <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
                                                         <?php $imagePath = $imagePath2 = '';
@@ -240,9 +329,67 @@
                             @endif
                             <!-- end single level category -->
 
-                            
+                             <!-- Step if addons avilable  Html -->
                            
-                             <!-- Step Two Html -->
+                            @if(app('request')->input('step') == '4')
+                             <div id="step-4-ondemand">
+                                @foreach ($cartData as $key => $cart_data)
+                               
+                                     <!-- show add ons -->
+                                     @if(!empty($cart_data->product->addOn) && $cart_data->product->addOn->count() > 0)
+                                        <div class="border-product">
+                                            <h4 class="mb-2"><b>{!! (!empty($cart_data->product->translation->first())) ? $cart_data->product->translation->first()->title : $cart_data->product->sku !!}</b></h4>
+                                        @foreach($cart_data->product->addOn as $row => $addon)
+                                        <h6 class="product-title">{{ $addon->addOnName->title }}
+                                                    @php
+                                                        $min_select = '';
+                                                        if($addon->addOnName->min_select > 0){
+                                                            $min_select = 'Minimun '.$addon->addOnName->min_select;
+                                                        }
+                                                        $max_select = '';
+                                                        $type_input = 'checkbox';
+                                                        if($addon->addOnName->max_select > 0){
+                                                            $max_select = 'Maximum '.$addon->addOnName->max_select;
+
+                                                            if($addon->addOnName->max_select > 1)
+                                                            $type_input = 'checkbox';
+                                                            else
+                                                            $type_input = 'radio';
+                                                        }
+                                                        if( ($min_select != '') && ($max_select != '') ){
+                                                            $min_select = $min_select.' and ';
+                                                        }
+                                                    @endphp
+                                            </h6>
+                                            <span class="productAddonSetOptions" data-min="{{$addon->addOnName->min_select}}" data-max="{{$addon->addOnName->max_select}}" data-addonset-title="{{$addon->addOnName->title}}">
+                                                
+                                            <div class="booking-time radio-btns long-radio">
+                                                     @foreach($addon->setoptions as $k => $option)
+                                                         <div>
+                                                            <div class="radios">
+                                                               
+                                                                <input type="{{$type_input}}" class="productAddonOption" id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}" class="productAddonOption"  name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}"/>
+                                                                <label for='inlineCheckbox_{{$key}}{{$row.'_'.$k}}'>
+                                                                    <span class="customCheckbox" aria-hidden="true">{{$option->title .' ($'.$option->price.')' }}</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                            </div>
+                                            </span>
+                                           
+                                        @endforeach
+                                        </div>
+                                        
+                                     @endif
+                                     <!-- end show add ons -->
+                                @endforeach
+                                  </div>
+                            @endif
+                             <!--Step if addons avilable  Html -->
+
+                           
+                            <!-- Step Two Html -->
                            
                             @if(app('request')->input('step') == '2')
                             <div id="step-2-ondemand">
@@ -388,6 +535,30 @@
                                                         </a>
                                                     </div>
                                                 </li>
+
+                                                <% if(vendor_product.addon.length != 0) { %>
+                                                    <div class="row align-items-md-center">
+                                                        <div class="col-12">
+                                                            <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
+                                                        </div>
+                                                    </div>
+                                                    <% _.each(vendor_product.addon, function(addon, ad){%>
+                                                    <div class="row">
+                                                        <div class="col-md-3 col-sm-4 items-details text-left">
+                                                            <p class="p-0 m-0"><%= addon.option.title %></p>
+                                                        </div>
+                                                        <div class="col-md-2 col-sm-4 text-center">
+                                                            <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= addon.option.price_in_cart %></div>
+                                                        </div>
+                                                        <div class="col-md-7 col-sm-4 text-right">
+                                                            <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= addon.option.quantity_price %></div>
+                                                        </div>
+                                                    </div>
+                                                    <% }); %>
+                                                <% } %>
+                                                <hr class="my-2">
+                                                  
+
                                             <% }); %>
                                         <% }); %>
 
@@ -841,4 +1012,6 @@
         
       })( jQuery, window , document );
     </script>
+
+    
 @endsection
