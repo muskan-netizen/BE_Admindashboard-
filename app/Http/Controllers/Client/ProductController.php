@@ -218,6 +218,7 @@ class ProductController extends BaseController
         $product = Product::where('id', $id)->firstOrFail();
         $rule = array(
             'sku' => 'required|unique:products,sku,'.$product->id,
+            'url_slug' => 'required|unique:products,url_slug,'.$product->id,
         );
         $validation  = Validator::make($request->all(), $rule);
         if ($validation->fails()) {

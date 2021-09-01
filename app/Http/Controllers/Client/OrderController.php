@@ -89,6 +89,9 @@ class OrderController extends BaseController{
                 $query->where('user_id', Auth::user()->id);
             });
         }
+        if(!empty($request->search_keyword)){
+            $orders = $orders->where('order_number', 'like', '%'.$request->search_keyword.'%');
+        }
 
         $order_count = OrderVendor::orderBy('id','asc');
         if (Auth::user()->is_superadmin == 0) {

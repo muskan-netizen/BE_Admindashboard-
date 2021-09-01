@@ -175,8 +175,11 @@
                     <b>Return Request <sup class="total-items">({{$return_requests}})</sup>
                         <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
                     </b>
-                </a>
+                </a>                
             </div>
+        </div>
+        <div class="offset-md-9 col-md-3 offset-lg-10 col-lg-2 mb-2">
+            <input type="search" class="form-control form-control-sm" placeholder="Search By Order Id" id="search_via_keyword">
         </div>
     </div>
 </div>
@@ -238,6 +241,7 @@
             $('#order_list_order').show();
             var url = $(this).data('url');
             var rel = $(this).data('rel');
+            $("#search_via_keyword").val("");
             init(rel, url);
             $(this).remove();
         });
@@ -245,6 +249,7 @@
             $('#order_list_order').show();
             var rel = $(this).data('rel');
             var url = "{{ route('orders.filter') }}";
+            $("#search_via_keyword").val("");
             $(".tab-pane").html('');
             init(rel, url);
         });
@@ -264,13 +269,23 @@
             });
         });
 
-        function init(filter_order_status, url) {
+        $("#search_via_keyword").on("keyup blur change",function(e){
+            $('#order_list_order').show();
+            var rel = $("#top-tab li a.active").data('rel');
+            var url = "{{ route('orders.filter') }}";
+            var search_keyword = $(this).val();
+            $(".tab-pane").html('');
+            init(rel, url, search_keyword);
+        })
+
+        function init(filter_order_status, url, search_keyword = "") {
             $.ajax({
                 url: url,
                 type: "POST",
                 dataType: "JSON",
                 data: {
-                    filter_order_status: filter_order_status
+                    filter_order_status: filter_order_status,
+                    search_keyword : search_keyword
                 },
                 success: function(response) {
                     $('#order_list_order').hide();

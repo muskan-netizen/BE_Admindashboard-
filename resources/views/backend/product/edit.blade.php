@@ -120,19 +120,26 @@
 
                             @if($errors->has('sku'))
                             <span class="text-danger" role="alert">
-                                <strong>{{ $errors->first('sku') }}</strong>
+                                {{ $errors->first('sku') }}
                             </span>
                             @endif
                         </div>
 
                         <div class="col-md-4" style="cursor: not-allowed;">
                             {!! Form::label('title', 'URL Slug',['class' => 'control-label']) !!}
+                            <span class="text-danger">*</span>
                             {!! Form::text('url_slug', $product->url_slug, ['class'=>'form-control', 'id' => 'url_slug','onkeypress' => "return alplaNumericSlug(event)"]) !!}
+                            
+                            @if($errors->has('url_slug'))
+                            <span class="text-danger" role="alert">
+                                {{ $errors->first('url_slug') }}
+                            </span>
+                            @endif
                         </div>
 
                         <div class="col-md-3" style="cursor: not-allowed;">
                             {!! Form::label('title', 'Category',['class' => 'control-label']) !!}
-                            {!! Form::text('category', $product->category ? $product->category->cat->name : '', ['class'=>'form-control', 'id' => 'url_slug', 'style' => 'pointer-events:none;']) !!}
+                            {!! Form::text('category', $product->category ? $product->category->cat->name : '', ['class'=>'form-control', 'style' => 'pointer-events:none;']) !!}
                             <input type="hidden" name="category_id" value="{{$product->category ? $product->category->cat->category_id : $product->category_id}}">
                         </div>
                     </div>
@@ -664,8 +671,8 @@
         if (!regexp.test(charCode)) {
             return false;
         }
-        var n2 = document.getElementById('url_slug');
-        n2.value = n2.value + charCode;
+        // var n2 = document.getElementById('url_slug');
+        // n2.value = n2.value + charCode;
         return true;
     }
     $('.saveProduct').click(function() {
