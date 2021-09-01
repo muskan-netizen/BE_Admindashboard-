@@ -54,7 +54,7 @@
                     </a>
                 </div>
             </div>
-            <div class="product-detail inner_spacing">
+            <div class="product-detail inner_spacing text-center">
                 <a href="{{route('vendorDetail')}}/<%= vendor.slug %>">
                     <h6><%= vendor.name %></h6>
                 </a>

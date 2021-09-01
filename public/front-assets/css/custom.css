@@ -4646,6 +4646,51 @@ ul#main-nav-list {
     position: relative;
 }
 
+.inner_spacing .productAddonSet {
+    background-color: #f3f7f9;
+    padding: 10px 10px;
+}
+
+
+.modal-open {
+    overflow: hidden;
+    width: calc(100% - 17px); /*for chrome/safari*/
+    width: -moz-calc(100% - 16px); /*for firefox*/
+    width: -ms-calc(100% - XXpx); /* where "XX" equals the width of the scrollbar in IE)*/
+}
+
+body.modal-open{
+    padding-right: 0 !important;
+    overflow-y: auto;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -5216,6 +5261,12 @@ body[dir="rtl"] .inner_spacing h3 {
 }
 
 @media(max-width: 576px) {
+    .main-menu .menu-right .icon-nav ul {
+        margin-left: auto;
+    }
+    .onhover-dropdown.mobile-account {
+        display: none;
+    }
     .navbar-brand{
         padding: 0;
     }

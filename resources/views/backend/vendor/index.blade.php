@@ -49,7 +49,7 @@
                         <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
                             <div class="text-center">
                                 <h3>
-                                    <i class="mdi mdi-currency-usd text-primary mdi-24px"></i>
+                                    <i class="fas fa-money-check-alt text-primary"></i>
                                     <span data-plugin="counterup" id="total_cash_to_collected">{{$vendors_product_count}}</span>
                                 </h3>
                                 <p class="text-muted font-15 mb-0">Total Products</p>
@@ -58,7 +58,7 @@
                         <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
                             <div class="text-center">
                                 <h3>
-                                    <i class="mdi mdi-currency-usd text-primary mdi-24px"></i>
+                                    <i class="fas fa-money-check-alt text-primary"></i>
                                     <span data-plugin="counterup" id="total_delivery_fees">{{$vendors_active_order_count}}</span>
                                 </h3>
                                 <p class="text-muted font-15 mb-0">Total Active Orders</p>

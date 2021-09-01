@@ -243,7 +243,44 @@
                                     @if(!empty($product->addOn) && $product->addOn->count() > 0)
                                     <div class="border-product">
                                         <h6 class="product-title">Addon List</h6>
-                                        <table class="table table-centered table-nowrap table-striped" id="addon-table">
+
+                                        <div id="addon-table">
+                                            @foreach($product->addOn as $row => $addon)
+                                                <div class="addon-product mb-3">
+                                                    <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
+                                                        @php
+                                                            $min_select = '';
+                                                            if($addon->min_select > 0){
+                                                                $min_select = 'Minimun '.$addon->min_select;
+                                                            }
+                                                            $max_select = '';
+                                                            if($addon->max_select > 0){
+                                                                $max_select = 'Maximum '.$addon->max_select;
+                                                            }
+                                                            if( ($min_select != '') && ($max_select != '') ){
+                                                                $min_select = $min_select.' and ';
+                                                            }
+                                                        @endphp
+                                                        @if( ($min_select != '') || ($max_select != '') )
+                                                            <small>({{$min_select.$max_select}} Selections allowed)</small>
+                                                        @endif
+                                                    </h4>
+
+                                                    <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
+                                                        @foreach($addon->setoptions as $k => $option)
+                                                        <div class="checkbox checkbox-success form-check-inline mb-1">
+                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
+                                                            <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}">
+                                                                {{$option->title .' ($'.$option->price.')' }}</label>
+                                                        </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>                
+
+
+                                        <table class="table table-centered table-nowrap table-striped d-none" id="addon-table">
                                             <tbody>
                                                 @foreach($product->addOn as $row => $addon)
                                                 <tr>

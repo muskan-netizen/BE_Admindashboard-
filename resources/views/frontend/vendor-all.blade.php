@@ -26,7 +26,7 @@
                         </div>
                     </div>
                     <div class="product-detail">
-                        <div class="inner_spacing">
+                        <div class="inner_spacing text-center">
                             <a href="{{route('vendorDetail')}}/{{ $vendor->slug }}">
                                 <h3>{{ $vendor->name }}</h3>
                                 @if($client_preference_detail)

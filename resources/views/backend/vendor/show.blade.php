@@ -1120,7 +1120,6 @@
 
             },
             eventClick: function(ev) {
-// console.log(ev.event.extendedProps.type);
                 $('#edit-slot-modal').modal({
                     //backdrop: 'static',
                     keyboard: false
@@ -1147,7 +1146,7 @@
 
                 $('#edit_slot_date').flatpickr({
                     minDate: "today",
-                    defaultDate: (ev.event.extendedProps.type == 'date') ? ev.event.start : ''
+                    defaultDate: (ev.event.extendedProps.type == 'date') ? ev.event.start : ev.event.start
                 });
 
                 $('#edit-slot-modal #edit_slotlabel').text('Edit For All ' + days[day-1] + '   ');

@@ -46,7 +46,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             @endforeach
                         </ul>
                     </li>
-                    <li class="onhover-dropdown mobile-account d-none d-sm-inline">
+                    <li class="onhover-dropdown mobile-account">
                         <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
                         <ul class="onhover-show-div">
                             <li>
@@ -62,7 +62,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         </div>
     </div>
 
-    <div class="mobile-menu main-menu">
+    <div class="mobile-menu main-menu d-block d-sm-none">
         <div class="menu-right">
             <ul class="header-dropdown icon-nav">                    
                 <li class="mobile-wishlist d-inline d-sm-none">

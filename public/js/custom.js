@@ -12,6 +12,11 @@ $(function () {
 });
 
 $(document).ready(function () {
+    
+    $('#myModal').on('show.bs.modal', function (e) {
+        document.querySelector('meta[name="viewport"]').content = 'width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0';
+    });  
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use DB;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\{ClientPreference, VendorSlotDate, Vendor, VendorSlot, SlotDay, ServiceArea};
 use Illuminate\Http\Request;
@@ -23,8 +24,8 @@ class VendorSlotController extends BaseController
         $takeaway = in_array('takeaway', $request->slot_type) ? '1' : 0;
         $delivery = in_array('delivery', $request->slot_type) ? '1' : 0;
 
-        if(empty($request->slot_date) || $request->slot_date == 'null'){
-
+        // if(empty($request->slot_date) || $request->slot_date == 'null'){
+        if($request->stot_type == 'day'){
             $slot = new VendorSlot();
             $slot->vendor_id    = $vendor->id;
             $slot->start_time   = $request->start_time;
@@ -43,7 +44,7 @@ class VendorSlotController extends BaseController
             $slotData['vendor_id']          = $vendor->id;
             $slotData['start_time']         = $request->start_time;
             $slotData['end_time']           = $request->end_time;
-            $slotData['specific_date']         = $request->slot_date;
+            $slotData['specific_date']      = $request->slot_date;
             $slotData['dine_in']            = $dine_in;
             $slotData['takeaway']           = $takeaway;
             $slotData['delivery']           = $delivery;
@@ -69,9 +70,37 @@ class VendorSlotController extends BaseController
         $takeaway = in_array('takeaway', $request->slot_type) ? '1' : 0;
         $delivery = in_array('delivery', $request->slot_type) ? '1' : 0;
 
-        if(empty($request->slot_date) || $request->slot_date == 'null'){
+        if($request->edit_type == 'day') {
+            $slotDay = SlotDay::where('id', $request->edit_type_id)->where('day', $request->edit_day)->first();
+            if(!$slotDay){
+                $slotDay = new SlotDay();
+                $slot = new VendorSlot();
+            }
+            else{
+                $slot_id = $slotDay->slot_id;
+                $slot = VendorSlot::where('id', $slot_id)->first();
 
-            $slot = new VendorSlot();
+                if($request->slot_type_edit == 'date'){
+                    // delete slot day
+                    $slotDay->delete();
+                    // delete vendor slot
+                    $slot->delete();
+
+                    $dateSlot = new VendorSlotDate();
+                    $dateSlot->vendor_id        = $vendor->id;
+                    $dateSlot->start_time       = $request->start_time;
+                    $dateSlot->end_time         = $request->end_time;
+                    $dateSlot->specific_date    = $request->slot_date;
+                    $dateSlot->dine_in          = $dine_in;
+                    $dateSlot->takeaway         = $takeaway;
+                    $dateSlot->delivery         = $delivery;
+                    $dateSlot->working_today    = 1;
+                    $dateSlot->save();
+
+                    return redirect()->back()->with('success', 'Slot saved successfully!');
+                }
+            }
+
             $slot->vendor_id    = $vendor->id;
             $slot->start_time   = $request->start_time;
             $slot->end_time     = $request->end_time;
@@ -80,21 +109,24 @@ class VendorSlotController extends BaseController
             $slot->delivery     = $delivery;
             $slot->save();
 
-            $slotDay = SlotDay::where('id', $request->edit_type_id)->where('day', $request->edit_day)->delete();
-
-            $sday = new SlotDay();
             $sday->slot_id =  $slot->id;
             $sday->day = $request->edit_day;
             $sday->save();
 
         }else{
-            $dateSlot = VendorSlotDate::whereDate('specific_date', $request->slot_date)->where('id', $request->edit_type_id)->first();
+            $dateSlot = VendorSlotDate::where('id', $request->edit_type_id)->first();
             if(!$dateSlot){
                 $dateSlot = new VendorSlotDate();
             }else{
-                if( ($request->edit_type == 'date') && ($request->slot_type_edit == 'day') ){
+                if( $request->slot_type_edit == 'day' ){
                     $vendor_id = $dateSlot->vendor_id;
+                    // delete date slot
                     $dateSlot->delete();
+                    // delete day slot
+                    $vendor_slot_day = SlotDay::whereHas('vendor_slot', function($q) use($vendor_id){
+                        $q->where('vendor_slots.vendor_id', $vendor_id);
+                    })->where('day', $request->edit_day)->delete();
+
                     $slot = new VendorSlot();
                     $slot->vendor_id    = $vendor->id;
                     $slot->start_time   = $request->start_time;
