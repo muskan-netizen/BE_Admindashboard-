@@ -75,7 +75,7 @@ class PayfastGatewayController extends FrontController
                 'merchant_key' => $this->gateway->getMerchantKey(),
                 'return_url' => url('order/return/success'),
                 'cancel_url' => url($request->cancelUrl),
-                'notify_url' => url("https://e6e7-103-72-170-243.ngrok.io/payment/payfast/notify"),
+                'notify_url' => url("payment/payfast/notify"),
                 'amount' => $amount,
                 'item_name' => 'test item',
                 'custom_int1' => $user->id, // user id

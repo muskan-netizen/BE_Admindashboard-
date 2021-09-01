@@ -530,7 +530,7 @@ class CartController extends FrontController
                     if($action == 'dine_in'){
                         $vendor_tables = VendorDineinTable::where('vendor_id', $vendorData->vendor_id)->with('category')->get();
                         foreach ($vendor_tables as $vendor_table) {
-                            $vendor_table->qr_url = url('/vendor/'.$vendorData->vendor->slug.'/?id='.$vendorData->vendor_id.'&table='.$vendor_table->id);
+                            $vendor_table->qr_url = url('/vendor/'.$vendorData->vendor->slug.'/?id='.$vendorData->vendor_id.'&name='.$vendorData->vendor->name.'&table='.$vendor_table->id);
                         }
                         $vendor_details['vendor_tables'] = $vendor_tables;
                     }
