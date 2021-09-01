@@ -38,9 +38,7 @@ class VendorController extends BaseController{
                     }
                 }
             }
-            $data['category_details'] = $category_details;
-            $data['vendor_name'] = $vendor->name;
-            return $this->successResponse($data, '', 200);
+            return $this->successResponse($category_details, '', 200);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }

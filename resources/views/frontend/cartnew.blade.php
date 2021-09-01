@@ -69,8 +69,6 @@
     </div>
 </div>
 
-
-
 <script type="text/template" id="cart_template">
     <% _.each(cart_details.products, function(product, key){%>
         <div id="thead_<%= product.vendor.id %>">

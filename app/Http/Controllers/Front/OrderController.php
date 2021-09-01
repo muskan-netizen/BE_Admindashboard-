@@ -81,8 +81,18 @@ class OrderController extends FrontController
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency'));
     }
+    public function getOrderSuccessReturnPage(Request $request){
+        $currency_id = Session::get('customerCurrency');
+        $langId = Session::get('customerLanguage');
+        $navCategories = $this->categoryNav($langId);
+        // $order = Order::with(['products.pvariant.vset', 'products.pvariant.translation_one', 'address'])->findOrfail($request->order_id);
+        $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+        return view('frontend.order.success-return', compact('navCategories', 'clientCurrency'));
+    }
     public function sendSuccessEmail($request, $order, $vendor_id=''){
-        if( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
+        if( (isset($request->user_id)) && (!empty($request->user_id)) ){
+            $user = User::find($request->user_id);
+        }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
             $user = User::where('auth_token', $request->auth_token)->first();
         }else{
             $user = Auth::user();
@@ -391,7 +401,9 @@ class OrderController extends FrontController
             DB::beginTransaction();
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             $delivery_on_vendors = array();
-            if( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
+            if( (isset($request->user_id)) && (!empty($request->user_id)) ){
+                $user = User::find($request->user_id);
+            }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
                 $user = User::whereHas('device',function  ($qu) use ($request){
                     $qu->where('access_token', $request->auth_token);
                 })->first();

@@ -754,7 +754,7 @@ $(document).ready(function () {
         }
     }
     $(document).on("click", ".topup_wallet_confirm", function () {
-        // $(".topup_wallet_confirm").attr("disabled", true);
+        $(".topup_wallet_confirm").attr("disabled", true);
         let payment_option_id = $('#wallet_payment_methods input[name="wallet_payment_method"]:checked').data('payment_option_id');
         if (payment_option_id == 4) {
             stripe.createToken(card).then(function (result) {
@@ -762,8 +762,7 @@ $(document).ready(function () {
                     $('#stripe_card_error').html(result.error.message);
                     $(".topup_wallet_confirm").attr("disabled", false);
                 } else {
-                    console.log(result.token.id);
-                    // paymentViaStripe(result.token.id, '', payment_option_id);
+                    paymentViaStripe(result.token.id, '', payment_option_id);
                 }
             });
         } else if (payment_option_id == 3) {

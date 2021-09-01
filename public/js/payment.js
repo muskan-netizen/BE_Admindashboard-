@@ -1,5 +1,9 @@
 $(document).ready(function () {
-    
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+        }
+    });
     let queryString = window.location.search;
     let path = window.location.pathname;
     let urlParams = new URLSearchParams(queryString);
@@ -125,6 +129,7 @@ $(document).ready(function () {
             total_amount = cartElement.val();
             tip = tipElement.val();
             ajaxData.tip = tip;
+            ajaxData.address_id = $("input:radio[name='address_id']:checked").val();
         }
         else if (walletElement.length > 0) {
             total_amount = walletElement.val();
@@ -174,4 +179,5 @@ $(document).ready(function () {
             }
         });
     }
+
 });

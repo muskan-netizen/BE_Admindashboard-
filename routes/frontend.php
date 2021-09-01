@@ -31,6 +31,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/paystack/completePurchase', 'Front\PaystackGatewayController@paystackCompletePurchase')->name('payment.paystackCompletePurchase');
 
 	Route::post('payment/payfast', 'Front\PayfastGatewayController@payfastPurchase')->name('payment.payfastPurchase');
+	Route::post('payment/payfast/notify', 'Front\PayfastGatewayController@payfastNotify')->name('payment.payfastNotify');
+	// Route::get('payment/payfast/notify', function (Request $request) {
+	// 	return view('frontend.payfastNotify', ['name' => 'payment.payfastNotify']);
+	// });
 	Route::post('payment/payfast/completePurchase', 'Front\PayfastGatewayController@payfastCompletePurchase')->name('payment.payfastCompletePurchase');
 
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
@@ -138,6 +142,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function() {
 	Route::post('verify/promocode', 'Front\PromoCodeController@postVerifyPromoCode')->name('verify.promocode');
 	Route::post('remove/promocode', 'Front\PromoCodeController@postRemovePromoCode')->name('remove.promocode');
 	Route::get('order/success/{order_id}', 'Front\OrderController@getOrderSuccessPage')->name('order.success');
+	Route::get('order/return/success', 'Front\OrderController@getOrderSuccessReturnPage')->name('order.return.success');
 	Route::post('promocode/list', 'Front\PromoCodeController@postPromoCodeList')->name('verify.promocode.list');
 	Route::post('payment/option/list', 'Front\PaymentController@index')->name('payment.option.list');
 	Route::get('user/setPrimaryAddress/{id}', 'Front\AddressController@setPrimaryAddress')->name('setPrimaryAddress');

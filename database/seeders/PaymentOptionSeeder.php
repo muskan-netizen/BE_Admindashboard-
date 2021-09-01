@@ -19,8 +19,8 @@ class PaymentOptionSeeder extends Seeder
         // array('id' => '2','code' => 'loyalty-points','path' => '','title' => 'loyalty Points', 'offsite' => '0', 'status' => '1'),
         array('id' => '3', 'path' => 'omnipay/paypal', 'code' => 'paypal',  'title' => 'PayPal', 'off_site' => '1', 'status' => '0'),
         array('id' => '4', 'path' => 'omnipay/stripe', 'code' => 'stripe', 'title' => 'Stripe', 'off_site' => '0', 'status' => '0'),
-        array('id' => '5', 'path' => 'paystackhq/omnipay-paystack', 'code' => 'paystack', 'title' => 'Paystack', 'off_site' => '1', 'status' => '0')
-        // array('id' => '6', 'path' => 'omnipay/payfast', 'code' => 'payfast', 'title' => 'Payfast', 'off_site' => '1', 'status' => '0')
+        array('id' => '5', 'path' => 'paystackhq/omnipay-paystack', 'code' => 'paystack', 'title' => 'Paystack', 'off_site' => '1', 'status' => '0'),
+        array('id' => '6', 'path' => 'omnipay/payfast', 'code' => 'payfast', 'title' => 'Payfast', 'off_site' => '1', 'status' => '0')
       ); 
 
       if($option_count == 0)

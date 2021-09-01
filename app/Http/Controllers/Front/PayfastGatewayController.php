@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers\Front;
 
+use DB;
 use Auth;
+use Session;
+use Redirect;
+use Carbon\Carbon;
 use Omnipay\Omnipay;
 use Illuminate\Http\Request;
-use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{PaymentOption, Client, ClientPreference, ClientCurrency};
+use App\Models\Client as CP;
+use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor};
 
 class PayfastGatewayController extends FrontController
 {
@@ -48,30 +53,40 @@ class PayfastGatewayController extends FrontController
         return md5( $getString );
     }
 
-    public function payfastPurchase(Request $request){
+    public function payfastPurchase(Request $request, $domain = ''){
         try{
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
             $returnUrlParams = '?amount='.$amount;
+            $address_id = 0;
+            $tip = 0;
             if($request->has('tip')){
-                $returnUrlParams = $returnUrlParams.'&tip='.$request->tip.'&gateway=payfast';
+                $tip = $request->tip;
+                $returnUrlParams = $returnUrlParams.'&tip='.$tip;
             }
+            if( ($request->has('address_id')) && ($request->address_id > 0) ){
+                $address_id = $request->address_id;
+                $returnUrlParams = $returnUrlParams.'&address_id='.$address_id;
+            }
+            $returnUrlParams = $returnUrlParams.'&gateway=payfast';
 
             $request_arr = array(
                 'merchant_id' => $this->gateway->getMerchantId(),
                 'merchant_key' => $this->gateway->getMerchantKey(),
-                'return_url' => url($request->returnUrl . $returnUrlParams),
+                'return_url' => url('order/return/success'),
                 'cancel_url' => url($request->cancelUrl),
-                // 'notify_url' => url($request->returnUrl . $returnUrlParams),
-                'name_first' => $user->name,
-                'name_last' => $user->name,
-                'email_address' => 'preetinder.pal@codebrewinnovations.com',
+                'notify_url' => url("https://e6e7-103-72-170-243.ngrok.io/payment/payfast/notify"),
                 'amount' => $amount,
                 'item_name' => 'test item',
-                // 'metadata' => ['user_id' => $user->id],
+                'custom_int1' => $user->id, // user id
+                'custom_int2' => $address_id, // address id
+                'custom_int3' => 6, //payment option id
+                'custom_str1' => $tip, // tip amount
                 'currency' => 'ZAR',
-                'description' => 'This is a test purchase transaction'
+                'description' => 'This is a test purchase transaction',
+                // 'metadata' => ['user_id' => $user->id],
             );
+
             $response = $this->gateway->purchase($request_arr)->send();
             unset($request_arr['description']);
             // $signature = md5(http_build_query($request_arr));
@@ -98,23 +113,45 @@ class PayfastGatewayController extends FrontController
         }
     }
 
-    public function paystackCompletePurchase(Request $request)
+    public function payfastNotify(Request $request, $domain = '')
     {
-        // Once the transaction has been approved, we need to complete it.
-        if($request->has(['reference'])){
-            $amount = $this->getDollarCompareAmount($request->amount);
-            $transaction = $this->gateway->completePurchase(array(
-                'amount'                => $amount,
-                'transactionReference'  => $request->reference
-            ));
-            $response = $transaction->send();
-            if ($response->isSuccessful()){
-                return $this->successResponse($response->getTransactionReference());
-            } else {
-                return $this->errorResponse($response->getMessage(), 400);
+        // Notify PayFast that information has been received
+        header( 'HTTP/1.0 200 OK' );
+        flush();
+
+        // Posted variables from ITN
+        $pfData = $request;
+        $pfData->payment_status = 'COMPLETE';
+        //update db
+        switch( $pfData->payment_status )
+        {
+        case 'COMPLETE':
+            // If complete, update your application, email the buyer and process the transaction as paid
+            $pfData->request->add([
+                'user_id' => $pfData->custom_int1,
+                'address_id' => $pfData->custom_int2,
+                'payment_option_id' => $pfData->custom_int3,
+                'transaction_id' => $pfData->pf_payment_id,
+                'tip' => $pfData->custom_str1,
+            ]);
+            $order = new OrderController();
+            $placeOrder = $order->placeOrder($pfData);
+            $response = $placeOrder->getData();
+            if($response->status == 'Success'){
+                return $this->successResponse($response->data, 'Order placed successfully.', 200);
+            }else{
+                return $this->errorResponse($response->message, 400);
             }
-        } else {
-            return $this->errorResponse('Transaction has been declined', 400);
+        break;
+        case 'FAILED':
+            // There was an error, update your application
+            return $this->errorResponse('Payment failed', 400);
+        break;
+        default:
+            // If unknown status, do nothing (safest course of action)
+            // return $this->errorResponse($response->getMessage(), 400);
+        break;
         }
     }
+
 }
