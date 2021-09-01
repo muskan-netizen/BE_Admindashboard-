@@ -52,8 +52,29 @@ class CategoryController extends FrontController{
         }
 
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && (isset($category->type_id)) && ($category->type_id != 4) && ($category->type_id != 5) ){
-            if(Session::has('vendors')){
-                $vendors = Session::get('vendors');
+            $latitude = Session::get('latitude');
+            $longitude = Session::get('longitude');
+            $vendorType = Session::get('vendorType');
+            $serviceAreaVendors = Vendor::select('id');
+            if($vendorType){
+                $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
+            }
+            $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
+                    $query->select('vendor_id')
+                    ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+                })
+                ->where('status', 1)->get();
+
+            if($serviceAreaVendors->isNotEmpty()){
+                foreach($serviceAreaVendors as $value){
+                    $vendors[] = $value->id;
+                }
+            }
+                
+            // if(Session::has('vendors')){
+            if(count($vendors) > 0){
+                Session::put('vendors', $vendors);
+                // $vendors = Session::get('vendors');
                 //remake child categories array
                 if($category->childs->isNotEmpty()){
                     $childArray = array();
@@ -68,7 +89,7 @@ class CategoryController extends FrontController{
                 }
                 //Abort route if category from route does not exist as per hyperlocal vendors
                 $category_vendors = VendorCategory::select('vendor_id')->where('category_id', $category->id)->where('status', 1)->get();
-                if(!$category_vendors->isEmpty()){
+                if($category_vendors->isNotEmpty()){
                     $index = 1;
                     foreach($category_vendors as $key => $value){
                         if(in_array($value->vendor_id, $vendors)){

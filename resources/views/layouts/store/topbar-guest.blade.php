@@ -7,7 +7,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @endphp
 <div class="top-header">
     <div class="container">
-        <div class="row">
+        <div class="row align-items-center">
             <div class="col-lg-7">
             @if($client_preference_detail->show_contact_us == 1)
                 <div class="header-contact">
@@ -22,7 +22,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <ul class="header-dropdown">
                     <li class="onhover-dropdown change-language">
                         <a href="javascript:void(0)">{{session()->get('locale')}} 
-                            <img src="{{asset('front-assets/images/icon/translation.png')}}" class="img-fluid">
+                        <span class="icon-ic_lang align-middle"></span>
+                        <span class="language ml-1 align-middle">language</span>
                         </a>
                         <ul class="onhover-show-div">
                             @foreach($languageList as $key => $listl)
@@ -34,7 +35,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </li>
                     <li class="onhover-dropdown change-currency">
                         <a href="javascript:void(0)">{{session()->get('iso_code')}}
-                            <img src="{{asset('front-assets/images/icon/exchange.png')}}" class="img-fluid">
+                        <span class="icon-ic_currency align-middle"></span>
+                        <span class="currency ml-1 align-middle">currency</span>
                         </a>
                         <ul class="onhover-show-div">
                             @foreach($currencyList as $key => $listc)

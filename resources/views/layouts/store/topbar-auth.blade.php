@@ -6,7 +6,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @endphp
 <div class="top-header">
     <div class="container">
-        <div class="row">
+        <div class="row align-item-center">
             <div class="col-4">
                     <div class="header-contact">
                         <ul>
@@ -26,7 +26,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </li> -->
                     <li class="onhover-dropdown change-language slected-language">
                         <a href="javascript:void(0)">{{session()->get('locale')}} 
-                            <img src="{{asset('front-assets/images/icon/translation.png')}}" class="img-fluid">
+                        <span class="icon-ic_lang align-middle"></span>
+                        <span class="language ml-1 align-middle">language</span>
                         </a>
                         <ul class="onhover-show-div">
                             @foreach($languageList as $key => $listl)
@@ -37,7 +38,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </ul>
                     </li>
                     <li class="onhover-dropdown change-currency slected-language">
-                        <a href="#">{{session()->get('iso_code')}} <img src="{{asset('front-assets/images/icon/exchange.png')}}" class="img-fluid" alt="">  </a>
+                        <a href="#">{{session()->get('iso_code')}} <span class="icon-ic_currency align-middle"></span> 
+                        <span class="currency ml-1 align-middle">currency</span> </a>
                         <ul class="onhover-show-div">
                             @foreach($currencyList as $key => $listc)
                                 <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">

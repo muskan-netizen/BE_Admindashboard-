@@ -1910,7 +1910,9 @@ label {
     width: 70%;
     background-color: #EEEEEE;
     padding: 0 10px;
+    border-radius: 50px;
     position: relative;
+    overflow: hidden;
 }
 
 .search_form,
@@ -4651,22 +4653,9 @@ ul#main-nav-list {
     padding: 10px 10px;
 }
 
-
-.modal-open {
-    overflow: hidden;
-    width: calc(100% - 17px); /*for chrome/safari*/
-    width: -moz-calc(100% - 16px); /*for firefox*/
-    width: -ms-calc(100% - XXpx); /* where "XX" equals the width of the scrollbar in IE)*/
+span.icon-ic_lang, span.icon-ic_currency {
+    font-size: 18px;
 }
-
-body.modal-open{
-    padding-right: 0 !important;
-    overflow-y: auto;
-  }
-
-
-
-
 
 
 
