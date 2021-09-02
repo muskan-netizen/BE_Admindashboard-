@@ -9,6 +9,9 @@ class CartAddon extends Model
 {
     use HasFactory;
     
+    protected $fillable = ['cart_id','cart_product_id','addon_id','option_id'];
+
+
     public function option(){
        return $this->belongsTo('App\Models\AddonOption', 'option_id', 'id')
        			->join('addon_option_translations as aot', 'addon_options.id', 'aot.addon_opt_id')

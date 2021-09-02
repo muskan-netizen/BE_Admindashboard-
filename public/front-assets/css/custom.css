@@ -1910,9 +1910,10 @@ label {
     width: 70%;
     background-color: #EEEEEE;
     padding: 0 10px;
-    border-radius: 50px;
     position: relative;
-    overflow: hidden;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
 }
 
 .search_form,
@@ -1926,7 +1927,7 @@ label {
 .search_form input.form-control {
     font-size: 18px;
     height: 50px;
-    background: #EEEEEE;
+    background: transparent;
     padding: 0;
 }
 

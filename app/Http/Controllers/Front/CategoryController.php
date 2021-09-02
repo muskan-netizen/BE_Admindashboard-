@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{Currency, Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order};
-
+use Redirect;
 class CategoryController extends FrontController{
     private $field_status = 2;
     
@@ -157,6 +157,33 @@ class CategoryController extends FrontController{
             }
         }elseif($page == 'on demand service'){
             $cartDataGet = $this->getCartOnDemand($request);
+            if($request->step == 2 && empty($request->addons) && empty($request->dataset)){
+                $addos = 0;
+                foreach($cartDataGet['cartData'] as $cp){
+                    if(count($cp->product->addOn) > 0)
+                    $addos = 1;
+               }
+               if($addos == 1){
+                $name = \Request::route()->getName();
+                $new_url = $request->path()."?step=1&addons=1";
+                return redirect($new_url);
+               }else{
+                $name = \Request::route()->getName();
+                $new_url = $request->path()."?step=2&dataset=1";
+                return redirect($new_url);
+               }
+            }
+            if($request->step == 2 && empty($request->addons))
+            {
+                if ($request->session()->has('skip_addons')) {
+                    $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
+                    return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
+                }
+                $request->session()->put('skip_addons', '1');
+                $new_url = $request->path()."?step=2";
+                return redirect($new_url);
+            }
+            
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
             return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }else{

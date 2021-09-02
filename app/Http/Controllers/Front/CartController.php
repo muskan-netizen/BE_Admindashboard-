@@ -905,4 +905,79 @@ class CartController extends FrontController
             return response()->json(['status'=>'Error', 'message'=>$ex->getMessage()]);
         }
     }
+
+
+
+    // add ones add in cart for ondemand 
+
+    public function postAddToCartAddons(Request $request, $domain = '')
+    {
+      
+        try {
+           
+            $user = Auth::user();
+             $addon_ids = $request->addonID;
+             $addon_options_ids = $request->addonoptID;
+             $langId = Session::get('customerLanguage');
+
+           $addonSets = $addon_ids = $addon_options = array();
+            if($request->has('addonID')){
+                $addon_ids = $request->addonID;
+            }
+            if($request->has('addonoptID')){
+                $addon_options = $request->addonoptID;
+            }
+            foreach($addon_options as $key => $opt){
+                $addonSets[$addon_ids[$key]][] = $opt;
+            }
+
+            if($request->has('addonoptID')){
+                $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
+                ->select('addon_sets.id', 'addon_sets.min_select', 'addon_sets.max_select', 'ast.title')
+                ->where('ast.language_id', $langId)
+                ->where('addon_sets.status', '!=', '2')
+                ->where('addon_sets.id', $request->addonID[0])->first();
+             if (!$addon) {
+                return response()->json(['error' => 'Invalid addon or delete by admin. Try again with remove some.'], 404);
+            }
+            if ($addon->min_select > count($request->addonID)) {
+                return response()->json([
+                    'error' => 'Select minimum ' . $addon->min_select . ' options of ' . $addon->title,
+                    'data' => $addon
+                ], 404);
+            }
+            if ($addon->max_select < count($request->addonID)) {
+                return response()->json([
+                    'error' => 'You can select maximum ' . $addon->max_select . ' options of ' . $addon->title,
+                    'data' => $addon
+                ], 404);
+            }
+        
+            }
+               
+           
+              
+                    CartAddon::where('cart_id',$request->cart_id)->where('cart_product_id',$request->cart_product_id)->delete();
+                    if (count($addon_options) > 0) {
+                        $saveAddons = array();
+                        foreach ($addon_options as $key => $opts) {
+                            $saveAddons[] = [
+                            'option_id' => $opts,
+                            'cart_id' => $request->cart_id,
+                            'addon_id' => $addon_ids[$key],
+                            'cart_product_id' => $request->cart_product_id,
+                        ];
+                        }
+                        CartAddon::insert($saveAddons);
+                    }
+                   
+                
+        
+
+           
+            return response()->json(['status' => 'success', 'message' => 'Addons Added Successfully!']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
 }

@@ -347,10 +347,9 @@ $(document).ready(function () {
                         $('#show_plus_minus' + cartproduct_id).find('.input_qty').val(1);
                         $('#show_plus_minus' + cartproduct_id).hide();
                         $('#add_button_href' + cartproduct_id).show();
-
-                        let parentdiv = $('#show_plus_minus' + cartproduct_id).parents('.classes_wrapper');
-                        let addons_div = parentdiv.find('.addons-div');
-                        addons_div.show();
+                        
+                        let addons_div = $('#addon_div' + cartproduct_id);
+                        addons_div.hide();
                     }
                     if ($('#next-button-ondemand-2').length != 0) {
                         $("#next-button-ondemand-2").hide();
@@ -1292,37 +1291,9 @@ $(document).ready(function () {
 
 
     $(document).on("click", ".add_on_demand", function () {
-        var addonids = [];
-        var addonoptids = [];
-        let that = $(this);
+         let that = $(this);
 
-        //  add addons data 
-        let parentdiv = $(this).parents('.classes_wrapper');
-        let addon_elem =  parentdiv.find('.productAddonSetOptions');
-    
-
-
-        addon_elem.find('.productAddonOption').each(function( index ,value) {
-            var min_select = $(value).attr("data-min");
-            var max_select = $(value).attr("data-max");
-            var addon_set_title = $(value).attr("data-addonset-title");
-            var addonId = $(value).attr("addonId");
-            var addonOptId = $(value).attr("addonOptId");
-            if ($(value).is(":checked")) {
-                addonids.push(addonId);
-                addonoptids.push(addonOptId);
-                $(value).prop('checked', false);
-            }
-            //  else {
-            //     addonids.splice(addonids.indexOf(addonId), 1);
-            //     addonoptids.splice(addonoptids.indexOf(addonOptId), 1);
-            // }
-            
-           
-        });
-
-       
-       
+      
         // end addons data
 
         var ajaxCall = 'ToCancelPrevReq';
@@ -1337,6 +1308,62 @@ $(document).ready(function () {
             addToCartOnDemand(ajaxCall, vendor_id, product_id, addonids, addonoptids, add_to_cart_url, variant_id, show_plus_minus, that);
 
         }
+
+    });
+
+
+   
+    $(document).on("click", ".productAddonOption", function () {
+
+        var cart_id = '';
+        var cart_product_id = '';
+        let that = $(this);
+
+        //  add addons data 
+        let parentdiv = $(this).parents('.add-on-main-div');
+        let addon_elem =  parentdiv.find('.productAddonSetOptions');
+    
+
+
+        addon_elem.find('.productAddonOption').each(function( index ,value) {
+            var addonId = $(value).attr("addonId");
+            var addonOptId = $(value).attr("addonOptId");
+            if ($(value).is(":checked")) {
+                addonids.push(addonId);
+                addonoptids.push(addonOptId);
+            }
+        });
+     
+        var cart_id = addon_elem.attr("data-cart_id");
+        var cart_product_id = addon_elem.attr("data-cart_product_id");
+   
+        
+
+        ajaxCall = $.ajax({
+            type: "post",
+            dataType: "json",
+            url: update_addons_in_cart,
+            data: { "addonID": addonids, "addonoptID": addonoptids,"cart_id":cart_id,"cart_product_id":cart_product_id},
+            success: function (response) {
+                if (response.status == 'success') {
+                    cartHeader();
+                    addonids = [];
+                    addonoptids = [];
+                } else {
+                    addonids = [];
+                    addonoptids = [];
+                    alert(response.message);
+                }
+            },
+            error: function (error) {
+                var response = $.parseJSON(error.responseText);
+                let error_messages = response.error;
+                addonids = [];
+                addonoptids = [];
+                that.prop('checked', false);
+                alert(error_messages);
+            }
+        });
 
     });
 

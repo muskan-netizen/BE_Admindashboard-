@@ -175,7 +175,7 @@
                     <b>Return Request <sup class="total-items">({{$return_requests}})</sup>
                         <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
                     </b>
-                </a>                
+                </a>
             </div>
         </div>
         <div class="offset-md-9 col-md-3 offset-lg-10 col-lg-2 mb-2">
@@ -242,7 +242,7 @@
             var url = $(this).data('url');
             var rel = $(this).data('rel');
             $("#search_via_keyword").val("");
-            init(rel, url);
+            init(rel, url, '',true);
             $(this).remove();
         });
         $(".nav-link").click(function() {
@@ -250,8 +250,8 @@
             var rel = $(this).data('rel');
             var url = "{{ route('orders.filter') }}";
             $("#search_via_keyword").val("");
-            $(".tab-pane").html('');
-            init(rel, url);
+            // $(".tab-pane").html('');
+            init(rel, url,'',false);
         });
         $(function() {
             var url = window.location.href;
@@ -264,32 +264,35 @@
                 $('#order_list_order').show();
                 var rel = "pending_orders";
                 var url = "{{ route('orders.filter') }}";
-                $(".tab-pane").html('');
-                init(rel, url);
+                // $(".tab-pane").html('');
+                init(rel, url, '',false);
             });
         });
 
-        $("#search_via_keyword").on("keyup blur change",function(e){
+        $("#search_via_keyword").on("keyup blur", function(e) {
             $('#order_list_order').show();
             var rel = $("#top-tab li a.active").data('rel');
             var url = "{{ route('orders.filter') }}";
             var search_keyword = $(this).val();
-            $(".tab-pane").html('');
-            init(rel, url, search_keyword);
+            // $(".tab-pane").html('');
+            init(rel, url, search_keyword, false);
         })
 
-        function init(filter_order_status, url, search_keyword = "") {
+        function init(filter_order_status, url, search_keyword = "", isOnload=false) {
             $.ajax({
                 url: url,
                 type: "POST",
                 dataType: "JSON",
                 data: {
                     filter_order_status: filter_order_status,
-                    search_keyword : search_keyword
+                    search_keyword: search_keyword
                 },
                 success: function(response) {
                     $('#order_list_order').hide();
                     if (response.status == 'Success') {
+                        if (!isOnload) {
+                            $(".tab-pane").html('');
+                        }
                         if (response.data.orders.data.length != 0) {
                             let order_page_template = _.template($('#order_page_template').html());
                             $("#" + filter_order_status).append(order_page_template({
