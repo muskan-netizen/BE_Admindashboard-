@@ -44,9 +44,9 @@ class AddressController extends FrontController{
     public function store(Request $request, $domain = ''){
         $validatedData = $request->validate([
                 'type' => 'required',
-                'city' => 'required',
-                'state' => 'required',
-                'pincode' => 'required',
+                // 'city' => 'required',
+                // 'state' => 'required',
+                // 'pincode' => 'required',
                 'address' => 'required',
                 'country' => 'required',
         ], [
@@ -59,14 +59,14 @@ class AddressController extends FrontController{
         $country = Country::select('code', 'name')->where('id', $request->country)->first();
         $address = new UserAddress;
         $address->type = $request->type;
-        $address->city = $request->city;
-        $address->state = $request->state;
+        $address->city = $request->city??"";
+        $address->state = $request->state??"";
         $address->street = $request->street;
         $address->country = $country->name;
         $address->country_code = $country->code;
         $address->user_id = Auth::user()->id;
         $address->address = $request->address;
-        $address->pincode = $request->pincode;
+        $address->pincode = $request->pincode??"";
         $address->latitude  = $request->latitude;
         $address->longitude  = $request->longitude;
         $address->save();

@@ -36,10 +36,10 @@ class StripeGatewayController extends FrontController{
             $amount = $this->getDollarCompareAmount($request->amount);
             $token = $request->input('stripe_token');
             $response = $this->gateway->purchase([
-                'currency' => 'INR', //$this->currency,
+                'currency' => $this->currency,
                 'token' => $token,
                 'amount' => $amount,
-                'metadata' => ['order_id' => "11"],
+                'metadata' => ['cart_id' => ($request->cart_id) ? $request->cart_id : 0],
                 'description' => 'This is a test purchase transaction.',
             ])->send();
             if ($response->isSuccessful()) {

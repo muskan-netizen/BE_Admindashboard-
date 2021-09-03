@@ -429,7 +429,7 @@ class CartController extends FrontController
         $user = Auth::user();
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
-        $preferences = ClientPreference::first();
+        $preferences = ClientPreference::with(['client_detail:id,code,country_id'])->first();
         $countries = Country::get();
         $cart->pharmacy_check = $preferences->pharmacy_check;
         $customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
@@ -728,8 +728,7 @@ class CartController extends FrontController
             $cart->tip_15_percent = number_format((0.15 * $total_payable_amount), 2, '.', '');
             $cart->deliver_status = $delivery_status;
             $cart->action = $action;
-            $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id])->render();
-
+            $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             

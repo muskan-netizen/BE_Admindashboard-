@@ -4,6 +4,7 @@ var maplat  = 30.7046;
 var maplong = 76.7179;
 var map = '';
 var product_image = '';
+var marker='';
 themeType = [
     {
         featureType: "poi",
@@ -164,7 +165,11 @@ function showroute(alltask,agent_location,map,product_image){
      origin: new google.maps.Point(0,0), // origin
      anchor: new google.maps.Point(22,22) // anchor
     }; 
-     new google.maps.Marker({
+    if (marker && marker.setMap) {
+        marker.setMap(null);
+        }
+
+     marker = new google.maps.Marker({
         position: {lat: parseFloat(agent_location.lat),lng:  parseFloat(agent_location.long)},
         label: null,
         icon: image,

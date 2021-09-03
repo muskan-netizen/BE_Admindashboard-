@@ -56,4 +56,9 @@ class ClientPreference extends Model
       return $values;
     }
 
+    public function client_detail()
+    {
+      return $this->belongsTo('App\Models\Client','client_code','code');
+    }
+
 }

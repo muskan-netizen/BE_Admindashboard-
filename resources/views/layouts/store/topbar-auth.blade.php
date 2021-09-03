@@ -125,10 +125,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </ul>
                         <h6>currency</h6>
                         <ul class="list-inline">
-                            <li><a href="#">euro</a></li>
-                            <li><a href="#">rupees</a></li>
-                            <li><a href="#">pound</a></li>
-                            <li><a href="#">doller</a></li>
+                            @foreach($currencyList as $key => $listc)
+                                <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
+                                    <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
+                                </li>
+                            @endforeach
                         </ul>
                         <h6>Change Theme</h6>
                         @if($client_preference_detail->show_dark_mode == 1)

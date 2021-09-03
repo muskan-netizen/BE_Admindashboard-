@@ -101,13 +101,25 @@
                         </div>
                     </div>
                 </div>
-                <input type="hidden" id="latitude">
-                <input type="hidden" id="longitude">
+                @php
+                $default_latitude = "";
+                $default_longitude = "";
+                $default_location_name = "";
+                $default_country = "";
+                if((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)){
+     //               $default_latitude = $preferences->Default_latitude??"";
+    //              $default_longitude = $preferences->Default_longitude??"";
+     //               $default_location_name = $preferences->Default_location_name??"";
+                    $default_country = $preferences->client_detail->country_id??"";
+                }
+                @endphp
+                <input type="hidden" id="latitude" value="{{$default_latitude}}">
+                <input type="hidden" id="longitude" value="{{$default_longitude}}">
                 <div class="form-row">
                     <div class="col-md-12 mb-3">
                         <label for="address">{{__('Address')}}</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="address" placeholder="{{__('Address')}}" aria-label="Recipient's Address" aria-describedby="button-addon2">
+                            <input type="text" class="form-control" id="address" placeholder="{{__('Address')}}" aria-label="Recipient's Address" aria-describedby="button-addon2" value="{{ $default_location_name }}">
                             <div class="input-group-append">
                                 <button class="btn btn-outline-secondary showMapHeader" type="button" id="button-addon2">
                                     <i class="fa fa-map-marker" aria-hidden="true"></i>
@@ -132,7 +144,7 @@
                         <label for="country">{{__('Country')}}</label>
                         <select name="country" id="country" class="form-control">
                             @foreach($countries as $co)
-                            <option value="{{$co->id}}">{{$co->name}}</option>
+                            <option value="{{$co->id}}" {{ ($co->id == $default_country)?"selected":"" }}>{{$co->name}}</option>
                             @endforeach
                         </select>
                         <span class="text-danger" id="country_error"></span>
