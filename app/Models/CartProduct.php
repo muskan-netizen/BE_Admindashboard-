@@ -21,7 +21,7 @@ class CartProduct extends Model{
 
 
  	public function product(){
-    	return $this->belongsTo('App\Models\Product')->select('id','title', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id','Requires_last_mile','pharmacy_check');
+    	return $this->belongsTo('App\Models\Product')->select('id','title', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id','Requires_last_mile','pharmacy_check','tags');
     }
 
     public function vendor(){

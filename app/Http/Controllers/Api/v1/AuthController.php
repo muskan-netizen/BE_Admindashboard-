@@ -239,6 +239,7 @@ class AuthController extends BaseController{
             $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 
                         'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
             $response['verify_details'] = $verified;
+            $response['cca2'] = $user->country ? $user->country->code : '';
             $preferData['map_key'] = $prefer->map_key;
             $preferData['theme_admin'] = $prefer->theme_admin;
             $preferData['date_format'] = $prefer->date_format;
@@ -268,7 +269,11 @@ class AuthController extends BaseController{
 
             if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
                 $response['send_otp'] = 1;
-                $to = '+'.$user->dial_code.$user->phone_number;
+                if($user->dial_code == "971"){
+                    $to = '+'.$user->dial_code."0".$user->phone_number;
+                } else {
+                    $to = '+'.$user->dial_code.$user->phone_number;
+                }
                 $provider = $prefer->sms_provider;
                 $body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
                 $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);

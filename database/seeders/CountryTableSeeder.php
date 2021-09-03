@@ -1,6 +1,7 @@
 <?php
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
+use DB;
 
 class CountryTableSeeder extends Seeder
 {
@@ -11,7 +12,9 @@ class CountryTableSeeder extends Seeder
      */
     public function run()
     {
-        \DB::table('countries')->delete();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('countries')->truncate();    
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');   
 
         $countries = array(
             array('id' => '1','code' => 'AF','name' => 'AFGHANISTAN','nicename' => 'Afghanistan','iso3' => 'AFG','numcode' => '4','phonecode' => '93'),

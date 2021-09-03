@@ -16,11 +16,11 @@ $timezone = Auth::user()->timezone;
             <div class="col-lg-4 mb-3">
                 <div class="card mb-0 h-100">
                     <div class="card-body">
-                        <h4 class="header-title mb-3">Track Order</h4>
+                        <h4 class="header-title mb-3">{{__('Track Order')}}</h4>
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="mb-4">
-                                    <h5 class="mt-0">Order ID:</h5>
+                                    <h5 class="mt-0">{{__('Order ID')}}:</h5>
                                     <p>#{{$order->order_number}}</p>
                                 </div>
                             </div>
@@ -87,7 +87,7 @@ $timezone = Auth::user()->timezone;
                                 </ul>
                             </div>
 
-                            @if(isset($order->vendors) && isset($order->vendors->first()->delivery_fee) && $order->vendors->first()->delivery_fee > 0.00)
+                            @if(isset($order->vendors) && isset($order->vendors->first()->dispatch_traking_url) && $order->vendors->first()->dispatch_traking_url !=null)
                                 <div class="col-lg-6">
                                     <ul class="list-unstyled remove-curser">
                                         @foreach($dispatcher_status_options as $dispatcher_status_option)

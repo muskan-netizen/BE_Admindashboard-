@@ -392,7 +392,7 @@ class OrderController extends FrontController
         if($response->status == 'Success'){
             return $this->successResponse($response->data, 'Order placed successfully.', 201);
         }else{
-            return $this->errorResponse($response->message, 402);
+            return $this->errorResponse($response->message, 400);
         }
     }
     public function orderSave($request, $paymentStatus)
@@ -410,6 +410,14 @@ class OrderController extends FrontController
             }else{
                 $user = Auth::user();
             }
+
+            if ( ($request->payment_option_id != 1) && ($request->payment_option_id != 2) ) {
+                $saved_transaction = Payment::where('transaction_id', $request->transaction_id)->first();
+                if($saved_transaction){
+                    return $this->errorResponse('Transaction has already been done', 400);
+                }
+            }
+
             $loyalty_amount_saved = 0;
             $redeem_points_per_primary_currency = '';
             $loyalty_card = LoyaltyCard::where('status', '0')->first();
@@ -675,7 +683,7 @@ class OrderController extends FrontController
                     $order_tax->save();
                 }
             }
-            if ( ($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->payment_option_id != 5) ) {
+            if ( ($request->payment_option_id != 1) && ($request->payment_option_id != 2) ) {
                 Payment::insert([
                     'date' => date('Y-m-d'),
                     'order_id' => $order->id,

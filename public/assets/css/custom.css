@@ -2273,7 +2273,35 @@ button.update-status {
     width: 49%;
 }
 
-
+.site_link {
+    border: 0.5px solid rgb(0 0 0 / 17%);
+    padding: 5px 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.position-relative {
+    position: relative !important;
+}
+.site_link a {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 20px;
+}
+span.copied_txt {
+    position: absolute;
+    bottom: -30px;
+    right: 0;
+    background: rgb(85 164 255 / 50%);
+    color: #ffff;
+    padding: 0 10px;
+    border-radius: 50px;
+    line-height: 24px;
+    font-size: 14px;
+}
 
 
 

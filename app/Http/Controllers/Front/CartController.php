@@ -436,6 +436,8 @@ class CartController extends FrontController
         $latitude = '';
         $longitude = '';
         $user_allAddresses = collect();
+        $upSell_products = collect();
+        $crossSell_products = collect();
         if($user){
             $user_allAddresses = UserAddress::where('user_id', $user->id)->get();
             if($address_id > 0){
@@ -612,6 +614,26 @@ class CartController extends FrontController
                             }
                         }
                     }
+
+                    $product = Product::with([
+                        'variant' => function ($sel) {
+                            $sel->groupBy('product_id');
+                        },
+                        'variant.media.pimage.image', 'upSell', 'crossSell', 'vendor', 'media.image', 'translation' => function ($q) use ($langId) {
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                            $q->where('language_id', $langId);
+                        }])->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating')
+                        ->where('url_slug', $prod->product->url_slug)
+                        ->first();
+                    $doller_compare = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
+                    $up_prods = $this->metaProduct($langId, $doller_compare, 'upSell', $product->upSell);
+                    if($up_prods){
+                        $upSell_products->push($up_prods);
+                    }
+                    $cross_prods = $this->metaProduct($langId, $doller_compare, 'crossSell', $product->crossSell);
+                    if($cross_prods){
+                        $crossSell_products->push($cross_prods);
+                    }
                 }
                 if ($vendorData->coupon) {
                     if ($vendorData->coupon->promo->promo_type_id == 2) {
@@ -707,6 +729,11 @@ class CartController extends FrontController
             $cart->deliver_status = $delivery_status;
             $cart->action = $action;
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id])->render();
+
+            $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
+            $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
+            
+            // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
         return $cart;

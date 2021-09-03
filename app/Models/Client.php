@@ -118,5 +118,9 @@ class Client extends Authenticatable
       return $value;
     }
 
+    public function country()
+    {
+      return $this->belongsTo('App\Models\Country','country_id','id');
+    }
 
 }

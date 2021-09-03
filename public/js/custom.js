@@ -11,8 +11,93 @@ $(function () {
     });
 });
 
-$(document).ready(function () {
+window.initializeSlider = function initializeSlider() {
+    $(".slide-6").slick({
+        dots: !1,
+        infinite: !0,
+        speed: 300,
+        slidesToShow: 5,
+        slidesToScroll: 6,
+        responsive: [
+            { breakpoint: 1367, settings: { slidesToShow: 5, slidesToScroll: 5, infinite: !0 } },
+            { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
+            { breakpoint: 767, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 3, infinite: !0 } },
+            { breakpoint: 480, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+        ],
+    });
+    $(".product-4").slick({
+        arrows: !0,
+        dots: !1,
+        infinite: !1,
+        speed: 300,
+        slidesToShow: 5,
+        slidesToScroll: 4,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 420, settings: { slidesToShow: 2, arrows: true,slidesToScroll: 1 } },
+        ],
+    });
+    $(".product-5").slick({
+        arrows: !0,
+        dots: !1,
+        infinite: !1,
+        speed: 300,
+        slidesToShow: 6,
+        slidesToScroll: 3,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true,slidesToScroll: 2 } },
+            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true,slidesToScroll: 1 } },
+        ],
+    });
+    $('.vendor-product').slick({
+        infinite: true,
+        speed: 300,
+        arrows: false,
+        dots: false,
+        slidesToShow: 4,
+        slidesToScroll: 3,
+        autoplay: true,
+        autoplaySpeed: 5000,
+        rtl: false,
+        responsive: [{
+            breakpoint: 1200,
+            settings: {
+                slidesToShow: 2,
+                slidesToScroll: 2
+            }
+        },
+        {
+            breakpoint: 767,
+            settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                arrows: true
+            }
+        }]
+    });   
+    
+    $(".booking-time").slick({
+        dots: !1,
+        infinite: !0,
+        speed: 300,
+        slidesToShow: 4,
+        slidesToScroll: 6,
+        responsive: [
+            { breakpoint: 1367, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
+            { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
+            { breakpoint: 767, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 3, infinite: !0 } },
+            { breakpoint: 480, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+        ],
+    });
+}
 
+$(document).ready(function () {
+    $('#myModal').on('show.bs.modal', function (e) {	
+        document.querySelector('meta[name="viewport"]').content = 'width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0';	
+    });
+    
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
@@ -462,13 +547,12 @@ $(document).ready(function () {
     let path = window.location.pathname;
     let urlParams = new URLSearchParams(queryString);
     if ((urlParams.has('PayerID')) && (urlParams.has('token'))) {
+        $('.spinner-overlay').show();
         let tipAmount = 0;
         if (urlParams.has('tip')) {
             tipAmount = urlParams.get('tip');
         }
-        $(document).ajaxStop(function () {
-            paymentSuccessViaPaypal(urlParams.get('amount'), urlParams.get('token'), urlParams.get('PayerID'), path, tipAmount);
-        });
+        paymentSuccessViaPaypal(urlParams.get('amount'), urlParams.get('token'), urlParams.get('PayerID'), path, tipAmount);
     }
 
     function paymentViaStripe(stripe_token, address_id, payment_option_id) {
@@ -597,15 +681,15 @@ $(document).ready(function () {
     function paymentSuccessViaPaypal(amount, token, payer_id, path, tip = 0) {
         let address_id = 0;
         if (path.indexOf("cart") !== -1) {
-            $('#order_placed_btn').trigger('click');
-            $('#v-pills-paypal-tab').trigger('click');
+            // $('#order_placed_btn').trigger('click');
+            // $('#v-pills-paypal-tab').trigger('click');
             $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
             address_id = $("input:radio[name='address_id']:checked").val();
         }
         else if (path.indexOf("wallet") !== -1) {
-            $('#topup_wallet_btn').trigger('click');
-            $('#wallet_topup_form #radio-paypal').prop("checked", true);
-            $(".topup_wallet_confirm").attr("disabled", true);
+            // $('#topup_wallet_btn').trigger('click');
+            // $('#wallet_topup_form #radio-paypal').prop("checked", true);
+            $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", true);
         }
         $.ajax({
             type: "GET",
@@ -621,25 +705,35 @@ $(document).ready(function () {
                         creditWallet(amount, 3, response.data);
                     }
                 } else {
+                    $('.spinner-overlay').hide();
                     if (path.indexOf("cart") !== -1) {
-                        success_error_alert('error', response.message, "#paypal-payment-form .payment_response");
+                        // success_error_alert('error', response.message, "#paypal-payment-form .payment_response");
+                        $(".cart_response").removeClass('d-none');
+                        success_error_alert('error', response.message, ".cart_response");
                         $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
                     }
                     else if (path.indexOf("wallet") !== -1) {
-                        success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-                        $(".topup_wallet_confirm").removeAttr("disabled");
+                        // success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                        ("#wallet_response .message").removeClass('d-none');
+                        success_error_alert('error', response.message, "#wallet_response .message");
+                        $("#topup_wallet_btn, .topup_wallet_confirm").removeAttr("disabled");
                     }
                 }
             },
             error: function (error) {
+                $('.spinner-overlay').hide();
                 var response = $.parseJSON(error.responseText);
                 if (path.indexOf("cart") !== -1) {
-                    success_error_alert('error', response.message, "#paypal-payment-form .payment_response");
+                    // success_error_alert('error', response.message, "#paypal-payment-form .payment_response");
+                    $(".cart_response").removeClass('d-none');
+                    success_error_alert('error', response.message, ".cart_response");
                     $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
                 }
                 else if (path.indexOf("wallet") !== -1) {
-                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-                    $(".topup_wallet_confirm").removeAttr("disabled");
+                    // success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                    ("#wallet_response .message").removeClass('d-none');
+                    success_error_alert('error', response.message, "#wallet_response .message");
+                    $("#topup_wallet_btn, .topup_wallet_confirm").removeAttr("disabled");
                 }
             }
         });
@@ -663,13 +757,24 @@ $(document).ready(function () {
                 if (response.status == "Success") {
                     window.location.href = base_url+'/order/success/'+response.data.id;
                 }else{
-                    $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+                    if($('.cart_response').length > 0){
+                        $(".cart_response").removeClass('d-none');
+                        success_error_alert('error', response.message, ".cart_response");
+                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                    }
                 }
             },
             error: function (error) {
                 var response = $.parseJSON(error.responseText);
-                success_error_alert('error', response.message, ".payment_response");
-                $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                // success_error_alert('error', response.message, ".payment_response");
+                if($('.cart_response').length > 0){
+                    $(".cart_response").removeClass('d-none');
+                    success_error_alert('error', response.message, ".cart_response");
+                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                }
+            },
+            complete: function(data){
+                $('.spinner-overlay').hide();
             }
         });
     }
@@ -699,15 +804,15 @@ $(document).ready(function () {
             paymentViaPayfast(address_id, payment_option_id);
         }
     });
-    function creditWallet(amount, payment_option_id, transaction_id) {
+    window.creditWallet = function creditWallet(amount, payment_option_id, transaction_id) {
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: credit_wallet_url,
             data: { wallet_amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id },
             success: function (response) {
+                location.href = path;
                 if (response.status == "Success") {
-                    location.href = path;
                     // $("#topup_wallet").modal("hide");
                     // $(".table.wallet-transactions table-body").html('');
                     $(".wallet_balance").text(response.data.wallet_balance);
@@ -715,14 +820,19 @@ $(document).ready(function () {
                     // let wallet_transactions_template = _.template($('#wallet_transactions_template').html());
                     // $(".table.wallet-transactions table-body").append(wallet_transactions_template({wallet_transactions:response.data.transactions}));
                 } else {
-                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-                    $(".topup_wallet_confirm").attr("disabled", false);
+                    $("#wallet_response .message").removeClass('d-none');
+                    success_error_alert('error', response.message, "#wallet_response .message");
+                    $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", false);
                 }
             },
             error: function (error) {
                 var response = $.parseJSON(error.responseText);
-                success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-                $(".topup_wallet_confirm").removeAttr("disabled");
+                $("#wallet_response .message").removeClass('d-none');
+                success_error_alert('error', response.message, "#wallet_response .message");
+                $("#topup_wallet_btn, .topup_wallet_confirm").removeAttr("disabled");
+            },
+            complete: function(data){
+                $('.spinner-overlay').hide();
             }
         });
     }
@@ -767,6 +877,10 @@ $(document).ready(function () {
             });
         } else if (payment_option_id == 3) {
             paymentViaPaypal('', payment_option_id);
+        } else if (payment_option_id == 5) {
+            paymentViaPaystack();
+        } else if (payment_option_id == 6) {
+            paymentViaPayfast();
         }
     });
     $(document).on("click", ".remove_promo_code_btn", function () {
@@ -964,6 +1078,10 @@ $(document).ready(function () {
                             if ($('#cart_main_page').length != 0) {
                                 let cart_template = _.template($('#cart_template').html());
                                 $("#cart_table").append(cart_template({cart_details:cart_details}));
+                                $(".other_cart_products").html('');
+                                let other_cart_products_template = _.template($('#other_cart_products_template').html());
+                                $(".other_cart_products").append(other_cart_products_template({cart_details:cart_details}));
+                                initializeSlider();
                                 $('#placeorder_form .left_box').html(''); 
                                 $('#placeorder_form .left_box').html(cart_details.left_section);
                                 if (vendor_type != 'delivery') {
@@ -1509,23 +1627,6 @@ $(document).ready(function () {
                 alert(error_messages);
             },
         });
-    }
-
-    function initializeSlider() {
-        $(".booking-time").slick({
-            dots: !1,
-            infinite: !0,
-            speed: 300,
-            slidesToShow: 4,
-            slidesToScroll: 6,
-            responsive: [
-                { breakpoint: 1367, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
-                { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
-                { breakpoint: 767, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 3, infinite: !0 } },
-                { breakpoint: 480, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            ],
-        });
-
     }
 
     /// ***************************************       END show cart data for on demand services    ***************************************************************///////////////// 

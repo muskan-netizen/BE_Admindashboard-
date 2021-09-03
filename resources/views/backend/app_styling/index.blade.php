@@ -96,7 +96,15 @@
                             </div>
                         </div>
                     </div>
-                </div>     
+                </div>
+                <div class="col-lg-4">
+                    <div class="card card-box">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h4 class="header-title mb-0">Signup Tagline</h4>
+                        </div>
+                        <input type="text" class="form-control" data-id="{{ $signup_tag_line_text->id??'' }}" id="signup_tagline" name="signup_tagline" value="{{ $signup_tag_line_text->name??'' }}">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -126,7 +134,7 @@
                     </div>
                 </div>
             </div>
-        </div>  
+        </div>
     </div>
 </div>
 
@@ -362,6 +370,31 @@
             }
         });
     }
+
+    $("#signup_tagline").on('blur',function() {
+        var updated_text = $(this).val();
+        var id = $(this).data('id');
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            url: "{{route('styling.updateSignupTagLine')}}",
+            data: { updated_text : updated_text, id : id },
+            dataType: 'json',
+            headers: {
+                Accept: "application/json"
+            },
+            success: function(response) {
+                if (response.status == 'success') {
+                    console.log(response.message);
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                }
+            }
+        });
+    });
 </script>
 
 @endsection

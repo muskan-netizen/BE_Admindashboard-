@@ -588,4 +588,17 @@
 @endsection
 @section('script')
 @include('backend.vendor.pagescript')
+<script>
+    $(document).on('click', '.copy_link', function() {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($('#pwd_spn').text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+        $("#show_copy_msg_on_click_copy").show();
+        setTimeout(function() {
+            $("#show_copy_msg_on_click_copy").hide();
+        }, 1000);
+    })
+</script>
 @endsection

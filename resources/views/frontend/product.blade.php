@@ -519,53 +519,82 @@
 @if($product->related_products->count() > 0)
 <section class="">
     <div class="container">
-        <div class="row">
+        <div class="row m-0">
             <div class="col-12 ">
-                <h2>Related products</h2>
+                <h3>{{__('Related products')}}</h3>
             </div>
         </div>
     </div>
 </section>
-@endif
-<section class="section-b-space ratio_asos">
-    <div class="container">
-        <div class="row"></div>
-        <div class="row search-product">
+
+{{--<section class="section-b-space ratio_asos">--}}
+    <div class="container mt-3 mb-5">
+        <div class="product-4 product-m no-arrow">
             @forelse($product->related_products as $related_product)
-            <div class="col-xl-2 col-md-4 col-sm-6">
-                <div class="product-box">
-                    <div class="img-wrapper">
-                        <div class="front">
-                            <a href="{{route('productDetail')}}/{{$related_product->url_slug}}">
-                                <img src="{{$related_product->media ? $related_product->media->first()->image->path['proxy_url'].'600/800'.$related_product->media->first()->image->path['image_path'] : ''}}" class="img-fluid blur-up lazyload bg-img" alt="">
-                            </a>
+                {{--<div class="col-xl-2 col-md-4 col-sm-6">--}}
+                <div>
+                    <a class="card scale-effect text-center" href="{{route('productDetail')}}/{{ $related_product->url_slug }}">
+                        <label class="product-tag">{{ __($related_product->product_type) }}</label>
+                        <div class="product-image">
+                            <img src="{{ $related_product->media ? $related_product->media->first()->image->path['proxy_url'].'600/800'.$related_product->media->first()->image->path['image_path'] : '' }}" alt="">
                         </div>
-                    </div>
-                    <a href="{{route('productDetail')}}/{{$related_product->url_slug}}">
-                        <div class="product-detail">
-                            <div class="rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
+                        <div class="media-body align-self-center">
+                            <div class="inner_spacing">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h3 class="m-0">{{ $related_product->translation_title }}</h3>
+                                    @if($client_preference_detail)
+                                        @if($client_preference_detail->rating_check == 1)
+                                            @if($related_product->averageRating > 0)
+                                                <span class="rating">{{ $related_product->averageRating }} <i class="fa fa-star text-white p-0"></i></span>
+                                            @endif
+                                        @endif
+                                    @endif
+                                </div>
+                                <p>{{ $related_product->vendor_name }}</p>
+                                <h4>
+                                    @if($related_product->inquiry_only == 0)
+                                        {{ Session::get('currencySymbol') . $related_product->variant_price }}
+                                    @endif
+                                </h4>
                             </div>
-                            <h6>{{ (!empty($related_product->translation) && $related_product->translation->first())? $related_product->translation->first()->title : ''}}</h6>
-                            <h4>{{Session::get('currencySymbol').($related_product->variant->first()->price * $related_product->variant->first()->multiplier)}}</h4>
-                            <ul class="color-variant">
-                                <li class="bg-light0"></li>
-                                <li class="bg-light1"></li>
-                                <li class="bg-light2"></li>
-                            </ul>
                         </div>
                     </a>
                 </div>
-            </div>
+                {{--<div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="product-box">
+                        <div class="img-wrapper">
+                            <div class="front">
+                                <a href="{{route('productDetail')}}/{{$related_product->url_slug}}">
+                                    <img src="{{$related_product->media ? $related_product->media->first()->image->path['proxy_url'].'600/800'.$related_product->media->first()->image->path['image_path'] : ''}}" class="img-fluid blur-up lazyload bg-img" alt="">
+                                </a>
+                            </div>
+                        </div>
+                        <a href="{{route('productDetail')}}/{{$related_product->url_slug}}">
+                            <div class="product-detail">
+                                <div class="rating">
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                </div>
+                                <h6>{{ (!empty($related_product->translation) && $related_product->translation->first())? $related_product->translation->first()->title : ''}}</h6>
+                                <h4>{{Session::get('currencySymbol').($related_product->variant->first()->price * $related_product->variant->first()->multiplier)}}</h4>
+                                <ul class="color-variant">
+                                    <li class="bg-light0"></li>
+                                    <li class="bg-light1"></li>
+                                    <li class="bg-light2"></li>
+                                </ul>
+                            </div>
+                        </a>
+                    </div>
+                </div>--}}
             @empty
             @endforelse
         </div>
     </div>
-</section>
+{{--</section>--}}
+@endif
 <div class="modal fade product-rating" id="product_rating" tabindex="-1" aria-labelledby="product_ratingLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

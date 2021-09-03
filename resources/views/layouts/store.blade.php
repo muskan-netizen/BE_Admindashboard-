@@ -38,6 +38,13 @@ else if($client_preference_detail->show_dark_mode == 2){
   <div class="loader_box" style="display: none;">
     <div class="spinner-border text-danger m-2 showLoader" role="status"></div>
   </div>
+  <div class="spinner-overlay">
+    <div class="page-spinner">
+        <div class="circle-border">
+            <div class="circle-core"></div>
+        </div>
+    </div>
+  </div>
   @yield('script')
 </body>
 </html>

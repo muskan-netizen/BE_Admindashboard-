@@ -30,6 +30,30 @@
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="mb-2">Public URL</h4>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-12">
+                    <div class="form-group mb-0">
+                        <div class="site_link position-relative">
+                            <a href="{{route('vendorDetail',$vendor->slug)}}" target="_blank"><span id="pwd_spn" class="password-span">{{route('vendorDetail',$vendor->slug)}}</span></a>
+                            <label class="copy_link float-right" id="cp_btn" title="copy">
+                                <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
+                                <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">Copied</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
             <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" id="slot-configs" method="post">
                 @csrf
                 <div class="row">

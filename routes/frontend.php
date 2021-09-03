@@ -129,6 +129,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function() {
     Route::get('user/addressBook', 'Front\AddressController@index')->name('user.addressBook');
 	Route::get('user/wallet', 'Front\WalletController@index')->name('user.wallet');
 	Route::post('user/wallet/credit', 'Front\WalletController@creditWallet')->name('user.creditWallet');
+	Route::get('user/loyalty', 'Front\LoyaltyController@index')->name('user.loyalty');
 	Route::post('wallet/payment/option/list', 'Front\WalletController@paymentOptions')->name('wallet.payment.option.list');
 	Route::get('user/deleteAddress/{id}', 'Front\AddressController@delete')->name('deleteAddress');
 	Route::post('user/updateAccount', 'Front\ProfileController@updateAccount')->name('user.updateAccount');

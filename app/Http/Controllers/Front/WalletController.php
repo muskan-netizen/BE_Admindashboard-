@@ -35,7 +35,9 @@ class WalletController extends FrontController
      */
     public function creditWallet(Request $request, $domain = '')
     {
-        if( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
+        if( (isset($request->user_id)) && (!empty($request->user_id)) ){
+            $user = User::find($request->user_id);
+        }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
             $user = User::whereHas('device',function  ($qu) use ($request){
                 $qu->where('access_token', $request->auth_token);
             })->first();
@@ -44,25 +46,28 @@ class WalletController extends FrontController
             $user = Auth::user();
         }
         if($user){
-            // $sendTime = \Carbon\Carbon::now()->addMinutes(10)->toDateTimeString();
             $credit_amount = $request->wallet_amount;
             $wallet = $user->wallet;
-            // dd($wallet->toArray());
             if ($credit_amount > 0) {
+                $saved_transaction = Transaction::where('meta', 'like', '%'.$request->transaction_id.'%')->first();
+                if($saved_transaction){
+                    return $this->errorResponse('Transaction has already been done', 400);
+                }
+
                 $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
                 $transactions = Transaction::where('payable_id', $user->id)->get();
                 $response['wallet_balance'] = $wallet->balanceFloat;
                 $response['transactions'] = $transactions;
                 $message = 'Wallet has been credited successfully';
                 Session::put('success', $message);
-                return $this->successResponse($response, $message, 201);
+                return $this->successResponse($response, $message, 200);
             }
             else{
-                return $this->errorResponse('Amount is not sufficient', 402);
+                return $this->errorResponse('Amount is not sufficient', 400);
             }
         }
         else{
-            return $this->errorResponse('Invalid User', 402);
+            return $this->errorResponse('Invalid User', 400);
         }
     }
 

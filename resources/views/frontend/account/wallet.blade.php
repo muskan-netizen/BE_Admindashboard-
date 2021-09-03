@@ -67,15 +67,17 @@ $timezone = Auth::user()->timezone;
                             \Session::forget('success');
                         @endphp
                     @endif
-                    @if ( ($errors) && (count($errors) > 0) )
+                    @if (\Session::has('error'))
                         <div class="alert alert-danger">
-                            <ul class="m-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                            <span>{!! \Session::get('error') !!}</span>
                         </div>
+                        @php
+                            \Session::forget('error');
+                        @endphp
                     @endif
+                    <div class="message d-none">
+                        <div class="alert p-0"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -261,6 +263,9 @@ $timezone = Auth::user()->timezone;
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
     var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
+    var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
+    var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
+    var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
     $('.verifyEmail').click(function() {
         verifyUser('email');
     });
@@ -310,4 +315,5 @@ $timezone = Auth::user()->timezone;
         output.src = URL.createObjectURL(event.target.files[0]);
     };
 </script>
+<script src="{{asset('js/payment.js')}}"></script>
 @endsection

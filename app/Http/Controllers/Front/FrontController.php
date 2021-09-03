@@ -118,6 +118,59 @@ class FrontController extends Controller
         return $products;
     }
 
+    public function metaProduct($langId, $multiplier, $for = 'related', $productArray = []){
+        if(empty($productArray)){
+            return $productArray;
+        }
+        $productIds = array();
+        foreach ($productArray as $key => $value) {
+            if($for == 'related'){
+                $productIds[] = $value->related_product_id;
+            }
+            if($for == 'upSell'){
+                $productIds[] = $value->upsell_product_id;
+            }
+            if($for == 'crossSell'){
+                $productIds[] = $value->cross_product_id;
+            }
+        }
+        $products = Product::with(['vendor', 'media' => function($q){
+                            $q->groupBy('product_id');
+                        }, 'media.image',
+                        'translation' => function($q) use($langId){
+                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                        },
+                        'variant' => function($q) use($langId){
+                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->groupBy('product_id');
+                        },
+                    ])->select('id', 'sku', 'averageRating', 'url_slug', 'is_new', 'is_featured', 'vendor_id', 'inquiry_only')
+                    ->whereIn('id', $productIds);
+        $products = $products->get();
+        if(!empty($products)){
+            foreach ($products as $key => $value) {
+                if($value->is_new == 1){
+                    $value->product_type = 'New Product';
+                }elseif($value->is_featured == 1){
+                    $value->product_type = 'Featured Product';
+                }else{
+                    $value->product_type ='On Sale';
+                }
+                $value->product_media = $value->media ? $value->media->first() : NULL;
+                $value->vendor_name = $value->vendor ? $value->vendor->name : '';
+                $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
+                $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
+                $value->variant_multiplier = $multiplier ? $multiplier : 1;
+                $value->variant_price = (!empty($value->variant->first())) ? number_format(($value->variant->first()->price * $multiplier),2,'.','') : 0;
+                $value->averageRating = number_format($value->averageRating, 1, '.', '');
+                // foreach ($value->variant as $k => $v) {
+                //     $value->variant[$k]->multiplier = $multiplier;
+                // }
+            }
+        }
+        return $products;
+    }
+
     public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption)
     {
         $config = array(

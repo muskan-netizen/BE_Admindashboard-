@@ -60,10 +60,10 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title text-uppercase">{{__('Cart')}}</h4>
+                <h3 class="page-title text-uppercase">{{__('Cart')}}</h3>
             </div>
             <div class="cart_response mt-3 mb-3 d-none">
-                <div class="alert" role="alert"></div>
+                <div class="alert p-0" role="alert"></div>
             </div>
         </div>
     </div>
@@ -333,53 +333,141 @@
         <p>{{__('No Other Coupons Available.')}}</p>
     </div>
 </script>
-<div class="container" id="cart_main_page">
-    @if($cartData)
-    <form method="post" action="" id="placeorder_form">
-        @csrf
-        <div class="card-box">
-            <div class="row d-flex justify-space-around">
-                @if(!$guest_user)
-                    <div class="col-lg-4 left_box">
-                        
-                    </div>
-                @endif
-                <div class="{{ $guest_user ? 'col-md-12' : 'col-lg-8' }}">
-                    <div class="spinner-box">
-                        <div class="circle-border">
-                            <div class="circle-core"></div>
+<div id="cart_main_page">
+    <div class="container">
+        @if($cartData)
+        <form method="post" action="" id="placeorder_form">
+            @csrf
+            <div class="card-box">
+                <div class="row d-flex justify-space-around">
+                    @if(!$guest_user)
+                        <div class="col-lg-4 left_box">
+                            
                         </div>
+                    @endif
+                    <div class="{{ $guest_user ? 'col-md-12' : 'col-lg-8' }}">
+                        <div class="spinner-box">
+                            <div class="circle-border">
+                                <div class="circle-core"></div>
+                            </div>
+                        </div>
+
+                        <div class="cart-page-layout" id="cart_table"></div>
+
                     </div>
+                </div>
 
-                    <div class="cart-page-layout" id="cart_table"></div>
-
+                <div class="row mb-4">
+                    <div class="col-6 mb-2 mb-sm-0">
+                        <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
+                    </div>
+                    <div class="col-6 text-right">
+                        <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
+                    </div>
                 </div>
             </div>
 
-            <div class="row mb-4">
-                <div class="col-6 mb-2 mb-sm-0">
-                    <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
+        </form>
+        @else
+        <div class="row mt-2 mb-4 mb-lg-5">
+            <div class="col-12 text-center">
+                <div class="cart_img_outer">
+                    <img src="{{asset('front-assets/images/empty_cart.png')}}">
                 </div>
-                <div class="col-6 text-right">
-                    <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
-                </div>
+                <h3>{{__('Your Cart Is Empty!')}}</h3>
+                <p>{{__('Add items to it now.')}}</p>
+                <a class="btn btn-solid" href="{{url('/')}}">{{__('Continue Shopping')}}</a>
             </div>
         </div>
-
-    </form>
-    @else
-    <div class="row mt-2 mb-4 mb-lg-5">
-        <div class="col-12 text-center">
-            <div class="cart_img_outer">
-                <img src="{{asset('front-assets/images/empty_cart.png')}}">
-            </div>
-            <h3>{{__('Your Cart Is Empty!')}}</h3>
-            <p>{{__('Add items to it now.')}}</p>
-            <a class="btn btn-solid" href="{{url('/')}}">{{__('Continue Shopping')}}</a>
-        </div>
+        @endif
     </div>
-    @endif
+
+    <div class="other_cart_products"></div>
+
 </div>
+<script type="text/template" id="other_cart_products_template">
+    <div class="container mt-3 mb-5">
+        <% if(cart_details.upSell_products != ''){ %>
+            <h3 class="mb-4 mt-4">{{__('Up Sell Products')}}</h3>
+            <div class="row">
+                <div class="col-12 p-0">
+                    <div class="product-4 product-m no-arrow">
+                        <% _.each(cart_details.upSell_products, function(prod, key){%>
+                            <div>
+                                <a class="card scale-effect text-center" href="{{route('productDetail')}}/<%= prod.url_slug %>">
+                                    <label class="product-tag"><%= prod.product_type %></label>
+                                    <div class="product-image">
+                                        <img src="<%= prod.product_media.image.path.proxy_url %>600/800<%= prod.product_media.image.path.image_path %>" alt="">
+                                    </div>
+                                    <div class="media-body align-self-center">
+                                        <div class="inner_spacing">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <h3 class="m-0"><%= prod.translation_title %></h3>
+                                                @if($client_preference_detail)
+                                                    @if($client_preference_detail->rating_check == 1)
+                                                        <% if(prod.averageRating > 0){ %>
+                                                            <span class="rating"><%= prod.averageRating %> <i class="fa fa-star text-white p-0"></i></span>
+                                                        <% } %>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                            <p><%= prod.vendor_name %></p>
+                                            <h4>
+                                                <% if(prod.inquiry_only == 0){ %>
+                                                    {{ Session::get('currencySymbol') }}<%= prod.variant_price %>
+                                                <% } %>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
+        <% if(cart_details.crossSell_products != ''){ %>
+            <h3 class="mb-4 mt-4">{{__('Cross Sell Products')}}</h3>
+            <div class="row">
+                <div class="col-12 p-0">
+                    <div class="product-4 product-m no-arrow">
+                        <% _.each(cart_details.crossSell_products, function(prod, key){%>
+                            <div>
+                                <a class="card scale-effect text-center" href="{{route('productDetail')}}/<%= prod.url_slug %>">
+                                    <label class="product-tag"><%= prod.product_type %></label>
+                                    <div class="product-image">
+                                        <img src="<%= prod.product_media.image.path.proxy_url %>600/800<%= prod.product_media.image.path.image_path %>" alt="">
+                                    </div>
+                                    <div class="media-body align-self-center">
+                                        <div class="inner_spacing">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <h3 class="m-0"><%= prod.translation_title %></h3>
+                                                @if($client_preference_detail)
+                                                    @if($client_preference_detail->rating_check == 1)
+                                                        <% if(prod.averageRating > 0){ %>
+                                                            <span class="rating"><%= prod.averageRating %> <i class="fa fa-star text-white p-0"></i></span>
+                                                        <% } %>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                            <p><%= prod.vendor_name %></p>
+                                            <h4>
+                                                <% if(prod.inquiry_only == 0){ %>
+                                                    {{ Session::get('currencySymbol') }}<%= prod.variant_price %>
+                                                <% } %>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</script>
 <div class="modal fade refferal_modal" id="refferal-modal" tabindex="-1" aria-labelledby="refferal-modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -555,7 +643,6 @@
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
     var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
     var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
-    var payment_success_payfast_url = "{{route('payment.payfastCompletePurchase')}}";;
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";

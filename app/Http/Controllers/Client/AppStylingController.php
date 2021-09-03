@@ -23,6 +23,7 @@ class AppStylingController extends BaseController
         $primary_color_options = [];
         $secondary_color_options = [];
         $tertiary_color_options = [];
+        $signup_tag_line_text = [];
         $regular_fonts = AppStyling::where('name', 'Regular Font')->first();
         if ($regular_fonts) {
             $regular_font_options = AppStylingOption::where('app_styling_id', $regular_fonts->id)->get();
@@ -55,7 +56,11 @@ class AppStylingController extends BaseController
         if ($tertiary_color) {
             $tertiary_color_options = AppStylingOption::where('app_styling_id', $tertiary_color->id)->first();
         }
-        return view('backend/app_styling/index')->with(['tertiary_color_options' => $tertiary_color_options, 'secondary_color_options' => $secondary_color_options, 'primary_color_options' => $primary_color_options, 'medium_font_options' => $medium_font_options, 'bold_font_options' => $bold_font_options, 'regular_font_options' => $regular_font_options, 'tab_style_options' => $tab_style_options, 'homepage_style_options' => $homepage_style_options]);
+        $signup_tag_line = AppStyling::where('name', 'Home Tag Line')->first();
+        if($signup_tag_line){
+            $signup_tag_line_text = AppStylingOption::where('app_styling_id', $signup_tag_line->id)->first();
+        }
+        return view('backend/app_styling/index')->with(['tertiary_color_options' => $tertiary_color_options, 'secondary_color_options' => $secondary_color_options, 'primary_color_options' => $primary_color_options, 'medium_font_options' => $medium_font_options, 'bold_font_options' => $bold_font_options, 'regular_font_options' => $regular_font_options, 'tab_style_options' => $tab_style_options, 'homepage_style_options' => $homepage_style_options, 'signup_tag_line_text' => $signup_tag_line_text]);
     }
     /**
      * Store a regular font.
@@ -131,6 +136,17 @@ class AppStylingController extends BaseController
         $option_change = AppStylingOption::where('app_styling_id', '=', $font->app_styling_id)->update(array('is_selected' => 0));
         $font->is_selected = 1;
         $font->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Updated successfully!'
+        ]);
+    }
+
+    public function updateSignupTagLine(Request $request)
+    {
+        $signUpTag = AppStylingOption::find($request->id);
+        $signUpTag->name = $request->updated_text;
+        $signUpTag->save();
         return response()->json([
             'status' => 'success',
             'message' => 'Updated successfully!'

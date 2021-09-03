@@ -200,6 +200,7 @@ class ProductController extends BaseController
         {   
             $vendor_id = $product->vendor_id;
             $agent_dispatcher_on_demand_tags = $this->getDispatcherOnDemandTags($vendor_id);
+           
         }
        
         
@@ -775,21 +776,21 @@ class ProductController extends BaseController
                     $unique = Auth::user()->code;
                     $email =  $unique.$vendor_id."_royodispatch@dispatch.com";
 
-                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
-                                                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->dispacher_home_other_service_key,
+                                                        'shortcode' => $dispatch_domain->dispacher_home_other_service_key_code,
                                                         'content-type' => 'application/json']
                                                             ]);
-                            $url = $dispatch_domain->pickup_delivery_service_key_url;                      
+                            $url = $dispatch_domain->dispacher_home_other_service_key_url;                      
                             $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
                             $response = json_decode($res->getBody(), true); 
                             if($response && $response['message'] == 'success'){
                                 return $response['tags'];
                             }
-                    
+                            Log::info($response);
                 }
             }    
             catch(\Exception $e){
-            
+                Log::info($e->getMessage());
             }
     }
     # check if last mile delivery on 

@@ -345,6 +345,22 @@
                 @endif
             </div>
             <div class="col-lg-5">
+                <div class="card-box ">
+                    <div class="row mb-2 bg-light">
+                        <div class="col-6" style="margin:auto; padding: 8px !important;">
+                            <h5 class="text-uppercase  mt-0 mb-0">Public URL</h5>
+                        </div>
+                        <div class="col-6 p-2 mt-0" style="margin:auto; padding: 8px !important;">
+                            <div class="site_link position-relative">
+                                <a href="{{route('productDetail',$product->url_slug)}}" target="_blank"><span id="pwd_spn" class="password-span">{{route('productDetail',$product->url_slug)}}</span></a>
+                                <label class="copy_link float-right" id="cp_btn" title="copy">
+                                    <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
+                                    <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">Copied</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card-box">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Other Information</h5>
                     <div class="row mb-2">
@@ -542,7 +558,7 @@
                             {!! Form::label('title', 'Related Products',['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="releted_product[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
                                 @foreach($otherProducts as $otherProduct)
-                                <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $related_ids)) selected @endif>{{$otherProduct->sku}}</option>
+                                <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $related_ids)) selected @endif>{{$otherProduct->primary->title}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -972,5 +988,17 @@
         });
     });
 </script>
-
+<script>
+    $(document).on('click', '.copy_link', function() {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($('#pwd_spn').text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+        $("#show_copy_msg_on_click_copy").show();
+        setTimeout(function() {
+            $("#show_copy_msg_on_click_copy").hide();
+        }, 1000);
+    })
+</script>
 @endsection

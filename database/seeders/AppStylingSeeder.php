@@ -35,6 +35,11 @@ class AppStylingSeeder extends Seeder{
             'name' => 'Futura-Normal',
             'is_selected' => '0'
         ]);
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Eina02-Regular',
+            'is_selected' => '0'
+        ]);
         $app_styling = AppStyling::insertGetId([
             'name' => 'Medium Font',
             'type' => '2'
@@ -54,6 +59,11 @@ class AppStylingSeeder extends Seeder{
             'name' => 'Futura-Medium',
             'is_selected' => '0'
         ]);
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Eina02-SemiBold',
+            'is_selected' => '0'
+        ]);
         $app_styling = AppStyling::insertGetId([
             'name' => 'Bold Font',
             'type' => '2'
@@ -71,6 +81,11 @@ class AppStylingSeeder extends Seeder{
         $app_styling_option = AppStylingOption::insert([
             'app_styling_id' => $app_styling,
             'name' => 'FuturaBT-Heavy',
+            'is_selected' => '0'
+        ]);
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Eina02-Bold',
             'is_selected' => '0'
         ]);
         $app_styling = AppStyling::insertGetId([
@@ -132,6 +147,22 @@ class AppStylingSeeder extends Seeder{
             'template_id' => '3',
         ]);
 
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Tab 4',
+            'image' => 'bar_four.png',
+            'is_selected' => '0',
+            'template_id' => '4',
+        ]);
+
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Tab 5',
+            'image' => 'bar_five.png',
+            'is_selected' => '0',
+            'template_id' => '5',
+        ]);
+
         $app_styling = AppStyling::insertGetId([
             'name' => 'Home Page Style',
             'type' => '3'
@@ -160,5 +191,31 @@ class AppStylingSeeder extends Seeder{
         //     'is_selected' => '0',
         //     'template_id' => '3',
         // ]);
+
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Home Page 4',
+            'image' => 'home_four.png',
+            'is_selected' => '0',
+            'template_id' => '2',
+        ]);
+
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Home Page 5',
+            'image' => 'home_five.png',
+            'is_selected' => '0',
+            'template_id' => '3',
+        ]);
+
+        $app_styling = AppStyling::insertGetId([
+            'name' => 'Home Tag Line',
+            'type' => '1'
+        ]);
+
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Create a free account and join us!',
+        ]);
     }
 }

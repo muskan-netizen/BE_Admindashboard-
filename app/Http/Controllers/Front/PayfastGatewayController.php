@@ -11,8 +11,7 @@ use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Front\OrderController;
-use App\Http\Controllers\Front\FrontController;
+use App\Http\Controllers\Front\{FrontController, OrderController, WalletController};
 use App\Models\Client as CP;
 use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor};
 
@@ -70,10 +69,15 @@ class PayfastGatewayController extends FrontController
             }
             $returnUrlParams = $returnUrlParams.'&gateway=payfast';
 
+            $returnUrl = route('order.return.success');
+            if($request->payment_form == 'wallet'){
+                $returnUrl = route('user.wallet');
+            }
+
             $request_arr = array(
                 'merchant_id' => $this->gateway->getMerchantId(),
                 'merchant_key' => $this->gateway->getMerchantKey(),
-                'return_url' => url('order/return/success'),
+                'return_url' => $returnUrl,
                 'cancel_url' => url($request->cancelUrl),
                 'notify_url' => url("payment/payfast/notify"),
                 'amount' => $amount,
@@ -82,6 +86,7 @@ class PayfastGatewayController extends FrontController
                 'custom_int2' => $address_id, // address id
                 'custom_int3' => 6, //payment option id
                 'custom_str1' => $tip, // tip amount
+                'custom_str2' => $request->payment_form,
                 'currency' => 'ZAR',
                 'description' => 'This is a test purchase transaction',
                 // 'metadata' => ['user_id' => $user->id],
@@ -89,13 +94,10 @@ class PayfastGatewayController extends FrontController
 
             $response = $this->gateway->purchase($request_arr)->send();
             unset($request_arr['description']);
-            // $signature = md5(http_build_query($request_arr));
             $passphrase = $this->gateway->getPassphrase();
             $signature = $this->generateSignature($request_arr, $passphrase);
-            // dd($signature);
             $request_arr['signature'] = $signature;
 
-            // $response = $this->gateway->purchase($request_arr)->send();
             if ($response->isSuccessful()) {
                 return $this->successResponse($response->getData());
             }
@@ -129,16 +131,29 @@ class PayfastGatewayController extends FrontController
             // If complete, update your application, email the buyer and process the transaction as paid
             $pfData->request->add([
                 'user_id' => $pfData->custom_int1,
-                'address_id' => $pfData->custom_int2,
                 'payment_option_id' => $pfData->custom_int3,
-                'transaction_id' => $pfData->pf_payment_id,
-                'tip' => $pfData->custom_str1,
+                'transaction_id' => $pfData->pf_payment_id
             ]);
-            $order = new OrderController();
-            $placeOrder = $order->placeOrder($pfData);
-            $response = $placeOrder->getData();
+            if($pfData->custom_str2 == 'cart'){
+                $pfData->request->add([
+                    'address_id' => $pfData->custom_int2,
+                    'tip' => $pfData->custom_str1,
+                ]);
+                $order = new OrderController();
+                $placeOrder = $order->placeOrder($pfData);
+                $response = $placeOrder->getData();
+            }
+            elseif($pfData->custom_str2 == 'wallet'){
+                $pfData->request->add([
+                    'wallet_amount' => $pfData->amount_gross
+                ]);
+                $wallet = new WalletController();
+                $creditWallet = $wallet->creditWallet($pfData);
+                $response = $creditWallet->getData();
+            }
+
             if($response->status == 'Success'){
-                return $this->successResponse($response->data, 'Order placed successfully.', 200);
+                return $this->successResponse($response->data, 'Payment completed successfully.', 200);
             }else{
                 return $this->errorResponse($response->message, 400);
             }
