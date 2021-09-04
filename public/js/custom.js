@@ -1699,7 +1699,7 @@ $(document).ready(function () {
         var quan = parseInt($('.quantity_count').val());
         var str = $('#instock').val();
         // var res = parseInt(str.substring(10, str.length - 1));
-        if (quan > str) {
+        if ((quan+1) > str) {
             alert("Quantity is not available in stock");
             $('.quantity_count').val(str);
         } else {

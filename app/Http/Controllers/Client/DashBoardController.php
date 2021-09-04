@@ -55,6 +55,9 @@ class DashBoardController extends BaseController{
             }
             $total_banners = $total_banners->count();
             $total_products = Product::orderBy('id','desc');
+            $total_products = $total_products->whereHas('vendor', function ($query){
+                $query->where(['vendors.status' => 1]);
+            });
             if (Auth::user()->is_superadmin == 0) {
                 $total_products = $total_products->whereHas('vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);

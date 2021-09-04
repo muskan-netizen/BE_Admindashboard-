@@ -94,8 +94,26 @@ class CartController extends FrontController
             ];
             if ($user) {
                 $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
+                $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
             } else {
                 $cart_detail = Cart::updateOrCreate(['unique_identifier' => $new_session_token], $cart_detail);
+                $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
+            }
+            $productDetail = Product::with([
+                'variant' => function ($sel) {
+                    $sel->groupBy('product_id');
+                }
+            ])->find($request->product_id);
+            if(!empty($already_added_product_in_cart)){
+                if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
+                    return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart')]);
+                }
+                if($productDetail->variant[0]->quantity <= ($already_added_product_in_cart->quantity + $request->quantity)){
+                    $request->quantity = $productDetail->variant[0]->quantity - $already_added_product_in_cart->quantity;
+                }
+            }
+            if($productDetail->variant[0]->quantity < $request->quantity){
+                $request->quantity = $productDetail->variant[0]->quantity;
             }
             $addonSets = $addon_ids = $addon_options = array();
             if($request->has('addonID')){

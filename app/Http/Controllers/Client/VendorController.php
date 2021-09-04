@@ -93,14 +93,16 @@ class VendorController extends BaseController
                 $query->where('user_id', $user->id);
             });
         }
+        $only_active_vendors = $vendors;
         $vendors = $vendors->get();
+        $only_active_vendors = $only_active_vendors->where('status', 1)->get();
         $active_vendor_count = $vendors->where('status', 1)->count();
         $blocked_vendor_count = $vendors->where('status', 2)->count();
         $awaiting__Approval_vendor_count = $vendors->where('status', 0)->count();
         $available_vendors_count = 0;
         $vendors_product_count = 0;
         $vendors_active_order_count = 0;
-        foreach ($vendors as $key => $vendor) {
+        foreach ($only_active_vendors as $key => $vendor) {
             $vendors_product_count += $vendor->products->count();
             $vendors_active_order_count += $vendor->activeOrders->count();
             if($vendor->show_slot == 1){

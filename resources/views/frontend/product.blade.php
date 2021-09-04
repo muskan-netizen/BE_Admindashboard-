@@ -291,7 +291,10 @@
                                                 @if(!$product->variant[0]->quantity > 0)
                                                     <span id="outofstock" style="color: red;">{{__('Out of Stock')}}</span>
                                                 @else
-                                                    <input type="hidden" id="instock" value="{{$product->variant[0]->quantity}}">
+                                                @php
+                                                $product_quantity_in_cart = $product_in_cart->quantity??0;
+                                                @endphp
+                                                    <input type="hidden" id="instock" value="{{ ($product->variant[0]->quantity - $product_quantity_in_cart)}}">
                                                 @endif
                                             </h6>
                                             @if($product->variant[0]->quantity > 0)
@@ -404,7 +407,10 @@
                                         </button>
                                         @endif
                                         @if($product->inquiry_only == 0)
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{$vendor_info->show_slot_option == 0 ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                        @php    
+                                        $product_quantity_in_cart = $product_in_cart->quantity??0;
+                                        @endphp
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ ($vendor_info->show_slot_option == 0 || ($product->variant[0]->quantity <= $product_quantity_in_cart)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
                                             @if($vendor_info->show_slot_option == 0)
                                             <p class="text-danger">Vendor is not accepting orders right now.</p>
                                             @endif

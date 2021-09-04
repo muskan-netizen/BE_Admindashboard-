@@ -32,7 +32,7 @@
                             <div class="text-center">
                                 <h3>
                                     <i class="mdi mdi-storefront text-primary mdi-24px"></i>
-                                    <span data-plugin="counterup" id="total_earnings_by_vendors">{{$total_vendor_count}}</span>
+                                    <span data-plugin="counterup" id="total_earnings_by_vendors">{{$active_vendor_count}}</span>
                                 </h3>
                                 <p class="text-muted font-15 mb-0">Total {{getNomenclatureName('vendors', true)}}</p>
                             </div>
