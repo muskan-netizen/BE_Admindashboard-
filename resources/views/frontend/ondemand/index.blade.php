@@ -78,7 +78,7 @@
                                                             @php
                                                                 $data->translation_title = (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku;
                                                                 $data->translation_description = (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku;
-                                                                $data->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                                                                $data->variant_multiplier = (!empty($clientCurrency)) ? $clientCurrency->doller_compare : 1;
                                                                 $data->variant_price = (!empty($data->variant->first())) ? $data->variant->first()->price : 0;
                                                             @endphp
 
