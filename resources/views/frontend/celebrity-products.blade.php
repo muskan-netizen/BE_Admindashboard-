@@ -99,7 +99,7 @@
                                     @foreach($newProds as $new)
                                         <?php $imagePath = '';
                                         foreach ($new['media'] as $k => $v) {
-                                            $imagePath = $v['image']['path']['proxy_url'].'300/300'.$v['image']['path']['image_path'];
+                                            $imagePath = $v['image']['path']['image_fit'].'300/300'.$v['image']['path']['image_path'];
                                         } ?>
                                         <div class="media">
                                             <a href="{{route('productDetail', $new['url_slug'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt="" ></a>
@@ -136,7 +136,7 @@
                             <div class="col-sm-12">
                                 <div class="top-banner-wrapper text-center">
                                     @if(!empty($celebrity->avatar))
-                                      <div class="common-banner"><img alt="" src="{{$celebrity->avatar['proxy_url'] . '1000/200' . $celebrity->avatar['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                                      <div class="common-banner"><img alt="" src="{{$celebrity->avatar['image_fit'] . '1000/200' . $celebrity->avatar['image_path']}}" class="img-fluid blur-up lazyload"></div>
                                     @endif
                                     <div class="top-banner-content small-section">
                                         <h4>{{ $celebrity->name }}</h4>
@@ -194,11 +194,11 @@
                                                 <?php
                                                 $imagePath = $imagePath2 = '';
                                                 $mediaCount = count($data->media);
-                                                for ($i = 0; $i < $mediaCount && $i < 2; $i++) { 
+                                                for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
                                                     if($i == 0){
-                                                        $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
+                                                        $imagePath = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                     }
-                                                    $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
+                                                    $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                 } ?>
                                                 <div class="col-xl-3 col-6 col-grid-box">
                                                     <div class="product-box scale-effect">

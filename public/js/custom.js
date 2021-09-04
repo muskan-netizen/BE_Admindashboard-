@@ -11,6 +11,65 @@ $(function () {
     });
 });
 
+$(window).scroll(function() {
+    var windscroll = $(window).scrollTop();
+    if (windscroll >= 400) {
+        $('section.scrolling_section').each(function(i) {
+    // The number at the end of the next line is how pany pixels you from the top you want it to activate.
+            if ($(this).position().top <= windscroll - 0) {
+                $('.scrollspy-menu li.active').removeClass('active');
+                $('.scrollspy-menu li').eq(i).addClass('active');
+            }
+        });
+
+    } else {
+
+        $('.scrollspy-menu li.active').removeClass('active');
+        $('.scrollspy-menu li:first').addClass('active');
+    }
+
+}).scroll();
+
+window.easyZoomInitialize = function easyZoomInitialize(){
+    let thumbs = $('.gallery-parent').children('.gallery-thumbs'),
+    top = $('.gallery-parent').children('.gallery-top');
+
+    // activation carousel plugin
+    let galleryThumbs = new Swiper(thumbs, {
+        spaceBetween: 5,
+        freeMode: true,
+        watchSlidesVisibility: true,
+        watchSlidesProgress: true,
+        breakpoints: {
+            0: {
+                slidesPerView: 3,
+            },
+            992: {
+                slidesPerView: 4,
+            },
+        },
+    });
+    let galleryTop = new Swiper(top, {
+        spaceBetween: 10,
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        thumbs: {
+            swiper: galleryThumbs,
+        },
+    });
+
+    // change carousel item height
+    // gallery-top
+    let productCarouselTopWidth = top.outerWidth();
+    top.css('height', productCarouselTopWidth);
+
+    // gallery-thumbs
+    let productCarouselThumbsItemWith = thumbs.find('.swiper-slide').outerWidth();
+    thumbs.css('height', productCarouselThumbsItemWith);
+}
+
 window.initializeSlider = function initializeSlider() {
     $(".slide-6").slick({
         dots: !1,

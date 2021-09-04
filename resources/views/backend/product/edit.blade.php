@@ -2,7 +2,7 @@
 
 @section('css')
 <!-- <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet"> -->
-<link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/css/samples.css') }}">
+<!--<link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/css/samples.css') }}">-->
 <link rel="stylesheet" href="{{ asset('assets/ck_editor/samples/toolbarconfigurator/lib/codemirror/neo.css') }}">
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />

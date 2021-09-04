@@ -133,7 +133,7 @@
                                 @foreach($newProds as $new)
                                 <?php $imagePath = '';
                                 foreach ($new['media'] as $k => $v) {
-                                    $imagePath = $v['image']['path']['proxy_url'] . '300/300' . $v['image']['path']['image_path'];
+                                    $imagePath = $v['image']['path']['image_fit'] . '300/300' . $v['image']['path']['image_path'];
                                 } ?>
                                 <div class="media">
                                     <a href="{{route('productDetail', $new['url_slug'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt=""></a>
@@ -172,9 +172,9 @@
                             <div class="col-sm-12">
                                 <div class="top-banner-wrapper mb-4">
                                     @if(!empty($vendor->banner))
-                                        <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1000/200' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                                        <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['image_fit'] . '1000/200' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
                                     @endif
-                                    <div class="row mt-n5">
+                                    <div class="row mt-n4">
                                         <div class="col-12">
                                             <form action="">
                                                 <div class="row">
@@ -235,7 +235,7 @@
                                                             <li><img src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
                                                         </ul>
                                                     </div>
-                                                    <div class="product-page-per-view">
+                                                    {{--<div class="product-page-per-view">
                                                         <?php $pnum = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 8; ?>
                                                         <select class="customerPaginate">
                                                             <option value="8" @if($pnum==8) selected @endif>Show 8
@@ -246,7 +246,7 @@
                                                             <option value="48" @if($pnum==48) selected @endif>Show 48
                                                             </option>
                                                         </select>
-                                                    </div>
+                                                    </div>--}}
                                                 </div>
                                             </div>
                                         </div>
@@ -260,9 +260,9 @@
                                                     $mediaCount = count($data->media);
                                                     for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
                                                         if ($i == 0) {
-                                                            $imagePath = $data->media[$i]->image->path['proxy_url'] . '300/300' . $data->media[$i]->image->path['image_path'];
+                                                            $imagePath = $data->media[$i]->image->path['image_fit'] . '600/600' . $data->media[$i]->image->path['image_path'];
                                                         }
-                                                        $imagePath2 = $data->media[$i]->image->path['proxy_url'] . '300/300' . $data->media[$i]->image->path['image_path'];
+                                                        $imagePath2 = $data->media[$i]->image->path['image_fit'] . '600/600' . $data->media[$i]->image->path['image_path'];
                                                     } ?>
                                                     <div class="col-xl-4 col-6 col-grid-box mt-3">
                                                         <a href="{{route('productDetail', $data->url_slug)}}" class="product-box scale-effect d-block mt-0">

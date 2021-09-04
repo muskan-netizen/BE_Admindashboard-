@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'icomoon';
-    src:  url('../fonts/icomoon.eot?7c0eqw');
-    src:  url('../fonts/icomoon.eot?7c0eqw#iefix') format('embedded-opentype'),
-      url('../fonts/icomoon.ttf?7c0eqw') format('truetype'),
-      url('../fonts/icomoon.woff?7c0eqw') format('woff'),
-      url('../fonts/icomoon.svg?7c0eqw#icomoon') format('svg');
+    src:  url('../fonts/icomoon.eot?y8ulni');
+    src:  url('../fonts/icomoon.eot?y8ulni#iefix') format('embedded-opentype'),
+      url('../fonts/icomoon.ttf?y8ulni') format('truetype'),
+      url('../fonts/icomoon.woff?y8ulni') format('woff'),
+      url('../fonts/icomoon.svg?y8ulni#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -25,6 +25,15 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
+  .icon-ic_eat:before {
+    content: "\e902";
+  }
+  .icon-location:before {
+    content: "\e903";
+  }
+  .icon-time:before {
+    content: "\e904";
+  }
   .icon-ic_currency:before {
     content: "\e900";
     color: #fff;
@@ -33,7 +42,6 @@
     content: "\e901";
     color: #fff;
   }
-../  
 
 /* latin-ext */
 @font-face {

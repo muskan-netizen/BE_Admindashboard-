@@ -116,7 +116,14 @@ class VendorController extends FrontController
             $show_range = 1;
         }
         $range_products = Product::join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
-        $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
+        if($vendor->vendor_templete_id == 2){
+            $page = 'categories';
+        }elseif($vendor->vendor_templete_id == 5){
+            $page = 'products-with-categories';
+        }else{
+            $page = 'products';
+        }
+        // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
         return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
     }
 
@@ -184,7 +191,14 @@ class VendorController extends FrontController
         else{
             $show_range = 1;
         }
-        $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
+        if($vendor->vendor_templete_id == 2){
+            $page = 'categories';
+        }elseif($vendor->vendor_templete_id == 5){
+            $page = 'products-with-categories';
+        }else{
+            $page = 'products';
+        }
+        // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
         $range_products = Product::join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
         return view('frontend/vendor-'.$page)->with(['vendor' => $vendor, 'show_range' => $show_range, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands, 'range_products' => $range_products]);
     }
@@ -192,6 +206,20 @@ class VendorController extends FrontController
     public function listData($langId, $vid, $type = '', $categorySlug = ''){
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
         if($type == 2){
+            // display categories
+            $products = Product::select('category_id')->distinct()->where('vendor_id', $vid)->where('is_live', 1)->get();
+            $vendor_categories = array();
+            foreach($products as $key => $product ){
+                $vendor_categories[] = $product->category_id;
+            }
+            $categoryData = Category::select('id', 'icon', 'slug', 'type_id', 'image')
+                            ->whereIn('id', $vendor_categories);
+            $categoryData = $categoryData->paginate($pagiNate);
+            foreach ($categoryData as $key => $value) {
+                $value->translation_name = ($value->translation->first()) ? $value->translation->first()->name : 'NA';
+            }
+            return $categoryData;
+        }elseif($type == 5){
             // display categories
             $products = Product::select('category_id')->distinct()->where('vendor_id', $vid)->where('is_live', 1)->get();
             $vendor_categories = array();

@@ -209,3 +209,37 @@
         </div>
     </div>
 </div>
+
+<div id="customer-wallet-transactions-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h4 class="modal-title">Wallet Transactions</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-centered table-striped w-100" id="customer_wallet_transactions_datatable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th class="text-nowrap">Date</th>
+                                        <th>Description</th>
+                                        <th>Credit / Debit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

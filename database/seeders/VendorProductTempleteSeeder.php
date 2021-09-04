@@ -15,25 +15,35 @@ class VendorProductTempleteSeeder extends Seeder
         DB::table('vendor_templetes')->delete();
         $vendor_templete_array = array(
             ['id' => 1,
-                'title' => 'Product',
+                'title' => 'Only Product',
                 'type' => 'Grid',
                 'status' =>'1'
             ],
             ['id' => 2,
-                'title' => 'Category',
+                'title' => 'Only Category',
                 'type' => 'Grid',
                 'status' =>'1'
             ],
             ['id' => 3,
-                'title' => 'Product',
+                'title' => 'Only Product',
                 'type' => 'List',
                 'status' =>'0'
             ],
             ['id' => 4,
-                'title' => 'Category',
+                'title' => 'Only Category',
                 'type' => 'List',
                 'status' =>'0'
             ],
+			['id' => 5,
+                'title' => 'Product with Category',
+                'type' => 'Grid',
+                'status' =>'1'
+            ],
+            ['id' => 6,
+                'title' => 'Product with Category',
+                'type' => 'List',
+                'status' =>'0'
+            ]
         ); 
         DB::table('vendor_templetes')->insert($vendor_templete_array);
     }

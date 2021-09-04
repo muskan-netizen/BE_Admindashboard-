@@ -72,7 +72,7 @@ class CategoryController extends FrontController{
             }
                 
             // if(Session::has('vendors')){
-            if(count($vendors) > 0){
+            if( (isset($vendors)) && (count($vendors) > 0) ){
                 Session::put('vendors', $vendors);
                 // $vendors = Session::get('vendors');
                 //remake child categories array

@@ -105,6 +105,7 @@
                                     <th>Phone</th>
                                     <th>Email OTP</th>
                                     <th>Phone OTP</th>
+                                    <th>Wallet</th>
                                     <th>Orders</th>
                                     <th>Active Orders</th>
                                     <th>Status</th>
@@ -215,6 +216,9 @@
                     }},
                     {data: 'email_token', name: 'email_token', orderable: false, searchable: false},
                     {data: 'phone_token', name: 'phone_token', orderable: false, searchable: false},
+                    {data: 'balanceFloat', name: 'balanceFloat', orderable: false, searchable: false, "mRender": function ( data, type, full ) {
+                        return "<a href='javascript:void(0)' class='customer_wallet_link' data-id='"+full.wallet.id+"'>"+data+"</a>";
+                    }},
                     {data: 'orders_count', name: 'orders_count', orderable: false, searchable: false},
                     {data: 'active_orders_count', name: 'active_orders_count', orderable: false, searchable: false},
                     {data: 'status', name: 'status', orderable: false, searchable: false, "mRender": function ( data, type, full ) {
@@ -234,12 +238,58 @@
             }
             finally{
                 var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
-                console.log(elems);
+                // console.log(elems);
                 elems.forEach(function(html) {
                 var switchery = new Switchery(html);
             });
         }
         }
+    });
+
+    $(document).delegate(".customer_wallet_link", "click", function(){
+        let id = $(this).attr("data-id");
+        $('#customer-wallet-transactions-modal').modal('show');
+        $('#customer_wallet_transactions_datatable').DataTable({
+            "dom": '<"toolbar">Bfrtip',
+            "destroy": true,
+            "scrollX": true,
+            "processing": true,
+            "serverSide": true,
+            "iDisplayLength": 10,
+            language: {
+                search: "",
+                paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
+                searchPlaceholder: "Search By Date, Description, Amount"
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+            },
+            buttons: [],
+            ajax: {
+                url: "{{route('customer.filterWalletTransactions')}}",
+                data: function (d) {
+                    d.search = $('input[type="search"]').val();
+                    d.walletId = id;
+                }
+            },
+            "initComplete": function(settings, json) {
+                
+            },
+            columnDefs: [{
+                targets: [1,3],
+                className: "text-nowrap",
+            }],
+            columns: [
+                {data: 'serial', name: 'serial', orderable: false, searchable: false},
+                {data: 'date', name: 'date', orderable: false, searchable: false},
+                {data: 'description', name: 'description', orderable: false, searchable: false, "mRender": function ( data, type, full ) {
+                    return '<span>'+data+'</span>';
+                }},
+                {data: 'amount', name: 'amount', orderable: false, searchable: false, "mRender": function ( data, type, full ) {
+                    return '<span class="text-right '+ ((full.type == 'deposit') ? 'text-success' : ((full.type == 'withdraw') ? 'text-danger' : ''))+'">'+data+'</span>';
+                }},
+            ]
+        });
     });
 </script>
 @endsection

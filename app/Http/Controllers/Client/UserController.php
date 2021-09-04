@@ -5,6 +5,7 @@ use Auth;
 use Image;
 use Password;
 use DataTables;
+use Carbon\Carbon;
 use App\Models\Vendor;
 use App\Models\UserVendor;
 use App\Models\Permissions;
@@ -18,7 +19,7 @@ use App\Http\Traits\ToasterResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Payment, User, Client, Country, Currency, Language, UserVerification, Role};
+use App\Models\{Payment, User, Client, Country, Currency, Language, UserVerification, Role, Transaction};
 
 class UserController extends BaseController{
     use ToasterResponser;
@@ -54,9 +55,10 @@ class UserController extends BaseController{
             $user->edit_url = route('customer.new.edit', $user->id);
             $user->delete_url = route('customer.account.action', [$user->id, 3]);
             $user->image_url = $user->image['proxy_url'].'40/40'.$user->image['image_path'];
-            $user->login_type = 'Email'; 
+            $user->login_type = 'Email';
             $user->is_superadmin = $current_user->is_superadmin; 
             $user->login_type_value = $user->email;
+            $user->balanceFloat = $user->balanceFloat; 
             if(!empty($user->facebook_auth_id)){
                 $user->login_type = 'Facebook';
                 $user->login_type_value = $user->facebook_auth_id;
@@ -293,5 +295,37 @@ class UserController extends BaseController{
             $request->session()->flash('error', 'Wrong Old Password');
             return redirect()->back();
         }
+    }
+
+    public function filterWalletTransactions(Request $request){
+        $pagiNate = 10;
+        $user_transactions = Transaction::where('wallet_id', $request->walletId)->orderBy('id', 'desc')->get();
+        // dd($user_transactions->toArray());
+        foreach ($user_transactions as $key => $trans) {
+            // $user = User::find($trans->payable_id);
+            $trans->serial = $key + 1;
+            $trans->date = Carbon::parse($trans->created_at)->format('M d, Y, H:i A');
+            // $trans->date = convertDateTimeInTimeZone($trans->created_at, $user->timezone, 'l, F d, Y, H:i A');
+            $trans->description = json_decode($trans->meta)[0];
+            $trans->amount = '$' . sprintf("%.2f",$trans->amount);
+            $trans->type = $trans->type;
+        }
+        return Datatables::of($user_transactions)
+        ->addIndexColumn()
+        ->rawColumns(['description'])
+        ->filter(function ($instance) use ($request) {
+            if (!empty($request->get('search'))) {
+                $instance->collection = $instance->collection->filter(function ($row) use ($request){
+                    if (Str::contains(Str::lower($row['date']), Str::lower($request->get('search')))){
+                        return true;
+                    }elseif (Str::contains(Str::lower($row['meta']), Str::lower($request->get('search')))) {
+                        return true;
+                    }elseif (Str::contains(Str::lower($row['amount']), Str::lower($request->get('search')))) {
+                        return true;
+                    }
+                    return false;
+                });
+            }
+        })->make(true);
     }
 }
