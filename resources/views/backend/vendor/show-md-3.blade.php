@@ -27,7 +27,7 @@
         </p>
     </div>
 </div>
-<div class="card-box">
+<!-- <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
             <div class="row">
@@ -50,7 +50,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">

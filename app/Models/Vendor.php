@@ -74,4 +74,9 @@ class Vendor extends Model{
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id'); 
     }
 
+    public function currentlyWorkingOrders(){
+      return $this->hasMany('App\Models\OrderVendor', 'vendor_id', 'id')->select('id', 'vendor_id')
+             ->whereIn('order_status_option_id',[2,4,5]); 
+   }
+
 }

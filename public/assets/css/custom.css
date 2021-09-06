@@ -2274,12 +2274,16 @@ button.update-status {
 }
 
 .site_link {
-    border: 0.5px solid rgb(0 0 0 / 17%);
     padding: 5px 10px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+.copy_link img{
+    width: 12px;
+    margin-top: 5px;
+    display: inline-block;
 }
 .position-relative {
     position: relative !important;
@@ -2293,19 +2297,23 @@ button.update-status {
 }
 span.copied_txt {
     position: absolute;
-    bottom: -30px;
+    bottom: -15px;
     right: 0;
     background: rgb(85 164 255 / 50%);
     color: #ffff;
     padding: 0 10px;
     border-radius: 50px;
-    line-height: 24px;
-    font-size: 14px;
+    line-height: 20px;
+    font-size: 12px;
 }
 
+h3 .fas.fa-money-check-alt{
+    font-size: 18px;
+}
 
-
-
+.copy_link {
+    cursor: pointer;
+}
 
 
 

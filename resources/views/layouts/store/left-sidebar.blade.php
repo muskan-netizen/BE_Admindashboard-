@@ -19,7 +19,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <div class="d-md-flex mr-auto">  
                         @if( (Session::get('preferences')))
                             @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
-                                <div class="location-bar d-flex align-items-center justify-content-start ml-md-2 my-2 my-lg-0 dropdown-toggle order-1" href="#edit-address" data-toggle="modal">
+                                <div class="location-bar d-none d-lg-flex align-items-center justify-content-start ml-md-2 my-2 my-lg-0 dropdown-toggle order-1" href="#edit-address" data-toggle="modal">
                                     <div class="map-icon mr-1"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
                                     <div class="homepage-address text-left">
                                         <h2><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
@@ -44,7 +44,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 @endif
                                 @if($client_preference_detail->takeaway_check == 1)
                                 <li class="navigation-tab-item" role="presentation">
-                                    <a class="nav-link {{ ($mod_count == 1 || (Session::get('vendorType') == 'takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">{{ __('Takeaway') }}</a>
+                                    <a class="nav-link {{ ($mod_count == 1 || (Session::get('vendorType') == 'takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">{{getNomenclatureName('Takeaway', true)}}</a>
                                 </li>
                                 @endif
                                 <div class="navigation-tab-overlay"></div>
@@ -52,9 +52,23 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         @endif 
                     </div>
                 </div>
-                <div class="col-lg-5 col-9 order-lg-2 order-1 position-initial">                
-                    <div class="search_bar menu-right d-flex align-items-center justify-content-end justify-content-lg-between w-100 ">
-                        <div class="radius-bar">
+                <div class="col-lg-5 col-9 order-lg-2 order-1 position-initial"> 
+                                 
+                    <div class="search_bar menu-right d-flex align-items-center justify-content-between justify-content-lg-between w-100 ">
+                        @if( (Session::get('preferences')))
+                            @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
+                                <div class="location-bar d-lg-none d-flex align-items-center justify-content-start ml-md-2 my-2 my-lg-0 dropdown-toggle" href="#edit-address" data-toggle="modal">
+                                    <div class="map-icon mr-1"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
+                                    <div class="homepage-address text-left">
+                                        <h2><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
+                                    </div>
+                                    <div class="down-icon">
+                                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            @endif
+                        @endif  
+                        <div class="radius-bar d-none d-lg-inline">
                             <div class="search_form d-flex align-items-center justify-content-between">
                                 <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
                                 <input class="form-control border-0 typeahead" type="search" placeholder="{{__('Search')}}" id="main_search_box">
@@ -179,8 +193,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     </div>
                                 </li>
                                 <li class="onhover-div mobile-cart">
-                                    <a href="{{route('showCart')}}"><i class="ti-shopping-cart"></i></a>
-                                    <span class="cart_qty_cls" style="display:none"></span>
+                                    <a href="{{route('showCart')}}" style="position: relative">
+                                        <i class="ti-shopping-cart"></i>
+                                        <span class="cart_qty_cls" style="display:none"></span>
+                                    </a>
+                                    {{--<span class="cart_qty_cls" style="display:none"></span>--}}
                                     <ul class="show-div shopping-cart">
                                     </ul>
                                 </li>

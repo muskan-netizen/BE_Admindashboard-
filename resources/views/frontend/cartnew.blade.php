@@ -232,6 +232,8 @@
                 </div>
                 <hr class="my-2">
             <% } %>
+
+            <% if(client_preference_detail.tip_before_order == 1) { %>
             <div class="row">
                 <div class="col-12">
                     <div class="mb-2">{{__('Do you want to give a tip?')}}</div>
@@ -267,6 +269,10 @@
                 </div>
             </div>
             <hr class="my-2">
+          
+            <% } %>
+
+
             <div class="row">
                 <div class="col-6">
                     <p class="total_amt m-0">{{__('Amount Payable')}}</p>
@@ -388,7 +394,7 @@
 <script type="text/template" id="other_cart_products_template">
     <div class="container mt-3 mb-5">
         <% if(cart_details.upSell_products != ''){ %>
-            <h3 class="mb-4 mt-4">{{__('Up Sell Products')}}</h3>
+            <h3 class="mb-4 mt-4">{{__('Frequently bought together')}}</h3>
             <div class="row">
                 <div class="col-12 p-0">
                     <div class="product-4 product-m no-arrow">
@@ -428,7 +434,7 @@
         <% } %>
 
         <% if(cart_details.crossSell_products != ''){ %>
-            <h3 class="mb-4 mt-4">{{__('Cross Sell Products')}}</h3>
+            <h3 class="mb-4 mt-4">{{__('You might be interested in')}}</h3>
             <div class="row">
                 <div class="col-12 p-0">
                     <div class="product-4 product-m no-arrow">

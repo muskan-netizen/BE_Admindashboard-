@@ -148,8 +148,35 @@ class ProductController extends FrontController{
             $listData = $nlistData;
             $category = $category_detail;
 
-           
-            return view('frontend.ondemand.index')->with(['time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
+            if($request->step == 2 && empty($request->addons) && empty($request->dataset)){
+                $addos = 0;
+                foreach($cartDataGet['cartData'] as $cp){
+                    if(count($cp->product->addOn) > 0)
+                    $addos = 1;
+               }
+               if($addos == 1){
+                $name = \Request::route()->getName();
+                $new_url = $request->path()."?step=1&addons=1";
+                return redirect($new_url);
+               }else{
+                $name = \Request::route()->getName();
+                $new_url = $request->path()."?step=2&dataset=1";
+                return redirect($new_url);
+               }
+            }
+            if($request->step == 2 && empty($request->addons))
+            {
+                if ($request->session()->has('skip_addons')) {
+                    $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
+                    return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
+                }
+                $request->session()->put('skip_addons', '1');
+                $new_url = $request->path()."?step=2";
+                return redirect($new_url);
+            }
+
+            $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
+            return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }
         elseif($product->category->categoryDetail->type_id == 7)
         {

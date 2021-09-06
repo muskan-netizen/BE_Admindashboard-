@@ -38,7 +38,7 @@
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
                                 <div class="text-center">
                                     <h3>
-                                        <i class="mdi mdi-currency-usd text-primary mdi-24px"></i>
+                                        <i class="fas fa-money-check-alt text-primary"></i>
                                         <span data-plugin="counterup" id="total_cash_to_collected">{{$total_cash_to_collected}}</span>
                                     </h3>
                                     <p class="text-muted font-15 mb-0">Total Cash To Be Collected</p>
@@ -47,7 +47,7 @@
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
                                 <div class="text-center">
                                     <h3>
-                                        <i class="mdi mdi-currency-usd text-primary mdi-24px"></i>
+                                        <i class="fas fa-money-check-alt text-primary"></i>
                                         <span data-plugin="counterup" id="total_delivery_fees">{{$total_delivery_fees}}</span>
                                     </h3>
                                     <p class="text-muted font-15 mb-0">Total Delivery Fees</p>

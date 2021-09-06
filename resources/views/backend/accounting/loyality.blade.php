@@ -31,7 +31,7 @@
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
                                 <div class="p-2 text-center">
                                     <h3>
-                                        <i class="mdi mdi-currency-usd text-primary mdi-24px"></i>
+                                        <i class="fas fa-money-check-alt text-primary"></i>
                                         <span data-plugin="counterup">{{$total_loyalty_earned}}</span>
                                     </h3>
                                         <p class="text-muted font-15 mb-0">Total {{getNomenclatureName('Loyalty Cards', false)}} Earned</p>
@@ -40,7 +40,7 @@
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
                                 <div class="p-2 text-center">
                                     <h3>
-                                        <i class="mdi mdi-currency-usd text-primary mdi-24px"></i>
+                                        <i class="fas fa-money-check-alt text-primary"></i>
                                         <span data-plugin="counterup">{{$total_loyalty_spent}}</span>
                                     </h3>
                                     <p class="text-muted font-15 mb-0">Total {{getNomenclatureName('Loyalty Cards', false)}} Spent</p>

@@ -881,6 +881,24 @@
                            <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
                         </div>
                      </div>
+                     <div class="col-md-4">
+                        <div class="form-group mb-3">
+                           <label for="enquire_mode" class="mr-3 mb-0">{{__('Tip Before Order')}}</label>
+                           <input type="checkbox" data-plugin="switchery" name="tip_before_order" id="tip_before_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_before_order == '1')) checked='checked' @endif>
+                        </div>
+                     </div>
+                     <div class="col-md-4">
+                        <div class="form-group mb-3">
+                           <label for="enquire_mode" class="mr-3 mb-0">{{__('Tip After Order')}}</label>
+                           <input type="checkbox" data-plugin="switchery" name="tip_after_order" id="tip_after_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_after_order == '1')) checked='checked' @endif>
+                        </div>
+                     </div>
+                     <div class="col-md-4">
+                        <div class="form-group mb-3">
+                           <label for="enquire_mode" class="mr-3 mb-0">{{__('Auto Accept Order')}}</label>
+                           <input type="checkbox" data-plugin="switchery" name="auto_accept_order" id="auto_accept_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->auto_accept_order == '1')) checked='checked' @endif>
+                        </div>
+                     </div>
                      <div class="col-md-12">
                         <div class="form-group mb-0 text-md-left">
                            <button class="btn btn-info d-block" type="submit">Save</button>

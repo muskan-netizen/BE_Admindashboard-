@@ -42,7 +42,7 @@ class VendorController extends BaseController
             $takeaway_check = $client_preference->takeaway_check;
             $delivery_check = $client_preference->delivery_check;
         }
-        $vendors = Vendor::withCount(['products', 'orders', 'activeOrders'])->with('slot')->where('status', $request->status)->orderBy('id', 'desc');
+        $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->orderBy('id', 'desc');
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -87,7 +87,7 @@ class VendorController extends BaseController
         $csvVendors = CsvVendorImport::all();
         $vendor_docs = collect(new VendorDocs);
         $client_preferences = ClientPreference::first();
-        $vendors = Vendor::withCount(['products', 'orders', 'activeOrders'])->with('slot')->orderBy('id', 'desc');
+        $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->orderBy('id', 'desc');
         if ($user->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -104,7 +104,7 @@ class VendorController extends BaseController
         $vendors_active_order_count = 0;
         foreach ($only_active_vendors as $key => $vendor) {
             $vendors_product_count += $vendor->products->count();
-            $vendors_active_order_count += $vendor->activeOrders->count();
+            $vendors_active_order_count += $vendor->currentlyWorkingOrders->count();
             if($vendor->show_slot == 1){
                 $available_vendors_count+=1;
             }elseif ($vendor->slot->count() > 0) {

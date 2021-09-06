@@ -309,6 +309,24 @@
                             </div>
                             @endforeach
                         </div>
+                        <div class="row mb-2 flex-nowrap">
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-3">
+                                <div class="form-group mb-3">
+                                    <label for="custom_domain">Takeaway({{$client_language->langName}})</label>
+                                    <input type="hidden" name="takeaway_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="takeaway_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 3)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('takeaway_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>The primary language name field is required.</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </form>

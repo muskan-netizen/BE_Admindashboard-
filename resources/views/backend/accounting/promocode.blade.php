@@ -22,13 +22,19 @@
                         <div class="row">
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
                                 <div class="p-2 text-center">
-                                    <h3><i class="mdi mdi-currency-usd text-success mdi-24px"></i><span data-plugin="counterup">{{$admin_paid_total_amt}}</span></h3>
+                                    <h3>
+                                        <i class="fas fa-money-check-alt text-success"></i>
+                                        <span data-plugin="counterup">{{$admin_paid_total_amt}}</span>
+                                    </h3>
                                     <p class="text-muted font-15 mb-0">Admin Paid Total</p>
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
                                 <div class="p-2 text-center">
-                                    <h3><i class="mdi mdi-currency-usd text-success mdi-24px"></i><span data-plugin="counterup">{{$vendor_paid_total_amt}}</span></h3>
+                                    <h3>
+                                        <i class="fas fa-money-check-alt text-success"></i>
+                                        <span data-plugin="counterup">{{$vendor_paid_total_amt}}</span>
+                                    </h3>
                                     <p class="text-muted font-15 mb-0">Vendor Paid Total</p>
                                 </div>
                             </div>

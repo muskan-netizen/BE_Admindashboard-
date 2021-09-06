@@ -29,7 +29,7 @@
                             </div>
                             <div class="col-sm-6 mb-3 mb-sm-0">
                                 <div class="p-2 text-center">
-                                    <h3><i class="mdi mdi-currency-usd text-success mdi-24px"></i><span data-plugin="counterup" id="total_tax_collected">{{$total_tax_collected}}</span></h3>
+                                    <h3><i class="fas fa-money-check-alt text-success"></i> <span data-plugin="counterup" id="total_tax_collected">{{$total_tax_collected}}</span></h3>
                                     <p class="text-muted font-15 mb-0">Total Tax Collected</p>
                                 </div>
                             </div>

@@ -645,7 +645,7 @@
 
 {{--<section class="section-b-space ratio_asos">--}}
     <div class="container mt-3 mb-5">
-        <div class="product-4 product-m no-arrow">
+        <div class="product-4 product-m no-arrow related-products">
             @forelse($product->related_products as $related_product)
                 {{--<div class="col-xl-2 col-md-4 col-sm-6">--}}
                 <div>

@@ -65,7 +65,8 @@ class CartController extends FrontController
             'guest_user'=>$guest_user,
             'action' => $action
         );
-        return view('frontend.cartnew')->with($data);
+        $client_preference_detail = ClientPreference::first();
+        return view('frontend.cartnew')->with($data,$client_preference_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
 
@@ -104,17 +105,23 @@ class CartController extends FrontController
                     $sel->groupBy('product_id');
                 }
             ])->find($request->product_id);
-            if(!empty($already_added_product_in_cart)){
-                if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
-                    return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart')]);
+
+            # if product type is not equal to on demand 
+            if($productDetail->category->categoryDetail->type_id != 8){
+                if(!empty($already_added_product_in_cart)){
+                    if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
+                        return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart')]);
+                    }
+                    if($productDetail->variant[0]->quantity <= ($already_added_product_in_cart->quantity + $request->quantity)){
+                        $request->quantity = $productDetail->variant[0]->quantity - $already_added_product_in_cart->quantity;
+                    }
                 }
-                if($productDetail->variant[0]->quantity <= ($already_added_product_in_cart->quantity + $request->quantity)){
-                    $request->quantity = $productDetail->variant[0]->quantity - $already_added_product_in_cart->quantity;
+                if($productDetail->variant[0]->quantity < $request->quantity){
+                    $request->quantity = $productDetail->variant[0]->quantity;
                 }
             }
-            if($productDetail->variant[0]->quantity < $request->quantity){
-                $request->quantity = $productDetail->variant[0]->quantity;
-            }
+          
+
             $addonSets = $addon_ids = $addon_options = array();
             if($request->has('addonID')){
                 $addon_ids = $request->addonID;
@@ -769,7 +776,20 @@ class CartController extends FrontController
     public function updateQuantity($domain = '', Request $request)
     {
         $cartProduct = CartProduct::find($request->cartproduct_id);
-        $cartProduct->quantity = $request->quantity;
+        $productDetail = Product::with([
+            'variant' => function ($sel) {
+                $sel->groupBy('product_id');
+            }
+        ])->find($cartProduct->product_id);
+
+        if($productDetail->category->categoryDetail->type_id != 8){
+            if($productDetail->variant[0]->quantity < $request->quantity){
+                return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart')]);
+            }
+         
+        }
+
+         $cartProduct->quantity = $request->quantity;
         $cartProduct->save();
        
         return response()->json("Successfully Updated");
@@ -832,7 +852,9 @@ class CartController extends FrontController
         if ($cart) {
             $cart_details = $this->getCart($cart, $address_id);
         }
-        return response()->json(['status' => 'success', 'cart_details' => $cart_details]);
+
+        $client_preference_detail = ClientPreference::first();
+        return response()->json(['status' => 'success', 'cart_details' => $cart_details, 'client_preference_detail' => $client_preference_detail]);
     }
 
 
@@ -950,7 +972,31 @@ class CartController extends FrontController
         }
     }
 
-
+    # update schedule for home services basis on services
+    public function updateProductSchedule(Request $request, $domain = '')
+    {
+        DB::beginTransaction();
+        try{
+            $user = Auth::user();
+            if ($user) {
+                if($request->task_type == 'now'){
+                    $request->schedule_dt = Carbon::now()->format('Y-m-d H:i:s');
+                }else{
+                    $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
+                CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt]);
+                DB::commit();
+                return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
+            }
+            else{
+                return response()->json(['status'=>'Error', 'message'=>'Invalid user']);
+            }
+        }
+        catch(\Exception $ex){
+            DB::rollback();
+            return response()->json(['status'=>'Error', 'message'=>$ex->getMessage()]);
+        }
+    }
 
     // add ones add in cart for ondemand 
 

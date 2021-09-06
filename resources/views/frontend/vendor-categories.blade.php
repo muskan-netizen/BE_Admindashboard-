@@ -71,7 +71,7 @@
                                     @if(!empty($vendor->banner))
                                         <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1000/200' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
                                     @endif
-                                    <div class="row mt-n5">
+                                    <div class="row mt-n4">
                                         <div class="col-12">
                                             <form action="">
                                                 <div class="row">

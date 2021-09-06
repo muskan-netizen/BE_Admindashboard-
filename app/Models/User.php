@@ -125,4 +125,11 @@ class User extends Authenticatable implements Wallet, WalletFloat
      $value = Client::first();
      return $value->code;
     }
+
+    public function currentlyWorkingOrders(){
+        return $this->hasMany('App\Models\Order', 'user_id', 'id')->select('id', 'user_id')
+               ->where('is_deleted', '!=', 1)->whereHas('orderStatusVendor', function($query){
+                   $query->whereIn('order_status_option_id',[2,4,5]);
+               }); 
+    }
 }

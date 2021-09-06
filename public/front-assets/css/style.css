@@ -5079,8 +5079,8 @@ button.btn.btn-outline:active {
     font-size: 10px;
     line-height: 15px;
     font-weight: 600;
-    top: -9px;
-    right: -11px;
+    top: -40px;
+    right: -20px;
     padding: 3px;
 }
 
@@ -10660,7 +10660,7 @@ header.header-style .onhover-dropdown:before {
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
-    z-index: 9;
+    z-index: 99;
 }
 
 .main-menu.product-full-page {
@@ -33501,9 +33501,9 @@ body.dark {
         margin-bottom: 15px;
     }
 
-    .cart_qty_cls {
+    /* .cart_qty_cls {
         top: -10px;
-    }
+    } */
 
     header.sticky .top-header {
         display: block;

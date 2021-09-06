@@ -43,4 +43,8 @@ class OrderVendor extends Model{
 		$title = DispatcherStatusOption::where('id',$value)->value('title');
         return ucfirst($title);
     }
+
+	public function allStatus(){
+	    return $this->hasMany('App\Models\VendorOrderStatus','order_vendor_id','id'); 
+	}
 }

@@ -220,7 +220,7 @@
                         return "<a href='javascript:void(0)' class='customer_wallet_link' data-id='"+full.wallet.id+"'>"+data+"</a>";
                     }},
                     {data: 'orders_count', name: 'orders_count', orderable: false, searchable: false},
-                    {data: 'active_orders_count', name: 'active_orders_count', orderable: false, searchable: false},
+                    {data: 'currently_working_orders_count', name: 'currently_working_orders_count', orderable: false, searchable: false},
                     {data: 'status', name: 'status', orderable: false, searchable: false, "mRender": function ( data, type, full ) {
                             if(full.status == 1){
                                 return "<input type='checkbox' data-id='"+full.id+"' id='cur_"+full.id+"' data-plugin='switchery' name='userAccount' class='chk_box' data-color='#43bee1' checked>";

@@ -21,7 +21,7 @@
                             <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
                                 <div class="p-2 text-center">
                                     <h3>
-                                        <i class="mdi mdi-currency-usd text-primary mdi-24px"></i>
+                                        <i class="fas fa-money-check-alt text-primary"></i>
                                         <span data-plugin="counterup">{{$total_order_value}}</span>
                                     </h3>
                                     <p class="text-muted font-15 mb-0">Total Order Value</p>
@@ -30,7 +30,7 @@
                             <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
                                 <div class="p-2 text-center">
                                     <h3>
-                                        <i class="mdi mdi-currency-usd text-success mdi-24px"></i>
+                                        <i class="fas fa-money-check-alt text-success"></i>
                                         <span data-plugin="counterup" id="total_delivery_fees">{{$total_delivery_fees}}</span>
                                     </h3>
                                     <p class="text-muted font-15 mb-0">Total Delivery Fees</p>
@@ -39,7 +39,7 @@
                             <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
                                 <div class="p-2 text-center">
                                     <h3>
-                                        <i class="mdi mdi-currency-usd text-success mdi-24px"></i>
+                                        <i class="fas fa-money-check-alt text-success"></i>
                                         <span data-plugin="counterup" id="total_admin_commissions">{{$total_admin_commissions}}</span>
                                     </h3>
                                     <p class="text-muted font-15 mb-0">Total Admin Commissions</p>

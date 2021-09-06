@@ -546,6 +546,8 @@ class OrderController extends FrontController
                     $order_product->variant_id = $vendor_cart_product->variant_id;
                     $order_product->product_name = $vendor_cart_product->product->title ?? $vendor_cart_product->product->sku;
                     $order_product->product_dispatcher_tag = $vendor_cart_product->product->tags;
+                    $order_product->schedule_type = $vendor_cart_product->schedule_type??null;
+                    $order_product->scheduled_date_time = $vendor_cart_product->scheduled_date_time??null;
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }

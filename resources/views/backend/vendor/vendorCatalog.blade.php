@@ -80,9 +80,18 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12">
+        <div class="col-12 d-flex align-items-center">
             <div class="page-title-box">
                 <h4 class="page-title">{{ucfirst($vendor->name)}} profile</h4>
+            </div>
+            <div class="form-group mb-0 ml-3">
+                <div class="site_link position-relative">
+                    <a href="{{route('vendorDetail',$vendor->slug)}}" target="_blank"><span id="pwd_spn" class="password-span">{{route('vendorDetail',$vendor->slug)}}</span></a>
+                    <label class="copy_link float-right" id="cp_btn" title="copy">
+                        <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
+                        <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">Copied</span>
+                    </label>
+                </div>
             </div>
         </div>
     </div>

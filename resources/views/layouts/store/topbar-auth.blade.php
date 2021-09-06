@@ -140,8 +140,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                 </li>
                 <li class="onhover-div mobile-cart">
-                    <a href="{{route('showCart')}}"><i class="ti-shopping-cart"></i></a>
-                    <span class="cart_qty_cls" style="display:none"></span>
+                    <a href="{{route('showCart')}}" style="position: relative">
+                        <i class="ti-shopping-cart"></i>
+                        <span class="cart_qty_cls" style="display:none"></span>
+                    </a>
+                    {{--<span class="cart_qty_cls" style="display:none"></span>--}}
                     <ul class="show-div shopping-cart">
                     </ul>
                 </li>

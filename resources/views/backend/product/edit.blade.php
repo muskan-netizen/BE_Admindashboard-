@@ -80,9 +80,16 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-8">
+        <div class="col-8 d-flex align-items-center">
             <div class="page-title-box">
                 <h4 class="page-title">Edit Product</h4>
+            </div>
+            <div class="site_link position-relative ml-3">
+                <a href="{{route('productDetail',$product->url_slug)}}" target="_blank"><span id="pwd_spn" class="password-span">{{route('productDetail',$product->url_slug)}}</span></a>
+                <label class="copy_link float-right" id="cp_btn" title="copy">
+                    <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
+                    <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">Copied</span>
+                </label>
             </div>
         </div>
         <div class="col-4 text-right" style="margin: auto;">
@@ -345,7 +352,7 @@
                 @endif
             </div>
             <div class="col-lg-5">
-                <div class="card-box ">
+                <!-- <div class="card-box ">
                     <div class="row mb-2 bg-light">
                         <div class="col-6" style="margin:auto; padding: 8px !important;">
                             <h5 class="text-uppercase  mt-0 mb-0">Public URL</h5>
@@ -360,7 +367,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="card-box">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Other Information</h5>
                     <div class="row mb-2">
@@ -415,6 +422,16 @@
                                     @endforeach
                                     @endif
                                 </select>
+                            </div>
+                        @endif
+
+                        @if($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8)
+                            <div class="col-md-6 d-flex justify-content-between mb-2">
+                                {!! Form::label('title', __('Mode Of Service'),['class' => 'control-label']) !!}
+                                <select class="selectize-select1 form-control"  name="mode_of_service" required>
+                                   <option value="instant" @if($product->mode_of_service == 'instant') selected="selected" @endif>{{ __('Instant') }}</option>
+                                   <option value="schedule" @if($product->mode_of_service == 'schedule') selected="selected" @endif>{{ __('Schedule') }}</option>
+                                 </select>
                             </div>
                         @endif
 

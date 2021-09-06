@@ -1,6 +1,6 @@
 @php
     if($action == 'takeaway'){
-        $label = 'Takeaway';
+        $label = getNomenclatureName('Takeaway', true);
     }elseif($action == 'dine_in'){
         $label = 'Dine-In';
     }else{
