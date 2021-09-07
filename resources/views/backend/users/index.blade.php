@@ -187,6 +187,8 @@
                     elems.forEach(function(html) {
                         var switchery = new Switchery(html);
                     });
+                    $('.dataTables_filter input[type="search"]').css({ 'width': '280px', 'display': 'inline-block' });
+                    $("#user_datatable_wrapper").find($(".dt-buttons.btn-group.flex-wrap")).css({ 'right': '320px' });
                 },
                 columns: [
                     {data: 'id', name: 'id', orderable: false, searchable: false},

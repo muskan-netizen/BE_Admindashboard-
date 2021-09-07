@@ -2319,7 +2319,13 @@ h3 .fas.fa-money-check-alt{
     cursor: pointer;
 }
 
-
+#user_datatable_processing {
+    width: auto;
+    position: absolute;
+    top: 0;
+    padding: 9px 0;
+    box-shadow: none !important;
+}
 
 
 

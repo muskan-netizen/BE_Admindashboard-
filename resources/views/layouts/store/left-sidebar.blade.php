@@ -10,6 +10,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
   @else
     @include('layouts.store/topbar-guest')
   @endif
+
+        
         <div class="container main-menu d-block">
             <div class="row align-items-center py-md-2 position-initial">
                 <div class="col-lg-2 col-3">

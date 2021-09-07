@@ -262,52 +262,54 @@
                                             <h4 class="mb-2"><b>{!! (!empty($cart_data->product->translation->first())) ? $cart_data->product->translation->first()->title : $cart_data->product->sku !!}</b></h4>
                                             @foreach($cart_data->product->addOn as $row => $addon)
                                             <div class="add-on-main-div">
-                                            <h6 class="product-title">{{ $addon->addOnName->title }}
-                                                    @php
-                                                        $min_select = '';
-                                                        if($addon->addOnName->min_select > 0){
-                                                            $min_select = 'Minimun '.$addon->addOnName->min_select;
-                                                        }
-                                                        $max_select = '';
-                                                        $type_input = 'checkbox';
-                                                        if($addon->addOnName->max_select > 0){
-                                                            $max_select = 'Maximum '.$addon->addOnName->max_select;
-
-                                                            if($addon->addOnName->max_select > 1)
+                                                <h6 class="product-title">{{ $addon->addOnName->title }}
+                                                        @php
+                                                            $min_select = '';
+                                                            if($addon->addOnName->min_select > 0){
+                                                                $min_select = 'Minimun '.$addon->addOnName->min_select;
+                                                            }
+                                                            $max_select = '';
                                                             $type_input = 'checkbox';
-                                                            else
-                                                            $type_input = 'radio';
-                                                        }
-                                                        if( ($min_select != '') && ($max_select != '') ){
-                                                            $min_select = $min_select.' and ';
-                                                        }
-                                                    @endphp
-                                            </h6>
-                                            <span class="productAddonSetOptions" data-min="{{$addon->addOnName->min_select}}" data-cart_id="{{$cart_data->cart_id}}" data-cart_product_id="{{$cart_data->id}}" data-max="{{$addon->addOnName->max_select}}" data-addonset-title="{{$addon->addOnName->title}}">
+                                                            if($addon->addOnName->max_select > 0){
+                                                                $max_select = 'Maximum '.$addon->addOnName->max_select;
+
+                                                                if($addon->addOnName->max_select > 1)
+                                                                $type_input = 'checkbox';
+                                                                else
+                                                                $type_input = 'radio';
+                                                            }
+                                                            if( ($min_select != '') && ($max_select != '') ){
+                                                                $min_select = $min_select.' and ';
+                                                            }
+                                                        @endphp
+                                                </h6>
+                                                <span class="productAddonSetOptions" data-min="{{$addon->addOnName->min_select}}" data-cart_id="{{$cart_data->cart_id}}" data-cart_product_id="{{$cart_data->id}}" data-max="{{$addon->addOnName->max_select}}" data-addonset-title="{{$addon->addOnName->title}}">
                                                 
-                                            <div class="booking-time radio-btns long-radio">
-                                                    @foreach($addon->setoptions as $k => $option)
-                                                        @php $checked = ''; @endphp
-                                                        @foreach ($cart_data->addon as $value)
-                                                            @if($addon->addOnName->id == $value->addon_id && $value->option_id == $option->id)
+                                                <div class="booking-time radio-btns long-radio">
+                                                        @foreach($addon->setoptions as $k => $option)
                                                             @php $checked = ''; @endphp
-                                                            @else
-                                                            @php $checked = 'checked'; @endphp
-                                                            @endif
-                                                        @endforeach
-                                                          <div>
-                                                            <div class="radios">
-                                                               
+                                                            @foreach ($cart_data->addon as $value)
+                                                               @if($checked != 'checked') 
+                                                                    @if($addon->addOnName->id == $value->addon_id && $value->option_id == $option->id  && $value->cart_product_id  == $cart_data->id)
+                                                                    @php $checked = 'checked'; @endphp
+                                                                    @else
+                                                                    @php $checked = ''; @endphp
+                                                                    @endif
+                                                               @endif 
+
+                                                            @endforeach
+                                                            <div>
+                                                                <div class="radios">
                                                                 <input type="{{$type_input}}" class="productAddonOption" {{ $checked }} id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}" class="productAddonOption"  name="addonData[{{$cart_data->id}}][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}"/>
-                                                                <label for='inlineCheckbox_{{$key}}{{$row.'_'.$k}}'>
-                                                                    <span class="customCheckbox" aria-hidden="true">{{$option->title .' ($'.$option->price.')' }} </span>
-                                                                </label>
+                                                                    <label for='inlineCheckbox_{{$key}}{{$row.'_'.$k}}'>
+                                                                        <span class="customCheckbox" aria-hidden="true">{{$option->title .' ($'.$option->price.')' }} </span>
+                                                                    </label>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    @endforeach
+                                                        @endforeach
+                                                </div>
+                                                </span>
                                             </div>
-                                            </span>
-                                        </div>
                                         @endforeach
                                         <hr>
                                         </div>
@@ -413,27 +415,27 @@
                     
                         <div class="footer-card">
                             @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && empty(app('request')->input('addons')))
-                            <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid">Next</span></a>
+                            <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">Next</span></a>
                             @elseif(app('request')->input('step') == '1' && app('request')->input('addons') == '1')
                             <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
-                            <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid">Next</span></a>
+                            <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">Next</span></a>
                             @elseif(app('request')->input('step') == '2' && empty(app('request')->input('addons')))
                             <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
                                 @if(Auth::guest())
-                                <a href="{{route('customer.login')}}" id="next-button-ondemand-3"><span class="btn btn-solid">Continue</span></a>
+                                <a href="{{route('customer.login')}}" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
                                 @else
-                                <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid">Continue</span></a>
+                                <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
                                 @endif
                             @elseif(app('request')->input('step') == '2' && !empty(app('request')->input('dateset')))
                                 <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
                                     @if(Auth::guest())
-                                    <a href="{{route('customer.login')}}" id="next-button-ondemand-3" ><span class="btn btn-solid">Continue</span></a>
+                                    <a href="{{route('customer.login')}}" id="next-button-ondemand-3" ><span class="btn btn-solid float-right">Continue</span></a>
                                     @else
-                                    <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid">Continue</span></a>
+                                    <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
                                     @endif    
                             @elseif(app('request')->input('step') == '3')
                             <a href="?step=2"><span class="btn btn-solid"><</span></a>
-                            <a href="?step=3" id="next-button-ondemand-4"><span class="btn btn-solid">Continue</span></a>
+                            <a href="?step=3" id="next-button-ondemand-4"><span class="btn btn-solid float-right">Continue</span></a>
                             @else
                            
                             @endif

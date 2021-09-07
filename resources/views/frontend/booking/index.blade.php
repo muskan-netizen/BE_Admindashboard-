@@ -31,71 +31,112 @@
 
     <div class="booking-experience ds bc">
         <div class="address-form">
-            <div class="location-box">
+
+            <div class="loader-outer d-none">
+                <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+            </div>
+
+            <div class="location-box check-pick-first">
+                <div class="where-to-go">
+                    <div class="title title-36">{{__('Where can we pick you up?')}}</div>
+                </div>
+            </div>
+            <div class="location-box check-dropoff-secpond" style="display:none">
                 <ul class="location-inputs position-relative pl-2" id="location_input_main_div">
-                    <li class="d-block mb-3 dots">
-                        <input class="form-control pickup-text" type="text" name="pickup_location_name[]" placeholder="{{__('Add A Pick-Up Location')}}" id="pickup_location"/>
-                        <input type="hidden" name="pickup_location_latitude[]" value="" id="pickup_location_latitude"/>
-                        <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude" />
+                    <li class="d-flex dots">
+                        <div class="title title-24 down-arrow pr-3 position-relative edit-pickup">  {{__('From')}} - <span id="pickup-where-from"></span></div>
                     </li>
-                    <li class="d-block mb-3 dots">
-                        <input class="form-control pickup-text" name="destination_location_name[]" type="text" placeholder="{{__('Add A Stop')}}" id="destination_location"/>
-                        <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude" />
-                        <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude" />
-                        <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel="{{Carbon\Carbon::now()->timestamp}}"></i>
+                    <li class="d-flex dots where-to-first">
+                        <div class="title title-36 pr-3 position-relative">{{__('Where To?')}}</div>
+                    </li>
+                    <li class="d-flex dots where-to-second" style="display:none !important;">
+                        <div class="title title-24 down-arrow pr-3 position-relative edit-dropoff">  {{__('To')}} - <span id="dropoff-where-to"></span></div>
                     </li>
                 </ul>
-
-                <a class="add-more-location position-relative pl-2" href="javascript:void(0)">{{__('Add Destination')}}</a>
+                <a class="add-more-location position-relative pl-2" style="display:none" href="javascript:void(0)">{{__('Add Destination')}}</a>
             </div>
-            <script type="text/template" id="destination_location_template">
-                <li class="d-block mb-3 dots" id="dots_<%= random_id %>">
-                    <input class="form-control pickup-text" type="text" name="destination_location_name[]" placeholder="{{__('Add A Stop')}}" id="destination_location_<%= random_id %>" data-rel="<%= random_id %>"/>
-                    <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude_<%= random_id %>" data-rel="<%= random_id %>"/>
-                    <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude_<%= random_id %>" data-rel="<%= random_id %>"/>
-                    <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel="<%= random_id %>"></i>
-                </li>
-            </script>
-            <div class="spinner-border avatar-lg text-primary m-2 cab-booking-main-loader" role="status" style="display:none;"></div>
-            <div class="location-list style-4"> 
-                @forelse($user_addresses as $user_address)
-                    <a class="search-location-result position-relative d-block" href="javascript:void(0);" data-address="{{$user_address->address}}" data-latitude="{{$user_address->latitude}}" data-longitude="{{$user_address->longitude}}">
-                        <h4 class="mt-0 mb-1"><b>{{$user_address->address}}</b></h4>
-                        <p class="ellips mb-0">{{$user_address->city}}, {{$user_address->state}}, {{$user_address->country}}</p>
-                    </a>
-                @empty
-                @endforelse
-            </div>
-            <div class="table-responsive style-4">
-                <div class="cab-button d-flex flex-nowrap align-items-center py-2" id="vendor_main_div"></div>
-            </div>
-            <div class="vehical-container style-4" style="height:calc(100vh - 397px !important" id="search_product_main_div"></div>
-            <script type="text/template" id="vendors_template">
-                <% _.each(results, function(result, key){%>
-                    <a class="btn btn-solid ml-2 vendor-list" href="javascript:void(0);" data-vendor="<%= result.id %>"><%= result.name %></a>
-                <% }); %>
-            </script>
-            <script type="text/template" id="products_template">
-                <% _.each(results, function(result, key){%>
-                    <a class="vehical-view-box row align-items-center no-gutters px-2 my-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
-                        <div class="col-3 vehicle-icon">
-                            <img class='img-fluid' src='<%= result.image_url %>'>
-                        </div>
-                        <div class="col-9">
-                            <div class="row no-gutters">
-                                <div class="col-8 vehicle-details">
-                                    <h4 class="m-0"><b><%= result.name %></b></h4>
-                                </div>
-                                <div class="col-4 ride-price pl-2 text-right">
-                                    <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
+            <input type="hidden" name="pickup_location_latitude[]" value="" id="pickup_location_latitude">
+            <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
+            <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude"/>
+            <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude"/>
+            <div class="location-container">
+                <div class="location-search d-flex align-items-center check-pickup">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                    <input class="form-control pickup-text pac-target-input" type="text" name="pickup_location_name[]" placeholder="Add A Pick-Up Location" id="pickup_location" autocomplete="off">
+                </div>
+                <div class="location-search d-flex align-items-center" style="display:none !important;" id="destination_location_add_more">
+                </div>
+                <div class="location-search d-flex align-items-center check-dropoff" style="display:none !important;">
+                    <input class="form-control pickup-text" name="destination_location_name[]" type="text" placeholder="{{__('Add A Stop')}}" id="destination_location"/>
+                </div>
+                <div class="location-search d-flex align-items-center" style="display:none !important;" id="destination_location_add_temp">
+                </div>
+                <div class="scheduled-ride">
+                    <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="mx-2">Now</span> <i class="fa fa-angle-down" aria-hidden="true"></i></button>
+                </div>
+                <div class="loader cab-booking-main-loader"></div>
+                <div class="location-list style-4"> 
+                        <a class="select-location row align-items-center" id="get-current-location" href="javascript:void(0)">
+                            <div class="col-2 text-center pl-4">
+                                <div class="round-shape active-location">
+                                    <i class="fa fa-crosshairs" aria-hidden="true"></i>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                    <hr class="m-0">
-                <% }); %>
-            </script>
+                            <div class="col-10 pl-3">
+                                <h4><b>Allow location Access</b></h4>
+                                <div class="current-location ellips text-color mb-2">Your current location</div>
+                                <hr class="m-0">
+                            </div>
+                        </a>
+                    @forelse($user_addresses as $user_address)
+                        <a class="search-location-result position-relative d-block" href="javascript:void(0);" data-address="{{$user_address->address}}" data-latitude="{{$user_address->latitude}}" data-longitude="{{$user_address->longitude}}">
+                            <h4 class="mt-0 mb-1"><b>{{$user_address->address}}</b></h4>
+                            <p class="ellips mb-0">{{$user_address->city}}, {{$user_address->state}}, {{$user_address->country}}</p>
+                        </a>
+                    @empty
+                    @endforelse
+                </div>
+                <div class="table-responsive style-4">
+                    <div class="cab-button d-flex flex-nowrap align-items-center py-2" id="vendor_main_div"></div>
+                </div>
+                <div class="vehical-container style-4" style="height:calc(100vh - 397px !important" id="search_product_main_div"></div>
+            </div>
         </div>
+        <script type="text/template" id="vendors_template">
+            <% _.each(results, function(result, key){%>
+                <a class="btn btn-solid ml-2 vendor-list" href="javascript:void(0);" data-vendor="<%= result.id %>"><%= result.name %></a>
+            <% }); %>
+        </script>
+        <script type="text/template" id="products_template">
+            <% _.each(results, function(result, key){%>
+                <a class="vehical-view-box row align-items-center no-gutters px-2 my-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
+                    <div class="col-3 vehicle-icon">
+                        <img class='img-fluid' src='<%= result.image_url %>'>
+                    </div>
+                    <div class="col-9">
+                        <div class="row no-gutters">
+                            <div class="col-8 vehicle-details">
+                                <h4 class="m-0"><b><%= result.name %></b></h4>
+                            </div>
+                            <div class="col-4 ride-price pl-2 text-right">
+                                <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <hr class="m-0">
+            <% }); %>
+        </script>
+        <script type="text/template" id="destination_location_template">
+            <input class="form-control pickup-text" type="text" name="destination_location_name[]" placeholder="{{__('Add A Stop')}}" id="destination_location_<%= random_id %>" data-rel="<%= random_id %>"/>
+            <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude_<%= random_id %>" data-rel="<%= random_id %>"/>
+            <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude_<%= random_id %>" data-rel="<%= random_id %>"/>
+        </script>
+        <script type="text/template" id="destination_location_template_li">
+            <li class="d-block dots" id="dots_<%= random_id %>">
+                <div class="title title-24 down-arrow pr-3 position-relative edit-other-stop" id="<%= random_id %>">  {{__('To')}} - <span id="dropoff-where-to-<%= random_id %>"></span></div>
+            </li>
+        </script>
         <script type="text/template" id="cab_detail_box_template">
             <div class="cab-outer style-4">
                 <div class="bg-white p-2">

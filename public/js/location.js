@@ -81,7 +81,7 @@ $(document).ready(function () {
             speed: 300,
             arrows: true,
             dots: false,
-            slidesToShow: 4,
+            slidesToShow: 3,
             slidesToScroll: 3,
             autoplay: false,
             autoplaySpeed: 5000,

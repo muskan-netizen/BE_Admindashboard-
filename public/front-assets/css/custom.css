@@ -3653,6 +3653,7 @@ header .homepage-address h2 {
     font-size: 36px;
     line-height: 44px;
     font-weight: 600;
+    min-height: 44px;
 }
 
 .title-24 {
@@ -3663,6 +3664,7 @@ header .homepage-address h2 {
 
 .location-search {
     padding: 16px 24px 0;
+    position: relative;
 }
 
 .location-search i {
@@ -3839,18 +3841,19 @@ header .homepage-address h2 {
 
 .location-inputs li {
     position: relative;
+    min-height: 44px;
 }
 
 .location-inputs li::before {
-    height: calc(100% - 3px);
-    background: transparent;
-    border-left: 2px dashed #fff;
+    height: calc(100% - 16px);
+    background: #fff;
+    border-left: 2px solid #fff;
     position: absolute;
     display: block;
     margin: auto;
     content: "";
     width: 2px;
-    left: -20px;
+    left: -19px;
     top: 26px;
 }
 
@@ -3859,23 +3862,27 @@ header .homepage-address h2 {
 }
 
 .dots::after {
-    height: 10px;
-    width: 10px;
+    height: 8px;
+    width: 8px;
     border: 2px solid #fff;
-    background: transparent;
+    background: #fff;
     position: absolute;
     display: block;
     margin: auto;
     content: "";
     left: 0;
-    top: 10px;
+    top: 6px;
     border-radius: 50px;
 }
 
 .location-inputs .dots::after {
-    top: 50%;
-    left: -24px;
-    transform: translateY(-50%);
+    top: 14px;
+    left: -22px;
+    /* transform: translateY(calc(-50% - 4px)); */
+}
+
+.location-inputs .dots.where-to-second::after {
+    border-radius: 0;
 }
 
 .location-inputs .dots.map-icon::after {
@@ -3888,6 +3895,7 @@ header .homepage-address h2 {
 
 .add-more-location {
     color: #fff;
+    margin-top: 14px;
 }
 
 .add-more-location:hover {
@@ -4717,10 +4725,16 @@ ul#main-nav-list {
     bottom: 0;
     z-index: 30;
     background-color: #fff;
-    justify-content: flex-end;
-    -webkit-box-align: center;
-    align-items: center;
-    display: flex;
+    float: left;
+    clear: left;
+    width: 100%;
+}
+.booking-time .radios {
+    width: 95%;
+}
+
+.footer-card .btn.btn-solid.float-left {
+    padding: 6.7px 10px;
 }
 
 
@@ -5166,13 +5180,7 @@ html {
     transform: rotate(-45deg);
 }
 
-#user_datatable_processing {
-    width: auto;
-    position: absolute;
-    top: 0;
-    padding: 9px 0;
-    box-shadow: none !important;
-}
+
 
 .row.cart-box-outer.classes_wrapper {
     position: relative;
@@ -5859,8 +5867,13 @@ body[dir="rtl"] .inner_spacing h3 {
         width: 35px !important;
     }
 
-    .fixed-bar .scrollspy-menu{
+    .fixed-bar .scrollspy-menu {
         position: fixed;
+        top: auto;
+        min-height: 460px;
+        overflow-y: auto;
+        left: auto;
+        right: 20px;
     }
 
     .scrollspy-menu {

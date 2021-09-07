@@ -245,9 +245,7 @@ class CategoryController extends FrontController{
                         },
                         'variant' => function($q) use($langId,$column,$value){
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','id');
-                            $q->groupBy('product_id')->with(['checkIfInCart' => function($q1) use($column,$value){
-                                $q1->whereHas('cart',function($qset)use($column,$value){$qset->where($column,$value);});
-                            }]);
+                            $q->groupBy('product_id');
                         },'variant.checkIfInCart'])->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only')->where('products.is_live', 1)->where('category_id', $category_id);
             if(count($vendors) > 0){
                 $products = $products->whereIn('products.vendor_id', $vendors);
