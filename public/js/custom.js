@@ -138,6 +138,7 @@ window.initializeSlider = function initializeSlider() {
         }]
     });   
     
+    
     $(".booking-time").slick({
         dots: !1,
         infinite: !0,

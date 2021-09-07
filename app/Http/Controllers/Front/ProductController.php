@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Front;
 use DB;
 use Auth;
 use Session;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Front\FrontController;
 use Redirect;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Front\FrontController;
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor};
 class ProductController extends FrontController{
     private $field_status = 2;
@@ -227,6 +228,7 @@ class ProductController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function getVariantData(Request $request, $domain = '', $sku){
+        $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $product = Product::select('id')->where('sku', $sku)->firstOrFail();
         $pv_ids = array();
         $product_variant = '';
@@ -286,7 +288,7 @@ class ProductController extends FrontController{
         ->where('id', $product->id)->first();
 
         if($pv_ids){
-            $variantData = ProductVariant::with('product', 'media.pimage.image')->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
+            $variantData = ProductVariant::with('product.media.image', 'media.pimage.image', 'checkIfInCart')->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
                 ->whereIn('id', $pv_ids)->get();
             if ($variantData) {
                 foreach($variantData as $variant){
@@ -304,6 +306,24 @@ class ProductController extends FrontController{
                 }
                 if(count($variantData) <= 1){
                     $variantData = $variantData->first()->toArray();
+                    if(!empty($variantData['media'])){
+                        $image_fit = $variantData['media'][0]['pimage']['image']['path']['image_fit'];
+                        $image_path = $variantData['media'][0]['pimage']['image']['path']['image_path'];
+                    }else{
+                        $image_fit = $variantData['product']['media'][0]['image']['path']['image_fit'];
+                        $image_path = $variantData['product']['media'][0]['image']['path']['image_path'];
+                    }
+                    if(empty($image_path)){
+                        $image_fit = \Config::get('app.FIT_URl');
+                        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
+                    }
+                    $variantData['image_fit'] = $image_fit;
+                    $variantData['image_path'] = $image_path;
+                    if(count($variantData['check_if_in_cart']) > 0){
+                        $variantData['check_if_in_cart'] = $variantData['check_if_in_cart'][0];
+                    }
+                    $variantData['variant_multiplier'] = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                    // dd($variantData);
                 }else{
                     $variantData = array();
                 }

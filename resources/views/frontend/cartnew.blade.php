@@ -287,6 +287,7 @@
                 </div>
             </div>
             <hr class="my-2">
+            <% if(client_preference_detail.off_scheduling_at_cart != 1) { %>
             <div class="row d-flex align-items-center arabic-lng no-gutters mt-2 mb-4" id="dateredio">
                 <div class="col-md-5 pr-md-2 mb-2 mb-md-0">
                     <div class="login-form">
@@ -307,6 +308,7 @@
                     <!-- <button type="button" class="btn btn-solid"><i class="fa fa-check" aria-hidden="true"></i></button> -->
                 </div>
             </div>
+            <% } %>
             
         </div>
     </div>

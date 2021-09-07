@@ -246,8 +246,8 @@ class VendorController extends FrontController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId,$column,$value){
-                            $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
-                            $q->groupBy('product_id');
+                            $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
+                            // $q->groupBy('product_id');
                         },'variant.checkIfInCart',
                         'addOn' => function ($q1) use ($langId) {
                             $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
@@ -271,7 +271,7 @@ class VendorController extends FrontController
                             $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
                             $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
                             $z->where('vt.language_id', $langId);
-                            $z->where('product_variant_sets.product_id', $p_id);
+                            $z->where('product_variant_sets.product_id', $p_id)->orderBy('product_variant_sets.variant_type_id', 'asc');
                         },'variantSet.option2'=> function ($zx) use ($langId, $p_id) {
                             $zx->where('vt.language_id', $langId)
                             ->where('product_variant_sets.product_id', $p_id);
@@ -287,7 +287,6 @@ class VendorController extends FrontController
                 $category->products = $products;
                 $category->products_count = $products->count();
             }
-            //  dd($vendor_categories->toArray());
             $listData = $vendor_categories;
             return $listData;
         }
