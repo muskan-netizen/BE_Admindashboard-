@@ -154,6 +154,15 @@ window.initializeSlider = function initializeSlider() {
 }
 
 $(document).ready(function () {
+
+    $("#side_menu_toggle").click(function(){
+        $(".manu-bars").toggleClass("menu-btn");
+        $(".scrollspy-menu").toggleClass("side-menu-open");
+    });
+    
+
+
+
     $('#myModal').on('show.bs.modal', function (e) {	
         document.querySelector('meta[name="viewport"]').content = 'width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0';	
     });

@@ -19,6 +19,8 @@ use App\Http\Traits\ToasterResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\CustomerExport;
 use App\Models\{Payment, User, Client, Country, Currency, Language, UserVerification, Role, Transaction};
 
 class UserController extends BaseController{
@@ -327,5 +329,9 @@ class UserController extends BaseController{
                 });
             }
         })->make(true);
+    }
+
+    public function export() {
+        return Excel::download(new CustomerExport, 'users.xlsx');
     }
 }

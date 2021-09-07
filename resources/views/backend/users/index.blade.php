@@ -36,87 +36,86 @@
             </button>
         </div>
     </div>
+
     <div class="row">
         <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-12">
-                            <div class="text-sm-left">
-                                @if (\Session::has('success'))
-                                <div class="alert alert-success">
-                                    <span>{!! \Session::get('success') !!}</span>
-                                </div>
-                                @endif
-                                @if (\Session::has('error_delete'))
-                                <div class="alert alert-danger">
-                                    <span>{!! \Session::get('error_delete') !!}</span>
-                                </div>
-                                @endif
-                            </div>
+            <div class="card-box">
+                <div class="row">
+                    <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
+                        <div class="text-center">
+                            <h3>
+                                <i class="fa fa-user text-primary mdi-24px"></i>
+                                <span data-plugin="counterup" id="total_vendor">{{$active_users}}</span>
+                            </h3>
+                            <p class="text-muted font-15 mb-0">Active User Count</p>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card widget-inline">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
-                                            <div class="text-center">
-                                                <h3>
-                                                    <i class="fa fa-user text-primary mdi-24px"></i>
-                                                    <span data-plugin="counterup" id="total_vendor">{{$active_users}}</span>
-                                                </h3>
-                                                <p class="text-muted font-15 mb-0">Active User Count</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
-                                            <div class="text-center">
-                                                <h3>
-                                                    <i class="fas fa-user-clock text-primary mdi-24px"></i>
-                                                    <span data-plugin="counterup" id="total_product">{{ $inactive_users }}</span>
-                                                </h3>
-                                                <p class="text-muted font-15 mb-0">Inactive User Count</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
-                                            <div class="text-center">
-                                                <h3>
-                                                    <i class="mdi mdi-login text-primary mdi-24px"></i>
-                                                    <span data-plugin="counterup" id="total_product">{{ $social_logins }}</span>
-                                                </h3>
-                                                <p class="text-muted font-15 mb-0">Social Login Count</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
+                        <div class="text-center">
+                            <h3>
+                                <i class="fas fa-user-clock text-primary mdi-24px"></i>
+                                <span data-plugin="counterup" id="total_product">{{ $inactive_users }}</span>
+                            </h3>
+                            <p class="text-muted font-15 mb-0">Inactive User Count</p>
                         </div>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table table-centered table-nowrap table-striped" id="user_datatable" width="100%">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Image</th>
-                                    <th>Name</th>
-                                    <th>Login Type</th>
-                                    <th>Email/Auth-id</th>
-                                    <th>Phone</th>
-                                    <th>Email OTP</th>
-                                    <th>Phone OTP</th>
-                                    <th>Wallet</th>
-                                    <th>Orders</th>
-                                    <th>Active Orders</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="post_list">
-                                
-                            </tbody>
-                        </table>
+                    <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
+                        <div class="text-center">
+                            <h3>
+                                <i class="mdi mdi-login text-primary mdi-24px"></i>
+                                <span data-plugin="counterup" id="total_product">{{ $social_logins }}</span>
+                            </h3>
+                            <p class="text-muted font-15 mb-0">Social Login Count</p>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row main-customer-page">
+        <div class="col-12">
+            <div class="card-box">
+                <div class="row mb-2">
+                    <div class="col-sm-12">
+                        <div class="text-sm-left">
+                            @if (\Session::has('success'))
+                            <div class="alert alert-success">
+                                <span>{!! \Session::get('success') !!}</span>
+                            </div>
+                            @endif
+                            @if (\Session::has('error_delete'))
+                            <div class="alert alert-danger">
+                                <span>{!! \Session::get('error_delete') !!}</span>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-centered table-nowrap table-striped" id="user_datatable" width="100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Login Type</th>
+                                <th>Email/Auth-id</th>
+                                <th>Phone</th>
+                                <th>Email OTP</th>
+                                <th>Phone OTP</th>
+                                <th>Wallet</th>
+                                <th>Orders</th>
+                                <th>Active Orders</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="post_list">
+                            
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -167,7 +166,13 @@
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
                 },
-                buttons: [],
+                buttons: [{
+                        className:'btn btn-success waves-effect waves-light',
+                        text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>Export CSV',
+                        action: function ( e, dt, node, config ) {
+                            window.location.href = "{{ route('customer.export') }}";
+                        }
+                }],
                 ajax: {
                   url: "{{route('user.filterdata')}}",
                   data: function (d) {

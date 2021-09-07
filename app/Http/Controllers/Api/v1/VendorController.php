@@ -117,10 +117,15 @@ class VendorController extends BaseController{
             $paginate = $request->has('limit') ? $request->limit : 12;
             // $preferences = Session::get('preferences');
             $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id')->where('slug', $slug1)->where('status', 1)->firstOrFail();
-            $langId = Auth::user()->language;
+            $user = Auth::user();
+            $userid = $user->id;
+            $langId = $user->language;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             
             $products = Product::with(['media.image',
+                        'category.categoryDetail', 'inwishlist' => function($qry) use($userid){
+                            $qry->where('user_id', $userid);
+                        },
                         'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
@@ -136,6 +141,7 @@ class VendorController extends BaseController{
             $products = $products->where('is_live', 1)->where('vendor_id', $vendor->id)->paginate($paginate);
             if(!empty($products)){
                 foreach ($products as $key => $value) {
+                    $value->is_wishlist = $value->category->categoryDetail->show_wishlist;
                     foreach ($value->variant as $k => $v) {
                         $value->variant[$k]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     }

@@ -1863,6 +1863,10 @@
       top: 25px;
   }
 
+  .main-customer-page .dt-buttons.btn-group.flex-wrap {
+    top: 36px;
+  }   
+
   .dt-buttons.btn-group.flex-wrap button,
   #clear_filter_btn_icon {
       border-radius: 0.2rem;

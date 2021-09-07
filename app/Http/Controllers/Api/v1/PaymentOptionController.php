@@ -25,7 +25,7 @@ class PaymentOptionController extends Controller{
         }else{
             $code = array('cod', 'paypal', 'stripe');
         }
-        $payment_options = PaymentOption::whereIn('code', $code)->get(['id', 'title', 'off_site']);
+        $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'title', 'off_site']);
         return $this->successResponse($payment_options, '', 201);
     }
 

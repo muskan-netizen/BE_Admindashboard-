@@ -152,6 +152,7 @@ Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'],
     Route::post('password/update', 'Client\UserController@changePassword')->name('client.password.update');
     Route::post('customer/change/status', 'Client\UserController@changeStatus')->name('customer.changeStatus');
     Route::get('customer/wallet/transactions', 'Client\UserController@filterWalletTransactions')->name('customer.filterWalletTransactions');
+    Route::get('customer/export/export', 'Client\UserController@export')->name('customer.export');
     Route::resource('product', 'Client\ProductController');
     Route::post('product/importCSV', 'Client\ProductController@importCsv')->name('product.import');
     Route::post('product/validate', 'Client\ProductController@validateData')->name('product.validate');
