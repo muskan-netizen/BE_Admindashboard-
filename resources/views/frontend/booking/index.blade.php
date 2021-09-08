@@ -61,6 +61,7 @@
                     </li>
                     <li class="d-flex dots where-to-second" style="display:none !important;">
                         <div class="title title-24 down-arrow pr-3 position-relative edit-dropoff">  {{__('To')}} - <span id="dropoff-where-to"></span></div>
+                        <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel=""></i>
                     </li>
                 </ul>
                 <a class="add-more-location position-relative pl-2" style="display:none" href="javascript:void(0)">{{__('Add Destination')}}</a>
@@ -82,7 +83,7 @@
                 <div class="location-search d-flex align-items-center" style="display:none !important;" id="destination_location_add_temp">
                 </div>
                 <div class="scheduled-ride">
-                    <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="mx-2">Now</span> <i class="fa fa-angle-down" aria-hidden="true"></i></button>
+                    <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="mx-2 scheduleDateTimeApnd">Now</span> <i class="fa fa-angle-down" aria-hidden="true"></i></button>
                 </div>
                 <div class="loader cab-booking-main-loader"></div>
                 <div class="location-list style-4"> 
@@ -105,6 +106,9 @@
                         </a>
                     @empty
                     @endforelse
+                </div>
+                <div class="scheduled-ride-list d-flex align-items-center"> 
+                    
                 </div>
                 <div class="table-responsive style-4">
                     <div class="cab-button d-flex flex-nowrap align-items-center py-2" id="vendor_main_div"></div>
@@ -137,6 +141,13 @@
                 <hr class="m-0">
             <% }); %>
         </script>
+        <script type="text/template" id="scheduleTime_template">
+            <div class="scheduleTime">
+                <select class="scheduleHour" onchange="checkScheduleDateTime(this)" ><option value="">HH</option><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>
+                <select class="scheduleMinute" onchange="checkScheduleDateTime(this)" ><option value="">MM</option><option value="0">00</option><option value="1">05</option><option value="2">10</option><option value="3">15</option><option value="4">20</option><option value="5">25</option><option value="6">30</option><option value="7">35</option><option value="8">40</option><option value="9">45</option><option value="10">50</option><option value="11">55</option></select>
+                <select class="scheduleAmPm" onchange="checkScheduleDateTime(this)" ><option value="">AM/PM</option><option value="am">AM</option><option value="pm">PM</option></select>
+            </div>
+        </script>
         <script type="text/template" id="destination_location_template">
             <input class="form-control pickup-text" type="text" name="destination_location_name[]" placeholder="{{__('Add A Stop')}}" id="destination_location_<%= random_id %>" data-rel="<%= random_id %>"/>
             <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude_<%= random_id %>" data-rel="<%= random_id %>"/>
@@ -145,6 +156,7 @@
         <script type="text/template" id="destination_location_template_li">
             <li class="d-block dots" id="dots_<%= random_id %>">
                 <div class="title title-24 down-arrow pr-3 position-relative edit-other-stop" id="<%= random_id %>">  {{__('To')}} - <span id="dropoff-where-to-<%= random_id %>"></span></div>
+                <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel="<%= random_id %>"></i>
             </li>
         </script>
         <script type="text/template" id="cab_detail_box_template">

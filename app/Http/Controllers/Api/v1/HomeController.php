@@ -51,16 +51,16 @@ class HomeController extends BaseController{
                         $bannerLink = $value->redirect_category_id;
                         if($bannerLink){
                             $categoryData = Category::where('status', '!=', $this->field_status)->where('id', $value->redirect_category_id)->with('translation_one')->first();
-                            $value->redirect_name = $categoryData->translation_one ? $categoryData->translation_one->name : '';
+                            $value->redirect_name = (($categoryData) && ($categoryData->translation_one)) ? $categoryData->translation_one->name : '';
                         }
                     }
                     if(!empty($value->link) && $value->link == 'vendor'){
                         $bannerLink = $value->redirect_vendor_id;
                         if($bannerLink){
-                            $vendorData = Vendor::select('name','vendor_templete_id')->where('status', '!=', $this->field_status)->where('id', $value->redirect_vendor_id)->first();
-                            $is_show_category = ($vendorData->vendor_templete_id == 1) ? 0 : 1;
+                            $vendorData = Vendor::select('name','vendor_templete_id')->where('status', 1)->where('id', $value->redirect_vendor_id)->first();
+                            $is_show_category = (($vendorData) && ($vendorData->vendor_templete_id == 1)) ? 0 : 1;
                             $value->is_show_category = $is_show_category;
-                            $value->redirect_name = $vendorData->name;
+                            $value->redirect_name = $vendorData->name ?? '';
                         }
                     }
                     $value->redirect_to = ucwords($value->link);

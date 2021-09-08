@@ -172,20 +172,20 @@ $(document).ready(function () {
         $("#destination_location_add_temp").append(destination_location_template({random_id:random_id})).show();
         initializeNew(random_id);
     });
-    $(document).on("click", ".location-inputs .apremove",function() {
-        if($('#dots_'+$(this).data('rel')).length != 0){
-            $('#dots_'+$(this).data('rel')).remove();
-            var destination_location_names = $('input[name="destination_location_name[]"]').map(function(){
-               return this.value;
-            }).get();
-            if(destination_location_names.length < 5){
-                $('.add-more-location').show();
-            }else{
-                $('.add-more-location').hide();
-            }
-            initMap2();
-        }
-    });
+    // $(document).on("click", ".location-inputs .apremove",function() {
+    //     if($('#dots_'+$(this).data('rel')).length != 0){
+    //         $('#dots_'+$(this).data('rel')).remove();
+    //         var destination_location_names = $('input[name="destination_location_name[]"]').map(function(){
+    //            return this.value;
+    //         }).get();
+    //         if(destination_location_names.length < 5){
+    //             $('.add-more-location').show();
+    //         }else{
+    //             $('.add-more-location').hide();
+    //         }
+    //         initMap2();
+    //     }
+    // });
     function initializeNew(random_id) {
       var input2 = document.getElementById('destination_location_'+random_id);
       if(input2){
@@ -200,18 +200,15 @@ $(document).ready(function () {
                 $('#search_product_main_div').attr("style", "display: block !important");
                 $('.location-list').attr("style", "display: none !important");
                 $('#destination_location_'+random_id).attr("style", "display: none !important");
-                $('#destination_location_latitude_'+random_id).attr("style", "display: none !important");
-                $('#destination_location_longitude_'+random_id).attr("style", "display: none !important");
 
                 var currentUrl                   = window.location.href;
                 var queryString                  = removeURLParameter(currentUrl, 'destination_location_'+random_id);
-                var destination_location         = $("#destination_location_"+random_id).val(place2.address_components[0].long_name);
+                var destination_location         = $("#destination_location_"+random_id).val();
                 var destinationLocationLatitude  = $("#destination_location_latitude_"+random_id).val();
                 var destinationLocationLongitude = $("#destination_location_longitude_"+random_id).val();
                 var perm = "?" + (queryString != '' ? queryString : '') + "&destination_location_"+random_id+"=" + destination_location  + "&destination_location_latitude_"+random_id+"=" + destinationLocationLatitude + "&destination_location_longitude_"+random_id+"=" + destinationLocationLongitude;
                 window.history.replaceState(null, null, perm);
             }
-            
         });
       }
     }
@@ -220,6 +217,7 @@ $(document).ready(function () {
         var longitude            = $(this).data('longitude');
         var pickup_location      = $('#pickup_location_latitude').val();
         var destination_location = $('#destination_location_latitude').val();
+        var pickupAddress        = $(this).data('address');
         if(pickup_location == ''){
             $('#pickup_location').val($(this).data('address'));
             $('#pickup_location_latitude').val(latitude);
@@ -254,11 +252,37 @@ $(document).ready(function () {
             $('.check-dropoff').attr("style", "display: none !important");
             $(".where-to-second").css("display", "block");
             $('.add-more-location').attr("style", "display: block !important");
+
+            $('#search_product_main_div').attr("style", "display: block !important");
+            $('.location-list').attr("style", "display: none !important");
+
+        }else{
+            $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
+                if(this.value == ''){
+                    var inputId = this.id;
+                    $('#'+inputId).val(pickupAddress);
+                    var random_id = $(this).data( "rel" );
+                    $('#destination_location_latitude_'+random_id).val(latitude);
+                    $('#destination_location_longitude_'+random_id).val(longitude);
+                    
+                    $('#search_product_main_div').attr("style", "display: block !important");
+                    $('.location-list').attr("style", "display: none !important");
+
+                    let destination_location_template_li = _.template($('#destination_location_template_li').html());
+                    var destination_location = $('#destination_location_'+random_id).val();            
+                    $('#location_input_main_div li:last-child').after(destination_location_template_li({random_id:random_id}));
+                    $("#dropoff-where-to-"+random_id).html(" "+ pickupAddress);
+
+                    var currentUrl                   = window.location.href;
+                    var queryString                  = removeURLParameter(currentUrl, 'destination_location_'+random_id);
+                    var perm = "?" + (queryString != '' ? queryString : '') + "&destination_location_"+random_id+"=" + pickupAddress  + "&destination_location_latitude_"+random_id+"=" + latitude + "&destination_location_longitude_"+random_id+"=" + longitude;
+                    window.history.replaceState(null, null, perm);
+                }
+            }).get();
         }
 
-
-        
         displayLocationCab(latitude, longitude);
+        getVendorList();   
     });
     function getVendorList(){
         var locations = [];
@@ -496,13 +520,149 @@ $(document).ready(function () {
 
     });
 
+    $(document).on("click",".scheduled-ride",function() {
+        $('.location-list').attr("style", "display: none !important");
+        $('.scheduled-ride-list').attr("style", "display: block !important");
+        var fromDate = moment();
+        var toDate   = moment().add(31, 'days');
+        enumerateDaysBetweenDates(fromDate, toDate);
+    });
+
+    var enumerateDaysBetweenDates = function(startDate, endDate) {
+        var now = startDate, dates = [];
+        $(".scheduled-ride-list").append('<button id="check-schedule-date-time" onclick="getScheduleDateTime(this)" disabled>Select</button>');
+        while (now.isSameOrBefore(endDate)) {
+            var scheduledDate = '<div class="form-check align-items-center" id="schedule-date-'+now.format('MMDDYYYY')+'"><input class="form-check-input" type="radio" onclick="appendScheduleTime(this)" name="scheduledDate" data-mdi="schedule-date-'+now.format('MMDDYYYY')+'" value="'+now.format('MM-DD-YYYY')+'"><label class="form-check-label" id="lable-schedule-date-'+now.format('MMDDYYYY')+'" for="">'+now.format('ddd, D MMM')+'</label></div>';
+            $(".scheduled-ride-list").append(scheduledDate);
+            now.add(1, 'days');
+        }
+
+    };
+
+    
+
+    $(document).on("click",".apremove",function() {
+        var destination_location_add_temp = $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').length;
+        
+        if(destination_location_add_temp == 0){
+            return false;
+        }else if(destination_location_add_temp == 1){
+            var destination_location_names = $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
+                if(this.value == ''){
+                    return "empty";
+                }
+            }).get();
+
+            if(destination_location_names[0] == 'empty'){
+                return false;
+            }
+
+            var destination_location = $("#destination_location").val();
+            if(destination_location == undefined){
+                return false;
+            }
+            
+        }else if(destination_location_add_temp == 2){
+            var destination_location_names = $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
+                if(this.value == ''){
+                    return "empty";
+                }
+            }).get();
+
+            var destination_location = $("#destination_location").val();
+            if(destination_location_names[0] == 'empty' && destination_location == undefined){
+                return false;
+            }
+            
+        }
+
+        var random_id = $(this).data('rel');
+
+        if(random_id == ''){
+            $(".where-to-second").remove();
+            $("#destination_location").remove();
+            $("#destination_location_latitude").remove();
+            $("#destination_location_longitude").remove();
+
+            var currentUrl = window.location.href;
+            query1 = removeURLParameter(currentUrl, 'destination_location');
+            var perm        = (query1 != '' ? "?" + query1 : '');
+            window.history.replaceState(null, null, perm);
+
+            var currentUrl2 = window.location.href;
+            query2 = removeURLParameter(currentUrl2, 'destination_location_latitude');
+            var perm        = (query2 != '' ? "?" + query2 : '');
+            window.history.replaceState(null, null, perm);
+
+            var currentUrl3 = window.location.href;
+            var query3 = removeURLParameter(currentUrl3, 'destination_location_longitude');
+            var perm        = (query3 != '' ? "?" + query3 : '');
+            window.history.replaceState(null, null, perm);
+        }else{
+            
+            $("#dots_"+random_id).remove();
+            $("#destination_location_"+random_id).remove();
+            $("#destination_location_latitude_"+random_id).remove();
+            $("#destination_location_longitude_"+random_id).remove();
+
+            var currentUrl = window.location.href;
+            query1 = removeURLParameter(currentUrl, 'destination_location_'+random_id);
+            var perm        = (query1 != '' ? "?" + query1 : '');
+            window.history.replaceState(null, null, perm);
+
+            var currentUrl2 = window.location.href;
+            query2 = removeURLParameter(currentUrl2, 'destination_location_latitude_'+random_id);
+            var perm        = (query2 != '' ? "?" + query2 : '');
+            window.history.replaceState(null, null, perm);
+
+            var currentUrl3 = window.location.href;
+            var query3 = removeURLParameter(currentUrl3, 'destination_location_longitude_'+random_id);
+            var perm        = (query3 != '' ? "?" + query3 : '');
+            window.history.replaceState(null, null, perm);
+        }
+
+        const waypts = [];
+        var destination_location_names = $('input[name="destination_location_name[]"]').map(function(){
+            return this.value;
+         }).get();
+ 
+         $(destination_location_names).each(function(index, destination_location_name) {
+             waypts.push({
+                 location: destination_location_name,
+                 stopover: true,
+               });
+         });
+ 
+        var random_id = $("#destination_location_add_temp input:last").data("rel");
+
+        let origin = $('#pickup_location').val();
+        let destination = (random_id != undefined) ? $('#destination_location_'+random_id).val() : $('#destination_location').val();
+        if(origin && destination){
+            directionsService.route({
+                origin: origin,
+                waypoints:waypts,
+                optimizeWaypoints:true,
+                destination: destination,
+                travelMode: google.maps.TravelMode.DRIVING,
+            }, function(response, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                var point = response.routes[0].legs[0];
+                directionsDisplay.setDirections(response);
+                getVendorList();
+                } else {
+                window.alert('Directions request failed due to ' + status);
+                return false;
+                }
+            });
+        }
+         
+        
+    });
+
     $(document).on("click",".edit-other-stop",function() {
         var random_id = $(this).attr("id");
-        // console.log(random_id);
         $("#destination_location_add_temp").attr("style", "display: block !important");
         $("#destination_location_"+random_id).attr("style", "display: block !important");
-        // $("#destination_location_latitude_").attr("style", "display: block !important");
-        // $("#destination_location_longitude_").attr("style", "display: block !important");
         initializeNew(random_id);
     });
     
@@ -586,7 +746,7 @@ $(document).ready(function () {
         var destination_location_names = $('input[name="destination_location_name[]"]').map(function(){
            return this.value;
         }).get();
-        // console.log(destination_location_names);
+
         $(destination_location_names).each(function(index, destination_location_name) {
             waypts.push({
                 location: destination_location_name,
@@ -624,7 +784,6 @@ $(document).ready(function () {
         var autocomplete2 = new google.maps.places.Autocomplete(input2);
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             var place = autocomplete.getPlace();
-            $('#pickup_location').val(place.address_components[0].long_name);
             $('#pickup_location_latitude').val(place.geometry.location.lat());
             $('#pickup_location_longitude').val(place.geometry.location.lng());
             initMap2();
@@ -639,7 +798,7 @@ $(document).ready(function () {
                 window.history.replaceState(null, null, perm);
 
                 $(".check-pick-first").css("display", "none");
-                $("#pickup-where-from").html(" "+place.address_components[0].long_name);
+                $("#pickup-where-from").html(" "+pickup_location);
                 $(".check-dropoff-secpond").css("display", "block");
                 $('.check-pickup').attr("style", "display: none !important");
                 $(".check-dropoff").css("display", "block");
@@ -648,7 +807,6 @@ $(document).ready(function () {
         });
         google.maps.event.addListener(autocomplete2, 'place_changed', function () {
             var place2 = autocomplete2.getPlace();
-            $('#destination_location').val(place2.address_components[0].long_name);
             $('#destination_location_latitude').val(place2.geometry.location.lat());
             $('#destination_location_longitude').val(place2.geometry.location.lng());
             initMap2();
@@ -662,7 +820,7 @@ $(document).ready(function () {
                 var perm        = "?" + (queryString != '' ? queryString : '') + "&destination_location=" + destination_location  + "&destination_location_latitude=" + place2.geometry.location.lat() +"&destination_location_longitude=" + place2.geometry.location.lng();
                 window.history.replaceState(null, null, perm);
                 
-                $("#dropoff-where-to").html(" "+place2.address_components[0].long_name);
+                $("#dropoff-where-to").html(" "+destination_location);
                 $('.where-to-first').attr("style", "display: none !important");
                 $('.check-dropoff').attr("style", "display: none !important");
                 $(".where-to-second").css("display", "block");
@@ -794,6 +952,42 @@ $(document).ready(function () {
         );
     }
 });
+
+
+function appendScheduleTime(thisObj){
+    $('.scheduled-ride-list').find('.scheduleTime').remove();
+    let scheduleTime_template = _.template($('#scheduleTime_template').html());
+    var mainDivId = $(thisObj).data('mdi');
+    $("#"+mainDivId).append(scheduleTime_template).show();
+}
+
+function getScheduleDateTime(thisObj){
+    var mainDivId      = $('input[name=scheduledDate]:checked').data('mdi');
+    var scheduledDate  = $("#lable-"+mainDivId).text();
+    var scheduleHour   = $('.scheduleHour').find(":selected").val();
+    var scheduleMinute = $('.scheduleMinute').find(":selected").val();
+    var scheduleAmPm   = $('.scheduleAmPm').find(":selected").val();
+    var waitTime       = parseFloat(scheduleMinute) + Number(10);
+    var scheduleDateTime = scheduledDate + ", " + scheduleHour + ":" + scheduleMinute + " " + scheduleAmPm + " - " + scheduleHour + ":" + waitTime + " " + scheduleAmPm;
+    $('.scheduleDateTimeApnd').text(scheduleDateTime);
+
+    $('.location-list').attr("style", "display: block !important");
+    $('.scheduled-ride-list').attr("style", "display: none !important");
+
+}
+
+function checkScheduleDateTime(thisObj){
+    var scheduledDate = $('input[name=scheduledDate]:checked').val();
+    var scheduleHour   = $('.scheduleHour').find(":selected").val();
+    var scheduleMinute = $('.scheduleMinute').find(":selected").val();
+    var scheduleAmPm   = $('.scheduleAmPm').find(":selected").val();
+    if(scheduledDate != '' && scheduleHour != '' && scheduleMinute != '' && scheduleAmPm != ''){
+        $('#check-schedule-date-time').prop('disabled', false);
+    }else{
+        $('#check-schedule-date-time').prop('disabled', true);
+    }
+    
+}
 
 function addressInputDisplay(locationWrapper, inputWrapper, input) {
     $(inputWrapper).removeClass("d-none").addClass("d-flex");
