@@ -5,11 +5,12 @@ $languageList = \App\Models\ClientLanguage::with('language')->where('is_active',
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
 
+
 <style>
     .cab-booking-header{
-        display: none;
-    }
-</style>
+         display: none;
+     }
+ </style>
 
 <header class="site-header">
 @if (Auth::check())
@@ -26,15 +27,55 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                     <div class="col-10 d-flex align-items-center justify-content-end">
                         <ul class="cab-menu-nav">
-                            <li>
-                                <a href="#"><span class="icon-ic_lang align-middle mr-1"></span> <span>EN</span></a>
+                            <li class="onhover-dropdown change-language slected-language">
+                                <a href="javascript:void(0)">{{session()->get('locale')}} 
+                                <span class="icon-ic_lang align-middle"></span>
+                                <span class="language ml-1 align-middle">language</span>
+                                </a>
+                                <ul class="onhover-show-div">
+                                    @foreach($languageList as $key => $listl)
+                                        <li class="{{session()->get('locale') ==  $listl->language->sort_code ?  'active' : ''}}">
+                                            <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                                        </li>
+                                    @endforeach
+                                </ul>
                             </li>
+                            <li class="onhover-dropdown change-currency slected-language">
+                                <a href="#">{{session()->get('iso_code')}} <span class="icon-ic_currency align-middle"></span> 
+                                <span class="currency ml-1 align-middle">currency</span> </a>
+                                <ul class="onhover-show-div">
+                                    @foreach($currencyList as $key => $listc)
+                                        <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
+                                            <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                            @if(Auth::guest())
                             <li class="cab-login-btn">
                                 <a href="#">login</a>
                             </li>
                             <li class="cab-signup-btn">
                                 <a href="#">Sign Up </a>
                             </li>
+                            @else
+                            <li class="onhover-dropdown mobile-account"> <i class="fa fa-user" aria-hidden="true"></i>
+                                {{__('My Account')}}
+                                <ul class="onhover-show-div">
+                                    @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
+                                        <li>
+                                            <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                        </li>
+                                    @endif
+                                    <li>
+                                        <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
+                                    </li>
+                                    <li>
+                                        <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            @endif
                         </ul>
                     </div>
                 </div>

@@ -390,15 +390,26 @@ class ProductController extends BaseController
     public function destroy($domain = '', $id)
     {
         try{
+           
             DB::beginTransaction();
             $product = Product::find($id);
             $dynamic = time();
+           
             Product::where('id', $id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
-            ProductVariant::where('product_id', $id)->update(['sku' => $product->sku.$dynamic]);
+            
+            $tot_var  = ProductVariant::where('product_id', $id)->get();
+            foreach($tot_var as $varr)
+            {   
+                $dynamic = time().substr(md5(mt_rand()), 0, 7);
+                ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
+            }
+          
             Product::where('id', $id)->delete();
+            
             CartProduct::where('product_id', $id)->delete();
-           UserWishlist::where('product_id', $id)->delete();
-            DB::commit();
+            UserWishlist::where('product_id', $id)->delete();
+           
+             DB::commit();
             return redirect()->back()->with('success', 'Product deleted successfully!');
         }
         catch(\Exception $ex){

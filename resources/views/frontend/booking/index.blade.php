@@ -30,6 +30,24 @@
     display: block !important;
 }
 </style>
+
+<?php
+$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+if (strpos($url,'cabservice') !== false) {?>
+<style>
+    .container .main-menu .d-block{
+         display: none;
+     }
+ </style>
+<?php
+} else { ?>
+    <style>
+        .cab-booking-header{
+             display: none;
+         }
+     </style>
+<?php }
+?>
 <header>
     <div class="mobile-fix-option"></div>
     @include('layouts.store/left-sidebar')
