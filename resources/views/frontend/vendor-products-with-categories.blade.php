@@ -164,7 +164,7 @@
                                 <h2 class="category-head mt-0 mb-3">{{$data->category->translation_one->name}} ({{$data->products_count}})</h2>
                                 @if(!empty($data->products))
                                     @forelse($data->products as $prod)
-                                    <div class="row cart-box-outer product_row classes_wrapper no-gutters mb-3" data-p_sku="{{ $prod->sku }}">
+                                    <div class="row cart-box-outer product_row classes_wrapper no-gutters mb-3" data-p_sku="{{ $prod->sku }}" data-slug="{{ $prod->url_slug }}">
                                         <div class="col-2">
                                             <div class="class_img product_image">
                                                 <img src="{{ $prod->product_image }}" alt="{{ $prod->translation_title }}">
@@ -187,6 +187,10 @@
                                                             $product_id = 0;
                                                             $variant_price = 0;
                                                             $variant_quantity = 0;
+                                                            $isAddonExist = 0;
+                                                            if(count($data->addOn) > 0){
+                                                                $isAddonExist = 1;
+                                                            }
                                                         @endphp
 
                                                         @foreach($data->variant as $var)
@@ -205,7 +209,7 @@
                                                         @endforeach
                                                         {{--@if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)--}}
                                                         @if($productVariantInCart > 0)
-                                                            <a class="add-cart-btn add_on_demand" style="display:none;" id="add_button_href{{$cartProductId}}" data-variant_id="{{$productVariantIdInCart}}" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="{{$vendor_id}}" data-product_id="{{$product_id}}" href="javascript:void(0)">Add</a>
+                                                            <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href{{$cartProductId}}" data-variant_id="{{$productVariantIdInCart}}" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="{{$vendor_id}}" data-product_id="{{$product_id}}" href="javascript:void(0)">Add</a>
                                                             <div class="number" id="show_plus_minus{{$cartProductId}}">
                                                                 <span class="minus qty-minus-ondemand" data-parent_div_id="show_plus_minus{{$cartProductId}}" data-id="{{$cartProductId}}" data-base_price="{{$variant_price}}" data-vendor_id="{{$vendor_id}}">
                                                                     <i class="fa fa-minus" aria-hidden="true"></i>
@@ -217,7 +221,7 @@
                                                             </div>
                                                         @else
                                                         
-                                                            <a class="add-cart-btn add_on_demand" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add</a>
+                                                            <a class="add-cart-btn add_vendor_product" id="aadd_button_href{{$data->id}}" data-variant_id="{{$data->variant[0]->id}}" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" data-addon="{{$isAddonExist}}" href="javascript:void(0)">Add</a>
                                                             <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
                                                                 <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
                                                                     <i class="fa fa-minus" aria-hidden="true"></i>
@@ -229,6 +233,8 @@
                                                             </div>
                                                         
                                                         @endif
+                                                        
+                                                        <div class="customizable-text">customizable</div>
                                                         </div>
                                                     </div>
                                                     @if($prod->averageRating > 0)
@@ -246,7 +252,6 @@
                                                     </p>
                                                     <div class="member_no d-block mb-0">
                                                         <span>{!! $prod->translation_description !!}</span>
-                                                        <a href='javascript:void(0)' class='read_more_link font-14' style="display: none">Read more</a>
                                                     </div>
                                                     <div id="product_variant_options_wrapper">
                                                         @if(!empty($prod->variantSet))
@@ -272,7 +277,7 @@
                                                         @endif
                                                     </div>
                                                     <div id="variant_response">
-                                                        <span class="text-danger mb-2 mt-2"></span>
+                                                        <span class="text-danger mb-2 mt-2 font-14"></span>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-4 text-right">
@@ -284,7 +289,7 @@
                                                     @endphp
 
                                                     @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
-                                                        <a class="add-cart-btn add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add</a>
+                                                        <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add</a>
                                                         <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
                                                             <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
                                                                 <i class="fa fa-minus" aria-hidden="true"></i>
@@ -296,7 +301,7 @@
                                                         </div>
                                                     @else
                                                         
-                                                        <a class="add-cart-btn add_on_demand" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add</a>
+                                                        <a class="add-cart-btn add_vendor_product" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add</a>
                                                         <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
                                                             <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
                                                                 <i class="fa fa-minus" aria-hidden="true"></i>
@@ -494,7 +499,7 @@
 <script type="text/template" id="variant_quantity_template">
     <% if(variant.quantity > 0){ %>
         <% if(variant.check_if_in_cart != '') { %>
-            <a class="add-cart-btn add_on_demand" style="display:none;" id="add_button_href<%= variant.check_if_in_cart.id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" href="javascript:void(0)">Add</a>
+            <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href<%= variant.check_if_in_cart.id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" href="javascript:void(0)">Add</a>
             <div class="number" id="show_plus_minus<%= variant.check_if_in_cart.id %>">
                 <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus<%= variant.check_if_in_cart.id %>" data-id="<%= variant.check_if_in_cart.id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>">
                     <i class="fa fa-minus" aria-hidden="true"></i>
@@ -505,7 +510,7 @@
                 </span>
             </div>
         <% }else{ %>
-            <a class="add-cart-btn add_on_demand" id="aadd_button_href<%= variant.product_id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.product.vendor_id %>" data-product_id="<%= variant.product_id %>" href="javascript:void(0)">Add</a>
+            <a class="add-cart-btn add_vendor_product" id="aadd_button_href<%= variant.product_id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.product.vendor_id %>" data-product_id="<%= variant.product_id %>" data-addon="<% variant.isAddonExist %>" href="javascript:void(0)">Add</a>
             <div class="number" style="display:none;" id="ashow_plus_minus<%= variant.product_id %>">
                 <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus<%= variant.product_id %>" readonly data-id="<%= variant.product_id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
                     <i class="fa fa-minus" aria-hidden="true"></i>
@@ -518,6 +523,58 @@
         <% } %>
     <% }else{ %>
         <span class="text-danger">Out of stock</span>
+    <% } %>
+</script>
+<script type="text/template" id="addon_template">
+    <% if(addOnData != ''){ %>
+        <% if(addOnData.product_image){ %>
+            <div class="d-flex" style="max-height:200px">
+                <img class="w-100" src="<%= addOnData.product_image %>" alt=""  style="object-fit:cover">
+            </div>
+        <% } %>
+        <div class="modal-header border-bottom">
+            <div class="d-flex flex-column">
+                <h5 class="modal-title" id="product_addonLabel"><%= addOnData.translation_title %></h5>
+                <% if(addOnData.averageRating > 0){ %>
+                <div class="rating-text-box justify-content-start" style="width: max-content;">
+                    <span><%= addOnData.averageRating %></span>
+                    <i class="fa fa-star" aria-hidden="true"></i>
+                </div>
+                <% } %>
+                <span><small><%= addOnData.translation_description %></small></span>
+            </div>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="border-product">
+                <div id="addon-table">
+                    <% _.each(addOnData.add_on, function(addon, key1){ %>
+                        <div class="addon-product mb-3">
+                            <h4 addon_id="<%= addon.addon_id %>" class="header-title productAddonSet mb-2"><%= addon.title %></h4>
+                            <div class="addonSetMinMax"><small></small></div>
+                            <div class="productAddonSetOptions" data-min="<%= addon.min_select %>" data-max="<%= addon.max_select %>" data-addonset-title="<%= addon.title %>">
+                                <% _.each(addon.setoptions, function(option, key2){ %>
+                                    <div class="checkbox-success d-flex mb-1">
+                                        <label class="pr-2 mb-0 flex-fill font-14" for="inlineCheckbox_<%= key1 %>_<%= key2 %>">
+                                            <%= option.title %>
+                                        </label>
+                                        <div>
+                                            <span class="addon_price mr-1 font-14">$<%= option.price %></span>
+                                            <input type="checkbox" id="inlineCheckbox_<%= key1 %>_<%= key2 %>" class="productAddonOption" name="addonData[<%= key1 %>][]" addonId="<%= addon.addon_id %>" addonOptId="<%= option.id %>">
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer flex-nowrap justify-content-center align-items-center">
+            
+        </div>
     <% } %>
 </script>
 <div class="modal fade remove-item-modal" id="remove_item_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="remove_itemLabel" aria-hidden="true">
@@ -541,11 +598,21 @@
         </div>
     </div>
 </div>
+<div class="modal fade product-addon-modal" id="product_addon_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="product_addonLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            
+        </div>
+    </div>
+</div>
 @endsection
 @section('script')
 <script src="{{asset('front-assets/js/rangeSlider.min.js')}}"></script>
 <script src="{{asset('front-assets/js/my-sliders.js')}}"></script>
 <script>
+
+    var get_product_addon_url = "{{ route('vendorProductAddons') }}"
+
     jQuery(window).scroll(function() {    
     var scroll = jQuery(window).scrollTop();
    
@@ -556,24 +623,37 @@
    }
    });
 
-   $('.price_head .member_no span').each(function() {
-		var desc = $(this).text();
-        if (desc.length > 80) {
-            $(this).addClass('text-ellipsis');
-            $(this).next().show();
-        }else{
-            $(this).removeClass('text-ellipsis');
-            $(this).next().hide();
-        }
-   });
+    var showChar = 140;
+	var ellipsestext = "...";
+	var moretext = "Read more";
+	var lesstext = "Read less";
+	$('.price_head .member_no span').each(function() {
+		var content = $(this).html();
+		if(content.length > showChar) {
 
-    $(document).delegate(".read_more_link", "click", function(){
-        $(this).prev().toggleClass('text-ellipsis');
-    })
+			var firstContent = content.substr(0, showChar);
+			var lastContent = content.substr(showChar, content.length - showChar);
 
-    $("#side_menu_toggle").click(function(){
-        $(".manu-bars").toggleClass("menu-btn");
-    });
+			var html = firstContent + '<span class="moreellipses">' + ellipsestext+ '&nbsp;</span><span class="morecontent"><span>' + lastContent + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+
+			$(this).html(html);
+		}
+
+	});
+
+	$(".morelink").click(function(){
+		if($(this).hasClass("less")) {
+			$(this).removeClass("less");
+			$(this).html(moretext);
+		} else {
+			$(this).addClass("less");
+			$(this).html(lesstext);
+		}
+		$(this).parent().prev().toggle();
+		$(this).prev().toggle();
+		return false;
+	});
+
 </script>
 <script>
     

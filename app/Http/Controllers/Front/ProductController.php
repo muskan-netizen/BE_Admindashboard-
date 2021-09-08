@@ -288,7 +288,7 @@ class ProductController extends FrontController{
         ->where('id', $product->id)->first();
 
         if($pv_ids){
-            $variantData = ProductVariant::with('product.media.image', 'media.pimage.image', 'checkIfInCart')->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
+            $variantData = ProductVariant::with('product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart')->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
                 ->whereIn('id', $pv_ids)->get();
             if ($variantData) {
                 foreach($variantData as $variant){
@@ -322,6 +322,11 @@ class ProductController extends FrontController{
                     if(count($variantData['check_if_in_cart']) > 0){
                         $variantData['check_if_in_cart'] = $variantData['check_if_in_cart'][0];
                     }
+                    $variantData['isAddonExist'] = 0;
+                    if(count($variantData['product']['addOn']) > 0){
+                        $variantData['isAddonExist'] = 1;
+                    }
+
                     $variantData['variant_multiplier'] = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     // dd($variantData);
                 }else{

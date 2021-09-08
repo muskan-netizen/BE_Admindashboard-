@@ -97,12 +97,12 @@ class HomeController extends BaseController{
             $user_geo[] = $longitude;
             if($request->has('type') ){
                 if($request->type == ''){
-                    $vendorData = Vendor::select('id', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot')->withAvg('product', 'averageRating');
+                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot')->withAvg('product', 'averageRating');
                 }else{
-                    $vendorData = Vendor::select('id', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot')->withAvg('product', 'averageRating')->where($request->type, 1);
+                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot')->withAvg('product', 'averageRating')->where($request->type, 1);
                 }
             }else{
-                $vendorData = Vendor::select('id', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot')->withAvg('product', 'averageRating');
+                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot')->withAvg('product', 'averageRating');
             }
             if($preferences->is_hyperlocal == 1){
                 if( (empty($latitude)) && (empty($longitude)) ){

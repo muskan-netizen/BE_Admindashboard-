@@ -19,6 +19,16 @@
     opacity: 0;
   }
 }
+.top-header,.main-menu.d-block{
+    display: none !important;
+}
+
+.cab-booking-header img.img-fluid {
+    height: 50px;
+}
+.cab-booking-header{
+    display: block !important;
+}
 </style>
 <header>
     <div class="mobile-fix-option"></div>

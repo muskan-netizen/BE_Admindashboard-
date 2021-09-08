@@ -72,49 +72,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     <div class="mobile-menu main-menu d-block d-sm-none">
         <div class="menu-right">
-            <ul class="header-dropdown icon-nav">                    
-                <li class="mobile-wishlist d-inline d-sm-none">
-                    <a href="{{route('user.wishlists')}}">
-                        <i class="fa fa-heart" aria-hidden="true"></i>
-                    </a>
-                </li>
-                <li class="onhover-dropdown mobile-account  d-inline d-sm-none"> <i class="fa fa-user" aria-hidden="true"></i>
-                    {{__('My Account')}}
-                    <ul class="onhover-show-div">
-                        @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
-                            <li>
-                                <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
-                            </li>
-                        @endif
-                        <li>
-                            <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
-                        </li>
-                        <li>
-                            <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="onhover-div mobile-search">
-                    <a href="javascript:void(0);" id="mobile_search_box_btn"><i class="ti-search"></i></a>
-                    <div id="search-overlay" class="search-overlay">
-                        <div> <span class="closebtn" onclick="closeSearch()" title="Close Overlay">×</span>
-                            <div class="overlay-content">
-                                <div class="container">
-                                    <div class="row">
-                                        <div class="col-xl-12">
-                                            <form>
-                                                <div class="form-group">
-                                                    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Search a Product">
-                                                </div>
-                                                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
+            <ul class="header-dropdown icon-nav">
                 <li class="onhover-div mobile-setting">
                     <div><i class="ti-settings"></i></div>
                     <div class="show-div setting">
@@ -139,6 +97,55 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         @endif
                     </div>
                 </li>
+                
+                <li class="onhover-dropdown mobile-account  d-inline d-sm-none"> <i class="fa fa-user" aria-hidden="true"></i>
+                    {{__('My Account')}}
+                    <ul class="onhover-show-div">
+                        @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
+                            <li>
+                                <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                            </li>
+                        @endif
+                        <li>
+                            <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
+                        </li>
+                        <li>
+                            <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
+                        </li>
+                    </ul>
+                </li>
+                
+                @if($client_preference_detail->show_wishlist == 1)
+                <li class="mobile-wishlist d-inline d-sm-none">
+                    <a href="{{route('user.wishlists')}}">
+                        <i class="fa fa-heart" aria-hidden="true"></i>
+                    </a>
+                </li>
+                @endif
+
+                <li class="onhover-div mobile-search">
+                    <a href="javascript:void(0);" id="mobile_search_box_btn"><i class="ti-search"></i></a>
+                    <div id="search-overlay" class="search-overlay">
+                        <div> <span class="closebtn" onclick="closeSearch()" title="Close Overlay">×</span>
+                            <div class="overlay-content">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-xl-12">
+                                            <form>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Search a Product">
+                                                </div>
+                                                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                
+                @if($client_preference_detail->cart_enable == 1)
                 <li class="onhover-div mobile-cart">
                     <a href="{{route('showCart')}}" style="position: relative">
                         <i class="ti-shopping-cart"></i>
@@ -148,6 +155,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <ul class="show-div shopping-cart">
                     </ul>
                 </li>
+                @endif
             </ul>
         </div>
     </div>

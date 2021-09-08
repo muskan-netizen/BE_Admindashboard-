@@ -12,7 +12,9 @@ class VendorProductTempleteSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('vendor_templetes')->delete();
+		DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('vendor_templetes')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         $vendor_templete_array = array(
             ['id' => 1,
                 'title' => 'Only Product',

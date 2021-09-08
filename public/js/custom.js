@@ -1518,6 +1518,56 @@ $(document).ready(function () {
 
     });
 
+    $(document).on("click", ".add_vendor_product", function () {
+        let that = $(this);
+        let check_addon = $(that).attr('data-addon');
+        if(check_addon > 0){
+            let slug = $(that).parents('.product_row').attr('data-slug');
+            getProductAddons(slug);
+            return false;
+        }
+     
+       // end addons data
+
+       var ajaxCall = 'ToCancelPrevReq';
+       var vendor_id = that.data("vendor_id");
+       var product_id = that.data("product_id");
+       var add_to_cart_url = that.data("add_to_cart_url");
+       var variant_id = that.data("variant_id");
+       var show_plus_minus = "#show_plus_minus" + product_id;
+
+       
+       if (!$.hasAjaxRunning()) {
+           addToCartOnDemand(ajaxCall, vendor_id, product_id, addonids, addonoptids, add_to_cart_url, variant_id, show_plus_minus, that);
+
+       }
+
+   });
+
+    window.getProductAddons = function getProductAddons(slug){
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: get_product_addon_url.replace(":slug", slug),
+            data: {"slug": slug},
+            success: function (response) {
+                if (response.status == 'Success') {
+                    $("#product_addon_modal .modal-content").html('');
+                    let addon_template = _.template($('#addon_template').html());
+                    $("#product_addon_modal .modal-content").append(addon_template({addOnData: response.data}));
+                    $("#product_addon_modal").modal('show');
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (error) {
+                var response = $.parseJSON(error.responseText);
+                let error_messages = response.message;
+                alert(error_messages);
+            },
+        });
+    }
+
 
    
     $(document).on("click", ".productAddonOption", function () {
