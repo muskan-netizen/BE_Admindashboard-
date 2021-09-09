@@ -349,10 +349,10 @@
                                                         <h6 class="d-flex align-items-center justify-content-between">
                                                             <span class="ellips"><%= vendor_product.quantity %>x <%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></span>
                                                             <span>
-                                                                {{Session::get('currencySymbol')}}<%= vendor_product.pvariant.price %>
-                                                                <a  class="action-icon ml-1 remove_product_via_cart" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
+                                                                <a class="action-icon mr-2 remove_product_via_cart text-danger" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                                 </a>
+                                                                {{Session::get('currencySymbol')}}<%= vendor_product.pvariant.price %>
                                                             </span>
                                                         </h6>
                                                     </div>
@@ -378,27 +378,28 @@
                                                     </div>
                                                     <% }); %>
                                                 <% } %>
+                                                <% if(product.delivery_fee_charges > 0) { %>
+                                                    <div class="row justify-content-between">
+                                                        <div class="col-md-6 col-sm-6 text-left">
+                                                            <h6 class="p-0 m-0 font-14"><b>{{__('Delivery fee')}}</b></h6>
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-6 text-right">
+                                                            <div class="extra-items-price font-14">{{Session::get('currencySymbol')}}<%= product.delivery_fee_charges %></div>
+                                                        </div>
+                                                    </div>
+                                                <% } %>
                                                 <hr class="my-2">
                                                     
 
                                             <% }); %>
                                         <% }); %>
-                                        
-                                        <% 
-                                        var gross_amount = cart_details.gross_amount;
-                                        var total_payable_amount = cart_details.total_payable_amount;
-                                        if(cart_details.total_delivery_fee > 0){
-                                            gross_amount = (gross_amount - cart_details.total_delivery_fee).toFixed(2);
-                                            total_payable_amount = (total_payable_amount - cart_details.total_delivery_fee).toFixed(2);
-                                        }
-                                        %>
+
                                         <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('PRICE DETAILS')}} </h5>
                                         <li class="p-0">
                                             <div class='media-body'>                                                                
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Price')}}</span>
-                                                    <span>{{Session::get('currencySymbol')}}<%= gross_amount %>
-                                                    </span>
+                                                    <span>{{Session::get('currencySymbol')}}<%= cart_details.gross_amount %></span>
                                                 </h6>
                                             </div>
                                         </li>
@@ -436,7 +437,7 @@
                                         </ul>
                                         <div class="cart-sub-total d-flex align-items-center justify-content-between">
                                             <span>{{__('Total')}}</span>
-                                            <span>{{Session::get('currencySymbol')}}<%= total_payable_amount %></span>
+                                            <span>{{Session::get('currencySymbol')}}<%= cart_details.total_payable_amount %></span>
                                         </div>
                                         <a class="checkout-btn text-center d-block" href="{{route('showCart')}}">Checkout</a>
                                     </script>
