@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use DB;
 use Validation;
 use Carbon\Carbon;
-use Client;
+use App\Models\Client;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
@@ -53,12 +53,15 @@ class VendorController extends BaseController{
             $paginate = $request->has('limit') ? $request->limit : 12;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $langId = Auth::user()->language;
-            $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 
+            $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'slug',
                         'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery')
                         ->where('id', $vid)->first();
             if(!$vendor){
                 return response()->json(['error' => 'No record found.'], 200);
             }
+            $code = $request->header('code');
+            $client = Client::where('code',$code)->first();
+            $vendor->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/vendor/".$vendor->slug;
             $variantSets =  ProductVariantSet::with(['options' => function($zx) use($langId){
                                 $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
                                 $zx->select('variant_options.*', 'vt.title');
@@ -117,6 +120,11 @@ class VendorController extends BaseController{
             $paginate = $request->has('limit') ? $request->limit : 12;
             // $preferences = Session::get('preferences');
             $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id')->where('slug', $slug1)->where('status', 1)->firstOrFail();
+            if(!empty($vendor)){
+                $code = $request->header('code');
+                $client = Client::where('code',$code)->first();
+                $vendor->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/vendor/".$vendor->slug;
+            }
             $user = Auth::user();
             $userid = $user->id;
             $langId = $user->language;

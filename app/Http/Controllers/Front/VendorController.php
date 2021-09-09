@@ -325,13 +325,15 @@ class VendorController extends FrontController
     public function vendorProductAddons(Request $request){
         $langId = Session::get('customerLanguage');
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
+        $variant_id = ($request->has('variant')) ? $request->variant : 0;
         $AddonData = Product::with(['media.image', 'translation' => function($q) use($langId){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                 },
-                'variant' => function($q) use($langId){
+                'variant' => function($q) use($langId, $variant_id){
                     $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
+                    $q->where('id', $variant_id);
                     // $q->groupBy('product_id');
-                },'variant.checkIfInCart',
+                },'variant.media.pimage.image','variant.checkIfInCart',
                 'addOn' => function ($q1) use ($langId) {
                     $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                     $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
@@ -345,11 +347,19 @@ class VendorController extends FrontController
                 }
             ])->where('is_live', 1)->where('url_slug', $request->slug)->first();
         if(!empty($AddonData)){
-            $AddonData->product_image = (!empty($AddonData->media->first())) ? $AddonData->media->first()->image->path['image_fit'] . '800/800' . $AddonData->media->first()->image->path['image_path'] : '';
-            $AddonData->translation_title = (!empty($AddonData->translation->first())) ? $AddonData->translation->first()->title : $AddonData->title;
-            $AddonData->translation_description = (!empty($AddonData->translation->first())) ? strip_tags($AddonData->translation->first()->body_html) : '';
+            if($AddonData->variant->first()->media->isNotEmpty()){
+                $image_fit = $AddonData->variant->first()->media->first()->pimage->image->path['image_fit'];
+                $image_path = $AddonData->variant->first()->media->first()->pimage->image->path['image_path'];
+            }else{
+                $image_fit = ($AddonData->media->isNotEmpty()) ? $AddonData->media->first()->image->path['image_fit'] : '';
+                $image_path = ($AddonData->media->isNotEmpty()) ? $AddonData->media->first()->image->path['image_path'] : '';
+            }
+            $AddonData->product_image = $image_fit . '800/800' . $image_path;
+            $AddonData->translation_title = ($AddonData->translation->isNotEmpty()) ? $AddonData->translation->first()->title : $AddonData->title;
+            $AddonData->translation_description = ($AddonData->translation->isNotEmpty()) ? strip_tags($AddonData->translation->first()->body_html) : '';
             $AddonData->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
-            $AddonData->variant_price = (!empty($AddonData->variant->first())) ? $AddonData->variant->first()->price : 0;
+            $variant_price = ($AddonData->variant->isNotEmpty()) ? $AddonData->variant->first()->price : 0;
+            $AddonData->variant_price = number_format(($variant_price * $AddonData->variant_multiplier), 2, '.', '');
         }
             // dd($AddonData);
         return response()->json(array('status' => 'Success', 'data' => $AddonData));

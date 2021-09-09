@@ -4953,7 +4953,7 @@ span.icon-ic_currency {
     padding: 20px 0;
 }
 
-.add-cart-btn {
+.add-cart-btn:not(.btn-solid) {
     width: 80px;
     height: 30px;
     line-height: 30px;
@@ -4971,7 +4971,7 @@ span.icon-ic_currency {
     position: relative;
 }
 
-.add-cart-btn:after {
+.add-cart-btn:not(.btn-solid):after {
     font: normal normal normal 12px/1 FontAwesome;
     content: "\f067";
     position: relative;

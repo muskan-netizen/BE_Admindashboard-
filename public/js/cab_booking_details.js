@@ -5,6 +5,8 @@ var maplong = 76.7179;
 var map = '';
 var product_image = '';
 var marker='';
+var order_status = '';
+var order_status_new = '';
 themeType = [
     {
         featureType: "poi",
@@ -67,6 +69,8 @@ function getOrderDriverDetails(dispatch_traking_url,order_id,product_image) {
 
             var alltask = response.data.tasks;
             var agent_location = response.data.agent_location;
+            var order_status_new = response.data.order_details.dispatcher_status;
+               
             showroute(alltask,agent_location,map,product_image);
             if(response.data.agent_location != null){
                 $('#searching_main_div').remove();
@@ -75,6 +79,23 @@ function getOrderDriverDetails(dispatch_traking_url,order_id,product_image) {
                 $('#driver_image').attr('src', response.data.agent_image).show();
                 $('#driver_phone_number').html(response.data.order.phone_number).show();
                 $("#dispatcher_status_show").html(response.data.order_details.dispatcher_status);
+                if(order_status != order_status_new){
+                    const options = {
+                        style: {
+                            main: {
+                                'background': 'pink',
+                                'color': 'black',
+                            },
+                        },
+                        settings: {
+                            duration: 2000,
+                        }
+                    };
+                    order_status = order_status_new;
+                    iqwerty.toast.toast(response.data.order_details.dispatcher_status);
+                }
+                
+
             }
         }
     });

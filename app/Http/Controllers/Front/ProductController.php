@@ -323,7 +323,7 @@ class ProductController extends FrontController{
                         $variantData['check_if_in_cart'] = $variantData['check_if_in_cart'][0];
                     }
                     $variantData['isAddonExist'] = 0;
-                    if(count($variantData['product']['addOn']) > 0){
+                    if(count($variantData['product']['add_on']) > 0){
                         $variantData['isAddonExist'] = 1;
                     }
 
