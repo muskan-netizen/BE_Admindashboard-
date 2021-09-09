@@ -240,7 +240,7 @@ class VendorController extends FrontController
             ->whereHas('category', function($query) {
                    $query->whereIn('type_id', [1]);
             })->where('status', 1)->get();
-            foreach($vendor_categories as $category) {
+            foreach($vendor_categories as $ckey => $category) {
                 $products = Product::with(['media.image',
                         'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
@@ -277,15 +277,20 @@ class VendorController extends FrontController
                             ->where('product_variant_sets.product_id', $p_id);
                         }])->where('id', $p_id)->first();
                         $value->variantSet = $variantData->variantSet;
-                        $value->product_image = (!empty($value->media->first())) ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : '';
-                        $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
-                        $value->translation_description = (!empty($value->translation->first())) ? strip_tags($value->translation->first()->body_html) : '';
+                        $value->product_image = ($value->media->isNotEmpty()) ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : '';
+                        $value->translation_title = ($value->translation->isNotEmpty()) ? $value->translation->first()->title : $value->sku;
+                        $value->translation_description = ($value->translation->isNotEmpty()) ? strip_tags($value->translation->first()->body_html) : '';
                         $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
-                        $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
+                        $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
+                        $value->variant_quantity = ($value->variant->isNotEmpty()) ? $value->variant->first()->quantity : 0;
                     }
                 }
-                $category->products = $products;
-                $category->products_count = $products->count();
+                if($products->count() > 0){
+                    $category->products = $products;
+                    $category->products_count = $products->count();
+                }else{
+                    unset($vendor_categories[$ckey]);
+                }
             }
             //  dd($vendor_categories->toArray());
             $listData = $vendor_categories;
