@@ -895,7 +895,7 @@ $(document).ready(function () {
             distanceService.getDistanceMatrix({
             origins: [$("#pickup_location").val()],
             destinations: [$("#destination_location").val()],
-            travelMode: google.maps.TravelMode.WALKING,
+            travelMode: google.maps.TravelMode.DRIVING,
             unitSystem: google.maps.UnitSystem.METRIC,
             durationInTraffic: true,
             avoidHighways: false,

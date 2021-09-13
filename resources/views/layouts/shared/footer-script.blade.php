@@ -85,6 +85,120 @@ if (Session::has('toaster')) {
         $(element).waitMe("hide");
     }
 </script>
+@if(!str_contains(url()->current(), '/godpanel'))
+@if((!empty(Auth::user())))
+<script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('input[name="_token"]').val()
+        }
+    });
+    var ip_address = window.location.host;
+    var host_arr = ip_address.split(".");
+    let socket = io(constants.socket_domain, {
+        query: {
+            "user_id": host_arr[0] + "_" + "{{ Auth::user()->id }}"
+        }
+    });
+    socket.on('createOrderByCustomer_'+host_arr[0] + "_" + "{{ (!empty(Auth::user()))?Auth::user()->id:0 }}", (message) => {
+        Audio.prototype.play = (function(play) {
+            return function () {
+            var audio = this,
+                args = arguments,
+                promise = play.apply(audio, args);
+            if (promise !== undefined) {
+                promise.catch(_ => {
+                // Autoplay was prevented. This is optional, but add a button to start playing.
+                var el = document.createElement("button");
+                el.innerHTML = "Play";
+                el.addEventListener("click", function(){play.apply(audio, args);});
+                this.parentNode.insertBefore(el, this.nextSibling)
+                });
+            }
+            };
+        })(Audio.prototype.play);
+        var x = document.getElementById("orderAudio"); 
+        x.play();
+        $.ajax({
+            url: "{{ route('orders.filter') }}",
+            type: "POST",
+            dataType: "JSON",
+            data: {
+                filter_order_status: "pending_orders",
+                search_keyword: message.order_number
+            },
+            success: function(response) {
+                if (response.status == 'Success') {
+                    if (response.data.orders.data.length != 0) {
+                        let latest_order_template = _.template($('#latest_order_template').html());
+                        $("#received_new_orders").find(".modal-body").append(latest_order_template({
+                            orders: response.data.orders.data
+                        }));
+                    }
+                    $("#received_new_orders").modal('show');
+                }
+            },
+            error: function(data) {
 
+            },
+        });
+    });
+</script>
+@endif
+<script>
+$(document).on("click", ".update_order_status", function() {
+    if (confirm("Are you Sure?")) {
+        let that = $(this);
+        var count = that.data("count");
+        var full_div = that.data("full_div");
+        var single_div = that.data("single_div");
+        var status_option_id = that.data("status_option_id");
+        var status_option_id_next = status_option_id + 1;
+        var order_vendor_id = that.data("order_vendor_id");
+        var order_id = that.data("order_id");
+        var vendor_id = that.data("vendor_id");
+        var count = that.data("count");
 
+        $.ajax({
+            url: "{{ route('order.changeStatus') }}",
+            type: "POST",
+            data: {
+                order_id: order_id,
+                vendor_id: vendor_id,
+                "_token": "{{ csrf_token() }}",
+                status_option_id: status_option_id,
+                order_vendor_id: order_vendor_id,
+            },
+            success: function(response) {
+
+                if (status_option_id == 4 || status_option_id == 5) {
+                    if (status_option_id == 4)
+                        var next_status = 'Out For Delivery';
+                    else
+                        var next_status = 'Delivered';
+                    that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
+                    return false;
+                } else {
+                    $(that).parents(single_div).slideUp(1000, function() {
+                        $(this).remove();
+                    });
+                    setTimeout(function(){
+                        if($("#received_new_orders").find(".update_order_status").length == 0){
+                            $("#received_new_orders").modal('hide');
+                        }
+                    }, 2000);
+                }
+
+                if (status_option_id == 2)
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                // location.reload();
+                if (typeof init === 'function') {
+                    init("pending_orders", "{{ route('orders.filter') }}", '',false);
+                }
+            },
+        });
+    }
+});
+</script>
+@endif
 @yield('script-bottom')
