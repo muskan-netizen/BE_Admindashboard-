@@ -72,6 +72,7 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
+        $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
             $cart_detail = [];
@@ -82,6 +83,7 @@ class CartController extends FrontController
             $new_session_token = session()->get('_token');
             $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
             $user_id = $user ? $user->id : '';
+            $variant_id = $request->variant_id;
             if ($user) {
                 $cart_detail['user_id'] = $user_id;
                 $cart_detail['created_by'] = $user_id;
@@ -101,7 +103,8 @@ class CartController extends FrontController
                 $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
             }
             $productDetail = Product::with([
-                'variant' => function ($sel) {
+                'variant' => function ($sel) use($variant_id) {
+                    $sel->where('id', $variant_id);
                     $sel->groupBy('product_id');
                 }
             ])->find($request->product_id);
@@ -170,19 +173,25 @@ class CartController extends FrontController
                 'luxury_option_id' => ($luxury_option) ? $luxury_option->id : 0
             ];
 
+            $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
+
             if ($luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
                 if ($checkCartLuxuryOption) {
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
                 if ($luxury_option->id == 2 || $luxury_option->id == 3) {
-                    $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
                     if ($checkVendorId) {
                         CartProduct::where('cart_id', $cart_detail->id)->delete();
                     }else{
                         $checkVendorTableAdded = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', $request->vendor_id)->whereNotNull('vendor_dinein_table_id')->first();
                         $cart_product_detail['vendor_dinein_table_id'] = ($checkVendorTableAdded) ? $checkVendorTableAdded->vendor_dinein_table_id : NULL;
                     }
+                }
+            }
+            if ( (isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1) ) {
+                if ($checkVendorId) {
+                    CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
             }
             
@@ -776,8 +785,10 @@ class CartController extends FrontController
     public function updateQuantity($domain = '', Request $request)
     {
         $cartProduct = CartProduct::find($request->cartproduct_id);
+        $variant_id = $cartProduct->variant_id;
         $productDetail = Product::with([
-            'variant' => function ($sel) {
+            'variant' => function ($sel) use($variant_id) {
+                $sel->where('id', $variant_id);
                 $sel->groupBy('product_id');
             }
         ])->find($cartProduct->product_id);

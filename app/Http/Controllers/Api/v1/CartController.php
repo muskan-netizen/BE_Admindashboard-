@@ -206,6 +206,7 @@ class CartController extends BaseController{
             }
             $cartData = $this->getCart($cart_detail, $user->language, $user->currency, $request->type);
             if($cartData && !empty($cartData)){
+                $cartData->cart_product_id = $cartProduct->id;
                 return $this->successResponse($cartData);
             }else{
                 return $this->successResponse($cartData);
