@@ -2726,7 +2726,7 @@ body .rating-form .btn-reset {
     width: 100%;
     display: inline-block;
     position: relative;
-    height: 170px;
+    height: 100px;
     border: 1px dashed #ddd;
 }
 
@@ -2735,7 +2735,7 @@ body .rating-form .btn-reset {
 }
 
 .rating_files .update_pic {
-    height: 170px;
+    height: 100px;
     width: 100%;
     object-fit: cover;
     overflow: hidden;
@@ -3230,6 +3230,12 @@ form input.form-control[placeholder="Address"] {
 
 img.h-45 {
     height: 42px;
+}
+
+.update_pic + .fa.fa-trash.local-img-del {
+    position: absolute;
+    top: 5px;
+    right: 16px;
 }
 
 
@@ -6470,9 +6476,9 @@ body[dir="rtl"] .inner_spacing h3 {
         max-width: 800px;
     }
 
-    .product-rating .modal-dialog {
+    /* .product-rating .modal-dialog {
         max-width: 1000px;
-    }
+    } */
 }
 
 @media(max-width:767px) {

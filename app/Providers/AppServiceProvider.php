@@ -60,7 +60,7 @@ class AppServiceProvider extends ServiceProvider
             if($client_preference_detail->takeaway_check == 1){$count++;}
             if($client_preference_detail->delivery_check == 1){$count++;}
         }
-        $stripe_publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+        $stripe_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
         view()->share('favicon', $favicon_url);
         view()->share('favicon', $favicon_url);
         view()->share('client_head', $client_head);

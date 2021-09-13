@@ -181,8 +181,8 @@
             $("#input-file").val('');
             for(var i = 0; i < data.data.length; i++) {
                 $("#remove_files").append("<input type='hidden' name='add_files[]' id='"+ data.data[i]['ids'] +"' = value='"+ data.data[i]['name'] +"'>");
-                $("#thumb-output").append("<img class=\"col-6 col-md-3 col-lg-2 update_pic\" src=\"" + data.data[i]['img_path'] + "\" />" +
-                "<i class='fa fa-trash local-img-del' aria-hidden='true' data-id='"+ data.data[i]['ids'] +"'></i>");
+                $("#thumb-output").append("<div class='col-6 col-md-3 col-lg-2'> <img class=\"update_pic\" src=\"" + data.data[i]['img_path'] + "\" />" +
+                "<i class='fa fa-trash local-img-del' aria-hidden='true' data-id='"+ data.data[i]['ids'] +"'></i></div>");
             }
     
             $("#return_form_button").html('Request').prop('disabled', false);

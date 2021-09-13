@@ -75,7 +75,7 @@ class HomeController extends BaseController{
             if($stripe_creds){
                 $creds_arr = json_decode($stripe_creds->credentials);
             }
-            $homeData['profile']->preferences->stripe_publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+            $homeData['profile']->preferences->stripe_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

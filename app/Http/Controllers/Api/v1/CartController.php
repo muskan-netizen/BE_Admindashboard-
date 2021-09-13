@@ -71,18 +71,18 @@ class CartController extends BaseController{
             $unique_identifier = '';
             if (!$user_id) {
                 if(empty($user->system_user)){
-                    return $this->errorResponse('System id should not be empty.', 404);
+                    return $this->errorResponse(__('System id should not be empty.'), 404);
                 }
                 $unique_identifier = $user->system_user;
             }
             
             $product = Product::where('sku', $request->sku)->first();
             if(!$product){
-                return $this->errorResponse('Invalid product.', 404);
+                return $this->errorResponse(__('Invalid product.'), 404);
             }
             $productVariant = ProductVariant::where('product_id',$product->id)->where('id',$request->product_variant_id)->first();
             if(!$productVariant){
-                return $this->errorResponse('Invalid product variant.', 404);
+                return $this->errorResponse(__('Invalid product variant.'), 404);
             }
             if($product->sell_when_out_of_stock == 0 && $productVariant->quantity < $request->quantity){
                 return $this->errorResponse('You Can not order more than '.$productVariant->quantity.' quantity.', 404);
@@ -104,7 +104,7 @@ class CartController extends BaseController{
                             ->where('addon_sets.status', '!=', '2')
                             ->where('addon_sets.id', $key)->first();
                 if(!$addon){
-                    return $this->errorResponse('Invalid addon or delete by admin. Try again with remove some.', 404);
+                    return $this->errorResponse(__('Invalid addon or delete by admin. Try again with remove some.'), 404);
                 }
                 if($addon->min_select > count($value)){
                     return response()->json([
@@ -139,12 +139,12 @@ class CartController extends BaseController{
             if ($luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
                 if ($checkCartLuxuryOption) {
-                    return $this->errorResponse(['error' => 'You are adding products in different mods', 'alert' => '1'], 404);
+                    return $this->errorResponse(['error' => __('You are adding products in different mods'), 'alert' => '1'], 404);
                 }
                 if ($luxury_option->id == 2 || $luxury_option->id == 3) {
                     $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $product->vendor_id)->first();
                     if ($checkVendorId) {
-                        return $this->errorResponse(['error' => 'Your cart has existing items from another vendor', 'alert' => '1'], 404);
+                        return $this->errorResponse(['error' => __('Your cart has existing items from another vendor'), 'alert' => '1'], 404);
                     }
                 }
             }
@@ -222,15 +222,15 @@ class CartController extends BaseController{
     public function updateQuantity(Request $request){
         $user = Auth::user();
         if ($request->quantity < 1) {
-            return response()->json(['error' => 'Quantity should not be less than 1'], 422);
+            return response()->json(['error' => __('Quantity should not be less than 1')], 422);
         }
         $cart = Cart::where('user_id', $user->id)->where('id', $request->cart_id)->first();
         if(!$cart){
-            return response()->json(['error' => 'User cart not exist.'], 404);
+            return response()->json(['error' => __('User cart not exist.')], 404);
         }
         $cartProduct = CartProduct::where('cart_id', $cart->id)->where('id', $request->cart_product_id)->first();
         if(!$cartProduct){
-            return response()->json(['error' => 'Product not exist in cart.'], 404);
+            return response()->json(['error' => __('Product not exist in cart.')], 404);
         }
         $cartProduct->quantity = $request->quantity;
         $cartProduct->save();
@@ -246,7 +246,7 @@ class CartController extends BaseController{
     public function getItemCount(Request $request){
         $cart = Cart::where('user_id', Auth::user()->id)->where('id', $request->cart_id)->first();
         if(!$cart){
-            return response()->json(['error' => 'User cart not exist.'], 404);
+            return response()->json(['error' => __('User cart not exist.')], 404);
         }
         $totalProducts = CartProduct::where('cart_id', $cart->id)->sum('quantity');
         $cart->item_count = $totalProducts;
@@ -271,18 +271,18 @@ class CartController extends BaseController{
         }
         $cart = $cart->first();
         if(!$cart){
-            return response()->json(['error' => 'Cart not exist'], 404);
+            return response()->json(['error' => __('Cart not exist')], 404);
         }
         $cartProduct = CartProduct::where('cart_id', $cart->id)->where('id', $request->cart_product_id)->first();
         if(!$cartProduct){
-            return response()->json(['error' => 'Product not exist in cart.'], 404);
+            return response()->json(['error' => __('Product not exist in cart.')], 404);
         }
         $cartProduct->delete();
         $totalProducts = CartProduct::where('cart_id', $cart->id)->sum('quantity');
         if(!$totalProducts || $totalProducts < 1){
             $cart->delete();
             return response()->json([
-                "message" => "Product removed from cart successfully.",
+                "message" => __("Product removed from cart successfully."),
                 'data' => array(),
             ]);
         }
@@ -290,7 +290,7 @@ class CartController extends BaseController{
         $cart->save();
         $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type);
         return response()->json([
-            "message" => "Product removed from cart successfully.",
+            "message" => __("Product removed from cart successfully."),
             'data' => $cartData,
         ]);
 
@@ -310,7 +310,7 @@ class CartController extends BaseController{
             $cart = $cart->where('user_id', $user->id);
         }
         $cart->delete();
-        return response()->json(['message' => 'Empty cart successfully.']);
+        return response()->json(['message' => __('Empty cart successfully.')]);
     }
 
     /**         *       Empty cart       *          */
