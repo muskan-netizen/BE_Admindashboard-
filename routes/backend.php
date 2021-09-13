@@ -13,6 +13,7 @@ use App\Http\Controllers\Client\Accounting\VendorController;
 use App\Http\Controllers\Client\Accounting\LoyaltyController;
 use App\Http\Controllers\Client\Accounting\PromoCodeController;
 use App\Http\Controllers\Client\VendorRegistrationDocumentController;
+use App\Http\Controllers\Client\DriverRegistrationDocumentController;
 
 Route::get('email-test', function(){
     $details['email'] = 'pankaj@yopmail.com';
@@ -62,6 +63,7 @@ Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'],
     Route::get('account/tax/filter', [TaxController::class, 'filter'])->name('account.tax.filter');
     Route::get('account/tax/export', [TaxController::class, 'export'])->name('account.tax.export');
     Route::get('account/vendor/filter', [VendorController::class, 'filter'])->name('account.vendor.filter');
+    Route::get('account/vendor/export', [VendorController::class, 'export'])->name('account.vendor.export');
     Route::get('account/order/filter', [OrderController::class, 'filter'])->name('account.order.filter');
     Route::get('account/loyalty/filter', [LoyaltyController::class, 'filter'])->name('account.loyalty.filter');
     Route::get('account/loyalty/export', [LoyaltyController::class, 'export'])->name('account.loyalty.export');
@@ -103,6 +105,11 @@ Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'],
     Route::post('vendorregistrationdocument/create', [VendorRegistrationDocumentController::class, 'store'])->name('vendor.registration.document.create');
     Route::post('vendorregistrationdocument/update', [VendorRegistrationDocumentController::class, 'update'])->name('vendor.registration.document.update');
     Route::post('vendor/registration/document/delete', [VendorRegistrationDocumentController::class, 'destroy'])->name('vendor.registration.document.delete');
+    Route::resource('driverregistrationdocument', 'Client\DriverRegistrationDocumentController');
+    Route::get('driver/registration/document/edit', [DriverRegistrationDocumentController::class, 'show'])->name('driver.registration.document.edit');
+   Route::post('driverregistrationdocument/create', [DriverRegistrationDocumentController::class, 'store'])->name('driver.registration.document.create');
+   Route::post('driverregistrationdocument/update', [DriverRegistrationDocumentController::class, 'update'])->name('driver.registration.document.update');
+   Route::post('driver/registration/document/delete', [DriverRegistrationDocumentController::class, 'destroy'])->name('driver.registration.document.delete');
     Route::resource('tax', 'Client\TaxCategoryController');
     Route::resource('taxRate', 'Client\TaxRateController');
     Route::resource('addon', 'Client\AddonSetController');

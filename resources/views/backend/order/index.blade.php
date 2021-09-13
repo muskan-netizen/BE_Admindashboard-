@@ -223,17 +223,55 @@
     </div>
 </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script> -->
 
-<script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+<!-- <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script> -->
 
+@endsection
+@section('script')
 <script type="text/javascript">
-    $(document).ready(function() {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('input[name="_token"]').val()
-            }
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('input[name="_token"]').val()
+        }
+    });
+    function init(filter_order_status, url, search_keyword = "", isOnload=false) {
+        $.ajax({
+            url: url,
+            type: "POST",
+            dataType: "JSON",
+            data: {
+                filter_order_status: filter_order_status,
+                search_keyword: search_keyword
+            },
+            success: function(response) {
+                $('#order_list_order').hide();
+                if (response.status == 'Success') {
+                    if (!isOnload) {
+                        $(".tab-pane").html('');
+                    }
+                    if (response.data.orders.data.length != 0) {
+                        let order_page_template = _.template($('#order_page_template').html());
+                        $("#" + filter_order_status).append(order_page_template({
+                            orders: response.data.orders.data,
+                            next_page_url: response.data.orders.next_page_url,
+                            filter_order_status: filter_order_status
+                        }));
+                    } else {
+                        let no_order_template = _.template($('#no_order_template').html());
+                        $("#" + filter_order_status).html(no_order_template({}));
+                    }
+                    $("#active-orders").html("(" + response.data.active_orders + ")");
+                    $("#pending-orders").html("(" + response.data.pending_orders + ")");
+                    $("#history-orders").html("(" + response.data.orders_history + ")");
+                }
+            },
+            error: function(data) {
+
+            },
         });
+    }
+    $(document).ready(function() {
         setTimeout(function() {
             $("#pending_order-tab").trigger('click');
         }, 500);
@@ -253,21 +291,21 @@
             // $(".tab-pane").html('');
             init(rel, url,'',false);
         });
-        $(function() {
-            var url = window.location.href;
-            var arr = url.split("/");
-            var result = arr[2];
-            let ip_address = result;
-            let socket_port = "3100";
-            let socket = io(ip_address + ':' + socket_port);
-            socket.on('sendChatToClient', (message) => {
-                $('#order_list_order').show();
-                var rel = "pending_orders";
-                var url = "{{ route('orders.filter') }}";
-                // $(".tab-pane").html('');
-                init(rel, url, '',false);
-            });
-        });
+        // $(function() {
+        //     var url = window.location.href;
+        //     var arr = url.split("/");
+        //     var result = arr[2];
+        //     let ip_address = result;
+        //     let socket_port = "3100";
+        //     let socket = io(ip_address + ':' + socket_port);
+        //     socket.on('sendChatToClient', (message) => {
+        //         $('#order_list_order').show();
+        //         var rel = "pending_orders";
+        //         var url = "{{ route('orders.filter') }}";
+        //         // $(".tab-pane").html('');
+        //         init(rel, url, '',false);
+        //     });
+        // });
 
         $("#search_via_keyword").on("keyup blur", function(e) {
             $('#order_list_order').show();
@@ -278,42 +316,7 @@
             init(rel, url, search_keyword, false);
         })
 
-        function init(filter_order_status, url, search_keyword = "", isOnload=false) {
-            $.ajax({
-                url: url,
-                type: "POST",
-                dataType: "JSON",
-                data: {
-                    filter_order_status: filter_order_status,
-                    search_keyword: search_keyword
-                },
-                success: function(response) {
-                    $('#order_list_order').hide();
-                    if (response.status == 'Success') {
-                        if (!isOnload) {
-                            $(".tab-pane").html('');
-                        }
-                        if (response.data.orders.data.length != 0) {
-                            let order_page_template = _.template($('#order_page_template').html());
-                            $("#" + filter_order_status).append(order_page_template({
-                                orders: response.data.orders.data,
-                                next_page_url: response.data.orders.next_page_url,
-                                filter_order_status: filter_order_status
-                            }));
-                        } else {
-                            let no_order_template = _.template($('#no_order_template').html());
-                            $("#" + filter_order_status).html(no_order_template({}));
-                        }
-                        $("#active-orders").html("(" + response.data.active_orders + ")");
-                        $("#pending-orders").html("(" + response.data.pending_orders + ")");
-                        $("#history-orders").html("(" + response.data.orders_history + ")");
-                    }
-                },
-                error: function(data) {
-
-                },
-            });
-        }
+        
 
 
         // update status 

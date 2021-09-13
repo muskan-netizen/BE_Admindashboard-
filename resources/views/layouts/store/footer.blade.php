@@ -62,6 +62,7 @@
         @endif;
     @endif;
 </script>
+<script src="{{asset('assets/js/constants.js')}}"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
 <script src="{{asset('front-assets/js/popper.min.js')}}"></script>
 <script src="{{asset('front-assets/js/slick.js')}}"></script>

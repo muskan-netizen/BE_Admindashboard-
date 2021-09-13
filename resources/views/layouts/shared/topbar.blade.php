@@ -1,4 +1,9 @@
 <!-- Topbar Start -->
+<audio id="orderAudio">
+  <source src="{{ asset('assets/sounds/notification.ogg')}}" type="audio/ogg">
+  <source src="{{ asset('assets/sounds/notification.mp3')}}" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
 <div class="navbar-custom">
     <div class="container-fluid d-flex align-items-center justify-content-between justify-content-lg-end">
         

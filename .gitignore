@@ -14,3 +14,4 @@ query.php
 /storage/framework/laravel-excel/
 storage/debugbar/
 composer.lock
+package-lock.json

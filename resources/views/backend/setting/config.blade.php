@@ -822,6 +822,59 @@
                      </div>
                   </div>
                </div>
+               <div class="col-lg-8">
+                  <div class="page-title-box">
+                     <h4 class="page-title text-uppercase">Driver Registration Documents</h4>
+                  </div>
+                  <div class="card-box mb-0 pb-2">
+                     <div class="d-flex align-items-center justify-content-end mt-2">
+                        <a class="btn btn-info d-block" id="add_driver_registration_document_modal_btn">
+                           <i class="mdi mdi-plus-circle mr-1"></i>Add
+                        </a>
+                     </div>
+                     <div class="table-responsive mt-3 mb-1">
+                        <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                           <thead>
+                              <tr>
+                                 <th>Name</th>
+                                 <th>Type</th>
+                                 <th>Action</th>
+                              </tr>
+                           </thead>
+                           <tbody id="post_list">
+                              @forelse($driver_registration_documents as $driver_registration_document)
+                              <tr>
+                                 <td>
+                                    <a class="edit_driver_registration_document_btn" data-driver_registration_document_id="{{$driver_registration_document->id}}" href="javascript:void(0)">   
+                                       {{$driver_registration_document->primary ? $driver_registration_document->primary->name : ''}}
+                                    </a>   
+                                 </td>
+                                 <td>{{$driver_registration_document->file_type}}</td>
+                                 <td>
+                                    <div>
+                                       <div class="inner-div" style="float: left;">
+                                          <a class="action-icon edit_driver_registration_document_btn" data-driver_registration_document_id="{{$driver_registration_document->id}}" href="javascript:void(0)">
+                                             <i class="mdi mdi-square-edit-outline"></i>
+                                          </a>
+                                       </div>
+                                       <div class="inner-div">
+                                          <button type="button" class="btn btn-primary-outline action-icon delete_driver_registration_document_btn" data-driver_registration_document_id="{{$driver_registration_document->id}}">
+                                             <i class="mdi mdi-delete"></i>
+                                          </button>
+                                       </div>
+                                    </div>
+                                 </td>
+                              </tr>
+                              @empty
+                              <tr align="center">
+                                 <td colspan="4" style="padding: 20px 0">Result not found.</td>
+                              </tr>
+                              @endforelse
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+               </div>
                <div class="col-lg-4">
                   <div class="page-title-box">
                      <h4 class="page-title text-uppercase">Refer and Earn</h4>
@@ -877,26 +930,32 @@
                      </div>
                      <div class="col-md-4">
                         <div class="form-group mb-3">
-                           <label for="enquire_mode" class="mr-3 mb-0">Subscription Mod</label>
+                           <label for="subscription_mode" class="mr-3 mb-0">Subscription Mod</label>
                            <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
                         </div>
                      </div>
                      <div class="col-md-4">
                         <div class="form-group mb-3">
-                           <label for="enquire_mode" class="mr-3 mb-0">{{__('Tip Before Order')}}</label>
+                           <label for="tip_before_order" class="mr-3 mb-0">{{__('Tip Before Order')}}</label>
                            <input type="checkbox" data-plugin="switchery" name="tip_before_order" id="tip_before_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_before_order == '1')) checked='checked' @endif>
                         </div>
                      </div>
                      <div class="col-md-4">
                         <div class="form-group mb-3">
-                           <label for="enquire_mode" class="mr-3 mb-0">{{__('Tip After Order')}}</label>
+                           <label for="tip_after_order" class="mr-3 mb-0">{{__('Tip After Order')}}</label>
                            <input type="checkbox" data-plugin="switchery" name="tip_after_order" id="tip_after_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_after_order == '1')) checked='checked' @endif>
                         </div>
                      </div>
                      <div class="col-md-4">
                         <div class="form-group mb-3">
-                           <label for="enquire_mode" class="mr-3 mb-0">{{__('Off Scheduling  Order')}}</label>
+                           <label for="off_scheduling_at_cart" class="mr-3 mb-0">{{__('Off Scheduling  Order')}}</label>
                            <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->off_scheduling_at_cart == '1')) checked='checked' @endif>
+                        </div>
+                     </div>
+                     <div class="col-md-5">
+                        <div class="form-group mb-3">
+                           <label for="isolate_single_vendor_order" class="mr-3 mb-0">{{__('Isolate Single Vendor Order')}}</label>
+                           <input type="checkbox" data-plugin="switchery" name="isolate_single_vendor_order" id="isolate_single_vendor_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->isolate_single_vendor_order == '1')) checked='checked' @endif>
                         </div>
                      </div>
                      <div class="col-md-12">
@@ -1106,6 +1165,59 @@
          </div>
       </div>
    </div>
+   <div id="add_driver_registration_document_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+         <div class="modal-content">
+            <div class="modal-header border-bottom">
+               <h4 class="modal-title" id="standard-modalLabel">Add Driver Registration Document</h4>
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+               <form id="driverRegistrationDocumentForm" method="POST" action="javascript:void(0)">
+                  @csrf
+                  <div id="save_social_media">
+                     <input type="hidden" name="driver_registration_document_id" value="">
+                     <div class="row">
+                        <div class="col-md-12">
+                           <div class="form-group position-relative">
+                              <label for="">Type</label>
+                              <div class="input-group mb-2">
+                                 <select class="form-control" name="file_type">
+                                    @forelse($file_types_driver as $k => $file_type)
+                                    <option value="{{$file_type}}">{{$file_type}}</option>
+                                    @empty
+                                    @endforelse
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        @forelse($client_languages as $k => $client_language)
+                        <div class="col-md-6 mb-2">
+                           <div class="row">
+                              <div class="col-12">
+                                 <div class="form-group position-relative">
+                                    <label for="">Name ({{$client_language->langName}})</label>
+                                    <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
+                                    <input class="form-control" name="name[{{$k}}]" type="text" id="driver_registration_document_name_{{$client_language->langId}}">
+                                 </div>
+                                 @if($k == 0)
+                                    <span class="text-danger error-text social_media_url_err"></span>
+                                 @endif
+                              </div>
+                           </div>
+                        </div>
+                        @empty
+                        @endforelse
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary submitSaveDriverRegistrationDocument">Save</button>
+            </div>
+         </div>
+      </div>
+   </div>
    @endsection
    @section('script')
    <script type="text/javascript">
@@ -1182,6 +1294,88 @@
                   $('#add_vendor_registration_document_modal #standard-modalLabel').html('Update Vendor Registration Document');
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_vendor_registration_document_modal #vendor_registration_document_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {
+
+            }
+         });
+      });
+
+      $('#add_driver_registration_document_modal_btn').click(function(e) {
+         $('#add_driver_registration_document_modal').modal('show');
+         $('#add_driver_registration_document_modal #standard-modalLabel').html('Add Driver Registration Document');
+      });
+      $(document).on("click", ".delete_driver_registration_document_btn", function() {
+         var driver_registration_document_id = $(this).data('driver_registration_document_id');
+         if (confirm('Are you sure?')) {
+            $.ajax({
+               type: "POST",
+               dataType: 'json',
+               url: "{{ route('driver.registration.document.delete') }}",
+               data: {
+                  _token: "{{ csrf_token() }}",
+                  driver_registration_document_id: driver_registration_document_id
+               },
+               success: function(response) {
+                  if (response.status == "Success") {
+                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                     setTimeout(function() {
+                        location.reload()
+                     }, 2000);
+                  }
+               }
+            });
+         }
+      });
+      $(document).on('click', '.submitSaveDriverRegistrationDocument', function(e) {
+         var driver_registration_document_id = $("#add_driver_registration_document_modal input[name=driver_registration_document_id]").val();
+         if (driver_registration_document_id) {
+            var post_url = "{{ route('driver.registration.document.update') }}";
+         } else {
+            var post_url = "{{ route('driver.registration.document.create') }}";
+         }
+         var form_data = new FormData(document.getElementById("driverRegistrationDocumentForm"));
+         $.ajax({
+            url: post_url,
+            method: 'POST',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+               if (response.status == 'Success') {
+                  $('#add_or_edit_social_media_modal').modal('hide');
+                  $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+               }
+            },
+            error: function(response) {
+               $('#add_driver_registration_document_modal .social_media_url_err').html('The default language name field is required.');
+            }
+         });
+      });
+      $(document).on("click", ".edit_driver_registration_document_btn", function() {
+         let driver_registration_document_id = $(this).data('driver_registration_document_id');
+         $('#add_driver_registration_document_modal input[name=driver_registration_document_id]').val(driver_registration_document_id);
+         $.ajax({
+            method: 'GET',
+            data: {
+               driver_registration_document_id: driver_registration_document_id
+            },
+            url: "{{ route('driver.registration.document.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                  $('#add_driver_registration_document_modal').modal('show');
+                  $("#add_driver_registration_document_modal input[name=file_type]").val(response.data.file_type).change();
+                  $("#add_driver_registration_document_modal input[name=driver_registration_document_id]").val(response.data.id);
+                  $('#add_driver_registration_document_modal #standard-modalLabel').html('Update Driver Registration Document');
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_driver_registration_document_modal #driver_registration_document_name_'+value.language_id).val(value.name);
                   });
                }
             },

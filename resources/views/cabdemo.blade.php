@@ -6,7 +6,7 @@
     <section class="cab-booking pt-0">
         <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d4850.865733603189!2d76.82393041076074!3d30.716149768967526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1627015845978!5m2!1sen!2sin" width="100%" height="100vh" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
         
-        <div class="booking-experience ds bc" style="top: 80px;">
+        <div class="booking-experience ds bc 12" style="top: 80px;">
             <div class="address-form">
 
                 <div class="loader-outer d-none">
@@ -718,39 +718,156 @@
 
     </section>
 
-    <!-- Payment Modal -->
-    <div class="modal fade payment-modal payment-modal-width" id="payment_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="payment_modalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header pb-0">
-                    <h5 class="modal-title" id="payment_modalLabel">Choose Profile</h5>
-                    <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+
+    <!-- Cab Booking Start From Here -->
+    <section class="cab-banner-area p-0 d-none">
+        <div class="container p-64">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card-box mb-0">
+                        <h1>Request a ride now</h1>
+                        <form action="" class="cab-booking-form">
+
+                            <div class="cab-input">
+                                <div class="form-group mb-1 position-relative">
+                                    <input class="form-control" type="text" placeholder="Enter pickup location">
+                                    <a class="location-btn" href="#">
+                                        <img src="{{asset('front-assets/images/arrow.svg')}}" alt="">
+                                    </a>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <input class="form-control" type="text" placeholder="Enter pickup location">
+                                </div>
+                                <div class="input-line"></div>
+                            </div>
+
+                            <div class="cab-footer">
+                                <button class="btn btn-solid new-btn request-btn">Request now</button>
+                                <button class="btn btn-solid new-btn schedule-btn">Schedule for later</button>
+                            </div>
+
+                        </form>
+                    </div>
                 </div>
-                <div class="modal-body p-0">
-                    <h4 class="payment-button"  data-toggle="modal" data-target="#select_payment_option" aria-label="Close">Select Payment Method</h4>
-                </div>        
             </div>
         </div>
+    </section>
+
+    <!-- Cab Content Area Start From Here -->
+
+    <div class="cab-content-area d-none">
+
+        <!-- Royo Business Start From Here -->
+        <section class="royo-business p-0">
+            <div class="container p-64">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="title-36">Royo for Business</h2>
+                        <div class="description-text">
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, labore!</p>
+                        </div>
+                        <a class="btn btn-solid new-btn d-inline-block" href="#">See how</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Royo Business Start From Here -->
+        <section class="royo-rental p-0">
+            <div class="container">                
+               
+                <div class="row align-items-center p-64">
+                    <div class="col-sm-6">
+                        <div class="cab-img-box">
+                            <img class="img-fluid" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_1116,h_744/v1624484990/assets/fa/f20c42-425a-4243-866b-b480d3bd68b4/original/gettyimages-1139275491-2048x2048_With-Mask.png" alt="">
+                        </div>
+                    </div>
+                    <div class="offset-md-1 col-sm-6 col-md-5 pl-lg-4">
+                        <div class="">
+                            <h2 class="title-52">Royo for Business</h2>
+                            <div class="description-text">
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem nisi officiis numquam!</p>
+                            </div>
+                            <a class="learn-more bottom-line" href="#">Learn more</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row align-items-center p-64">
+                    <div class="col-sm-6 order-md-1">
+                        <div class="cab-img-box">
+                            <img class="img-fluid" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1623719981/assets/4d/b05e4c-7340-40c4-a3e9-da0de41f14fc/original/rentals-iindia.jpg" alt="">
+                        </div>
+                    </div>
+                    <div class="col-sm-6 order-md-0">
+                        <div class="pr-lg-5 mr-lg-5">
+                            <h2 class="title-52">Royo Intercity </h2>
+                            <div class="description-text">
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem nisi officiis numquam!</p>
+                            </div>
+                            <a class="learn-more" href="#">Learn more</a>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- Focused On Safety Start From Here -->
+        <section class="focused-on-safety p-0">
+            <div class="container p-64">
+                <div class="row mb-4 pb-2">
+                    <div class="col-12">
+                        <div class="title-36">Focused on safety, wherever you go</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="safety-box">
+                            <div class="safety-img">
+                                <img class="img-fluid" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1613520218/assets/3e/e98625-31e6-4536-8646-976a1ee3f210/original/Safety_Home_Img2x.png" alt="">
+                            </div>
+                            <div class="safety-content">
+                                <h3 class="mt-0">Our commitment to your safety</h3>
+                                <div class="safety-text">
+                                    <p>With every safety feature and every standard in our Community Guidelines, we're committed to helping to create a safe environment for our users.</p>
+                                </div>
+                                <div class="safety-links">
+                                    <a class="bottom-line" href="#">
+                                        <span>Read about our Community Guidelines</span>
+                                    </a>
+                                    <a class="bottom-line" href="#">
+                                        <span>See all safety features</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="safety-box">
+                            <div class="safety-img">
+                                <img class="img-fluid" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1613520218/assets/3e/e98625-31e6-4536-8646-976a1ee3f210/original/Safety_Home_Img2x.png" alt="">
+                            </div>
+                            <div class="safety-content">
+                                <h3 class="mt-0">Setting 10,000+ cities in motion</h3>
+                                <div class="safety-text">
+                                    <p>With every safety feature and every standard in our Community Guidelines, we're committed to helping to create a safe environment for our users.</p>
+                                </div>
+                                <div class="safety-links">
+                                    <a class="bottom-line" href="#">
+                                        <span>View all cities</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </div>
 
-    <!-- Select Payment Option -->
-    <div class="modal fade select-payment-option payment-modal-width" id="select_payment_option" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="select_payment_optionLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="select_payment_optionLabel">Choose payment method</h5>
-                    <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> Cash</span></h4>
-                </div>        
-            </div>
-        </div>
-    </div>
+    
 
 
     <script src="{{asset('front-assets/js/popper.min.js')}}"></script>

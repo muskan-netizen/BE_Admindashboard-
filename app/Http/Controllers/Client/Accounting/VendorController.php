@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
 use Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\OrderVendorListExport;
+
 class VendorController extends Controller{
     use ApiResponser;
 
@@ -88,5 +91,9 @@ class VendorController extends Controller{
                     });
                 }
             })->make(true);
+    }
+
+    public function export() {
+        return Excel::download(new OrderVendorListExport, 'vendor_list.xlsx');
     }
 }

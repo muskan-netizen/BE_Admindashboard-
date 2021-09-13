@@ -38,9 +38,19 @@ class Order extends Model{
 	    return $this->hasOne('App\Models\LoyaltyCard' , 'id', 'loyalty_membership_id'); 
 	}
 	public function taxes(){
-	    return $this->hasMany('App\Models\OrderTax' , 'order_id', 'id' )->latest(); 
+	    return $this->hasMany('App\Models\OrderTax' , 'order_id', 'id' )->latest();
 	}
 	public function prescription(){
 	    return $this->hasMany('App\Models\OrderProductPrescription' , 'order_id', 'id'); 
+	}
+	public function user_vendor(){
+		return $this->hasManyThrough(
+            'App\Models\UserVendor',
+            'App\Models\OrderVendor',
+            'order_id', // Foreign key on the environments table...
+            'vendor_id', // Foreign key on the deployments table...
+            'id', // Local key on the projects table...
+            'vendor_id' // Local key on the environments table...
+        );
 	}
 }

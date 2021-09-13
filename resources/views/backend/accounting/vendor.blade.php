@@ -115,7 +115,13 @@
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
                 },
-                buttons:[],
+                buttons:[{   
+                        className:'btn btn-success waves-effect waves-light',
+                        text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>Export CSV',
+                        action: function ( e, dt, node, config ) {
+                            window.location.href = "{{ route('account.vendor.export') }}";
+                        }
+                }],
                 ajax: {
                   url: "{{route('account.vendor.filter')}}",
                   data: function (d) {

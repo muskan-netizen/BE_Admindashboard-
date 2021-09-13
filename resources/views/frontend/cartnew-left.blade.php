@@ -106,12 +106,12 @@
                 $default_longitude = "";
                 $default_location_name = "";
                 $default_country = "";
-                if((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)){
+       //         if((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)){
      //               $default_latitude = $preferences->Default_latitude??"";
     //              $default_longitude = $preferences->Default_longitude??"";
      //               $default_location_name = $preferences->Default_location_name??"";
                     $default_country = $preferences->client_detail->country_id??"";
-                }
+      //          }
                 @endphp
                 <input type="hidden" id="latitude" value="{{$default_latitude}}">
                 <input type="hidden" id="longitude" value="{{$default_longitude}}">

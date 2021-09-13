@@ -17,8 +17,8 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 @if(count($pages))
                     <div class="col-lg-3 col-md-6 pl-lg-5">
                         <div class="sub-title">
-                            <div class="footer-title">
-                                <h4>{{ __('Links') }}</h4>
+                            <div class="footer-title mt-0">
+                                <h4 class="mt-0">{{ __('Links') }}</h4>
                             </div>
                             <div class="footer-contant">
                                 <ul>
@@ -58,20 +58,32 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 @if($client_preference_detail->show_contact_us == 1)
                     <div class="col-lg-3 col-md-6 mb-md-0 mb-3">
                         <div class="sub-title">
-                            <div class="footer-title">
-                                <h4>{{ __('Contact Us') }}</h4>
+                            <div class="footer-title mt-0">
+                                <h4 class="mt-0">{{ __('Contact Us') }}</h4>
                             </div>
                             <div class="footer-contant">
                                 <ul class="contact-list">
-                                    <li><i class="fa fa-map-marker"></i>{{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}
+                                    <li><img src="{{asset('front-assets/images/ic_location.svg')}}" alt="">{{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}
                                     </li>
-                                    <li><i class="fa fa-phone"></i><a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}">{{$clientData ? $clientData->phone_number : '123-456-7898'}}</a></li>
-                                    <li><i class="fa fa-envelope-o"></i><a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}">{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</a></li>
+                                    <li><img src="{{asset('front-assets/images/ic_call.svg')}}" alt=""><a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}">{{$clientData ? $clientData->phone_number : '123-456-7898'}}</a></li>
+                                    <li><img src="{{asset('front-assets/images/ic_mail.svg')}}" alt=""><a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}">{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</a></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
-                @endif                  
+                @endif  
+                <div class="col-lg-3 col-md-6 mb-md-0 mb-3 text-right d-none">
+                    <div class="store-btn">
+                        <a href="#"><img src="{{asset('front-assets/images/app-store.png')}}" alt=""></a>
+                        <a class="ml-2" href="#"><img src="{{asset('front-assets/images/google-play.png')}}" alt=""></a>
+                    </div>
+                    <ul class="social-links ml-md-auto mt-3">
+                        <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                        <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+                        <li><a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                        <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+                    </ul>
+                </div>                
             </div>
         </div>
     </section>

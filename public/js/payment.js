@@ -44,7 +44,7 @@ $(document).ready(function () {
                     window.location.href = response.data;
                 } else {
                     if (cartElement.length > 0) {
-                        success_error_alert('error', response.message, "#paystack-payment-form .payment_response");
+                        success_error_alert('error', response.message, ".payment_response");
                         $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
                     }
                     else if (walletElement.length > 0) {
@@ -56,7 +56,7 @@ $(document).ready(function () {
             error: function (error) {
                 var response = $.parseJSON(error.responseText);
                 if (cartElement.length > 0) {
-                    success_error_alert('error', response.message, "#paystack-payment-form .payment_response");
+                    success_error_alert('error', response.message, ".payment_response");
                     $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
                 }
                 else if (walletElement.length > 0) {
@@ -156,7 +156,7 @@ $(document).ready(function () {
                         });
                         form = $('<form id="payfast_offsite_form" action="' + res.redirectUrl + '" method="post">'+ form + '</form>');
                         if (cartElement.length > 0) {
-                            $('#v-pills-payfast').append(form);
+                            $('#proceed_to_pay_modal .modal-body').append(form);
                         }
                         else if (walletElement.length > 0) {
                             $('#topup_wallet .modal-content').append(form);

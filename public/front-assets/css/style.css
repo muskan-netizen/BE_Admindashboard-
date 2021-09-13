@@ -36,11 +36,9 @@
   }
   .icon-ic_currency:before {
     content: "\e900";
-    color: #fff;
   }
   .icon-ic_lang:before {
     content: "\e901";
-    color: #fff;
   }
 
 /* latin-ext */

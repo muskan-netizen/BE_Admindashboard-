@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, VariantOptionTranslation};
+use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, DriverRegistrationDocument, VariantOptionTranslation};
 use GuzzleHttp\Client as GCLIENT;
 class ClientPreferenceController extends BaseController{
     public function index(){
@@ -22,7 +22,9 @@ class ClientPreferenceController extends BaseController{
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
         $file_types = ['image/*' => 'Image', '.pdf' => 'Pdf'];
+        $file_types_driver = ['image/*' => 'Image', '.pdf' => 'Pdf','.txt'=>'Text'];
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
+        $driver_registration_documents = DriverRegistrationDocument::with('primary')->get();
         if($preference->reffered_by_amount == null){
             $reffer_by = 0;
         }else{
@@ -40,7 +42,7 @@ class ClientPreferenceController extends BaseController{
             $last_mile_teams = $this->getLastMileTeams(); 
             
         }
-        return view('backend/setting/config')->with(['last_mile_teams' => $last_mile_teams,'client' => $client, 'preference' => $preference, 'mapTypes'=> $mapTypes, 'smsTypes' => $smsTypes, 'client_languages' => $client_languages, 'file_types' => $file_types, 'vendor_registration_documents' => $vendor_registration_documents, 'reffer_by' => $reffer_by, 'reffer_to' => $reffer_to,]);
+        return view('backend/setting/config')->with(['last_mile_teams' => $last_mile_teams,'client' => $client, 'preference' => $preference, 'mapTypes'=> $mapTypes, 'smsTypes' => $smsTypes, 'client_languages' => $client_languages, 'file_types' => $file_types, 'vendor_registration_documents' => $vendor_registration_documents, 'driver_registration_documents' => $driver_registration_documents, 'reffer_by' => $reffer_by, 'reffer_to' => $reffer_to, 'file_types_driver' => $file_types_driver]);
     }
 
     public function getCustomizePage(ClientPreference $clientPreference){
@@ -216,6 +218,8 @@ class ClientPreferenceController extends BaseController{
             $preference->tip_before_order = ($request->has('tip_before_order') && $request->tip_before_order == 'on') ? 1 : 0;
             $preference->tip_after_order = ($request->has('tip_after_order') && $request->tip_after_order == 'on') ? 1 : 0;
             $preference->off_scheduling_at_cart = ($request->has('off_scheduling_at_cart') && $request->off_scheduling_at_cart == 'on') ? 1 : 0;
+            $preference->isolate_single_vendor_order = ($request->has('isolate_single_vendor_order') && $request->isolate_single_vendor_order == 'on') ? 1 : 0;
+            
         }
         if($request->has('primary_language')){
             $deactivate_language = ClientLanguage::where('client_code',Auth::user()->code)->where('is_primary', 1)->first();

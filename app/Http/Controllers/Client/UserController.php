@@ -309,7 +309,7 @@ class UserController extends BaseController{
             $trans->date = Carbon::parse($trans->created_at)->format('M d, Y, H:i A');
             // $trans->date = convertDateTimeInTimeZone($trans->created_at, $user->timezone, 'l, F d, Y, H:i A');
             $trans->description = json_decode($trans->meta)[0];
-            $trans->amount = '$' . sprintf("%.2f",$trans->amount);
+            $trans->amount = '$' . sprintf("%.2f", ($trans->amount / 100));
             $trans->type = $trans->type;
         }
         return Datatables::of($user_transactions)

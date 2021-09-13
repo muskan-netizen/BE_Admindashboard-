@@ -522,6 +522,62 @@
     <% }); %>
 </script>
 <script type="text/template" id="payment_method_tab_pane_template">
+    <% if(payment_options == '') { %>
+        <h6>{{__('Payment Options Not Avaialable')}}</h6>
+    <% }else{ %>
+        <div class="modal-body pb-0">
+            <div class="payment_response">
+                <div class="alert p-0 m-0" role="alert"></div>
+            </div>
+            <h5 class="text-17 mb-2">{{__('Debit From')}}</h5>
+            <form method="POST" id="cart-payment-form">
+                @csrf
+                @method('POST')
+                <% _.each(payment_options, function(payment_option, k){%>
+                    <div class="" id="" role="tabpanel">
+                        <label class="radio mt-2">
+                            <%= payment_option.title %> 
+                            <input type="radio" name="cart_payment_method" id="radio-<%= payment_option.slug %>" value="<%= payment_option.id %>" data-payment_option_id="<%= payment_option.id %>">
+                            <span class="checkround"></span>
+                        </label>
+                        <% if(payment_option.slug == 'stripe') { %>
+                            <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper d-none">
+                                <div class="form-control">
+                                    <label class="d-flex flex-row pt-1 pb-1 mb-0">
+                                        <div id="stripe-card-element"></div>
+                                    </label>
+                                </div>
+                                <span class="error text-danger" id="stripe_card_error"></span>
+                            </div>
+                        <% } %>
+                    </div>
+                <% }); %>
+            </form>
+        </div>
+        <div class="modal-footer d-block text-center">
+            <div class="row">
+                <div class="col-sm-12 p-0 d-flex flex-fill">
+                    <button type="button" class="btn btn-solid ml-1 proceed_to_pay">{{__('Place Order')}}</button>
+                </div>
+            </div>
+        </div>
+    <% } %>
+</script>
+
+<div class="modal fade" id="proceed_to_pay_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="pay-billLabel">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header border-bottom">
+            <h5 class="modal-title" id="pay-billLabel">{{__('Total Amount')}}: <span id="total_amt"></span></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div id="v_pills_tabContent"></div>
+    </div>
+  </div>
+</div>
+<!-- <script type="text/template" id="payment_method_tab_pane_template">
     <% _.each(payment_options, function(payment_option, k){%>
         <div class="tab-pane fade <%= payment_option.slug == 'cash_on_delivery' ? 'active show': ''%>" id="v-pills-<%= payment_option.slug %>" role="tabpanel" aria-labelledby="v-pills-<%= payment_option.slug %>-tab">
             <form method="POST" id="<%= payment_option.slug %>-payment-form">
@@ -547,7 +603,6 @@
                         <div class="col-md-12 text-md-right">
                             <button type="button" class="btn btn-solid" data-dismiss="modal">{{ __('Cancel') }}</button>
                             <button type="button" class="btn btn-solid ml-1 proceed_to_pay">{{__('Place Order')}}</button>
-                            <!-- <button type="button" class="btn btn-solid ml-1 proceed_to_pay">Scheduled Now</button> -->
                         </div>
                     </div>
                 </div>
@@ -579,7 +634,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <div id="prescription_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -639,6 +694,7 @@
 @endsection
 
 @section('script')
+<script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <script type="text/javascript">
     var guest_cart = {{ $guest_user ? 1 : 0 }};
@@ -707,6 +763,15 @@
                 success_error_alert('error', response.message, ".payment_response");
             }
         });
+    });
+
+    $(document).delegate('#cart-payment-form input[name="cart_payment_method"]', 'change', function() {
+        var method = $(this).attr('id');
+        if(method.replace('radio-', '') == 'stripe'){
+            $("#cart-payment-form .stripe_element_wrapper").removeClass('d-none');
+        }else{
+            $("#cart-payment-form .stripe_element_wrapper").addClass('d-none');
+        }
     });
 </script>
 <script src="{{asset('js/payment.js')}}"></script>

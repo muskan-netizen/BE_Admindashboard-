@@ -460,9 +460,9 @@ class PickupDeliveryController extends FrontController{
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = Auth::user();
             if ($dispatch_domain && $dispatch_domain != false) {
-                if ($request->payment_method == 1) {
+                if ($request->payment_method == 1 || 1 ==1 ) {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $request->amount;
+                    $payable_amount = $order->payable_amount;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;

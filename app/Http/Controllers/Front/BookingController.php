@@ -47,8 +47,10 @@ class BookingController extends FrontController
            $tasks = $response['tasks'];
            $agent_location = $response['agent_location'];
         }
-       
-        return view('frontend.booking.details')->with(['user_addresses' => $user_addresses, 'navCategories' => $navCategories,'order' => $order,'route' => $route,'tasks' => $tasks,'agent_location' => $agent_location]);
+        
+
+        $vendor = OrderVendor::where('order_id',$order->id)->first();
+        return view('frontend.booking.details')->with(['user_addresses' => $user_addresses, 'navCategories' => $navCategories,'order' => $order,'vendor' => $vendor,'route' => $route,'tasks' => $tasks,'agent_location' => $agent_location]);
        
     }
 

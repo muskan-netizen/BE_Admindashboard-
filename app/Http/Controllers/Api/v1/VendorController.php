@@ -83,18 +83,55 @@ class VendorController extends BaseController{
             $products = Product::with(['category.categoryDetail', 'inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
-                        'media.image', 'translation' => function($q) use($langId){
-                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                        'media.image',
+                        'addOn' => function($q1) use($langId){
+                            $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                            $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                            $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                            $q1->where('ast.language_id', $langId);
+                        },
+                        'addOn.setoptions' => function($q2) use($langId){
+                            $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                            $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                            $q2->where('apt.language_id', $langId);
+                        },
+                        'translation' => function($q) use($langId){
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId){
-                            $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
-                            $q->groupBy('product_id');
-                        },
+                            $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
+                            // $q->groupBy('product_id');
+                        }, 'variant.checkIfInCart',
                     ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id')
                     ->where('products.vendor_id', $vid)
                     ->where('products.is_live', 1)->paginate($paginate);
             if(!empty($products)){
                 foreach ($products as $key => $product) {
+                    foreach ($product->addOn as $key => $value) {
+                        foreach ($value->setoptions as $k => $v) {
+                            if($v->price == 0){
+                                $v->is_free = true;
+                            }else{
+                                $v->is_free = false;
+                            }
+                            $v->multiplier = $clientCurrency->doller_compare;
+                        }
+                    }
+
+                    $p_id = $product->id;
+                    $variantData = $product->with(['variantSet' => function ($z) use ($langId, $p_id) {
+                        $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                        $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+                        $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                        $z->where('vt.language_id', $langId);
+                        $z->where('product_variant_sets.product_id', $p_id)->orderBy('product_variant_sets.variant_type_id', 'asc');
+                    },'variantSet.options'=> function($zx) use($langId, $p_id){
+                        $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
+                        ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
+                        ->where('pvs.product_id', $p_id)
+                        ->where('vt.language_id', $langId);
+                    }])->where('id', $p_id)->first();
+                    $product->variantSet = $variantData->variantSet;
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->multiplier = $clientCurrency->doller_compare;

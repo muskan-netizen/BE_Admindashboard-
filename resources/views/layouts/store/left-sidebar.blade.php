@@ -18,7 +18,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
   @else
     @include('layouts.store/topbar-guest')
   @endif
-
+        <!-- Start Cab Booking Header From Here -->
         <div class="cab-booking-header">
             <div class="container">
                 <div class="row">
@@ -81,6 +81,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
             </div>
         </div>
+        <!-- End Cab Booking Header From Here -->
+
 
         <div class="container main-menu d-block">
             <div class="row align-items-center py-md-2 position-initial">

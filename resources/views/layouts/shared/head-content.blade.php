@@ -116,6 +116,7 @@ if($theme && !empty($theme->map_key)){
 @endif
 @endif
 
+<script src="{{asset('assets/js/constants.js')}}"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
 <link href="{{asset('assets/libs/flatpickr/flatpickr.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/mohithg-switchery/mohithg-switchery.min.css') }}" rel="stylesheet" type="text/css" />

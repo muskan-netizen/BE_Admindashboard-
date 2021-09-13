@@ -4,6 +4,9 @@ Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 Route::get('/debug-sentry', function () {
     throw new Exception('My first Sentry error!');
 });
+
+Route::get('page/driver-registration', 'Front\UserhomeController@driverSignup');
+Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');
 Route::group(['middleware' => ['domain']], function () {
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
@@ -60,6 +63,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/search-all/{keyword}','Front\SearchController@showSearchResults')->name('showSearchResults');
 	Route::get('/','Front\UserhomeController@index')->name('userHome');
 	Route::get('page/{slug}','Front\UserhomeController@getExtraPage')->name('extrapage');
+	
 	Route::post('/homePageData','Front\UserhomeController@postHomePageData')->name('homePageData');
 	Route::post('/theme','Front\UserhomeController@setTheme')->name('config.update');
 	Route::get('/getConfig','Front\UserhomeController@getConfig')->name('config.get');
@@ -96,6 +100,7 @@ Route::group(['middleware' => ['domain']], function () {
     Route::get('vendor/{id?}', 'Front\VendorController@vendorProducts')->name('vendorDetail');
 	Route::get('vendor/{slug1}/{slug2}', 'Front\VendorController@vendorCategoryProducts')->name('vendorCategoryProducts');
     Route::post('vendor/filters/{id}', 'Front\VendorController@vendorFilters')->name('vendorProductFilters');
+	Route::post('vendor/products/searchResults', 'Front\VendorController@vendorProductsSearchResults')->name('vendorProductsSearchResults');
 	Route::post('vendor/product/addons', 'Front\VendorController@vendorProductAddons')->name('vendorProductAddons');
     Route::get('brand/{id?}', 'Front\BrandController@brandProducts')->name('brandDetail');
     Route::post('brand/filters/{id}', 'Front\BrandController@brandFilters')->name('brandProductFilters');

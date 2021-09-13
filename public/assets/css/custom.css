@@ -2435,6 +2435,9 @@ h3 .fas.fa-money-check-alt{
           flex: 0 0 50%;
           max-width: 50%;
       }
+      .received-orders .modal-dialog.modal-dialog-centered {
+        max-width: 600px;
+    }
   }
 
   @media(min-width:992px) {
