@@ -14,7 +14,7 @@ use App\Http\Requests\Web\OrderProductRatingRequest;
 use App\Http\Requests\Web\CheckImageRequest;
 use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile};
 use App\Http\Traits\ApiResponser;
-
+use GuzzleHttp\Client as GCLIENT;
 class RatingController extends FrontController{
 	
     use ApiResponser;
@@ -64,6 +64,13 @@ class RatingController extends FrontController{
                 $removefiles = OrderProductRatingFile::where('order_product_rating_id',$ratings->id)->whereIn('id',$request->remove_files)->delete();
        
             }
+
+            if(isset($request->rating_for_dispatch) && !empty($request->rating_for_dispatch))
+            {
+                $staus = $this->setRatingOnDispatch($request);
+               
+            }   
+            
             if(isset($ratings)) {
                 return $this->successResponse($ratings,'Rating Submitted.');
             }
@@ -71,6 +78,33 @@ class RatingController extends FrontController{
             
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
+        }
+    }
+
+
+    # set rating at dispatch panel 
+    public function setRatingOnDispatch($request)
+    {
+        try {
+            $dispatch_domain = $this->checkIfPickupDeliveryOnCommon();
+            if ($dispatch_domain && $dispatch_domain != false) {
+                $all_location = array();
+                $postdata =  [ 'order_id' => $request->rating_for_dispatch??'',
+                                'rating' => $request->rating??'',
+                                'review' => $request->review??''];
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;                      
+                $res = $client->post($url.'/api/update-order-feedback',
+                    ['form_params' => ($postdata)]
+                );
+                
+                $response = json_decode($res->getBody(), true); 
+                if($response && $response['message'] == 'success'){
+                   
+                }
+            }
+        }catch(\Exception $e){
+              return $e->getMessage();
         }
     }
 

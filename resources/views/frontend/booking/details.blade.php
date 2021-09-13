@@ -275,12 +275,13 @@ $(document).ready(function (){
 $('body').on('click', '.add_edit_review', function (event) {
         event.preventDefault();
         var id = $(this).data('id');
+        var dispatch_order_id = $(this).data('dispatch_order_id');
         var order_vendor_product_id = $(this).data('order_vendor_product_id');
         $.get('/rating/get-product-rating?id=' + id +'&order_vendor_product_id=' + order_vendor_product_id, function(markup)
         {
             $('#product_rating').modal('show'); 
             $('#review-rating-form-modal').html(markup);
-            $('#review-upload-form').append('<input type="hidden" name="rating_for_dispatch" value="1">');
+            $('#review-upload-form').append('<input type="hidden" name="rating_for_dispatch" value="'+dispatch_order_id+'" id="rating_for_dispatch">');
            
         });
     });
