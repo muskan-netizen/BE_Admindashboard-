@@ -48,12 +48,16 @@ class RatingController extends FrontController{
                 //     } 
                 // }
                 if(isset($request->add_files) && is_array($request->add_files))    # send  array of insert images 
-                {
+                {   
+                   
                     foreach ($request->add_files as $storage) {
-                        $img = new OrderProductRatingFile();
-                        $img->order_product_rating_id = $ratings->id;
-                        $img->file = $storage;
-                        $img->save();
+                        OrderProductRatingFile::updateOrCreate(['order_product_rating_id' => $ratings->id,
+                        'file' => $storage]);
+
+                        // $img = new OrderProductRatingFile();
+                        // $img->order_product_rating_id = $ratings->id;
+                        // $img->file = $storage;
+                        // $img->save();
                        
                     }
                 }  

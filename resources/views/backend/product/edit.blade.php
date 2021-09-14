@@ -729,7 +729,7 @@
         //     ]
         // });
         $("div#my-awesome-dropzone").dropzone({
-            acceptedFiles: ".jpeg,.jpg,.png",
+            acceptedFiles: ".jpeg,.jpg,.png,.svg",
             addRemoveLinks: true,
             url: "{{route('product.images')}}",
             params: {

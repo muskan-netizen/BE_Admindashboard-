@@ -1,3 +1,3 @@
 var constants = {
-    socket_domain : "socket.alerthire.com"
+    socket_domain : "socket.royoorders.com"
 }

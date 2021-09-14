@@ -713,13 +713,13 @@
                      <div class="card-box mb-0">
                         <div class="row align-items-center">
                            <div class="col-sm-5">
-                              <div class="form-group mb-0 switchery-demo">
+                              <div class="form-group mb-md-0 switchery-demo">
                                  <label for="verify_email" class="mr-3 mb-0">Verify Email</label>
                                  <input type="checkbox" data-plugin="switchery" name="verify_email" id="verify_email" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_email == '1')) checked='checked' @endif>
                               </div>
                            </div>
                            <div class="col-sm-5">
-                              <div class="form-group mb-0">
+                              <div class="form-group mb-md0">
                                  <label for="verify_phone" class="mr-3 mb-0">Verify Phone</label>
                                  <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif>
                               </div>
@@ -739,19 +739,19 @@
                      <div class="card-box mb-0">
                         <div class="row align-items-center">
                            <div class="col-md-3">
-                              <div class="form-group mb-0">
+                              <div class="form-group mb-md-0">
                                  <label for="dinein_check" class="mr-3 mb-0">Dine In</label>
                                  <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
                            <div class="col-md-3">
-                              <div class="form-group mb-0">
+                              <div class="form-group mb-md-0">
                                  <label for="delivery_check" class="mr-3 mb-0">Delivery</label>
                                  <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
                            <div class="col-md-3">
-                              <div class="form-group mb-0">
+                              <div class="form-group mb-md-0">
                                  <label for="takeaway_check" class="mr-3 mb-0">Takeaway</label>
                                  <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
                               </div>
@@ -976,7 +976,7 @@
                   <div class="col-md-4">
                      <button class="btn w-100 btn-danger cleanSoftDeleted">Clean All Soft Deleted</button>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-4 my-2 my-md-0">
                      <button class="btn w-100 btn-danger importDemoContent">Import Demo Content</button>
                   </div>
                   <div class="col-md-4">

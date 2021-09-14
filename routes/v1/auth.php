@@ -1,5 +1,5 @@
 <?php
-Route::group(['prefix' => 'v1/auth'], function () {
+Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], function () {
     Route::get('country-list', 'Api\v1\AuthController@countries');
     Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {
         Route::get('logout', 'Api\v1\AuthController@logout');
@@ -13,7 +13,7 @@ Route::group(['prefix' => 'v1/auth'], function () {
         Route::post('forgotPassword', 'Api\v1\AuthController@forgotPassword');
     });
 });
-Route::group(['prefix' => 'v1'], function () {
+Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
     Route::group(['middleware' => ['dbCheck', 'apilogger']], function() {
         Route::post('social/info', 'Api\v1\SocialController@getKeys');
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');

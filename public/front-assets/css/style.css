@@ -622,11 +622,11 @@ label {
 ==========================**/
 section,
 .section-t-space {
-    padding-top: 70px;
+    padding-top: 40px;
 }
 
 .section-b-space {
-    padding-bottom: 70px;
+    padding-bottom: 40px;
 }
 
 .large-section {

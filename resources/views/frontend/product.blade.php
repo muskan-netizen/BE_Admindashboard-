@@ -163,6 +163,7 @@
                                             if($product->variant->first()->media->isNotEmpty()){
                                                 $product->media = $product->variant->first()->media;
                                             }
+                                            
                                             if($product->media->isEmpty()){
                                                 $arr = [
                                                     'image' => (object)[
@@ -358,7 +359,7 @@
                                         </div>                
 
 
-                                        <table class="table table-centered table-nowrap table-striped d-none" id="addon-table">
+                                        {{--<table class="table table-centered table-nowrap table-striped d-none" id="addon-table">
                                             <tbody>
                                                 @foreach($product->addOn as $row => $addon)
                                                 <tr>
@@ -396,7 +397,7 @@
                                                 </tr>
                                                 @endforeach
                                             </tbody>
-                                        </table>
+                                        </table>--}}
                                     </div>
                                     @endif
                                     <div class="product-buttons">
@@ -511,10 +512,10 @@
     </div>
 </section>
 <script type="text/template" id="variant_image_template">
-    <% if(media != '') { %>
+    <% if(variant.media != '') { %>
         <div class="swiper-container gallery-top">
             <div class="swiper-wrapper">
-                <% _.each(media, function(img, key){ %>
+                <% _.each(variant.media, function(img, key){ %>
                     <div class="swiper-slide easyzoom easyzoom--overlay">
                         <a href="<%= img.pimage.image.path['image_fit'] %>600/600<%= img.pimage.image.path['image_path'] %>">
                         <img src="<%= img.pimage.image.path['image_fit'] %>600/600<%= img.pimage.image.path['image_path'] %>" alt="">
@@ -528,33 +529,38 @@
         </div>
         <div class="swiper-container gallery-thumbs">
             <div class="swiper-wrapper">
-                <% _.each(media, function(img, key){ %>
+                <% _.each(variant.media, function(img, key){ %>
                     <div class="swiper-slide">
                         <img src="<%= img.pimage.image.path['image_fit'] %>300/300<%= img.pimage.image.path['image_path'] %>" alt="">
                     </div>
                 <% }); %>
             </div>
         </div>
-        <!--<div class="product-slick">
-            <% _.each(media, function(img, key){ %>
-                <div class="image_mask">
-                    <img class="img-fluid blur-up lazyload image_zoom_cls-<%= key %>" src="<%= img.pimage.image.path['proxy_url'] %>600/800<%= img.pimage.image.path['image_path'] %>">
-                </div>
-            <% }); %>
-        </div>
-        <div class="row">
-            <div class="col-12 p-0">
-                <div class="slider-nav">
-                    <% _.each(media, function(img, key){ %>
-                        <div>
-                            <img class="img-fluid blur-up lazyload" src="<%= img.pimage.image.path['proxy_url'] %>300/300<%= img.pimage.image.path['image_path'] %>">
-                        </div>
-                    <% }); %>
-                </div>
-            </div>
-        </div>-->
     <% }else{ %>
         <div class="swiper-container gallery-top">
+            <div class="swiper-wrapper">
+                <% _.each(variant.product.media, function(img, key){ %>
+                    <div class="swiper-slide easyzoom easyzoom--overlay">
+                        <a href="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>">
+                        <img src="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>" alt="">
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next swiper-button-white"></div>
+            <div class="swiper-button-prev swiper-button-white"></div>
+        </div>
+        <div class="swiper-container gallery-thumbs">
+            <div class="swiper-wrapper">
+                <% _.each(variant.product.media, function(img, key){ %>
+                    <div class="swiper-slide">
+                        <img src="<%= img.image.path['image_fit'] %>300/300<%= img.image.path['image_path'] %>" alt="">
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+        <!--<div class="swiper-container gallery-top">
             <div class="swiper-wrapper">
                 <div class="swiper-slide easyzoom easyzoom--overlay">
                     <a href="{{ \Config::get('app.IMG_URL1') .'600/800'. \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png') }}">
@@ -562,10 +568,9 @@
                     </a>
                 </div>
             </div>
-            <!-- Add Arrows -->
             <div class="swiper-button-next swiper-button-white"></div>
             <div class="swiper-button-prev swiper-button-white"></div>
-        </div>
+        </div>-->
         <!--<div class="product-slick" style="min-height: 200px; display: table; width: 100%;">
             <div class="image_mask" style="vertical-align: middle; display: table-cell; text-align: center">
                 <img class="img-fluid blur-up lazyload" src="{{ \Config::get('app.IMG_URL1') .'600/800'. \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png') }}">
@@ -911,18 +916,16 @@
                         $('#product_variant_quantity_wrapper').html('');
                         let variant_quantity_template = _.template($('#variant_quantity_template').html());
                         $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
+                        console.log(response.variant.quantity);
                         if(response.variant.quantity < 1){
                             $(".addToCart, #addon-table").hide();
                         }else{
                             $(".addToCart, #addon-table").show();
                         }
 
-                        // $('#product-slick-wrapper').html('');
                         let variant_image_template = _.template($('#variant_image_template').html());
-                        // $("#product-slick-wrapper").append(variant_image_template({media:response.variant.media}));
-
                         $(".product__carousel .gallery-parent").html('');
-                        $(".product__carousel .gallery-parent").append(variant_image_template({media:response.variant.media}));
+                        $(".product__carousel .gallery-parent").append(variant_image_template({variant:response.variant}));
                         easyZoomInitialize();
                         $('.easyzoom').easyZoom();
 

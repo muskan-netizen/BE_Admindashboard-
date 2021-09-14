@@ -74,5 +74,6 @@ class Kernel extends HttpKernel
         'webAuth' => \App\Http\Middleware\WebAuth::class,
         'ClientAuth' => \App\Http\Middleware\ClientAuth::class,
         'systemAuth'    =>\App\Http\Middleware\SystemAuth::class,
+        'ApiLocalization' => \App\Http\Middleware\ApiLocalization::class,
     ];
 }

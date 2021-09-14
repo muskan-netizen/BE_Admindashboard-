@@ -371,7 +371,7 @@ class OrderController extends Controller {
                 });
             break;
         }
-        $orders = $orders->paginate($paginate);
+        $orders = $orders->with(['vendor:id,name,logo,banner'])->paginate($paginate);
         foreach ($orders as $order) {
             $order_item_count = 0;
             $order->user_name = $user->name;

@@ -180,7 +180,7 @@ let TotalImages = $('#input-file')[0].files.length; //Total Images
 let review = $('#exampleFormControlTextarea1').val();
 if(TotalImages > 0)
 {
-    
+   console.log(1); 
 let images = $('#input-file')[0];
 for (let i = 0; i < TotalImages; i++) {
 formData.append('images' + i, images.files[i]);
@@ -205,7 +205,7 @@ if(data.status == 'Success')
         $("#input-file").val('');
         for(var i = 0; i < data.data.length; i++) {
             console.log(data.data[i]['name']);
-            $("#remove_files").append("<input type='hidden' name='add_files[]' id='"+ data.data[i]['ids'] +"' = value='"+ data.data[i]['name'] +"'>");
+            $("#remove_files").append("<input type='hidden' name='add_files[]' id='"+ data.data[i]['ids'] +"'  value='"+ data.data[i]['name'] +"'>");
             $("#thumb-output").append("<div class='col-6 col-md-4'> <img class=\"update_pic\" src=\"" + data.data[i]['img_path'] + "\" />" +
             "<i class='fa fa-trash local-img-del' aria-hidden='true' data-id='"+ data.data[i]['ids'] +"'></i></div>");
         }
@@ -224,6 +224,7 @@ error: function(data){
 }
 else
 {
+  
 $.ajax({
 type:'POST',
 url: "{{ route('update.order.rating')}}",

@@ -19,7 +19,7 @@
     opacity: 0;
   }
 }
-.top-header,.main-menu.d-block{
+.site-topbar,.main-menu.d-block{
     display: none !important;
 }
 
@@ -100,7 +100,7 @@ if (strpos($url,'cabservice') !== false) {?>
                     <input class="form-control pickup-text" name="destination_location_name[]" type="text" placeholder="{{__('Add A Stop')}}" id="destination_location"/>
                 </div>
                 <div class="location-search d-flex align-items-center" style="display:none !important;" id="destination_location_add_temp">
-                    <i class="fa fa-search" aria-hidden="true"></i>
+
                 </div>
                 <div class="scheduled-ride">
                     <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="mx-2 scheduleDateTimeApnd">Now</span> <i class="fa fa-angle-down" aria-hidden="true"></i></button>
@@ -158,7 +158,7 @@ if (strpos($url,'cabservice') !== false) {?>
                 <div class="table-responsive style-4">
                     <div class="cab-button d-flex flex-nowrap align-items-center py-2" id="vendor_main_div"></div>
                 </div>
-                <div class="vehical-container style-4" style="height:calc(100vh - 397px) !important" id="search_product_main_div"></div>
+                <div class="vehical-container style-4" id="search_product_main_div"></div>
             </div>
         </div>
         <script type="text/template" id="vendors_template">
@@ -194,13 +194,14 @@ if (strpos($url,'cabservice') !== false) {?>
             </div>
         </script>
         <script type="text/template" id="destination_location_template">
+            <i class="fa fa-search destination-icon" aria-hidden="true"></i> 
             <input class="form-control pickup-text" type="text" name="destination_location_name[]" placeholder="{{__('Add A Stop')}}" id="destination_location_<%= random_id %>" data-rel="<%= random_id %>"/>
             <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude_<%= random_id %>" data-rel="<%= random_id %>"/>
             <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude_<%= random_id %>" data-rel="<%= random_id %>"/>
         </script>
         <script type="text/template" id="destination_location_template_li">
             <li class="d-flex dots" id="dots_<%= random_id %>">
-                <div class="title title-24 pr-3 position-relative edit-other-stop" id="<%= random_id %>">  {{__('To')}} - <span id="dropoff-where-to-<%= random_id %>"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+                <div class="title title-24 position-relative edit-other-stop" id="<%= random_id %>">  {{__('To')}} - <span id="dropoff-where-to-<%= random_id %>"></span><i class="fa fa-angle-down" aria-hidden="true"></i></div>
                 <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel="<%= random_id %>"></i>
             </li>
         </script>
@@ -208,7 +209,7 @@ if (strpos($url,'cabservice') !== false) {?>
             <div class="cab-outer style-4">
                 <div class="bg-white p-2">
                     <a class="close-cab-detail-box" href="javascript:void()">✕</a>
-                    <div class="w-100 h-100">
+                    <div class="cab-image-box w-100 d-flex align-items-center justify-content-center">
                         <img src="<%= result.image_url %>">
                     </div>
                     <div class="cab-location-details">
@@ -250,10 +251,10 @@ if (strpos($url,'cabservice') !== false) {?>
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                 </h4>
                 <div class="row">
-                    <div class="col-sm-6">
+                    <div class="col-6">
                         <button class="btn btn-solid w-100" id="pickup_now" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">Pickup Now</button>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-6">
                         <button class="btn btn-solid w-100" id="pickup_later" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_later">Pickup Later</button>
                     </div>
                 </div>
@@ -293,15 +294,18 @@ if (strpos($url,'cabservice') !== false) {?>
                 </div>
                 <div class="cab-location-details" id="driver_details_main_div" style="display:none;">
                    <div class="row align-items-center">
-                       <div class="col-8" >
-                            <h4 id="driver_name"><b><%= result.user_name %></b></h4>
-                            <p class="mb-0" id="driver_phone_number"><%= result.phone_number %></p>
-                       </div>
-                       <div class="col-4">
+
+                        <div class="col-4">
                            <div class="taxi-img">
                                <img src="" id="driver_image">
                            </div>
-                       </div>
+                        </div>
+
+                        <div class="col-8" >
+                            <h4 id="driver_name"><b><%= result.user_name %></b></h4>
+                            <p class="mb-0" id="driver_phone_number"><%= result.phone_number %></p>
+                        </div>
+
                    </div>
                 </div>
             </div>
@@ -318,13 +322,13 @@ if (strpos($url,'cabservice') !== false) {?>
         </script>
 
         <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
-        <div class="promo-box style-4 d-none">
-            <a class="d-block mt-2 close-promo-code-detail-box" href="javascript:void(0)">✕</a>
-            <div class="row" id="cab_booking_promo_code_list_main_div">
-                
-            </div>    
+            <div class="promo-box style-4 d-none">
+                <a class="d-block mt-2 close-promo-code-detail-box" href="javascript:void(0)">✕</a>
+                <div class="row" id="cab_booking_promo_code_list_main_div">
+                    
+                </div>    
+            </div>
         </div>
-    </div>
 
 
    

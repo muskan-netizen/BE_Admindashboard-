@@ -5,7 +5,7 @@ $urlImg = $clientData->logo['proxy_url'].'200/80'.$clientData->logo['image_path'
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
-<div class="top-header">
+<div class="top-header site-topbar">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-7">

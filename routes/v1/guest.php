@@ -1,5 +1,5 @@
 <?php
-Route::group(['prefix' => 'v1'], function () {
+Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
     Route::group(['middleware' => ['dbCheck', 'checkAuth', 'apilogger']], function() {
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::get('cart/list', 'Api\v1\CartController@index');

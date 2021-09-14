@@ -62,6 +62,8 @@ return [
 
     'asset_url' => env('ASSET_URL', null),
 
+    'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es'],
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
