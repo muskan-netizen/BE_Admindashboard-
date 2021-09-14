@@ -35,8 +35,8 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 @if(count($social_media_details))
                     <div class="col-lg-4 col-md-6 pl-lg-5">
                         <div class="sub-title">
-                            <div class="footer-title">
-                                <h4>{{ __('Connect') }}</h4>
+                            <div class="footer-title mt-0">
+                                <h4 class="mt-0">{{ __('Connect') }}</h4>
                             </div>
                             <div class="footer-contant">
                                 <div class="footer-social">

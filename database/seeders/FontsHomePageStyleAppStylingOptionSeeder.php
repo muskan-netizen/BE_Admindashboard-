@@ -23,6 +23,11 @@ class FontsHomePageStyleAppStylingOptionSeeder extends Seeder
             if(empty($checkExist)){
                 AppStylingOption::create(['app_styling_id' => $app_styling->id, 'name' => 'Eina02-Regular', 'is_selected' => 0]);
             }
+
+            $checkExist = AppStylingOption::where(['app_styling_id' => $app_styling->id, 'name' => 'Metropolis-Regular'])->first();
+            if(empty($checkExist)){
+                AppStylingOption::create(['app_styling_id' => $app_styling->id, 'name' => 'Metropolis-Regular', 'is_selected' => 0]);
+            }
         }
 
         $app_styling = AppStyling::where(['name' => 'Medium Font'])->first();
@@ -32,6 +37,11 @@ class FontsHomePageStyleAppStylingOptionSeeder extends Seeder
             if(empty($checkExist)){
                 AppStylingOption::create(['app_styling_id' => $app_styling->id, 'name' => 'Eina02-SemiBold', 'is_selected' => 0]);
             }
+
+            $checkExist = AppStylingOption::where(['app_styling_id' => $app_styling->id, 'name' => 'Metropolis-SemiBold'])->first();
+            if(empty($checkExist)){
+                AppStylingOption::create(['app_styling_id' => $app_styling->id, 'name' => 'Metropolis-SemiBold', 'is_selected' => 0]);
+            }
         }
 
         $app_styling = AppStyling::where(['name' => 'Bold Font'])->first();
@@ -40,6 +50,11 @@ class FontsHomePageStyleAppStylingOptionSeeder extends Seeder
             $checkExist = AppStylingOption::where(['app_styling_id' => $app_styling->id, 'name' => 'Eina02-Bold'])->first();
             if(empty($checkExist)){
                 AppStylingOption::create(['app_styling_id' => $app_styling->id, 'name' => 'Eina02-Bold', 'is_selected' => 0]);
+            }
+
+            $checkExist = AppStylingOption::where(['app_styling_id' => $app_styling->id, 'name' => 'Metropolis-Bold'])->first();
+            if(empty($checkExist)){
+                AppStylingOption::create(['app_styling_id' => $app_styling->id, 'name' => 'Metropolis-Bold', 'is_selected' => 0]);
             }
         }
 

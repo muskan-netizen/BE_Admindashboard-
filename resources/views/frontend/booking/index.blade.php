@@ -345,7 +345,7 @@ if (strpos($url,'cabservice') !== false) {?>
                 </button>
             </div>
             <div class="modal-body p-0">
-                <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 select_cab_payment_method"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> Cash</span></h4>
+                <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> Cash</span></h4>
                 {{-- <h4 class="payment-button"  data-toggle="modal" data-target="#select_payment_option" aria-label="Close">Select Payment Method</h4> --}}
             </div>        
         </div>

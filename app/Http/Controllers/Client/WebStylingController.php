@@ -78,6 +78,11 @@ class WebStylingController extends BaseController{
             $best_sellers->is_active = $request->has('best_sellers') && $request->best_sellers == "on" ? 1 : 0;
             $best_sellers->save(); 
         }
+        $cab_booking = HomePageLabel::where('slug', 'cab_booking')->first();
+        if($cab_booking){
+            $cab_booking->is_active = $request->has('cab_booking') && $request->cab_booking == "on" ? 1 : 0;
+            $cab_booking->save(); 
+        }
         $client_preferences = ClientPreference::first();
         if($client_preferences){
             if($request->has('favicon')){

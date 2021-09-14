@@ -736,7 +736,7 @@ form .btn {
 .collection-filter .theme-card .offer-slider .media>a {
     display: block;
     width: 50%;
-    height: 150px;
+    height: 100px;
 }
 
 .offer-slider .media-body {
@@ -2518,6 +2518,7 @@ footer .form-control {
     padding: 10px;
     border-radius: 50px;
     min-width: 120px;
+    text-transform: capitalize;
 }
 
 .pixelstrap ul a:before {
@@ -4080,7 +4081,7 @@ h4#driver_name {
     content: "";
     width: 2px;
     left: -19px;
-    top: 26px;
+    top: 24px;
 }
 
 .location-inputs li.where-to-first::before {
@@ -4095,7 +4096,9 @@ h4#driver_name {
     height: 300px;
 
 }
-
+.cab-image-box img {
+    max-width: 100%;
+}
 .cab-location-details h4+img {
     height: 40px;
 }
@@ -4115,7 +4118,7 @@ h4#driver_name {
 }
 
 .location-inputs .dots::after {
-    top: 14px;
+    top: 12px;
     left: -22px;
     /* transform: translateY(calc(-50% - 4px)); */
 }
