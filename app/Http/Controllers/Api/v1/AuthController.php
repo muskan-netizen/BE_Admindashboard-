@@ -41,11 +41,11 @@ class AuthController extends BaseController{
         $errors = array();
         $user = User::with('country')->where('email', $loginReq->email)->first();
         if(!$user){
-            $errors['error'] = 'Invalid email';
+            $errors['error'] = __('Invalid email');
             return response()->json($errors, 422);
         }
         if(!Auth::attempt(['email' => $loginReq->email, 'password' => $loginReq->password])){
-            $errors['error'] = 'Invalid password';
+            $errors['error'] = __('Invalid password');
             return response()->json($errors, 422);
         }
         $user = Auth::user();

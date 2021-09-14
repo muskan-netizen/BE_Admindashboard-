@@ -43,9 +43,9 @@ class AddressController extends BaseController{
                 $add = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
             }
             $address = UserAddress::where('id', $addressId)->where('user_id', $user->id)->first();
-            $message = "Address updated successfully.";
+            $message = __("Address updated successfully.");
             if(!$address){
-                $message = "Address added successfully.";
+                $message = __("Address added successfully.");
                 $address = new UserAddress();
                 $address->user_id = $user->id;
                 $address->is_primary = $request->has('is_primary') ? 1 : 0;
@@ -70,7 +70,7 @@ class AddressController extends BaseController{
             }
             $add = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
             $add = UserAddress::where('user_id', $user->id)->where('id', $addressId)->update(['is_primary' => 1]);
-            return $this->successResponse('', 'Address is set as primary address successfully.');
+            return $this->successResponse('', __('Address is set as primary address successfully.'));
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
@@ -83,7 +83,7 @@ class AddressController extends BaseController{
                 return $this->errorResponse('Address not found.', 404);
             }
             $address->delete();
-            return $this->successResponse('', 'Address deleted successfully.');
+            return $this->successResponse('', __('Address deleted successfully.'));
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }

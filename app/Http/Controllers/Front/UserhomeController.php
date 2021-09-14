@@ -13,9 +13,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Contracts\Session\Session as SessionSession;
-use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, ClientCurrency, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language};
+use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, ClientCurrency, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language,OnboardSetting};
 use Illuminate\Contracts\View\View;
 use Illuminate\View\View as ViewView;
+use Redirect;
 
 class UserhomeController extends FrontController
 {
@@ -184,6 +185,11 @@ class UserhomeController extends FrontController
                     });
                 })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
             $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
+
+            $only_cab_booking = OnboardSetting::where('key_value','home_page_cab_booking')->count();
+            if($only_cab_booking == 1)
+            return Redirect::route('categoryDetail','cabservice');    
+
             return view('frontend.home')->with(['home' => $home, 'count' => $count, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
         } catch (Exception $e) {
             pr($e->getCode());

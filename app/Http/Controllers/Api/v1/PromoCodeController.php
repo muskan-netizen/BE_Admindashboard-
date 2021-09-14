@@ -99,7 +99,7 @@ class PromoCodeController extends Controller{
             $cart_coupon->vendor_id = $request->vendor_id;
             $cart_coupon->coupon_id = $request->coupon_id;
             $cart_coupon->save();
-            return $this->successResponse($cart_coupon, 'Promotion Code Used Successfully.', 201);
+            return $this->successResponse($cart_coupon, __('Promotion Code Used Successfully'), 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
@@ -119,7 +119,7 @@ class PromoCodeController extends Controller{
                 return $this->errorResponse('Invalid Promocode Id', 422);
             }
             CartCoupon::where('cart_id', $request->cart_id)->where('coupon_id', $request->coupon_id)->delete();
-            return $this->successResponse(null, 'Promotion Code Removed Successfully.', 201);
+            return $this->successResponse(null, __('Promotion Code Removed Successfully'), 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }

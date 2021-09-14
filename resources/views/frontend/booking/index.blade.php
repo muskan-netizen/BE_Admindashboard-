@@ -180,7 +180,7 @@ if (strpos($url,'cabservice') !== false) {?>
                             <div class="col-4 ride-price pl-2 text-right">
                                 <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
                             </div>
-                        </div>
+                        </div> 
                     </div>
                 </a>
                 <hr class="m-0">

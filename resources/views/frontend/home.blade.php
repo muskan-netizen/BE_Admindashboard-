@@ -115,6 +115,9 @@
 <section class="section-b-space p-t-0 pt-3 pt-md-5 ratio_asos d-none" id="our_vendor_main_div">
     <div class="vendors">
         @foreach($homePageLabels as $homePageLabel)
+        @if($homePageLabel->slug == 'cab_booking')
+            @include('frontend.booking.cabbooking-single-module')
+        @else
         <div class="container" id="{{$homePageLabel->slug.'1'}}">
             <div class="row">
                 <div class="col-12 text-center d-flex align-items-center justify-content-between mb-4">
@@ -136,6 +139,7 @@
                 </div>
             </div>
         </div>
+        @endif
         @endforeach
     </div>
 </section>

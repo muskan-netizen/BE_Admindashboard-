@@ -176,8 +176,8 @@ class VendorController extends BaseController{
                         },
                         'variant' => function($q) use($langId){
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
-                            $q->groupBy('product_id');
-                        },
+                            // $q->groupBy('product_id');
+                        }, 'variant.checkIfInCart',
                     ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
             if(!empty($slug2)){
                 $category = Category::select('id')->where('slug', $slug2)->firstOrFail();

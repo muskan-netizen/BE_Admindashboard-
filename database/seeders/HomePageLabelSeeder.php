@@ -82,6 +82,7 @@ class HomePageLabelSeeder extends Seeder
             'title' => 'Cab Booking',
             'slug' => 'cab_booking',
             'order_by' => 7,
+            'is_active' => 0
         ]);
     }
 }

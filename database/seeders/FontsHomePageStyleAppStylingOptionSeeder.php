@@ -77,7 +77,7 @@ class FontsHomePageStyleAppStylingOptionSeeder extends Seeder
         if(!empty($app_styling)){
             $checkExist = AppStylingOption::where(['app_styling_id' => $app_styling->id])->first();
             if(empty($checkExist)){
-                AppStylingOption::create(['app_styling_id' => $app_styling->id, 'name' => 'Create a free account and join us!']);
+                AppStylingOption::create(['app_styling_id' => $app_styling->id, 'name' => __('Create a free account and join us!')]);
             }
         }
     }
