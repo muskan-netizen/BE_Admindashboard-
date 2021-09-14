@@ -14,7 +14,15 @@ jQuery(window).scroll(function () {
 $(document).ready(function () {
 
     if (window.location.pathname == '/') {
-        getHomePage("", "");
+        let latitude = "";
+        let longitude = "";
+        if($("#address-latitude").length > 0){
+            latitude = $("#address-latitude").val();
+        }
+        if($("#address-longitude").length > 0){
+            longitude = $("#address-longitude").val();
+        }
+        getHomePage(latitude, longitude);
     //     $(document).ready(function () {
     //         $.ajax({
     //             url: client_preferences_url,

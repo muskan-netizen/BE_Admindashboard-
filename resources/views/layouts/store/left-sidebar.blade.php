@@ -272,7 +272,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
             </div>
         </div>
-    @if(count($navCategories) > 0)
+    {{--@if(count($navCategories) > 0)--}}
         <div class="menu-navigation">
             <div class="container">
                 <div class="row">
@@ -314,7 +314,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
             </div>
         </div>
-    @endif
+    {{--@endif--}}
 
    
 
