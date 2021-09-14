@@ -95,7 +95,7 @@
             <label for="review">Review</label>
             <textarea class="form-control"
                 placeholder="Wrire Your Testimonial Here"
-                id="exampleFormControlTextarea1" rows="4"  name="review" maxlength="500" required>{{$rating_details->review??''}}</textarea>
+                id="exampleFormControlTextarea1" rows="4"  name="review" maxlength="500">{{$rating_details->review??''}}</textarea>
         </div>
         <span class="text-danger" id="error-msg"></span>
         <span class="text-success" id="success-msg"></span>
@@ -253,6 +253,7 @@ if(data.status == 'Success')
             $(location).prop('href', url);
            }
         }
+        $('#success-msg').text(data.message);
     }else{
         $('#error-msg').text(data.message);
         $("#review_form_button").html('Submit Your Review').prop('disabled', false);

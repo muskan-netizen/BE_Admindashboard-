@@ -348,7 +348,7 @@
                                                     <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
                                                         @foreach($addon->setoptions as $k => $option)
                                                         <div class="checkbox checkbox-success form-check-inline mb-1">
-                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
+                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
                                                             <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}">
                                                                 {{$option->title .' ($'.$option->price.')' }}</label>
                                                         </div>
@@ -388,7 +388,7 @@
                                                     <td>
                                                         @foreach($addon->setoptions as $k => $option)
                                                         <div class="checkbox checkbox-success form-check-inline">
-                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
+                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
                                                             <label class="pl-2" for="inlineCheckbox_{{$row.'_'.$k}}">
                                                                 {{$option->title .' ($'.$option->price.')' }}</label>
                                                         </div>
@@ -949,11 +949,11 @@
     var addonids = [];
     var addonoptids = [];
     $(function() {
-        $(".productAddonOption").click(function(e) {
+        $(".productDetailAddonOption").click(function(e) {
             var addon_elem = $(this).closest('tr');
             var addon_minlimit = addon_elem.data('min');
             var addon_maxlimit = addon_elem.data('max');
-            if(addon_elem.find(".productAddonOption:checked").length > addon_maxlimit) {
+            if(addon_elem.find(".productDetailAddonOption:checked").length > addon_maxlimit) {
                 this.checked = false;
             }else{
                 var addonId = $(this).attr("addonId");
@@ -966,8 +966,6 @@
                     addonoptids.splice(addonoptids.indexOf(addonOptId), 1);
                 }
             }
-
-            console.log(addonoptids);
         });
     });
 </script>

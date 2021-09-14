@@ -5192,7 +5192,7 @@ ul#main-nav-list {
 .breadcrumb-item+.breadcrumb-item::before {
     content: "/";
     font-size: 18px;
-    top: -2px;
+    top: 2px;
     position: relative;
 }
 

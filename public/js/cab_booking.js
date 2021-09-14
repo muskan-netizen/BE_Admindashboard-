@@ -1,5 +1,10 @@
    ////////   **************  cab details page  *****************  ////////
 
+   $(document).on("click", ".select_cab_payment_method",function() {
+      $("#payment_modal").modal('toggle');
+   });
+
+
    function setOrderDetailsPage() {
     $('.address-form').addClass('d-none');
     $('.cab-detail-box').removeClass('d-none');

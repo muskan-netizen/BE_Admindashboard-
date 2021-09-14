@@ -244,7 +244,7 @@ if (strpos($url,'cabservice') !== false) {?>
                 </div>
             </div>
             <div class="payment-promo-container p-2">
-                <h4 class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="d-flex align-items-center justify-content-between mb-2"  data-toggle="modal" data-target="#payment_modal">
                     <span>
                         <i class="fa fa-money" aria-hidden="true"></i> Cash
                     </span>
@@ -334,6 +334,41 @@ if (strpos($url,'cabservice') !== false) {?>
    
 </section>
 
+<!-- Payment Modal -->
+<div class="modal fade payment-modal payment-modal-width" id="payment_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="payment_modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header pb-0">
+                <h5 class="modal-title" id="payment_modalLabel">Select Payment Method</h5>
+                <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 select_cab_payment_method"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> Cash</span></h4>
+                {{-- <h4 class="payment-button"  data-toggle="modal" data-target="#select_payment_option" aria-label="Close">Select Payment Method</h4> --}}
+            </div>        
+        </div>
+    </div>
+</div>
+
+<!-- Select Payment Option -->
+<div class="modal fade select-payment-option payment-modal-width" id="select_payment_option" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="select_payment_optionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="select_payment_optionLabel">Choose payment method</h5>
+                <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4 class="d-flex  justify-content-between mb-2 mt-3 select_cab_payment_methodx"><span ><i class="fa fa-money mr-3" aria-hidden="true"></i> Cash</span></h4>
+            </div>        
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('script')
@@ -350,5 +385,6 @@ var no_coupon_available_message = "{{__('No Other Coupons Available.')}}";
 var order_tracking_details_url = "{{url('looking/order-tracking-details')}}";
 var cab_booking_promo_code_remove_url = "{{url('looking/promo-code/remove')}}";
 var apply_cab_booking_promocode_coupon_url = "{{ route('verify.cab.booking.promo-code') }}";
+
 </script>
 @endsection
