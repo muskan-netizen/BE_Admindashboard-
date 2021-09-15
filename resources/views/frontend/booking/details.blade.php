@@ -194,7 +194,7 @@
                                 <li><a href="#"><i class="fa fa-star" aria-hidden="true"></i></a></li>
                                 <li><a href="#"><i class="fa fa-star" aria-hidden="true"></i></a></li>
                                 <li><a href="#"><i class="fa fa-star" aria-hidden="true"></i></a></li>
-                                <li><span class="rating-count">(8)</span></li>
+                                <li><span class="rating-count">(<%= result.total_order_by_agent %> )</span></li>
                             </ul>
                             <p class="mb-0" id="driver_phone_number"><%= result.phone_number %></p>
                        </div>

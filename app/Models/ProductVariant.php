@@ -82,4 +82,20 @@ class ProductVariant extends Model
 
         return $this->hasMany('App\Models\CartProduct', 'variant_id', 'id')->whereHas('cart',function($qset)use($column,$value){$qset->where($column,$value);});;
     }
+
+    public function checkIfInCartApp()
+    { 
+        $user = Auth::user();
+        if ($user->id && $user->id > 0) {
+            $column = 'user_id';
+            $value = $user->id;
+        } else {
+            $column = 'unique_identifier';
+            $value = $user->system_user;
+        }
+
+        return $this->hasMany('App\Models\CartProduct', 'variant_id', 'id')->whereHas('cart',function($qset)use($column,$value){
+            $qset->where($column,$value);
+        });
+    }
 }

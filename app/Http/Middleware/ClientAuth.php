@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
-use App\Models\{Client, ClientPreference, ClientLanguage, ClientCurrency,Permissions,UserVendor};
+use App\Models\{Client, ClientPreference, ClientLanguage, ClientCurrency,Permissions,UserVendor,Country};
 
 class ClientAuth{
     /**
@@ -78,7 +78,15 @@ class ClientAuth{
                  return redirect('login')->with(['account_blocked' => 'You are unauthorized user.']);
              }
 
-            
+             $cl = Client::first();
+             $getAdminCurrentCountry = Country::where('id', '=', $cl->country_id)->get()->first();
+             if(!empty($getAdminCurrentCountry)){
+                 $countryCode = $getAdminCurrentCountry->code;
+             }else{
+                 $countryCode = '';
+             }
+             
+             Session::put('default_country_code', $countryCode);
         }
         return redirect('user/login');
         

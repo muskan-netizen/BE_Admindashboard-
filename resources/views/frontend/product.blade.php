@@ -22,6 +22,9 @@
         font: normal normal normal 14px/1 FontAwesome;
         font-size: inherit;
     }
+    #number{
+        display:block;
+    }
 </style>
 
 @endsection
@@ -757,7 +760,7 @@
                         </div>
                         <div class="col-md-6 form-group">
                             <label>{{__('Phone Number')}}</label>
-                            <input class="form-control" name="number" id="number" value="{{$user ? $user->phone_number : '' }}" type="text" placeholder="{{__('Phone Number')}}" style="display:inline-block;">
+                            <input class="form-control" name="number1" id="number1" value="{{$user ? $user->phone_number : '' }}" type="text" placeholder="{{__('Phone Number')}}" style="display:inline-block;">
                             <span class="text-danger error-text numberError"></span>
                         </div>
                         <div class="col-md-6 form-group">

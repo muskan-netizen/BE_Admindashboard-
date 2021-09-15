@@ -246,6 +246,7 @@
             separateDialCode: true,
             hiddenInput: "full_number",
             utilsScript: "{{asset('assets/js/utils.js')}}",
+            initialCountry: "{{ Session::get('default_country_code','US') }}",
         });
 
         function initialize() {

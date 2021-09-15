@@ -81,6 +81,22 @@ function getOrderDriverDetails(dispatch_traking_url,order_id,product_image) {
                 $('#driver_image').attr('src', response.data.agent_image).show();
                 $('#driver_phone_number').html(response.data.order.phone_number).show();
                 $("#dispatcher_status_show").html(response.data.order_details.dispatcher_status);
+                var avgrating = response.data.avgrating;
+                var fillStar = '';
+                for (let i = 1; i <= avgrating; i++) {
+                    fillStar += "<li><a href='#'><i class='fa fa-star' aria-hidden='true'></i></a></li>";
+                }
+                var emptystar = 5;
+                var emptystarhtml = '';
+                for (let i = 1; i <= emptystar-avgrating; i++) {
+                    emptystarhtml += "<li><a href='#'><i class='fa fa-star-o' aria-hidden='true'></i></a></li>";
+                }
+
+                $(".product-rating-star").html(fillStar);
+                $(".product-rating-star").append(emptystarhtml);
+
+                $(".rating-count").html('('+response.data.total_order_by_agent+')');
+                
                 if(order_status != order_status_new){
                     const options = {
                         style: {

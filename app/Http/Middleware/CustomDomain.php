@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
-use App\Models\{Client, ClientPreference, ClientLanguage, ClientCurrency, Product};
+use App\Models\{Client, ClientPreference, ClientLanguage, ClientCurrency, Product,Country};
 
 class CustomDomain{
     /**
@@ -99,6 +99,17 @@ class CustomDomain{
           if(isset($clientPreference)){
             $preferData = $clientPreference;
           }
+
+          $cl = Client::first();
+          $getAdminCurrentCountry = Country::where('id', '=', $cl->country_id)->get()->first();
+          if(!empty($getAdminCurrentCountry)){
+              $countryCode = $getAdminCurrentCountry->code;
+          }else{
+              $countryCode = '';
+          }
+
+          Session::put('default_country_code', $countryCode);
+
           Session::put('preferences', $preferData);
       }else{
         return redirect()->route('error_404');

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Twilio\Rest\Client as TwilioC;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
-use App\Models\{Client, ClientPreference};
+use App\Models\{Client, ClientPreference,Country};
 
 class DatabaseDynamic{
     /**
@@ -80,6 +80,17 @@ class DatabaseDynamic{
                 }
 
               }
+
+
+              $cl = Client::first();
+              $getAdminCurrentCountry = Country::where('id', '=', $cl->country_id)->get()->first();
+              if(!empty($getAdminCurrentCountry)){
+                  $countryCode = $getAdminCurrentCountry->code;
+              }else{
+                  $countryCode = '';
+              }
+              
+              Session::put('default_country_code', $countryCode);
           }
       }
         return $next($request);

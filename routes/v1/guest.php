@@ -22,6 +22,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
         // Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
         Route::get('vendor/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProducts');
+        Route::post('checkIsolateSingleVendor', 'Api\v1\CartController@checkIsolateSingleVendor');
         // Route::get('vendor/category/productsFilter/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProductsFilter');
         Route::post('productByVariant/{id}','Api\v1\ProductController@getVariantData')->name('productVariant');
         Route::post('contact-us', 'Api\v1\HomeController@contactUs');

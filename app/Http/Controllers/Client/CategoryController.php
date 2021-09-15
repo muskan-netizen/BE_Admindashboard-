@@ -19,9 +19,17 @@ class CategoryController extends BaseController{
      * @return \Illuminate\Http\Response
      */
     public function index(){
+
+        $celebrity_check = ClientPreference::first()->value('celebrity_check');
+      
         $brands = Brand::with( 'bc.cate.primary')->where('status', '!=', 2)->orderBy('position', 'asc')->get();
         $variants = Variant::with('option', 'varcategory.cate.primary')->where('status', '!=', 2)->orderBy('position', 'asc')->get();
-        $categories = Category::with('translation_one')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1)->get();
+        $categories = Category::with('translation_one')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
+
+        if($celebrity_check == 0)
+        $categories = $categories->where('type_id','!=',5);   # if celebrity mod off .
+        
+        $categories = $categories->get();
         if($categories){
             $build = $this->buildTree($categories->toArray());
             $tree = $this->printTree($build);
@@ -31,6 +39,8 @@ class CategoryController extends BaseController{
                     ->where('client_languages.client_code', Auth::user()->code)
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
+
+                    
         return view('backend.catalog.index')->with(['categories' => $categories, 'html' => $tree,  'languages' => $langs, 'variants' => $variants, 'brands' => $brands, 'build' => $build]);
     }
 

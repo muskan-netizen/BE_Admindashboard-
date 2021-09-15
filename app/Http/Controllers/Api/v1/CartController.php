@@ -755,4 +755,26 @@ class CartController extends BaseController{
             return response()->json(['status'=>'Error', 'message'=>$ex->getMessage()]);
         }
     }
+
+    public function checkIsolateSingleVendor(Request $request, $domain=''){
+        try{
+            $preference = ClientPreference::first();
+            $user = Auth::user();
+            $new_session_token = session()->get('_token');
+            if ($user) {
+                $cart_detail = Cart::where('user_id', $user->id)->first();
+            } else {
+                $cart_detail = Cart::where('unique_identifier', $new_session_token)->first();
+            }
+            if ( (isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1) && (!empty($cart_detail)) ) {
+                $checkVendorId = CartProduct::where('vendor_id', '!=', $request->vendor_id)->where('cart_id', $cart_detail->id)->first();
+                return response()->json(['status'=>'Success', 'otherVendorExists'=>($checkVendorId ? 1 : 0), 'isSingleVendorEnabled'=>1]);
+            }else{
+                return response()->json(['status'=>'Success', 'otherVendorExists'=>0 , 'isSingleVendorEnabled'=>0]);
+            }
+        }
+        catch(\Exception $ex){
+            return response()->json(['status'=>'Error', 'message'=>$ex->getMessage()]);
+        }
+    }
 }

@@ -308,6 +308,7 @@
         separateDialCode: true,
         hiddenInput: "contact",
         utilsScript: "{{asset('assets/js/utils.js')}}",
+        initialCountry: "{{ Session::get('default_country_code','US') }}",
     });
     $(document).ready(function () {
         $("#phone").keypress(function (e) {

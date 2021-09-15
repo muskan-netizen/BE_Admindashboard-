@@ -90,6 +90,8 @@ class CustomerAuthController extends FrontController
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
+
+       
         if (!Session::get('referrer')) {
             return view('frontend.account.registernew')->with(['navCategories' => $navCategories]);
         } else {
