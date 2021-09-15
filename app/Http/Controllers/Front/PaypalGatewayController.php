@@ -20,16 +20,17 @@ class PaypalGatewayController extends FrontController
 
     public function __construct()
     {
-        $paypal_creds = PaymentOption::select('credentials')->where('code', 'paypal')->where('status', 1)->first();
+        $paypal_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'paypal')->where('status', 1)->first();
         $creds_arr = json_decode($paypal_creds->credentials);
         $username = (isset($creds_arr->username)) ? $creds_arr->username : '';
         $password = (isset($creds_arr->password)) ? $creds_arr->password : '';
         $signature = (isset($creds_arr->signature)) ? $creds_arr->signature : '';
+        $testmode = (isset($paypal_creds->test_mode) && ($paypal_creds->test_mode == '1')) ? true : false;
         $this->gateway = Omnipay::create('PayPal_Express');
         $this->gateway->setUsername($username);
         $this->gateway->setPassword($password);
         $this->gateway->setSignature($signature);
-        $this->gateway->setTestMode(false); //set it to 'false' when go live
+        $this->gateway->setTestMode($testmode); //set it to 'false' when go live
         
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';

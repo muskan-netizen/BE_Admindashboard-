@@ -19,12 +19,13 @@ class StripeGatewayController extends FrontController{
 
     public function __construct()
     {
-        $paypal_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
-        $creds_arr = json_decode($paypal_creds->credentials);
+        $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'stripe')->where('status', 1)->first();
+        $creds_arr = json_decode($stripe_creds->credentials);
         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+        $testmode = (isset($stripe_creds->test_mode) && ($stripe_creds->test_mode == '1')) ? true : false;
         $this->gateway = Omnipay::create('Stripe');
         $this->gateway->setApiKey($api_key);
-        $this->gateway->setTestMode(false); //set it to 'false' when go live
+        $this->gateway->setTestMode($testmode); //set it to 'false' when go live
 
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';

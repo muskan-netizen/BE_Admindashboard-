@@ -1,5 +1,5 @@
  <!-- Cab Booking Start From Here -->
- <section class="cab-banner-area p-0" style="background:url({{\Config::get('app.FIT_URl', '')}}{{\Config::get('app.IMG_URL2', '')}}/1000/600/{{asset('images/CabBANNER.jpg')}})">
+ <section class="cab-banner-area p-0" style="background:url({{asset('images/CabBANNER.jpg')}});background-size: cover;background-repeat: no-repeat;background-position: center;">
     <div class="container p-64">
         <div class="row">
             <div class="col-md-6">
@@ -12,9 +12,9 @@
                                 <input type="hidden" name="pickup_location_latitude" value="" id="destination_location_latitude_home_1" data-rel="1"/>
                                 <input type="hidden" name="pickup_location_longitude" value="" id="destination_location_longitude_home_1" data-rel="1"/>
                           
-                                <a class="location-btn" href="#">
+                                {{-- <a class="location-btn" href="#">
                                     <img src="{{asset('front-assets/images/arrow.svg')}}" alt="">
-                                </a>
+                                </a> --}}
                             </div>
                             <div class="form-group mb-0">
                                 <input class="form-control edit-other-stop" type="text" name="destination_location" placeholder="Enter drop location" id="destination_location_2" data-rel="2" >

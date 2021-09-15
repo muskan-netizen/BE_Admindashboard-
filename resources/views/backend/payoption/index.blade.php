@@ -77,9 +77,21 @@
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <h4 class="header-title mb-0">{{$opt->title}}</h4>
                     </div>
-                    <div class="form-group mb-0 switchery-demo">
-                        <label for="" class="mr-3">Enable</label>
-                        <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-3">Enable</label>
+                                <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
+                            </div>
+                        </div>
+                        @if ( (strtolower($opt->code) != 'cod') )
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-3">Sandbox</label>
+                                <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="sandbox[{{$opt->id}}]" class="chk_box" data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
+                            </div>
+                        </div>
+                        @endif
                     </div>
 
                     @if ( (strtolower($opt->code) == 'stripe') )

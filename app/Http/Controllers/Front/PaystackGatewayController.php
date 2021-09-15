@@ -18,14 +18,15 @@ class PaystackGatewayController extends FrontController
 
     public function __construct()
     {
-        $paystack_creds = PaymentOption::select('credentials')->where('code', 'paystack')->where('status', 1)->first();
+        $paystack_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'paystack')->where('status', 1)->first();
         $creds_arr = json_decode($paystack_creds->credentials);
         $secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
         $public_key = (isset($creds_arr->public_key)) ? $creds_arr->public_key : '';
+        $testmode = (isset($paystack_creds->test_mode) && ($paystack_creds->test_mode == '1')) ? true : false;
         $this->gateway = Omnipay::create('Paystack');
         $this->gateway->setSecretKey($secret_key);
         $this->gateway->setPublicKey($public_key);
-        $this->gateway->setTestMode(true); //set it to 'false' when go live
+        $this->gateway->setTestMode($testmode); //set it to 'false' when go live
         // dd($this->gateway);
     }
 

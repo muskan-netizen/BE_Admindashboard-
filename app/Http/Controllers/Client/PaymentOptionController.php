@@ -79,6 +79,7 @@ class PaymentOptionController extends BaseController
         $method_id_arr = $request->input('method_id');
         $method_name_arr = $request->input('method_name');
         $active_arr = $request->input('active');
+        $test_mode_arr = $request->input('sandbox');
 
         foreach ($method_id_arr as $key => $id) {
             $saved_creds = PaymentOption::select('credentials')->where('id', $id)->first();
@@ -89,9 +90,14 @@ class PaymentOptionController extends BaseController
             }
 
             $status = 0;
-
+            $test_mode = 0;
             if( (isset($active_arr[$id])) && ($active_arr[$id] == 'on') ){
                 $status = 1;
+
+                if( (isset($test_mode_arr[$id])) && ($test_mode_arr[$id] == 'on') ){
+                    $test_mode = 1;
+                }
+
                 if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paypal') ){
                     $validatedData = $request->validate([
                         'paypal_username'       => 'required',
@@ -138,7 +144,7 @@ class PaymentOptionController extends BaseController
                     ));
                 }
             }
-            PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds]);
+            PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
         }
         $toaster = $this->successToaster('Success', $msg);
         return redirect()->back()->with('toaster', $toaster);
