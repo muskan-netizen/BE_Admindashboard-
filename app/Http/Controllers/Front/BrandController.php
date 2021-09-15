@@ -24,6 +24,7 @@ class BrandController extends FrontController
         $vid = '';
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
+        $preferences = Session::get('preferences');
         $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
         $navCategories = $this->categoryNav($langId);
         $vendorIds = array();
@@ -33,10 +34,14 @@ class BrandController extends FrontController
                 $vendorIds[] = $value->id;
             }
         }
+        // if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+        //     if(Session::has('vendors')){
+        //         $vendorIds = Session::get('vendors');
+        //     }
+        // }
+
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-            if(Session::has('vendors')){
-                $vendorIds = Session::get('vendors');
-            }
+            $vendorIds = $this->getServiceAreaVendors();
         }
 
         $brand = Brand::with(['translation' => function($q) use($langId){
@@ -55,8 +60,11 @@ class BrandController extends FrontController
                     },
                 ])
                 ->select('id', 'sku', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'brand_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating')
-                ->where('brand_id', $brandId)
-                ->where('is_live', 1)->paginate(8);
+                ->where('brand_id', $brandId);
+        if (is_array($vendorIds)) {
+            $products = $products->whereIn('vendor_id', $vendorIds);
+        }
+        $products = $products->where('is_live', 1)->paginate(8);
         
         $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
         if(!empty($products)){

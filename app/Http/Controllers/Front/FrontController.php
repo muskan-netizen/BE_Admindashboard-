@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct};
+use App\Models\{Client, Category, Product, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor};
 
 class FrontController extends Controller
 {
@@ -83,7 +83,31 @@ class FrontController extends Controller
         return $branch;
     }
 
-    public function productList($venderIds, $langId, $currency = 'USD', $where = '')
+    public function getServiceAreaVendors(){
+        $latitude = Session::get('latitude');
+        $longitude = Session::get('longitude');
+        $vendorType = Session::get('vendorType');
+        $serviceAreaVendors = Vendor::select('id');
+        $vendors = [];
+        if($vendorType){
+            $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
+        }
+        $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
+                $query->select('vendor_id')
+                ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+            })
+            ->where('status', 1)->get();
+
+        if($serviceAreaVendors->isNotEmpty()){
+            foreach($serviceAreaVendors as $value){
+                $vendors[] = $value->id;
+            }
+        }
+        Session::put('vendors', $vendors);
+        return $vendors;
+    }
+
+    public function productList($vendorIds, $langId, $currency = 'USD', $where = '')
     {
         $products = Product::with([
             'media' => function ($q) {
@@ -101,9 +125,9 @@ class FrontController extends Controller
         if ($where !== '') {
             $products = $products->where($where, 1);
         }
-        // if(is_array($venderIds) && count($venderIds) > 0){
-            if (is_array($venderIds)) {
-                $products = $products->whereIn('vendor_id', $venderIds);
+        // if(is_array($vendorIds) && count($vendorIds) > 0){
+            if (is_array($vendorIds)) {
+                $products = $products->whereIn('vendor_id', $vendorIds);
             }
             $products = $products->where('is_live', 1)->take(6)->get();
         // pr($products->toArray());die;          
