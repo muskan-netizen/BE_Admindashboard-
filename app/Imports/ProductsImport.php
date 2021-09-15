@@ -43,7 +43,7 @@ class ProductsImport implements ToCollection{
                 }
                 if ($row[4] != "") {
                     $category = $row[4];
-                    $vendorCategoryExists = VendorCategory::with('category.translation_one')
+                    $vendorCategoryExists = VendorCategory::with('category.translation')
                     ->whereHas('category.translation', function($q)use($category){
                         $q->select('category_translations.name')
                         ->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')
@@ -234,7 +234,16 @@ class ProductsImport implements ToCollection{
                     }
 
                     // insert product
-                    $category = CategoryTranslation::where('name', $da[4])->first();
+                    // $category = CategoryTranslation::where('name', $da[4])->first();
+                    $categoryName = $da[4];
+                    $category = VendorCategory::with('category.translation')
+                    ->whereHas('category.translation', function($q)use($categoryName){
+                        $q->select('category_translations.name')
+                        ->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')
+                        ->join('languages', 'category_translations.language_id', 'languages.id')
+                        ->where('cl.is_active', 1)
+                        ->where('category_translations.name', 'LIKE', $categoryName);
+                    })->where('vendor_id', $this->vendor_id)->first();
                     $product = Product::insertGetId([
                         'is_new' => 1,
                         'type_id' => 1,
