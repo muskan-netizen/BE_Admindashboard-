@@ -6600,24 +6600,12 @@ body[dir="rtl"] .inner_spacing h3 {
         max-width: 1000px;
     }
 
-    /* #proceed_to_pay_modal .modal-dialog, */
     .return-order .modal-dialog {
         max-width: 800px;
     }
-
-    /* .product-rating .modal-dialog {
-        max-width: 1000px;
-    } */
 }
 
 @media(max-width:767px) {
-
-    /* .site-header{
-        padding: 10px 0 0;
-    }
-    .main-menu {
-        margin-top: 10px;
-    } */
 
     .main-menu .menu-right .icon-nav li {
         padding: 0;

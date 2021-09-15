@@ -42,7 +42,28 @@ class ProductsImport implements ToCollection{
                     $checker = 1;
                 }
                 if ($row[4] != "") {
-                    $category_check = CategoryTranslation::where('name', "LIKE", $row[4])->first();
+                    $category = $row[4];
+                    $vendorCategoryExists = VendorCategory::with('category.translation_one')
+                    ->whereHas('category.translation', function($q)use($category){
+                        $q->select('category_translations.name')
+                        ->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')
+                        ->join('languages', 'category_translations.language_id', 'languages.id')
+                        ->where('cl.is_active', 1)
+                        ->where('category_translations.name', 'LIKE', $category);
+                    })->where('vendor_id', $this->vendor_id)->first();
+
+                    if (!$vendorCategoryExists) { //check if category doesn't exist
+                        $error[] = "Row " . $i . " : Category doesn't exist";
+                        $checker = 1;
+                    }
+                    else{
+                        if($vendorCategoryExists->status != 1){
+                            $error[] = "Row " . $i . " : This category is not activated for this vendor";
+                            $checker = 1;
+                        }
+                    }
+
+                    /*$category_check = CategoryTranslation::where('name', "LIKE", $row[4])->first();
                     if (!$category_check) { //check if category doesn't exist
                         $error[] = "Row " . $i . " : Category doesn't exist";
                         $checker = 1;
@@ -52,7 +73,7 @@ class ProductsImport implements ToCollection{
                             $error[] = "Row " . $i . " : This category is not activated for this vendor";
                             $checker = 1;
                         }
-                    }
+                    }*/
                 }
                 if ($row[5] != "" && $row[6] == "") {
                     $error[] = "Row " . $i . " : There is no value for option 1";
