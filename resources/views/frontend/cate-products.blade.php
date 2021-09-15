@@ -186,7 +186,7 @@
                                                             <li><img src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
                                                         </ul>
                                                     </div> --}}
-                                                    <div class="product-page-per-view">
+                                                    {{-- <div class="product-page-per-view">
                                                         <?php $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 8; ?>
                                                         <select class="customerPaginate">
                                                             <option value="8" @if($pagiNate == 8) selected @endif>Show 8 
@@ -198,7 +198,7 @@
                                                             <option value="48" @if($pagiNate == 48) selected @endif>Show 48
                                                             </option>
                                                         </select>
-                                                    </div>
+                                                    </div> --}}
                                                 </div>
                                             </div>
                                         </div>
