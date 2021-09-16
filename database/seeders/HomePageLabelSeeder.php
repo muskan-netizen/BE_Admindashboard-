@@ -78,8 +78,7 @@ class HomePageLabelSeeder extends Seeder
         $already = HomePageLabel::where('slug', 'pickup_delivery')->count();
 
         if($already == 0){
-            $del = HomePageLabel::where('slug', 'cab_booking')->delete();
-            $home_page = HomePageLabel::insertGetId([
+             $home_page = HomePageLabel::insertGetId([
                 'id' => 7,
                 'title' => 'Pickup Delivery',
                 'slug' => 'pickup_delivery',
@@ -88,18 +87,7 @@ class HomePageLabelSeeder extends Seeder
             ]);
          
         }
-        else{
-            $del = HomePageLabel::where('slug', 'cab_booking')->delete();
-            $del = HomePageLabel::where('slug', 'pickup_delivery')->delete();
-            $home_page = HomePageLabel::insertGetId([
-                'id' => 7,
-                'title' => 'Pickup Delivery',
-                'slug' => 'pickup_delivery',
-                'order_by' => 7,
-                'is_active' => 0
-            ]);
            
-        }   
        
     }
 }
