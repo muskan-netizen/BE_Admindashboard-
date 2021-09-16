@@ -81,7 +81,7 @@ class HomePageLabelSeeder extends Seeder
             $del = HomePageLabel::where('slug', 'cab_booking')->delete();
             $home_page = HomePageLabel::insertGetId([
                 'id' => 7,
-                'title' => 'Picup Delivery',
+                'title' => 'Pickup Delivery',
                 'slug' => 'pickup_delivery',
                 'order_by' => 7,
                 'is_active' => 0
@@ -93,7 +93,7 @@ class HomePageLabelSeeder extends Seeder
             $del = HomePageLabel::where('slug', 'pickup_delivery')->delete();
             $home_page = HomePageLabel::insertGetId([
                 'id' => 7,
-                'title' => 'Picup Delivery',
+                'title' => 'Pickup Delivery',
                 'slug' => 'pickup_delivery',
                 'order_by' => 7,
                 'is_active' => 0
