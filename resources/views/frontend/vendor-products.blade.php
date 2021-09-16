@@ -140,7 +140,9 @@
                                     <div class="media-body align-self-center">
                                         <div class="inner_spacing">
                                             <a href="{{route('productDetail', $new['url_slug'])}}">
-                                                <h3>{{ $new['translation_title'] }}</h3>
+                                                <h3 class="d-flex align-items-center justify-content-between">
+                                                    <label class="mb-0">{{ $new['translation_title'] }}</label>
+                                                </h3>
                                                 @if($new['inquiry_only'] == 0)
                                                     <h4 class="mt-1">
                                                         <?php $multiply = $new['variant_multiplier']; ?>

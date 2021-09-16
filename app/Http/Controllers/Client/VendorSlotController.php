@@ -109,9 +109,9 @@ class VendorSlotController extends BaseController
             $slot->delivery     = $delivery;
             $slot->save();
 
-            $sday->slot_id =  $slot->id;
-            $sday->day = $request->edit_day;
-            $sday->save();
+            $slotDay->slot_id =  $slot->id;
+            $slotDay->day = $request->edit_day;
+            $slotDay->save();
 
         }else{
             $dateSlot = VendorSlotDate::where('id', $request->edit_type_id)->first();

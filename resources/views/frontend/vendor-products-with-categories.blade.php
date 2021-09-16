@@ -616,7 +616,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade product-addon-modal" id="product_addon_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="product_addonLabel" aria-hidden="true">
+<div class="modal fade product-addon-modal" id="product_addon_modal" tabindex="-1" aria-labelledby="product_addonLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             

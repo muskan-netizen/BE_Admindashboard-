@@ -97,24 +97,27 @@
                                             $imagePath = $v['image']['path']['image_fit'].'300/300'.$v['image']['path']['image_path'];
                                         } ?>
                                         <div class="media">
-                                            <a href="{{route('productDetail', $new['url_slug'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt="" ></a>
+                                            <a href="{{route('productDetail', $new['url_slug'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt=""></a>
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing">
                                                     <a href="{{route('productDetail', $new['url_slug'])}}">
-                                                        <h3>{{ $new['translation_title'] }}</h3>
-                                                    </a>
-                                                    @if($new['inquiry_only'] == 0)
-                                                    <h4 class="mt-1">
-                                                        <?php $multiply = $new['variant_multiplier']; ?>
-                                                        {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}} </h4>
-                                                    @endif
-                                                    @if($client_preference_detail)
-                                                        @if($client_preference_detail->rating_check == 1)  
-                                                            @if($new['averageRating'] > 0)
-                                                                <span class="rating">{{ $new['averageRating'] }} <i class="fa fa-star text-white p-0"></i></span>
+                                                        <h3 class="d-flex align-items-center justify-content-between">
+                                                            <label class="mb-0">{{ $new['translation_title'] }}</label>
+                                                        </h3>
+                                                        @if($client_preference_detail)
+                                                            @if($client_preference_detail->rating_check == 1)
+                                                                @if($new['averageRating'] > 0)
+                                                                    <span class="rating">{{ $new['averageRating'] }} <i class="fa fa-star text-white p-0"></i></span>
+                                                                @endif
                                                             @endif
                                                         @endif
-                                                    @endif
+                                                        @if($new['inquiry_only'] == 0)
+                                                            <h4 class="mt-1">
+                                                                <?php $multiply = $new['variant_multiplier']; ?>
+                                                                {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                            </h4>
+                                                        @endif
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -217,19 +220,14 @@
                                                     $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                 } ?>
                                                 <div class="col-xl-3 col-6 col-grid-box">
-                                                    <div class="product-box scale-effect mt-0">
-                                                        <div class="img-wrapper">
-                                                            <div class="front">
-                                                                <a href="{{route('productDetail', $data->url_slug)}}"><img class="img-fluid blur-up lazyload" src="{{$imagePath}}" alt=""></a>
-                                                            </div>
+                                                    <a href="{{route('productDetail', $data->url_slug)}}" class="product-box scale-effect mt-0">
+                                                        <div class="product-image p-0">
+                                                            <img class="img-fluid blur-up lazyload" src="{{$imagePath}}" alt="">
                                                         </div>
-                                                        <div class="product-detail">
-                                                            <div class="inner_spacing">
-                                                                <a href="{{route('productDetail', $data->url_slug)}}">
-                                                                    <h3>{{ $data->translation_title }}</h3>
-                                                                    @if($data->inquiry_only == 0)
-                                                                        <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
-                                                                    @endif
+                                                        <div class="media-body align-self-center">
+                                                            <div class="inner_spacing w-100">
+                                                                <h3 class="d-flex align-items-center justify-content-between">
+                                                                    <label class="mb-0">{{ $data->translation_title }}</label>
                                                                     @if($client_preference_detail)
                                                                         @if($client_preference_detail->rating_check == 1)  
                                                                             @if($data->averageRating > 0)
@@ -237,10 +235,14 @@
                                                                             @endif
                                                                         @endif
                                                                     @endif
-                                                                </a>
+                                                                </h3>
+                                                                <p>{{ $data->translation_description }}</p>
+                                                                @if($data->inquiry_only == 0)
+                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                @endif
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </a>
                                                 </div>
                                                 @endforeach
                                               @else

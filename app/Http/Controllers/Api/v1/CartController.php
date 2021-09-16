@@ -63,8 +63,9 @@ class CartController extends BaseController{
 
     /**     * Add product In Cart    *           */
     public function add(Request $request){
-        $luxury_option = LuxuryOption::where('title', $request->type)->first();
         try {
+            $preference = ClientPreference::first();
+            $luxury_option = LuxuryOption::where('title', $request->type)->first();
             $user = Auth::user();
             $langId = $user->language;
             $user_id = $user->id;
@@ -136,18 +137,27 @@ class CartController extends BaseController{
             }else{
                 $cart_detail = Cart::updateOrCreate(['unique_identifier' => $unique_identifier], $cart_detail);
             }
+
+            $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $product->vendor_id)->first();
+
             if ($luxury_option) {
                 $checkCartLuxuryOption = CartProduct::where('luxury_option_id', '!=', $luxury_option->id)->where('cart_id', $cart_detail->id)->first();
                 if ($checkCartLuxuryOption) {
                     return $this->errorResponse(['error' => __('You are adding products in different mods'), 'alert' => '1'], 404);
                 }
                 if ($luxury_option->id == 2 || $luxury_option->id == 3) {
-                    $checkVendorId = CartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $product->vendor_id)->first();
                     if ($checkVendorId) {
                         return $this->errorResponse(['error' => __('Your cart has existing items from another vendor'), 'alert' => '1'], 404);
                     }
                 }
             }
+
+            if ( (isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1) ) {
+                if ($checkVendorId) {
+                    CartProduct::where('cart_id', $cart_detail->id)->delete();
+                }
+            }
+
             if($cart_detail->id > 0){
                 $oldquantity = $isnew = 0;
                 $cart_product_detail = [
@@ -760,11 +770,10 @@ class CartController extends BaseController{
         try{
             $preference = ClientPreference::first();
             $user = Auth::user();
-            $new_session_token = session()->get('_token');
-            if ($user) {
+            if ($user->id && $user->id > 0) {
                 $cart_detail = Cart::where('user_id', $user->id)->first();
             } else {
-                $cart_detail = Cart::where('unique_identifier', $new_session_token)->first();
+                $cart_detail = Cart::where('unique_identifier', $user->system_user)->first();
             }
             if ( (isset($preference->isolate_single_vendor_order)) && ($preference->isolate_single_vendor_order == 1) && (!empty($cart_detail)) ) {
                 $checkVendorId = CartProduct::where('vendor_id', '!=', $request->vendor_id)->where('cart_id', $cart_detail->id)->first();
