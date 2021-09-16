@@ -24,6 +24,14 @@ class Vendor extends Model{
       return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id')->has('day')->where('start_time', '<', $current_time)->where('end_time', '>', $current_time);
     }
 
+    public function slotDate(){
+      $client = Client::first();
+      $mytime = Carbon::now()->setTimezone($client->timezone);
+      $current_date = $mytime->toDateString();
+      $current_time = $mytime->toTimeString();
+      return $this->hasMany('App\Models\VendorSlotDate', 'vendor_id', 'id')->where('specific_date', '=', $current_date)->where('start_time', '<', $current_time)->where('end_time', '>', $current_time);
+    }
+
     public function avgRating(){
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->avg('averageRating'); 
     }

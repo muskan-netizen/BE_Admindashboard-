@@ -57,10 +57,14 @@ class HomeController extends BaseController{
                     if(!empty($value->link) && $value->link == 'vendor'){
                         $bannerLink = $value->redirect_vendor_id;
                         if($bannerLink){
-                            $vendorData = Vendor::select('name','vendor_templete_id')->where('status', 1)->where('id', $value->redirect_vendor_id)->first();
+                            $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude')->where('status', 1)->where('id', $value->redirect_vendor_id)->first();
+                            if($vendorData){
+                                $vendorData->is_show_category = ($vendorData->vendor_templete_id == 2 || $vendorData->vendor_templete_id == 4 ) ? 1 : 0;
+                            }
                             $is_show_category = (($vendorData) && ($vendorData->vendor_templete_id == 1)) ? 0 : 1;
                             $value->is_show_category = $is_show_category;
                             $value->redirect_name = $vendorData->name ?? '';
+                            $value->vendor = $vendorData;
                         }
                     }
                     $value->redirect_to = ucwords($value->link);
@@ -97,12 +101,12 @@ class HomeController extends BaseController{
             $user_geo[] = $longitude;
             if($request->has('type') ){
                 if($request->type == ''){
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot')->withAvg('product', 'averageRating');
+                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating');
                 }else{
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot')->withAvg('product', 'averageRating')->where($request->type, 1);
+                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating')->where($request->type, 1);
                 }
             }else{
-                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot')->withAvg('product', 'averageRating');
+                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating');
             }
             if($preferences->is_hyperlocal == 1){
                 if( (empty($latitude)) && (empty($longitude)) ){

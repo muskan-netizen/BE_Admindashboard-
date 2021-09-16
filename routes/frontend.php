@@ -187,7 +187,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function() {
 		Route::post('promo-code/remove', 'Front\PickupDeliveryController@postRemovePromoCode');
 		Route::post('product-detail/{id}', 'Front\PickupDeliveryController@postCabProductById');
 		Route::post('get-list-of-vehicles-old/{id}', 'Front\PickupDeliveryController@getListOfVehicles');
-		Route::post('vendor/list/{category_id}', 'Front\PickupDeliveryController@postVendorListByCategoryId');
+		Route::post('vendor/list/{category_id}', 'Front\PickupDeliveryController@postVendorListByCategoryId')->name('pickup-delivery-route');
 		Route::post('get-list-of-vehicles/{id}', 'Front\PickupDeliveryController@productsByVendorInPickupDelivery');
 		Route::post('order-tracking-details', 'Front\PickupDeliveryController@getOrderTrackingDetails')->name('bookingIndex');
 		Route::post('promo-code/verify', 'Front\PickupDeliveryController@postVerifyPromoCode')->name('verify.cab.booking.promo-code');

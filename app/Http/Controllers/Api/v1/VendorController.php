@@ -22,7 +22,7 @@ class VendorController extends BaseController{
             $category_details = [];
             $vendor_id = $request->vendor_id;
             $type = Type::where('title' ,'Vendor')->first();
-            $vendor = Vendor::select('name')->where('id', $vendor_id)->first();
+            $vendor = Vendor::select('name', 'latitude', 'longitude')->where('id', $vendor_id)->first();
             $vendor_products = Product::with('category.categoryDetail')->where('vendor_id', $vendor_id)->where('is_live', 1)->get(['id']);
             foreach ($vendor_products as $vendor_product) {
                 if(!in_array($vendor_product->category->categoryDetail->id, $vendor_ids)){
@@ -80,7 +80,10 @@ class VendorController extends BaseController{
                     //             $qr->select('category_id')->from('vendor_categories')
                     //                 ->where('vendor_id', $vid)->where('status', 0);
                     // })
-            $products = Product::with(['category.categoryDetail', 'inwishlist' => function($qry) use($userid){
+            $products = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                            ->where('category_translations.language_id', $langId);
+                        }, 'inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
                         'media.image',
@@ -168,7 +171,10 @@ class VendorController extends BaseController{
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             
             $products = Product::with(['media.image',
-                        'category.categoryDetail', 'inwishlist' => function($qry) use($userid){
+                        'category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                            ->where('category_translations.language_id', $langId);
+                        }, 'inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
                         'addOn' => function($q1) use($langId){

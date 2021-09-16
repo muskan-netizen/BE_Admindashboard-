@@ -190,6 +190,130 @@
     </div>
 </form>
 
+<!-- cab booking template -->
+@if(isset($if_pickup_on) && !empty($if_pickup_on)  && $if_pickup_on->is_active == 1)
+<div class="row">
+    <div class="col-xl-8">
+        <div class="card-box home-options-list">
+            <div class="row mb-2">
+                <div class="col-sm-8">
+                    <h4 class="page-title mt-0">{{ __('Pickup & Delivery')}}</h4>
+                    <p class="sub-header">
+                        Drag & drop to edit different sections.
+                    </p>
+                </div>
+                <div class="col-sm-4 text-right">
+                    <button class="btn btn-info waves-effect waves-light text-sm-right" id="add_pickup_delivery_section_button"   data-toggle="modal" data-target="#add_pickup_delivery_section">Add</button>
+                </div>
+            </div>
+
+            <div class="custom-dd-empty dd" id="pickup_datatable">
+                <ol class="dd-list p-0" id="pickup_ol">
+                    @foreach($cab_booking_layouts as $home_page_label)
+                    <li class="dd-item dd3-item d-flex align-items-center" data-id="1" data-row-id="{{$home_page_label->id}}">
+                        <a herf="#" class="dd-handle dd3-handle d-block mr-auto">
+                            {{$home_page_label->title}}
+                        </a>
+                        <div class="language-inputs style-4">
+                            <div class="row no-gutters flex-nowrap align-items-center my-2">
+                                @foreach($langs as $lang)
+                                @php
+                                $exist = 0;
+                                $value = '';
+                                @endphp
+                                <div class="col-3 pl-1">
+                                    <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="home_labels[]">
+                                    <input class="form-control" type="hidden" value="{{$lang->langId}}" name="languages[]">
+                                    @foreach($home_page_label->translations as $translation)
+                                    @if($translation->language_id == $lang->langId)
+                                    @php
+                                    $exist = 1;
+                                    $value = $translation->title;
+                                    @endphp
+                                    @endif
+                                    @endforeach
+                                    <input class="form-control" value="{{$exist == 1 ? $value : '' }}" type="text" name="names[]" placeholder="{{ $lang->langName }}">
+                                </div>
+                                @endforeach
+                                   
+                                    @foreach($home_page_label->pickupCategories as $val)
+                                             {{ $val->categoryDetail->translation_one->name??'' }} 
+                                    @endforeach
+                                    
+                            </div>
+                        </div>
+                        <div class="mb-0 ml-3">
+                            <input type="checkbox" {{$home_page_label->is_active == 1 ? 'checked' : ''}} id="{{$home_page_label->slug}}" data-plugin="switchery" name="{{$home_page_label->slug}}" class="chk_box2" data-color="#43bee1">
+                        </div>
+                    </li>
+                    @endforeach
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- modal for add section --> 
+<!-- Payment Modal -->
+<div class="modal fade" id="add_pickup_delivery_section" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="payment_modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header pb-0">
+                <h5 class="modal-title" id="payment_modalLabel">{{ __('Add New Section')}}</h5>
+                <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body py-0 px-2">
+                
+                <form id="pickup-add-section-form" action="javascript:void(0)" method="post">
+                    <div class="dd-item dd3-item" data-id="1" data-row-id="0">
+                        <div class="language-inputs w-100 style-4">
+                            <div class="row no-gutters flex-nowrap align-items-center my-2">
+                                @foreach($langs as $lang)
+                                @php
+                                $exist = 0;
+                                $value = '';
+                                @endphp
+                                <div class="col-3 pl-1">
+                                    <input class="form-control" type="hidden" value="{{$lang->langId}}" name="languages[]">
+                                    <input class="form-control" value="" type="text" name="names[]" placeholder="{{ $lang->langName }}" required>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="px-1 mb-3">
+                           <label class="mb-2 d-block">Categories</label>
+                           <select class="form-control select2-multiple" id="categories" name="categories[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
+                           
+                            {{-- <select class="form-control w-100">  --}}
+                                @foreach ($all_pickup_category as $category)
+                                <option value="{{$category->id}}">{{$category->translation_one->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="px-1 d-flex mb-3">
+                            <label class="mb-2 d-block mr-4">Toggle</label>
+                            <input type="checkbox"  data-plugin="switchery" name="is_active" class="chk_box2" data-color="#43bee1">
+                        </div>
+
+                        <div class="mt-3 mb-2">
+                            <button class="btn btn-info waves-effect waves-light text-center w-100"  type="submit" id="submit_new_pickup_section">{{ __('Submit') }}</button>
+                        </div>
+                    </div>
+                </form>
+            
+            </div>        
+        </div>
+    </div>
+</div>
+<!-- end modal for add section -->
+<!-- end cab booking template -->
+
+
+@endif
 @endsection
 
 @section('script')
@@ -242,6 +366,9 @@
         submitData();
     });
 
+    // $('#submit_new_pickup_section').on('click',function(e){
+    //     $(this).closest("form").submit();
+    // });
     function submitDarkMmode(id) {
         var data_uri = "{{route('styling.updateDarkMode')}}";
         console.log(id);
@@ -309,6 +436,18 @@
         }
     });
 
+    $("#pickup_datatable ol").sortable({
+         placeholder: "ui-state-highlight",
+        update: function(event, ui) {
+            var post_order_ids = new Array();
+            $('#pickup_ol li').each(function() {
+                post_order_ids.push($(this).data("row-id"));
+            });
+            saveOrderPickup(post_order_ids);
+            
+        }
+    });
+
     function saveOrder(orderVal) {
         $.ajaxSetup({
             headers: {
@@ -329,5 +468,58 @@
             },
         });
     }
+
+    function saveOrderPickup(orderVal) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{{ url('client/pickuplabel/saveOrder') }}",
+            data: {
+                order: orderVal
+            },
+            success: function(response) {
+                if (response.status == 'success') {
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                }
+            },
+        });
+    }
+
+    // save pickup section 
+    $('#pickup-add-section-form').submit(function(e) {
+        e.preventDefault();  
+        var form = document.getElementById('pickup-add-section-form');
+        var formData = new FormData(form);
+        var data_uri = "{{route('pickup.add.section')}}";
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+         $.ajax({
+            type: "post",
+            url: data_uri,
+            data: formData,
+            contentType: false,
+            processData: false,
+            headers: {
+                Accept: "application/json"
+            },
+            success: function(response) {
+                if (response.status == 'success') {
+                    console.log(response.message);
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                    var r = document.querySelector(':root');
+                    r.style.setProperty('--theme-deafult', 'lightblue');
+                    location.reload();
+                }
+            }
+        });
+    });
 </script>
 @endsection

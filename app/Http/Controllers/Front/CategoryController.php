@@ -152,7 +152,7 @@ class CategoryController extends FrontController{
             }else{
 
                 $user_addresses = UserAddress::get();
-                return view('frontend.booking.index')->with(['user_addresses' => $user_addresses, 'navCategories' => $navCategories]);
+                return view('frontend.booking.index')->with(['user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category]);
             }
         }elseif($page == 'on demand service'){ 
             $cartDataGet = $this->getCartOnDemand($request);

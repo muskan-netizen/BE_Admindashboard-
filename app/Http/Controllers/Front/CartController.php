@@ -487,7 +487,7 @@ class CartController extends FrontController
         $delifproductnotexist = CartProduct::where('cart_id', $cart_id)->doesntHave('product')->delete();
       
         $cartData = CartProduct::with([
-            'vendor', 'coupon' => function ($qry) use ($cart_id) {
+            'vendor', 'vendor.slot.day', 'vendor.slotDate', 'coupon' => function ($qry) use ($cart_id) {
                 $qry->where('cart_id', $cart_id);
             }, 'vendorProducts.pvariant.media.pimage.image', 'vendorProducts.product.media.image',
             'vendorProducts.pvariant.vset.variantDetail.trans' => function ($qry) use ($langId) {
@@ -548,6 +548,7 @@ class CartController extends FrontController
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             $vendor_details = [];
             $delivery_status = 1;
+            $is_vendor_closed = 0;
             foreach ($cartData as $ven_key => $vendorData) {
                 $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
@@ -581,7 +582,7 @@ class CartController extends FrontController
                         }
                     }
                 }
-                
+
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
                     if($cart_dinein_table_id > 0){
                         $prod->update(['vendor_dinein_table_id' => $cart_dinein_table_id]);
@@ -689,6 +690,7 @@ class CartController extends FrontController
                 $vendorData->taxable_amount = number_format($taxable_amount, 2, '.', '');
                 $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount), 2, '.', '');
                 $vendorData->isDeliverable = 1;
+                $vendorData->is_vendor_closed = $is_vendor_closed;
                 if (!empty($subscription_features)) {
                     $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount - $subscription_discount), 2, '.', '');
                 }
@@ -696,6 +698,21 @@ class CartController extends FrontController
                     if($serviceArea->isEmpty()){
                         $vendorData->isDeliverable = 0;
                         $delivery_status = 0;
+                    }
+                }
+                if($vendorData->vendor->show_slot == 0){
+                    if(empty($vendorData->vendor->slot_date)){
+                        $vendorData->is_vendor_closed = 1;
+                        if($delivery_status != 0){
+                            $delivery_status = 0;
+                        }
+                    }elseif(empty($vendorData->vendor->slot)){
+                        $vendorData->is_vendor_closed = 1;
+                        if($delivery_status != 0){
+                            $delivery_status = 0;
+                        }
+                    }else{
+                        $vendorData->is_vendor_closed = 0;
                     }
                 }
                 $total_payable_amount = $total_payable_amount + $payable_amount;

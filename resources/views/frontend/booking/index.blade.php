@@ -375,7 +375,12 @@ if (strpos($url,'cabservice') !== false) {?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{asset('js/cab_booking.js')}}"></script>
 <script>
-var autocomplete_urls = "{{url('looking/vendor/list/14')}}";
+var category_id = "{{ $category->id??'' }}";
+
+var routeset = "{{route('pickup-delivery-route',':category_id')}}";
+
+var autocomplete_urls = routeset.replace(":category_id", category_id);
+
 var get_product_detail = "{{url('looking/product-detail')}}";
 var promo_code_list_url = "{{route('verify.promocode.list')}}";
 var get_vehicle_list = "{{url('looking/get-list-of-vehicles')}}";

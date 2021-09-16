@@ -85,6 +85,8 @@ Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'],
     Route::post('web-styling/updateWebStyles', 'Client\WebStylingController@updateWebStyles')->name('styling.updateWebStyles');
     Route::post('web-styling/updateDarkMode', 'Client\WebStylingController@updateDarkMode')->name('styling.updateDarkMode');
     Route::post('homepagelabel/saveOrder', 'Client\WebStylingController@saveOrder');
+    Route::post('pickuplabel/saveOrder', 'Client\WebStylingController@saveOrderPickup');
+    Route::post('web-styling/pickup-add-section', 'Client\WebStylingController@addNewPickupSection')->name('pickup.add.section');
     Route::get('app-styling', 'Client\AppStylingController@index')->name('appStyling.index');
     Route::post('app-styling/updateFont', 'Client\AppStylingController@updateFont')->name('styling.updateFont');
     Route::post('app-styling/updateColor', 'Client\AppStylingController@updateColor')->name('styling.updateColor');
@@ -209,6 +211,8 @@ Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'],
     Route::post('subscription/payment/stripe', 'Client\StripeGatewayController@subscriptionPaymentViaStripe')->name('subscription.payment.stripe');
 
     Route::get('/admin/signup', 'Client\AdminSignUpController@index')->name('admin.signup');
+    Route::post('save_fcm_token', 'Client\UserController@save_fcm')->name('client.save_fcm');
+
     // pickup & delivery 
     Route::group(['prefix' => 'vendor/dispatcher'], function () {
         Route::post('updateCreateVendorInDispatch', 'Client\VendorController@updateCreateVendorInDispatch')->name('update.Create.Vendor.In.Dispatch');

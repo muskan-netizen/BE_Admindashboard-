@@ -79,6 +79,13 @@
                 <div class="col-12">
                     <div class="countdownholder alert-danger" id="min_order_validation_error_<%= product.vendor.id %>" style="display:none;">Your cart will be expired in </div>
                 </div>
+                <% if( product.is_vendor_closed == 1 ) { %>
+                    <div class="col-12">
+                        <div class="text-danger">
+                            <i class="fa fa-exclamation-circle"></i> Vendor is not accepting orders right now.
+                        </div>
+                    </div>
+                <% } %>
                 <% if( (product.isDeliverable != undefined) && (product.isDeliverable == 0) ) { %>
                     <div class="col-12">
                         <div class="text-danger">

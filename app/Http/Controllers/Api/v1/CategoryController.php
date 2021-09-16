@@ -73,7 +73,7 @@ class CategoryController extends BaseController
                     $vendor_ids[] = $vendor_category->vendor_id;
                }
             }
-            $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')->where($mod_type,1)->where('status', '!=', $this->field_status)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit);
+            $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude')->where($mod_type,1)->where('status', '!=', $this->field_status)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit);
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 1) ? 0 : 1;
@@ -82,7 +82,10 @@ class CategoryController extends BaseController
         }elseif($type == 'vendor' && $product_list == 'true'){
             $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
-            $products = Product::has('vendor')->with(['category.categoryDetail','inwishlist' => function($qry) use($userid){
+            $products = Product::has('vendor')->with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                        $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                        ->where('category_translations.language_id', $langId);
+                    },'inwishlist' => function($qry) use($userid){
                         $qry->where('user_id', $userid);
                     },
                     'media.image', 'translation' => function($q) use($langId){
@@ -148,7 +151,10 @@ class CategoryController extends BaseController
         }elseif($type == 'product' || $type == 'Product'){
             $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
-            $products = Product::has('vendor')->with(['category.categoryDetail','inwishlist' => function($qry) use($userid){
+            $products = Product::has('vendor')->with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                        $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                        ->where('category_translations.language_id', $langId);
+                    },'inwishlist' => function($qry) use($userid){
                         $qry->where('user_id', $userid);
                     },
                     'addOn' => function($q1) use($langId){

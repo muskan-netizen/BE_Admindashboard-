@@ -272,9 +272,7 @@
 
 <script>
   
-
-
-    
+   
 var autocomplete_urls = "{{url('looking/vendor/list/14')}}";
 var get_product_detail = "{{url('looking/product-detail')}}";
 var promo_code_list_url = "{{route('verify.promocode.list')}}";
