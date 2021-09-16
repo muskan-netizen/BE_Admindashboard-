@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="icon" href="../assets/images/favicon/1.png" type="image/x-icon">
     <link rel="shortcut icon" href="../assets/images/favicon/1.png" type="image/x-icon">
-    <title>Multikart | Email template </title>
+    <title>Royo Order | Email template </title>
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900" rel="stylesheet">
 
     <style type="text/css">

@@ -231,7 +231,7 @@ class ProfileController extends BaseController{
             'country_code'  => 'required|string',
             'name'          => 'required|string|min:3|max:50',
             'email'         => 'required|email|max:50||unique:users,email,'.$usr,
-            'phone_number'  => 'required|string|min:10|max:15|unique:users,phone_number,'.$usr,
+            'phone_number'  => 'required|string|min:8|max:15|unique:users,phone_number,'.$usr,
         ]);
         if($validator->fails()){
             foreach($validator->errors()->toArray() as $error_key => $error_value){

@@ -180,8 +180,9 @@ class ProductController extends FrontController{
             return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }
         elseif($product->category->categoryDetail->type_id == 7)
-        {
-            return Redirect::route('categoryDetail','cabservice');
+        {  
+            $slug = $product->category->categoryDetail->slug ?? '';
+            return Redirect::route('categoryDetail',$slug);
         }
         else{
             $vendor_info = Vendor::where('id', $product->vendor_id)->with('slot')->first();
