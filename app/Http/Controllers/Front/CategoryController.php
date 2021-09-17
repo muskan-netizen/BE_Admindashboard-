@@ -254,7 +254,7 @@ class CategoryController extends FrontController{
             if(!empty($products)){
                 foreach ($products as $key => $value) {
                     $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
-                    $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
+                    $value->translation_description = (!empty($value->translation->first())) ? html_entity_decode(strip_tags($value->translation->first()->body_html)) : $value->sku;
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
                     // foreach ($value->variant as $k => $v) {
@@ -374,7 +374,7 @@ class CategoryController extends FrontController{
         if(!empty($products)){
             foreach ($products as $key => $value) {
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
-                $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
+                $value->translation_description = (!empty($value->translation->first())) ? strip_tags($value->translation->first()->body_html) : $value->sku;
                 $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                 $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
                 // foreach ($value->variant as $k => $v) {

@@ -290,7 +290,7 @@ class VendorController extends FrontController
                         $value->variantSet = $variantData->variantSet;
                         $value->product_image = ($value->media->isNotEmpty()) ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : '';
                         $value->translation_title = ($value->translation->isNotEmpty()) ? $value->translation->first()->title : $value->sku;
-                        $value->translation_description = ($value->translation->isNotEmpty()) ? strip_tags($value->translation->first()->body_html) : '';
+                        $value->translation_description = ($value->translation->isNotEmpty()) ? html_entity_decode(strip_tags($value->translation->first()->body_html)) : '';
                         $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                         $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
                         $value->variant_id = ($value->variant->isNotEmpty()) ? $value->variant->first()->id : 0;
@@ -326,7 +326,8 @@ class VendorController extends FrontController
             $products = $products->where('is_live', 1)->where('vendor_id', $vid)->paginate($pagiNate);
             if(!empty($products)){
                 foreach ($products as $key => $value) {
-                    $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
+                    $value->translation_title = ($value->translation->isNotEmpy()) ? $value->translation->first()->title : $value->sku;
+                    $value->translation_description = ($value->translation->isNotEmpty()) ? html_entity_decode(strip_tags($value->translation->first()->body_html)) : '';
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
                     // foreach ($value->variant as $k => $v) {

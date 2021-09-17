@@ -579,6 +579,7 @@
                     </div>
                 </div>
             <% }); %>
+            <div class="addon_response text-danger font-14 d-none" style="padding:0 16px"></div>
         </div>
         <div class="modal-footer flex-nowrap align-items-center">
             <div class="counter-container d-flex align-items-center">

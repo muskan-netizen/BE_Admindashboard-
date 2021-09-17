@@ -1632,6 +1632,12 @@ $(document).ready(function () {
 
     $(document).delegate(".product_addon_option","click", function () {
         //  add addons data 
+        var addonSet = $(this).parents('.productAddonSetOptions');
+        var addon_minlimit = addonSet.attr("data-min");
+        var addon_maxlimit = addonSet.attr("data-max");
+        if(addonSet.find(".product_addon_option:checked").length > addon_maxlimit) {
+            this.checked = false;
+        }
         let parentdiv = $(this).parents('.modal-body');
         calculateVariantPriceWithAddon(parentdiv);
     });
@@ -1690,12 +1696,12 @@ $(document).ready(function () {
                 var max_select = $(this).attr("data-max");
                 var addon_set_title = $(this).attr("data-addonset-title");
                 if( (min_select > 0) && ($(this).find(".product_addon_option:checked").length < min_select) ){
-                    alert("Minimum "+min_select+" "+addon_set_title+" required");
+                    success_error_alert('error', "Minimum "+min_select+" "+addon_set_title+" required", ".addon_response");
                     breakOut = true;
                     return false;
                 }
                 if( (max_select > 0) && ($(this).find(".product_addon_option:checked").length > max_select) ){
-                    alert("You can select maximum "+max_select+" "+addon_set_title);
+                    success_error_alert('error', "You can select maximum "+max_select+" "+addon_set_title, ".addon_response");
                     breakOut = true;
                     return false;
                 }
@@ -2126,9 +2132,17 @@ $(document).ready(function () {
         $(element).find(".alert").html('');
         $(element).removeClass('d-none');
         if (responseClass == 'success') {
-            $(element).find(".alert").html("<div class='alert-success p-1'>" + message + "</div>").show();
+            if($(element).find(".alert").length > 0){
+                $(element).find(".alert").html("<div class='alert-success p-1'>" + message + "</div>").show();
+            }else{
+                $(element).html(message).show();
+            }
         } else if (responseClass == 'error') {
-            $(element).find(".alert").html("<div class='alert-danger p-1'>" + message + "</div>").show();
+            if($(element).find(".alert").length > 0){
+                $(element).find(".alert").html("<div class='alert-danger p-1'>" + message + "</div>").show();
+            }else{
+                $(element).html(message).show();
+            }
         }
         $('html, body').animate({
             scrollTop: $(element).offset().top
