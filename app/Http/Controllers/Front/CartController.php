@@ -701,12 +701,7 @@ class CartController extends FrontController
                     }
                 }
                 if($vendorData->vendor->show_slot == 0){
-                    if(empty($vendorData->vendor->slot_date)){
-                        $vendorData->is_vendor_closed = 1;
-                        if($delivery_status != 0){
-                            $delivery_status = 0;
-                        }
-                    }elseif(empty($vendorData->vendor->slot)){
+                    if( ($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty()) ){
                         $vendorData->is_vendor_closed = 1;
                         if($delivery_status != 0){
                             $delivery_status = 0;

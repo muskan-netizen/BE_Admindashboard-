@@ -161,10 +161,10 @@ class WebStylingController extends BaseController{
         $featured_products->is_active = $request->has('is_active') && $request->is_active == "on" ? 1 : 0;
         $featured_products->save(); 
         
-
         foreach ($request->languages as $key => $value) {
             $home_translation = new CabBookingLayoutTranslation();
             $home_translation->title = $request->names[$key];
+            $home_translation->body_html = $request->description_[$key] ??null;
             $home_translation->cab_booking_layout_id  = $featured_products->id;
             $home_translation->language_id = $request->languages[$key];
             $home_translation->save();

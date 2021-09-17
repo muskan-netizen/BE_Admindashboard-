@@ -185,14 +185,22 @@ class ProductController extends FrontController{
             return Redirect::route('categoryDetail',$slug);
         }
         else{
-            $vendor_info = Vendor::where('id', $product->vendor_id)->with('slot')->first();
-            if($vendor_info){
-                if($vendor_info->show_slot == 1){
-                    $vendor_info->show_slot_option = 1;
-                }elseif ($vendor_info->slot->count() > 0) {
-                    $vendor_info->show_slot_option = 1;
-                }else{
-                    $vendor_info->show_slot_option = 0;
+            $vendor = Vendor::where('id', $product->vendor_id)->with('slot', 'slotDate')->first();
+            if($vendor){
+                // if($vendor->show_slot == 1){
+                //     $vendor->show_slot_option = 1;
+                // }elseif ($vendor->slot->count() > 0) {
+                //     $vendor->show_slot_option = 1;
+                // }else{
+                //     $vendor->show_slot_option = 0;
+                // }
+                $vendor->is_vendor_closed = 0;
+                if($vendor->show_slot == 0){
+                    if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
+                        $vendor->is_vendor_closed = 1;
+                    }else{
+                        $vendor->is_vendor_closed = 0;
+                    }
                 }
             }
             if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')   
@@ -218,7 +226,7 @@ class ProductController extends FrontController{
     
             // dd($shareComponent);
             $category = $product->category->categoryDetail;
-            return view('frontend.product')->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor_info, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart]);
+            return view('frontend.product')->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart]);
         
         }
    }

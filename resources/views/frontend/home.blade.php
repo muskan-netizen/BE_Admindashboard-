@@ -115,8 +115,11 @@
 <section class="section-b-space p-t-0 pt-3 pt-md-5 ratio_asos d-none" id="our_vendor_main_div">
     <div class="vendors">
         @foreach($homePageLabels as $homePageLabel)
-        @if($homePageLabel->slug == 'cab_booking')
+        @if($homePageLabel->slug == 'pickup_delivery')
+            @foreach($homePagePickupLabels as $key =>  $homePagePickupLabel)
             @include('frontend.booking.cabbooking-single-module')
+            <hr>
+            @endforeach
         @else
         <div class="container" id="{{$homePageLabel->slug.'1'}}">
             <div class="row">

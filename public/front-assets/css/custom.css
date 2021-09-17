@@ -4242,7 +4242,7 @@ a.vehical-view-box.row.no-gutters {
 .vehical-container {
     overflow-y: auto;
     overflow-x: hidden;
-    height: calc(100vh - 397px);
+    /* height: calc(100vh - 397px); */
     padding: 0 0 20px;
 }
 
@@ -4251,7 +4251,6 @@ a.vehical-view-box.row.no-gutters {
     font-size: 16px;
     color: #343a40;
 }
-
 
 .scheduled-ride-list {
     position: absolute;
@@ -4599,7 +4598,6 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     margin: 0 auto 10px;
 }
 
-
 .product-tag {
     border-radius: 0px 4px 4px 0px;
     position: absolute;
@@ -4724,7 +4722,6 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     color: #6c757d;
 }
 
-
 .position-initial {
     position: initial !important;
 }
@@ -4808,9 +4805,6 @@ input.form-control.pac-target-input.gm-err-autocomplete {
         bottom: -40px;
     }
 }
-
-
-
 
 /* Classes Page Css */
 .product-order span.ellips {
@@ -4918,7 +4912,6 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     cursor: pointer;
 }
 
-
 .radio-btns input[type="checkbox"]:checked+label .customCheckbox {
     background-color: var(--theme-deafult);
     color: #fff;
@@ -4972,8 +4965,6 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     line-height: normal;
     padding: 10px 14px;
 }
-
-
 
 .hours-slot .slick-track,
 .materials-slide .slick-track {
@@ -5063,8 +5054,6 @@ ul#main-nav-list {
     width: max-content;
 }
 
-
-
 #main-nav::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     background-color: #F5F5F5;
@@ -5133,9 +5122,6 @@ ul#main-nav-list {
     padding: 150px 0 0 0;
 }
 
-/* Height of nav bar added to total height: 300 */
-
-/* Section Background Colors */
 #main-header,
 #main-footer {
     background: #f1c40f;
@@ -5349,15 +5335,11 @@ ul#main-nav-list {
     position: sticky;
     top: 0;
     border-bottom: 1px solid #ddd;
-    padding: 0 0 15px;
+    padding: 20px 0;
     background: #fff;
     z-index: 11;
     font-weight: 400;
     font-size: 22px;
-}
-
-.fixed-bar .category-head {
-    padding: 20px 0;
 }
 
 .add-cart-btn:not(.btn-solid) {
@@ -5402,7 +5384,6 @@ ul#main-nav-list {
     opacity: 0.5;
 }
 
-
 .categories-product-list .number {
     border: 0.5px solid rgb(237, 90, 107);
     border-radius: 8px;
@@ -5414,10 +5395,6 @@ ul#main-nav-list {
 
 .scrolling_section .price_head h5 {
     width: calc(100% - 150px);
-}
-
-html {
-    scroll-behavior: smooth;
 }
 
 .fixed-bar .scrollspy-menu {
@@ -5470,7 +5447,8 @@ html {
 }
 
 .cart-main-box {
-    min-width: 325px;
+    width: 325px;
+    max-width: 100%;
     position: sticky;
     top: 0;
 }
@@ -5483,12 +5461,6 @@ html {
     overflow-y: auto;
     max-height: 600px;
 }
-
-/* .fixed-bar .cart-main-box{
-    position: fixed;
-    width: 325px;
-    top: 0;
-} */
 
 .cart-sub-total {
     background-color: #1b1b1b;
@@ -5543,10 +5515,6 @@ html {
     cursor: pointer;
 }
 
-/* .inner_spacing h3.d-flex.align-items-center.justify-content-between {
-    justify-content: center !important;
-} */
-
 .other_cart_products .slick-track {
     margin: 0;
 }
@@ -5577,11 +5545,6 @@ html {
 .price_head .member_no span {
     color: #777777;
     font-size: 14px;
-    /* text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden; */
 }
 
 .morecontent span {
@@ -5645,7 +5608,6 @@ html {
     top: 14px;
 }
 
-
 .bar-line>span {
     background: rgb(255, 255, 255);
 }
@@ -5672,7 +5634,6 @@ html {
 .dark-light {
     z-index: 1111;
 }
-
 
 /* Cab booking Page Css */
 .cab-banner-area {
@@ -5713,17 +5674,14 @@ html {
 }
 
 .cab-input .form-control::-webkit-input-placeholder {
-    /* Edge */
     color: rgb(0 0 0 / 0.9);
 }
 
 .cab-input .form-control::-ms-input-placeholder {
-    /* Edge */
     color: rgb(0 0 0 / 0.9);
 }
 
 .cab-input .form-control::placeholder {
-    /* Edge */
     color: rgb(0 0 0 / 0.9);
 }
 

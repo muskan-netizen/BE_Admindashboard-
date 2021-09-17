@@ -35,8 +35,12 @@
                                             <input id="item_one{{$key}}" type="hidden" name="return_ids" value="{{ $product->id }}" required>
                                             <label class="order-items d-flex" for="item_one{{$key}}">  
                                                 <div class="item-img mx-1">
-                                                    <img src="{{ $product->image['proxy_url'].'74/100'.$product->image['image_path'] }}" alt="">
-                                                </div>    
+                                                    @if($product->pvariant->media->isNotEmpty())
+                                                        <img src="{{ $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'] }}" alt="">
+                                                    @else
+                                                        <img src="{{ $product->image['image_fit'].'74/100'.$product->image['image_path'] }}" alt="">
+                                                    @endif
+                                                </div>
                                                 <div class="items-name ml-2">
                                                     <h4 class="mt-0 mb-1"><b>{{ $product->product_name }}</b></h4>
                                                     <label><b>Quantity</b>: {{ $product->quantity }}</label>

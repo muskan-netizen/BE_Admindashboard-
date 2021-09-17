@@ -4,22 +4,23 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="card-box mb-0">
-                    <h1>Request a ride now</h1>
-                    <form action="{{ route('categoryDetail','cabservice')}}" class="cab-booking-form">
+                    <h2>{{ _('Request a ride now') }} : {{ $homePagePickupLabel->pickupCategories->first()->categoryDetail->translation_one->name}}
+                    </h2>
+                    <form action="{{ route('categoryDetail',$homePagePickupLabel->pickupCategories->first()->categoryDetail->slug??'')}}" class="cab-booking-form">
                                  <div class="cab-input">
                             <div class="form-group mb-1 position-relative">
-                                <input class="form-control edit-other-stop" type="text" placeholder="Enter pickup location" name="pickup_location" id="destination_location_1" data-rel="1" >
-                                <input type="hidden" name="pickup_location_latitude" value="" id="destination_location_latitude_home_1" data-rel="1"/>
-                                <input type="hidden" name="pickup_location_longitude" value="" id="destination_location_longitude_home_1" data-rel="1"/>
+                                <input class="form-control edit-other-stop" type="text" placeholder="Enter pickup location" name="pickup_location" id="pickup_location_{{$key}}" data-rel="{{$key}}" >
+                                <input type="hidden" name="pickup_location_latitude" value="" id="pickup_location_{{$key}}_latitude_home" data-rel="{{$key}}"/>
+                                <input type="hidden" name="pickup_location_longitude" value="" id="pickup_location_{{$key}}_longitude_home" data-rel="{{$key}}"/>
                           
                                 {{-- <a class="location-btn" href="#">
                                     <img src="{{asset('front-assets/images/arrow.svg')}}" alt="">
                                 </a> --}}
                             </div>
                             <div class="form-group mb-0">
-                                <input class="form-control edit-other-stop" type="text" name="destination_location" placeholder="Enter drop location" id="destination_location_2" data-rel="2" >
-                                <input type="hidden" name="destination_location_latitude" value="" id="destination_location_latitude_home_2" data-rel="2"/>
-                                <input type="hidden" name="destination_location_longitude" value="" id="destination_location_longitude_home_2" data-rel="2"/>
+                                <input class="form-control edit-other-stop" type="text" name="destination_location" placeholder="Enter drop location" id="destination_location_{{$key}}" data-rel="{{$key}}" >
+                                <input type="hidden" name="destination_location_latitude" value="" id="destination_location_{{$key}}_latitude_home" data-rel="{{$key}}"/>
+                                <input type="hidden" name="destination_location_longitude" value="" id="destination_location_{{$key}}_longitude_home" data-rel="{{$key}}"/>
                           
                             </div>
                             <div class="input-line"></div>
@@ -38,3 +39,5 @@
 </section>
 
 <!-- Cab Content Area Start From Here -->
+
+{!! $homePagePickupLabel->translations->first()->body_html !!}

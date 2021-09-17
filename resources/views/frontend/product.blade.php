@@ -414,8 +414,8 @@
                                         @php    
                                         $product_quantity_in_cart = $product_in_cart->quantity??0;
                                         @endphp
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ ($vendor_info->show_slot_option == 0 || ($product->variant[0]->quantity <= $product_quantity_in_cart)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
-                                            @if($vendor_info->show_slot_option == 0)
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ ($vendor_info->is_vendor_closed == 1 || ($product->variant[0]->quantity <= $product_quantity_in_cart)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                            @if($vendor_info->is_vendor_closed == 1)
                                             <p class="text-danger">Vendor is not accepting orders right now.</p>
                                             @endif
                                         @else

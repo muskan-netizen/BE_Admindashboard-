@@ -30,7 +30,8 @@ class ReturnOrderController extends FrontController{
                 $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
             },'vendors.products'=>function($qw)use($request){
                 $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
-            },'products'=>function($qw)use($request){
+            },'vendors.products.pvariant.media.pimage.image',
+            'products'=>function($qw)use($request){
                 $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
             }])->whereHas('vendors',function($q)use($request){
                 $q->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
@@ -62,7 +63,8 @@ class ReturnOrderController extends FrontController{
             $reasons = ReturnReason::where('status','Active')->orderBy('order','asc')->get();
             $order_details = Order::with(['vendors.products' => function ($q1)use($request){
                 $q1->where('id', $request->return_ids);
-            },'products' => function ($q1)use($request){
+            }, 'vendors.products.pvariant.media.pimage.image',
+            'products' => function ($q1)use($request){
                 $q1->where('id', $request->return_ids);
             },'products.productRating', 'user', 'address'])
             ->whereHas('vendors.products',function($q)use($request){

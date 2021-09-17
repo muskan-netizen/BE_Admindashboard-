@@ -91,9 +91,18 @@
                                             <i class="icon-location"></i> {{$vendor->address}}
                                         </li>
                                         <li class="d-block vendor-timing">
-                                            <span><i class="icon-time"></i> 11am – 11pm (Today)</span>
-                                            <span data-toggle="tooltip" data-placement="right" title="Tooltip on right"><i class="fa fa-exclamation-circle" aria-hidden="true"></i>
-                                            <span class="tooltip-text d-none">Mon-Sun : 11am - 11pm</span>
+                                            <i class="icon-time"></i> 
+                                                @if(($vendor->is_vendor_closed == 0) && ($vendor->show_slot == 0))
+                                                    {{$vendor->opening_time}} – {{$vendor->closing_time}} 
+                                                    <span class="badge badge-success">Open</span>
+                                                @elseif(($vendor->is_vendor_closed == 0) && ($vendor->show_slot == 1))
+                                                    24 x  7 <span class="badge badge-success">Open</span>
+                                                @else
+                                                    <span class="badge badge-danger">Closed</span>
+                                                @endif
+                                            </span>
+                                            {{-- <span data-toggle="tooltip" data-placement="right" title="Tooltip on right"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></span>
+                                            <span class="tooltip-text d-none">Mon-Sun : 11am - 11pm</span>--}}
                                             </span> 
                                         </li>
                                     </ul>
@@ -212,36 +221,38 @@
                                                                 @break;
                                                             @endif
                                                         @endforeach
-
-                                                        @if($productVariantInCart > 0)
-                                                            <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href{{$cartProductId}}" data-variant_id="{{$productVariantIdInCart}}" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="{{$vendor_id}}" data-product_id="{{$product_id}}" data-addon="{{$isAddonExist}}" href="javascript:void(0)">Add</a>
-                                                            <div class="number" id="show_plus_minus{{$cartProductId}}">
-                                                                <span class="minus qty-minus-product" data-parent_div_id="show_plus_minus{{$cartProductId}}" data-id="{{$cartProductId}}" data-base_price="{{$variant_price}}" data-vendor_id="{{$vendor_id}}">
-                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                </span>
-                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$variant_quantity}}" class="input-number" step="0.01" id="quantity_ondemand_{{$cartProductId}}" readonly>
-                                                                <span class="plus qty-plus-product"  data-id="{{$cartProductId}}" data-base_price="{{$variant_price}}" data-vendor_id="{{$vendor_id}}">
-                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                        @else
-                                                            @if($variant_quantity > 0)
-                                                            <a class="add-cart-btn add_vendor_product" id="aadd_button_href{{$data->id}}" data-variant_id="{{$data->variant[0]->id}}" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" data-addon="{{$isAddonExist}}" href="javascript:void(0)">Add</a>
-                                                            <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
-                                                                <span class="minus qty-minus-product"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                </span>
-                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
-                                                                <span class="plus qty-plus-product"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
+                                                        
+                                                        @if($vendor->is_vendor_closed == 0)
+                                                            @if($productVariantInCart > 0)
+                                                                <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href{{$cartProductId}}" data-variant_id="{{$productVariantIdInCart}}" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="{{$vendor_id}}" data-product_id="{{$product_id}}" data-addon="{{$isAddonExist}}" href="javascript:void(0)">Add</a>
+                                                                <div class="number" id="show_plus_minus{{$cartProductId}}">
+                                                                    <span class="minus qty-minus-product" data-parent_div_id="show_plus_minus{{$cartProductId}}" data-id="{{$cartProductId}}" data-base_price="{{$variant_price}}" data-vendor_id="{{$vendor_id}}">
+                                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                    </span>
+                                                                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$variant_quantity}}" class="input-number" step="0.01" id="quantity_ondemand_{{$cartProductId}}" readonly>
+                                                                    <span class="plus qty-plus-product"  data-id="{{$cartProductId}}" data-base_price="{{$variant_price}}" data-vendor_id="{{$vendor_id}}">
+                                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
                                                             @else
-                                                            <span class="text-danger">Out of stock</span>
+                                                                @if($variant_quantity > 0)
+                                                                <a class="add-cart-btn add_vendor_product" id="aadd_button_href{{$data->id}}" data-variant_id="{{$data->variant[0]->id}}" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" data-addon="{{$isAddonExist}}" href="javascript:void(0)">Add</a>
+                                                                <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
+                                                                    <span class="minus qty-minus-product"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                    </span>
+                                                                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
+                                                                    <span class="plus qty-plus-product"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                @else
+                                                                <span class="text-danger">Out of stock</span>
+                                                                @endif
                                                             @endif
-                                                        @endif
-                                                        @if( ($isAddonExist > 0) && ($variant_quantity > 0) )
-                                                            <div class="customizable-text">customizable</div>
+                                                            @if( ($isAddonExist > 0) && ($variant_quantity > 0) )
+                                                                <div class="customizable-text">customizable</div>
+                                                            @endif
                                                         @endif
                                                         </div>
                                                     </div>

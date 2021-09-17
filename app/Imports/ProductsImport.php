@@ -348,6 +348,9 @@ class ProductsImport implements ToCollection{
                         $proVariant->sku = $da[0];
                         $proVariant->product_id = $product;
                         $proVariant->barcode = $this->generateBarcodeNumber();
+                        $proVariant->quantity = $da[25];
+                        $proVariant->price = $da[26];
+                        $proVariant->compare_at_price = $da[27];
                         $proVariant->save();
                     }
                 }

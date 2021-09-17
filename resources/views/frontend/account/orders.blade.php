@@ -162,7 +162,11 @@ $timezone = Auth::user()->timezone;
                                                                             @foreach($vendor->products as $product)
                                                                                 @if($vendor->vendor_id == $product->vendor_id)
                                                                                     <li class="text-center">
-                                                                                        <img src="{{ $product->image['proxy_url'].'74/100'.$product->image['image_path'] }}" alt="">
+                                                                                        @if($product->pvariant->media->isNotEmpty())
+                                                                                            <img src="{{ $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'] }}" alt="">
+                                                                                        @else
+                                                                                            <img src="{{ $product->image['image_fit'].'74/100'.$product->image['image_path'] }}" alt="">
+                                                                                        @endif
                                                                                         <span class="item_no position-absolute">x{{$product->quantity}}</span>
                                                                                         <label class="items_price">{{Session::get('currencySymbol')}}{{$product->price * $clientCurrency->doller_compare}}</label>
                                                                                     </li>
@@ -326,7 +330,11 @@ $timezone = Auth::user()->timezone;
                                                                                 $pro_rating = $product->productRating->rating??0;
                                                                             @endphp
                                                                             <li class="text-center">
-                                                                                <img src="{{ $product->image['proxy_url'].'74/100'.$product->image['image_path'] }}" alt="">
+                                                                                @if($product->pvariant->media->isNotEmpty())
+                                                                                    <img src="{{ $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'] }}" alt="">
+                                                                                @else
+                                                                                    <img src="{{ $product->image['image_fit'].'74/100'.$product->image['image_path'] }}" alt="">
+                                                                                @endif
                                                                                 <span class="item_no position-absolute">x{{$product->quantity}}</span>
                                                                                 <label class="items_price">{{Session::get('currencySymbol')}}{{$product->price * $clientCurrency->doller_compare}}</label>
                                                                                 <label class="rating-star add_edit_review" data-id="{{$product->productRating->id??0}}"  data-order_vendor_product_id="{{$product->id??0}}">
@@ -490,7 +498,11 @@ $timezone = Auth::user()->timezone;
                                                                                     $pro_rating = $product->productRating->rating??0;
                                                                                 @endphp
                                                                                 <li class="text-center">
-                                                                                    <img src="{{ $product->image['proxy_url'].'74/100'.$product->image['image_path'] }}" alt="">
+                                                                                    @if($product->pvariant->media->isNotEmpty())
+                                                                                        <img src="{{ $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'] }}" alt="">
+                                                                                    @else
+                                                                                        <img src="{{ $product->image['image_fit'].'74/100'.$product->image['image_path'] }}" alt="">
+                                                                                    @endif
                                                                                     <span class="item_no position-absolute">x{{$product->quantity}}</span>
                                                                                     <label class="items_price">{{Session::get('currencySymbol')}}{{$product->price * $clientCurrency->doller_compare}}</label>
                                                                                     <label class="rating-star add_edit_review" data-id="{{$product->productRating->id??0}}"  data-order_vendor_product_id="{{$product->id??0}}">

@@ -48,7 +48,24 @@ class VendorController extends FrontController
      */
     public function vendorProducts(Request $request, $domain = '', $slug = 0){
         $preferences = Session::get('preferences');
-        $vendor = Vendor::select('id','email', 'name', 'slug', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website')->where('slug', $slug)->where('status', 1)->firstOrFail();
+        $vendor = Vendor::with('slot.day', 'slotDate')
+            ->select('id','email', 'name', 'slug', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot')->where('slug', $slug)->where('status', 1)->firstOrFail();
+        $vendor->is_vendor_closed = 0;
+        if($vendor->show_slot == 0){
+            if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
+                $vendor->is_vendor_closed = 1;
+            }else{
+                $vendor->is_vendor_closed = 0;
+                if($vendor->slotDate->isNotEmpty()){
+                    $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
+                    $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
+                }elseif($vendor->slot->isNotEmpty()){
+                    $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
+                    $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
+                }
+            }
+        }
+        // dd($vendor->toArray());
         if( $request->has('table') ){
             if(!Auth::user()){
                 session(['url.intended' => url()->full()]);
@@ -226,6 +243,7 @@ class VendorController extends FrontController
             return $categoryData;
         }
         elseif($type == 5){
+            // listing category with products
             $user = Auth::user();
             if ($user) {
                 $column = 'user_id';

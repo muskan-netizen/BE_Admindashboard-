@@ -34,7 +34,7 @@ class OrderController extends FrontController
         $navCategories = $this->categoryNav($langId);
         $pastOrders = Order::with(['vendors' => function ($q) {
             $q->where('order_status_option_id', 6);
-        }, 'vendors.products', 'products.productRating', 'user', 'address'])
+        }, 'vendors.products', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address'])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', 6);
             })
@@ -42,7 +42,7 @@ class OrderController extends FrontController
             ->orderBy('orders.id', 'DESC')->paginate(10);
         $activeOrders = Order::with(['vendors' => function ($q) {
             $q->where('order_status_option_id', '!=', 6);
-        }, 'vendors.products', 'user', 'address'])
+        }, 'vendors.products', 'vendors.products.pvariant.media.pimage.image', 'user', 'address'])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
             })
@@ -54,7 +54,6 @@ class OrderController extends FrontController
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
             }
         }
-        // dd($activeOrders->toArray()['data']);
         foreach ($pastOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
@@ -65,7 +64,8 @@ class OrderController extends FrontController
             $q->whereHas('productReturn');
         }, 'vendors.products' => function ($q) {
             $q->whereHas('productReturn');
-        }, 'vendors' => function ($q) {
+        }, 'vendors.products.pvariant.media.pimage.image',
+        'vendors' => function ($q) {
             $q->whereHas('products.productReturn');
         }])->whereHas('vendors.products.productReturn')->whereHas('vendors.products.productReturn')
             ->where('orders.user_id', $user->id)->orderBy('orders.id', 'DESC')->paginate(20);

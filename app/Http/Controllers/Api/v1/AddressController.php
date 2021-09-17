@@ -35,7 +35,7 @@ class AddressController extends BaseController{
             $user = Auth::user();
             if($validator->fails()){
                 foreach($validator->errors()->toArray() as $error_key => $error_value){
-                    $errors['error'] = $error_value[0];
+                    $errors['error'] = __($error_value[0]);
                     return response()->json($errors, 422);
                 }
             }
@@ -66,7 +66,7 @@ class AddressController extends BaseController{
             $user = Auth::user();
             $address = UserAddress::where('id', $addressId)->where('user_id', $user->id)->first();
             if(!$address){
-                return $this->errorResponse('Address not found.', 404);
+                return $this->errorResponse(__('Address not found.'), 404);
             }
             $add = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
             $add = UserAddress::where('user_id', $user->id)->where('id', $addressId)->update(['is_primary' => 1]);
@@ -80,7 +80,7 @@ class AddressController extends BaseController{
         try {
             $address = UserAddress::where('id', $addressId)->where('user_id', Auth::user()->id)->first();
             if(!$address){
-                return $this->errorResponse('Address not found.', 404);
+                return $this->errorResponse(__('Address not found.'), 404);
             }
             $address->delete();
             return $this->successResponse('', __('Address deleted successfully.'));

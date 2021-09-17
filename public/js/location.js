@@ -569,7 +569,7 @@ google.maps.event.addDomListener(window, 'load', initMap);
 
 ////   cab booking section 
 
-$(document).on("click",".edit-other-stop",function() {
+$(document).on("input",".edit-other-stop",function() {
     var random_id = $(this).attr("id");
     var rel = $(this).attr("data-rel");
      initializeNewCabHome(random_id,rel);
@@ -582,8 +582,8 @@ $(document).on("click",".edit-other-stop",function() {
     var autocomplete = new google.maps.places.Autocomplete(input);
     google.maps.event.addListener(autocomplete, 'place_changed', function () {
       var place = autocomplete.getPlace();
-      document.getElementById('destination_location_latitude_home_'+rel).value = place.geometry.location.lat();
-      document.getElementById('destination_location_longitude_home_'+rel).value = place.geometry.location.lng();
+      document.getElementById(random_id+'_latitude_home').value = place.geometry.location.lat();
+      document.getElementById(random_id+'_longitude_home').value = place.geometry.location.lng();
 
       
        
