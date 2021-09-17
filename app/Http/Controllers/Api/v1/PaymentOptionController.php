@@ -382,10 +382,10 @@ class PaymentOptionController extends Controller{
                         ]);
                     }
                     DB::commit();
-                    return $this->successResponse($order, 'Order placed successfully.', 201);
+                    return $this->successResponse($order, __('Order placed successfully.'), 201);
                     }
                 }else{
-                    return $this->errorResponse(['error' => 'Empty cart.'], 404);
+                    return $this->errorResponse(['error' => __('Empty cart.')], 404);
                 }
         
             }

@@ -309,10 +309,10 @@ class OrderController extends Controller {
                     }
                     DB::commit();
                     // $this->sendOrderNotification($user->id);
-                    return $this->successResponse($order, 'Order placed successfully.', 201);
+                    return $this->successResponse($order, __('Order placed successfully.'), 201);
                     }
                 }else{
-                    return $this->errorResponse(['error' => 'Empty cart.'], 404);
+                    return $this->errorResponse(['error' => __('Empty cart.')], 404);
                 }
         
             }
@@ -377,12 +377,12 @@ class OrderController extends Controller {
             $order->user_name = $user->name;
             $order->user_image = $user->image;
             $order->date_time = convertDateTimeInTimeZone($order->orderDetail->created_at, $user->timezone);
-            $order->payment_option_title = $order->orderDetail->paymentOption->title;
+            $order->payment_option_title = __($order->orderDetail->paymentOption->title);
             $order->order_number = $order->orderDetail->order_number;
             $product_details = [];
             $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->orderDetail->id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
             if($vendor_order_status){
-                $order->order_status =  ['current_status' => ['id' => $vendor_order_status->OrderStatusOption->id, 'title' => $vendor_order_status->OrderStatusOption->title]];
+                $order->order_status =  ['current_status' => ['id' => $vendor_order_status->OrderStatusOption->id, 'title' => __($vendor_order_status->OrderStatusOption->title)]];
             }else{
                 $order->current_status = null;
             }
@@ -437,7 +437,7 @@ class OrderController extends Controller {
             if($order){
                 $order->user_name = $order->user->name;
                 $order->user_image = $order->user->image;
-                $order->payment_option_title = $order->paymentOption->title;
+                $order->payment_option_title = __($order->paymentOption->title);
     	    	foreach ($order->vendors as $vendor) {
     				$couponData = [];
     				$payable_amount = 0;

@@ -32,7 +32,7 @@ class PromoCodeController extends Controller{
             }
             $vendor = Vendor::where('id', $request->vendor_id)->first();
             if(!$vendor){
-                return response()->json(['error' => 'Invalid vendor id.'], 404);
+                return response()->json(['error' => __('Invalid vendor id.')], 404);
             }
             $now = Carbon::now()->toDateTimeString();
             $product_ids = Product::where('vendor_id', $request->vendor_id)->pluck("id");
@@ -76,23 +76,23 @@ class PromoCodeController extends Controller{
             }
             $vendor = Vendor::where('id', $request->vendor_id)->first();
             if(!$vendor){
-                return response()->json(['error' => 'Invalid vendor id.'], 404);
+                return response()->json(['error' => __('Invalid vendor id.')], 404);
             }
             $cart_detail = Cart::where('id', $request->cart_id)->first();
             if(!$cart_detail){
-                return $this->errorResponse('Invalid Cart Id', 422);
+                return $this->errorResponse(__('Invalid Cart Id'), 422);
             }
             $cart_detail = Promocode::where('id', $request->coupon_id)->first();
             if(!$cart_detail){
-                return $this->errorResponse('Invalid Promocode Id', 422);
+                return $this->errorResponse(__('Invalid Promocode Id'), 422);
             }
             $cart_coupon_detail = CartCoupon::where('cart_id', $request->cart_id)->where('vendor_id', $request->vendor_id)->where('coupon_id', $request->coupon_id)->first();
             if($cart_coupon_detail){
-                return $this->errorResponse('Coupon Code already applied.', 422);
+                return $this->errorResponse(__('Coupon Code already applied.'), 422);
             }
             $cart_coupon_detail2 = CartCoupon::where('cart_id', $request->cart_id)->where('coupon_id', $request->coupon_id)->first();
             if($cart_coupon_detail2){
-                return $this->errorResponse('Coupon Code already applied other vendor.', 422);
+                return $this->errorResponse(__('Coupon Code already applied other vendor.'), 422);
             }
             $cart_coupon = new CartCoupon();
             $cart_coupon->cart_id = $request->cart_id;
@@ -112,11 +112,11 @@ class PromoCodeController extends Controller{
             }
             $cart_detail = Cart::where('id', $request->cart_id)->first();
             if(!$cart_detail){
-                return $this->errorResponse('Invalid Cart Id', 422);
+                return $this->errorResponse(__('Invalid Cart Id'), 422);
             }
             $cart_detail = Promocode::where('id', $request->coupon_id)->first();
             if(!$cart_detail){
-                return $this->errorResponse('Invalid Promocode Id', 422);
+                return $this->errorResponse(__('Invalid Promocode Id'), 422);
             }
             CartCoupon::where('cart_id', $request->cart_id)->where('coupon_id', $request->coupon_id)->delete();
             return $this->successResponse(null, __('Promotion Code Removed Successfully'), 201);

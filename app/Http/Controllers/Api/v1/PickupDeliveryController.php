@@ -26,7 +26,7 @@ class PickupDeliveryController extends BaseController{
     public function productsByVendorInPickupDelivery(Request $request, $vid = 0){
         try {
             if($vid == 0){
-                return response()->json(['error' => 'No record found.'], 404);
+                return response()->json(['error' => __('No record found.')], 404);
             }
             $userid = Auth::user()->id;
             $paginate = $request->has('limit') ? $request->limit : 12;
@@ -36,7 +36,7 @@ class PickupDeliveryController extends BaseController{
                         'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery')
                         ->where('id', $vid)->first();
             if(!$vendor){
-                return response()->json(['error' => 'No record found.'], 200);
+                return response()->json(['error' => __('No record found.')], 200);
             }
             // $variantSets =  ProductVariantSet::with(['options' => function($zx) use($langId){
             //                     $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
@@ -113,7 +113,7 @@ class PickupDeliveryController extends BaseController{
         try{
            
             if($cid == 0){
-                return response()->json(['error' => 'No record found.'], 404);
+                return response()->json(['error' => __('No record found.')], 404);
             }
             $userid = Auth::user()->id;
             $langId = Auth::user()->language;
@@ -269,7 +269,7 @@ class PickupDeliveryController extends BaseController{
                 if ($user->is_email_verified == 0) {
                         $data = [];
                         $data['status'] = 404;
-                        $data['message'] =  'Your account is not verified.';
+                        $data['message'] =  __('Your account is not verified.');
                         return $data;
                     }
             }
@@ -277,7 +277,7 @@ class PickupDeliveryController extends BaseController{
                 if ($user->is_phone_verified == 0) {
                     $data = [];
                         $data['status'] = 404;
-                        $data['message'] =  'Your phone is not verified.';
+                        $data['message'] =  __('Your phone is not verified.');
                         return $data;
                     
                 }
@@ -434,7 +434,7 @@ class PickupDeliveryController extends BaseController{
 
                         $data = [];
                         $data['status'] = 200;
-                        $data['message'] =  'Order Placed';
+                        $data['message'] =  __('Order Placed');
                         $data['data'] =  
                         $order;
                         return $data;
@@ -578,11 +578,11 @@ class PickupDeliveryController extends BaseController{
             }
             $vendor = Vendor::where('id', $request->vendor_id)->first();
             if(!$vendor){
-                return response()->json(['error' => 'Invalid vendor id.'], 404);
+                return response()->json(['error' => __('Invalid vendor id.')], 404);
             }
             $cart_detail = Promocode::where('id', $request->coupon_id)->first();
             if(!$cart_detail){
-                return $this->errorResponse('Invalid Promocode Id', 422);
+                return $this->errorResponse(__('Invalid Promocode Id'), 422);
             }
             if($cart_detail->promo_type_id == 2){
                 $cart_detail['new_amount'] = $cart_detail->amount;
@@ -594,7 +594,7 @@ class PickupDeliveryController extends BaseController{
                 if($cart_detail['new_amount'] < 0)
                 $cart_detail['new_amount'] = 0.00;
             }
-            return $this->successResponse($cart_detail, 'Promotion Code Used Successfully.', 201);
+            return $this->successResponse($cart_detail, __('Promotion Code Used Successfully.'), 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
@@ -607,14 +607,14 @@ class PickupDeliveryController extends BaseController{
             }
             $cart_detail = Cart::where('id', $request->cart_id)->first();
             if(!$cart_detail){
-                return $this->errorResponse('Invalid Cart Id', 422);
+                return $this->errorResponse(__('Invalid Cart Id'), 422);
             }
             $cart_detail = Promocode::where('id', $request->coupon_id)->first();
             if(!$cart_detail){
-                return $this->errorResponse('Invalid Promocode Id', 422);
+                return $this->errorResponse(__('Invalid Promocode Id'), 422);
             }
            
-            return $this->successResponse(null, 'Promotion Code Removed Successfully.', 201);
+            return $this->successResponse(null, __('Promotion Code Removed Successfully.'), 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }

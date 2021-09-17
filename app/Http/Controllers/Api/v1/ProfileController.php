@@ -57,7 +57,7 @@ class ProfileController extends BaseController{
                         } catch (\Exception $e) {
                         }
                     }
-                    return response()->json(array('success' => true, 'message' => 'Send Successfully'));
+                    return response()->json(array('success' => true, 'message' => __('Send Successfully')));
                 }
             }
         } catch (Exception $e) {
@@ -103,14 +103,14 @@ class ProfileController extends BaseController{
     public function updateWishlist(Request $request, $pid = 0){
         $product = Product::where('id', $pid)->first();
         if(!$product){
-            return response()->json(['error' => 'No record found.'], 404);
+            return response()->json(['error' => __('No record found.')], 404);
         }
         $exist = UserWishlist::where('user_id', Auth::user()->id)->where('product_id', $product->id)->first();
         if($exist){
             $exist->delete();
             return response()->json([
             	'data' => $product->id,
-	            'message' => 'Product has been removed from wishlist.',
+	            'message' => __('Product has been removed from wishlist.'),
 	        ]);
         }
         $wishlist = new UserWishlist();
@@ -120,7 +120,7 @@ class ProfileController extends BaseController{
         $wishlist->save();
         return response()->json([
         	'data' => $product->id,
-            'message' => 'Product has been added in wishlist.',
+            'message' => __('Product has been added in wishlist.'),
         ]);
     }
 
@@ -142,7 +142,7 @@ class ProfileController extends BaseController{
     {
         $user = User::with('country', 'address')->select('name', 'email', 'phone_number', 'type', 'country_id')->where('id', Auth::user()->id)->first();
         if(!$user){
-            return response()->json(['error' => 'No record found.'], 404);
+            return response()->json(['error' => __('No record found.')], 404);
         }
         return response()->json(['data' => $user]);
     }
@@ -168,14 +168,14 @@ class ProfileController extends BaseController{
         $current_password = Auth::User()->password;           
         if(!Hash::check($request->current_password, $current_password))
         {
-            return response()->json(['error' => 'Password did not matched.'], 404);
+            return response()->json(['error' => __('Password did not matched.')], 404);
         }
         $user_id = Auth::User()->id;                       
         $obj_user = User::find(Auth::User()->id);
         $obj_user->password = Hash::make($request->new_password);
         $obj_user->save(); 
         return response()->json([
-            'message' => 'Password updated successfully.',
+            'message' => __('Password updated successfully.'),
         ]);
     }
 
@@ -214,7 +214,7 @@ class ProfileController extends BaseController{
         $user->image = $imageName;
         $user->save();
         return response()->json([
-            'message' => 'Profile image updated successfully.',
+            'message' => __('Profile image updated successfully.'),
             'data' => $user->image,
             'save' => $save
         ]);
@@ -241,7 +241,7 @@ class ProfileController extends BaseController{
         }
         $country_detail = Country::where('code', $request->country_code)->first();
         if(!$country_detail){
-            return response()->json(['error' => 'Invalid country code.'], 404);
+            return response()->json(['error' => __('Invalid country code.')], 404);
         }
         $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username','mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
         $user = User::where('id', $usr)->first();
@@ -310,7 +310,7 @@ class ProfileController extends BaseController{
         $data['is_email_verified'] = $user->is_email_verified;
         return response()->json([
             'data' => $data,
-            'message' => 'Profile updated successfully.'
+            'message' => __('Profile updated successfully.')
         ]);
     }
     
