@@ -20,7 +20,7 @@ class ProductInquiryController extends FrontController
                 'agree' =>'accepted',
                 'name' => 'required',
                 'email' => 'required',
-                'number' => 'required',
+                'number1' => 'required',
                 'message' => 'required',
             ], [
                 'name.required' => __('The name field is required.'),
