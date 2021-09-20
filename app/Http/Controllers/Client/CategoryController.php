@@ -239,8 +239,10 @@ class CategoryController extends BaseController
             $cate->can_add_products = ($request->has('can_add_products') && $request->can_add_products == 'on' && ($request->type_id == 1 || $request->type_id == 3)) ? 1 : 0;
             if ($request->has('parent_cate') && $request->parent_cate > 0) {
                 $cat = Category::find($request->parent_cate);
-                if ($update =='false'|| $update=='true' && $cat->type->title == 'Product') {
-                    return 'bad parent';
+                if ($request->parent_cate != 1) {
+                    if (($update == 'false' || $update == 'true') && $cat->type->title == 'Product') {
+                        return 'bad parent';
+                    }
                 }
                 $cate->parent_id = $request->parent_cate;
             } else {
