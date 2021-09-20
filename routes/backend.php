@@ -87,6 +87,7 @@ Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'],
     Route::post('homepagelabel/saveOrder', 'Client\WebStylingController@saveOrder');
     Route::post('pickuplabel/saveOrder', 'Client\WebStylingController@saveOrderPickup');
     Route::post('web-styling/pickup-add-section', 'Client\WebStylingController@addNewPickupSection')->name('pickup.add.section');
+    Route::delete('web-styling/pickup-delete-section/{id}', 'Client\WebStylingController@deletePickupSection')->name('pickup.delete.section');
     Route::get('app-styling', 'Client\AppStylingController@index')->name('appStyling.index');
     Route::post('app-styling/updateFont', 'Client\AppStylingController@updateFont')->name('styling.updateFont');
     Route::post('app-styling/updateColor', 'Client\AppStylingController@updateColor')->name('styling.updateColor');

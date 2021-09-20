@@ -167,6 +167,8 @@
         return false;
     });
     
+   
+    
 
     $("#varient-datatable tbody").sortable({
         placeholder: "ui-state-highlight",

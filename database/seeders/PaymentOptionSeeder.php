@@ -15,7 +15,7 @@ class PaymentOptionSeeder extends Seeder
       $option_count = DB::table('payment_options')->count();
 
       $payment_options = array(
-        array('id' => '1','code' => 'cod','path' => '','title' => 'Cash On Delivery', 'off_site' => '0', 'status' => '0'),
+        array('id' => '1','code' => 'cod','path' => '','title' => __('Cash On Delivery'), 'off_site' => '0', 'status' => '0'),
         // array('id' => '2','code' => 'loyalty-points','path' => '','title' => 'loyalty Points', 'offsite' => '0', 'status' => '1'),
         array('id' => '3', 'path' => 'omnipay/paypal', 'code' => 'paypal',  'title' => 'PayPal', 'off_site' => '1', 'status' => '0'),
         array('id' => '4', 'path' => 'omnipay/stripe', 'code' => 'stripe', 'title' => 'Stripe', 'off_site' => '0', 'status' => '0'),

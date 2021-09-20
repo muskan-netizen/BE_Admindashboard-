@@ -159,19 +159,25 @@
                                             <div class="row margin-res">
                                             @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
-                                                    <?php $imagePath = $data->logo['proxy_url'] .'300/300'. $data->logo['image_path'];
+                                                    @php 
+                                                    $imagePath = $data->logo['proxy_url'] .'300/300'. $data->logo['image_path'];
                                                     $imagePath2 = $data->banner['proxy_url'] .'300/300'. $data->banner['image_path'];
-                                                    ?>
+                                                    if(empty($data->vendor_templete_id) || ($data->vendor_templete_id == 1)){
+                                                        $vendor_url = route('categoryVendorProducts', [$category->slug, $data->slug]);
+                                                    }else{
+                                                        $vendor_url = route('vendorDetail', $data->slug);
+                                                    }
+                                                    @endphp
                                                     <div class="col-xl-3 col-6 col-grid-box">
                                                         <div class="product-box">
                                                             <div class="img-wrapper">
                                                                 <div class="front">
-                                                                    <a href="{{route('vendorDetail', $data->slug)}}"><img class="img-fluid blur-up lazyload" alt="" src="{{$imagePath}}" width="300" height="300"></a>
+                                                                    <a href="{{$vendor_url}}"><img class="img-fluid blur-up lazyload" alt="" src="{{$imagePath}}" width="300" height="300"></a>
                                                                 </div>
                                                             </div>
                                                             <div class="product-detail">
                                                                 <div class="inner_spacing">
-                                                                    <a href="{{route('vendorDetail', $data->slug)}}">
+                                                                    <a href="{{$vendor_url}}">
                                                                         <h3>{{$data->name}}</h3>
                                                                     </a>
                                                                     @if($client_preference_detail)

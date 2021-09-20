@@ -8,6 +8,20 @@
 
 <div class="row">
     <div class="col-12">
+        <div class="col-sm-8">
+            <div class="text-sm-left">
+                @if (\Session::has('success'))
+                <div class="alert alert-success">
+                    <span>{!! \Session::get('success') !!}</span>
+                </div>
+                @endif
+                @if (\Session::has('error_delete'))
+                <div class="alert alert-danger">
+                    <span>{!! \Session::get('error_delete') !!}</span>
+                </div>
+                @endif
+            </div>
+        </div>
         <div class="page-title-box">
             <h4 class="page-title">Web Styling</h4>
         </div>
@@ -181,6 +195,7 @@
                             <div class="mb-0 ml-3">
                                 <input type="checkbox" {{$home_page_label->is_active == 1 ? 'checked' : ''}} id="{{$home_page_label->slug}}" data-plugin="switchery" name="{{$home_page_label->slug}}" class="chk_box2" data-color="#43bee1">
                             </div>
+                           
                         </li>
                         @endforeach
                     </ol>
@@ -245,6 +260,14 @@
                         <div class="mb-0 ml-3">
                             <input type="checkbox" {{$home_page_label->is_active == 1 ? 'checked' : ''}} id="{{$home_page_label->slug}}" data-plugin="switchery" name="{{$home_page_label->slug}}" class="chk_box2" data-color="#43bee1">
                         </div>
+                        <a class="action-icon deletePickupSection" dataid="{{$home_page_label->id}}" href="javascript:void(0);">
+                            <i class="mdi mdi-delete"></i>
+                        </a>
+                        <form action="{{route('pickup.delete.section', $home_page_label->id)}}" method="POST"  style="display: none;" id="pickupDeleteForm{{$home_page_label->id}}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="action-icon btn btn-primary-outline" dataid="{{$home_page_label->id}}" onclick="return confirm('Are you sure? You want to delete the section.')" > <i class="mdi mdi-delete"></i></button>
+                        </form>
                     </li>
                     @endforeach
                 </ol>
@@ -319,6 +342,29 @@
     </div>
 </div>
 <!-- end modal for add section -->
+
+
+<!-- Payment Modal -->
+<div class="modal fade" id="edit_pickup_delivery_section" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="payment_modalLabel_edit" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header pb-0">
+                <h5 class="modal-title" id="payment_modalLabel_edit">{{ __('Edit Section')}}</h5>
+                <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body py-0 px-2">
+                
+              
+            
+            </div>        
+        </div>
+    </div>
+</div>
+<!-- end modal for add section -->
+
+
 <!-- end cab booking template -->
 
 
@@ -331,6 +377,15 @@
 <script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
 
 <script>
+
+$(document).on('click', '.deletePickupSection', function() {
+        var did = $(this).attr('dataid');
+        if (confirm("Are you sure? You want to delete this section.")) {
+            $('#pickupDeleteForm' + did).submit();
+        }
+        return false;
+    });
+
     var allEditors = document.querySelectorAll('.description_ck');
     console.log(allEditors.length);
     for (var i = 0; i < allEditors.length; ++i) {

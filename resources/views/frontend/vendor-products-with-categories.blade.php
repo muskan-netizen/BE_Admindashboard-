@@ -96,7 +96,7 @@
                                                     {{$vendor->opening_time}} – {{$vendor->closing_time}} 
                                                     <span class="badge badge-success">Open</span>
                                                 @elseif(($vendor->is_vendor_closed == 0) && ($vendor->show_slot == 1))
-                                                    24 x  7 <span class="badge badge-success">Open</span>
+                                                    24 x 7 <span class="badge badge-success">Open</span>
                                                 @else
                                                     <span class="badge badge-danger">Closed</span>
                                                 @endif
@@ -412,7 +412,7 @@
                 <div class="col-md-6 col-sm-6 text-left">
                     <h6 class="m-0 font-14"><b>{{__('Delivery fee')}}</b></h6>
                 </div>
-                <div class="col-md-3 col-sm-6 text-right">
+                <div class="col-md-6 col-sm-6 text-right">
                     <div class="extra-items-price font-14 mr-3">{{Session::get('currencySymbol')}}<%= product.delivery_fee_charges %></div>
                 </div>
             </div>

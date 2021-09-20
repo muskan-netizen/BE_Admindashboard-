@@ -114,6 +114,10 @@ class ProductController extends BaseController
             $product = Product::with(['inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
+                        'category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                            ->where('category_translations.language_id', $langId);
+                        },
                         'variant' => function($v){
                             $v->select('id', 'sku', 'product_id', 'title', 'quantity','price','barcode','tax_category_id')
                             ->groupBy('product_id'); // return first variant

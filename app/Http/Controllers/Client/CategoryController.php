@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\{Client, ClientPreference, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product};
 use GuzzleHttp\Client as GCLIENT;
-class CategoryController extends BaseController{
+
+class CategoryController extends BaseController
+{
     private $blocking = '2';
     private $folderName = 'category/icon';
     /**
@@ -18,29 +20,30 @@ class CategoryController extends BaseController{
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(){
+    public function index()
+    {
 
         $celebrity_check = ClientPreference::first()->value('celebrity_check');
-      
-        $brands = Brand::with( 'bc.cate.primary')->where('status', '!=', 2)->orderBy('position', 'asc')->get();
+
+        $brands = Brand::with('bc.cate.primary')->where('status', '!=', 2)->orderBy('position', 'asc')->get();
         $variants = Variant::with('option', 'varcategory.cate.primary')->where('status', '!=', 2)->orderBy('position', 'asc')->get();
         $categories = Category::with('translation_one')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
 
-        if($celebrity_check == 0)
-        $categories = $categories->where('type_id','!=',5);   # if celebrity mod off .
-        
+        if ($celebrity_check == 0)
+            $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
+
         $categories = $categories->get();
-        if($categories){
+        if ($categories) {
             $build = $this->buildTree($categories->toArray());
             $tree = $this->printTree($build);
         }
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
-                    ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
-                    ->where('client_languages.client_code', Auth::user()->code)
-                    ->where('client_languages.is_active', 1)
-                    ->orderBy('client_languages.is_primary', 'desc')->get();
+            ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
+            ->where('client_languages.client_code', Auth::user()->code)
+            ->where('client_languages.is_active', 1)
+            ->orderBy('client_languages.is_primary', 'desc')->get();
 
-                    
+
         return view('backend.catalog.index')->with(['categories' => $categories, 'html' => $tree,  'languages' => $langs, 'variants' => $variants, 'brands' => $brands, 'build' => $build]);
     }
 
@@ -49,23 +52,24 @@ class CategoryController extends BaseController{
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request){
+    public function create(Request $request)
+    {
         $is_vendor = ($request->has('is_vendor')) ? $request->is_vendor : 0;
         $vendors = array();
         $category = new Category();
         $preference = ClientPreference::first();
-        $type = Type::where('title','!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
-        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('deleted_at', NULL)->whereIn('type_id', ['1', '3', '6','8'])->where('is_core', 1)->where('status', 1)->get();
+        $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
+        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('deleted_at', NULL)->whereIn('type_id', ['1', '3', '6', '8'])->where('is_core', 1)->where('status', 1)->get();
         $vendor_list = Vendor::select('id', 'name')->where('status', '!=', $this->blocking)->get();
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
-                    ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
-                    ->where('client_languages.client_code', Auth::user()->code)
-                    ->where('client_languages.is_active', 1)
-                    ->orderBy('client_languages.is_primary', 'desc')->get();
+            ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
+            ->where('client_languages.client_code', Auth::user()->code)
+            ->where('client_languages.is_active', 1)
+            ->orderBy('client_languages.is_primary', 'desc')->get();
         $dispatcher_warning_page_options = DispatcherWarningPage::where('status', 1)->get();
         $dispatcher_template_type_options = DispatcherTemplateTypeOption::where('status', 1)->get();
-        $returnHTML = view('backend.catalog.add-category')->with(['category' => $category, 'is_vendor' => $is_vendor, 'languages' => $langs, 'parCategory' => $parCategory, 'typeArray' => $type, 'vendor_list' => $vendor_list,'dispatcher_template_type_options'=> $dispatcher_template_type_options, 'dispatcher_warning_page_options' => $dispatcher_warning_page_options, 'preference' => $preference])->render();
-        return response()->json(array('success' => true, 'html'=>$returnHTML));
+        $returnHTML = view('backend.catalog.add-category')->with(['category' => $category, 'is_vendor' => $is_vendor, 'languages' => $langs, 'parCategory' => $parCategory, 'typeArray' => $type, 'vendor_list' => $vendor_list, 'dispatcher_template_type_options' => $dispatcher_template_type_options, 'dispatcher_warning_page_options' => $dispatcher_warning_page_options, 'preference' => $preference])->render();
+        return response()->json(array('success' => true, 'html' => $returnHTML));
     }
 
     /**
@@ -74,18 +78,19 @@ class CategoryController extends BaseController{
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $rules = array(
             'name.0' => 'required|string|max:60',
             'slug' => 'required|string|max:30|unique:categories',
         );
-        if($request->type == 'Vendor'){
+        if ($request->type == 'Vendor') {
             $rules['vendor_ids'] = "required";
         }
         $validation  = Validator::make($request->all(), $rules)->validate();
         $cate = new Category();
         $save = $this->save($request, $cate, 'false');
-        if($save > 0){
+        if ($save > 0) {
             foreach ($request->language_id as $key => $value) {
                 $category_translation = new Category_translation();
                 $category_translation->name = $request->name[$key];
@@ -104,9 +109,15 @@ class CategoryController extends BaseController{
             $hs->client_code = Auth::user()->code;
             $hs->save();
             return response()->json([
-                'status'=>'success',
+                'status' => 'success',
                 'message' => 'Category created Successfully!',
                 'data' => $save
+            ]);
+        }
+        if ($save == 'bad parent') {
+            return response()->json([
+                'status' => 'error1',
+
             ]);
         }
     }
@@ -117,18 +128,19 @@ class CategoryController extends BaseController{
      * @param  \App\Category_translation  $category_translation
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, $domain = '', $id){
+    public function edit(Request $request, $domain = '', $id)
+    {
         $is_vendor = ($request->has('is_vendor')) ? $request->is_vendor : 0;
         $vendors = array();
         $tagList = array();
         $preference = ClientPreference::first();
-        $type = Type::where('title','!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
+        $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
         $category = Category::with('translation', 'tags')->where('id', $id)->first();
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
-                    ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
-                    ->where('client_languages.client_code', Auth::user()->code)
-                    ->where('client_languages.is_active', 1)
-                    ->orderBy('client_languages.is_primary', 'desc')->get();
+            ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
+            ->where('client_languages.client_code', Auth::user()->code)
+            ->where('client_languages.is_active', 1)
+            ->orderBy('client_languages.is_primary', 'desc')->get();
         $existlangs = $langIds = array();
         foreach ($langs as $key => $value) {
             $langIds[] = $langs[$key]->langId;
@@ -136,11 +148,11 @@ class CategoryController extends BaseController{
         foreach ($category->translation as $key => $value) {
             $existlangs[] = $value->language_id;
         }
-        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('categories.id', '!=', $id)->where('status', '!=', $this->blocking)->whereIn('type_id', ['1', '3', '6','8'])->where('deleted_at', NULL)->get();
+        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('categories.id', '!=', $id)->where('status', '!=', $this->blocking)->whereIn('type_id', ['1', '3', '6', '8'])->where('deleted_at', NULL)->get();
         $dispatcher_warning_page_options = DispatcherWarningPage::where('status', 1)->get();
         $dispatcher_template_type_options = DispatcherTemplateTypeOption::where('status', 1)->get();
-        $returnHTML = view('backend.catalog.edit-category')->with(['typeArray' => $type, 'category' => $category,  'languages' => $langs, 'is_vendor' => $is_vendor, 'parCategory' => $parCategory, 'langIds' => $langIds, 'existlangs' => $existlangs, 'tagList' => $tagList,'dispatcher_warning_page_options' => $dispatcher_warning_page_options, 'dispatcher_template_type_options' => $dispatcher_template_type_options, 'preference' => $preference])->render();
-        return response()->json(array('success' => true, 'html'=>$returnHTML));
+        $returnHTML = view('backend.catalog.edit-category')->with(['typeArray' => $type, 'category' => $category,  'languages' => $langs, 'is_vendor' => $is_vendor, 'parCategory' => $parCategory, 'langIds' => $langIds, 'existlangs' => $existlangs, 'tagList' => $tagList, 'dispatcher_warning_page_options' => $dispatcher_warning_page_options, 'dispatcher_template_type_options' => $dispatcher_template_type_options, 'preference' => $preference])->render();
+        return response()->json(array('success' => true, 'html' => $returnHTML));
     }
 
     /**
@@ -150,19 +162,20 @@ class CategoryController extends BaseController{
      * @param  \App\Category_translation  $category_translation
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $domain = '', $id){
+    public function update(Request $request, $domain = '', $id)
+    {
         $rules = array(
-            'slug' => 'required|string|max:30|unique:categories,slug,'.$id,
+            'slug' => 'required|string|max:30|unique:categories,slug,' . $id,
             'name.0' => 'required|string|max:60',
         );
         $validation  = Validator::make($request->all(), $rules)->validate();
         $category = Category::where('id', $id)->first();
         $save = $this->save($request, $category, 'true');
-        if($save > 0){
-            if($request->has('language_id')){
+        if ($save > 0) {
+            if ($request->has('language_id')) {
                 foreach ($request->language_id as $key => $value) {
                     $trans = Category_translation::where('category_id', $save)->where('language_id', $value)->first();
-                    if(!$trans){
+                    if (!$trans) {
                         $trans = new Category_translation();
                         $trans->category_id = $save;
                         $trans->language_id = $value;
@@ -182,11 +195,24 @@ class CategoryController extends BaseController{
             $hs->client_code = Auth::user()->code;
             $hs->save();
             return response()->json([
-                'status'=>'success',
+                'status' => 'success',
                 'message' => 'Category created Successfully!',
                 'data' => $save
             ]);
         }
+        if ($save == 'bad parent') {
+            return response()->json([
+                'status' => 'error1',
+
+            ]);
+        }
+        if ($save == 'bad type') {
+            return response()->json([
+                'status' => 'error2',
+
+            ]);
+        }
+        // return response()->json('error', 'Cannot create a sub-category of product type of category!!!');
     }
 
     /**
@@ -196,9 +222,13 @@ class CategoryController extends BaseController{
      * @param  \App\Banner  $banner
      * @return \Illuminate\Http\Response
      */
-    public function save(Request $request, Category $cate, $update = 'false'){
+    public function save(Request $request, Category $cate, $update = 'false')
+    {
         try {
             $cate->slug = $request->slug;
+            if ($request->type_id == 1 && $cate->childs->first() != null) {
+                return 'bad type';
+            }
             $cate->type_id = $request->type_id;
             $cate->display_mode = $request->display_mode;
             $cate->warning_page_id = $request->warning_page_id;
@@ -207,16 +237,20 @@ class CategoryController extends BaseController{
             $cate->is_visible = ($request->has('is_visible') && $request->is_visible == 'on') ? 1 : 0;
             $cate->show_wishlist = ($request->has('show_wishlist') && $request->show_wishlist == 'on') ? 1 : 0;
             $cate->can_add_products = ($request->has('can_add_products') && $request->can_add_products == 'on' && ($request->type_id == 1 || $request->type_id == 3)) ? 1 : 0;
-            if($request->has('parent_cate') && $request->parent_cate > 0){
+            if ($request->has('parent_cate') && $request->parent_cate > 0) {
+                $cat = Category::find($request->parent_cate);
+                if ($update =='false'|| $update=='true' && $cat->type->title == 'Product') {
+                    return 'bad parent';
+                }
                 $cate->parent_id = $request->parent_cate;
-            }else{
+            } else {
                 $cate->parent_id = 1;
             }
-            if($update == 'false'){
-                if($request->has('vendor_id')){
+            if ($update == 'false') {
+                if ($request->has('vendor_id')) {
                     $cate->is_core = 0;
                     $cate->vendor_id = $request->vendor_id;
-                }else{
+                } else {
                     $cate->is_core = 1;
                 }
                 $cate->status = 1;
@@ -225,15 +259,15 @@ class CategoryController extends BaseController{
             }
             if ($request->hasFile('icon')) {
                 $file = $request->file('icon');
-                $cate->icon = Storage::disk('s3')->put($this->folderName, $file,'public');
+                $cate->icon = Storage::disk('s3')->put($this->folderName, $file, 'public');
             }
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $cate->image = Storage::disk('s3')->put('/category/image', $file,'public');
+                $cate->image = Storage::disk('s3')->put('/category/image', $file, 'public');
             }
             $cate->save();
             $tagDelete = CategoryTag::where('category_id', $cate->id)->delete();
-            if($request->has('tags') && !empty($request->tags)){
+            if ($request->has('tags') && !empty($request->tags)) {
                 $tagArray = array();
                 $tags = explode(',', $request->tags);
                 foreach ($tags as $k => $v) {
@@ -246,9 +280,9 @@ class CategoryController extends BaseController{
             }
             return $cate->id;
         } catch (Exception $e) {
-            pr($e->getMessage());die;
+            pr($e->getMessage());
+            die;
         }
-        
     }
 
     /**
@@ -258,10 +292,11 @@ class CategoryController extends BaseController{
      * @param  \App\Category_translation  $category_translation
      * @return \Illuminate\Http\Response
      */
-    public function updateOrder(Request $request){
+    public function updateOrder(Request $request)
+    {
         $data = json_decode($request->orderDta);
         $arr = $this->buildArray($data);
-        if($arr > 0){
+        if ($arr > 0) {
             return redirect('client/category')->with('success', 'Category order updated successfully!');
         }
     }
@@ -272,7 +307,8 @@ class CategoryController extends BaseController{
      * @param  \App\Category_translation  $category_translation
      * @return \Illuminate\Http\Response
      */
-    public function destroy($domain = '', $id){
+    public function destroy($domain = '', $id)
+    {
         $user = Auth::user();
         $parent = Category::where('id', $id)->first();
         $array_of_ids = $this->getChildren($parent);
@@ -282,16 +318,17 @@ class CategoryController extends BaseController{
         CategoryHistory::insert([
             'category_id' => $id,
             'action' => 'deleted',
-            'update_id' =>$user->id,
-            'updater_role' =>'Admin',
+            'update_id' => $user->id,
+            'updater_role' => 'Admin',
             'client_code' => $user->code,
         ]);
         return redirect()->back()->with('success', 'Category deleted successfully!');
     }
 
-    private function getChildren($category){
+    private function getChildren($category)
+    {
         $ids = [];
-        if($category->childs){
+        if ($category->childs) {
             foreach ($category->childs as $cat) {
                 $ids[] = $cat->id;
                 $ids = array_merge($ids, $this->getChildren($cat));
@@ -300,38 +337,34 @@ class CategoryController extends BaseController{
         return $ids;
     }
 
-
-
-
-
-
-
-      # get dispatcher tags from dispatcher panel  
-      public function getDispatcherTags(){
-        try {   
+    # get dispatcher tags from dispatcher panel  
+    public function getDispatcherTags()
+    {
+        try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
-                if ($dispatch_domain && $dispatch_domain != false) {
-                            $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
-                                                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
-                                                        'content-type' => 'application/json']
-                                                            ]);
-                            $url = $dispatch_domain->pickup_delivery_service_key_url;                      
-                            $res = $client->get($url.'/api/get-agent-tags');
-                            $response = json_decode($res->getBody(), true); 
-                            if($response && $response['message'] == 'success'){
-                                return $response['tags'];
-                            }
-                    
+            if ($dispatch_domain && $dispatch_domain != false) {
+                $client = new GCLIENT([
+                    'headers' => [
+                        'personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                        'content-type' => 'application/json'
+                    ]
+                ]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $res = $client->get($url . '/api/get-agent-tags');
+                $response = json_decode($res->getBody(), true);
+                if ($response && $response['message'] == 'success') {
+                    return $response['tags'];
                 }
-            }    
-            catch(\Exception $e){
-              
             }
+        } catch (\Exception $e) {
+        }
     }
     # check if last mile delivery on 
-    public function checkIfPickupDeliveryOn(){
+    public function checkIfPickupDeliveryOn()
+    {
         $preference = ClientPreference::first();
-        if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
+        if ($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
             return $preference;
         else
             return false;

@@ -133,7 +133,6 @@
                 </div>
             </div>
         </div>
-
         <div class="col-xl-4 col-lg-6 mb-4">
             <div class="card-box h-100">
                 <div class="row mb-2">

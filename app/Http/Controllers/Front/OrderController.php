@@ -1288,28 +1288,102 @@ class OrderController extends FrontController
                         $files[$key]['file_name'] =  $driver_registration_document_file_name[$key];
                     }
                 }
-                $postdata =  [
-                    'upload_photo' => $request->upload_photo,
-                    'name' => $request->name,
-                    'phone_number' => $request->phone_number,
-                    'type' => $request->type,
-                    'vehicle_type_id' => $request->vehicle_type_id,
-                    'make_model' => $request->make_model,
-                    'uid' => $request->uid,
-                    'plate_number' => $request->plate_number,
-                    'color' => $request->color,
-                    'extra_keys' => $files
-                ];
-                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code, 'content-type' => 'multipart/form-data']]);
+               
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
                 $url = $dispatch_domain->delivery_service_key_url;
-                $res = $client->post($url . '/api/agent/create', [
-                    'form_params' => $postdata
+                $key1 = 0;
+                $key2 = 0;
+
+                foreach ($files as $file) {
+
+                    if ($file['file_type'] != "Text") {
+                        $file_path          = $file['file_name']->getPathname();
+                        $file_mime          = $file['file_name']->getMimeType('image');
+                        $file_uploaded_name = $file['file_name']->getClientOriginalName();
+                        $filedata[$key2] =  [
+                            'Content-type' => 'multipart/form-data',
+                            'name' => 'uploaded_file[]',
+                            'file_type' => $file['file_type'],
+                            'id' => $file['id'],
+                            'filename' => $file_uploaded_name,
+                            'Mime-Type' => $file_mime,
+                            'contents' => fopen($file_path, 'r'),
+                          
+                        ];
+                        $other[$key2]=[
+                            'filename1' => $file_uploaded_name,
+                            'file_type' => $file['file_type'],
+                            'id' => $file['id'],  
+                        ];
+                        $key2++;
+                    } else {
+                        $abc[$key1] =  [
+                            'file_type' => $file['file_type'],
+                            'id' => $file['id'],
+                            'contents' => $file['file_name'],
+                        ];
+                        $key1++;
+                    }
+                }
+                $res = $client->post( $url.'/api/agent/create', [
+
+                    'multipart' => [
+                        $filedata[0],
+                        $filedata[1],
+                          [
+                            'name' => 'other',
+                            'contents' => json_encode($other)
+                        ],
+                        [
+                            'name' => 'files_text',
+                            'contents' => json_encode($abc)
+                        ],
+                        [
+                            'name' => 'upload_photo',
+                            'contents' => json_encode($request->upload_photo)
+                        ],
+                        [
+                            'name' => 'count',
+                            'contents' => count($files)
+                        ],
+                        [
+                            'name' => 'name',
+                            'contents' => $request->name
+                        ],
+                        [
+                            'name' => 'phone_number',
+                            'contents' => $request->phone_number
+                        ],
+                        [
+                            'name' => 'type',
+                            'contents' => $request->type
+                        ],
+                        [
+                            'name' => 'vehicle_type_id',
+                            'contents' => $request->vehicle_type_id
+                        ],
+                        [
+                            'name' => 'make_model',
+                            'contents' => $request->make_model
+                        ],
+                        [
+                            'name' => 'uid',
+                            'contents' => $request->uid
+                        ],
+                        [
+                            'name' => 'plate_number',
+                            'contents' => $request->plate_number
+                        ],
+                        [
+                            'name' => 'color',
+                            'contents' => $request->color
+                        ],
+                    ]
+
                 ]);
                 $response = json_decode($res->getBody(), true);
                 if ($response && isset($response['task_id']) && $response['task_id'] > 0) {
-                    $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
-                    $response['dispatch_traking_url'] = $dispatch_traking_url;
-                    return $response;
+                   return $response;
                 }
                 return $response;
             }

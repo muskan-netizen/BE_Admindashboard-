@@ -8,14 +8,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <div class="container">
         <div class="row align-item-center">
             <div class="col-4">
-                    <div class="header-contact">
+                    {{-- <div class="header-contact">
                         <ul>
                             <li class="text-capitalize">{{session('client_config')->company_name}}</li>
                             <!-- <li>
                                 <i class="fa fa-phone" aria-hidden="true"></i>{{__('Call Us')}}: {{session('client_config')->phone_number}}
                             </li> -->
                         </ul>
-                    </div>
+                    </div> --}}
             </div>
             <div class="col-8 text-right">
                 <ul class="header-dropdown">                    

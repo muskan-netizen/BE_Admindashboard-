@@ -109,7 +109,7 @@ class FrontController extends Controller
 
     public function productList($vendorIds, $langId, $currency = 'USD', $where = '')
     {
-        $products = Product::with([
+        $products = Product::with(['vendor',
             'media' => function ($q) {
                 $q->groupBy('product_id');
             }, 'media.image',

@@ -192,20 +192,19 @@ class CategoryController extends FrontController{
                 abort(404);
             }
         }
-    }
-    
+    }    
 
     public function listData($langId, $category_id, $type = ''){
 
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
         
         if(strtolower($type) == 'vendor'){
-            $vendorData = Vendor::with('products')->select('vendors.id', 'name', 'slug', 'logo', 'banner', 'order_pre_time', 'order_min_amount');
+            $vendorData = Vendor::with('products')->select('vendors.id', 'name', 'slug', 'logo', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
             $vendorData = $vendorData->join('vendor_categories as vct', 'vct.vendor_id', 'vendors.id')->where('vct.category_id', $category_id)->where('vct.status', 1);
             $preferences= Session::get('preferences');
             if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-                $vendors= (Session::has('vendors')) ? Session::get('vendors') : array();
-                $vendors= $vendorData->whereIn('vct.vendor_id', $vendors);
+                $vendors= $this->getServiceAreaVendors();
+                $vendorData= $vendorData->whereIn('vct.vendor_id', $vendors);
             }
             $vendorData = $vendorData->where('vendors.status', '!=', $this->field_status)->paginate($pagiNate);
             foreach ($vendorData as $key => $value) {
@@ -239,7 +238,7 @@ class CategoryController extends FrontController{
             if(Session::has('vendors')){
                 $vendors = Session::get('vendors');
             }
-            $products = Product::with(['media.image', 'category',
+            $products = Product::with(['vendor', 'media.image', 'category',
                         'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
@@ -265,6 +264,90 @@ class CategoryController extends FrontController{
             $listData = $products;
             return $listData;
         }
+    }
+    
+    /** 
+     * Display category->vendor->products list
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function categoryVendorProducts(Request $request, $domain = '', $slug1 = 0, $slug2 = 0)
+    {
+        // slug1 => category slug
+        // slug2 => vendor slug
+        $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
+        $preferences = Session::get('preferences');
+        $langId = Session::get('customerLanguage');
+        $curId = Session::get('customerCurrency');
+        $navCategories = $this->categoryNav($langId);
+        $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
+        $category = Category::with(['tags', 'brands.translation' => function($q) use($langId){
+            $q->where('brand_translations.language_id', $langId);
+        },
+        'type'  => function($q){
+            $q->select('id', 'title as redirect_to');
+        },
+        'childs.translation'  => function($q) use($langId){
+            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+            ->where('category_translations.language_id', $langId);
+        },
+        'translation' => function($q) use($langId){
+            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+            ->where('category_translations.language_id', $langId);
+        }, 
+        'allParentsAccount'])
+        ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id')
+        ->where('slug', $slug1)->firstOrFail();
+        $category->translation_name = ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
+        foreach($category->childs as $key => $child){
+            $child->translation_name = ($child->translation->first()) ? $child->translation->first()->name : $child->slug;
+        }
+        $vendor = Vendor::select('id', 'name')->where('slug', $slug2)->where('status', 1)->firstOrFail();
+
+        $variantSets = ProductVariantSet::with(['options' => function($zx) use($langId){
+            $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
+            $zx->select('variant_options.*', 'vt.title');
+            $zx->where('vt.language_id', $langId);
+        }
+        ])->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id')
+        ->join('variant_translations as vt','vt.variant_id','vr.id')
+        ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
+        ->where('vt.language_id', $langId)
+        ->whereIn('product_variant_sets.product_id', function($qry) use($category){ 
+            $qry->select('product_id')->from('product_categories')
+                ->where('category_id', $category->id);
+        })
+        ->groupBy('product_variant_sets.variant_type_id')->get();
+        $redirect_to = $category->type->redirect_to;
+        $np = $this->productList([$vendor->id], $langId, $curId, 'is_new');
+        foreach($np as $new){
+            $new->translation_title = (!empty($new->translation->first())) ? $new->translation->first()->title : $new->sku;
+            $new->variant_multiplier = (!empty($new->variant->first())) ? $new->variant->first()->multiplier : 1;
+            $new->variant_price = (!empty($new->variant->first())) ? $new->variant->first()->price : 0;
+        }
+        $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
+
+        $products = Product::with(['media.image',
+            'translation' => function($q) use($langId){
+                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+            },
+            'variant' => function($q) use($langId){
+                $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                $q->groupBy('product_id');
+            },
+        ])
+        ->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only')
+        ->where('is_live', 1)->where('category_id', $category->id)->where('vendor_id', $vendor->id)->paginate($pagiNate);
+        if(!empty($products)){
+            foreach ($products as $key => $value) {
+                $value->translation_title = ($value->translation->isNotEmpty()) ? $value->translation->first()->title : $value->sku;
+                $value->translation_description = ($value->translation->isNotEmpty()) ? html_entity_decode(strip_tags($value->translation->first()->body_html)) : '';
+                $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
+            }
+        }
+        $listData = $products;
+        return view('frontend/cate-products')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets]);
     }
 
     /**

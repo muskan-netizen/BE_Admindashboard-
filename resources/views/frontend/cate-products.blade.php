@@ -104,6 +104,7 @@
                                                         <h3 class="d-flex align-items-center justify-content-between">
                                                             <label class="mb-0">{{ $new['translation_title'] }}</label>
                                                         </h3>
+                                                        <h6><b>{{$new['vendor']['name']}}</b></h6>
                                                         @if($client_preference_detail)
                                                             @if($client_preference_detail->rating_check == 1)
                                                                 @if($new['averageRating'] > 0)
@@ -146,7 +147,7 @@
                                                         @foreach($category->childs->toArray() as $cate)
                                                         <div class="category-block">
                                                             <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                                <div class="category-image"><img alt="" src="{{$cate['icon']['image_fit'] . '100/80' . $cate['icon']['image_path']}}" ></div>
+                                                                <div class="category-image"><img alt="" src="{{$cate['icon']['image_fit'] . '300/300' . $cate['icon']['image_path']}}" ></div>
                                                             </a>
                                                             <div class="category-details">
                                                                 <a href="{{route('categoryDetail', $cate['slug'])}}">
@@ -236,7 +237,11 @@
                                                                         @endif
                                                                     @endif
                                                                 </h3>
-                                                                <p>{{ $data->translation_description }}</p>
+                                                                @if (strlen($data->translation_description) >= 65)
+                                                                    <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
+                                                                @else
+                                                                    <p>{{ $data->translation_description }}</p>
+                                                                @endif
                                                                 @if($data->inquiry_only == 0)
                                                                     <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
                                                                 @endif

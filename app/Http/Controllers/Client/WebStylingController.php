@@ -213,4 +213,21 @@ class WebStylingController extends BaseController{
             'message' => 'Home Page Labels order updated Successfully!',
         ]);
     }
+
+
+     # delete  pickup delivery section 
+     public function deletePickupSection($domain = '', $id){
+
+        DB::beginTransaction();
+        try{
+        $featured_products =  CabBookingLayout::where('id',$id)->delete(); 
+        DB::commit();
+        return redirect()->back()->with('success', 'Pickup Styling Deleted Successfully!');
+        }
+        catch(\Exception $ex){
+            DB::rollback();
+            return redirect()->back()->with('success', $ex->getMessage());
+           
+        }
+    }
 }

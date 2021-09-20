@@ -12,7 +12,7 @@ class BaseController extends Controller
 {
     private $htmlData = '';
     private $toggleData = '';
-    private $optionData = '';
+    private $optionData = ''; 
     private $successCount = 0;
     private $parent_cat_id = 0;
     private $makeArray = array();
@@ -78,7 +78,7 @@ class BaseController extends Controller
                         $this->htmlData .= '</li>';
                     }
                 }else{
-                    if($node['type_id'] == 4 || $node['type_id']==5){
+                    if($node['type_id'] == 4 || $node['type_id']==5|| $node['type_id']==1){
                         $this->htmlData .= '<li class="dd-item dd3-item dd-nochildren" data-id="' . $node["id"] . '">';
                     } else {
                         $this->htmlData .= '<li class="dd-item dd3-item" data-id="' . $node["id"] . '">';
@@ -221,7 +221,6 @@ class BaseController extends Controller
             }
             $count++;
         }
-
         return $this->successCount;
     }
 
