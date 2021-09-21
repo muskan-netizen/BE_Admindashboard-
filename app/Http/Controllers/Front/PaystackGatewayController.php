@@ -74,11 +74,14 @@ class PaystackGatewayController extends FrontController
             ));
             $response = $transaction->send();
             if ($response->isSuccessful()){
+                //$this->successMail();
                 return $this->successResponse($response->getTransactionReference());
             } else {
+                //$this->failMail();
                 return $this->errorResponse($response->getMessage(), 400);
             }
         } else {
+            $this->failMail();
             return $this->errorResponse('Transaction has been declined', 400);
         }
     }

@@ -190,7 +190,7 @@ class ProfileController extends FrontController
     }
 
     public function save_fcm(Request $request){
-        UserDevice::updateOrCreate(['device_token' => $request->device_token],['user_id' => Auth::user()->id, 'device_type' => "web"])->first();
+        UserDevice::updateOrCreate(['device_token' => $request->fcm_token],['user_id' => Auth::user()->id, 'device_type' => "web"])->first();
         return response()->json([ 'status'=>'success', 'message' => 'Token updated successfully']);
     }
 

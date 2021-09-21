@@ -485,11 +485,11 @@ class FrontController extends Controller
           $dist = acos($dist);
           $dist = rad2deg($dist);
           $miles = $dist * 60 * 1.1515;
-          $unit = strtoupper($unit);
+          $unit = strtolower($unit);
       
-          if ($unit == "K") {
+          if ($unit == "kilometer") {
             return ($miles * 1.609344);
-          } else if ($unit == "N") {
+          } else if ($unit == "nautical mile") {
             return ($miles * 0.8684);
           } else {
             return $miles;

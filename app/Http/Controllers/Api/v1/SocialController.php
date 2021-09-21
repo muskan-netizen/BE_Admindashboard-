@@ -146,10 +146,10 @@ class SocialController extends BaseController{
                 );
             } else {
                 $user_device = UserDevice::updateOrCreate(
-                    ['device_token' => $signReq->device_token],
+                    ['device_token' => $request->device_token],
                     [
-                        'user_id' => $user->id,
-                        'device_type' => $signReq->device_type,
+                        'user_id' => $customer->id,
+                        'device_type' => $request->device_type,
                         'access_token' => $token
                     ]
                 );

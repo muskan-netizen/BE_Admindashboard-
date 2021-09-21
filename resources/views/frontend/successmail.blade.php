@@ -46,9 +46,8 @@
                                                                 <tr>
                                                                     <td style="padding-bottom: 20px;">
                                                                         <?php
-                                                                        echo "Payment Failed"; ?><br><br><br>
-                                                                      
-                                                                       
+                                                                         echo "$email_template_content";
+                                                                        ?><br><br><br>                                                                       
                                                                     </td>
                                                                 </tr>
                                                             </tbody>

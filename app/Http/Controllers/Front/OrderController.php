@@ -1332,43 +1332,43 @@ class OrderController extends FrontController
                 }
                 if(!array_key_exists(0, $filedata))
                 {
-                    $filedata[0]=[ 'name' => 'u','contents' => 'abc'];
+                    $filedata[0]=[ 'name' => 'uploaded_file[]','contents' => 'abc'];
                 }
                 if(!array_key_exists(1, $filedata))
                 {
-                    $filedata[1]=[ 'name' => 'u','contents' => 'abc'];
+                    $filedata[1]=[ 'name' => 'uploaded_file[]','contents' => 'abc'];
                 }
                 if(!array_key_exists(2, $filedata))
                 {
-                    $filedata[2]=[ 'name' => 'u','contents' => 'abc'];
+                    $filedata[2]=[ 'name' => 'uploaded_file[]','contents' => 'abc'];
                 }
                 if(!array_key_exists(3, $filedata))
                 {
-                    $filedata[3]=[ 'name' => 'u','contents' => 'abc'];
+                    $filedata[3]=[ 'name' => 'uploaded_file[]','contents' => 'abc'];
                 }
                 if(!array_key_exists(4, $filedata))
                 {
-                    $filedata[4]=[ 'name' => 'u','contents' => 'abc'];
+                    $filedata[4]=[ 'name' => 'uploaded_file[]','contents' => 'abc'];
                 }
                 if(!array_key_exists(5, $filedata))
                 {
-                    $filedata[5]=[ 'name' => 'u','contents' => 'abc'];
+                    $filedata[5]=[ 'name' => 'uploaded_file[]','contents' => 'abc'];
                 }
                 if(!array_key_exists(6, $filedata))
                 {
-                    $filedata[6]=[ 'name' => 'u','contents' => 'abc'];
+                    $filedata[6]=[ 'name' => 'uploaded_file[]','contents' => 'abc'];
                 }
                 if(!array_key_exists(7, $filedata))
                 {
-                    $filedata[7]=[ 'name' => 'u','contents' => 'abc'];
+                    $filedata[7]=[ 'name' => 'uploaded_file[]','contents' => 'abc'];
                 }
                 if(!array_key_exists(8, $filedata))
                 {
-                    $filedata[8]=[ 'name' => 'u','contents' => 'abc'];
+                    $filedata[8]=[ 'name' => 'uploaded_file[]','contents' => 'abc'];
                 }
                 if(!array_key_exists(9, $filedata))
                 {
-                    $filedata[9]=[ 'name' => 'u','contents' => 'abc'];
+                    $filedata[9]=[ 'name' => 'uploaded_file[]','contents' => 'abc'];
                 }
                 $res = $client->post( $url.'/api/agent/create', [
 

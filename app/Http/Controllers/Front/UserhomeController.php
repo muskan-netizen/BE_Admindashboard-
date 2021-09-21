@@ -262,9 +262,11 @@ class UserhomeController extends FrontController
                 $long1  = $longitude;
                 $lat2   = $value->latitude;
                 $long2  = $value->longitude;
-                $distance = $this->calulateDistanceLineOfSight($lat1,$long1,$lat2, $long2, 'K');
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                $distance_to_time_multiplier = (!empty($preferences->distance_to_time_multiplier)) ? $preferences->distance_to_time_multiplier : 2;
+                $distance = $this->calulateDistanceLineOfSight($lat1,$long1,$lat2, $long2, $distance_unit);
                 $value->lineOfSightDistance = number_format($distance, 1, '.', '');
-                $value->timeofLineOfSightDistance = number_format(floatval($value->order_pre_time), 0, '.', '') + number_format(($distance * 2), 0, '.', ''); // distance is multiplied by 2 minutes per 1 distance unit to calculate travel time
+                $value->timeofLineOfSightDistance = number_format(floatval($value->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', ''); // distance is multiplied by multiplier to calculate travel time
             }
         }
         if (($latitude) && ($longitude)) {

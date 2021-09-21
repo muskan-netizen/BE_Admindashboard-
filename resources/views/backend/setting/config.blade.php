@@ -1096,10 +1096,38 @@
                </table>
             </div>
          </div>
-      </div>      
+      </div>
+      <div class="col-xl-6">
+         <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{__('Distance to Time Calculator')}}</h4>
+         </div>
+         <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+            <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
+            @csrf
+            <div class="card-box mb-0 pb-1">
+               <div class="d-flex align-items-center justify-content-end">
+                  <!-- <h4 class="header-title mb-0">Refer and Earn</h4> -->
+                  <button class="btn btn-info d-block" type="submit"> Save </button>
+               </div>
+               <div class="row mt-2">
+                  <div class="col-xl-6">
+                     <label class="primaryCurText">{{__('Distance Unit')}}</label>
+                     <select class="form-control" id="distance_unit_for_time" name="distance_unit_for_time">
+                        <option value="">{{__('Select unit')}}</option>
+                        <option value="kilometer" @if((isset($preference) && $preference->distance_unit_for_time == 'kilometer')) selected @endif>{{__('Kilometer')}}</option>
+                        <option value="mile" @if((isset($preference) && $preference->distance_unit_for_time == 'mile')) selected @endif>{{__('Mile')}}</option>
+                     </select>
+                  </div>
+                  <div class="col-xl-6">
+                     <label class="primaryCurText">{{__('Distance to Time Multiplier (Per 1 distance unit)')}}</label>
+                     <input class="form-control" type="number" id="distance_to_time_multiplier" name="distance_to_time_multiplier" value="{{ old('distance_to_time_multiplier', $preference->distance_to_time_multiplier  ?? '')}}" min="0">
+                  </div>
+               </div>
+            </div>
+         </form>
+      </div>
    </div>
 
-   </form>
    <div style="display:none;">
       <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
          @csrf
