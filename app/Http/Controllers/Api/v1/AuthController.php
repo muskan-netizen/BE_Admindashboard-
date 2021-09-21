@@ -87,6 +87,11 @@ class AuthController extends BaseController{
                     'access_token' => $token
                 ]
             );
+        } else {
+            $device = UserDevice::updateOrCreate(['device_token' => $loginReq->device_token],
+                                                          ['user_id' => $user->id,
+                                                          'device_type' => $loginReq->device_type,
+                                                          'access_token' => $token]);
         }
         
 
@@ -271,6 +276,15 @@ class AuthController extends BaseController{
             if (!empty($signReq->fcm_token)) {
                 $user_device = UserDevice::updateOrCreate(
                     ['device_token' => $signReq->fcm_token],
+                    [
+                        'user_id' => $user->id,
+                        'device_type' => $signReq->device_type,
+                        'access_token' => $token
+                    ]
+                );
+            } else {
+                $user_device = UserDevice::updateOrCreate(
+                    ['device_token' => $signReq->device_token],
                     [
                         'user_id' => $user->id,
                         'device_type' => $signReq->device_type,

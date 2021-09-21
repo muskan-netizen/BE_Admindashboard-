@@ -144,6 +144,15 @@ class SocialController extends BaseController{
                         'access_token' => $token
                     ]
                 );
+            } else {
+                $user_device = UserDevice::updateOrCreate(
+                    ['device_token' => $signReq->device_token],
+                    [
+                        'user_id' => $user->id,
+                        'device_type' => $signReq->device_type,
+                        'access_token' => $token
+                    ]
+                );
             }
             
             $response['status'] = 'Success';

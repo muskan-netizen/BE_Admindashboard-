@@ -41,6 +41,8 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
+$app->register(Illuminate\Mail\MailServiceProvider::class); 
+
 /*
 |--------------------------------------------------------------------------
 | Return The Application

@@ -9,6 +9,7 @@ use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\OrderStoreRequest;
+use Log;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client};
 
 class OrderController extends Controller {
@@ -549,6 +550,7 @@ class OrderController extends Controller {
     public function sendOrderPushNotificationVendors($user_ids, $orderData, $header_code)
     {
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        Log::info($devices);
         $client_preferences = ClientPreference::select('fcm_server_key')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
@@ -584,6 +586,7 @@ class OrderController extends Controller {
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
                 $result = curl_exec($ch);
+                Log::info($result);
                 curl_close($ch);
             }
         }
@@ -592,6 +595,7 @@ class OrderController extends Controller {
     public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id, $header_code)
     {
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        Log::info($devices);
         $client_preferences = ClientPreference::select('fcm_server_key')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
@@ -638,6 +642,7 @@ class OrderController extends Controller {
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
                 $result = curl_exec($ch);
+                Log::info($result);
                 curl_close($ch);
             }
         }
