@@ -78,11 +78,17 @@ class AuthController extends BaseController{
         // $device->access_token = $token;
         // $device->save();
 
-
-        $device = UserDevice::updateOrCreate(['device_token' => $loginReq->device_token],
-                                                          ['user_id' => $user->id,
-                                                          'device_type' => $loginReq->device_type,
-                                                          'access_token' => $token]);
+        if (!empty($loginReq->fcm_token)) {
+            $device = UserDevice::updateOrCreate(
+                ['device_token' => $loginReq->fcm_token],
+                [
+                    'user_id' => $user->id,
+                    'device_type' => $loginReq->device_type,
+                    'access_token' => $token
+                ]
+            );
+        }
+        
 
         $user->auth_token = $token;
         $user->save();
@@ -262,10 +268,16 @@ class AuthController extends BaseController{
             // ];
             // UserDevice::insert($user_device);
 
-            $user_device = UserDevice::updateOrCreate(['device_token' => $signReq->device_token],
-                                                          ['user_id' => $user->id,
-                                                          'device_type' => $signReq->device_type,
-                                                          'access_token' => $token]);
+            if (!empty($signReq->fcm_token)) {
+                $user_device = UserDevice::updateOrCreate(
+                    ['device_token' => $signReq->fcm_token],
+                    [
+                        'user_id' => $user->id,
+                        'device_type' => $signReq->device_type,
+                        'access_token' => $token
+                    ]
+                );
+            }
 
             if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
                 $response['send_otp'] = 1;

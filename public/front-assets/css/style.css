@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'icomoon';
-    src:  url('../fonts/icomoon.eot?y8ulni');
-    src:  url('../fonts/icomoon.eot?y8ulni#iefix') format('embedded-opentype'),
-      url('../fonts/icomoon.ttf?y8ulni') format('truetype'),
-      url('../fonts/icomoon.woff?y8ulni') format('woff'),
-      url('../fonts/icomoon.svg?y8ulni#icomoon') format('svg');
+    src:  url('../fonts/icomoon.eot?uvyscm');
+    src:  url('../fonts/icomoon.eot?uvyscm#iefix') format('embedded-opentype'),
+      url('../fonts/icomoon.ttf?uvyscm') format('truetype'),
+      url('../fonts/icomoon.woff?uvyscm') format('woff'),
+      url('../fonts/icomoon.svg?uvyscm#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -25,6 +25,15 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
+  .icon-ic_mail:before {
+    content: "\e905";
+  }
+  .icon-ic_call:before {
+    content: "\e906";
+  }
+  .icon-ic_location:before {
+    content: "\e907";
+  }
   .icon-ic_eat:before {
     content: "\e902";
   }
@@ -36,10 +45,13 @@
   }
   .icon-ic_currency:before {
     content: "\e900";
+    color: #fff;
   }
   .icon-ic_lang:before {
     content: "\e901";
+    color: #fff;
   }
+  
 
 /* latin-ext */
 @font-face {
@@ -8751,7 +8763,7 @@ footer.dark-footer .sub-footer.dark-subfooter {
 .footer-theme .sub-title .contact-list i {
     position: absolute;
     left: 0;
-    top: 21px;
+    top: 8px;
 }
 
 .footer-theme .sub-title .contact-list li {

@@ -60,7 +60,7 @@
                                 </div>
                                 <div class="col-md-10 mb-3">
                                     <label for="title" class="control-label">Content</label>
-                                    <textarea class="form-control" id="content" placeholder="Meta Keyword" rows="6" name="meta_keyword" cols="10"></textarea>
+                                    <textarea class="form-control" id="content" placeholder="Meta Keyword" rows="6" name="meta_keyword" cols="10" maxlength="250"></textarea>
                                 </div>
                                 <div class="col-md-2 mb-3">
                                     <label for="title" class="control-label">Tags:-<div id="tags" disabled=""></div></label>

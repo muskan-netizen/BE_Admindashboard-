@@ -95,6 +95,9 @@ class UserhomeController extends FrontController
         $client = Auth::user();
         $ClientPreference = ClientPreference::where('client_code', $client->code)->first();
         $preference = $ClientPreference ? $ClientPreference : new ClientPreference();
+        $page_detail = Page::with(['translations' => function ($q) {
+            $q->where('language_id', session()->get('customerLanguage'));
+        }])->where('slug', 'driver-registration')->firstOrFail();
         $last_mile_teams = [];
         // $tags   =  $this->getAgentTags();
         $tag = [];
@@ -106,7 +109,7 @@ class UserhomeController extends FrontController
         }
         $showTag = implode(',', $tag);
         $driver_registration_documents = DriverRegistrationDocument::get();
-        return view('frontend.driver-registration', compact('navCategories', 'client_preferences', 'user', 'showTag', 'last_mile_teams', 'driver_registration_documents'));
+        return view('frontend.driver-registration', compact('page_detail','navCategories', 'client_preferences', 'user', 'showTag', 'last_mile_teams', 'driver_registration_documents'));
     }
 
     public function checkIfLastMileOn()
@@ -228,7 +231,7 @@ class UserhomeController extends FrontController
         }
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
-        $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount', 'logo', 'slug')->where($request->type, 1);
+        $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where($request->type, 1);
         if ($preferences) {
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = $preferences->Default_location_name;
@@ -253,6 +256,16 @@ class UserhomeController extends FrontController
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
             $value->vendorRating = $this->vendorRating($value->products);
+            $value->name = Str::limit($value->name, 15, '..');
+            if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                $lat1   = $latitude;
+                $long1  = $longitude;
+                $lat2   = $value->latitude;
+                $long2  = $value->longitude;
+                $distance = $this->calulateDistanceLineOfSight($lat1,$long1,$lat2, $long2, 'K');
+                $value->lineOfSightDistance = number_format($distance, 1, '.', '');
+                $value->timeofLineOfSightDistance = number_format(floatval($value->order_pre_time), 0, '.', '') + number_format(($distance * 2), 0, '.', ''); // distance is multiplied by 2 minutes per 1 distance unit to calculate travel time
+            }
         }
         if (($latitude) && ($longitude)) {
             Session::put('vendors', $vendor_ids);

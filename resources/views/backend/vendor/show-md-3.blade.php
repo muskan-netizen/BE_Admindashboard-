@@ -62,18 +62,18 @@
                     </div>
                 </div>
                 <div class="row mb-2">
-                    <!-- <div class="col-md-12">
+                    <div class="col-md-12">
                         <div class="form-group" id="order_pre_timeInput">
                             {!! Form::label('title', 'Order Prepare Time(In minutes)',['class' => 'control-label']) !!}
-                            <input class="form-control" onkeypress="return isNumberKey(event)" name="order_pre_time" type="text" value="{{$vendor->order_pre_time}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                            <input class="form-control" onkeypress="return isNumberKey(event)" name="order_pre_time" type="text" value="{{ ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0 }}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     </div>
-                    <div class="col-md-12">
+                    {{-- <div class="col-md-12">
                         <div class="form-group" id="auto_reject_timeInput">
                             {!! Form::label('title', 'Auto Reject Time(In minutes, 0 for no rejection)',['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="auto_reject_time" type="text" value="{{$vendor->auto_reject_time}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
-                    </div> -->
+                    </div> --}}
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', '24*7 Availability',['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="show_slot" class="form-control" data-color="#43bee1" @if($vendor->show_slot == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>

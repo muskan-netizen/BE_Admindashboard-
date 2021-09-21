@@ -2327,7 +2327,9 @@ h3 .fas.fa-money-check-alt{
     box-shadow: none !important;
 }
 
-
+.custom-toggle .switchery {
+    float: right;
+}
 
 
 

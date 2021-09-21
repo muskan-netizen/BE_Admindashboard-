@@ -83,3 +83,49 @@
 
 <script src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
+@if (Auth::check())
+@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
+<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+<script>
+    var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
+    var firebaseConfig = {
+        apiKey: firebaseCredentials.fcm_api_key,
+        authDomain: firebaseCredentials.fcm_auth_domain,
+        projectId: firebaseCredentials.fcm_project_id,
+        storageBucket: firebaseCredentials.fcm_storage_bucket,
+        messagingSenderId: firebaseCredentials.fcm_messaging_sender_id,
+        appId: firebaseCredentials.fcm_app_id,
+        measurementId: firebaseCredentials.fcm_measurement_id
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    const messaging = firebase.messaging();
+
+    function initFirebaseMessagingRegistration() {
+        messaging.requestPermission().then(function() {
+            return messaging.getToken()
+        }).then(function(token) {
+            $.ajax({
+                url: "{{ route('user.save_fcm') }}",
+                type: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    fcm_token: token,
+                },
+                success: function(response) {
+
+                },
+            });
+            console.log(token);
+
+        }).catch(function(err) {
+            console.log(`Token Error :: ${err}`);
+        });
+    }
+
+    initFirebaseMessagingRegistration();
+</script>
+@endif
+@endif

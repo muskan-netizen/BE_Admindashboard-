@@ -54,17 +54,25 @@
                     </a>
                 </div>
             </div>
-            <div class="product-detail inner_spacing text-center">
+            <div class="product-detail inner_spacing text-center m-0 w-100">
                 <a href="{{route('vendorDetail')}}/<%= vendor.slug %>">
-                    <h6><%= vendor.name %></h6>
+                    <h3 class="d-flex justify-content-between p-0">
+                        <span><%= vendor.name %></span>
+                        @if($client_preference_detail)
+                            @if($client_preference_detail->rating_check == 1)
+                                <% if(vendor.vendorRating > 0){%>
+                                    <span class="rating m-0"><%= vendor.vendorRating %> <i class="fa fa-star text-white p-0"></i></span>
+                                <% } %>
+                            @endif
+                        @endif
+                    </h3>
                 </a>
-                @if($client_preference_detail)
-                    @if($client_preference_detail->rating_check == 1)
-                        <% if(vendor.vendorRating > 0){%>
-                            <span class="rating"><%= vendor.vendorRating %> <i class="fa fa-star text-white p-0"></i></span>
-                        <% } %>
-                    @endif
-                @endif
+                <% if(vendor.timeofLineOfSightDistance != undefined){ %>
+                    <h6 class="d-flex justify-content-between">
+                        <small><i class="fa fa-map-marker"></i> <%= vendor.lineOfSightDistance %>km</small>
+                        <small><i class="fa fa-clock"></i> <%= vendor.timeofLineOfSightDistance %>min</small>
+                    </h6>
+                <% } %>
             </div>
         </div>
     <% }); %>

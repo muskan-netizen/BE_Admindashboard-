@@ -15,45 +15,51 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     </div>
                 </div>
                 @if(count($pages))
-                    <div class="col-lg-3 col-md-6 pl-lg-5">
-                        <div class="sub-title">
-                            <div class="footer-title mt-0">
-                                <h4 class="mt-0">{{ __('Links') }}</h4>
-                            </div>
-                            <div class="footer-contant">
+                <div class="col-lg-3 col-md-6 pl-lg-5">
+                    <div class="sub-title">
+                        <div class="footer-title mt-0">
+                            <h4 class="mt-0">{{ __('Links') }}</h4>
+                        </div>
+                        <div class="footer-contant">
+                            <ul>
+                                @foreach($pages as $page)
+                                @if($page->slug=='driver-registration')
+                                <li>
+                                    <a href="{{route('page/driver-registration')}}">{{$page->translations->first() ? $page->translations->first()->title : $page->primary->title}}</a>
+                                </li>
+                                @else
+                                <li>
+                                    <a href="{{route('extrapage',['slug' => $page->slug])}}">{{$page->translations->first() ? $page->translations->first()->title : $page->primary->title}}</a>
+                                </li>
+                                @endif
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                @endif
+                @if(count($social_media_details))
+                <div class="col-lg-4 col-md-6 pl-lg-5">
+                    <div class="sub-title">
+                        <div class="footer-title mt-0">
+                            <h4 class="mt-0">{{ __('Connect') }}</h4>
+                        </div>
+                        <div class="footer-contant">
+                            <div class="footer-social">
                                 <ul>
-                                    @foreach($pages as $page)
-                                        <li>
-                                            <a href="{{route('extrapage',['slug' => $page->slug])}}">{{$page->translations->first() ? $page->translations->first()->title : $page->primary->title}}</a>
-                                        </li>
+                                    @foreach($social_media_details as $social_media_detail)
+                                    <li class="d-block">
+                                        <a href="{{http_check($social_media_detail->url)}}" target="_blank">
+                                            <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
+                                            <span>{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span>
+                                        </a>
+                                    </li>
                                     @endforeach
                                 </ul>
                             </div>
                         </div>
                     </div>
-                @endif
-                @if(count($social_media_details))
-                    <div class="col-lg-4 col-md-6 pl-lg-5">
-                        <div class="sub-title">
-                            <div class="footer-title mt-0">
-                                <h4 class="mt-0">{{ __('Connect') }}</h4>
-                            </div>
-                            <div class="footer-contant">
-                                <div class="footer-social">
-                                    <ul>
-                                        @foreach($social_media_details as $social_media_detail)
-                                            <li class="d-block">
-                                                <a href="{{http_check($social_media_detail->url)}}" target="_blank">
-                                                    <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
-                                                    <span>{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span>
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>  
-                            </div>   
-                        </div>   
-                    </div>
+                </div>
                 @endif
                 @if($client_preference_detail->show_contact_us == 1)
                     <div class="col-lg-3 col-md-6 mb-md-0 mb-3">
@@ -63,15 +69,15 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                             </div>
                             <div class="footer-contant">
                                 <ul class="contact-list">
-                                    <li><img src="{{asset('front-assets/images/ic_location.svg')}}" alt="">{{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}
-                                    </li>
-                                    <li><img src="{{asset('front-assets/images/ic_call.svg')}}" alt=""><a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}">{{$clientData ? $clientData->phone_number : '123-456-7898'}}</a></li>
-                                    <li><img src="{{asset('front-assets/images/ic_mail.svg')}}" alt=""><a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}">{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</a></li>
+                                    <li><i class="icon-location"></i> {{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}</li>
+                                    <li><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}">{{$clientData ? $clientData->phone_number : '123-456-7898'}}</a></li>
+                                    <li><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}">{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</a></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
-                @endif  
+                </div>
+                @endif
                 <div class="col-lg-3 col-md-6 mb-md-0 mb-3 text-right d-none">
                     <div class="store-btn">
                         <a href="#"><img src="{{asset('front-assets/images/app-store.png')}}" alt=""></a>
@@ -83,7 +89,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <li><a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
                         <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
                     </ul>
-                </div>                
+                </div>
             </div>
         </div>
     </section>
@@ -124,21 +130,21 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
 </footer>
 
 <div class="modal fade single-vendor-order-modal" id="single_vendor_order_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="s_vendor_remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header pb-0">
-        <h5 class="modal-title" id="s_vendor_remove_cartLabel">{{__('Remove Cart')}}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <h6 class="m-0">{{__('You can only buy products for single vendor. Do you want to remove all your cart products to continue?')}}</h6>
-      </div>
-      <div class="modal-footer flex-nowrap justify-content-center align-items-center">
-        <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
-        <button type="button" class="btn btn-solid" id="single_vendor_remove_cart_btn" data-cart_id="">{{__('Remove')}}</button>
-      </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header pb-0">
+                <h5 class="modal-title" id="s_vendor_remove_cartLabel">{{__('Remove Cart')}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h6 class="m-0">{{__('You can only buy products for single vendor. Do you want to remove all your cart products to continue?')}}</h6>
+            </div>
+            <div class="modal-footer flex-nowrap justify-content-center align-items-center">
+                <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
+                <button type="button" class="btn btn-solid" id="single_vendor_remove_cart_btn" data-cart_id="">{{__('Remove')}}</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

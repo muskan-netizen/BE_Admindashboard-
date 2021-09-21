@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail; 
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
+use App\Models\UserDevice;
 use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPreference, Client, Order, Transaction};
 
 class ProfileController extends FrontController
@@ -186,6 +187,11 @@ class ProfileController extends FrontController
             $user->save();
         }
         return redirect()->route('user.profile')->with('success', __('Your Password has been changed successfully'));
+    }
+
+    public function save_fcm(Request $request){
+        UserDevice::updateOrCreate(['device_token' => $request->device_token],['user_id' => Auth::user()->id, 'device_type' => "web"])->first();
+        return response()->json([ 'status'=>'success', 'message' => 'Token updated successfully']);
     }
 
 }

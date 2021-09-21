@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use App\Models\{Brand, Category, ClientLanguage, CategoryTranslation, CsvProductImport, Product, ProductCategory, ProductTranslation, ProductVariant, ProductVariantSet, TaxCategory, Variant, VariantOption, VendorCategory, VendorMedia};
+use App\Models\{Brand, Category, ClientLanguage, CategoryTranslation, CsvProductImport, Product, ProductCategory, ProductTranslation, ProductVariant, ProductVariantSet, TaxCategory, Variant, VariantOption, VendorCategory, VendorMedia, ProductImage};
 
 class ProductsImport implements ToCollection{
     private $folderName = 'prods';
@@ -348,10 +348,24 @@ class ProductsImport implements ToCollection{
                         $proVariant->sku = $da[0];
                         $proVariant->product_id = $product;
                         $proVariant->barcode = $this->generateBarcodeNumber();
-                        $proVariant->quantity = $da[25];
-                        $proVariant->price = $da[26];
-                        $proVariant->compare_at_price = $da[27];
+                        $proVariant->quantity = $da[25]??0;
+                        $proVariant->price = $da[26]??"";
+                        $proVariant->compare_at_price = $da[27]??"";
                         $proVariant->save();
+                    }
+                    if (!empty($da[17])) {
+                        foreach (explode(',', $da[17]) as $file_key => $file) {
+                            $img = new VendorMedia();
+                            $img->media_type = 1;
+                            $img->vendor_id = $this->vendor_id;
+                            $img->path = $file;
+                            $img->save();
+                            $image = new ProductImage();
+                            $image->product_id = $product;
+                            $image->is_default = ($file_key == 0)?1:0;
+                            $image->media_id = $img->id;
+                            $image->save();
+                        }
                     }
                 }
                 else{

@@ -222,7 +222,7 @@
                 <div class="tab-content">
                     <div class="tab-pane {{($tab == 'configuration') ? 'active show' : '' }} " id="configuration">
 
-                        <!-- <div class="row">
+                        {{-- <div class="row">
                                 <div class="col-md-12">
                                     <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" id="slot-configs" method="post">
                                         @csrf
@@ -293,7 +293,7 @@
                                         </div>
                                     </form>
                                 </div>
-                            </div> -->
+                            </div> --}}
 
                         @include('backend.vendor.vendorSubscriptions')
 

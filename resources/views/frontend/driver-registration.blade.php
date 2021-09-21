@@ -11,8 +11,8 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <h2 class="mb-3">Driver Registration</h2>
-                <p>We provide Visitors (as defined below) with access to the Website and Registered Members (as defined below) with access to the Platform subject to the following Terms of Use. By browsing the public areas of the Website, you acknowledge that you have read, understood, and agree to be legally bound by these Terms of Use and our Privacy Policy, which is hereby incorporated by reference (collectively, this “Agreement”). If you do not agree to any of these terms, then please do not use the Website, the App, and/or the Platform. We may change the terms and conditions of these Terms of Use from time to time with or without notice to you.</p>
+            <h2 class="mb-3">{{$page_detail->translations->first() ? $page_detail->translations->first()->title : $page_detail->primary->title}}</h2>
+                <p>{!!$page_detail->translations->first() ? $page_detail->translations->first()->description : $page_detail->primary->description !!}</p>
             </div>
         </div>
         <form class="vendor-signup" id="vendor_signup_form" method="POST" name="form_data" action="{{route('page.driverSignup')}}" enctype="multipart/form-data">

@@ -54,6 +54,7 @@ class PageController extends Controller{
         $page_translation->title = $request->edit_title;
         $page_translation->meta_keyword = $request->edit_meta_keyword;
         $page_translation->meta_description = $request->edit_meta_description;
+        $page_translation->type_of_form = $request->type_of_form;
         $page_translation->save();
         return $this->successResponse($page_translation, 'Page Data Saved Successfully.');
     }
@@ -98,6 +99,7 @@ class PageController extends Controller{
         $page_translation->description = $request->edit_description;
         $page_translation->meta_keyword = $request->edit_meta_keyword;
         $page_translation->meta_description = $request->edit_meta_description;
+        $page_translation->type_of_form = $request->type_of_form;
         $page_translation->save();
         return $this->successResponse($page_translation, 'Page Updated Successfully.');
     }

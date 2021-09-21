@@ -112,6 +112,18 @@
                                 </div>                               
                             </div>         
                         </div>
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label for="title" class="control-label">Attach Form</label>
+                                    <select class="form-control" name="type_of_form" id="type_of_form">
+                                        <option value="0">None</option>
+                                        <option value="1">Vendor Registration</option>
+                                        <option value="2">Driver Registration</option>
+                                    </select>
+                                </div>                               
+                            </div>         
+                        </div>
                         <div class="col-12 mb-3">
                             <label for="title" class="control-label">Description</label>
                             <textarea class="form-control" id="edit_description" rows="9" name="meta_description" cols="100"></textarea>
@@ -152,6 +164,7 @@
                         $('#edit_page_content #edit_title').val(response.data.translation.title);
                         $("#edit_page_content #published").val(response.data.translation.is_published);
                         $('#edit_page_content #edit_meta_title').val(response.data.translation.meta_title);
+                        $('#edit_page_content #type_of_form').val(response.data.translation.type_of_form);
                         // $('#edit_page_content #edit_description').val(response.data.translation.description);
                         CKEDITOR.instances.edit_description.setData(response.data.translation.description);
                         $('#edit_page_content #edit_meta_keyword').val(response.data.translation.meta_keyword);
@@ -176,6 +189,7 @@
             $('#edit_page_content #page_id').val('');
             $('#edit_page_content #edit_title').val('');
             $('#edit_page_content #edit_meta_title').val('');
+            $('#edit_page_content #type_of_form').val('');
             // $('#edit_page_content #edit_description').summernote('reset');
             CKEDITOR.instances.edit_description.setData("");
             $('#edit_page_content #edit_meta_keyword').val('');
@@ -211,11 +225,12 @@
             let is_published = $('#edit_page_content #published option:selected').val();
             let language_id = $('#edit_page_content #client_language :selected').val();
             let edit_meta_title = $('#edit_page_content #edit_meta_title').val();
+            let type_of_form = $('#edit_page_content #type_of_form').val();
             // let edit_description = $('#edit_page_content #edit_description').val();
             let edit_description = CKEDITOR.instances.edit_description.getData();
             let edit_meta_keyword = $('#edit_page_content #edit_meta_keyword').val();
             let edit_meta_description = $('#edit_page_content #edit_meta_description').val();
-            var data = { page_id: page_id, is_published: is_published, edit_title: edit_title,edit_meta_title:edit_meta_title, edit_description:edit_description, edit_meta_keyword:edit_meta_keyword, edit_meta_description:edit_meta_description,language_id:language_id};
+            var data = { page_id: page_id, is_published: is_published, edit_title: edit_title,edit_meta_title:edit_meta_title, edit_description:edit_description, edit_meta_keyword:edit_meta_keyword, edit_meta_description:edit_meta_description,language_id:language_id,type_of_form:type_of_form};
             $.post(update_url, data, function(response) {
               $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
               $('#text_body_'+response.data.id).html(response.data.title);

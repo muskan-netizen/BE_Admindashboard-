@@ -30,7 +30,7 @@ else if($client_preference_detail->show_dark_mode == 2){
   }
 }
 @endphp
-<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'activess' : '' }}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
+<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
   
   @yield('content')
   @include('layouts.store/footer-content')

@@ -17,7 +17,11 @@ class VendorMedia extends Model
         $img = $value;
       }
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      if (substr($img, 0, 7) == "http://" || substr($img, 0, 8) == "https://"){
+        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.$img;
+      } else {
+        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      }
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }

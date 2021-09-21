@@ -40,7 +40,7 @@
                             </div>
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
                                 <div class="p-2 text-center">
-                                    <h3><i class="mdi mdi-account-group text-danger mdi-24px"></i><span data-plugin="counterup"> {{$promo_code_uses_count}}</span></h3>
+                                    <h3><i class="mdi mdi-account-group text-danger mdi-24px"></i> <span data-plugin="counterup"> {{$promo_code_uses_count}}</span></h3>
                                     <p class="text-muted font-15 mb-0">Promo Code Uses</p>
                                 </div>
                             </div>

@@ -308,7 +308,7 @@
                             @empty
                             @endforelse
                         </div>
-                        <div class="col-12 col-lg-3 d-md-inline-block d-none">
+                        <div class="col-12 col-lg-3 d-lg-inline-block d-none">
                             <div class="card-box p-0 cart-main-box">                                
                                 <div class="p-2 d-flex align-items-center justify-content-between border-bottom">
                                     <h4 class="right-card-title">Cart</h4>

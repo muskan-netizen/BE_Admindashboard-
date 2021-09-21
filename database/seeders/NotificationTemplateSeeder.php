@@ -20,24 +20,76 @@ class NotificationTemplateSeeder extends Seeder
                 'label' =>'New Order',
                 'subject' =>'New Vendor Signup',
                 'tags' => '', 
-                'content' => 'Thanks for your Order'
+                'content' => 'Thanks for your Order',
+                'slug' => 'new-order'
             ],
             [
                 'label' => 'Order Status Update',
                 'subject' => 'Verify Mail',
                 'tags' => '', 
-                'content' => 'Your Order status has been updated'
+                'content' => 'Your Order status has been updated',
+                'slug' => 'order-status-update'
             ],
             [
                 'label' =>'Refund Status Update',
                 'subject' => 'Reset Password Notification',
                 'tags' => '',
-                'content' => 'Your Order status has been updated'
+                'content' => 'Your Order status has been updated',
+                'slug' => 'refund-status-update'
+            ],
+            [
+                'label' =>'New Order Received (Owner)',
+                'subject' => 'New Order Received',
+                'tags' => '',
+                'content' => 'You have received a new order',
+                'slug' => 'new-order-received'
+            ],
+            [
+                'label' =>'Order Accepted (Customer)',
+                'subject' => 'Order Accepted',
+                'tags' => '{order_id}',
+                'content' => 'Your order ({order_id}) has been accepted',
+                'slug' => 'order-accepted'
+            ],
+            [
+                'label' =>'Order Rejected (Customer)',
+                'subject' => 'Order Rejected',
+                'tags' => '{order_id}',
+                'content' => 'Your order ({order_id}) has been rejected',
+                'slug' => 'order-rejected'
+            ],
+            [
+                'label' =>'Order Processing (Customer)',
+                'subject' => 'Order Processed',
+                'tags' => '{order_id}',
+                'content' => 'Your order ({order_id}) has been processed',
+                'slug' => 'order-processing'
+            ],
+            [
+                'label' =>'Out of delivery (Customer)',
+                'subject' => 'Out of delivery',
+                'tags' => '{order_id}',
+                'content' => 'Your order ({order_id}) has been reached to you soon',
+                'slug' => 'order-out-of-delivery'
+            ],
+            [
+                'label' =>'Order Delivered (Customer)',
+                'subject' => 'Order Delivered',
+                'tags' => '{order_id}',
+                'content' => 'Your order ({order_id}) has delivered',
+                'slug' => 'order-delivered'
+            ],
+            [
+                "label" => "Place Order Reminder (Customer)",
+                "subject" => "Don't wait too much",
+                "tags" => "",
+                "content" => "Place your order before it's too late",
+                "slug" => "place-order-reminder"
             ]
         ];
         NotificationTemplate::truncate();
         foreach ($create_array as $key => $array) {
-            NotificationTemplate::create(['label' => $array['label'], 'slug' => Str::slug($array['label'], "-"),'content' => $array['content'], 'subject' => $array['subject'], 'tags' => $array['tags']]);
+            NotificationTemplate::create(['label' => $array['label'], 'slug' => $array['slug'], 'content' => $array['content'], 'subject' => $array['subject'], 'tags' => $array['tags']]);
         }
     }
 }

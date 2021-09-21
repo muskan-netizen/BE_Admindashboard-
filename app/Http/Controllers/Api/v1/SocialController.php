@@ -135,11 +135,16 @@ class SocialController extends BaseController{
             // $user_device->device_type = $request->device_type;
             // $user_device->device_token = $request->device_token;
             // $user_device->save();
-
-            $user_device = UserDevice::updateOrCreate(['device_token' => $request->device_token],
-                                                          ['user_id' => $customer->id,
-                                                          'device_type' => $request->device_type,
-                                                          'access_token' => $token]);
+            if (!empty($request->fcm_token)) {
+                $user_device = UserDevice::updateOrCreate(
+                    ['device_token' => $request->fcm_token],
+                    [
+                        'user_id' => $customer->id,
+                        'device_type' => $request->device_type,
+                        'access_token' => $token
+                    ]
+                );
+            }
             
             $response['status'] = 'Success';
             $response['auth_token'] =  $token;

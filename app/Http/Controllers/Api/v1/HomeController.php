@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling};
+use App\Models\{User, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor,VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling};
 
 class HomeController extends BaseController{
     use ApiResponser;
@@ -120,13 +120,34 @@ class HomeController extends BaseController{
                         ->whereRaw("ST_Contains(polygon, ST_GeomFromText('POINT(".$latitude." ".$longitude.")'))");
                 });
             }
-            $vendorData = $vendorData->with('slot')->where('status', '!=', $this->field_status)->get();
+            $vendorData = $vendorData->with('slot')->where('status', 1)->get();
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
+
+                $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();
+                $categoriesList = '';
+                foreach($vendorCategories as $key => $category){
+                    if($category->category){
+                        $categoriesList = $categoriesList . $category->category->translation_one->name;
+                        if( $key !=  $vendorCategories->count()-1 ){
+                            $categoriesList = $categoriesList . ', ';
+                        }
+                    }
+                }
+                $vendor->categoriesList = $categoriesList;
             }
             foreach ($vendorData as $key => $value) {
                 $vends[] = $value->id;
+                if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                    $lat1   = $latitude;
+                    $long1  = $longitude;
+                    $lat2   = $value->latitude;
+                    $long2  = $value->longitude;
+                    $distance = $this->calulateDistanceLineOfSight($lat1,$long1,$lat2, $long2, 'K');
+                    $value->lineOfSightDistance = number_format($distance, 1, '.', '');
+                    $value->timeofLineOfSightDistance = number_format(floatval($value->order_pre_time), 0, '.', '') + number_format(($distance * 2), 0, '.', ''); // distance is multiplied by 2 minutes per 1 distance unit to calculate travel time
+                }
             }
             $isVendorArea = 0;
             $langId = $user->language;
