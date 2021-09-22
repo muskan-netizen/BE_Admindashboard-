@@ -149,7 +149,7 @@ if (Session::has('toaster')) {
         });
     });
 </script>
-@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
+@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']) && empty(Session::get('current_fcm_token')))
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
     var firebaseConfig = {

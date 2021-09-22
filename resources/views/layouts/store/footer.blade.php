@@ -22,13 +22,19 @@
     var is_hyperlocal = 0;
     var selected_address = 0;
     var vendor_type = "delivery";
+    var currentRouteName = "{{Route::currentRouteName()}}";
     @if(Session::has('vendorType'))
         vendor_type = "{{Session::get('vendorType')}}";
     @endif
     var autocomplete_url = "{{ route('autocomplete') }}";
     let stripe_publishable_key = '{{ $stripe_publishable_key }}';
     var login_url = "{{ route('customer.login') }}";
+    if(currentRouteName == 'indexTemplateOne')
+    var home_page_url = "{{ route('indexTemplateOne') }}";
+    else
     var home_page_url = "{{ route('userHome') }}";
+    
+    var home_page_url_template_one = "{{ route('indexTemplateOne') }}";
     let home_page_url2 = home_page_url.concat("/");
     var add_to_whishlist_url = "{{ route('addWishlist') }}";
     var show_cart_url = "{{ route('showCart') }}";
@@ -84,7 +90,7 @@
 <script src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 @if (Auth::check())
-@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
+@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']) && empty(Session::get('current_fcm_token')))
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
 <script>

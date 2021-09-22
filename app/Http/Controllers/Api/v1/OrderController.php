@@ -551,7 +551,7 @@ class OrderController extends Controller {
     {
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
         Log::info($devices);
-        $client_preferences = ClientPreference::select('fcm_server_key')->first();
+        $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
             $notification_content = NotificationTemplate::where('id', 4)->first();
@@ -568,7 +568,8 @@ class OrderController extends Controller {
                     "notification" => [
                         'title' => $notification_content->subject,
                         'body'  => $notification_content->content,
-                        'sound' => "default",
+                        'sound' => "notification.mp3",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'].'200/200'.$client_preferences->favicon['image_path'] : '',
                         'click_action' => $redirect_URL
                     ],
                     "data" => [
@@ -596,7 +597,7 @@ class OrderController extends Controller {
     {
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
         Log::info($devices);
-        $client_preferences = ClientPreference::select('fcm_server_key')->first();
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
             if ($order_status_id == 2 || $order_status_id == 7) {
@@ -624,7 +625,8 @@ class OrderController extends Controller {
                     "notification" => [
                         'title' => $notification_content->subject,
                         'body'  => $body_content,
-                        'sound' => "default",
+                        'sound' => "notification.mp3",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'].'200/200'.$client_preferences->favicon['image_path'] : '',
                         'click_action' => $redirect_URL
                     ],
                     "data" => [

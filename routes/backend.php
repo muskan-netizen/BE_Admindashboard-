@@ -83,11 +83,15 @@ Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'],
     Route::post('banner/toggle', 'Client\BannerController@toggleAllBanner')->name('banner.toggle');
     Route::get('web-styling', 'Client\WebStylingController@index')->name('webStyling.index');
     Route::post('web-styling/updateWebStyles', 'Client\WebStylingController@updateWebStyles')->name('styling.updateWebStyles');
+    Route::post('web-styling/updateWebStylesNew', 'Client\WebStylingController@updateWebStylesNew')->name('styling.updateWebStylesNew');
+    Route::get('web-styling/get-html-data-in-modal', 'Client\WebStylingController@getHtmlDatainModal')->name('get-html-data-in-modal');
     Route::post('web-styling/updateDarkMode', 'Client\WebStylingController@updateDarkMode')->name('styling.updateDarkMode');
     Route::post('homepagelabel/saveOrder', 'Client\WebStylingController@saveOrder');
     Route::post('pickuplabel/saveOrder', 'Client\WebStylingController@saveOrderPickup');
     Route::post('web-styling/pickup-add-section', 'Client\WebStylingController@addNewPickupSection')->name('pickup.add.section');
-    Route::delete('web-styling/pickup-delete-section/{id}', 'Client\WebStylingController@deletePickupSection')->name('pickup.delete.section');
+    Route::post('web-styling/edit-Dynamic-Html-Section', 'Client\WebStylingController@editDynamicHtmlSection')->name('edit.Dynamic.Html.Section');
+    Route::post('web-styling/pickup-append-section', 'Client\WebStylingController@appendPickupSection')->name('pickup.append.section');
+    Route::get('web-styling/pickup-delete-section/{id}', 'Client\WebStylingController@deletePickupSection')->name('pickup.delete.section');
     Route::get('app-styling', 'Client\AppStylingController@index')->name('appStyling.index');
     Route::post('app-styling/updateFont', 'Client\AppStylingController@updateFont')->name('styling.updateFont');
     Route::post('app-styling/updateColor', 'Client\AppStylingController@updateColor')->name('styling.updateColor');

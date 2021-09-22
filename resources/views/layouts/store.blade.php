@@ -33,7 +33,11 @@ else if($client_preference_detail->show_dark_mode == 2){
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
   
   @yield('content')
+  @if(Route::currentRouteName() == 'indexTemplateOne')
+  @include('layouts.store/footer-content-template-one')
+  @else
   @include('layouts.store/footer-content')
+  @endif
   @include('layouts.store/footer')
   <div class="loader_box" style="display: none;">
     <div class="spinner-border text-danger m-2 showLoader" role="status"></div>

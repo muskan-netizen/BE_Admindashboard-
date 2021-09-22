@@ -74,13 +74,18 @@ class ProfileController extends BaseController{
         $language_id = $user->language;
         $paginate = $request->has('limit') ? $request->limit : 12;
 		$clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
-        $user_wish_details = UserWishlist::with(['product.category.categoryDetail','product.media.image', 'product.translation' => function($q) use($language_id){
-                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
-                    },'product.variant' => function($q) use($language_id){
-                        $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
-                        $q->groupBy('product_id');
-                    },
-                    ])->select( "id", "user_id", "product_id")->where('user_id', $user->id)->paginate($paginate);
+        $user_wish_details = UserWishlist::with(['product.category.categoryDetail',
+            'product.category.categoryDetail.translation' => function($q) use($language_id){
+                $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                ->where('category_translations.language_id', $language_id);
+            },
+            'product.media.image', 'product.translation' => function($q) use($language_id){
+                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
+            },'product.variant' => function($q) use($language_id){
+                $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                $q->groupBy('product_id');
+            },
+        ])->select( "id", "user_id", "product_id")->where('user_id', $user->id)->paginate($paginate);
     	if($user_wish_details){
     		foreach ($user_wish_details as $user_wish_detail) {
                 $user_wish_detail->product->is_wishlist = $user_wish_detail->product ? $user_wish_detail->product->category->categoryDetail->show_wishlist : null;

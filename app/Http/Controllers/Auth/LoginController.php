@@ -12,6 +12,9 @@ use Illuminate\Validation\Validator;
 use Illuminate\Support\Facades\Cache;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Models\UserDevice;
+use Session;
+
 class LoginController extends Controller{
     /*
     |--------------------------------------------------------------------------
@@ -73,6 +76,10 @@ class LoginController extends Controller{
     public function Logout(){   
         Auth::guard('client')->logout();
         Auth::logout();
+        if (!empty(Session::get('current_fcm_token'))) {
+            UserDevice::where('device_token', Session::get('current_fcm_token'))->delete();
+            Session::forget('current_fcm_token');
+        }
         return redirect()->route('customer.login');
     }
 

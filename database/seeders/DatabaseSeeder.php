@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
               SubscriptionFeaturesListVendorSeeder::class,
               SubscriptionStatusOptionsSeeder::class,
               HomePageLabelSeeder::class,
+              HomePageLabelSeederDefault::class,
               EmailTemplateSeeder::class,
               NotificationTemplateSeeder::class
           ]);

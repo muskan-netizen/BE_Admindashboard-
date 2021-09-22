@@ -108,7 +108,7 @@ class HomeController extends BaseController{
             }else{
                 $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating');
             }
-            if($preferences->is_hyperlocal == 1){
+            if(($preferences) && ($preferences->is_hyperlocal == 1)){
                 if( (empty($latitude)) && (empty($longitude)) ){
                     $address = $preferences->Default_location_name;
                     $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
@@ -121,6 +121,7 @@ class HomeController extends BaseController{
                 });
             }
             $vendorData = $vendorData->with('slot')->where('status', 1)->get();
+            
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
@@ -136,17 +137,10 @@ class HomeController extends BaseController{
                     }
                 }
                 $vendor->categoriesList = $categoriesList;
-            }
-            foreach ($vendorData as $key => $value) {
-                $vends[] = $value->id;
+                
+                $vends[] = $vendor->id;
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                    $lat1   = $latitude;
-                    $long1  = $longitude;
-                    $lat2   = $value->latitude;
-                    $long2  = $value->longitude;
-                    $distance = $this->calulateDistanceLineOfSight($lat1,$long1,$lat2, $long2, 'K');
-                    $value->lineOfSightDistance = number_format($distance, 1, '.', '');
-                    $value->timeofLineOfSightDistance = number_format(floatval($value->order_pre_time), 0, '.', '') + number_format(($distance * 2), 0, '.', ''); // distance is multiplied by 2 minutes per 1 distance unit to calculate travel time
+                    $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences);
                 }
             }
             $isVendorArea = 0;

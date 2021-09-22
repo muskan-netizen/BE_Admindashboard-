@@ -22,6 +22,7 @@ use App\Http\Controllers\Client\BaseController;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
 use App\Models\UserDevice;
+use Session;
 use App\Models\{Payment, User, Client, Country, Currency, Language, UserVerification, Role, Transaction};
 
 class UserController extends BaseController{
@@ -338,6 +339,7 @@ class UserController extends BaseController{
 
     public function save_fcm(Request $request){
         UserDevice::updateOrCreate(['device_token' => $request->fcm_token],['user_id' => Auth::user()->id, 'device_type' => "web"])->first();
+        Session::put('current_fcm_token', $request->fcm_token);
         return response()->json([ 'status'=>'success', 'message' => 'Token updated successfully']);
     }
 }

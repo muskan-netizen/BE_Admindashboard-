@@ -7,11 +7,13 @@ use Session;
 use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use Omnipay\Common\CreditCard;
-use App\Models\{PaymentOption, Client, ClientPreference, ClientCurrency, SubscriptionPlansUser};
+use App\Models\{PaymentOption, Client, ClientPreference, ClientCurrency, SubscriptionPlansUser, UserAddress};
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Support\Facades\Validator;
-class StripeGatewayController extends FrontController{
+
+class StripeGatewayController extends FrontController
+{
 
     use ApiResponser;
     public $gateway;
@@ -33,7 +35,9 @@ class StripeGatewayController extends FrontController{
 
     public function postPaymentViaStripe(request $request)
     {
-        try{
+        try {
+            $user = Auth::user();
+            $address = UserAddress::where('user_id', $user->id);
             $amount = $this->getDollarCompareAmount($request->amount);
             $token = $request->input('stripe_token');
             $response = $this->gateway->purchase([
@@ -42,32 +46,43 @@ class StripeGatewayController extends FrontController{
                 'amount' => $amount,
                 'metadata' => ['cart_id' => ($request->cart_id) ? $request->cart_id : 0],
                 'description' => 'This is a test purchase transaction.',
+            //     'name'=>Auth::user()->name,
+            //     'address' => [
+            //        'line1'       => '510 Townsend St',
+            //        'postal_code' => '98140',
+            //        'city'        => 'San Francisco',
+            //        'state'       => 'CA',
+            //        'country'     => 'US',
+            //    ],
+                // 'name' => Auth::user()->name,
+                // 'address' => $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode,
             ])->send();
             if ($response->isSuccessful()) {
-                //$this->successMail();
+                $this->successMail();
                 return $this->successResponse($response->getData());
-            } 
+            }
             // elseif ($response->isRedirect()) {
             //     return $this->errorResponse($response->getRedirectUrl(), 400);
             // } 
             else {
-               // $this->failMail();
+                $this->failMail();
                 return $this->errorResponse($response->getMessage(), 400);
             }
-        }catch(\Exception $ex){
-            //$this->failMail();
+        } catch (\Exception $ex) {
+            $this->failMail();
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
 
     public function subscriptionPaymentViaStripe(request $request)
     {
-        try{
+        try {
             $user = Auth::user();
+            $address = UserAddress::where('user_id', $user->id);
             $token = $request->stripe_token;
-            $plan = SubscriptionPlansUser::where('slug',$request->subscription_id)->firstOrFail();
+            $plan = SubscriptionPlansUser::where('slug', $request->subscription_id)->firstOrFail();
             $saved_payment_method = $this->getSavedUserPaymentMethod($request);
-            if(!$saved_payment_method){
+            if (!$saved_payment_method) {
                 $customerResponse = $this->gateway->createCustomer(array(
                     'description' => 'Creating Customer for subscription',
                     'email' => $request->email,
@@ -75,15 +90,14 @@ class StripeGatewayController extends FrontController{
                 ))->send();
                 // Find the card ID
                 $customer_id = $customerResponse->getCustomerReference();
-                if($customer_id){
+                if ($customer_id) {
                     $request->request->set('customerReference', $customer_id);
                     $save_payment_method_response = $this->saveUserPaymentMethod($request);
                 }
-            }
-            else{
+            } else {
                 $customer_id = $saved_payment_method->customerReference;
             }
-            
+
             // $subscriptionResponse = $this->gateway->createSubscription(array(
             //     "customerReference" => $customer_id,
             //     'plan' => 'Basic Plan',
@@ -92,35 +106,32 @@ class StripeGatewayController extends FrontController{
             $amount = $this->getDollarCompareAmount($request->amount);
             $authorizeResponse = $this->gateway->authorize([
                 'amount' => $amount,
-                'currency' => 'INR', //$this->currency,
+                'currency' => $this->currency,
                 'description' => 'This is a subscription purchase transaction.',
                 'customerReference' => $customer_id
             ])->send();
             if ($authorizeResponse->isSuccessful()) {
                 $purchaseResponse = $this->gateway->purchase([
-                    'currency' => 'INR',
+                    'currency' => $this->currency,
                     'amount' => $amount,
                     'metadata' => ['user_id' => $user->id, 'plan_id' => $plan->id],
                     'description' => 'This is a subscription purchase transaction.',
                     'customerReference' => $customer_id
                 ])->send();
                 if ($purchaseResponse->isSuccessful()) {
-                    //$this->successMail();
+                    $this->successMail();
                     return $this->successResponse($purchaseResponse->getData());
-                }
-                else {
-                    //$this->failMail();
+                } else {
+                    $this->failMail();
                     return $this->errorResponse($purchaseResponse->getMessage(), 400);
                 }
-            }
-            else {
-                //$this->failMail();
+            } else {
+                $this->failMail();
                 return $this->errorResponse($authorizeResponse->getMessage(), 400);
             }
-        }catch(\Exception $ex){
-            //$this->failMail();
+        } catch (\Exception $ex) {
+            $this->failMail();
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
-
 }

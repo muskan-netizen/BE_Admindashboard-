@@ -7,7 +7,7 @@ use App\Models\{ClientPreference, HomePageLabel,ClientLanguage, HomePageLabelTra
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use DB;
+use DB,Log;
 class WebStylingController extends BaseController{
     //
      /**
@@ -20,7 +20,17 @@ class WebStylingController extends BaseController{
         $client_preferences = ClientPreference::first();
         $home_page_labels = HomePageLabel::with('translations')->orderBy('order_by')->get();
         $all_pickup_category = Category::with('translation_one')->where('type_id',7)->get();
-        $cab_booking_layouts = CabBookingLayout::with('translations')->orderBy('order_by')->get();
+        if(count($all_pickup_category) == 0){
+            $cab_booking_layouts = CabBookingLayout::with('translations')->where('slug','!=','pickup_delivery')->orderBy('order_by')->get();
+            $home_page_labels = HomePageLabel::with('translations')->where('slug','!=','pickup_delivery')->orderBy('order_by')->get();
+     
+        }
+        else{
+            $cab_booking_layouts = CabBookingLayout::with('translations')->orderBy('order_by')->get();
+            $home_page_labels = HomePageLabel::with('translations')->orderBy('order_by')->get();
+
+        }
+      
         // pr($home_page_labels->toArray());die;
 
         $if_pickup_on  = HomePageLabel::where('slug','pickup_delivery')->first();
@@ -227,6 +237,176 @@ class WebStylingController extends BaseController{
         catch(\Exception $ex){
             DB::rollback();
             return redirect()->back()->with('success', $ex->getMessage());
+           
+        }
+    }
+
+
+    # apend new section
+    public function appendPickupSection(Request $request){
+        DB::beginTransaction();
+        try{
+        $home_page = HomePageLabel::where('id', $request->row_id)->first();
+
+        $order_no = CabBookingLayout::orderBy('order_by','desc')->value('order_by');
+        if(isset($order_no) && !empty($order_no))
+        $order_no += 1;
+        else
+        $order_no = 1;
+       
+        $featured_products = new CabBookingLayout(); 
+        $featured_products->title = $home_page->title??null;
+        $featured_products->slug = $home_page->slug??null;
+        $featured_products->is_active = 1;
+        $featured_products->order_by = $order_no??1;
+        $featured_products->save(); 
+        
+        if($home_page->slug == 'pickup_delivery')
+        {   
+            $all_pickup_category = Category::with('translation_one')->where('type_id',7)->first();
+            if( $all_pickup_category){
+            $cate = new CabBookingLayoutCategory();
+            $cate->cab_booking_layout_id  = $featured_products->id;
+            $cate->category_id  = $all_pickup_category->id;
+            $cate->save();
+            }
+            
+        }
+
+        DB::commit();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Web Styling Updated Successfully!'
+        ]);
+        }
+        catch(\Exception $ex){
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $ex->getMessage()
+            ]);
+           
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateWebStylesNew(Request $request){
+        // dd($request->all());
+        foreach ($request->home_labels as $key => $value) {
+            $home_translation = CabBookingLayoutTranslation::where('language_id', $request->languages[$key])->where('cab_booking_layout_id', $request->home_labels[$key])->first();
+            if (!$home_translation) {
+                $home_translation = new CabBookingLayoutTranslation();
+            }
+            $home_translation->title = $request->names[$key];
+            $home_translation->cab_booking_layout_id  = $request->home_labels[$key];
+            $home_translation->language_id = $request->languages[$key];
+            $home_translation->save();
+
+
+        }
+        foreach ($request->pickup_labels as $key => $value) {
+
+            if(isset($request->is_active[$key]) && !empty($request->is_active[$key]))
+            $is_cc =  1;
+            else
+            $is_cc =  0;
+
+            $is_active = CabBookingLayout::where('id', $request->pickup_labels[$key])->first();
+            if($is_active){
+                $is_active->is_active = $is_cc;
+                $is_active->save(); 
+            }
+
+            if(isset($request->categories[$key]) && !empty($request->categories[$key])){
+                $is_cat =  $request->categories[$key]['check'];
+                Log::info($is_cat);
+            }
+            else{
+                $is_cat =  0;
+                Log::info($is_cat);
+            }
+           
+
+
+            if($is_cat != 0)
+            {   
+                $del = CabBookingLayoutCategory::where('cab_booking_layout_id',$request->pickup_labels[$key])->delete();
+                $cate = new CabBookingLayoutCategory();
+                $cate->cab_booking_layout_id  = $request->pickup_labels[$key];
+                $cate->category_id  = $is_cat;
+                $cate->save();
+            }
+
+
+        }
+
+
+       
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Web Styling Updated Successfully!'
+        ]);
+    }
+
+
+
+     /**
+     * get Html Data in Modal
+    */
+    public function getHtmlDatainModal(Request $request){
+        try {
+            $html_data = CabBookingLayoutTranslation::where('cab_booking_layout_id',$request->id)->get();
+            $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
+                    ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
+                    ->where('client_languages.client_code', Auth::user()->code)
+                    ->where('client_languages.is_active', 1)
+                    ->orderBy('client_languages.is_primary', 'desc')->get();
+       
+                if ($request->ajax()) {
+                 return \Response::json(\View::make('backend.web_styling.html-edit-modal', array('html_data'=>  $html_data,'langs' => $langs))->render());
+                }
+
+           
+            return $this->errorResponse('Invalid Layout', 404);
+            
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+
+       # edit Dynamic Html Section
+       public function editDynamicHtmlSection(Request $request){
+
+        DB::beginTransaction();
+        try{
+            CabBookingLayoutTranslation::where('cab_booking_layout_id',$request->layout_id)->delete();
+         foreach ($request->languages as $key => $value) {
+            $home_translation = new CabBookingLayoutTranslation();
+            $home_translation->body_html = $request->description_[$key] ??null;
+            $home_translation->cab_booking_layout_id   = $request->layout_id;
+            $home_translation->language_id = $request->languages[$key];
+            $home_translation->save();
+        }
+       
+        DB::commit();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Web Styling Updated Successfully!'
+        ]);
+        }
+        catch(\Exception $ex){
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $ex->getMessage()
+            ]);
            
         }
     }

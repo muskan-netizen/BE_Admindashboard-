@@ -87,6 +87,34 @@ class HomePageLabelSeeder extends Seeder
             ]);
          
         }
+
+        $already = HomePageLabel::where('slug', 'dynamic_page')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Dynamic Page',
+            'slug' => 'dynamic_page',
+            'order_by' => 8,
+        ]);
+
+
+        $already = HomePageLabel::where('slug', 'trending_vendors')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Trending Vendors',
+            'slug' => 'trending_vendors',
+            'order_by' => 9,
+        ]);
+
+        $already = HomePageLabel::where('slug', 'recent_orders')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Recent Orders',
+            'slug' => 'recent_orders',
+            'order_by' => 10,
+        ]);
            
        
     }

@@ -3386,7 +3386,10 @@ header .homepage-address h2 {
     border-radius: 50px;
     overflow: hidden;
     padding: 8px 10px;
-    width: 100%;
+}
+
+.page-tabs{
+    width: 50%;
 }
 
 /* Animation Tabbar Css */
@@ -5842,7 +5845,7 @@ section.royo-business .title-36 {
     width: 100%;
 }
 
-
+/* New P */
 
 
 

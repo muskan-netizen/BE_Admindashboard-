@@ -66,7 +66,12 @@ class CheckAuth
                 $currency_id = $checkCur->currency_id;
             }
         }
-
+        if(isset($header['latitude'][0]) && !empty($header['latitude'][0])){
+            $user->latitude = $header['latitude'][0];
+        }
+        if(isset($header['longitude'][0]) && !empty($header['longitude'][0])){
+            $user->longitude = $header['longitude'][0];
+        }
         $user->language = $language_id;
         $user->currency = $currency_id;
         

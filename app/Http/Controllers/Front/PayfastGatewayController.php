@@ -157,16 +157,17 @@ class PayfastGatewayController extends FrontController
                 $this->successMail();
                 return $this->successResponse($response->data, 'Payment completed successfully.', 200);
             }else{
-                //$this->failMail();
+                $this->failMail();
                 return $this->errorResponse($response->message, 400);
             }
         break;
         case 'FAILED':
-            //$this->failMail();
+            $this->failMail();
             // There was an error, update your application
             return $this->errorResponse('Payment failed', 400);
         break;
         default:
+        $this->failMail();
             // If unknown status, do nothing (safest course of action)
             // return $this->errorResponse($response->getMessage(), 400);
         break;

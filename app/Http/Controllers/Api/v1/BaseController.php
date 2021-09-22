@@ -85,6 +85,26 @@ class BaseController extends Controller{
         return $categories;
     }
 
+    function getVendorDistanceWithTime($userLat='', $userLong='', $vendor, $preferences){
+        if(($preferences) && ($preferences->is_hyperlocal == 1)){
+            if( (empty($userLat)) && (empty($userLong)) ){
+                $userLat = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
+                $userLong = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
+            }
+
+            $lat1   = $userLat;
+            $long1  = $userLong;
+            $lat2   = $vendor->latitude;
+            $long2  = $vendor->longitude;
+            $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+            $distance_to_time_multiplier = (!empty($preferences->distance_to_time_multiplier)) ? $preferences->distance_to_time_multiplier : 2;
+            $distance = $this->calulateDistanceLineOfSight($lat1, $long1, $lat2, $long2, $distance_unit);
+            $vendor->lineOfSightDistance = number_format($distance, 1, '.', '');
+            $vendor->timeofLineOfSightDistance = number_format(floatval($vendor->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', ''); // distance is multiplied by distance time multiplier to calculate travel time
+        }
+        return $vendor;
+    }
+
     protected function in_polygon($points_polygon, $vertices_x, $vertices_y, $longitude_x, $latitude_y){
       $i = $j = $c = 0;
       for ($i = 0, $j = $points_polygon-1 ; $i < $points_polygon; $j = $i++) {

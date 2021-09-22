@@ -187,14 +187,26 @@ class UserhomeController extends FrontController
                             ->whereDate('end_date_time', '>=', Carbon::now());
                     });
                 })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
+            
+            
+            $home_page_labels = CabBookingLayout::where('is_active', 1)->orderBy('order_by');
+            
+            if(isset($langId) && !empty($langId))
+            $home_page_labels = $home_page_labels->with(['translations' => function ($q)use($langId){
+                $q->where('language_id',$langId);
+            }]);
+
+            $home_page_labels = $home_page_labels->get();  
+
+            if(count($home_page_labels) == 0)
             $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
+            
 
             $only_cab_booking = OnboardSetting::where('key_value','home_page_cab_booking')->count();
             if($only_cab_booking == 1)
-            return Redirect::route('categoryDetail','cabservice');    
-            $home_page_pickup_labels = CabBookingLayout::with(['translations' => function($q)use($langId){
-                $q->where('language_id',$langId);
-            }])->where('is_active', 1)->orderBy('order_by')->get();
+            return Redirect::route('categoryDetail','cabservice');   
+
+            $home_page_pickup_labels = CabBookingLayout::where('is_active', 1)->orderBy('order_by')->get();
            
             return view('frontend.home')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels,'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
         } catch (Exception $e) {
@@ -419,6 +431,71 @@ class UserhomeController extends FrontController
             $takeaway_check = $clientPreferences->takeaway_check;
             $age_restriction = $clientPreferences->age_restriction;
             return response()->json(["age_restriction" => $age_restriction, "dinein_check" => $dinein_check, "delivery_check" => $delivery_check, "takeaway_check" => $takeaway_check]);
+        }
+    }
+
+
+    /////    new home page 
+    public function indexTemplateOne(Request $request)
+    {
+        try {
+            $home = array();
+            $vendor_ids = array();
+            if ($request->has('ref')) {
+                session(['referrer' => $request->query('ref')]);
+            }
+            $latitude = Session::get('latitude');
+            $longitude = Session::get('longitude');
+            $curId = Session::get('customerCurrency');
+            $preferences = Session::get('preferences');
+            $langId = Session::get('customerLanguage');
+            $client_config = Session::get('client_config');
+            $selectedAddress = Session::get('selectedAddress');
+            $navCategories = $this->categoryNav($langId);
+            Session::put('navCategories', $navCategories);
+            $clientPreferences = ClientPreference::first();
+            $count = 0;
+            if ($clientPreferences) {
+                if ($clientPreferences->dinein_check == 1) {
+                    $count++;
+                }
+                if ($clientPreferences->takeaway_check == 1) {
+                    $count++;
+                }
+                if ($clientPreferences->delivery_check == 1) {
+                    $count++;
+                }
+            }
+            if ($preferences) {
+                if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
+                    $selectedAddress = $preferences->Default_location_name;
+                    $latitude = $preferences->Default_latitude;
+                    $longitude = $preferences->Default_longitude;
+                    Session::put('latitude', $latitude);
+                    Session::put('longitude', $longitude);
+                    Session::put('selectedAddress', $selectedAddress);
+                }
+            }
+            $banners = Banner::where('status', 1)->where('validity_on', 1)
+                ->where(function ($q) {
+                    $q->whereNull('start_date_time')->orWhere(function ($q2) {
+                        $q2->whereDate('start_date_time', '<=', Carbon::now())
+                            ->whereDate('end_date_time', '>=', Carbon::now());
+                    });
+                })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
+            $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
+
+            $only_cab_booking = OnboardSetting::where('key_value','home_page_cab_booking')->count();
+            if($only_cab_booking == 1)
+            return Redirect::route('categoryDetail','cabservice');    
+            $home_page_pickup_labels = CabBookingLayout::with(['translations' => function($q)use($langId){
+                $q->where('language_id',$langId);
+            }])->where('is_active', 1)->orderBy('order_by')->get();
+           
+            return view('frontend.home-template-one')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels,'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+        } catch (Exception $e) {
+            pr($e->getCode());
+            die;
         }
     }
 }

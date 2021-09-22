@@ -63,6 +63,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/autocomplete-search','Front\SearchController@postAutocompleteSearch')->name('autocomplete');
 	Route::get('/search-all/{keyword}','Front\SearchController@showSearchResults')->name('showSearchResults');
 	Route::get('/','Front\UserhomeController@index')->name('userHome');
+	Route::get('/homeTemplateOne','Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
 	Route::get('page/{slug}','Front\UserhomeController@getExtraPage')->name('extrapage');
 	
 	Route::post('/homePageData','Front\UserhomeController@postHomePageData')->name('homePageData');

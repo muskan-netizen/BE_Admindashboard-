@@ -17,6 +17,7 @@ use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use Log;
 class PickupDeliveryController extends FrontController{
 	
     use ApiResponser;
@@ -114,10 +115,14 @@ class PickupDeliveryController extends FrontController{
                                 $qr->select('category_id')->from('vendor_categories')
                                     ->where('vendor_id', $vid)->where('status', 0);
                     })
+                    ->whereHas('category.categoryDetail' ,function($qryd) {
+                        $qryd->where('type_id', 7);   # check only products get of pickup
+                    })
                     ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags')
                     ->where('products.vendor_id', $vid)
                     ->where('products.is_live', 1)->distinct()->get(); 
-            if(!empty($products)){
+
+             if(!empty($products)){
                 foreach ($products as $key => $product) {
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product);
                     $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'93/93'.$product->media->first()->image->path['image_path'] : '';
@@ -245,7 +250,7 @@ class PickupDeliveryController extends FrontController{
      public function createOrder(Request $request){
         DB::beginTransaction();
         try {
-            $user = Auth::user();
+             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
             if($order_place && $order_place['status'] == 200){
                 $data = [];
@@ -285,7 +290,7 @@ class PickupDeliveryController extends FrontController{
         $user = Auth::user();
         $currency_id = Session::get('customerCurrency');
         $request->address_id = $request->address_id ??null;
-        $request->payment_option_id = $request->payment_method ??1;
+        $request->payment_option_id = $request->payment_option_id ??1;
         if ($user) {
             $loyalty_amount_saved = 0;
             $redeem_points_per_primary_currency = '';
@@ -459,14 +464,19 @@ class PickupDeliveryController extends FrontController{
             $tasks = array();
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = Auth::user();
+            $wallet = $customer->wallet;
             if ($dispatch_domain && $dispatch_domain != false) {
-                if ($request->payment_method == 1 || 1 ==1 ) {
+                if ($request->payment_option_id == 1) {
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order->payable_amount;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
+                  
+                  $wal =   $wallet->forceWithdrawFloat($order->payable_amount, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                  Log::info($wal);
                 }
+                Log::info($cash_to_be_collected);
                 $unique = Auth::user()->code;
                 $team_tag = $unique."_".$vendor;
                 $dynamic = uniqid($order->id.$vendor);

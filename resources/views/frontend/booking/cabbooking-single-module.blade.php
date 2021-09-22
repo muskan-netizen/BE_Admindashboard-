@@ -4,9 +4,9 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="card-box mb-0">
-                    <h2>{{ _('Request a ride now') }} : {{ $homePagePickupLabel->pickupCategories->first()->categoryDetail->translation_one->name}}
+                    <h2>{{ _('Request a ride now') }} : {{ $homePageLabel->pickupCategories->first()->categoryDetail->translation_one->name ?? ''}}
                     </h2>
-                    <form action="{{ route('categoryDetail',$homePagePickupLabel->pickupCategories->first()->categoryDetail->slug??'')}}" class="cab-booking-form">
+                    <form action="{{ route('categoryDetail',$homePageLabel->pickupCategories->first()->categoryDetail->slug??'')}}" class="cab-booking-form">
                                  <div class="cab-input">
                             <div class="form-group mb-1 position-relative">
                                 <input class="form-control edit-other-stop" type="text" placeholder="Enter pickup location" name="pickup_location" id="pickup_location_{{$key}}" data-rel="{{$key}}" >
@@ -40,4 +40,3 @@
 
 <!-- Cab Content Area Start From Here -->
 
-{!! $homePagePickupLabel->translations->first()->body_html !!}

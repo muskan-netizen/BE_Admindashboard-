@@ -464,6 +464,10 @@ class CustomerAuthController extends FrontController
     }
     public function logout(){
         Auth::logout();
+        if (!empty(Session::get('current_fcm_token'))) {
+            UserDevice::where('device_token', Session::get('current_fcm_token'))->delete();
+            Session::forget('current_fcm_token');
+        }
         return redirect()->route('customer.login');
     }
 }
