@@ -221,7 +221,7 @@
                             <input type="checkbox" {{$home_page_label->is_active == 1 ? 'checked' : ''}} id="{{$home_page_label->slug}}" data-plugin="switchery" name="is_active[{{$key}}][check]" class="chk_box2" data-color="#43bee1">
                         </div>
                         @if($home_page_label->slug == 'dynamic_page')
-                        <a class="action-icon edit_dynamic_page" dataid="{{$home_page_label->id}}" href="javascript:void(0);">
+                        <a class="action-icon edit_dynamic_page" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
                             <i class="mdi mdi-pencil"></i>
                         </a>
                         @endif

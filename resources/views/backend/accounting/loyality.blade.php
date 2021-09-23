@@ -103,7 +103,7 @@
                         <table class="table table-centered table-nowrap table-striped" id="accounting_loyality_datatable" width="100%">
                             <thead>
                                 <tr>
-                                    <th>Order Id</th>
+                                    <th>Order ID</th>
                                     <th>Date & Time</th>
                                     <th>Customer Name</th>
                                     <th>Final Amount</th>

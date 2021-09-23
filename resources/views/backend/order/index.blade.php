@@ -27,7 +27,7 @@
             <% if(order.vendors.length !== 0) { %>
                 <div class="col-xl-6"  id="full-order-div<%= k %>">
                     <div class="row no-gutters order_head">
-                        <div class="col-md-3"><h4>Order Id</h4></div>
+                        <div class="col-md-3"><h4>Order ID</h4></div>
                         <div class="col-md-3"><h4>Date & Time</h4></div>
                         <div class="col-md-3"><h4>Customer</h4></div>
                         <div class="col-md-3"><h4>Address</h4></div>
@@ -179,7 +179,7 @@
             </div>
         </div>
         <div class="offset-md-9 col-md-3 offset-lg-10 col-lg-2 mb-2">
-            <input type="search" class="form-control form-control-sm" placeholder="Search By Order Id" id="search_via_keyword">
+            <input type="search" class="form-control form-control-sm" placeholder="Search By Order ID" id="search_via_keyword">
         </div>
     </div>
 </div>

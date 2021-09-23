@@ -106,9 +106,15 @@ if (strpos($url,'cabservice') !== false) {?>
                     <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="mx-2 scheduleDateTimeApnd">Now</span> <i class="fa fa-angle-down" aria-hidden="true"></i></button>
                 </div>
                 @if($wallet_balance < 0)
-                    <h6 style="color: red;">{{__('* Please recharge your wallet first.')}}
-                    <a href="{{route('user.wallet')}}">{{ __('Click Here') }}</a></h6>
-                
+                <div class="row">
+                        <div class="col-md-7">
+                            <h6 style="color: red;">{{__('* Please recharge your wallet.')}}
+                        </div>
+                        <div class="col-md-5 text-md-right text-center">
+                            <button type="button" class="btn btn-solid" id="topup_wallet_btn" data-toggle="modal" data-target="#topup_wallet">{{__('Topup Wallet')}}</button>
+                        </div>
+                    </div>        
+                  
                 @endif
                 <div class="loader cab-booking-main-loader"></div>
                 <div class="location-list style-4"> 
@@ -377,6 +383,57 @@ if (strpos($url,'cabservice') !== false) {?>
         </div>
     </div>
 </div>
+<!-- topup wallet -->
+<div class="modal fade" id="topup_wallet" tabindex="-1" aria-labelledby="topup_walletLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-bottom">
+        <h5 class="modal-title text-17 mb-0 mt-0" id="topup_walletLabel">{{__('Available Balance')}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="" id="wallet_topup_form">
+        @csrf
+        @method('POST')
+        <div class="modal-body pb-0"> {{ $clientCurrency ??''}}ds
+            <div class="form-group">
+                <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">@money(Auth::user()->balanceFloat * 1)</span></div>
+            </div>
+            <div class="form-group">
+                <h5 class="text-17 mb-2">{{__('Topup Wallet')}}</h5>
+            </div>
+            <div class="form-group">
+                <label for="wallet_amount">{{__('Amount')}}</label>
+                <input class="form-control" name="wallet_amount" id="wallet_amount" type="text" placeholder="Enter Amount">
+            </div>
+            <div class="form-group">
+                <div><label for="custom_amount">{{__('Recommended')}}</label></div>
+                <button type="button" class="btn btn-solid mb-2 custom_amount">+10</button>
+                <button type="button" class="btn btn-solid mb-2 custom_amount">+20</button>
+                <button type="button" class="btn btn-solid mb-2 custom_amount">+50</button>
+            </div>
+            <hr class="mt-0 mb-1" />
+            <div class="payment_response">
+                <div class="alert p-0 m-0" role="alert"></div>
+            </div>
+            <h5 class="text-17 mb-2">{{__('Debit From')}}</h5>
+            <div class="form-group" id="wallet_payment_methods">
+            </div>
+        </div>
+        <div class="modal-footer d-block text-center">
+            <div class="row">
+                <div class="col-sm-12 p-0 d-flex justify-space-around">
+                    <button type="button" class="btn btn-block btn-solid mr-1 mt-2 topup_wallet_confirm">{{__('Topup Wallet')}}</button>
+                    <button type="button" class="btn btn-block btn-solid ml-1 mt-2" data-dismiss="modal">{{__('Cancel')}}</button>
+                </div>
+            </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- end topup wallet -->
 
 @endsection
 

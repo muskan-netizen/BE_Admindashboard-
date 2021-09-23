@@ -81,7 +81,7 @@
                         <table class="table table-centered table-nowrap table-striped" id="accounting_tax_datatable" width='100%'>
                             <thead>
                                 <tr>
-                                    <th>Order Id</th>
+                                    <th>Order ID</th>
                                     <th>Date & Time</th>
                                     <th>Customer Name</th>
                                     <th>Final Amount</th>
@@ -139,7 +139,7 @@
                         language: {
                             search: "",
                             paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
-                            searchPlaceholder: "Search By Order Id"
+                            searchPlaceholder: "Search By Order ID"
                         },
                         drawCallback: function () {
                             $(".dataTables_paginate > .pagination").addClass("pagination-rounded");

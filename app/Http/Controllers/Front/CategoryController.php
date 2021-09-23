@@ -158,8 +158,7 @@ class CategoryController extends FrontController{
                 $user_addresses = UserAddress::get();
                 $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
                 $wallet_balance = Auth::user()->balanceFloat * $clientCurrency->doller_compare;
-
-                return view('frontend.booking.index')->with(['wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category]);
+                return view('frontend.booking.index')->with(['clientCurrency' => 'clientCurrency' ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category]);
             }
         }elseif($page == 'on demand service'){ 
             $cartDataGet = $this->getCartOnDemand($request);
@@ -190,7 +189,7 @@ class CategoryController extends FrontController{
                 return redirect($new_url);
             }
             
-            $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+            $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
             return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }else{
             if(view()->exists('frontend/cate-'.$page.'s')){
