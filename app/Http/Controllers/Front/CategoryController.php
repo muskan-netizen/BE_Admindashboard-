@@ -158,7 +158,7 @@ class CategoryController extends FrontController{
                 $user_addresses = UserAddress::get();
                 $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
                 $wallet_balance = Auth::user()->balanceFloat * $clientCurrency->doller_compare;
-                return view('frontend.booking.index')->with(['clientCurrency' => 'clientCurrency' ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category]);
+                return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category]);
             }
         }elseif($page == 'on demand service'){ 
             $cartDataGet = $this->getCartOnDemand($request);

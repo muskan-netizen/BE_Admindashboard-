@@ -52,51 +52,53 @@ class WebStylingController extends BaseController{
      */
     public function updateWebStyles(Request $request){
         // dd($request->all());
-        foreach ($request->home_labels as $key => $value) {
-            $home_translation = HomePageLabelTranslation::where('language_id', $request->languages[$key])->where('home_page_label_id', $request->home_labels[$key])->first();
-            if (!$home_translation) {
-                $home_translation = new HomePageLabelTranslation();
+        if($request->has('home_labels')){
+            foreach ($request->home_labels as $key => $value) {
+                $home_translation = HomePageLabelTranslation::where('language_id', $request->languages[$key])->where('home_page_label_id', $request->home_labels[$key])->first();
+                if (!$home_translation) {
+                    $home_translation = new HomePageLabelTranslation();
+                }
+                $home_translation->title = $request->names[$key];
+                $home_translation->home_page_label_id = $request->home_labels[$key];
+                $home_translation->language_id = $request->languages[$key];
+                $home_translation->save();
             }
-            $home_translation->title = $request->names[$key];
-            $home_translation->home_page_label_id = $request->home_labels[$key];
-            $home_translation->language_id = $request->languages[$key];
-            $home_translation->save();
         }
-        $featured_products = HomePageLabel::where('slug', 'featured_products')->first();
-        if($featured_products){
-            $featured_products->is_active = $request->has('featured_products') && $request->featured_products == "on" ? 1 : 0;
-            $featured_products->save(); 
-        }
-        $vendors = HomePageLabel::where('slug', 'vendors')->first();
-        if($vendors){
-            $vendors->is_active = $request->has('vendors') && $request->vendors == "on" ? 1 : 0;
-            $vendors->save(); 
-        }
-        $new_products = HomePageLabel::where('slug', 'new_products')->first();
-        if($new_products){
-            $new_products->is_active = $request->has('new_products') && $request->new_products == "on" ? 1 : 0;
-            $new_products->save(); 
-        }
-        $on_sale = HomePageLabel::where('slug', 'on_sale')->first();
-        if($on_sale){
-            $on_sale->is_active = $request->has('on_sale') && $request->on_sale == "on" ? 1 : 0;
-            $on_sale->save(); 
-        }
-        $brands = HomePageLabel::where('slug', 'brands')->first();
-        if($brands){
-            $brands->is_active = $request->has('brands') && $request->brands == "on" ? 1 : 0;
-            $brands->save(); 
-        }
-        $best_sellers = HomePageLabel::where('slug', 'best_sellers')->first();
-        if($best_sellers){
-            $best_sellers->is_active = $request->has('best_sellers') && $request->best_sellers == "on" ? 1 : 0;
-            $best_sellers->save(); 
-        }
-        $pickup_delivery = HomePageLabel::where('slug', 'pickup_delivery')->first();
-        if($pickup_delivery){
-            $pickup_delivery->is_active = $request->has('pickup_delivery') && $request->pickup_delivery == "on" ? 1 : 0;
-            $pickup_delivery->save(); 
-        }
+        // $featured_products = HomePageLabel::where('slug', 'featured_products')->first();
+        // if($featured_products){
+        //     $featured_products->is_active = $request->has('featured_products') && $request->featured_products == "on" ? 1 : 0;
+        //     $featured_products->save(); 
+        // }
+        // $vendors = HomePageLabel::where('slug', 'vendors')->first();
+        // if($vendors){
+        //     $vendors->is_active = $request->has('vendors') && $request->vendors == "on" ? 1 : 0;
+        //     $vendors->save(); 
+        // }
+        // $new_products = HomePageLabel::where('slug', 'new_products')->first();
+        // if($new_products){
+        //     $new_products->is_active = $request->has('new_products') && $request->new_products == "on" ? 1 : 0;
+        //     $new_products->save(); 
+        // }
+        // $on_sale = HomePageLabel::where('slug', 'on_sale')->first();
+        // if($on_sale){
+        //     $on_sale->is_active = $request->has('on_sale') && $request->on_sale == "on" ? 1 : 0;
+        //     $on_sale->save(); 
+        // }
+        // $brands = HomePageLabel::where('slug', 'brands')->first();
+        // if($brands){
+        //     $brands->is_active = $request->has('brands') && $request->brands == "on" ? 1 : 0;
+        //     $brands->save(); 
+        // }
+        // $best_sellers = HomePageLabel::where('slug', 'best_sellers')->first();
+        // if($best_sellers){
+        //     $best_sellers->is_active = $request->has('best_sellers') && $request->best_sellers == "on" ? 1 : 0;
+        //     $best_sellers->save(); 
+        // }
+        // $pickup_delivery = HomePageLabel::where('slug', 'pickup_delivery')->first();
+        // if($pickup_delivery){
+        //     $pickup_delivery->is_active = $request->has('pickup_delivery') && $request->pickup_delivery == "on" ? 1 : 0;
+        //     $pickup_delivery->save(); 
+        // }
         $client_preferences = ClientPreference::first();
         if($client_preferences){
             if($request->has('favicon')){

@@ -396,9 +396,9 @@ if (strpos($url,'cabservice') !== false) {?>
       <form action="" id="wallet_topup_form">
         @csrf
         @method('POST')
-        <div class="modal-body pb-0"> {{ $clientCurrency ??''}}ds
+        <div class="modal-body pb-0">
             <div class="form-group">
-                <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">@money(Auth::user()->balanceFloat * 1)</span></div>
+                <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">@money(Auth::user()->balanceFloat * $clientCurrency->doller_compare)</span></div>
             </div>
             <div class="form-group">
                 <h5 class="text-17 mb-2">{{__('Topup Wallet')}}</h5>
@@ -433,11 +433,102 @@ if (strpos($url,'cabservice') !== false) {?>
     </div>
   </div>
 </div>
+
+
+<script type="text/template" id="payment_method_template">
+    <% if(payment_options == '') { %>
+        <h6>{{__('Payment Options Not Avaialable')}}</h6>
+    <% }else{ %>
+        <% _.each(payment_options, function(payment_option, k){%>
+            <% if( (payment_option.slug != 'cash_on_delivery') && (payment_option.slug != 'loyalty_points') ) { %>
+                <label class="radio mt-2">
+                    <%= payment_option.title %> 
+                    <input type="radio" name="wallet_payment_method" id="radio-<%= payment_option.slug %>" value="<%= payment_option.slug %>" data-payment_option_id="<%= payment_option.id %>">
+                    <span class="checkround"></span>
+                </label>
+                <% if(payment_option.slug == 'stripe') { %>
+                    <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper d-none">
+                        <div class="form-control">
+                            <label class="d-flex flex-row pt-1 pb-1 mb-0">
+                                <div id="stripe-card-element"></div>
+                            </label>
+                        </div>
+                        <span class="error text-danger" id="stripe_card_error"></span>
+                    </div>
+                <% } %>
+            <% } %>
+        <% }); %>
+    <% } %>
+</script>
+
 <!-- end topup wallet -->
 
 @endsection
 
 @section('script')
+<script src="https://js.stripe.com/v3/"></script>
+<script type="text/javascript">
+    var ajaxCall = 'ToCancelPrevReq';
+    var credit_wallet_url = "{{route('user.creditWallet')}}";
+    var payment_stripe_url = "{{route('payment.stripe')}}";
+    var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
+    var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
+    var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
+    var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
+    var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
+    var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
+    var cabbookingwallet = 1;
+    $('.verifyEmail').click(function() {
+        verifyUser('email');
+    });
+    $('.verifyPhone').click(function() {
+        verifyUser('phone');
+    });
+    function verifyUser($type = 'email') {
+        ajaxCall = $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{{ route('verifyInformation', Auth::user()->id) }}",
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "type": $type,
+            },
+            beforeSend: function() {
+                if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
+                    ajaxCall.abort();
+                }
+            },
+            success: function(response) {
+                var res = response.result;
+            },
+            error: function(data) {},
+        });
+    }
+    $(document).delegate(".custom_amount", "click", function(){
+        let wallet_amount = $("#wallet_amount").val();
+        let amount = $(this).text();
+        if(wallet_amount == ''){ wallet_amount = 0; }
+        let new_amount = parseInt(amount) + parseInt(wallet_amount);
+        $("#wallet_amount").val(new_amount);
+    });
+
+    $(document).on('change', '#wallet_payment_methods input[name="wallet_payment_method"]', function() {
+        var method = $(this).val();
+        if(method == 'stripe'){
+            $("#wallet_payment_methods .stripe_element_wrapper").removeClass('d-none');
+        }else{
+            $("#wallet_payment_methods .stripe_element_wrapper").addClass('d-none');
+        }
+    });
+</script>
+<script>
+    var loadFile = function(event) {
+        var output = document.getElementById('output');
+        output.src = URL.createObjectURL(event.target.files[0]);
+    };
+</script>
+<script src="{{asset('js/payment.js')}}"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{asset('js/cab_booking.js')}}"></script>
 <script>
