@@ -34,7 +34,7 @@ class OrderController extends FrontController
         $navCategories = $this->categoryNav($langId);
         $pastOrders = Order::with(['vendors' => function ($q) {
             $q->where('order_status_option_id', 6);
-        }, 'vendors.products', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address'])
+        }, 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address'])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', 6);
             })
@@ -42,7 +42,7 @@ class OrderController extends FrontController
             ->orderBy('orders.id', 'DESC')->paginate(10);
         $activeOrders = Order::with(['vendors' => function ($q) {
             $q->where('order_status_option_id', '!=', 6);
-        }, 'vendors.products', 'vendors.products.pvariant.media.pimage.image', 'user', 'address'])
+        }, 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address'])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
             })
@@ -52,23 +52,54 @@ class OrderController extends FrontController
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                foreach($vendor->products as $product){
+                    if($product->pvariant->media->isNotEmpty()){
+                        $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'];
+                    }elseif($product->media->isNotEmpty()){
+                        $product->image_url = $product->media->first()->image->path['image_fit'].'74/100'.$product->media->first()->image->path['image_path'];
+                    }else{
+                        $product->image_url = ($product->image) ? $product->image['image_fit'].'74/100'.$product->image['image_path'] : '';
+                    }
+                }
             }
         }
         foreach ($pastOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                foreach($vendor->products as $product){
+                    if($product->pvariant->media->isNotEmpty()){
+                        $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'];
+                    }elseif($product->media->isNotEmpty()){
+                        $product->image_url = $product->media->first()->image->path['image_fit'].'74/100'.$product->media->first()->image->path['image_path'];
+                    }else{
+                        $product->image_url = ($product->image) ? $product->image['image_fit'].'74/100'.$product->image['image_path'] : '';
+                    }
+                }
             }
         }
         $returnOrders = Order::with(['vendors.products.productReturn', 'products.productRating', 'user', 'address', 'products' => function ($q) {
             $q->whereHas('productReturn');
         }, 'vendors.products' => function ($q) {
             $q->whereHas('productReturn');
-        }, 'vendors.products.pvariant.media.pimage.image',
+        }, 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image',
         'vendors' => function ($q) {
             $q->whereHas('products.productReturn');
         }])->whereHas('vendors.products.productReturn')->whereHas('vendors.products.productReturn')
             ->where('orders.user_id', $user->id)->orderBy('orders.id', 'DESC')->paginate(20);
+        foreach ($returnOrders as $order) {
+            foreach ($order->vendors as $vendor) {
+                foreach($vendor->products as $product){
+                    if($product->pvariant->media->isNotEmpty()){
+                        $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'];
+                    }elseif($product->media->isNotEmpty()){
+                        $product->image_url = $product->media->first()->image->path['image_fit'].'74/100'.$product->media->first()->image->path['image_path'];
+                    }else{
+                        $product->image_url = ($product->image) ? $product->image['image_fit'].'74/100'.$product->image['image_path'] : '';
+                    }
+                }
+            }
+        }
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend/account/orders')->with(['navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency]);
     }

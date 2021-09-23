@@ -202,41 +202,55 @@ class HomeController extends BaseController{
             $curId = Auth::user()->language;
             $response = array();
             if($for == 'all'){
-                $categories = Category::with(['type'  => function($q){
-                            $q->select('id', 'title as redirect_to');
-                        }])
-                        ->join('category_translations as ct', 'ct.category_id', 'categories.id')
-                        ->select('categories.id', 'categories.slug', 'categories.type_id', 'ct.name as dataname', 'ct.trans-slug', 'ct.meta_title', 'ct.meta_description', 'ct.meta_keywords', 'ct.category_id')
-                        ->where('ct.language_id', $langId)
+                $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
+                        ->leftjoin('types', 'types.id', 'categories.type_id')
+                        ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
+                        ->where('categories.id', '>', '1')
+                        ->where('categories.is_visible', 1)
+                        ->where('categories.status', '!=', 2)
+                        ->where('categories.is_core', 1)
+                        ->where('cts.language_id', $langId)
                         ->where(function ($q) use ($keyword) {
-                            $q->where('ct.name', ' LIKE', '%' . $keyword . '%')
+                            $q->where('cts.name', ' LIKE', '%' . $keyword . '%')
                             ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
-                                ->orWhere('ct.trans-slug', 'LIKE', '%' . $keyword . '%');
-                        })->where('categories.status', '!=', '2')->get();
-                
-                foreach ($categories as $key => $value) {
-                    $value->response_type = 'category';
-                    // $response[] = $value;
+                            ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
+                        })->orderBy('categories.parent_id', 'asc')
+                        ->orderBy('categories.position', 'asc')->get();
+                foreach ($categories as $category) {
+                    $category->response_type = 'category';
+                    $category->image_url = $category->image['proxy_url'].'80/80'.$category->image['image_path'];
+                    $response[] = $category;
                 }
+
                 $brands = Brand::join('brand_translations as bt', 'bt.brand_id', 'brands.id')
-                        ->select('brands.id', 'bt.title  as dataname')
+                        ->select('brands.id', 'bt.title  as dataname', 'image')
                         ->where('bt.title', 'LIKE', '%' . $keyword . '%')
                         ->where('brands.status', '!=', '2')
                         ->where('bt.language_id', $langId)
                         ->orderBy('brands.position', 'asc')->get();
-
                 foreach ($brands as $brand) {
                     $brand->response_type = 'brand';
-                    // $response[] = $brand;
+                    $brand->image_url = $brand->image['proxy_url'].'80/80'.$brand->image['image_path'];
+                    $response[] = $brand;
                 }
-                $vendors  = Vendor::select('id', 'name  as dataname', 'address')->where(function ($q) use ($keyword) {
-                        $q->where('name', ' LIKE', '%' . $keyword . '%')->orWhere('address', 'LIKE', '%' . $keyword . '%');
-                    })->where('vendors.status', '!=', '2')->get();
+
+                $vendors = Vendor::select('id', 'name  as dataname', 'logo','slug', 'address');
+                $vendors = $vendors->where(function ($q) use ($keyword) {
+                                $q->where('name', 'LIKE', "%$keyword%")->orWhere('address', 'LIKE', '%' . $keyword . '%');
+                            })->where('status', 1)->get();
                 foreach ($vendors as $vendor) {
                     $vendor->response_type = 'vendor';
-                    // $response[] = $vendor;
+                    $vendor->image_url = $vendor->logo['proxy_url'].'80/80'.$vendor->logo['image_path'];
+                    $response[] = $vendor;
                 }
-                $products = Product::join('product_translations as pt', 'pt.product_id', 'products.id')
+                // $vendors  = Vendor::select('id', 'name  as dataname', 'address')->where(function ($q) use ($keyword) {
+                //         $q->where('name', ' LIKE', '%' . $keyword . '%')->orWhere('address', 'LIKE', '%' . $keyword . '%');
+                //     })->where('vendors.status', '!=', '2')->get();
+                // foreach ($vendors as $vendor) {
+                //     $vendor->response_type = 'vendor';
+                //     // $response[] = $vendor;
+                // }
+                $products = Product::with('media')->join('product_translations as pt', 'pt.product_id', 'products.id')
                             ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
                             ->where('pt.language_id', $langId)
                             ->where(function ($q) use ($keyword) {
@@ -244,6 +258,7 @@ class HomeController extends BaseController{
                             })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->get();
                 foreach ($products as $product) {
                     $product->response_type = 'product';
+                    $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
                     $response[] = $product;
                 }
                 return $this->successResponse($response);

@@ -63,7 +63,7 @@ class ReturnOrderController extends FrontController{
             $reasons = ReturnReason::where('status','Active')->orderBy('order','asc')->get();
             $order_details = Order::with(['vendors.products' => function ($q1)use($request){
                 $q1->where('id', $request->return_ids);
-            }, 'vendors.products.pvariant.media.pimage.image',
+            }, 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image',
             'products' => function ($q1)use($request){
                 $q1->where('id', $request->return_ids);
             },'products.productRating', 'user', 'address'])
@@ -72,7 +72,18 @@ class ReturnOrderController extends FrontController{
             })->where('orders.user_id', Auth::user()->id)->where('id', $request->order_id)->orderBy('orders.id', 'DESC')->first();
             
             if(isset($order_details)){
-              return view('frontend.account.return-order')->with(['order' => $order_details,'navCategories' => $navCategories,'reasons' => $reasons]);
+                foreach($order_details->vendors as $key => $vendor){
+                    foreach($vendor->products as $product){
+                        if($product->pvariant->media->isNotEmpty()){
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'].'74/100'.$product->pvariant->media->first()->pimage->image->path['image_path'];
+                        }elseif($product->media->isNotEmpty()){
+                            $product->image_url = $product->media->first()->image->path['image_fit'].'74/100'.$product->media->first()->image->path['image_path'];
+                        }else{
+                            $product->image_url = ($product->image) ? $product->image['image_fit'].'74/100'.$product->image['image_path'] : '';
+                        }
+                    }
+                }
+                return view('frontend.account.return-order')->with(['order' => $order_details,'navCategories' => $navCategories,'reasons' => $reasons]);
             }
             return $this->errorResponse('Invalid order', 404);
             
