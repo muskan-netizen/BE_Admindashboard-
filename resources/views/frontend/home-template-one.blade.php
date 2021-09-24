@@ -37,11 +37,9 @@
                         }
                         @endphp
                     @if($url)
-                    <a href="{{$url}}">
+                    <a class="banner-img-outer" href="{{$url}}">
                         @endif
-                        <div>
                             <img src="{{$banner->image['image_fit'] . '1500/600' . $banner->image['image_path']}}">
-                        </div>
                         @if($url)
                     </a>
                     @endif

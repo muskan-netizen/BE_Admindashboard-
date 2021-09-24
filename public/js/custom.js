@@ -259,6 +259,12 @@ $(document).ready(function () {
     $("#mobile_search_box_btn").click(function () {
         $('.radius-bar').slideToggle();
     });
+    // $("#mobile_search_box_btn").click(function () {
+    //     $('.search-overlay').slideToggle();
+    // });
+    // $(".closebtn").click(function () {
+    //     $('.search-overlay').slideUp();
+    // });
     // $("#search_viewall").click(function () {
     //     console.log("nsdhfjs");
     // });

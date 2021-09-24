@@ -58,7 +58,7 @@ body{
 }
 
 .top-header.site-topbar {
-    background: #4A4A4A;
+    background: var(--top-header-color);
     padding: 10px 0;
 }
 
@@ -150,21 +150,21 @@ body{
     border-radius: 30px;
 }
 
-.slick-next:before, .slick-prev:before{
+.home-banner-slider .slick-next:before,.home-banner-slider .slick-prev:before{
     content: none;
 }
 
-.slick-prev,.slick-next{
+.home-banner-slider .slick-prev,.home-banner-slider .slick-next{
     height: 61px;
     width: 61px;
 }
 
-.slick-prev,.slick-prev:focus, .slick-prev:hover{
+.home-banner-slider .slick-prev,.home-banner-slider .slick-prev:focus, .slick-prev:hover{
     background: url(http://local.myorder.com/front-assets/images/slider-back.svg) no-repeat center center;
     left: -80px;
 }
 
-.slick-next, .slick-next:focus, .slick-next:hover{
+.home-banner-slider .slick-next,.home-banner-slider .slick-next:focus, .home-banner-slider .slick-next:hover{
     background: url(http://local.myorder.com/front-assets/images/slider-back.svg) no-repeat center center;
     right: -80px;
     transform: rotate(-180deg);
@@ -621,6 +621,17 @@ footer ul.social-links li a {
 
 
 @media (min-width: 991px){
+    .home-banner-slider .slick-slide {
+        height: 400px;
+        border-radius: 40px;
+        overflow: hidden;
+    }
+    
+    .home-banner-slider .slick-slide img{
+        height: 100%;
+        object-fit: cover;
+        width: 100%;
+    }
     .col-lg-10.cw {
         flex: 0 0 80.333333%;
         max-width: 80.333333%;
@@ -652,12 +663,10 @@ footer ul.social-links li a {
 @media (max-width: 991px){
     .top-header .header-dropdown li span:last-child {
         display: none;
-    }
-        
+    }        
     .top-header .header-dropdown li span:first-child {
         font-size: 24px;
-    }
-    
+    }    
     .top-header .header-dropdown li {
         padding: 5px 10px 5px 0;
     }
