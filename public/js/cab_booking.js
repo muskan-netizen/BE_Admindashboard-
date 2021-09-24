@@ -581,6 +581,7 @@ $(document).ready(function () {
             getLocation();
         }else{
             $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
+                console.log(this.value);
                 if(this.value == ''){
                     var inputId = this.id;
                     $('#'+inputId).val(currentLocation);

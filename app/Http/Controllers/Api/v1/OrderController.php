@@ -421,7 +421,7 @@ class OrderController extends BaseController {
                 $order_pre_time = ($order->order_pre_time > 0) ? $order->order_pre_time : 0;
                 $user_to_vendor_time = ($order->user_to_vendor_time > 0) ? $order->user_to_vendor_time : 0;
                 $ETA = $order_pre_time + $user_to_vendor_time;
-                $order->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA) : '0 minutes';
+                $order->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA) : convertDateTimeInTimeZone(Carbon::now(), $user->timezone, 'h:i A');
             }
             $order->product_details = $product_details;
             $order->item_count = $order_item_count;
@@ -499,7 +499,7 @@ class OrderController extends BaseController {
                         $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
                         $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
                         $ETA = $order_pre_time + $user_to_vendor_time;
-                        $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA) : '0 minutes';
+                        $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA) : convertDateTimeInTimeZone(Carbon::now(), $user->timezone, 'h:i A');
                     }
         		}
     		    $order->order_item_count = $order_item_count;

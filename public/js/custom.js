@@ -1005,6 +1005,7 @@ $(document).ready(function () {
             url: credit_wallet_url,
             data: { wallet_amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id },
             success: function (response) {
+               // var currentUrl = window.location.href;
                 location.href = path;
                 if (response.status == "Success") {
                     // $("#topup_wallet").modal("hide");
@@ -1058,8 +1059,24 @@ $(document).ready(function () {
         }
     }
     $(document).on("click", ".topup_wallet_confirm", function () {
-        $(".topup_wallet_confirm").attr("disabled", true);
+        var wallet_amount = $('#wallet_amount').val();
         let payment_option_id = $('#wallet_payment_methods input[name="wallet_payment_method"]:checked').data('payment_option_id');
+        if((wallet_amount == undefined || wallet_amount <= 0 ) && (amount_required_error_msg != undefined)){
+            $('#wallet_amount_error').html(amount_required_error_msg);
+            return false;
+        }else{
+            $('#wallet_amount_error').html('');
+        }
+         if((payment_option_id == undefined || payment_option_id <= 0) && (payment_method_required_error_msg != undefined)){
+            $('#wallet_payment_methods_error').html(payment_method_required_error_msg);
+            return false;
+        }else{
+            $('#wallet_payment_methods_error').html('');
+        }
+        
+
+        $(".topup_wallet_confirm").attr("disabled", true);
+       
         if (payment_option_id == 4) {
             stripe.createToken(card).then(function (result) {
                 if (result.error) {

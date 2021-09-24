@@ -1,6 +1,7 @@
 jQuery('.home-banner-slider').slick({
     infinite: true,
     slidesToShow: 1,
+    autoplay: true,
     slidesToScroll: 1,
     responsive: [
         {

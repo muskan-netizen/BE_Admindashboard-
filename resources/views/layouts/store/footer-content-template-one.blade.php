@@ -76,7 +76,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <a href="#"><img src="{{asset('front-assets/images/app-store.png')}}" alt=""></a>
                         <a class="ml-2" href="#"><img src="{{asset('front-assets/images/google-play.png')}}" alt=""></a>
                     </div>
-                    <ul class="social-links ml-lg-auto mx-auto mt-3">
+                    <ul class="social-links ml-auto mt-3">
                         @foreach($social_media_details as $social_media_detail)
                                     <li>
                                         <a href="{{http_check($social_media_detail->url)}}" target="_blank">

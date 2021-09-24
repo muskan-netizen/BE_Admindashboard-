@@ -207,6 +207,7 @@ $timezone = Auth::user()->timezone;
             <div class="form-group">
                 <label for="wallet_amount">{{__('Amount')}}</label>
                 <input class="form-control" name="wallet_amount" id="wallet_amount" type="text" placeholder="Enter Amount">
+                <span class="error-msg" id="wallet_amount_error"></span>
             </div>
             <div class="form-group">
                 <div><label for="custom_amount">{{__('Recommended')}}</label></div>
@@ -221,6 +222,7 @@ $timezone = Auth::user()->timezone;
             <h5 class="text-17 mb-2">{{__('Debit From')}}</h5>
             <div class="form-group" id="wallet_payment_methods">
             </div>
+            <span class="error-msg" id="wallet_payment_methods_error"></span>
         </div>
         <div class="modal-footer d-block text-center">
             <div class="row">
@@ -272,6 +274,14 @@ $timezone = Auth::user()->timezone;
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
     var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
     var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
+    var amount_required_error_msg = "{{__('Please enter amount.') }}";
+    var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
+    
+    $('#wallet_amount').keypress(function(event) {
+        if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+            event.preventDefault();
+        }
+    });
     $('.verifyEmail').click(function() {
         verifyUser('email');
     });
@@ -307,6 +317,7 @@ $timezone = Auth::user()->timezone;
     });
 
     $(document).on('change', '#wallet_payment_methods input[name="wallet_payment_method"]', function() {
+        $('#wallet_payment_methods_error').html('');
         var method = $(this).val();
         if(method == 'stripe'){
             $("#wallet_payment_methods .stripe_element_wrapper").removeClass('d-none');

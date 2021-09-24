@@ -138,7 +138,7 @@ $timezone = Auth::user()->timezone;
                                                             <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0">
                                                                 @if($vendor->delivery_fee > 0)
                                                                     <div class="progress-order font-12">
-                                                                        <span class="ml-2">Your order will arrive in {{$vendor->ETA}}</span>
+                                                                        <span class="ml-2">Your order will arrive by {{$vendor->ETA}}</span>
                                                                     </div>
                                                                 @endif
                                                                 <span class="left_arrow pulse"></span>

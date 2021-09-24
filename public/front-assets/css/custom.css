@@ -1923,6 +1923,14 @@ label {
     font-size: 14px;
     border-radius: 4px;
 }
+.error-msg {
+    width: 100%;
+    color: #ce1b1b;
+    padding: 5px 10px;
+    margin: 0 0 30px;
+    font-size: 14px;
+    border-radius: 4px;
+}
 
 .sp-colorize-container {
     background: rgb(74, 129, 212);
@@ -5866,9 +5874,32 @@ section.royo-business .title-36 {
     padding: 5px 0;
 }
 
+.product-timing small {
+    font-size: 14px;
+    margin-top: 10px;
+    color: #000;
+}
 
-/* New P */
+.product-timing small:before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    background: #000;
+    display: inline-block;
+    margin: 0 10px;
+    border-radius: 50%;
+    top: -1px;
+    position: relative;
+}
 
+.product-timing small:first-child::before {
+    content: none;
+}
+
+.product-timing small i {
+    color: var(--theme-deafult);
+    margin: 0 2px 0 0;
+}
 
 
 

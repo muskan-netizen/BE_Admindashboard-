@@ -144,8 +144,8 @@ if (Session::has('toaster')) {
                         $("#received_new_orders").find(".modal-body").append(latest_order_template({
                             orders: response.data.orders.data
                         }));
+                        $("#received_new_orders").modal('show');
                     }
-                    $("#received_new_orders").modal('show');
                 }
             },
             error: function(data) {

@@ -65,7 +65,7 @@ class OrderController extends FrontController
                     $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
                     $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
                     $ETA = $order_pre_time + $user_to_vendor_time;
-                    $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA) : '0 minutes';
+                    $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA) : convertDateTimeInTimeZone(Carbon::now(), $user->timezone, 'h:i A');
                 }
             }
         }
