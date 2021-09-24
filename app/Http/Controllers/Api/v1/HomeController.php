@@ -99,6 +99,7 @@ class HomeController extends BaseController{
             $longitude = $request->longitude;
             $user_geo[] = $latitude;
             $user_geo[] = $longitude;
+            $paginate = $request->has('limit') ? $request->limit : 12;
             if($request->has('type') ){
                 if($request->type == ''){
                     $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating');
