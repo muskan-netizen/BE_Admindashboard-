@@ -15,7 +15,13 @@
 @section('content')
  <header>
     <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
+    @if(isset($set_template)  && $set_template->template_id == 1)
+        @include('layouts.store/left-sidebar-template-one')
+        @elseif(isset($set_template)  && $set_template->template_id == 2)
+        @include('layouts.store/left-sidebar')
+        @else
+        @include('layouts.store/left-sidebar-template-one')
+        @endif
 </header>
 <section class="section-b-space ratio_asos">
     <div class="collection-wrapper">
@@ -40,6 +46,7 @@
                                                     <a href="{{route('productDetail', $new['url_slug'])}}">
                                                         <h3>{{ $new['translation_title'] }}</h3>
                                                     </a>
+                                                    <h6 class="mt-0"><b>{{$new['vendor']['name']}}</b></h6>
                                                     @if($new['inquiry_only'] == 0)
                                                     <h4 class="mt-1">
                                                         <?php $multiply = $new['variant_multiplier']; ?>
@@ -72,7 +79,7 @@
                                     @endif
                                     <div class="top-banner-content small-section">
                                         <h4>{{ $category->translation_name }}</h4>
-                                        <div class="row">
+                                        {{-- <div class="row">
                                             <div class="col-12">
                                                 <div class="slide-6 no-arrow">
                                                     @foreach($category->childs->toArray() as $cate)
@@ -89,7 +96,7 @@
                                                     @endforeach
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 </div>
                                 <div class="collection-product-wrapper">

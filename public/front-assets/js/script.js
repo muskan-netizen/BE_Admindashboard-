@@ -195,6 +195,86 @@
                 { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             ],
         }),
+        $('.suppliers-slider').slick({
+            dots: false,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            arrows: false,
+            dots: false,
+            responsive: [
+              {
+                breakpoint: 991,
+                settings: {
+                  slidesToShow: 4,
+                  slidesToScroll: 1,
+                  infinite: true,
+                  dots: false
+                }
+              },
+              {
+                breakpoint: 767,
+                settings: {
+                  slidesToShow: 3,
+                  slidesToScroll: 1,
+                  dots: false
+                }
+              },
+              {
+                breakpoint: 480,
+                settings: {
+                  slidesToShow: 2,
+                  slidesToScroll: 1,
+                  dots: false
+                }
+              }
+            ]
+        });
+        $(".brand-slider").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 4,
+            arrows:false,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                {
+                  breakpoint: 1367,
+                  settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                    arrows: false,
+                    infinite: true
+                  }
+                },
+                {
+                  breakpoint: 991,
+                  settings: {
+                    slidesToShow: 2,
+                    arrows: false,
+                    slidesToScroll: 1 
+                  }
+                },
+                {
+                  breakpoint: 767,
+                  settings: {
+                    slidesToShow: 2,
+                    arrows: false,
+                    slidesToScroll: 1
+                  }
+                },
+                {
+                  breakpoint: 480,
+                  settings: {
+                    slidesToShow: 1,
+                    arrows:false,
+                    slidesToScroll: 1
+                  }
+                }
+              ],
+        }),
         e(".tools-product-4").slick({
             infinite: !0,
             speed: 300,

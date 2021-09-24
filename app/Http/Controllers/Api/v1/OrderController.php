@@ -6,13 +6,13 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\OrderStoreRequest;
 use Log;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client};
 
-class OrderController extends Controller {
+class OrderController extends BaseController {
     use ApiResponser;
     /**
      * Display a listing of the resource.
@@ -410,6 +410,12 @@ class OrderController extends Controller {
                     'title' => $product->product_name,
                 );
             }
+            if($order->delivery_fee > 0){
+                $order_pre_time = ($order->order_pre_time > 0) ? $order->order_pre_time : 0;
+                $user_to_vendor_time = ($order->user_to_vendor_time > 0) ? $order->user_to_vendor_time : 0;
+                $ETA = $order_pre_time + $user_to_vendor_time;
+                $order->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA) : '0 minutes';
+            }
             $order->product_details = $product_details;
             $order->item_count = $order_item_count;
             unset($order->user);
@@ -482,6 +488,12 @@ class OrderController extends Controller {
                         }
                         $product->product_addons = $product_addons;
         			}
+                    if($vendor->delivery_fee > 0){
+                        $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
+                        $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
+                        $ETA = $order_pre_time + $user_to_vendor_time;
+                        $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA) : '0 minutes';
+                    }
         		}
     		    $order->order_item_count = $order_item_count;
             }
@@ -574,7 +586,9 @@ class OrderController extends Controller {
                     ],
                     "data" => [
                         'title' => $notification_content->subject,
-                        'body'  => $notification_content->content
+                        'body'  => $notification_content->content,
+                        'data' => $orderData,
+                        'type' => "order_created"
                     ],
                     "priority" => "high"
                 ];

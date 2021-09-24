@@ -12,7 +12,13 @@
 @section('content')
 <header>
     <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
+    @if(isset($set_template)  && $set_template->template_id == 1)
+        @include('layouts.store/left-sidebar-template-one')
+        @elseif(isset($set_template)  && $set_template->template_id == 2)
+        @include('layouts.store/left-sidebar')
+        @else
+        @include('layouts.store/left-sidebar-template-one')
+        @endif
 </header>
 <style type="text/css">
     .productVariants .firstChild {
@@ -143,6 +149,7 @@
                                                 <h3 class="d-flex align-items-center justify-content-between">
                                                     <label class="mb-0">{{ $new['translation_title'] }}</label>
                                                 </h3>
+                                                <h6><b>{{$new['vendor']['name']}}</b></h6>
                                                 @if($new['inquiry_only'] == 0)
                                                     <h4 class="mt-1">
                                                         <?php $multiply = $new['variant_multiplier']; ?>

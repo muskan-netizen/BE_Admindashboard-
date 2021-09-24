@@ -13,11 +13,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
  </style>
 
 <header class="site-header">
-@if (Auth::check())
+  
+   @if(Auth::check())
    @include('layouts.store/topbar-auth-template-one')
-  @else
-    @include('layouts.store/topbar-guest-template-one')
-  @endif
+   @else
+   @include('layouts.store/topbar-guest-template-one')
+   @endif
         <!-- Start Cab Booking Header From Here -->
         <div class="cab-booking-header">
             <div class="container">
@@ -122,8 +123,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <div class="navigation-tab-overlay"></div>
                             </ul>
                         @endif 
-
-
+                       
                         <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end justify-content-lg-between w-100 ">
                         @if( (Session::get('preferences')))
                             @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
@@ -138,7 +138,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 </div>
                             @endif
                         @endif  
-                        <div class="radius-bar d-none d-lg-inline">
+                        <div class="radius-bar d-lg-inline">
                             <div class="search_form d-flex align-items-center justify-content-between">
                                 <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
                                 <input class="form-control border-0 typeahead" type="search" placeholder="{{getNomenclatureName('Search product, vendor, item', true)}}" id="main_search_box">
@@ -490,7 +490,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <li>
             <a href="{{route('categoryDetail')}}/<%= category.slug %>">
                 @if($client_preference_detail->show_icons == 1)
-                    <img src="<%= category.icon.image_fit %>200/200<%= category.icon.image_path %>" alt="">
+                    <div class="nav-cate-img">
+                        <img src="<%= category.icon.image_fit %>200/200<%= category.icon.image_path %>" alt=""> 
+                    </div>
                 @endif
                 <%= category.name %>
             </a>

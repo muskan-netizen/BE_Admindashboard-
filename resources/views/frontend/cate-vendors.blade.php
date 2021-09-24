@@ -18,7 +18,13 @@
 
  <header>
     <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
+    @if(isset($set_template)  && $set_template->template_id == 1)
+        @include('layouts.store/left-sidebar-template-one')
+        @elseif(isset($set_template)  && $set_template->template_id == 2)
+        @include('layouts.store/left-sidebar')
+        @else
+        @include('layouts.store/left-sidebar-template-one')
+        @endif
 </header>
 @if(!empty($category))
 @include('frontend.included_files.categories_breadcrumb')
@@ -46,6 +52,7 @@
                                                     <a href="{{route('productDetail', $new['url_slug'])}}">
                                                         <h3>{{ $new['translation_title'] }}</h3>
                                                     </a>
+                                                    <h6><b>{{$new['vendor']['name']}}</b></h6>
                                                     @if($new['inquiry_only'] == 0)
                                                     <h4 class="mt-1">
                                                         <?php $multiply = $new['variant_multiplier']; ?>
@@ -84,7 +91,7 @@
                                     <div class="top-banner-content small-section">
                                         <h4>{{ $category->translation_name }}</h4>
 
-                                        <!-- @if(!empty($category->childs) && count($category->childs) > 0)
+                                        {{-- @if(!empty($category->childs) && count($category->childs) > 0)
                                             <div class="row">
                                                 <div class="col-12">
                                                     
@@ -104,7 +111,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        @endif -->
+                                        @endif --}}
                                     </div>
 
                                 </div>
@@ -164,6 +171,8 @@
                                                     $imagePath2 = $data->banner['proxy_url'] .'300/300'. $data->banner['image_path'];
                                                     if(empty($data->vendor_templete_id) || ($data->vendor_templete_id == 1)){
                                                         $vendor_url = route('categoryVendorProducts', [$category->slug, $data->slug]);
+                                                    }elseif($data->vendor_templete_id == 5){
+                                                        $vendor_url = route('vendorCategoryProducts', [$data->slug, $category->slug]);
                                                     }else{
                                                         $vendor_url = route('vendorDetail', $data->slug);
                                                     }

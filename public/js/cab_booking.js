@@ -295,6 +295,9 @@ $(document).ready(function () {
                     var queryString                  = removeURLParameter(currentUrl, 'destination_location_'+random_id);
                     var perm = "?" + (queryString != '' ? queryString : '') + "&destination_location_"+random_id+"=" + pickupAddress  + "&destination_location_latitude_"+random_id+"=" + latitude + "&destination_location_longitude_"+random_id+"=" + longitude;
                     window.history.replaceState(null, null, perm);
+
+                    $('#destination_location_'+random_id).attr("style", "display: none !important");
+
                 }
             }).get();
         }
@@ -413,6 +416,9 @@ $(document).ready(function () {
                         let cab_booking_promo_code_template = _.template($('#cab_booking_promo_code_template').html());
                         $("#cab_booking_promo_code_list_main_div").append(cab_booking_promo_code_template({promo_codes: response.data, vendor_id:vendor_id, product_id:product_id, amount:amount})).show();
                     }else{
+                        $('.promo-box').removeClass('d-none');
+                        $('.cab-detail-box').addClass('d-none');
+                        let cab_booking_promo_code_template = _.template($('#cab_booking_promo_code_template').html());
                         $("#cab_booking_promo_code_list_main_div").html(no_coupon_available_message).show();
                     }
                 }
@@ -527,8 +533,79 @@ $(document).ready(function () {
     });
 
     $(document).on("click","#get-current-location",function() {
-        // alert();
-        getLocation();
+        
+        var currentLocation          = $('#address-input').val();
+        var currentLocationLatitude  = $('#address-latitude').val();
+        var currentLocationLongitude = $('#address-longitude').val();
+        if($('.check-pickup').css('display') == 'block')
+        {
+            $('#pickup_location').val(currentLocation);
+            $('#pickup_location_latitude').val(currentLocationLatitude);
+            $('#pickup_location_longitude').val(currentLocationLongitude);
+
+            // initMap2();
+            var pickupLocationLatitude  = currentLocation;
+            var pickupLocationLongitude = currentLocationLatitude;
+            var currentUrl              = window.location.href;
+            var queryString             = removeURLParameter(currentUrl, 'pickup_location');
+            var perm                    = "?pickup_location=" + currentLocation + "&pickup_location_latitude=" + pickupLocationLatitude +"&pickup_location_longitude=" + pickupLocationLongitude + (queryString != '' ? "&" + queryString : '');
+            window.history.replaceState(null, null, perm);
+
+            $(".check-pick-first").css("display", "none");
+            $("#pickup-where-from").html(" "+currentLocation);
+            $(".check-dropoff-secpond").css("display", "block");
+            $('.check-pickup').attr("style", "display: none !important");
+            $(".check-dropoff").css("display", "block");
+
+            getLocation();
+        }else if($('.check-dropoff').css('display') == 'block'){
+            $('#destination_location').val(currentLocation);
+            $('#destination_location_latitude').val(currentLocationLatitude);
+            $('#destination_location_longitude').val(currentLocationLongitude);
+
+            var currentUrl  = window.location.href;
+            var queryString = removeURLParameter(currentUrl, 'destination_location');
+            var perm        = "?" + (queryString != '' ? queryString : '') + "&destination_location=" + currentLocation  + "&destination_location_latitude=" + currentLocationLatitude +"&destination_location_longitude=" + currentLocationLongitude;
+            window.history.replaceState(null, null, perm);
+            
+            $("#dropoff-where-to").html(" "+currentLocation);
+            $('.where-to-first').attr("style", "display: none !important");
+            $('.check-dropoff').attr("style", "display: none !important");
+            $(".where-to-second").css("display", "block");
+            $('.add-more-location').attr("style", "display: block !important");
+
+            $('#search_product_main_div').attr("style", "display: block !important");
+            $('.location-list').attr("style", "display: none !important");
+
+
+            getLocation();
+        }else{
+            $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
+                if(this.value == ''){
+                    var inputId = this.id;
+                    $('#'+inputId).val(currentLocation);
+                    var random_id = $(this).data( "rel" );
+                    $('#destination_location_latitude_'+random_id).val(currentLocationLatitude);
+                    $('#destination_location_longitude_'+random_id).val(currentLocationLongitude);
+                    
+                    $('#search_product_main_div').attr("style", "display: block !important");
+                    $('.location-list').attr("style", "display: none !important");
+
+                    let destination_location_template_li = _.template($('#destination_location_template_li').html());
+                    var destination_location = $('#destination_location_'+random_id).val();            
+                    $('#location_input_main_div li:last-child').after(destination_location_template_li({random_id:random_id}));
+                    $("#dropoff-where-to-"+random_id).html(" "+ currentLocation);
+
+                    var currentUrl                   = window.location.href;
+                    var queryString                  = removeURLParameter(currentUrl, 'destination_location_'+random_id);
+                    var perm = "?" + (queryString != '' ? queryString : '') + "&destination_location_"+random_id+"=" + currentLocation  + "&destination_location_latitude_"+random_id+"=" + currentLocationLatitude + "&destination_location_longitude_"+random_id+"=" + currentLocationLongitude;
+                    window.history.replaceState(null, null, perm);
+                }
+            }).get();
+        }
+        
+        
+        
     });
     $(document).on("click",".edit-dropoff",function() {
         $(".check-dropoff-secpond").css("display", "block");
@@ -936,6 +1013,7 @@ $(document).ready(function () {
     }
     
     function getLocation() {
+        console.log('navigator.geolocation', navigator.geolocation);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition, null);
         } else {

@@ -1,24 +1,31 @@
 @php
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
-
-$urlImg = $clientData->logo['proxy_url'].'200/80'.$clientData->logo['image_path'];
+$urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'];
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
 <div class="top-header site-topbar">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-7">
-            @if($client_preference_detail->show_contact_us == 1)
-                {{-- <div class="header-contact">
-                    <ul>
-                        <li>{{session('client_config') ? session('client_config')->company_name : ''}}</li>
-                        <!-- <li><i class="fa fa-phone" aria-hidden="true"></i>{{__('Call Us')}}: {{session('client_config') ? session('client_config')->phone_number : ''}}</li> -->
-                    </ul>
-                </div> --}}
-            @endif
+            <div class="col-6">
+                <div class="d-flex align-items-center">    
+                    <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
+                    @if( (Session::get('preferences')))
+                        @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
+                            <div class="location-bar d-none d-sm-flex align-items-center justify-content-start ml-md-2 my-2 my-lg-0 dropdown-toggle order-1" href="#edit-address" data-toggle="modal">
+                                <div class="map-icon mr-md-2"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
+                                <div class="homepage-address text-left">
+                                    <h2><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
+                                </div>
+                                <div class="down-icon ml-2">
+                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        @endif
+                    @endif
+                </div>
             </div>
-            <div class="col-lg-5 text-right">
+            <div class="col-6 text-right">
                 <ul class="header-dropdown">
                     <li class="onhover-dropdown change-language">
                         <a href="javascript:void(0)">{{session()->get('locale')}} 

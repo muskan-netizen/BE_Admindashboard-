@@ -39,7 +39,8 @@ class DatabaseSeeder extends Seeder
               HomePageLabelSeeder::class,
               HomePageLabelSeederDefault::class,
               EmailTemplateSeeder::class,
-              NotificationTemplateSeeder::class
+              NotificationTemplateSeeder::class,
+              WebStylingSeeder::class
           ]);
         // $this->call(UsersTableSeeder::class);
        // $this->call(AppStylingOptionsTableSeeder::class);

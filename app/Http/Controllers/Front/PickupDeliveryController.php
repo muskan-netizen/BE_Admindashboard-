@@ -82,7 +82,7 @@ class PickupDeliveryController extends FrontController{
                 $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
             }
         }
-        $product->loyalty_amount_saved = $loyalty_amount_saved;
+        $product->loyalty_amount_saved = number_format((float)$loyalty_amount_saved, 2, '.', '') ??0.00;
         return $this->successResponse($product);
     }
     # get all vehicles category by vendor
@@ -155,7 +155,7 @@ class PickupDeliveryController extends FrontController{
            
             $response['vendor'] = $vendor;
             $response['products'] = $products;
-            $response['loyalty_amount_saved'] = $loyalty_amount_saved??0.00;
+            $response['loyalty_amount_saved'] = number_format((float)$loyalty_amount_saved, 2, '.', '') ??0.00;
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());

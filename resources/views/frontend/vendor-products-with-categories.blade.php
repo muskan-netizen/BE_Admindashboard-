@@ -12,7 +12,13 @@
 @section('content')
 <header>
    <div class="mobile-fix-option"></div>
-   @include('layouts.store/left-sidebar')
+   @if(isset($set_template)  && $set_template->template_id == 1)
+        @include('layouts.store/left-sidebar-template-one')
+        @elseif(isset($set_template)  && $set_template->template_id == 2)
+        @include('layouts.store/left-sidebar')
+        @else
+        @include('layouts.store/left-sidebar-template-one')
+        @endif
 </header>
 <style type="text/css">
     .productVariants .firstChild {
@@ -175,8 +181,8 @@
                         <div class="col-md-8 col-lg-6">
                             @forelse($listData as $key => $data)
                             <section class="scrolling_section" id="{{$data->category->slug}}">
-                                <h2 class="category-head mt-0 mb-3">{{$data->category->translation_one->name}} ({{$data->products_count}})</h2>
                                 @if(!empty($data->products))
+                                    <h2 class="category-head mt-0 mb-3">{{$data->category->translation_one->name}} ({{$data->products_count}})</h2>
                                     @forelse($data->products as $prod)
                                     <div class="row cart-box-outer product_row classes_wrapper no-gutters mb-3" data-p_sku="{{ $prod->sku }}" data-slug="{{ $prod->url_slug }}">
                                         <div class="col-2">
@@ -303,6 +309,8 @@
                                     </div>
                                     @empty
                                     @endforelse
+                                @else
+                                    <h4 class="mt-3 mb-3 text-center">No product found</h4>
                                 @endif
                             </section>
                             @empty
@@ -779,7 +787,7 @@
                 type: "post",
                 dataType: 'json',
                 url: vendor_products_page_search_url,
-                data: { keyword: keyword, vendor: "{{$vendor->id}}" },
+                data: { keyword: keyword, vendor: "{{$vendor->id}}", vendor_category: "{{$vendor_category ?? ''}}" },
                 beforeSend: function() {
                     if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
                         ajaxCall.abort();

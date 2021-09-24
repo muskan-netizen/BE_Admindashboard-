@@ -836,6 +836,38 @@
                      </div>
                   </div>
                </div>
+               <div class="col-xl-12 mb-4">
+                  <div class="page-title-box">
+                     <h4 class="page-title text-uppercase">Vendor</h4>
+                  </div>
+                  <div class="card-box mb-0">
+                     <div class="row align-items-center">
+                        <div class="col-md-3">
+                           <div class="form-group mb-md-0">
+                              <label for="dinein_check" class="mr-3 mb-0">Dine In</label>
+                              <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
+                           </div>
+                        </div>
+                        <div class="col-md-3">
+                           <div class="form-group mb-md-0">
+                              <label for="delivery_check" class="mr-3 mb-0">Delivery</label>
+                              <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
+                           </div>
+                        </div>
+                        <div class="col-md-3">
+                           <div class="form-group mb-md-0">
+                              <label for="takeaway_check" class="mr-3 mb-0">Takeaway</label>
+                              <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
+                           </div>
+                        </div>
+                        <div class="col-md-3">
+                           <div class="form-group mb-0 text-md-right">
+                              <button class="btn btn-info d-block ml-md-auto" type="submit"> Save </button>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
             </div>
          </form>
 
@@ -908,38 +940,6 @@
    <div class="row">
       <div class="col-xl-6">
          <div class="row">
-            <div class="col-xl-12 mb-4">
-                  <div class="page-title-box">
-                     <h4 class="page-title text-uppercase">Vendor</h4>
-                  </div>
-                  <div class="card-box mb-0">
-                     <div class="row align-items-center">
-                        <div class="col-md-3">
-                           <div class="form-group mb-md-0">
-                              <label for="dinein_check" class="mr-3 mb-0">Dine In</label>
-                              <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
-                           </div>
-                        </div>
-                        <div class="col-md-3">
-                           <div class="form-group mb-md-0">
-                              <label for="delivery_check" class="mr-3 mb-0">Delivery</label>
-                              <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
-                           </div>
-                        </div>
-                        <div class="col-md-3">
-                           <div class="form-group mb-md-0">
-                              <label for="takeaway_check" class="mr-3 mb-0">Takeaway</label>
-                              <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
-                           </div>
-                        </div>
-                        <div class="col-md-3">
-                           <div class="form-group mb-0 text-md-right">
-                              <button class="btn btn-info d-block ml-md-auto" type="submit"> Save </button>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </div>
             <div class="col-lg-12">
                <!-- <div class="page-title-box">
                   <h4 class="page-title text-uppercase">Vendor Registration Documents</h4>
@@ -1104,7 +1104,7 @@
          <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
             <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
             @csrf
-            <div class="card-box mb-0 pb-1">
+            <div class="card-box mb-0">
                <div class="d-flex align-items-center justify-content-end">
                   <!-- <h4 class="header-title mb-0">Refer and Earn</h4> -->
                   <button class="btn btn-info d-block" type="submit"> Save </button>

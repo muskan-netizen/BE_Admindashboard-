@@ -28,6 +28,7 @@
                                         @endif
                                     @endif
                                 </h3>
+                                <h6 class="mt-0"><b>{{$data->vendor->name}}</b></h6>
                                 @if (strlen($data->translation_description) >= 65)
                                     <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
                                 @else

@@ -37,6 +37,21 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'Eina03';
+    src: url('../fonts/Eina03-SemiBold.eot');
+    src: url('../fonts/Eina03-SemiBold.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/Eina03-SemiBold.woff2') format('woff2'),
+        url('../fonts/Eina03-SemiBold.woff') format('woff'),
+        url('../fonts/Eina03-SemiBold.ttf') format('truetype'),
+        url('../fonts/Eina03-SemiBold.svg#Eina03-SemiBold') format('svg');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+
 body{
     font-family: 'Eina02';
     font-weight: 400;
@@ -94,7 +109,7 @@ body{
 }
 
 .navigation-tab-overlay {
-    background: linear-gradient(136.24deg, #FC7049 0%, #FD312C 100%);
+    background: var(--theme-deafult);
 }
 
 .navigation-tab-item .nav-link {
@@ -106,8 +121,27 @@ body{
     font-weight: 600;
 }
 
+.search_form input.form-control{
+    opacity: 0.81;
+    color: #8B8B8B;
+    font-family: 'Eina03';
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0;
+    line-height: 16px;
+}
+
+.search_form input.form-control::-webkit-input-placeholder,
+.search_form input.form-control::placeholder {
+    opacity: 0.81;
+    color: #8B8B8B;
+    font-family: 'Eina03';
+    font-weight: 600;
+    font-size: 16px;
+}
+
 .icon-nav .btn.btn-solid {
-    background: linear-gradient(136.24deg, #FC7049 0%, #FD312C 100%);
+    background: var(--theme-deafult);
     border: 0;
 }
 
@@ -145,7 +179,7 @@ body{
     height: 100%;
     object-fit: cover;
     width: 100%;
-    object-position: 0 0;
+    object-position: center;
     border-radius: 10px;
 }
 
@@ -180,7 +214,7 @@ body{
     font-weight: 400;
     font-size: 15px;
     letter-spacing: 0;
-    margin: 0 0 10px;
+    margin: 8px 0;
     line-height: 20px;  
 }
 
@@ -216,12 +250,49 @@ body{
     text-align: center;
     border: 1px solid #EC5837;
     display: block;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    transition: all 0.5s;
 }
 
-.popular-brands,.royo-recommends{
+.see-all-btn:hover {
+    background: linear-gradient(136.24deg, #FC7049 0%, #FD312C 100%);
+    color: #fff;
+}
+
+.off-price {
+    background: url(../images/off.svg);
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+    color: #FFFFFF;
+    font-size: 10px;
+    letter-spacing: 0;
+    width: 40px;
+    height: 40px;
+    text-indent: -8px;
+    line-height: 10px;
+    font-family: 'Eina02';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.off-price span {
+    display: block;
+    margin-left: 16px;
+    font-size: 8px;
+}
+
+.off-price sup {
+    right: -10px;
+}
+
+.popular-brands, .royo-recommends {
     padding: 55px 0;
     z-index: 1;
-    margin: 55px 0;
+    margin: 30px 0 20px;
 }
 
 .popular-brands .brand-slider {
@@ -267,8 +338,8 @@ body{
     max-width: 100%;
 }
 
-.black-box{
-    background: #000;
+.black-box {
+    background: rgb(0 0 0 / 26%);
 }
 .red-box{
     background-color: #ED1D24;
@@ -305,6 +376,14 @@ body{
 
 .supplier-rating .fa.fa-star{
     color: #ffaa00;
+}
+
+.suppliers-box .rating-box {
+    position: initial;
+}
+
+.suppliers-box .fa.fa-star {
+    color: #fff;
 }
 
 .menu-navigation {
@@ -380,6 +459,20 @@ footer ul.social-links li a {
     font-size: 16px;
 }
 
+
+
+
+
+
+
+/* Dark Mood Css */
+.dark .left-shape::before,.dark .right-shape::before {
+    background: rgb(247 247 247 / 15%);
+}
+
+.dark .product-description h3,.dark .supplier-rating h6 {
+    color: #fff;
+}
 
 
 
@@ -548,7 +641,12 @@ footer ul.social-links li a {
     .right-shape .slick-dots {
         right: 90px;
     }
-
+    .render_full_on_sale, .render_full_best_sellers {
+        margin-bottom: 30px;
+    }
+    .cab-banner-area .container.p-64 {
+        padding-left: 0 !important;
+    }
 
 }
 @media (max-width: 991px){
@@ -591,6 +689,12 @@ footer ul.social-links li a {
         right: 0;
         left: 0;
     }
+    .popular-brands {
+        margin: 0;
+    }
+    .home-slider-wrapper {
+        padding-top: 0;
+    }
 }
 @media (max-width: 767px){
     .location-bar {
@@ -599,6 +703,9 @@ footer ul.social-links li a {
     .footer-theme .sub-title .contact-list li {
         padding-left: 0 !important;
     }  
+    ul.social-links.ml-auto {
+        margin: auto;
+    }
     .map-icon {
         margin-left: auto;
     }
@@ -609,6 +716,31 @@ footer ul.social-links li a {
     .see-all-btn {
         height: 30px;
         line-height: 26px;
+    }
+    .p-64 {
+        padding: 24px 20px !important;
+    }
+    .suppliers-img-outer.text-center {
+        width: calc(100% - 40px);
+        margin: 0 auto 20px;
+    }
+    .suppliers-img-outer.text-center img{
+        width: 100%;
+    }
+    .img-outer-box {
+        height: 170px;
+    }
+    section.suppliers-section {
+        padding: 0  16px;
+    }
+    .product-4 {
+        padding: 0 16px;
+    }
+    .cab-banner-area .card-box{
+        padding: 24px;
+    }
+    .sub-footer .payment-card-bottom {
+        padding: 0 0 10px;
     }
 }
 

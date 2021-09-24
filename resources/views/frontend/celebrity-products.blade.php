@@ -15,7 +15,13 @@
 @section('content')
 <header>
     <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
+    @if(isset($set_template)  && $set_template->template_id == 1)
+        @include('layouts.store/left-sidebar-template-one')
+        @elseif(isset($set_template)  && $set_template->template_id == 2)
+        @include('layouts.store/left-sidebar')
+        @else
+        @include('layouts.store/left-sidebar-template-one')
+        @endif
 </header>
 <section class="section-b-space ratio_asos">
     <div class="collection-wrapper">
@@ -108,6 +114,7 @@
                                                     <a href="{{route('productDetail', $new['url_slug'])}}">
                                                         <h3>{{ $new['translation_title'] }}</h3>
                                                     </a>
+                                                    <h6><b>{{$new['vendor']['name']}}</b></h6>
                                                     @if($new['inquiry_only'] == 0)
                                                     <h4 class="mt-1">
                                                         <?php $multiply = $new['variant_multiplier']; ?>
@@ -211,11 +218,12 @@
                                                                 <a href="javascript:void(0)" title="Add to Wishlist" class="addWishList" proSku="{{$data->sku}}"><i class="ti-heart" aria-hidden="true"></i></a>
                                                             </div>
                                                         </div>
-                                                        <div class="product-detail">
+                                                        <div class="media-body align-self-center">
                                                             <div class="inner_spacing">
                                                                 <a href="{{route('productDetail', $data->url_slug)}}">
                                                                     <h3>{{ $data->translation_title }}</h3>
                                                                 </a>
+                                                                <h6 class="mt-0"><b>{{$data->vendor->name}}</b></h6>
                                                                 <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
                                                                 @if($client_preference_detail)
                                                                     @if($client_preference_detail->rating_check == 1)  

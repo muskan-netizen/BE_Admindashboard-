@@ -92,6 +92,7 @@ Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'],
     Route::post('web-styling/edit-Dynamic-Html-Section', 'Client\WebStylingController@editDynamicHtmlSection')->name('edit.Dynamic.Html.Section');
     Route::post('web-styling/pickup-append-section', 'Client\WebStylingController@appendPickupSection')->name('pickup.append.section');
     Route::get('web-styling/pickup-delete-section/{id}', 'Client\WebStylingController@deletePickupSection')->name('pickup.delete.section');
+    Route::post('web-styling/updateHomePageStyle', 'Client\WebStylingController@updateHomePageStyle')->name('web.styling.updateHomePageStyle');
     Route::get('app-styling', 'Client\AppStylingController@index')->name('appStyling.index');
     Route::post('app-styling/updateFont', 'Client\AppStylingController@updateFont')->name('styling.updateFont');
     Route::post('app-styling/updateColor', 'Client\AppStylingController@updateColor')->name('styling.updateColor');

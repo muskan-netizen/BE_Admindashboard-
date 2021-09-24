@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{ClientPreference, HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory};
+use App\Models\{ClientPreference, HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory,WebStyling,WebStylingOption};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -39,8 +39,11 @@ class WebStylingController extends BaseController{
                     ->where('client_languages.client_code', Auth::user()->code)
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
-
-        return view('backend/web_styling/index')->with(['if_pickup_on' => $if_pickup_on ,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs]);
+        $homepage_style = WebStyling::where('name', 'Home Page Style')->first();
+        if ($homepage_style) {
+            $homepage_style_options = WebStylingOption::where('web_styling_id', $homepage_style->id)->get();
+        }
+        return view('backend/web_styling/index')->with(['homepage_style_options' => $homepage_style_options,'if_pickup_on' => $if_pickup_on ,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs]);
     }
 
 
@@ -112,6 +115,7 @@ class WebStylingController extends BaseController{
             $client_preferences->show_icons = $request->show_icons == 'on' ? 1 : 0;
             $client_preferences->show_wishlist = $request->show_wishlist == 'on' ? 1 : 0;
             $client_preferences->show_payment_icons = $request->show_payment_icons == 'on' ? 1 : 0;
+            $client_preferences->hide_nav_bar = $request->hide_nav_bar == 'on' ? 1 : 0;
             $client_preferences->age_restriction_title = $request->age_restriction_title;
             $client_preferences->site_top_header_color = $request->site_top_header_color;
             $client_preferences->save();
@@ -411,5 +415,23 @@ class WebStylingController extends BaseController{
             ]);
            
         }
+    }
+
+     /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateHomePageStyle(Request $request)
+    {
+        $font = WebStylingOption::where('id', $request->home_styles)->first();
+        $option_change = WebStylingOption::where('web_styling_id', '=', $font->web_styling_id)->update(array('is_selected' => 0));
+        $font->is_selected = 1;
+        $font->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Updated successfully!'
+        ]);
     }
 }

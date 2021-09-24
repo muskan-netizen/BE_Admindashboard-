@@ -77,10 +77,19 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <a class="ml-2" href="#"><img src="{{asset('front-assets/images/google-play.png')}}" alt=""></a>
                     </div>
                     <ul class="social-links ml-lg-auto mx-auto mt-3">
-                        <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                        @foreach($social_media_details as $social_media_detail)
+                                    <li>
+                                        <a href="{{http_check($social_media_detail->url)}}" target="_blank">
+                                            <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
+                                            {{-- <span>{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span> --}}
+                                        </a>
+                                    </li>
+                        @endforeach
+
+                        {{-- <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
                         <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
                         <li><a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-                        <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+                        <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li> --}}
                     </ul>
                 </div>                
             </div>

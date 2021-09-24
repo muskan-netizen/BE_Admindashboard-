@@ -50,7 +50,13 @@
     ?>
 <header>
     <div class="mobile-fix-option"></div>
-    @include('layouts.store/left-sidebar')
+    @if(isset($set_template)  && $set_template->template_id == 1)
+        @include('layouts.store/left-sidebar-template-one')
+        @elseif(isset($set_template)  && $set_template->template_id == 2)
+        @include('layouts.store/left-sidebar')
+        @else
+        @include('layouts.store/left-sidebar-template-one')
+        @endif
 </header>
 <section class="cab-booking pt-0">
     <div id="map_canvas" style="width: 100%; height: 100%;"></div>

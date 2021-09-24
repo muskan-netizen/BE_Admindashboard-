@@ -283,6 +283,7 @@ $(document).ready(function () {
             url: home_page_data_url,
             success: function (response) {
                 if (response.status == "Success") {
+                    $('#main-menu').smartmenus('destroy');
                     $("#main-menu").html('');
                     let nav_categories_template = _.template($('#nav_categories_template').html());
                     $("#main-menu").append(nav_categories_template({ nav_categories: response.data.navCategories }));
@@ -292,6 +293,8 @@ $(document).ready(function () {
                         $(".slide-6").slick('destroy');
                         $(".product-4").slick('destroy');
                         $(".product-5").slick('destroy');
+                        $(".brand-slider").slick('destroy');
+                        $(".suppliers-slider").slick('destroy');
                         if ($('.vendor-product').html() != '') {
                             $('.vendor-product').slick('destroy');
                         }

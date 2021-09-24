@@ -100,7 +100,7 @@ class PickupDeliveryController extends BaseController{
             $response['vendor'] = $vendor;
             $response['products'] = $products;
             $response['loyalty_amount_saved'] = $loyalty_amount_saved??0.00;
-            return response()->json(['status','data' => $response]);
+             return response()->json(['status','data' => $response]);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
         }

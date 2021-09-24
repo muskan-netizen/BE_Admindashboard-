@@ -138,6 +138,12 @@
                             <input type="checkbox" id="show_payment_icons" data-plugin="switchery" name="show_payment_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
                         </div>
                     </li>
+                    <li class="d-flex align-items-center justify-content-between mt-2">
+                        <h4 class="header-title mb-2">{{ __('Hide Nav Bar') }}</h4>
+                        <div class="mb-0">
+                            <input type="checkbox" id="hide_nav_bar" data-plugin="switchery" name="hide_nav_bar" class="chk_box2" data-color="#43bee1" {{$client_preferences->hide_nav_bar == 1 ? 'checked' : ''}}>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -145,6 +151,35 @@
 
   
 </form>
+
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="header-title">Home Page Style</h4>
+                <div class="row">
+                    @foreach($homepage_style_options as $homepage_style)
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="card mb-0">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-12 custom-control custom-radio radio_new p-0">
+                                        <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
+                                        <label class="custom-control-label" for="{{$homepage_style->id}}">
+                                            <img class="card-img-top img-fluid" src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- cab booking template -->
 <form id="favicon-form-pickup" method="post" enctype="multipart/form-data">
@@ -411,6 +446,9 @@ $(document).on('click', '.deletePickupSection', function() {
     $("#show_payment_icons").change(function() {
         submitData();
     });
+    $("#hide_nav_bar").change(function() {
+        submitData();
+    });
     $("#save_home_page").click(function(event) {
         event.preventDefault();
         submitData();
@@ -598,6 +636,32 @@ $(document).on('click', '.deletePickupSection', function() {
         });
     }
 
-   
+    function submitHomePageForm(id) {
+        var data_uri = "{{route('web.styling.updateHomePageStyle')}}";
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        let home_styles = id;
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: data_uri,
+            data: {
+                home_styles: home_styles
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status == 'success') {
+                    console.log(response.message);
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                }
+            }
+        });
+    }
 </script>
+
 @endsection

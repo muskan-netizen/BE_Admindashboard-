@@ -100,10 +100,15 @@ if (Session::has('toaster')) {
     var host_arr = ip_address.split(".");
     let socket = io(constants.socket_domain, {
         query: {
-            "user_id": host_arr[0] + "_" + "{{ Auth::user()->id }}"
+            "user_id": host_arr[0] + "_" + "{{ Auth::user()->id }}",
+            "subdomain": host_arr[0]
         }
     });
     socket.on('createOrderByCustomer_' + host_arr[0] + "_" + "{{ (!empty(Auth::user()))?Auth::user()->id:0 }}", (message) => {
+        get_latest_order_socket(message.order_number);
+    });
+
+    function get_latest_order_socket(order_number){
         Audio.prototype.play = (function(play) {
             return function() {
                 var audio = this,
@@ -130,7 +135,7 @@ if (Session::has('toaster')) {
             dataType: "JSON",
             data: {
                 filter_order_status: "pending_orders",
-                search_keyword: message.order_number
+                search_keyword: order_number
             },
             success: function(response) {
                 if (response.status == 'Success') {
@@ -147,9 +152,9 @@ if (Session::has('toaster')) {
 
             },
         });
-    });
+    }
 </script>
-@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']) && empty(Session::get('current_fcm_token')))
+@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
     var firebaseConfig = {
@@ -165,8 +170,8 @@ if (Session::has('toaster')) {
     firebase.initializeApp(firebaseConfig);
 
     const messaging = firebase.messaging();
-
     function initFirebaseMessagingRegistration() {
+        @if(empty(Session::get('current_fcm_token')))
         messaging.requestPermission().then(function() {
             return messaging.getToken()
         }).then(function(token) {
@@ -186,9 +191,22 @@ if (Session::has('toaster')) {
         }).catch(function(err) {
             console.log(`Token Error :: ${err}`);
         });
+        @endif
     }
 
     initFirebaseMessagingRegistration();
+    messaging.onMessage(function(payload) {
+        if (!("Notification" in window)) {
+            console.log("This browser does not support system notifications.");
+        } else if (Notification.permission === "granted") {
+            if(payload && payload.data && payload.data.data){
+                if(payload.data.type && payload.data.type=="order_created"){
+                    var payload_data = JSON.parse(payload.data.data);
+                    get_latest_order_socket(payload_data.order_number);
+                }
+            }
+        }
+    });
 </script>
 @endif
 @endif

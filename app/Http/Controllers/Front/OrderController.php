@@ -61,6 +61,12 @@ class OrderController extends FrontController
                         $product->image_url = ($product->image) ? $product->image['image_fit'].'74/100'.$product->image['image_path'] : '';
                     }
                 }
+                if($vendor->delivery_fee > 0){
+                    $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
+                    $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
+                    $ETA = $order_pre_time + $user_to_vendor_time;
+                    $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA) : '0 minutes';
+                }
             }
         }
         foreach ($pastOrders as $order) {
@@ -431,6 +437,7 @@ class OrderController extends FrontController
     {
         try {
             DB::beginTransaction();
+            $preferences = ClientPreference::select('is_hyperlocal','Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier')->first();
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (!empty($request->user_id))) {
@@ -497,7 +504,7 @@ class OrderController extends FrontController
                     }
                 }
             }
-            $cart_products = CartProduct::select('*')->with(['product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
+            $cart_products = CartProduct::select('*')->with(['vendor','product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                 $query->where('cart_id', $cart->id);
             }, 'coupon.promo', 'product.addon'])->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
             $total_amount = 0;
@@ -555,6 +562,16 @@ class OrderController extends FrontController
                                 $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2);
                                 // $payable_amount = $payable_amount + $delivery_fee;
                                 $delivery_fee_charges = $delivery_fee;
+                                
+                                if(($preferences) && ($preferences->is_hyperlocal == 1)){
+                                    $latitude = Session::get('latitude');
+                                    $longitude = Session::get('longitude');
+                                    $vendor_cart_product->vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor_cart_product->vendor, $preferences);
+                                    $OrderVendor->order_pre_time = $vendor_cart_product->vendor->order_pre_time;
+                                    if($vendor_cart_product->vendor->timeofLineOfSightDistance > 0){
+                                        $OrderVendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $vendor_cart_product->vendor->order_pre_time;
+                                    }
+                                }
                             }
                         }
                     }
@@ -813,6 +830,8 @@ class OrderController extends FrontController
                     "data" => [
                         'title' => $notification_content->subject,
                         'body'  => $notification_content->content,
+                        'data' => $orderData,
+                        'type' => "order_created"
                     ],
                     "priority" => "high"
                 ];

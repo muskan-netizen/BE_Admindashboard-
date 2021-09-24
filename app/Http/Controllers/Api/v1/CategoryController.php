@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Api\v1;
 use DB;
 use Validation;
 use Carbon\Carbon;
-use Client;
+// use Client;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory,ProductCategory, ClientPreference};
+use App\Models\{User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory,ProductCategory, Client, ClientPreference};
 
 class CategoryController extends BaseController
 {
@@ -54,6 +54,9 @@ class CategoryController extends BaseController
             if(!$category){
                 return response()->json(['error' => 'No record found.'], 200);
             }
+            $code = $request->header('code');
+            $client = Client::where('code',$code)->first();
+            $category->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/category/".$category->slug;
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
             $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $paginate, $userid, $product_list, $mod_type);
