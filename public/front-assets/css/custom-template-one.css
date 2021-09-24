@@ -421,7 +421,7 @@ body{
 }
 
 .sub-footer {
-    background-color: #000000;
+    background-color :var(--top-header-color);
 }
 
 .sub-footer p {
