@@ -177,7 +177,7 @@ body{
 
 .img-outer-box img {
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     width: 100%;
     object-position: center;
     border-radius: 10px;
