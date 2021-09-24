@@ -86,6 +86,39 @@ class UserhomeController extends FrontController
         }
     }
 
+    public function checkIfLastMileDeliveryOn()
+    {
+        $preference = ClientPreference::first();
+        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+            return $preference;
+        else
+            return false;
+    }
+
+    public function driverDocuments()
+    {
+        try {
+            $dispatch_domain = $this->checkIfLastMileDeliveryOn();
+            $url = $dispatch_domain->delivery_service_key_url;
+            $endpoint = $url."/api/send-documents";  
+            // $endpoint = "http://192.168.99.177:8006/api/send-documents";
+            // $dispatch_domain = $this->checkIfLastMileDeliveryOn();
+             //$dispatch_domain->delivery_service_key_code = '649a9a';
+            // $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
+            $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
+
+            $response = $client->post($endpoint);
+            $response = json_decode($response->getBody(), true);
+            return json_encode($response['data']);
+
+        } catch (\Exception $e) {
+            $data = [];
+            $data['status'] = 400;
+            $data['message'] =  $e->getMessage();
+            return $data;
+        }
+    }
+
     public function driverSignup()
     {
         $user = Auth::user();
@@ -93,23 +126,21 @@ class UserhomeController extends FrontController
         $client_preferences = ClientPreference::first();
         $navCategories = $this->categoryNav($language_id);
         $client = Auth::user();
-        $ClientPreference = ClientPreference::where('client_code', $client->code)->first();
-        $preference = $ClientPreference ? $ClientPreference : new ClientPreference();
+        // $ClientPreference = ClientPreference::where('client_code', $client->code)->first();
+        // $preference = $ClientPreference ? $ClientPreference : new ClientPreference();
         $page_detail = Page::with(['translations' => function ($q) {
             $q->where('language_id', session()->get('customerLanguage'));
         }])->where('slug', 'driver-registration')->firstOrFail();
         $last_mile_teams = [];
-        // $tags   =  $this->getAgentTags();
+
         $tag = [];
-        // foreach ($tags as $key => $value) {
-        //     array_push($tag, $value['name']);
+    
+        // if (isset($preference) && $preference->need_delivery_service == '1') {
+        //     $last_mile_teams = $this->getLastMileTeams();
         // }
-        if (isset($preference) && $preference->need_delivery_service == '1') {
-            $last_mile_teams = $this->getLastMileTeams();
-        }
         $showTag = implode(',', $tag);
-        $driver_registration_documents = DriverRegistrationDocument::get();
-        return view('frontend.driver-registration', compact('page_detail','navCategories', 'client_preferences', 'user', 'showTag', 'last_mile_teams', 'driver_registration_documents'));
+        $driver_registration_documents = json_decode($this->driverDocuments());
+        return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents'));
     }
 
     public function checkIfLastMileOn()
@@ -187,24 +218,24 @@ class UserhomeController extends FrontController
                             ->whereDate('end_date_time', '>=', Carbon::now());
                     });
                 })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
-            
-            
+
+
             $home_page_labels = CabBookingLayout::where('is_active', 1)->orderBy('order_by');
-            
-            if(isset($langId) && !empty($langId))
-            $home_page_labels = $home_page_labels->with(['translations' => function ($q)use($langId){
-                $q->where('language_id',$langId);
-            }]);
 
-            $home_page_labels = $home_page_labels->get();  
+            if (isset($langId) && !empty($langId))
+                $home_page_labels = $home_page_labels->with(['translations' => function ($q) use ($langId) {
+                    $q->where('language_id', $langId);
+                }]);
 
-            if(count($home_page_labels) == 0)
-            $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
-            
+            $home_page_labels = $home_page_labels->get();
 
-            $only_cab_booking = OnboardSetting::where('key_value','home_page_cab_booking')->count();
-            if($only_cab_booking == 1)
-            return Redirect::route('categoryDetail','cabservice');   
+            if (count($home_page_labels) == 0)
+                $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
+
+
+            $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
+            if ($only_cab_booking == 1)
+                return Redirect::route('categoryDetail', 'cabservice');
 
             $home_page_pickup_labels = CabBookingLayout::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
            
@@ -286,7 +317,7 @@ class UserhomeController extends FrontController
                 $long2  = $value->longitude;
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 $distance_to_time_multiplier = (!empty($preferences->distance_to_time_multiplier)) ? $preferences->distance_to_time_multiplier : 2;
-                $distance = $this->calulateDistanceLineOfSight($lat1,$long1,$lat2, $long2, $distance_unit);
+                $distance = $this->calulateDistanceLineOfSight($lat1, $long1, $lat2, $long2, $distance_unit);
                 $value->lineOfSightDistance = number_format($distance, 1, '.', '');
                 $value->timeofLineOfSightDistance = number_format(floatval($value->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', ''); // distance is multiplied by multiplier to calculate travel time
             }
@@ -495,14 +526,14 @@ class UserhomeController extends FrontController
                 })->orderBy('sorting', 'asc')->with('category')->with('vendor')->get();
             $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
 
-            $only_cab_booking = OnboardSetting::where('key_value','home_page_cab_booking')->count();
-            if($only_cab_booking == 1)
-            return Redirect::route('categoryDetail','cabservice');    
-            $home_page_pickup_labels = CabBookingLayout::with(['translations' => function($q)use($langId){
-                $q->where('language_id',$langId);
+            $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
+            if ($only_cab_booking == 1)
+                return Redirect::route('categoryDetail', 'cabservice');
+            $home_page_pickup_labels = CabBookingLayout::with(['translations' => function ($q) use ($langId) {
+                $q->where('language_id', $langId);
             }])->where('is_active', 1)->orderBy('order_by')->get();
-           
-            return view('frontend.home-template-one')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels,'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+
+            return view('frontend.home-template-one')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
         } catch (Exception $e) {
             pr($e->getCode());
             die;

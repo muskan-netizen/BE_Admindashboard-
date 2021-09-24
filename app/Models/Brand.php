@@ -18,7 +18,7 @@ class Brand extends Model
   	}
 
   	public function bc(){
-  		return $this->hasOne('App\Models\BrandCategory');
+  		return $this->hasMany('App\Models\BrandCategory');
   	}
 
     public function getImageAttribute($value)

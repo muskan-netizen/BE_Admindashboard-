@@ -25,7 +25,7 @@ class CategoryController extends BaseController
 
         $celebrity_check = ClientPreference::first()->value('celebrity_check');
 
-        $brands = Brand::with('bc.cate.primary')->where('status', '!=', 2)->orderBy('position', 'asc')->get();
+        $brands = Brand::with('bc.cate.primary')->where('status', '!=', 2)->orderBy('position', 'asc')->with('bc')->get();
         $variants = Variant::with('option', 'varcategory.cate.primary')->where('status', '!=', 2)->orderBy('position', 'asc')->get();
         $categories = Category::with('translation_one')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
 

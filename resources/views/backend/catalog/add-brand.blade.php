@@ -11,7 +11,7 @@
             <div class="col-md-12">
                 <div class="form-group">
                     {!! Form::label('title', 'Select Category',['class' => 'control-label']) !!}
-                    <select class="form-control selectize-select" id="cateSelectBox" name="cate_id">
+                    <select class="form-control selectize-select" data-toggle="select2" id="cateSelectBox" name="cate_id[]" multiple="multiple" data-placeholder="Choose ...">
                         @foreach($categories as $cate)
                             <option value="{{$cate->id}}">{{$cate->slug}}</option>
                         @endforeach

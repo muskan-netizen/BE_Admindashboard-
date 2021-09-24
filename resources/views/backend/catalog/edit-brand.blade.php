@@ -11,10 +11,11 @@
             <div class="col-md-12">
                 <div class="form-group">
                     {!! Form::label('title', 'Select Category',['class' => 'control-label']) !!}
-                    <select class="form-control selectize-select" id="cateSelectBox" name="cate_id">
+                    <select class="form-control selectize-select" data-toggle="select2" id="cateSelectBox" name="cate_id[]" multiple="multiple" >
                         @foreach($categories as $cate)
                             @if($brand->bc)
-                                <option value="{{$cate->id}}" @if($brand->bc->category_id == $cate->id) selected @endif>{{$cate->translation_one['name']}}</option>
+                                <option value="{{$cate->id}}" @foreach($brand->bc as $cat)@if($cat->category_id == $cate->id) selected @endif 
+                                    @endforeach>{{$cate->translation_one['name']}}</option>
                             @else
                                 <option value="{{$cate->id}}">{{$cate->translation_one['name']}}</option>
                             @endif

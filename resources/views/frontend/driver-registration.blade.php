@@ -32,50 +32,55 @@
                         </div>
                     </div>
                     <div class="needs-validation vendor-signup">
-                        <div class="form-group">
-                            <label for="">{{__('UPLOAD PROFILE PHOTO')}}</label>
-                            <div class="file file--upload">
-                                <label for="input_file_logo">
-                                    <span class="update_pic">
-                                        <img src="" id="upload_logo_preview">
-                                    </span>
-                                    <span class="plus_icon">
-                                        <i class="fa fa-plus"></i>
-                                    </span>
-                                </label>
-                                <input id="input_file_logo" type="file" name="upload_photo" accept="image/*">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col-md-4 mb-3" id="phone_numberInput">
-                                <div class="form-group" id="nameInputEdit">
-                                    <label for="name" class="control-label">NAME</label>
-                                    <input type="text" class="form-control" id="name" placeholder="John Doe" name="name" value="">
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong></strong>
-                                    </span>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="">{{__('UPLOAD PROFILE PHOTO')}}</label>
+                                    <div class="file file--upload" >
+                                        <label for="input_file_logo">
+                                            <span class="update_pic">
+                                                <img src="" id="upload_logo_preview">
+                                            </span>
+                                            <span class="plus_icon">
+                                                <i class="fa fa-plus"></i>
+                                            </span>
+                                        </label>
+                                        <input id="input_file_logo" type="file" name="upload_photo" accept="image/*">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 mb-3" id="phone_numberInput">
-                                <label for="validationCustom02">{{__('CONTACT NUMBER.')}}</label>
-                                <input type="tel" class="form-control" name="phone_number" id="phone" value="">
-                                <div class="invalid-feedback" id="phone_number_error"><strong></strong></div>
-                                <input type="hidden" id="countryData" name="countryData" value="us">
-                                <input type="hidden" id="dialCode" name="dialCode" value="">
-                            </div>
-                            <div class="col-md-4 mb-3" id="full_nameInput">
-                                <div class="form-group" id="typeInputEdit">
-                                    <label for="type" class="control-label">TYPE</label>
-                                    <select class="form-control" data-style="btn-light" name="type" id="type">
-                                        <option value="Employee">Employee</option>
-                                        <option value="Freelancer">Freelancer</option>
-                                    </select>
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong></strong>
-                                    </span>
+                            <div class="col-lg-6">
+                                <div class="col-md-12 mb-3" id="phone_numberInput">
+                                    <div class="form-group" id="nameInputEdit">
+                                        <label for="name" class="control-label">NAME</label>
+                                        <input type="text" class="form-control" id="name" placeholder="John Doe" name="name" value="">
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-3" id="phone_numberInput">
+                                    <label for="validationCustom02">{{__('CONTACT NUMBER.')}}</label>
+                                    <input type="tel" class="form-control" name="phone_number" id="phone" value="">
+                                    <div class="invalid-feedback" id="phone_number_error"><strong></strong></div>
+                                    <input type="hidden" id="countryCode" name="country" value="">
+                                    <input type="hidden" id="dialCode" name="country_code" value="">
+                                </div>
+                                <div class="col-md-12 mb-3" id="full_nameInput">
+                                    <div class="form-group" id="typeInputEdit">
+                                        <label for="type" class="control-label">TYPE</label>
+                                        <select class="form-control" data-style="btn-light" name="type" id="type">
+                                            <option value="Employee">Employee</option>
+                                            <option value="Freelancer">Freelancer</option>
+                                        </select>
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        
                         <div class="row ">
                             <div class="col-md-12">
                                 <div class="form-group" id="vehicle_type_idInput">
@@ -149,11 +154,11 @@
                     </div>
                     <div class="form-row">
                         @foreach($driver_registration_documents as $driver_registration_document)
-                        <div class="col-md-6 mb-3" id="{{$driver_registration_document->primary->slug}}Input">
-                            <label for="">{{$driver_registration_document->primary ? $driver_registration_document->primary->name : ''}}</label>
+                        <div class="col-md-6 mb-3" id="{{$driver_registration_document->name}}Input">
+                            <label for="">{{$driver_registration_document->name ? $driver_registration_document->name : ''}}</label>
                             @if(strtolower($driver_registration_document->file_type) == 'text')
                             <div class="form-group">
-                                <input type="text" class="form-control" id="input_file_logo_{{$driver_registration_document->id}}" name="{{$driver_registration_document->primary->slug}}" placeholder="Enter Text" value="">
+                                <input type="text" class="form-control" id="input_file_logo_{{$driver_registration_document->id}}" name="{{$driver_registration_document->name}}" placeholder="Enter Text" value="">
                             </div>
                             @else
                             <div class="file file--upload">
@@ -166,16 +171,18 @@
                                     </span>
                                 </label>
                                 @if(strtolower($driver_registration_document->file_type) == 'image')
-                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->primary->slug}}" v accept="image/*" data-rel="{{$driver_registration_document->id}}">
+                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->name}}" v accept="image/*" data-rel="{{$driver_registration_document->id}}">
                                 @elseif(strtolower($driver_registration_document->file_type) == 'pdf')
-                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->primary->slug}}" accept=".pdf" data-rel="{{$driver_registration_document->id}}">
+                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->name}}" accept=".pdf" data-rel="{{$driver_registration_document->id}}">
                                 @endif
-                                <div class="invalid-feedback" id="{{$driver_registration_document->primary->slug}}_error"><strong></strong></div>
+                                <div class="invalid-feedback" id="{{$driver_registration_document->name}}_error"><strong></strong></div>
                             </div>
                             @endif
                         </div>
                         @endforeach
                     </div>
+                    <p id="data-error" style="color:red;"></p>
+
                     <button class="btn btn-solid mt-3 w-100" dir="ltr" data-style="expand-right" id="register_btn" type="button">
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="register_btn_loader" style="display:none !important;"></span>
                         <span class="ladda-label">{{__('Submit')}}</span>
@@ -193,6 +200,206 @@
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script type="text/javascript">
+    var tagList = "{{$showTag}}";
+    tagList = tagList.split(',');
+
+    function makeTag() {
+        $('.myTag1').tagsInput({
+            'autocomplete': {
+                source: tagList,
+            }
+        });
+    }
+    var mobile_number = '';
+    // $('#add-agent-modal .xyz').val(mobile_number.getSelectedCountryData().dialCode); 
+    $('#add-agent-modal .xyz').change(function() {
+        var phonevalue = $('.xyz').val();
+        $("#countryCode").val(mobile_number.getSelectedCountryData().dialCode);
+    });
+
+    function phoneInput() {
+        console.log('phone working');
+        var input = document.querySelector(".xyz");
+
+        var mobile_number_input = document.querySelector(".xyz");
+        mobile_number = window.intlTelInput(mobile_number_input, {
+            separateDialCode: true,
+            hiddenInput: "full_number",
+            utilsScript: "{{ asset('telinput/js/utils.js') }}",
+        });
+    }
+    $(document).ready(function() {
+        jQuery('#onfoot').click();
+    });
+    $(document).on('click', '.click', function() { //alert('a');
+        var radi = $(this).find('input[type="radio"]');
+        radi.prop('checked', true);
+        var check = radi.val();
+        var act = radi.attr('act');
+        switch (check) {
+            case "1":
+                $("#foot_" + act).attr("src", "{{ asset('assets/icons/walk_blue.png') }}");
+                $("#cycle_" + act).attr("src", "{{ asset('assets/icons/cycle.png') }}");
+                $("#bike_" + act).attr("src", "{{ asset('assets/icons/bike.png') }}");
+                $("#cars_" + act).attr("src", "{{ asset('assets/icons/car.png') }}");
+                $("#trucks_" + act).attr("src", "{{ asset('assets/icons/truck.png') }}");
+                break;
+            case "2":
+                $("#foot_" + act).attr("src", "{{ asset('assets/icons/walk.png') }}");
+                $("#cycle_" + act).attr("src", "{{ asset('assets/icons/cycle_blue.png') }}");
+                $("#bike_" + act).attr("src", "{{ asset('assets/icons/bike.png') }}");
+                $("#cars_" + act).attr("src", "{{ asset('assets/icons/car.png') }}");
+                $("#trucks_" + act).attr("src", "{{ asset('assets/icons/truck.png') }}");
+                break;
+            case "3":
+                $("#foot_" + act).attr("src", "{{ asset('assets/icons/walk.png') }}");
+                $("#cycle_" + act).attr("src", "{{ asset('assets/icons/cycle.png') }}");
+                $("#bike_" + act).attr("src", "{{ asset('assets/icons/bike_blue.png') }}");
+                $("#cars_" + act).attr("src", "{{ asset('assets/icons/car.png') }}");
+                $("#trucks_" + act).attr("src", "{{ asset('assets/icons/truck.png') }}");
+                break;
+            case "4":
+                $("#foot_" + act).attr("src", "{{ asset('assets/icons/walk.png') }}");
+                $("#cycle_" + act).attr("src", "{{ asset('assets/icons/cycle.png') }}");
+                $("#bike_" + act).attr("src", "{{ asset('assets/icons/bike.png') }}");
+                $("#cars_" + act).attr("src", "{{ asset('assets/icons/car_blue.png') }}");
+                $("#trucks_" + act).attr("src", "{{ asset('assets/icons/truck.png') }}");
+                break;
+            case "5":
+                $("#foot_" + act).attr("src", "{{ asset('assets/icons/walk.png') }}");
+                $("#cycle_" + act).attr("src", "{{ asset('assets/icons/cycle.png') }}");
+                $("#bike_" + act).attr("src", "{{ asset('assets/icons/bike.png') }}");
+                $("#cars_" + act).attr("src", "{{ asset('assets/icons/car.png') }}");
+                $("#trucks_" + act).attr("src", "{{ asset('assets/icons/truck_blue.png') }}");
+                break;
+        }
+    });
+    /* Get agent by ajax */
+    $(".editIcon").click(function(e) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        e.preventDefault();
+        var uid = $(this).attr('agentId');
+        $.ajax({
+            type: "get",
+            url: "<?php echo url('agent'); ?>" + '/' + uid + '/edit',
+            data: '',
+            dataType: 'json',
+            success: function(data) {
+                $('#edit-agent-modal #editCardBox').html(data.html);
+                $('#edit-agent-modal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                makeTag();
+                phoneInput();
+                //$('.dropify').dropify();
+                var imgs = $('#profilePic').attr('showImg');
+                $('#profilePic').attr("data-default-file", imgs);
+                $('#profilePic').dropify();
+                $('').dropify();
+            },
+            error: function(data) {
+                console.log('data2');
+            }
+        });
+    });
+    /* add Team using ajax*/
+    // $("#add-agent-modal #submitAgent").submit(function(e) {
+
+    // });
+    $("#submitAgent").submit(function(e) {
+        e.preventDefault();
+        // $(document).on('click', '.submitAgentForm', function() { 
+        var form = document.getElementById('submitAgent');
+        var formData = new FormData(form);
+        var urls = "{{URL::route('page.driverSignup')}}";
+        saveTeam(urls, formData, inp = '', modal = 'add-agent-modal');
+    });
+    /* edit Team using ajax*/
+    $("#edit-agent-modal #UpdateAgent").submit(function(e) {
+        e.preventDefault();
+    });
+    $(document).on('click', '.submitEditForm', function() {
+        var form = document.getElementById('UpdateAgent');
+        var formData = new FormData(form);
+        var urls = document.getElementById('agent_id').getAttribute('url');
+        saveTeam(urls, formData, inp = 'Edit', modal = 'edit-agent-modal');
+        console.log(urls);
+    });
+
+    function saveTeam(urls, formData, inp = '', modal = '') {
+        $.ajax({
+            method: 'post',
+            headers: {
+                Accept: "application/json"
+            },
+            url: urls,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.status == 'success') {
+                    $("#" + modal + " .close").click();
+                    location.reload();
+                } else {
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text(response.message);
+                }
+                return response;
+            },
+            error: function(response) {
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    Object.keys(errors).forEach(function(key) {
+                        $("#" + key + "Input" + inp + " input").addClass("is-invalid");
+                        $("#" + key + "Input" + inp + " span.invalid-feedback").children("strong").text(errors[key][0]);
+                        $("#" + key + "Input span.invalid-feedback").show();
+                    });
+                } else {
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text('Something went wrong, Please try Again.');
+                }
+                return response;
+            }
+        });
+    }
+    /* Get agent by ajax */
+    $(".submitpayreceive").click(function(e) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        e.preventDefault();
+        $.ajax({
+            type: "post",
+            url: "",
+            data: '',
+            dataType: 'json',
+            success: function(data) {
+                $('#edit-agent-modal #editCardBox').html(data.html);
+                $('#edit-agent-modal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                makeTag();
+                //$('.dropify').dropify();
+                var imgs = $('#profilePic').attr('showImg');
+                $('#profilePic').attr("data-default-file", imgs);
+                $('#profilePic').dropify();
+                $('').dropify();
+            },
+            error: function(data) {
+                console.log('data2');
+            }
+        });
+    });
+</script>
 <script type="text/javascript">
     var text_image = "{{url('images/104647.png')}}";
 
@@ -307,6 +514,7 @@
         });
         $('#register_btn').click(function() {
             var that = $(this);
+     
             $(this).attr('disabled', true);
             $('#register_btn_loader').show();
             $('.form-control').removeClass("is-invalid");
@@ -329,6 +537,7 @@
                         $('input[type=file]').val('');
                         $("#vendor_signup_form")[0].reset();
                         $('#vendor_signup_form img').attr('src', '');
+                      
                         $('html,body').animate({
                             scrollTop: '0px'
                         }, 1000);
@@ -337,8 +546,16 @@
                             $('#success_msg').html('').hide();
                         }, 3000);
                     }
+                 
+                    console.log(data);
+               
+                    $("#data-error").empty();
+                    $("#data-error").html(data.message);
                 },
-                error: function(response) {
+                error: function(data) {
+                    $("#data-error").empty();
+                   // console.log(data);
+                    $("#data-error").append(response.data);
                     that.attr('disabled', false);
                     $('html,body').animate({
                         scrollTop: '0px'
@@ -352,210 +569,15 @@
                             $("#" + key + "Input div.invalid-feedback").show();
                         });
                     } else {
+
                         $(".show_all_error.invalid-feedback").show();
                         $(".show_all_error.invalid-feedback").text('Something went wrong, Please try Again.');
                     }
                 }
+               
             });
         });
     });
 </script>
-<script type="text/javascript">
-    var tagList = "{{$showTag}}";
-    tagList = tagList.split(',');
 
-    function makeTag() {
-        $('.myTag1').tagsInput({
-            'autocomplete': {
-                source: tagList,
-            }
-        });
-    }
-    var mobile_number = '';
-    // $('#add-agent-modal .xyz').val(mobile_number.getSelectedCountryData().dialCode); 
-    $('#add-agent-modal .xyz').change(function() {
-        var phonevalue = $('.xyz').val();
-        $("#countryCode").val(mobile_number.getSelectedCountryData().dialCode);
-    });
-    function phoneInput() {
-        console.log('phone working');
-        var input = document.querySelector(".xyz");
-
-        var mobile_number_input = document.querySelector(".xyz");
-        mobile_number = window.intlTelInput(mobile_number_input, {
-            separateDialCode: true,
-            hiddenInput: "full_number",
-            utilsScript: "{{ asset('telinput/js/utils.js') }}",
-        });
-    }
-    $(document).ready(function() {
-        jQuery('#onfoot').click();
-    });
-    $(document).on('click', '.click', function() { //alert('a');
-        var radi = $(this).find('input[type="radio"]');
-        radi.prop('checked', true);
-        var check = radi.val();
-        var act = radi.attr('act');
-        switch (check) {
-            case "1":
-                $("#foot_" + act).attr("src", "{{ asset('assets/icons/walk_blue.png') }}");
-                $("#cycle_" + act).attr("src", "{{ asset('assets/icons/cycle.png') }}");
-                $("#bike_" + act).attr("src", "{{ asset('assets/icons/bike.png') }}");
-                $("#cars_" + act).attr("src", "{{ asset('assets/icons/car.png') }}");
-                $("#trucks_" + act).attr("src", "{{ asset('assets/icons/truck.png') }}");
-                break;
-            case "2":
-                $("#foot_" + act).attr("src", "{{ asset('assets/icons/walk.png') }}");
-                $("#cycle_" + act).attr("src", "{{ asset('assets/icons/cycle_blue.png') }}");
-                $("#bike_" + act).attr("src", "{{ asset('assets/icons/bike.png') }}");
-                $("#cars_" + act).attr("src", "{{ asset('assets/icons/car.png') }}");
-                $("#trucks_" + act).attr("src", "{{ asset('assets/icons/truck.png') }}");
-                break;
-            case "3":
-                $("#foot_" + act).attr("src", "{{ asset('assets/icons/walk.png') }}");
-                $("#cycle_" + act).attr("src", "{{ asset('assets/icons/cycle.png') }}");
-                $("#bike_" + act).attr("src", "{{ asset('assets/icons/bike_blue.png') }}");
-                $("#cars_" + act).attr("src", "{{ asset('assets/icons/car.png') }}");
-                $("#trucks_" + act).attr("src", "{{ asset('assets/icons/truck.png') }}");
-                break;
-            case "4":
-                $("#foot_" + act).attr("src", "{{ asset('assets/icons/walk.png') }}");
-                $("#cycle_" + act).attr("src", "{{ asset('assets/icons/cycle.png') }}");
-                $("#bike_" + act).attr("src", "{{ asset('assets/icons/bike.png') }}");
-                $("#cars_" + act).attr("src", "{{ asset('assets/icons/car_blue.png') }}");
-                $("#trucks_" + act).attr("src", "{{ asset('assets/icons/truck.png') }}");
-                break;
-            case "5":
-                $("#foot_" + act).attr("src", "{{ asset('assets/icons/walk.png') }}");
-                $("#cycle_" + act).attr("src", "{{ asset('assets/icons/cycle.png') }}");
-                $("#bike_" + act).attr("src", "{{ asset('assets/icons/bike.png') }}");
-                $("#cars_" + act).attr("src", "{{ asset('assets/icons/car.png') }}");
-                $("#trucks_" + act).attr("src", "{{ asset('assets/icons/truck_blue.png') }}");
-                break;
-        }
-    });
-    /* Get agent by ajax */
-    $(".editIcon").click(function(e) {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
-            }
-        });
-        e.preventDefault();
-        var uid = $(this).attr('agentId');
-        $.ajax({
-            type: "get",
-            url: "<?php echo url('agent'); ?>" + '/' + uid + '/edit',
-            data: '',
-            dataType: 'json',
-            success: function(data) {
-                $('#edit-agent-modal #editCardBox').html(data.html);
-                $('#edit-agent-modal').modal({
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                makeTag();
-                phoneInput();
-                //$('.dropify').dropify();
-                var imgs = $('#profilePic').attr('showImg');
-                $('#profilePic').attr("data-default-file", imgs);
-                $('#profilePic').dropify();
-                $('').dropify();
-            },
-            error: function(data) {
-                console.log('data2');
-            }
-        });
-    });
-    /* add Team using ajax*/
-    // $("#add-agent-modal #submitAgent").submit(function(e) {
-
-    // });
-    $("#submitAgent").submit(function(e) {
-        e.preventDefault();
-        // $(document).on('click', '.submitAgentForm', function() { 
-        var form = document.getElementById('submitAgent');
-        var formData = new FormData(form);
-        var urls = "{{URL::route('page.driverSignup')}}";
-        saveTeam(urls, formData, inp = '', modal = 'add-agent-modal');
-    });
-    /* edit Team using ajax*/
-    $("#edit-agent-modal #UpdateAgent").submit(function(e) {
-        e.preventDefault();
-    });
-    $(document).on('click', '.submitEditForm', function() {
-        var form = document.getElementById('UpdateAgent');
-        var formData = new FormData(form);
-        var urls = document.getElementById('agent_id').getAttribute('url');
-        saveTeam(urls, formData, inp = 'Edit', modal = 'edit-agent-modal');
-        console.log(urls);
-    });
-    function saveTeam(urls, formData, inp = '', modal = '') {
-        $.ajax({
-            method: 'post',
-            headers: {
-                Accept: "application/json"
-            },
-            url: urls,
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                if (response.status == 'success') {
-                    $("#" + modal + " .close").click();
-                    location.reload();
-                } else {
-                    $(".show_all_error.invalid-feedback").show();
-                    $(".show_all_error.invalid-feedback").text(response.message);
-                }
-                return response;
-            },
-            error: function(response) {
-                if (response.status === 422) {
-                    let errors = response.responseJSON.errors;
-                    Object.keys(errors).forEach(function(key) {
-                        $("#" + key + "Input" + inp + " input").addClass("is-invalid");
-                        $("#" + key + "Input" + inp + " span.invalid-feedback").children("strong").text(errors[key][0]);
-                        $("#" + key + "Input span.invalid-feedback").show();
-                    });
-                } else {
-                    $(".show_all_error.invalid-feedback").show();
-                    $(".show_all_error.invalid-feedback").text('Something went wrong, Please try Again.');
-                }
-                return response;
-            }
-        });
-    }
-    /* Get agent by ajax */
-    $(".submitpayreceive").click(function(e) {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
-            }
-        });
-        e.preventDefault();
-        $.ajax({
-            type: "post",
-            url: "",
-            data: '',
-            dataType: 'json',
-            success: function(data) {
-                $('#edit-agent-modal #editCardBox').html(data.html);
-                $('#edit-agent-modal').modal({
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                makeTag();
-                //$('.dropify').dropify();
-                var imgs = $('#profilePic').attr('showImg');
-                $('#profilePic').attr("data-default-file", imgs);
-                $('#profilePic').dropify();
-                $('').dropify();
-            },
-            error: function(data) {
-                console.log('data2');
-            }
-        });
-    });
-</script>
 @endsection

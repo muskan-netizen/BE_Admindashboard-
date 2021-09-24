@@ -1,7 +1,7 @@
 @extends('layouts.vertical', ['title' => 'Catalog'])
 @section('css')
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
-    <link href="{{asset('assets/libs/nestable2/nestable2.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<link href="{{asset('assets/libs/nestable2/nestable2.min.css')}}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
 <div class="container-fluid">
@@ -37,13 +37,12 @@
                         </p>
                     </div>
                     <div class="col-sm-4 text-right">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right openCategoryModal"
-                         dataid="0" is_vendor="0"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                        <button class="btn btn-info waves-effect waves-light text-sm-right openCategoryModal" dataid="0" is_vendor="0"><i class="mdi mdi-plus-circle mr-1"></i> Add
                         </button>
                     </div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-md-12">                        
+                    <div class="col-md-12">
                         <form name="category_order" id="category_order" action="{{route('category.order')}}" method="post">
                             @csrf
                             <input type="hidden" name="orderDta" id="orderDta" value="" />
@@ -70,8 +69,7 @@
                         </p>
                     </div>
                     <div class="col-sm-4 text-right">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right addVariantbtn"
-                         dataid="0"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                        <button class="btn btn-info waves-effect waves-light text-sm-right addVariantbtn" dataid="0"><i class="mdi mdi-plus-circle mr-1"></i> Add
                         </button>
                     </div>
                     <div class="col-sm-8">
@@ -98,27 +96,27 @@
                                     @foreach($variants as $key => $variant)
                                     <tr class="variantList" data-row-id="{{$variant->id}}">
                                         <td><span class="dragula-handle"></span></td>
-                                        <td><a class="editVariantBtn" dataid="{{$variant->id}}" href="javascript:void(0);" >{{$variant->title}}</a> <br> <b>{{isset($variant->varcategory->cate->primary->name) ? $variant->varcategory->cate->primary->name : ''}}</b></td>
+                                        <td><a class="editVariantBtn" dataid="{{$variant->id}}" href="javascript:void(0);">{{$variant->title}}</a> <br> <b>{{isset($variant->varcategory->cate->primary->name) ? $variant->varcategory->cate->primary->name : ''}}</b></td>
                                         <td>
                                             @foreach($variant->option as $key => $value)
                                             <label style="margin-bottom: 3px;">
                                                 @if($variant->type == 2)
                                                 <span style="padding:8px; float: left; border: 1px dotted #ccc; background:{{$value->hexacode}};"> </span>
                                                 @endif
-                                                &nbsp;&nbsp; {{$value->title}}</label> <br/>
+                                                &nbsp;&nbsp; {{$value->title}}</label> <br />
                                             @endforeach
                                         </td>
                                         <td>
-                                            <a class="action-icon editVariantBtn" dataid="{{$variant->id}}" href="javascript:void(0);" >
+                                            <a class="action-icon editVariantBtn" dataid="{{$variant->id}}" href="javascript:void(0);">
                                                 <i class="mdi mdi-square-edit-outline"></i>
                                             </a>
                                             <a class="action-icon deleteVariant" dataid="{{$variant->id}}" href="javascript:void(0);">
                                                 <i class="mdi mdi-delete"></i>
                                             </a>
-                                            <form action="{{route('variant.destroy', $variant->id)}}" method="POST"  style="display: none;" id="varDeleteForm{{$variant->id}}">
+                                            <form action="{{route('variant.destroy', $variant->id)}}" method="POST" style="display: none;" id="varDeleteForm{{$variant->id}}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="action-icon btn btn-primary-outline" dataid="{{$variant->id}}" onclick="return confirm('Are you sure? You want to delete the variant.')" > <i class="mdi mdi-delete"></i></button>
+                                                <button type="submit" class="action-icon btn btn-primary-outline" dataid="{{$variant->id}}" onclick="return confirm('Are you sure? You want to delete the variant.')"> <i class="mdi mdi-delete"></i></button>
                                             </form>
                                         </td>
                                     </tr>
@@ -141,9 +139,8 @@
                         <p class="sub-header"></p>
                     </div>
                     <div class="col-sm-4 text-right">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right addBrandbtn"
-                         dataid="0">
-                         <i class="mdi mdi-plus-circle mr-1"></i> Add
+                        <button class="btn btn-info waves-effect waves-light text-sm-right addBrandbtn" dataid="0">
+                            <i class="mdi mdi-plus-circle mr-1"></i> Add
                         </button>
                     </div>
                 </div>
@@ -168,9 +165,17 @@
                                     <tr class="brandList" data-row-id="{{$brand->id}}">
                                         <td><span class="dragula-handle"></span></td>
                                         <td><img class="rounded-circle" src="{{$brand->image['proxy_url'].'30/30'.$brand->image['image_path']}}"></td>
-                                        <td><a class="editBrandBtn" dataid="{{$brand->id}}" href="javascript:void(0);" >{{$brand->title}}</a> <br> <b>{{isset($brand->bc->cate->primary) ? $brand->bc->cate->primary->name : ''}}</b></td>
+                                        <td><a class="editBrandBtn" dataid="{{$brand->id}}" href="javascript:void(0);">{{$brand->title}}</a> <br> <b>
+                                                @foreach($categories as $cate)
+                                                @foreach($brand->bc as $cat)
+                                                @if($cat->category_id == $cate->id)
+                                                {{$cate->translation_one['name']}}
+                                                @endif
+                                                @endforeach
+                                                @endforeach
+                                            </b></td>
                                         <td>
-                                            <a class="action-icon editBrandBtn" dataid="{{$brand->id}}" href="javascript:void(0);" > 
+                                            <a class="action-icon editBrandBtn" dataid="{{$brand->id}}" href="javascript:void(0);">
                                                 <i class="mdi mdi-square-edit-outline"></i>
                                             </a>
                                             <a class="action-icon deleteBrand" dataid="{{$brand->id}}" href="javascript:void(0);"> <i class="mdi mdi-delete"></i> </a>
@@ -207,16 +212,19 @@
 <script src="{{ asset('assets/js/jquery.tagsinput-revisited.js') }}"></script>
 <link rel="stylesheet" href="{{ asset('assets/css/jquery.tagsinput-revisited.css') }}" />
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
+
 @include('backend.common.category-script')
 @include('backend.catalog.pagescript')
 <script type="text/javascript">
     var tagList = "";
     tagList = tagList.split(',');
-    function makeTag(tagList = ''){
+
+    function makeTag(tagList = '') {
         $('.myTag1').tagsInput({
             'autocomplete': {
                 source: tagList
-            } 
+            }
         });
     }
     $('.saveList').on('click', function(e) {
@@ -230,7 +238,6 @@
         document.getElementById('orderDta').value = JSON.stringify(data);
         $('#category_order').submit();
     });
-    
 </script>
-    
+
 @endsection
