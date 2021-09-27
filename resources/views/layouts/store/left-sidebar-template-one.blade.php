@@ -24,7 +24,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <div class="container">
                 <div class="row">
                     <div class="col-2">
-                        <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
+                        <!-- <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a> -->
                     </div>
                     <div class="top-header bg-transparent col-10 d-flex align-items-center justify-content-end">
                         <ul class="header-dropdown">
@@ -102,7 +102,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                 </div> -->
                 <div class="col-lg-12">
-                    <div class="d-flex mr-auto align-items-center">  
+                    <div class="d-flex mr-auto align-items-center"> 
+                        <a class="navbar-brand mr-3 d-none d-md-inline-block" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                         @if($mod_count > 1)
                             <ul class="nav nav-tabs navigation-tab nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
                                 @if($client_preference_detail->delivery_check == 1)

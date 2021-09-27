@@ -59,7 +59,11 @@ body{
 
 .top-header.site-topbar {
     background: var(--top-header-color);
-    padding: 10px 0;
+    padding: 5px 0;
+}
+
+.top-header .header-dropdown li{
+    padding: 0 20px 0 0;
 }
 
 .site-topbar .location-bar {
@@ -260,13 +264,17 @@ body{
 }
 
 .h2-heading{
-    color: #fff;
+    color: #000;
     font-family: 'Eina02';
     font-weight: 700;   
     font-size: 28px;
     letter-spacing: 0;
     line-height: 38px;
     margin: 0;
+}
+
+.popular-brands .h2-heading{
+    color: #fff;
 }
 
 .see-all-btn{
@@ -392,7 +400,9 @@ body{
 
 .suppliers-img-outer {
     height: 200px;
-    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .supplier-rating h6{
@@ -505,6 +515,105 @@ footer ul.social-links li a {
 .vendor-cate{
     font-size: 14px;
 }
+
+.login-modal .from-control {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    height: 48px;
+    padding: 0 20px;
+}
+
+.login-modal .btn.btn-solid {
+    height: 48px;
+}
+
+.divider-line {
+    border-bottom: 1px solid #ddd;
+    position: relative;
+    margin: 25px 0;
+}
+
+.divider-line span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -14px;
+    margin: auto;
+    background: #fff;
+    width: 30px;
+    text-align: center;
+    height: 30px;
+    border-radius: 50px;
+    margin-top: 0;
+    display: block;
+}
+
+.login-button {
+    display: block;
+    text-align: center;
+    height: 48px;
+    border: 1px solid #ddd;
+    margin-top: 20px;
+    border-radius: 5px;
+    line-height: 48px;
+    font-size: 18px;
+    width: 100%;
+    background: transparent;
+}
+
+.login-button i {
+    font-size: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    margin-top: -6px;
+    margin-right: 10px;
+}
+
+.new-user{
+    font-size: 14px;
+}
+
+
+.mail-icon .img-fluid {
+    width: 40%;
+    margin: auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -714,6 +823,13 @@ footer ul.social-links li a {
     }
 
 }
+
+@media (max-width: 1199px){
+    section.home-slider-wrapper {
+        padding-top: 0;
+    }
+}
+
 @media (max-width: 991px){
     .site-header {
         padding-bottom: 50px;
@@ -721,7 +837,7 @@ footer ul.social-links li a {
     .radius-bar {
         width: 100%;
         position: absolute;
-        bottom: -100px;
+        bottom: -60px;
         left: 0;
     }
     .top-header .header-dropdown li span:last-child {
@@ -771,6 +887,9 @@ footer ul.social-links li a {
 @media (max-width: 767px){
     .site-header {
         padding-bottom: 0;
+    }   
+    header {
+        padding: 0 0 50px;
     }
     .location-bar {
         width: auto;
@@ -820,8 +939,14 @@ footer ul.social-links li a {
 }
 
 @media (max-width: 576px){
+    .top-header.site-topbar{
+        padding: 10px 0;
+    }
     .top-header {
         height: auto;
+    }
+    header {
+        padding: 0;
     }
     .radius-bar {
         width: 100%;

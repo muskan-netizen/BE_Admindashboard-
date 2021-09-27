@@ -626,7 +626,6 @@ $(document).ready(function () {
     });
 
     $(document).on("click",".scheduled-ride",function() {
-        return false;
         $('.location-list').attr("style", "display: none !important");
         $('.scheduled-ride-list').attr("style", "display: block !important");
         var fromDate = moment();
@@ -789,10 +788,10 @@ $(document).ready(function () {
    // var query = str.replace(query.replace('+', ' ');
   //  var uri_enc = encodeURIComponent(uri);
   //  var uri_dec = decodeURIComponent(uri_enc);
-    console.log(query);
     if(query != ''){
         var vars = query.split('&');
         for(i = 0; i<vars.length; i++){
+            vars[i] = decodeURIComponent(vars[i].replace(/\+/g, ' '));
             var perm = vars[i].split('=');
             if(perm[0] == 'pickup_location'){
                 var pickup_location = window.unescape(perm[1]);
@@ -808,6 +807,10 @@ $(document).ready(function () {
                 $('#destination_location_latitude').val(perm[1]);
             }else if(perm[0] == 'destination_location_longitude'){
                 $('#destination_location_longitude').val(perm[1]);
+            }else if(perm[0] == 'schedule_date'){
+                $('#schedule_date').val(perm[1]);
+            }else if(perm[0] == 'schedule_date_set'){
+                $('.scheduleDateTimeApnd').html(perm[1]);
             }
         }
 
@@ -1075,7 +1078,13 @@ $(document).ready(function () {
             }
         );
     }
+
+
+
+     
 });
+
+
 
 
 function appendScheduleTime(thisObj){
@@ -1093,11 +1102,41 @@ function getScheduleDateTime(thisObj){
     var scheduleAmPm   = $('.scheduleAmPm').find(":selected").val();
     var waitTime       = parseFloat(scheduleMinute) + Number(10);
     var scheduleDateTime = scheduledDate + ", " + scheduleHour + ":" + scheduleMinute + " " + scheduleAmPm + " - " + scheduleHour + ":" + waitTime + " " + scheduleAmPm;
+    var scheduleDateRadio =  $('input[name=scheduledDate]:checked').val();
+    var scheduleHourHtml   = $('.scheduleHour').find(":selected").html();
+    var scheduleMinuteHtml = $('.scheduleMinute').find(":selected").html();
+    var scheduleDateTimeSet = scheduleDateRadio +" "+ scheduleHourHtml + ":" + scheduleMinuteHtml + " " + scheduleAmPm;
+    var currentUrl  = window.location.href;
+    var queryString = removeURLParameterNew(currentUrl, 'schedule_date');
+    var perm = "?" + (queryString != '' ? queryString : '') + "&schedule_date=" + scheduleDateTimeSet  + "&schedule_date_set=" + scheduleDateTime;
+    window.history.replaceState(null, null, perm);
+
+
     $('.scheduleDateTimeApnd').text(scheduleDateTime);
 
     $('.location-list').attr("style", "display: block !important");
     $('.scheduled-ride-list').attr("style", "display: none !important");
 
+}
+
+function removeURLParameterNew(url, parameter) {
+    //prefer to use l.search if you have a location/link object
+    var urlparts = url.split('?');   
+    if (urlparts.length >= 2) {
+
+        var prefix = encodeURIComponent(parameter) + '=';
+        var pars = urlparts[1].split(/[&;]/g);
+
+        //reverse iteration as may be destructive
+        for (var i = pars.length; i-- > 0;) {    
+            //idiom for string.startsWith
+            if (pars[i].lastIndexOf(prefix, 0) !== -1) {  
+                pars.splice(i, 1);
+            }
+        }
+        return (pars.length > 0 ? pars.join('&') : '');
+    }
+    return false;
 }
 
 function checkScheduleDateTime(thisObj){

@@ -248,6 +248,7 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
+         dd( $request->toArray());
         DB::beginTransaction();
         try {
              $user = Auth::user();

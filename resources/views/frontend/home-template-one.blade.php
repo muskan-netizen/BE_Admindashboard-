@@ -16,7 +16,10 @@
     <div class="mobile-fix-option"></div>
     @include('layouts.store/left-sidebar-template-one')
 </header>
-
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal">
+  Launch demo modal
+</button>
 <section class="home-slider-wrapper">
     <div class="container">
         <div class="row">
@@ -161,9 +164,7 @@
         </div> 
 
     <% }); %>
-</script>
-
-
+</script>   
 
 <script type="text/template" id="banner_template">
     <% _.each(brands, function(brand, k){%>
@@ -317,6 +318,67 @@
         </div>
     </div>
 </div>
+
+
+<!-- Modal -->
+<div class="modal fade login-modal" id="login_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-body">
+            <div class="login-form-new">
+                <div class="modal-header px-0 pt-0">
+                    <h5 class="modal-title">Log in</h5>
+                    <button type="button" class="close m-0 p-0" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="">
+                    <div class="form-group">
+                        <input class="from-control" type="text" placeholder="Enter Phone Number">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-solid w-100" type="submit">Send OTP</button>
+                    </div>
+                    <div class="divider-line"><span>or</span></div>
+                        <button class="login-button email-btn">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                            <span>Continue with Email</span>
+                        </button>
+                        <button class="login-button">
+                            <i class="fa fa-google" aria-hidden="true"></i>
+                            <span>Continue with gmail</span>
+                        </button>
+                    <div class="divider-line mb-2"></div>
+                    <p class="new-user mb-0">New to Royo? <a href="">Create account</a></p>
+                </form>
+            </div>                                 
+            <div class="login-with-mail">
+                <div class="modal-header px-0 pt-0">
+                    <button type="button back-login" class="close m-0 p-0" data-dismiss="modal" aria-label="Close">
+                        <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    </button>
+                    <h5 class="modal-title">Log in</h5>
+                    <button type="button" class="close m-0 p-0" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="">
+                    <div class="mail-icon text-center">
+                        <img alt="image" src="https://b.zmtcdn.com/Zwebmolecules/73b3ee9d469601551f2a0952581510831595917292.png" class="img-fluid">
+                    </div>
+                    <div class="form-group">
+                        <input class="from-control" type="text" placeholder="Email">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-solid w-100" type="submit">Send OTP</button>
+                    </div>
+                    
+                </form>
+            </div>                                 
+        </div>
+    </div>
+  </div>
+</div>
 @endsection
 @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
@@ -328,6 +390,15 @@
             console.log("nejhbfe");
             // $(".hide_div").hide();
         });
+    });
+    jQuery('.login-with-mail').hide();
+    jQuery('.email-btn').click(function(){
+        jQuery('.login-with-mail').show();
+        jQuery('.login-form-new').hide();
+    });
+    jQuery('.back-login').click(function(){
+        jQuery('.login-with-mail').hide();
+        jQuery('.login-form-new').show();
     });
     // $(".mobile-back").on("click", function() {
     //     $(".sm-horizontal").css("right", "-410px");

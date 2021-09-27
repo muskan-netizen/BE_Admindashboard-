@@ -48,7 +48,7 @@ class FrontController extends Controller
                         $q1->whereIn('vct.vendor_id', $vendors)
                             ->where('vct.status', 1)
                             ->orWhere(function ($q2) {
-                                $q2->whereIn('categories.type_id', [4, 5]);
+                                $q2->whereIn('categories.type_id', [4,5,8]);
                             });
                     });
             }
@@ -65,6 +65,8 @@ class FrontController extends Controller
         if ($categories) {
             $categories = $this->buildTree($categories->toArray());
         }
+
+        
         return $categories;
     }
 

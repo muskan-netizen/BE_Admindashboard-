@@ -94,6 +94,7 @@ if (strpos($url,'cabservice') !== false) {?>
             <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
             <input type="hidden" name="destination_location_latitude[]" value="" id="destination_location_latitude"/>
             <input type="hidden" name="destination_location_longitude[]" value="" id="destination_location_longitude"/>
+            <input type="hidden" name="schedule_date" value="" id="schedule_date"/>
             <div class="location-container style-4">
                 <div class="location-search d-flex align-items-center check-pickup">
                     <i class="fa fa-search" aria-hidden="true"></i>

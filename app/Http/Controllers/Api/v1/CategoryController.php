@@ -168,7 +168,7 @@ class CategoryController extends BaseController
                 );
             }
             return $category_details;
-        }elseif($type == 'product' || $type == 'Product'){
+        }elseif($type == 'product' || $type == 'Product' || $type == 'on demand service'){
             $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){

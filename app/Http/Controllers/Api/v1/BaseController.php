@@ -50,7 +50,7 @@ class BaseController extends Controller{
                     ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')->distinct('categories.slug');
         
         $status = $this->field_status;
-        $include_categories = [4]; // type 4 for brands
+        $include_categories = [4,8]; // type 4 for brands
         $celebrity_check = 0;
         if ($preferences) {
             if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
