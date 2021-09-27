@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Contracts\Session\Session as SessionSession;
-use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, ClientCurrency, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language,OnboardSetting,CabBookingLayout,WebStylingOption};
+use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language,OnboardSetting,CabBookingLayout,WebStylingOption};
 use Illuminate\Contracts\View\View;
 use Illuminate\View\View as ViewView;
 use Redirect;
@@ -284,7 +284,7 @@ class UserhomeController extends FrontController
         }
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
-        $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where($request->type, 1);
+        $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where($request->type, 1);
         if ($preferences) {
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = $preferences->Default_location_name;
@@ -309,7 +309,7 @@ class UserhomeController extends FrontController
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
             $value->vendorRating = $this->vendorRating($value->products);
-            $value->name = Str::limit($value->name, 15, '..');
+            // $value->name = Str::limit($value->name, 15, '..');
             if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                 $lat1   = $latitude;
                 $long1  = $longitude;
@@ -321,7 +321,19 @@ class UserhomeController extends FrontController
                 $value->lineOfSightDistance = number_format($distance, 1, '.', '');
                 $value->timeofLineOfSightDistance = number_format(floatval($value->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', ''); // distance is multiplied by multiplier to calculate travel time
             }
+            $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
+            $categoriesList = '';
+            foreach($vendorCategories as $key => $category){
+                if($category->category){
+                    $categoriesList = $categoriesList . $category->category->translation_one->name;
+                    if( $key !=  $vendorCategories->count()-1 ){
+                        $categoriesList = $categoriesList . ', ';
+                    }
+                }
+            }
+            $value->categoriesList = $categoriesList;
         }
+        // dd($vendors->toArray());
         if (($latitude) && ($longitude)) {
             Session::put('vendors', $vendor_ids);
         }
@@ -343,6 +355,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $new_product_detail->inquiry_only,
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'price' => Session::get('currencySymbol') . ' ' . (number_format($new_product_detail->variant->first()->price * $multiply, 2)),
+                'category' => $new_product_detail->category->categoryDetail->translation->first()->name
             );
         }
         foreach ($feature_product_details as  $feature_product_detail) {
@@ -358,6 +371,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $feature_product_detail->inquiry_only,
                 'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
                 'price' => Session::get('currencySymbol') . ' ' . (number_format($feature_product_detail->variant->first()->price * $multiply, 2)),
+                'category' => $new_product_detail->category->categoryDetail->translation->first()->name
             );
         }
         foreach ($on_sale_product_details as  $on_sale_product_detail) {
@@ -373,6 +387,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $on_sale_product_detail->inquiry_only,
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'price' => Session::get('currencySymbol') . ' ' . (number_format($on_sale_product_detail->variant->first()->price * $multiply, 2)),
+                'category' => $new_product_detail->category->categoryDetail->translation->first()->name
             );
         }
         $home_page_labels = HomePageLabel::with('translations')->get();
@@ -390,7 +405,9 @@ class UserhomeController extends FrontController
 
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type)
     {
-        $products = Product::with([
+        $products = Product::with(['category.categoryDetail.translation' => function($q) use ($langId){
+                $q->where('category_translations.language_id', $langId);
+            },
             'vendor' => function ($q) use ($type) {
                 $q->where($type, 1);
             },

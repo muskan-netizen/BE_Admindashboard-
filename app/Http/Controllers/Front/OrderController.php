@@ -35,7 +35,10 @@ class OrderController extends FrontController
         $navCategories = $this->categoryNav($langId);
         $pastOrders = Order::with(['vendors' => function ($q) {
             $q->where('order_status_option_id', 6);
-        }, 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address'])
+        },
+        'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+            $qry->where('language_id', $langId);
+        }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address'])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', 6);
             })
@@ -43,7 +46,10 @@ class OrderController extends FrontController
             ->orderBy('orders.id', 'DESC')->paginate(10);
         $activeOrders = Order::with(['vendors' => function ($q) {
             $q->where('order_status_option_id', '!=', 6);
-        }, 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address'])
+        },
+        'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+            $qry->where('language_id', $langId);
+        }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address'])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
             })
@@ -51,6 +57,7 @@ class OrderController extends FrontController
             ->orderBy('orders.id', 'DESC')->paginate(10);
         foreach ($activeOrders as $order) {
             foreach ($order->vendors as $vendor) {
+                // dd($vendor->toArray());
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
                 foreach ($vendor->products as $product) {
@@ -68,6 +75,11 @@ class OrderController extends FrontController
                     $ETA = $order_pre_time + $user_to_vendor_time;
                     $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : convertDateTimeInTimeZone($vendor->created_at, $user->timezone, 'h:i A');
                 }
+                if($vendor->dineInTable){
+                    $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                    $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                    $vendor->dineInTableCategory = $vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
+                }
             }
         }
         foreach ($pastOrders as $order) {
@@ -83,12 +95,19 @@ class OrderController extends FrontController
                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                     }
                 }
+                if($vendor->dineInTable){
+                    $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                    $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                    $vendor->dineInTableCategory = $vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
+                }
             }
         }
         $returnOrders = Order::with([
             'vendors.products.productReturn', 'products.productRating', 'user', 'address', 'products' => function ($q) {
                 $q->whereHas('productReturn');
-            }, 'vendors.products' => function ($q) {
+            },'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                $qry->where('language_id', $langId);
+            }, 'vendors.dineInTable.category', 'vendors.products' => function ($q) {
                 $q->whereHas('productReturn');
             }, 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image',
             'vendors' => function ($q) {
@@ -106,6 +125,11 @@ class OrderController extends FrontController
                     } else {
                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                     }
+                }
+                if($vendor->dineInTable){
+                    $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                    $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                    $vendor->dineInTableCategory = $vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
                 }
             }
         }

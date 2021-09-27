@@ -7,7 +7,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
     <section class="section-b-space light-layout py-4">
         <div class="container">
             <div class="row footer-theme partition-f">
-                <div class="col-lg-2 col-md-6 d-flex align-items-center justify-content-center justify-content-md-start">
+                <div class="col-lg-3 col-md-6 d-flex align-items-center justify-content-center justify-content-md-start">
                     <div class="footer-logo mb-0">
                         <a href="{{ route('userHome') }}">
                             <img class="img-fluid blur-up lazyload" src="{{$urlImg}}">
@@ -15,7 +15,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     </div>
                 </div>
                 @if(count($pages))
-                    <div class="col-lg-3 col-md-6 pl-lg-5">
+                    <div class="col-lg-3 col-md-6 pl-lg-4">
                         <div class="sub-title">
                             <div class="footer-title mt-0">
                                 <h4 class="mt-0">{{ __('Links') }}</h4>
@@ -56,7 +56,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     </div>
                 @endif
                 @if($client_preference_detail->show_contact_us == 1)
-                    <div class="col-lg-3 col-md-6 mb-md-0 mb-3">
+                    <div class="col-lg-3 col-md-6 mb-md-0 mb-3 pl-xl-3">
                         <div class="sub-title">
                             <div class="footer-title mt-0">
                                 <h4 class="mt-0">{{ __('Contact Us') }}</h4>
@@ -130,6 +130,44 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         </div>
     </div>
 </footer>
+
+<div class="sticky-bottom-cart d-sm-block d-none">
+    <div class="container">
+        <div class="cart-content">
+            <div class="product-image">
+                <img src="../assets/images/pro3/1.jpg" class="img-fluid" alt="">
+                <div class="content d-lg-block d-none">
+                    <h5>WOMEN PINK SHIRT</h5>
+                    <h6>$32.96<del>$459.00</del><span>55% off</span></h6>
+                </div>
+            </div>
+            <div class="selection-section">
+                <div class="form-group mb-0">
+                    <select id="inputState" class="form-control">
+                        <option selected="">Choose color...</option>
+                        <option>pink</option>
+                        <option>blue</option>
+                        <option>grey</option>
+                    </select>
+                </div>
+                <div class="form-group mb-0">
+                    <select id="inputState" class="form-control">
+                        <option selected="">Choose size...</option>
+                        <option>small</option>
+                        <option>medium</option>
+                        <option>large</option>
+                        <option>extra large</option>
+                    </select>
+                </div>
+            </div>
+            <div class="add-btn">
+                <a data-bs-toggle="modal" data-bs-target="#addtocart" href="" class="btn btn-solid btn-sm">add to
+                    cart</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade single-vendor-order-modal" id="single_vendor_order_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="s_vendor_remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
   <div class="modal-dialog modal-dialog-centered">

@@ -273,6 +273,178 @@ class CustomerAuthController extends FrontController
         } catch (Exception $e) {
         }
     }
+
+    /**
+     * Login user via Phone number
+     *
+     */
+    public function loginViaPhone(Request $request, $domain = ''){
+        try{
+            $errors = array();
+            $validator = Validator::make($request->all(), [
+                'country_code'  => 'required|string',
+                'phone_number'  => 'required|string|min:8|max:15'
+            ]);
+            if($validator->fails()){
+                foreach($validator->errors()->toArray() as $error_key => $error_value){
+                    $errors['error'] = __($error_value[0]);
+                    return response()->json($errors, 422);
+                }
+            }
+            $phone_number = str_ireplace(' ', '', $request->phone_number);
+            $user = User::where('dial_code', $request->country_code)->where('phone_number', $phone_number)->first();
+            if(!$user){
+                $errors['error'] = __('Your phone number is not registered');
+                return response()->json($errors, 422);
+            }
+
+            $phoneCode = mt_rand(100000, 999999);
+            $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
+            $user->phone_token = $phoneCode;
+            $user->phone_token_valid_till = $sendTime;
+            $user->save();
+
+            $response['status'] = 'Success';
+            $response['dial_code'] = $request->country_code;
+            $response['phone_number'] = $phone_number;
+            $verified['is_email_verified'] = $request->is_email_verified;
+            $verified['is_phone_verified'] = $request->is_phone_verified;
+            $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 
+                        'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
+            $response['verify_details'] = $verified;
+            $response['cca2'] = $request->country_code;
+
+            $response['send_otp'] = 1;
+            if($request->country_code == "971"){
+                $to = '+'.$request->country_code."0".$phone_number;
+            } else {
+                $to = '+'.$request->country_code.$phone_number;
+            }
+            $provider = $prefer->sms_provider;
+            $body = "Please enter OTP ".$phoneCode." to verify your account.";
+            if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
+                $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                if($send){
+                    $message = __('An otp has been sent to your phone. Please check.');
+                    return $this->successResponse([], $message);
+                }else{
+                    return $this->errorResponse(__('Something went wrong in sending OTP. We are sorry to for the inconvenience'), 404);
+                }
+            }else{
+                return $this->errorResponse(__('Provider service is not configured. Please contact administration.'), 404);
+            }
+        }
+        catch(\Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode()); 
+        }
+    }
+
+    /**
+     * Verify Login user via Phone number and create token
+     *
+     */
+    public function verifyLoginViaPhone(Request $loginReq, $domain = ''){
+        try {
+            $phone_number = str_ireplace(' ', '', $loginReq->phone_number);
+            $user = User::where('dial_code', $loginReq->country_code)->where('phone_number', $loginReq->phone_number)->first();
+            if(!$user){
+                $errors['error'] = __('Your phone number is not registered');
+                return response()->json($errors, 422);
+            }
+            $currentTime = Carbon::now()->toDateTimeString();
+            $message = 'Account verified successfully.';
+            
+            if($user->phone_token != $loginReq->otp){
+                return $this->errorResponse(__('OTP is not valid'), 404);
+            }
+            if($currentTime > $user->phone_token_valid_till){
+                return $this->errorResponse(__('OTP has been expired.'), 404);
+            }
+
+            $token1 = new Token;
+            $token = $token1->make([
+                'key' => 'royoorders-jwt',
+                'issuer' => 'royoorders.com',
+                'expiry' => strtotime('+1 month'),
+                'issuedAt' => time(),
+                'algorithm' => 'HS256',
+            ])->get();
+            $token1->setClaim('user_id', $user->id);
+            try {
+                Token::validate($token, 'secret');
+            } catch (\Exception $e) {
+
+            }
+            $user_refferal = UserRefferal::where('user_id', $user->id)->first();
+
+            if (!empty($loginReq->fcm_token)) {
+                $device = UserDevice::updateOrCreate(
+                    ['device_token' => $loginReq->fcm_token],
+                    [
+                        'user_id' => $user->id,
+                        'device_type' => $loginReq->device_type,
+                        'access_token' => $token
+                    ]
+                );
+            } else {
+                $device = UserDevice::updateOrCreate(['device_token' => $loginReq->device_token],
+                    ['user_id' => $user->id,
+                    'device_type' => $loginReq->device_type,
+                    'access_token' => $token]);
+            }
+            $user->phone_token = NULL;
+            $user->phone_number = $loginReq->phone_number;
+            $user->is_phone_verified = 1;
+            $user->phone_token_valid_till = NULL;
+            $user->auth_token = $token;
+            $user->save();
+
+            $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 
+                        'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
+            $verified['is_email_verified'] = $user->is_email_verified;
+            $verified['is_phone_verified'] = $user->is_phone_verified;
+
+            $user_cart = Cart::where('user_id', $user->id)->first();
+            if($user_cart){
+                $unique_identifier_cart = Cart::where('unique_identifier', $loginReq->device_token)->first();
+                if($unique_identifier_cart){
+                    $unique_identifier_cart_products = CartProduct::where('cart_id', $unique_identifier_cart->id)->get();
+                    foreach ($unique_identifier_cart_products as $unique_identifier_cart_product) {
+                        $user_cart_product_detail = CartProduct::where('cart_id', $user_cart->id)->where('product_id', $unique_identifier_cart_product->product_id)->first();
+                        if($user_cart_product_detail){
+                            $user_cart_product_detail->quantity = ($unique_identifier_cart_product->quantity + $user_cart_product_detail->quantity);
+                            $user_cart_product_detail->save();
+                            $unique_identifier_cart_product->delete();
+                        }else{
+                        $unique_identifier_cart_product->cart_id = $user_cart->id;
+                        $unique_identifier_cart_product->save();
+                        }
+                    }
+                    $unique_identifier_cart->delete();
+                }
+            }else{
+                Cart::where('unique_identifier', $loginReq->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
+            }
+            $checkSystemUser = $this->checkCookies($user->id);
+            $data['name'] = $user->name;
+            $data['email'] = $user->email;
+            $data['auth_token'] =  $token;
+            $data['source'] = $user->image;
+            $data['verify_details'] = $verified;
+            $data['is_admin'] = $user->is_admin;
+            $data['client_preference'] = $prefer;
+            $data['dial_code'] = $user->dial_code;
+            $data['phone_number'] = $user->phone_number;
+            $data['cca2'] = $user->country ? $user->country->code : '';
+            $data['callingCode'] = $user->country ? $user->country->phonecode : '';
+            $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code: '';
+            return $this->successResponse($data , $message);
+        } 
+        catch (Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), $ex->getCode()); 
+        }
+    }
+
     public function postVendorregister(Request $request, $domain = ''){
         try {
             DB::beginTransaction();

@@ -2542,10 +2542,6 @@ footer .form-control {
     color: #fff;
 }
 
-.pixelstrap>li {
-    text-align: center;
-}
-
 #location_search_wrapper {
     box-shadow: 0px 0px 2px #ddd;
 }
@@ -5890,12 +5886,16 @@ section.royo-business .title-36 {
 }
 
 .product-timing small {
-    font-size: 14px;
-    margin-top: 10px;
+    font-size: 13px;
     color: #000;
+    margin: 0 0 3px;
 }
 
-.product-timing small:before {
+.product-timing small:last-child {
+    margin: 0;
+}
+
+/* .product-timing small:before {
     content: "";
     width: 5px;
     height: 5px;
@@ -5905,7 +5905,7 @@ section.royo-business .title-36 {
     border-radius: 50%;
     top: -1px;
     position: relative;
-}
+} */
 
 .product-timing small:first-child::before {
     content: none;
@@ -6322,6 +6322,9 @@ body[dir="rtl"] .inner_spacing h3 {
 }
 
 @media(min-width: 992px) {
+    .pixelstrap>li{
+        text-align: center;
+    }
     .booking-experience {
         height: calc(100vh - 150px);
         position: absolute;

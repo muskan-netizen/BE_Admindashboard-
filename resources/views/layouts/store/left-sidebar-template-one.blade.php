@@ -97,7 +97,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
 
         <div class="container main-menu d-block">
-            <div class="row align-items-center py-md-4 py-3 position-initial">
+            <div class="row align-items-center pb-3 pt-2 position-initial">
                 <!-- <div class="col-lg-2 col-3">
                     <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                 </div> -->

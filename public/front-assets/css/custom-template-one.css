@@ -171,8 +171,8 @@ body{
 } */
 
 .home-banner-slider .slick-prev, .home-banner-slider .slick-next {
-    height: 61px;
-    width: 61px;
+    height: 40px;
+    width: 40px;
     background: rgb(0 0 0 / 18%);
     border-radius: 50%;
 }
@@ -194,14 +194,35 @@ body{
     border-radius: 10px;
 }
 
+.scale-effect {
+    transform: none;
+    -webkit-transform: none;
+    -moz-transform: none;
+    transition-duration: none;
+}
+
+.product-4 .slick-slide{
+    padding: 30px 0;
+}
+
 .common-product-box {
     padding: 0 10px;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    transition: all 0.5s;
+    display: block;
+}
+
+.common-product-box:hover{
+    border-color: rgb(232, 232, 232);
+    box-shadow: rgb(28 28 28 / 12%) 0px 0.4rem 1.8rem;
+    box-sizing: border-box;
 }
 
 .rating-box {
-    position: absolute;
+    /* position: absolute;
     top: 30px;
-    left: 0;
+    left: 0; */
     border-radius: 2.13px;
     background-color: #F7B500;
     font-size: 11px;
@@ -223,14 +244,14 @@ body{
     color: #000000;
     font-family: 'Eina02';
     font-weight: 400;
-    font-size: 15px;
+    font-size: 13px;
     letter-spacing: 0;
-    margin: 8px 0;
+    margin: 5px 0;
     line-height: 20px;  
 }
 
 .product-description b{
-    color: #4C9F29;
+    color: #000;
     font-family: 'Eina02';
     font-weight: 700;
     font-size: 16px;
@@ -239,7 +260,7 @@ body{
 }
 
 .h2-heading{
-    color: #000000;
+    color: #fff;
     font-family: 'Eina02';
     font-weight: 700;   
     font-size: 28px;
@@ -317,7 +338,7 @@ body{
     content: "";
     width: 50%;
     height: 100%;
-    background: #f7f7f7;
+    background: var(--top-header-color);
     display: block;
     position: absolute;
     top: 0;
@@ -369,11 +390,9 @@ body{
     line-height: 33px;
 }
 
-.suppliers-img-outer.text-center {
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.suppliers-img-outer {
+    height: 200px;
+    background-color: #000;
 }
 
 .supplier-rating h6{
@@ -382,19 +401,28 @@ body{
     font-size: 17px;
     letter-spacing: 0;
     line-height: 23px;
-    text-align: center;
 }
 
-.supplier-rating .fa.fa-star{
-    color: #ffaa00;
+.supplier-rating p{
+    font-size: 14px;
+}
+
+.supplier-rating i{
+    color: #fff;
 }
 
 .suppliers-box .rating-box {
     position: initial;
 }
-
-.suppliers-box .fa.fa-star {
-    color: #fff;
+.custom-rating li {
+    background: #ffaa00;
+    color: #fff !important;
+    padding: 0 4px;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    line-height: 16px;
+    border-radius: 2px;
 }
 
 .menu-navigation {
@@ -402,14 +430,14 @@ body{
 }
 
 .nav-cate-img {
-    height: 98px;
-    width: 98px;
+    height: 70px;
+    width: 70px;
     background-color: #F7F7F7;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    margin: 0 auto 20px;
+    margin: 0 auto 10px;
 }
 
 .nav-cate-img img {
@@ -470,8 +498,13 @@ footer ul.social-links li a {
     font-size: 16px;
 }
 
+.sticky-bottom-cart .product-image {
+    height: auto;
+}
 
-
+.vendor-cate{
+    font-size: 14px;
+}
 
 
 
@@ -633,10 +666,10 @@ footer ul.social-links li a {
 
 @media (min-width: 1367px){
     .home-banner-slider .slick-prev,.home-banner-slider .slick-prev:focus, .slick-prev:hover{
-        left: -80px;
+        left: -60px;
     }    
     .home-banner-slider .slick-next,.home-banner-slider .slick-next:focus, .home-banner-slider .slick-next:hover{
-        right: -80px;
+        right: -60px;
     }
 }
 @media (min-width: 991px){
@@ -682,6 +715,15 @@ footer ul.social-links li a {
 
 }
 @media (max-width: 991px){
+    .site-header {
+        padding-bottom: 50px;
+    }
+    .radius-bar {
+        width: 100%;
+        position: absolute;
+        bottom: -100px;
+        left: 0;
+    }
     .top-header .header-dropdown li span:last-child {
         display: none;
     }        
@@ -727,6 +769,9 @@ footer ul.social-links li a {
     }
 }
 @media (max-width: 767px){
+    .site-header {
+        padding-bottom: 0;
+    }
     .location-bar {
         width: auto;
     }
@@ -777,5 +822,16 @@ footer ul.social-links li a {
 @media (max-width: 576px){
     .top-header {
         height: auto;
+    }
+    .radius-bar {
+        width: 100%;
+        position: fixed;
+        z-index: 11111;
+        bottom: 59px;
+        left: 0;
+        right: 0;
+        margin: auto;
+        display: none;
+        border-radius: 0;
     }
 }

@@ -51,7 +51,7 @@ class BrandController extends FrontController
                     ->where('id', $brandId)->firstOrFail();
         $brand->translation_title = ($brand->translation->first()) ? $brand->translation->first()->title : '';
 
-        $products = Product::with(['media.image', 'translation' => function($q) use($langId){
+        $products = Product::with(['vendor', 'media.image', 'translation' => function($q) use($langId){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     },
                     'variant' => function($q) use($langId){

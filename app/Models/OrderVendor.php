@@ -47,4 +47,8 @@ class OrderVendor extends Model{
 	public function allStatus(){
 	    return $this->hasMany('App\Models\VendorOrderStatus','order_vendor_id','id'); 
 	}
+
+	public function dineInTable(){
+	    return $this->belongsTo('App\Models\VendorDineinTable' , 'vendor_dinein_table_id', 'id'); 
+	}
 }
