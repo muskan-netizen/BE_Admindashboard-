@@ -205,11 +205,11 @@ body{
     transition-duration: none;
 }
 
-.product-4 .slick-slide{
+.product-4 .slick-slide,.suppliers-slider .slick-slide{
     padding: 30px 0;
 }
 
-.common-product-box {
+.common-product-box,.suppliers-box {
     padding: 0 10px;
     -webkit-transition: all 0.5s;
     -moz-transition: all 0.5s;
@@ -217,10 +217,17 @@ body{
     display: block;
 }
 
-.common-product-box:hover{
+.common-product-box:hover,.suppliers-box:hover{
     border-color: rgb(232, 232, 232);
     box-shadow: rgb(28 28 28 / 12%) 0px 0.4rem 1.8rem;
     box-sizing: border-box;
+}
+
+.suppliers-box {
+    width: calc(100% - 20px);
+    margin: auto;
+    padding-top: 10px;
+    padding-bottom: 20px;
 }
 
 .rating-box {

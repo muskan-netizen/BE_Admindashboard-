@@ -131,7 +131,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
     </div>
 </footer>
 
-<div class="sticky-bottom-cart d-sm-block d-none">
+<!-- <div class="sticky-bottom-cart d-sm-block d-none">
     <div class="container">
         <div class="cart-content">
             <div class="product-image">
@@ -166,7 +166,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 
 <div class="modal fade single-vendor-order-modal" id="single_vendor_order_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="s_vendor_remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">

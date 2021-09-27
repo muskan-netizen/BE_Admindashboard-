@@ -262,7 +262,7 @@
             <div class="row">
                 <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-3">
                     <h2 class="h2-heading">{{ $homePageLabel->slug == 'vendors' ? getNomenclatureName('vendors', true) :  __($homePageLabel->title) }}</h2>
-                    <a class="see-all-btn" href="{{route('vendor.all')}}">See all</a>
+                    <a class="btn btn-solid" href="{{route('vendor.all')}}">See all</a>
                 </div>
                 <div class="col-12 px-0">
                     <div class="suppliers-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
@@ -279,7 +279,7 @@
                 <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-0">
                     <h2 class="h2-heading">{{ $homePageLabel->slug == 'vendors' ? getNomenclatureName('vendors', true) :  __($homePageLabel->title) }}</h2>
                     @if($homePageLabel->slug == 'vendors')
-                    <a class="see-all-btn" href="{{route('vendor.all')}}">{{__('View More')}}</a>
+                    <a class="btn btn-solid" href="{{route('vendor.all')}}">{{__('View More')}}</a>
                     @endif
                 </div>
             </div>
