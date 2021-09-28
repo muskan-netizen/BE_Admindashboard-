@@ -25,7 +25,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-2">
                     <a class="suppliers-box d-block px-2" href="{{route('vendorDetail', $vendor->slug)}}">
                         <div class="suppliers-img-outer">
-                            <img class="fluid-img mx-auto" src="{{$vendor->logo['image_fit']}}150/150{{$vendor->logo['image_path']}}" alt="">
+                            <img class="fluid-img mx-auto" src="{{$vendor->logo['image_fit']}}200/200{{$vendor->logo['image_path']}}" alt="">
                         </div>
                         <div class="supplier-rating">
                             <h6 class="mb-1">{{$vendor->name}}</h6>
