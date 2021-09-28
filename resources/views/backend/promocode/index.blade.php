@@ -11,11 +11,11 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-                <h4 class="page-title">Promocode</h4>
+                <h4 class="page-title">{{ __('Promocode') }}</h4>
             </div>
         </div>
         <div class="col-sm-6 text-sm-right">
-            <button class="btn btn-info waves-effect waves-light text-sm-right openPromoModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> Add </button>
+            <button class="btn btn-info waves-effect waves-light text-sm-right openPromoModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }} </button>
         </div>
     </div>
     <div class="row">
@@ -49,20 +49,20 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Image</th>
-                                    <th>Promo Code</th>
-                                    <th style="width:150px">Title</th>
-                                    <th style="width:150px">Description</th>
-                                    <th>Promo Types</th>
-                                    <th>Total Amount</th>
-                                    <th>Expiry Date</th>
+                                    <th>{{ __('Image') }}</th>
+                                    <th>{{ __('Promo Code') }}</th>
+                                    <th style="width:150px">{{ __('Title') }}</th>
+                                    <th style="width:150px">{{ __('Description') }}</th>
+                                    <th>{{ __('Promo Types') }}</th>
+                                    <th>{{ __('Total Amount') }}</th>
+                                    <th>{{ __('Expiry Date') }}</th>
                                     <!-- <th>Min Amount To Spend</th>
                                     <th>Max Amount To Spend</th>
                                     <th>Limit Per User</th>
                                     <th>Total Limit</th>
                                     <th>Restriction On</th>
                                     <th>Restriction Type</th> -->
-                                    <th>Action</th>
+                                    <th>{{ __('Action') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="post_list">

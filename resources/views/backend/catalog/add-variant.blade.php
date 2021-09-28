@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', 'Select Category',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Select Category'),['class' => 'control-label']) !!}
                     <select class="selectize-select form-control" id="cateSelectBox" name="cate_id">
                         @foreach($categories as $cate)
                             <option value="{{$cate->id}}">{{ ucfirst($cate->slug) }}</option>
@@ -16,10 +16,10 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', 'Type',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Type'),['class' => 'control-label']) !!}
                     <select class="form-control selectize-select dropDownType" name="type" dataFor="add">
-                        <option value="1">DropDown</option>
-                        <option value="2">Color</option>
+                        <option value="1">{{ __("DropDown") }}</option>
+                        <option value="2">{{ __("Color") }}</option>
                     </select>
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
@@ -29,7 +29,7 @@
         </div>                            
         <div class="row rowYK">
             <div class="col-md-12">
-                <h5>Variant Title</h5>
+                <h5>{{ __("Variant Title") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
                 <table class="table table-borderless mb-0" id="banner-datatable" >
@@ -58,12 +58,12 @@
         </div>
         <div class="row rowYK">
             <div class="col-md-12">
-                <h5>Variant Options</h5>
+                <h5>{{ __("Variant Options") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
                 <table class="table table-borderless mb-0 optionTableAdd" id="banner-datatable">
                     <tr class="trForClone">
-                        <th class="hexacodeClass-add" style="display:none;">Color Code</th>
+                        <th class="hexacodeClass-add" style="display:none;">{{ __("Color Code") }}</th>
                         @foreach($languages as $langs)
                             <th>{{$langs->language->name}}</th>
                         @endforeach
@@ -83,7 +83,7 @@
                 </table>
             </div>
             <div class="col-md-12">
-                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-Add">Add Option</button>
+                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-Add">{{ __("Add Option") }}</button>
             </div>
         </div>
     </div>

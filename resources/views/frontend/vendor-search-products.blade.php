@@ -142,7 +142,7 @@
 </div>
 @else
 <div class="col-12 col-lg-9 d-md-inline-block">
-    <h4 class="mt-3 mb-3 text-center">No result found</h4>
+    <h4 class="mt-3 mb-3 text-center">{{ __("No result found") }}</h4>
 </div>
 @endif
 <div class="col-12 col-lg-3 d-lg-inline-block d-none">

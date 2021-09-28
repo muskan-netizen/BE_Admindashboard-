@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="page-title-box">
-            <h4 class="page-title">Web Styling</h4>
+            <h4 class="page-title">{{ __("Web Styling") }}</h4>
         </div>
     </div>
 </div>
@@ -34,24 +34,24 @@
             <div class="card card-box">
                 <div class="row">
                     <div class="col-5">
-                        <h4 class="header-title">Favicon</h4>
+                        <h4 class="header-title">{{ __("Favicon") }}</h4>
                         <div class="mb-0">
-                            <label>Upload Favicon</label>
+                            <label>{{ __("Upload Favicon") }}</label>
                             <input type="file" accept="image/*" data-default-file="{{$client_preferences->favicon ? $client_preferences->favicon['proxy_url'].'600/400'.$client_preferences->favicon['image_path'] : ''}}" data-plugins="dropify" name="favicon" class="dropify" id="image" />
-                            <label class="logo-size d-block text-right mt-1">Icon Size 32x32</label>
+                            <label class="logo-size d-block text-right mt-1">{{ __("Icon Size") }} 32x32</label>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
                         </div>
                     </div>
                     <div class="col-7">
-                        <h4 class="header-title">Color</h4>
+                        <h4 class="header-title">{{ __("Color") }}</h4>
                         <div class="form-group">
-                            <label for="primary_color">Primary Color</label>
+                            <label for="primary_color">{{ __("Primary Color") }}</label>
                             <input type="text" id="primary_color_option" name="primary_color" class="form-control" value="{{ old('primary_color', $client_preferences->web_color ?? 'cccccc')}}">
                         </div>
                         <div class="form-group mb-0">
-                            <label>Top Header Color</label>
+                            <label>{{ __("Top Header Color") }}</label>
                             <input type="text" id="site_top_header_color" name="site_top_header_color" class="form-control" value="{{ old('site_top_header_color', $client_preferences->site_top_header_color ?? '#4c4c4c')}}">
                         </div>
                     </div>
@@ -61,20 +61,20 @@
             <div class="card card-box">
                 <ul class="pl-0 mb-0">
                     <li class="d-flex flex-column justify-content-start mt-2">
-                        <h4 class="header-title mb-2">Show Dark Mode</h4>
+                        <h4 class="header-title mb-2">{{ __("Show Dark Mode") }}</h4>
                         <div class="form-group">
                             <ul class="list-inline">
                                 <li class="d-inline-block ml-3 mr-2">
                                     <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('0')" id="option1" name="show_dark_mode" {{$client_preferences->show_dark_mode == 0 ? 'checked' : ''}}>
-                                    <label class="custom-control-label" for="option1">Day</label>
+                                    <label class="custom-control-label" for="option1">{{ __("Day") }}</label>
                                 </li>
                                 <li class="d-inline-block ml-3 mr-2 mb-2 mb-lg-0">
                                     <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('1')" id="option2" name="show_dark_mode" {{$client_preferences->show_dark_mode == 1 ? 'checked' : ''}}>
-                                    <label class="custom-control-label" for="option2">Night</label>
+                                    <label class="custom-control-label" for="option2">{{ __("Night") }}</label>
                                 </li>
                                 <li class="d-inline-block ml-3">
                                     <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('2')" id="option3" name="show_dark_mode" {{$client_preferences->show_dark_mode == 2 ? 'checked' : ''}}>
-                                    <label class="custom-control-label" for="option3">Day with Toggle</label>
+                                    <label class="custom-control-label" for="option3">{{ __("Day with Toggle") }}</label>
                                 </li>
                             </ul>
                         </div>
@@ -89,12 +89,12 @@
         <div class="col-md-6 col-xl-3">
             <div class="card card-box">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h4 class="header-title mb-0">Age Restriction Popup</h4>
+                    <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
                     <div class="mb-0">
                         <input type="checkbox" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box1" data-color="#43bee1" {{$client_preferences->age_restriction == 1 ? 'checked' : ''}}>
                     </div>
                 </div>
-                <label for="">Title</label>
+                <label for="">{{ __('Title') }}</label>
                 <input type="text" class="form-control" id="age_restriction_title" name="age_restriction_title" value="{{ old('age_restriction_title', $client_preferences->age_restriction_title ?? '')}}">
             </div>
         </div>
@@ -103,37 +103,37 @@
             <div class="card card-box">
                 <ul class="pl-0 mb-0">
                     <li class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title mb-2">Show Wishlist Icon</h4>
+                        <h4 class="header-title mb-2">{{ __("Show Wishlist Icon") }}</h4>
                         <div class="mb-0">
                             <input type="checkbox" id="show_wishlist" data-plugin="switchery" name="show_wishlist" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_wishlist == 1 ? 'checked' : ''}}>
                         </div>
                     </li>
                     <li class="d-flex align-items-center justify-content-between mt-2">
-                        <h4 class="header-title mb-2">Show Ratings</h4>
+                        <h4 class="header-title mb-2">{{ __("Show Ratings") }}</h4>
                         <div class="mb-0">
                             <input type="checkbox" id="rating_enable" data-plugin="switchery" name="rating_enable" class="chk_box2" data-color="#43bee1" {{$client_preferences->rating_check == 1 ? 'checked' : ''}}>
                         </div>
                     </li>
                     <li class="d-flex align-items-center justify-content-between mt-2">
-                        <h4 class="header-title mb-2">Show Cart Icon</h4>
+                        <h4 class="header-title mb-2">{{ __("Show Cart Icon") }}</h4>
                         <div class="mb-0">
                             <input type="checkbox" id="cart_enable" data-plugin="switchery" name="cart_enable" class="chk_box1" data-color="#43bee1" {{$client_preferences->cart_enable == 1 ? 'checked' : ''}}>
                         </div>
                     </li>
                     <li class="d-flex align-items-center justify-content-between mt-2">
-                        <h4 class="header-title mb-2">Show Contact Us</h4>
+                        <h4 class="header-title mb-2">{{ __("Show Contact Us") }}</h4>
                         <div class="mb-0">
                             <input type="checkbox" id="show_contact_us" data-plugin="switchery" name="show_contact_us" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_contact_us == 1 ? 'checked' : ''}}>
                         </div>
                     </li>
                     <li class="d-flex align-items-center justify-content-between mt-2">
-                        <h4 class="header-title mb-2">Show Icons in navigation</h4>
+                        <h4 class="header-title mb-2">{{ __("Show Icons in navigation") }}</h4>
                         <div class="mb-0">
                             <input type="checkbox" id="show_icons" data-plugin="switchery" name="show_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_icons == 1 ? 'checked' : ''}}>
                         </div>
                     </li>
                     <li class="d-flex align-items-center justify-content-between mt-2">
-                        <h4 class="header-title mb-2">Show Payment Icons</h4>
+                        <h4 class="header-title mb-2">{{ __("Show Payment Icons") }}</h4>
                         <div class="mb-0">
                             <input type="checkbox" id="show_payment_icons" data-plugin="switchery" name="show_payment_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
                         </div>
@@ -157,7 +157,7 @@
     <div class="col-xl-6">
         <div class="card">
             <div class="card-body">
-                <h4 class="header-title">Home Page Style</h4>
+                <h4 class="header-title">{{ __("Home Page Style") }}</h4>
                 <div class="row">
                     @foreach($homepage_style_options as $homepage_style)
                     <div class="col-sm-6 col-md-4 col-lg-3">
@@ -190,14 +190,14 @@
                 <div class="col-sm-8">
                     <h4 class="page-title mt-0">{{ __('Home Page')}}</h4>
                     <p class="sub-header">
-                        Drag & drop to edit different sections.
+                        {{ __("Drag & drop to edit different sections.") }}
                     </p>
                 </div>
                 {{-- <div class="col-sm-4 text-right">
                     <button class="btn btn-info waves-effect waves-light text-sm-right" id="add_pickup_delivery_section_button"   data-toggle="modal" data-target="#add_pickup_delivery_section">Add</button>
                 </div> --}}
                 <div class="col-sm-4 text-right">
-                    <button class="btn btn-info waves-effect waves-light text-sm-right" id="save_home_page_pickup">Save</button>
+                    <button class="btn btn-info waves-effect waves-light text-sm-right" id="save_home_page_pickup">{{ __("Save") }}</button>
                 </div>
             </div>
 
@@ -289,7 +289,13 @@
                     <li class="dd-item dd3-item d-flex align-items-center" id="drag{{$home_page_label->id}}" data-id="1" data-row-id="{{$home_page_label->id}}" draggable="true" ondragstart="drag(event)">
                         <a herf="#" class="dd-handle dd3-handle d-block mr-auto">
                             @if($home_page_label->slug == "vendors")
-                            {{getNomenclatureName('Vendors', true)}}
+
+                            @php
+                                $vendorLable = getNomenclatureName('Vendors', true);
+                                $vendorLable = ($vendorLable === 'Vendors') ? __('Vendors') : $vendorLable; 
+                            @endphp
+
+                            {{ $vendorLable }}
                             @else
                             {{$home_page_label->title}}
                             @endif

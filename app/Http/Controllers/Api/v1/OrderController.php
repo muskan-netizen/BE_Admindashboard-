@@ -337,7 +337,7 @@ class OrderController extends BaseController {
                     // $this->sendOrderNotification($user->id);
                     $code = $request->header('code');
                     $this->sendOrderPushNotificationVendors($order->admins, $order, $code);
-                    return $this->successResponse($order, __('Order placed successfully.'), 201);
+                    return $this->successResponse($order, __('Order placed successfully.'), 201); 
                 }
             } else {
                 return $this->errorResponse(['error' => __('Empty cart.')], 404);
@@ -603,7 +603,7 @@ class OrderController extends BaseController {
                     "notification" => [
                         'title' => $notification_content->subject,
                         'body'  => $notification_content->content,
-                        'sound' => "notification.mp3",
+                        'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => $redirect_URL
                     ],
@@ -662,7 +662,7 @@ class OrderController extends BaseController {
                     "notification" => [
                         'title' => $notification_content->subject,
                         'body'  => $body_content,
-                        'sound' => "notification.mp3",
+                        'sound' => "default",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => $redirect_URL
                     ],

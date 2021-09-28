@@ -2365,29 +2365,100 @@ h3 .fas.fa-money-check-alt{
 
 
 
+/* Arabic Css Start From Here */
+body[dir="rtl"] {}
+
+body[dir="rtl"] .content-page {
+    margin-left: 0;
+    margin-right: 240px;
+}
+
+body[dir="rtl"] .navbar-custom {
+    left: 0;
+    right: auto;
+}
+
+body[dir="rtl"] .mr-auto {
+    margin-right: 0 !important;
+}
+
+body[dir="rtl"] #sidebar-menu .menu-title {
+    text-align: right;
+}
+
+body[dir="rtl"] .nav-second-level li a {
+    text-align: right;
+}
+
+body[dir="rtl"] #sidebar-menu>ul>li a[data-toggle="collapse"]:after {left: 0;right: auto;transform: rotate(180deg);}
+
+body[dir="rtl"] #sidebar-menu>ul>li ul.nav-second-level {
+    padding-right: 20px;
+}
+
+body[dir="rtl"] .top-site-links li i {
+    margin: 0 0 0 10px;
+}
+
+body[dir="rtl"] ul {
+    padding-right: 0;
+}
+
+body[dir="rtl"] .nav-second-level li .collapse li a:before {
+    left: auto;
+    right: 0;
+}
+
+body[dir="rtl"] .dt-buttons.btn-group.flex-wrap {
+    right: auto !important;
+    left: 330px;
+}
+
+body[dir="rtl"] .text-sm-right {
+    text-align: left!important;
+}
+
+body[dir="rtl"] {
+    text-align: right !important;
+}
+
+body[dir="rtl"] .dataTables_filter label {
+    float: left !important;
+}
+
+body[dir="rtl"] .home-options-list .dd-list .dd3-item {
+    padding-right: 40px;
+    position: relative;
+}
+
+body[dir="rtl"] .home-options-list .dd-list .dd3-handle::before {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+body[dir="rtl"] span.switchery.switchery-default {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 20px;
+}
+
+body[dir="rtl"] .home-options-list .dd-list .dd-item .dd-handle {
+    padding: 0 0 0 20px;
+}
 
 
+body[dir="rtl"] span.inner-div {
+    float: left;
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+body[dir="rtl"] .modal-header .close {
+    padding: 1rem 1rem;
+    margin: -1rem -1rem -1rem !important;
+}
 
 
 

@@ -32,7 +32,7 @@
                                 </a>
                             </div>
                         </div>
-                        <h4 class="page-title">Dashboard</h4>
+                        <h4 class="page-title">{{ __('Dashboard') }}</h4>
                     </div>
                 </div>
             </div>
@@ -43,7 +43,7 @@
                             <div class="row align-items-center">
                                 <div class="col-8">
                                     <div class="text-end">
-                                        <p class="text-muted mb-1 text-truncate">Pending Orders</p>
+                                        <p class="text-muted mb-1 text-truncate">{{ __('Pending Orders') }}</p>
                                         <h3 class="text-dark mt-1 mb-0"><span class="counter" data-plugin="counterup" id="total_pending_order"></span></h3>
                                     </div>
                                 </div>
@@ -62,7 +62,7 @@
                             <div class="row align-items-center">
                             <div class="col-8">
                                     <div class="text-end">
-                                        <p class="text-muted mb-1 text-truncate">Active Orders</p>
+                                        <p class="text-muted mb-1 text-truncate">{{ __('Active Orders') }}</p>
                                         <h3 class="text-dark mt-1 mb-0"><span data-plugin="counterup" id="total_active_order"></span></h3>
                                     </div>
                                 </div>
@@ -82,7 +82,7 @@
                             <div class="row align-items-center">
                                 <div class="col-8">
                                     <div class="text-end">
-                                        <p class="text-muted mb-1 text-truncate">Delivered Orders</p>
+                                        <p class="text-muted mb-1 text-truncate">{{ __('Delivered Orders') }}</p>
                                         <h3 class="text-dark mt-1 mb-0"><span data-plugin="counterup" id="total_delivered_order"></span></h3>
                                     </div>
                                 </div>
@@ -101,7 +101,7 @@
                             <div class="row align-items-center">
                                 <div class="col-8">
                                     <div class="text-end">
-                                        <p class="text-muted mb-1 text-truncate">Cancelled Orders</p>
+                                        <p class="text-muted mb-1 text-truncate">{{ __('Cancelled Orders') }}</p>
                                         <h3 class="text-dark mt-1 mb-0"><span data-plugin="counterup" id="total_rejected_order"></span></h3>
                                     </div>
                                 </div>
@@ -120,7 +120,7 @@
                             <div class="row align-items-center">
                                 <div class="col-8">
                                     <div class="text-end">
-                                        <p class="text-muted mb-1 text-truncate">Vendor</p>
+                                        <p class="text-muted mb-1 text-truncate">{{ __('Vendor') }}</p>
                                         <h3 class="text-dark mt-1 mb-0"><span data-plugin="counterup" id="total_vendor"></span></h3>
                                     </div>
                                 </div>
@@ -140,7 +140,7 @@
                             <div class="row align-items-center">
                                 <div class="col-8">
                                     <div class="text-end">
-                                        <p class="text-muted mb-1 text-truncate">Categories</p>
+                                        <p class="text-muted mb-1 text-truncate">{{ __('Categories') }}</p>
                                         <h3 class="text-dark mt-1 mb-0"><span data-plugin="counterup" id="total_categories"></span></h3>
                                     </div>
                                 </div>
@@ -159,7 +159,7 @@
                             <div class="row align-items-center">
                             <div class="col-8">
                                     <div class="text-end">
-                                        <p class="text-muted mb-1 text-truncate">Products</p>
+                                        <p class="text-muted mb-1 text-truncate">{{ __('Products') }}</p>
                                         <h3 class="text-dark mt-1 mb-0"><span data-plugin="counterup" id="total_products"></span></h3>
                                     </div>
                                 </div>
@@ -178,7 +178,7 @@
                             <div class="row align-items-center">
                                 <div class="col-8">
                                     <div class="text-end">
-                                        <p class="text-muted mb-1 text-truncate">Banner Promotions</p>
+                                        <p class="text-muted mb-1 text-truncate">{{ __('Banner Promotions') }}</p>
                                         <h3 class="text-dark mt-1 mb-0"><span data-plugin="counterup" id="total_banners"></span></h3>
                                     </div>
                                 </div>
@@ -197,7 +197,7 @@
                             <div class="row align-items-center">
                                 <div class="col-8">
                                     <div class="text-end">
-                                        <p class="text-muted mb-1 text-truncate">Brands</p>
+                                        <p class="text-muted mb-1 text-truncate">{{ __('Brands') }}</p>
                                         <h3 class="text-dark mt-1"><span data-plugin="counterup" id="total_brands"></span></h3>
                                     </div>
                                 </div>
@@ -216,7 +216,7 @@
                             <div class="row align-items-center">
                                 <div class="col-8">
                                     <div class="text-end">
-                                        <p class="text-muted mb-1 text-truncate">Return Request</p>
+                                        <p class="text-muted mb-1 text-truncate">{{ __('Return Request') }}</p>
                                         <h3 class="text-dark mt-1 mb-0"><span data-plugin="counterup" id="return_requests"></span></h3>
                                     </div>
                                 </div>
@@ -236,12 +236,12 @@
                         <div class="card-body p-2">
                             <div class="card-widgets d-flex align-items-center select-date">
                                 <div class="btn-group mb-0 mx-2">
-                                    <button type="button" class="btn btn-xs btn-light yearSales">Yearly</button>
-                                    <button type="button" class="btn btn-xs btn-light weeklySales">Weekly</button>
-                                    <button type="button" class="btn btn-xs btn-secondary monthlySales">Monthly</button>
+                                    <button type="button" class="btn btn-xs btn-light yearSales">{{ __('Yearly') }}</button>
+                                    <button type="button" class="btn btn-xs btn-light weeklySales">{{ __('Weekly') }}</button>
+                                    <button type="button" class="btn btn-xs btn-secondary monthlySales">{{ __('Monthly') }}</button>
                                 </div>
                             </div>
-                            <h4 class="header-title mb-0">Sales Analytics</h4>
+                            <h4 class="header-title mb-0">{{ __('Sales Analytics') }}</h4>
                             <div id="cardCollpase2" class="collapse show mt-3" dir="ltr" style="position: relative;">
                                 <div id="sales-analytics" class="mt-4" data-colors="#1abc9c,#4a81d4" style="min-height: 393px;">
                                 </div>
@@ -260,7 +260,7 @@
                 <div class="col-lg-8 mb-3">
                     <div class="card">
                         <div class="card-body">
-                         <h4 class="header-title mb-0">Revenue By Location</h4>
+                         <h4 class="header-title mb-0">{{ __('Revenue By Location') }}</h4>
                          <div id="cardCollpase4" class="collapse pt-3 show">
                             <div id="world-map-markers" style="height: 433px"></div>
                          </div>
@@ -270,7 +270,7 @@
                 <div class="col-lg-4 mb-3">
                     <div class="card">
                         <div class="card-body">
-                         <h4 class="header-title mb-0 pb-2">Orders (Top Categories)</h4>
+                         <h4 class="header-title mb-0 pb-2">{{ __("Orders (Top Categories)") }}</h4>
                          <div class="gray-placeholder-img text-center py-5 my-2 hide" id="empty_card_collpase4">
                              <img src="{{asset('assets/images/Dashboard _ Royo.png')}}" alt="">
                          </div>

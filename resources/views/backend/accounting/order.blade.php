@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Orders</h4>
+                    <h4 class="page-title">{{ __('Orders') }}</h4>
                 </div>
             </div>
         </div>     
@@ -23,7 +23,7 @@
                                         <i class="mdi mdi-currency-usd text-primary mdi-24px"></i>
                                         <span data-plugin="counterup" id="total_earnings_by_vendors">{{$total_earnings_by_vendors}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">Total Order Value</p>
+                                    <p class="text-muted font-15 mb-0">{{ __('Total Order Value') }}</p>
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
@@ -32,7 +32,7 @@
                                         <i class="mdi mdi-cart-arrow-up text-primary mdi-24px"></i>
                                         <span data-plugin="counterup" id="total_order_count">{{$total_order_count}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">Total Orders</p>
+                                    <p class="text-muted font-15 mb-0">{{ __('Total Orders') }}</p>
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
@@ -41,7 +41,7 @@
                                         <i class="fas fa-money-check-alt text-primary"></i>
                                         <span data-plugin="counterup" id="total_cash_to_collected">{{$total_cash_to_collected}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">Total Cash To Be Collected</p>
+                                    <p class="text-muted font-15 mb-0">{{ __('Total Cash To Be Collected') }}</p>
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
@@ -50,7 +50,7 @@
                                         <i class="fas fa-money-check-alt text-primary"></i>
                                         <span data-plugin="counterup" id="total_delivery_fees">{{$total_delivery_fees}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">Total Delivery Fees</p>
+                                    <p class="text-muted font-15 mb-0">{{ __('Total Delivery Fees') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -74,7 +74,7 @@
                                     </div>
                                     <div class="col">
                                         <select class="form-control" id="vendor_select_box">
-                                            <option value="">Select Vendor</option>
+                                            <option value="">{{ __('Select Vendor') }}</option>
                                             @forelse($vendors as $vendor)
                                                 <option value="{{$vendor->id}}">{{$vendor->name}}</option>
                                             @empty
@@ -83,7 +83,7 @@
                                     </div>
                                     <div class="col">
                                         <select class="form-control" name="" id="order_status_option_select_box">
-                                            <option value="">Select Order Status</option>
+                                            <option value="">{{ __('Select Order Status') }}</option>
                                             @forelse($order_status_options as $order_status_option)
                                                 <option value="{{$order_status_option->title}}">{{$order_status_option->title}}</option>
                                             @empty
@@ -103,17 +103,17 @@
                         <table class="table table-centered table-nowrap table-striped" id="accounting_vendor_datatable" width="100%">
                             <thead>
                                 <tr>
-                                    <th>Order ID</th>
-                                    <th>Date & Time</th>
-                                    <th>Customer Name</th>
-                                    <th>Vendor</th>
-                                    <th>Subtotal Amount</th>
-                                    <th>Promo Code Discount</th>
-                                    <th>Admin Commission [Fixed]</th>
-                                    <th>Admin Commission [%Age]</th>
-                                    <th>Final Amount</th>
-                                    <th>Payment Method</th>
-                                    <th>Order Status</th>
+                                    <th>{{ __('Order ID') }}</th>
+                                    <th>{{ __('Date & Time') }}</th>
+                                    <th>{{ __('Customer Name') }}</th>
+                                    <th>{{ __('Vendor') }}</th>
+                                    <th>{{ __('Subtotal Amount') }}</th>
+                                    <th>{{ __('Promo Code Discount') }}</th>
+                                    <th>{{ __('Admin Commission') }} [{{ __("Fixed") }}]</th>
+                                    <th>{{ __('Admin Commission') }} [%{{ __("Age") }}]</th>
+                                    <th>{{ __('Final Amount') }}</th>
+                                    <th>{{ __('Payment Method') }}</th>
+                                    <th>{{ __('Order Status') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="accounting_vendor_tbody_list">

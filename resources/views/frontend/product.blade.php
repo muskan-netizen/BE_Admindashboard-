@@ -299,7 +299,7 @@
                                         <div class="product-description border-product pb-0">
                                             <h6 class="product-title mt-0">{{__('Quantity')}}:
                                                 @if(!$product->variant[0]->quantity > 0)
-                                                    <span id="outofstock" style="color: red;">{{__('Out of Stock')}}</span>
+                                                    <span id="outofstock" style="color: red;">{{ __('Out of Stock')}}</span>
                                                 @else
                                                 @php
                                                 $product_quantity_in_cart = $product_in_cart->quantity??0;

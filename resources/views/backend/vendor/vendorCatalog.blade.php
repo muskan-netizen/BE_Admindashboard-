@@ -82,14 +82,14 @@
     <div class="row">
         <div class="col-12 d-flex align-items-center">
             <div class="page-title-box">
-                <h4 class="page-title">{{ucfirst($vendor->name)}} profile</h4>
+                <h4 class="page-title">{{ucfirst($vendor->name)}} {{ __("profile") }}</h4>
             </div>
             <div class="form-group mb-0 ml-3">
                 <div class="site_link position-relative">
                     <a href="{{route('vendorDetail',$vendor->slug)}}" target="_blank"><span id="pwd_spn" class="password-span">{{route('vendorDetail',$vendor->slug)}}</span></a>
                     <label class="copy_link float-right" id="cp_btn" title="copy">
                         <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
-                        <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">Copied</span>
+                        <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">{{ __("Copied") }}</span>
                     </label>
                 </div>
             </div>
@@ -120,17 +120,17 @@
                 <ul class="nav nav-pills navtab-bg nav-justified">
                     <li class="nav-item">
                         <a href="{{ route('vendor.catalogs', $vendor->id) }}" aria-expanded="false" class="nav-link {{($tab == 'catalog') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                            Catalog
+                            {{ __("Catalog") }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ route('vendor.show', $vendor->id) }}" aria-expanded="false" class="nav-link {{($tab == 'configuration') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                            Configuration
+                            {{ __("Configuration") }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ route('vendor.categories', $vendor->id) }}" aria-expanded="true" class="nav-link {{($tab == 'category') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                            Categories & Add Ons
+                            {{ __("Categories & Add Ons") }}
                         </a>
                     </li>
                 </ul>
@@ -145,7 +145,7 @@
                                                 <i class="mdi mdi-package-variant-closed text-primary mdi-24px"></i>
                                                 <span data-plugin="counterup" id="total_earnings_by_vendors">{{$product_count}}</span>
                                             </h3>
-                                            <p class="text-muted font-15 mb-0">Total Products</p>
+                                            <p class="text-muted font-15 mb-0">{{ __("Total Products") }}</p>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
@@ -154,7 +154,7 @@
                                                 <i class="mdi mdi-package-variant text-primary mdi-24px"></i>
                                                 <span data-plugin="counterup" id="total_order_count">{{$published_products}}</span>
                                             </h3>
-                                            <p class="text-muted font-15 mb-0">Published Products</p>
+                                            <p class="text-muted font-15 mb-0">{{ __('Published Products') }}</p>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
@@ -163,7 +163,7 @@
                                                 <i class="mdi mdi-store-24-hour text-primary mdi-24px"></i>
                                                 <span data-plugin="counterup" id="total_cash_to_collected">{{$last_mile_delivery}}</span>
                                             </h3>
-                                            <p class="text-muted font-15 mb-0">Last Mile Deliverables</p>
+                                            <p class="text-muted font-15 mb-0">{{ __("Last Mile Deliverables") }}</p>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
@@ -172,7 +172,7 @@
                                                 <i class="mdi mdi-new-box text-primary mdi-24px"></i>
                                                 <span data-plugin="counterup" id="total_delivery_fees">{{$new_products}}</span>
                                             </h3>
-                                            <p class="text-muted font-15 mb-0">New Products</p>
+                                            <p class="text-muted font-15 mb-0">{{ __('New Products') }}</p>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
@@ -181,7 +181,7 @@
                                                 <i class="mdi mdi-diamond text-primary mdi-24px"></i>
                                                 <span data-plugin="counterup" id="total_delivery_fees">{{$featured_products}}</span>
                                             </h3>
-                                            <p class="text-muted font-15 mb-0">Featured Products</p>
+                                            <p class="text-muted font-15 mb-0">{{ __("Featured Products") }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -196,11 +196,11 @@
                         <div class="card-box">
                             <div class="row">
                                 <div class="col-12 d-flex align-items-center justify-content-between mb-3">
-                                    <h4 class="mb-0"> Catalog</h4>
+                                    <h4 class="mb-0"> {{ __('Catalog') }}</h4>
                                     <div class="">
-                                        <a class="btn btn-info waves-effect waves-light text-sm-right importProductBtn {{$vendor->status == 1 ? '' : 'disabled'}}" dataid="0" href="javascript:void(0);" {{$vendor->status == 1 ? '' : 'disabled'}}><i class="mdi mdi-plus-circle mr-1"></i> Import
+                                        <a class="btn btn-info waves-effect waves-light text-sm-right importProductBtn {{$vendor->status == 1 ? '' : 'disabled'}}" dataid="0" href="javascript:void(0);" {{$vendor->status == 1 ? '' : 'disabled'}}><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Import") }}
                                         </a>
-                                        <a class="btn btn-info waves-effect waves-light text-sm-right addProductBtn {{$vendor->status == 1 ? '' : 'disabled'}}" dataid="0" href="javascript:void(0);"><i class="mdi mdi-plus-circle mr-1"></i> Add Product</a>
+                                        <a class="btn btn-info waves-effect waves-light text-sm-right addProductBtn {{$vendor->status == 1 ? '' : 'disabled'}}" dataid="0" href="javascript:void(0);"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add Product") }}</a>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -209,16 +209,16 @@
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>Name</th>
-                                                    <th>Category</th>
-                                                    <th>Brand</th>
-                                                    <th>Quantity</th>
-                                                    <th>Price</th>
-                                                    <th>Status</th>
-                                                    <th>New</th>
-                                                    <th>Featured</th>
-                                                    <th>Requires Last<br>Mile Delivery</th>
-                                                    <th>Action</th>
+                                                    <th>{{ __("Name") }}</th>
+                                                    <th>{{ __("Category") }}</th>
+                                                    <th>{{ __("Brand") }}</th>
+                                                    <th>{{ __("Quantity") }}</th>
+                                                    <th>{{ __("Price") }}</th>
+                                                    <th>{{ __("Status") }}</th>
+                                                    <th>{{ __("New") }}</th>
+                                                    <th>{{ __("Featured") }}</th>
+                                                    <th>{{ __("Requires Last") }}<br>{{ __("Mile Delivery") }}</th>
+                                                    <th>{{ __("Action") }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="post_list">
@@ -277,7 +277,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Product</h4>
+                <h4 class="modal-title">{{ __("Add Product") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_product_form" method="post" enctype="multipart/form-data" action="{{route('product.store')}}">
@@ -288,7 +288,7 @@
                             <div class="row">
                                 <div class="col-12 mb-2">
                                     <div class="form-group" id="skuInput">
-                                        {!! Form::label('title', 'SKU (Allowed Keys -> a-z,A-Z,0-9,-,_)',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('SKU (Allowed Keys -> a-z,A-Z,0-9,-,_)'),['class' => 'control-label']) !!}
                                         <span class="text-danger">*</span>
                                         {!! Form::text('sku', null, ['class'=>'form-control','id' => 'sku', 'onkeyup' => 'return alplaNumeric(event)', 'placeholder' => 'Apple-iMac']) !!}
                                         <span class="invalid-feedback" role="alert">
@@ -300,7 +300,7 @@
                                 </div>
                                 <div class="col-12 mb-2">
                                     <div class="form-group" id="url_slugInput">
-                                        {!! Form::label('title', 'URL Slug',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('URL Slug'),['class' => 'control-label']) !!}
                                         {!! Form::text('url_slug', null, ['class'=>'form-control', 'id' => 'url_slug', 'placeholder' => 'Apple iMac', 'onkeypress' => 'return slugify(event)']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -309,9 +309,9 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group" id="categoryInput">
-                                        {!! Form::label('title', 'Category',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('Category'),['class' => 'control-label']) !!}
                                         <select class="form-control selectizeInput" id="category_list" name="category">
-                                            <option value="">Select Category...</option>
+                                            <option value="">{{ __("Select Category") }}...</option>
                                             {!! $product_categories !!}
                                                 
                                             {{--@foreach($product_categories as $product_category)
@@ -332,7 +332,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitProduct">Submit</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitProduct">{{ __('Submit') }}</button>
                 </div>
             </form>
         </div>
@@ -342,7 +342,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Product</h4>
+                <h4 class="modal-title">{{ __("Add Product") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             
@@ -354,12 +354,12 @@
 
                             <div id="import_csv" class="row align-items-center mb-3">
                                 <div class="col-12 text-right mb-2">
-                                    <button class="btn btn-info button" id="csv_button" type="button">Import form Woocommerce</button>
+                                    <button class="btn btn-info button" id="csv_button" type="button">{{ __("Import form Woocommerce") }}</button>
                                 </div>
                                 <div class="col-md-12">
                                     <form method="post" enctype="multipart/form-data" id="save_imported_products">
                                         @csrf
-                                        <a href="{{url('file-download'.'/sample_product.csv')}}">Download Sample file here!</a>
+                                        <a href="{{url('file-download'.'/sample_product.csv')}}">{{ __("Download Sample file here!") }}</a>
                                         <input type="hidden" value="{{$vendor->id}}" name="vendor_id" />
                                         <input type="file" accept=".csv" onchange="submitProductImportForm()" data-plugins="dropify" name="product_excel" class="dropify" />
                                     </form>
@@ -368,7 +368,7 @@
 
                             <div id="import_woocommerce" class="row align-items-center mb-3">
                                 <div class="col-12 text-right mb-2">
-                                    <button class="btn btn-info button" id="woocommerce_button" type="button">Import CSV</button>
+                                    <button class="btn btn-info button" id="woocommerce_button" type="button">{{ __("Import CSV") }}</button>
                                 </div>
                                 <div class="col-md-12">
                                     <form id="woocommerces_form">
@@ -385,7 +385,7 @@
                                              <span class="text-danger" id="consumer_secret_error"></span>
                                         </div>
                                         <button class="btn btn-info button" id="save_woocommerce_btn" type="button" onclick="this.classList.toggle('button--loading')">Save</button>
-                                        <button class="btn btn-info button" id="import_product_from_woocomerce" data-vendor="{{$vendor->id}}" onclick="this.classList.toggle('button--loading')">Import Products From Woocommerce</button>
+                                        <button class="btn btn-info button" id="import_product_from_woocomerce" data-vendor="{{$vendor->id}}" onclick="this.classList.toggle('button--loading')">{{ __("Import Products From Woocommerce") }}</button>
                                     </form>
                                 </div>
                             </div>
@@ -396,9 +396,9 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>File Name</th>
-                                            <th colspan="2">Status</th>
-                                            <th>Link</th>
+                                            <th>{{ __("File Name") }}</th>
+                                            <th colspan="2">{{ __("Status") }}</th>
+                                            <th>{{ __("Link") }}</th>
                                         </tr>
                                     </thead>
                                     <tbody id="post_list">
@@ -407,13 +407,13 @@
                                             <td> {{ $loop->iteration }}</td>
                                             <td> {{ $csv->name }}</td>
                                             @if($csv->status == 1)
-                                            <td>Pending</td>
+                                            <td>{{ __("Pending") }}</td>
                                             <td></td>
                                             @elseif($csv->status == 2)
-                                            <td>Success</td>
+                                            <td>{{ __('Success') }}</td>
                                             <td></td>
                                             @else
-                                            <td>Errors</td>
+                                            <td>{{ __("Errors") }}</td>
                                             <td class="position-relative text-center">
                                                 <i class="mdi mdi-exclamation-thick"></i>
                                                 <ul class="tooltip_error">
@@ -426,7 +426,7 @@
                                                 </ul>
                                             </td>
                                             @endif
-                                            <td> <a href="{{ $csv->path }}">Download</a> </td>
+                                            <td> <a href="{{ $csv->path }}">{{ __("Download") }}</a> </td>
                                         </tr>
                                         @endforeach
                                     </tbody>

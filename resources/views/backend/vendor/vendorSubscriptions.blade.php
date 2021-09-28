@@ -30,37 +30,37 @@
                                     <b class="mr-2">
                                     @if(!empty($subscription->cancelled_at))
                                         @if( $subscription->end_date >= $now )
-                                            Cancels On
+                                            {{ __('Cancels On') }}
                                         @else
-                                            Cancelled On
+                                            {{ __('Cancelled On') }}
                                         @endif
                                     @else
                                         @if( $subscription->end_date >= $now )
-                                            Upcoming Billing Date
+                                            {{ __('Upcoming Billing Date') }}
                                         @else
-                                            Expired On
+                                            {{ __('Expired On') }}
                                         @endif
                                     @endif
                                     </b>
                                     <span>{{ convertDateTimeInTimeZone($subscription->end_date, $timezone, 'F d, Y') }}</span>
                                 @elseif($subscription->status_id == 1)
-                                    <b class="mr-2">Status</b><span class="text-info">{{ $subscription->status->title }}</span>
+                                    <b class="mr-2">{{ __("Status") }}</b><span class="text-info">{{ $subscription->status->title }}</span>
                                 @elseif($subscription->status_id == 4)
-                                    <b class="mr-2">Status</b><span class="text-danger">{{ $subscription->status->title }}</span>
+                                    <b class="mr-2">{{ __("Status") }}</b><span class="text-danger">{{ $subscription->status->title }}</span>
                                 @endif
                             </div>
                             <div class="col-sm-6 mb-0 text-center text-sm-right">
                                 @if($subscription->status_id == 2)
                                     @if( $subscription->end_date >= $now )
                                         @if($subscription->plan->status == 1)
-                                            <a class="btn btn-info subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">Pay now (${{ $subscription->plan->price }})</a>
+                                            <a class="btn btn-info subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __("Pay now") }} (${{ $subscription->plan->price }})</a>
                                         @endif
                                         @if(empty($subscription->cancelled_at))
-                                            <a class="cancel-subscription-link btn btn-info" href="#cancel-subscription" data-toggle="modal" data-id="{{ $subscription->slug }}">Cancel</a>
+                                            <a class="cancel-subscription-link btn btn-info" href="#cancel-subscription" data-toggle="modal" data-id="{{ $subscription->slug }}">{{ __('Cancel') }}</a>
                                         @endif
                                     @else
                                         @if($subscription->plan->status == 1)
-                                            <a class="btn btn-info subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">Renew (${{ $subscription->plan->price }})</a>
+                                            <a class="btn btn-info subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __("Renew") }} (${{ $subscription->plan->price }})</a>
                                         @endif
                                     @endif
                                 @endif
@@ -97,9 +97,9 @@
                     </div>
                     <div class="pricingtable-purchase">
                         @if( (isset($subscription->plan->id)) && ($plan->id == $subscription->plan->id) )
-                            <button class="btn btn-info black-btn disabled w-100">Subscribed</button>
+                            <button class="btn btn-info black-btn disabled w-100">{{ __('Subscribed') }}</button>
                         @else
-                            <button class="btn btn-info w-100 subscribe_btn" data-id="{{ $plan->slug }}">Subscribe</button>
+                            <button class="btn btn-info w-100 subscribe_btn" data-id="{{ $plan->slug }}">{{ __("Subscribe") }}</button>
                         @endif
                     </div>
                 </div>
@@ -112,7 +112,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header pb-0">
-        <h5 class="modal-title" id="cancel_subscriptionLabel">Unsubscribe</h5>
+        <h5 class="modal-title" id="cancel_subscriptionLabel">{{ __("Unsubscribe") }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
@@ -120,7 +120,7 @@
       <form id="cancel-subscription-form" method="POST" action="">
         @csrf
         <div class="modal-body">
-            <h6 class="m-0">Do you really want to cancel this subscription ?</h6>
+            <h6 class="m-0">{{ __("Do you really want to cancel this subscription ?") }}</h6>
         </div>
         <div class="modal-footer flex-nowrap justify-content-center align-items-center">
             <button type="submit" class="btn btn-success">Continue</a>
@@ -135,13 +135,13 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header pb-0">
-        <h5 class="modal-title" id="error_responseLabel">Error</h5>
+        <h5 class="modal-title" id="error_responseLabel">{{ __('Error') }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
       </div>
       <div class="modal-body">
-        <h6 class="message_body">Unknown error occurs</h6>
+        <h6 class="message_body">{{ __('Unknown error occurs') }}</h6>
       </div>
       <div class="modal-footer flex-nowrap justify-content-center align-items-center">
         <button type="button" class="btn btn-info" data-dismiss="modal">Ok</button>
@@ -154,7 +154,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header border-bottom">
-        <h5 class="modal-title text-17 mb-0 mt-0" id="subscription_paymentLabel">Subscription</h5>
+        <h5 class="modal-title text-17 mb-0 mt-0" id="subscription_paymentLabel">{{ __('Subscription') }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -177,7 +177,7 @@
                 <div class="mb-2"><span id="subscription_price"></span> / <span id="subscription_frequency"></span></div>
             </div>
             <div class="form-group">
-                <div class="mt-2">Features included:
+                <div class="mt-2">{{ __("Features included") }}:
                     <div class="mt-2" id="features_list"></div>
                 </div>
             </div>
@@ -185,15 +185,15 @@
             <div class="payment_response">
                 <div class="alert p-0 m-0" role="alert"></div>
             </div>
-            <h5 class="text-17 mb-2">Debit From</h5>
+            <h5 class="text-17 mb-2">{{ __("Debit From") }}</h5>
             <div class="form-group" id="subscription_payment_methods">
             </div>
         </div>
         <div class="modal-footer d-block text-center">
             <div class="row">
                 <div class="col-sm-12 p-0 d-flex justify-space-around">
-                    <button type="button" class="btn btn-success btn-solid mt-2 subscription_confirm_btn">Pay</button>
-                    <button type="button" class="btn btn-info btn-solid mt-2" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success btn-solid mt-2 subscription_confirm_btn">{{ __('Pay') }}</button>
+                    <button type="button" class="btn btn-info btn-solid mt-2" data-dismiss="modal">{{ __("Cancel") }}</button>
                 </div>
             </div>
         </div>

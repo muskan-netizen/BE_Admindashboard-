@@ -150,14 +150,14 @@
     <div class="row">
         <div class="col-12 d-flex align-items-center">
             <div class="page-title-box">
-                <h4 class="page-title">{{ucfirst($vendor->name)}} profile</h4>
+                <h4 class="page-title">{{ucfirst($vendor->name)}} {{ __('profile') }}</h4>
             </div>
             <div class="form-group mb-0 ml-3">
                 <div class="site_link position-relative">
                     <a href="{{route('vendorDetail',$vendor->slug)}}" target="_blank"><span id="pwd_spn" class="password-span">{{route('vendorDetail',$vendor->slug)}}</span></a>
                     <label class="copy_link float-right" id="cp_btn" title="copy">
                         <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
-                        <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">Copied</span>
+                        <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">{{ __('Copied') }}</span>
                     </label>
                 </div>
             </div>
@@ -204,17 +204,17 @@
                 <ul class="nav nav-pills navtab-bg nav-justified">
                     <li class="nav-item">
                         <a href="{{ route('vendor.catalogs', $vendor->id) }}" aria-expanded="false" class="nav-link {{($tab == 'catalog') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                            Catalog
+                            {{ __('Catalog') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ route('vendor.show', $vendor->id) }}" aria-expanded="false" class="nav-link {{($tab == 'configuration') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                            Configuration
+                            {{ __('Configuration') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ route('vendor.categories', $vendor->id) }}" aria-expanded="true" class="nav-link {{($tab == 'category') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                            Categories & Add Ons
+                            {{ __('Categories & Add Ons') }}
                         </a>
                     </li>
 
@@ -303,10 +303,10 @@
                                 <div class="col-md-12">
                                     <div class="row align-items-center mb-3">
                                         <div class="col-sm-6">
-                                            <h4 class="mb-2 "><span> Service Area </span></h4>
+                                            <h4 class="mb-2 "><span> {{ __('Service Area') }} </span></h4>
                                         </div>
                                         <div class="col-sm-6 text-center text-sm-right">
-                                            <button class="btn btn-info openServiceModal"> Add Service Area</button>
+                                            <button class="btn btn-info openServiceModal"> {{ __('Add Service Area') }}</button>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -315,8 +315,8 @@
                                                 <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                                                     <thead>
                                                         <tr>
-                                                            <th>Name</th>
-                                                            <th style="width: 85px;">Action</th>
+                                                            <th>{{ __('Name') }}</th>
+                                                            <th style="width: 85px;">{{ __('Action') }}</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -357,7 +357,7 @@
                         @if($vendor->show_slot == 0)
                         <div class="card-box">
                             <div class="row">
-                                <h4 class="mb-4 "> Weekly Slot</h4>
+                                <h4 class="mb-4 "> {{ __('Weekly Slot') }}</h4>
                                 <div class="col-md-12">
                                     <div class="row mb-2">
                                         <div class="col-md-12">
@@ -374,20 +374,20 @@
                         @if($vendor->dine_in == 1)
                         <div class="card-box">
                             <div class="row">
-                                <h4 class="mb-4 "> Table Booking </h4>
+                                <h4 class="mb-4 "> {{ __('Table Booking ') }}</h4>
                                 <div class="col-md-12">
                                     <div class="row">
                                         <div class="col-md-2 mb-2 text-center text-sm-left">
-                                            <h5>Categories</h5>
+                                            <h5>{{ __('Categories') }}</h5>
                                         </div>
                                         <div class="col-md-2 mb-2 text-center text-sm-right">
-                                            <button class="btn btn-info addDineinCategory"> Add Category </button>
+                                            <button class="btn btn-info addDineinCategory"> {{ __('Add Category') }} </button>
                                         </div>
                                         <div class="col-md-2 mb-2 text-center text-sm-left">
-                                            <h5>Tables</h5>
+                                            <h5>{{ __('Tables') }}</h5>
                                         </div>
                                         <div class="col-md-6 mb-2 text-center text-sm-right">
-                                            <button class="btn btn-info addDineinTable"> Add Table </button>
+                                            <button class="btn btn-info addDineinTable"> {{ __("Add Table") }} </button>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -396,8 +396,8 @@
                                                 <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                                                     <thead>
                                                         <tr>
-                                                            <th>Name</th>
-                                                            <th style="width: 85px;">Action</th>
+                                                            <th>{{ __('Name') }}</th>
+                                                            <th style="width: 85px;">{{ __('Action') }}</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -428,10 +428,10 @@
                                                 <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                                                     <thead>
                                                         <tr>
-                                                            <th>Name</th>
-                                                            <th>Category Name</th>
-                                                            <th>QR Code</th>
-                                                            <th style="width: 85px;">Action</th>
+                                                            <th>{{ __('Name') }}</th>
+                                                            <th>{{ __('Category Name') }}</th>
+                                                            <th>{{ __("QR Code") }}</th>
+                                                            <th style="width: 85px;">{{ __("Action") }}</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -493,7 +493,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Table</h4>
+                <h4 class="modal-title">{{ __("Add Table") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form action="{{ route('vendor.addTable', $vendor->id) }}" method="POST" enctype="multipart/form-data">
@@ -501,16 +501,16 @@
                 <div class="modal-body mt-0" id="editCardBox">
                     <div class="row">
                         <div class="col-sm-4">
-                            <label>Upload Category image</label>
+                            <label>{{ __("Upload Category image") }}</label>
                             <input type="file" accept="image/*" data-default-file="" data-plugins="dropify" name="image" class="dropify" id="image" />
-                            <label class="logo-size d-block text-right mt-1">Image Size 1026x200</label>
+                            <label class="logo-size d-block text-right mt-1">{{ __('Image Size') }} 1026x200</label>
                         </div>
                         <div class="col-sm-3 mb-2">
-                            {!! Form::label('title', 'Table Number',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Table Number'),['class' => 'control-label']) !!}
                             {!! Form::text('table_number', '',['class' => 'form-control', 'placeholder' => 'Table Number', 'required'=>'required']) !!}
                         </div>
                         <div class="col-sm-3 mb-2">
-                            {!! Form::label('title', 'Category',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Category'),['class' => 'control-label']) !!}
                             <select class="selectize-select form-control" name="vendor_dinein_category_id" id="assignTo">
                                 @foreach($dinein_categories as $dinein_category)
                                 <option value="{{$dinein_category->id}}">{{$dinein_category->title}}</option>
@@ -518,7 +518,7 @@
                             </select>
                         </div>
                         <div class="col-sm-2 mb-2">
-                            {!! Form::label('title', 'Seat Capacity',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Seat Capacity'),['class' => 'control-label']) !!}
                             {!! Form::number('seating_number', '1',['class' => 'form-control', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => 'Seating Number', 'required'=>'required']) !!}
                         </div>
                         <input type="hidden" name="vendor_id" value="{{ $vendor->id }}" />
@@ -531,7 +531,7 @@
                                     <h4 class="col-md-12"> {{ $langs->langName.' Language' }} </h4>
                                     <div class="col-md-6">
                                         <div class="form-group" id="{{ ($langs->langId == 1) ? 'nameInput' : 'nameotherInput' }}">
-                                            {!! Form::label('title', 'Name',['class' => 'control-label']) !!}
+                                            {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                                             @if($langs->is_primary == 1)
                                             {!! Form::text('name[]', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                             @else
@@ -545,19 +545,19 @@
                                     {!! Form::hidden('language_id[]', $langs->langId) !!}
                                     <div class="col-md-6">
                                         <div class="form-group" id="meta_titleInput">
-                                            {!! Form::label('title', 'Meta Title',['class' => 'control-label']) !!}
+                                            {!! Form::label('title', __('Meta Title'),['class' => 'control-label']) !!}
                                             {!! Form::text('meta_title[]', null, ['class' => 'form-control']) !!}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            {!! Form::label('title', 'Meta Description',['class' => 'control-label']) !!}
+                                            {!! Form::label('title', __('Meta Description'),['class' => 'control-label']) !!}
                                             {!! Form::textarea('meta_description[]', null, ['class'=>'form-control', 'rows' => '3']) !!}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            {!! Form::label('title', 'Meta Keywords',['class' => 'control-label']) !!}
+                                            {!! Form::label('title', __('Meta Keywords'),['class' => 'control-label']) !!}
                                             {!! Form::textarea('meta_keywords[]', null, ['class' => 'form-control', 'rows' => '3']) !!}
                                         </div>
                                     </div>
@@ -569,7 +569,7 @@
                 </div>
                 <div class="modal-footer">
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">Save</button>
+                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">{{ __('Save') }}</button>
                     </div>
                 </div>
             </form>
@@ -581,7 +581,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Table Category</h4>
+                <h4 class="modal-title">{{ __("Add Table Category") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form action="{{ route('vendor.addCategory', $vendor->id) }}" method="POST">
@@ -589,7 +589,7 @@
                 <div class="modal-body mt-0" id="editCardBox">
                     <div class="row">
                         <div class="col-lg-12 mb-2">
-                            {!! Form::label('title', 'Category Name',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Category Name'),['class' => 'control-label']) !!}
                             {!! Form::text('title', '',['class' => 'form-control', 'placeholder' => 'Category Name', 'required'=>'required']) !!}
                         </div>
                         <input type="hidden" name="vendor_id" value="{{ $vendor->id }}" />
@@ -602,7 +602,7 @@
                                     <h4 class="col-md-12"> {{ $langs->langName.' Language' }} </h4>
                                     <div class="col-md-6">
                                         <div class="form-group" id="{{ ($langs->langId == 1) ? 'nameInput' : 'nameotherInput' }}">
-                                            {!! Form::label('title', 'Name',['class' => 'control-label']) !!}
+                                            {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                                             @if($langs->is_primary == 1)
                                             {!! Form::text('name[]', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                             @else
@@ -622,7 +622,7 @@
                 </div>
                 <div class="modal-footer">
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">Save</button>
+                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">{{ __('Save') }}</button>
                     </div>
                 </div>
             </form>
@@ -634,7 +634,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Service Area</h4>
+                <h4 class="modal-title">{{ __("Add Service Area") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="geo_form" action="{{ route('vendor.serviceArea', $vendor->id) }}" method="POST">
@@ -644,18 +644,18 @@
                     <input type="hidden" name="zoom_level" value="13" id="zoom_level" />
                     <div class="row">
                         <div class="col-lg-12 mb-2">
-                            {!! Form::label('title', 'Area Name',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Area Name'),['class' => 'control-label']) !!}
                             {!! Form::text('name', '',['class' => 'form-control', 'placeholder' => 'Area Name', 'required'=>'required']) !!}
                         </div>
                         <div class="col-lg-12 mb-2">
-                            {!! Form::label('title', 'Area Description',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Area Description'),['class' => 'control-label']) !!}
                             {!! Form::textarea('description', '',['class' => 'form-control', 'rows' => '3', 'placeholder' => 'Area Description']) !!}
                         </div>
                         <div class="col-lg-12">
                             <div class="input-group mb-3">
                                 <input type="text" id="pac-input" class="form-control" placeholder="Search by name" aria-label="Recipient's username" aria-describedby="button-addon2" name="loc_name">
                                 <div class="input-group-append">
-                                    <button class="btn btn-info" type="button" id="refresh">Edit Mode</button>
+                                    <button class="btn btn-info" type="button" id="refresh">{{ __("Edit Mode") }}</button>
                                 </div>
                             </div>
                             <div class="" style="height:96%;">
@@ -670,7 +670,7 @@
                             class="btn btn-block btn-outline-blue waves-effect waves-light">Cancel</button>
                     </div> -->
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">Save</button>
+                        <button type="submit" class="btn btn-block btn-blue waves-effect waves-light w-100">{{ __("Save") }}</button>
                     </div>
                 </div>
             </form>

@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Customize</h4>
+                <h4 class="page-title">{{ __("Customize") }}</h4>
             </div>
         </div>
     </div>
@@ -28,23 +28,23 @@
                 @csrf
                 <div class="card-box mb-0 h-100 pb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">Admin</h4>
+                        <h4 class="header-title mb-0">{{ __("Admin") }}</h4>
                         <input type="hidden" name="send_to" id="send_to" value="customize">
-                        <button class="btn btn-info d-block" type="submit"> Save </button>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
                     <p class="sub-header">
-                        Choose between light and dark theme, for the platform.
+                        {{ __("Choose between light and dark theme, for the platform.") }}
                     </p>
                     <div class="row">
                         <div class="col-sm-12 mb-2">
-                            <label for="primary_color">Admin Panel Theme</label> <br />
+                            <label for="primary_color">{{ __("Admin Panel Theme") }}</label> <br />
                             <div class="radio radio-blue form-check-inline">
                                 <input type="radio" id="light_theme" value="light" name="theme_admin" {{ (isset($preference) && $preference->theme_admin =="light")? "checked" : "" }}>
-                                <label for="light_theme"> Light theme </label>
+                                <label for="light_theme"> {{ __("Light theme") }} </label>
                             </div>
                             <div class="radio form-check-inline">
                                 <input type="radio" id="dark_theme" value="dark" name="theme_admin" {{ (isset($preference) &&  $preference->theme_admin =="dark")? "checked" : "" }}>
-                                <label for="dark_theme"> Dark theme </label>
+                                <label for="dark_theme"> {{ __("Dark theme") }} </label>
                             </div>
                             @if($errors->has('theme'))
                             <span class="text-danger" role="alert">
@@ -69,17 +69,17 @@
                 @csrf
                 <div class="card-box mb-0 h-100 pb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">Date & Time</h4>
+                        <h4 class="header-title mb-0">{{ __("Date & Time") }}</h4>
                         <input type="hidden" name="send_to" id="send_to" value="customize">
-                        <button class="btn btn-info d-block" type="submit"> Save </button>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
                     <p class="sub-header">
-                        View and update the date & time format.
+                        {{ __("View and update the date & time format.") }}
                     </p>
                     <div class="row mb-2">
                         <div class="col-md-12">
                             <div class="form-group mb-2">
-                                <label for="date_format">Date Format</label>
+                                <label for="date_format">{{ __("Date Format") }}</label>
                                 <select class="form-control" id="date_format" name="date_format">
                                     <option value="DD-MM-YYYY" {{ ($preference && $preference->date_format =="DD-MM-YYYY")? "selected" : "" }}>
                                         DD-MM-YYYY</option>
@@ -97,11 +97,11 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group mb-2">
-                                <label for="time_format">Time Format</label>
+                                <label for="time_format">{{ __("Time Format") }}</label>
                                 <select class="form-control" id="time_format" name="time_format">
-                                    <option value="12" {{ ($preference && $preference->time_format =="12")? "selected" : "" }}>12 hours
+                                    <option value="12" {{ ($preference && $preference->time_format =="12")? "selected" : "" }}>12 {{ __("hours") }}
                                     </option>
-                                    <option value="24" {{ ($preference && $preference->time_format =="24")? "selected" : "" }}>24 hours
+                                    <option value="24" {{ ($preference && $preference->time_format =="24")? "selected" : "" }}>24 {{ __("hours") }}
                                     </option>
                                 </select>
                                 @if($errors->has('time_format'))
@@ -120,16 +120,16 @@
                 @csrf
                 <div class="card-box mb-0 h-100 pb-0">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title mb-0">Localization</h4>
+                        <h4 class="header-title mb-0">{{ __("Localization") }}</h4>
                         <input type="hidden" name="send_to" id="send_to" value="customize">
-                        <button class="btn btn-info d-block" type="submit"> Save </button>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
                     <p class="sub-header">
-                        Define and update the localization
+                        {{ __("Define and update the localization") }}
                     </p>
                     <div class="row col-spacing">
                         <div class="col-sm-4 mb-2">
-                            <label for="languages">Primary Language</label>
+                            <label for="languages">{{ __("Primary Language") }}</label>
                             <select class="form-control" id="primary_language" name="primary_language">
                                 @php
                                    $primary_language_id =  $preference->primarylang ? $preference->primarylang->language_id : '';
@@ -140,7 +140,7 @@
                             </select>
                         </div>
                         <div class="col-sm-8 mb-2">
-                            <label for="languages">Additional Languages</label>
+                            <label for="languages">{{ __("Additional Languages") }}</label>
                             <select class="form-control select2-multiple" id="languages" name="languages[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
                                 @foreach($languages as $lang)
                                 @if($lang->id != $primary_language_id)
@@ -150,7 +150,7 @@
                             </select>
                         </div>
                         <div class="col-sm-4 mb-2">
-                            <label for="primary_currency">Primary Currency</label>
+                            <label for="primary_currency">{{ __("Primary Currency") }}</label>
                             <select class="form-control" id="primary_currency" name="primary_currency">
                                 @foreach($currencies as $currency)
                                 <option iso="{{$currency->iso_code.' '.$currency->symbol}}" {{ (isset($preference) && $preference->primary->currency->id == $currency->id) ? "selected" : ""}} value="{{$currency->id}}"> {{$currency->iso_code.' '.$currency->symbol}} </option>
@@ -158,7 +158,7 @@
                             </select>
                         </div>
                         <div class="col-sm-8">
-                            <label for="currency">Additional Currency</label>
+                            <label for="currency">{{ __("Additional Currency") }}</label>
                             <select class="form-control select2-multiple" id="currency" name="currency_data[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
                                 @foreach($currencies as $currency)
                                 @if($preference->primary->currency->id != $currency->id)
@@ -189,17 +189,17 @@
                 @csrf
                 <div class="card-box mb-0 h-100">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title mb-0">Custom Domain</h4>
+                        <h4 class="header-title mb-0">{{ __("Custom Domain") }}</h4>
                         <input type="hidden" name="send_to" id="send_to" value="customize">
-                        <button class="btn btn-info d-block" type="submit"> Save </button>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
                     <p class="sub-header">
-                        Update custom domain here.
+                        {{ __("Update custom domain here.") }}
                     </p>
                     <div class="row mb-2">
                         <div class="col-sm-12">
                             <div class="form-group mb-3">
-                                <label for="custom_domain">Custom Domain</label>
+                                <label for="custom_domain">{{ __("Custom Domain") }}</label>
                                 <input type="text" name="custom_domain" id="custom_domain" placeholder="xyz" class="form-control" value="{{ old('custom_domain', $preference->domain->custom_domain ?? '')}}">
                                 @if($errors->has('custom_domain'))
                                 <span class="text-danger" role="alert">
@@ -215,18 +215,18 @@
         <div class="col-lg-3 mb-3">
             <div class="card-box mb-0 h-100 pb-1">
                 <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h4 class="header-title mb-0">Social Media</h4>
+                    <h4 class="header-title mb-0">{{ __("Social Media") }}</h4>
                     <button class="btn btn-info d-block" id="add_social_media_modal_btn">
-                        <i class="mdi mdi-plus-circle mr-1"></i>Add
+                        <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
                     </button>
                 </div>
                 <div class="table-responsive mt-3">
                     <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
                         <thead>
                             <tr>
-                                <th>Icon</th>
-                                <th>URL</th>
-                                <th>Action</th>
+                                <th>{{ __("Icon") }}</th>
+                                <th>{{ __("URL") }}</th>
+                                <th>{{ __("Action") }}</th>
                             </tr>
                         </thead>
                         <tbody id="post_list">
@@ -255,7 +255,7 @@
                             </tr>
                             @empty
                             <tr align="center">
-                                <td colspan="4" style="padding: 20px 0">Result not found.</td>
+                                <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -268,22 +268,22 @@
                 @csrf
                 <div class="card-box mb-0 h-100">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title mb-0">Nomenclature</h4>
-                        <button class="btn btn-info d-block" type="submit"> Save </button>
+                        <h4 class="header-title mb-0">{{ __("Nomenclature") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
-                    <p class="sub-header">View and update the naming</p>
+                    <p class="sub-header">{{ __("View and update the naming") }}</p>
                     <div class="table-responsive">
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
                                 <div class="form-group mb-3">
-                                    <label for="custom_domain">Vendors({{$client_language->langName}})</label>
+                                    <label for="custom_domain">{{ __("Vendors") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 1)}}">
                                     @if($k == 0)
                                         @if($errors->has('names.0'))
                                             <span class="text-danger" role="alert">
-                                                <strong>The primary language name field is required.</strong>
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
                                         @endif
                                     @endif
@@ -295,13 +295,13 @@
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
                                 <div class="form-group mb-3">
-                                    <label for="custom_domain">Loyalty Cards({{$client_language->langName}})</label>
+                                    <label for="custom_domain">{{ __("Loyalty Cards") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="loyalty_cards_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="loyalty_cards_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 2)}}">
                                     @if($k == 0)
                                         @if($errors->has('loyalty_cards_names.0'))
                                             <span class="text-danger" role="alert">
-                                                <strong>The primary language name field is required.</strong>
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
                                         @endif
                                     @endif
@@ -313,13 +313,13 @@
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
                                 <div class="form-group mb-3">
-                                    <label for="custom_domain">Takeaway({{$client_language->langName}})</label>
+                                    <label for="custom_domain">{{ __("Takeaway") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="takeaway_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="takeaway_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 3)}}">
                                     @if($k == 0)
                                         @if($errors->has('takeaway_names.0'))
                                             <span class="text-danger" role="alert">
-                                                <strong>The primary language name field is required.</strong>
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
                                         @endif
                                     @endif
@@ -331,13 +331,13 @@
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
                                 <div class="form-group mb-3">
-                                    <label for="custom_domain">Search({{$client_language->langName}})</label>
+                                    <label for="custom_domain">{{ __("Search") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="search_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="search_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 4)}}">
                                     @if($k == 0)
                                         @if($errors->has('search_names.0'))
                                             <span class="text-danger" role="alert">
-                                                <strong>The primary language name field is required.</strong>
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
                                         @endif
                                     @endif
@@ -355,14 +355,14 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title" id="standard-modalLabel">Add Social Media</h4>
+                <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Social Media") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
                 <div id="save_social_media">
                     <input type="hidden" name="social_media_id" value="">
                     <div class="form-group position-relative">
-                        <label for="">Icon</label>
+                        <label for="">{{ __("Icon") }}</label>
                         <div class="input-group mb-2">
                             <div class="input-group-prepend">
                                 <div class="input-group-text"><i class="fab fa-facebook"></i></div>
@@ -384,14 +384,14 @@
                         </div>
                     </div>
                     <div class="form-group position-relative">
-                        <label for="">URL</label>
+                        <label for="">{{ __("URL") }}</label>
                         <input class="form-control" name="url" type="text" placeholder="http://www.google.com">
                         <span class="text-danger error-text social_media_url_err"></span>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary submitSaveSocialForm">Save</button>
+                <button type="button" class="btn btn-primary submitSaveSocialForm">{{ __("Save") }}</button>
             </div>
         </div>
     </div>

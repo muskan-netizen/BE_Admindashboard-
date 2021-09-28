@@ -19,11 +19,11 @@
     <div class="row">
         <div class="col-8">
             <div class="page-title-box">
-                <h4 class="page-title">Add Product</h4>
+                <h4 class="page-title">{{ __("Add Product") }}</h4>
             </div>
         </div>
         <div class="col-4 text-right" style="margin: auto;">
-            <button type="button" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> Submit</button>
+            <button type="button" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
         </div>
     </div>
     <div class="row mb-2">
@@ -49,10 +49,10 @@
             <div class="col-lg-7">
                 @csrf
                 <div class="card-box">
-                    <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">General</h5>
+                    <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">{{ __("General") }}</h5>
                     <div class="row mb-2">
                         <div class="col-6 mb-2">
-                            {!! Form::label('title', 'Product Type',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Product Type'),['class' => 'control-label']) !!}
                             <select class="form-control selectizeInput" id="typeSelectBox" name="type_id">
                                 @foreach($typeArray as $type)
                                     <option value="{{$type->id}}">{{$type->title}}</option>
@@ -61,7 +61,7 @@
                         </div>
 
                         <div class="col-6 mb-2">
-                            {!! Form::label('title', 'SKU (Allowed Keys -> a-z,A-Z,0-9,-,_)',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('SKU (Allowed Keys -> a-z,A-Z,0-9,-,_)'),['class' => 'control-label']) !!}
                             <span class="text-danger">*</span>
                             {!! Form::text('sku', null, ['class'=>'form-control','id' => 'sku', 'onkeypress' => 'return alplaNumeric(event)', 'placeholder' => 'Apple-iMac']) !!}
 
@@ -73,14 +73,14 @@
                         </div>
 
                         <div class="col-6" style="cursor: not-allowed;">
-                            {!! Form::label('title', 'URL Slug',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('URL Slug'),['class' => 'control-label']) !!}
                             {!! Form::text('product_url', null, ['class'=>'form-control', 'id' => 'product_url', 'placeholder' => 'Apple iMac', 'style' => 'pointer-events:none;']) !!}
                         </div>
 
                         <div class="col-6">
-                            {!! Form::label('title', 'Category',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Category'),['class' => 'control-label']) !!}
                             <select class="form-control selectizeInput" id="category_list" name="category[]">
-                                <option value="">Select Category...</option>
+                                <option value="">{{ __("Select Category") }}...</option>
                                 @foreach($categories as $cate)
                                     <option value="{{$cate->id}}">{{$cate->english->name}}</option>
                                 @endforeach
@@ -92,7 +92,7 @@
                 <div class="card-box ">
                     <div class="row mb-2 bg-light">
                         <div class="col-8" style="margin:auto; padding: 8px !important;">
-                            <h5 class="text-uppercase  mt-0 mb-0">Product Information</h5>
+                            <h5 class="text-uppercase  mt-0 mb-0">{{ __("Product Information") }}</h5>
                         </div>
                         <div class="col-4 p-2 mt-0" style="margin:auto; padding: 8px !important;">
                             <select class="selectize-select form-control" id="language_id" name="language_id">
@@ -105,63 +105,63 @@
 
                     <div class="row mb-2">
                         <div class="col-12 mb-2">
-                            {!! Form::label('title', 'Product Name',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Product Name'),['class' => 'control-label']) !!}
                             {!! Form::text('product_name', null, ['class'=>'form-control', 'id' => 'product_name', 'placeholder' => 'Apple iMac']) !!}
                         </div>
 
                         <div class="col-12 mb-2">
-                            {!! Form::label('title', 'Product Desription',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Product Desription'),['class' => 'control-label']) !!}
                             {!! Form::textarea('body_html', null, ['class'=>'form-control', 'id' => 'body_html', 'placeholder' => 'Description', 'rows' => '3']) !!}
                         </div>
 
                         <div class="col-12 mb-2">
-                            {!! Form::label('title', 'Meta Title',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Meta Title'),['class' => 'control-label']) !!}
                             {!! Form::text('meta_title', null, ['class'=>'form-control', 'id' => 'meta_title', 'placeholder' => 'Meta Title']) !!}
                         </div>
 
                         <div class="col-12 mb-2">
-                            {!! Form::label('title', 'Meta Keyword',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Meta Keyword'),['class' => 'control-label']) !!}
                             {!! Form::textarea('meta_keyword', null, ['class'=>'form-control', 'id' => 'meta_keyword', 'placeholder' => 'Meta Keyword', 'rows' => '3']) !!}
                         </div>
 
                         <div class="col-12 mb-2">
-                            {!! Form::label('title', 'Meta Desription',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Meta Desription'),['class' => 'control-label']) !!}
                             {!! Form::textarea('meta_description', null, ['class'=>'form-control', 'id' => 'meta_description', 'placeholder' => 'Meta Desription', 'rows' => '3']) !!}
                         </div>
                     </div>
                 </div>
 
                 <div class="card-box">
-                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Pricing Information</h5>
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pricing Information") }}</h5>
                     <div class="row mb-2">
                         <div class="col-6 mb-2">
-                            {!! Form::label('title', 'Price', ['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
                             {!! Form::text('price', null, ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         <div class="col-6 mb-2">
-                            {!! Form::label('title', 'Compare at price', ['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Compare at price'), ['class' => 'control-label']) !!}
                             {!! Form::text('compare_at_price', null, ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         <div class="col-6 mb-2">
-                            {!! Form::label('title', 'Cost Price', ['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Cost Price'), ['class' => 'control-label']) !!}
                             {!! Form::text('cost_price', null, ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         
                     </div>
                     <div class="row mb-2">
-                        {!! Form::label('title', 'Track Inventory',['class' => 'control-label col-sm-4']) !!}
+                        {!! Form::label('title', __('Track Inventory'),['class' => 'control-label col-sm-4']) !!}
                         <div class="col-sm-4">
                             <input type="checkbox" bid="" id="has_inventory" data-plugin="switchery" name="has_inventory" class="chk_box" data-color="#43bee1" checked>
                         </div>
                     </div>
                     <div class="row mb-2 check_inventory">
                         <div class="col-sm-6">
-                            {!! Form::label('title', 'Quantity',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Quantity'),['class' => 'control-label']) !!}
                             {!! Form::number('quantity', 0, ['class'=>'form-control', 'id' => 'quantity', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         <div class="col-sm-2"></div>
                         <div class="col-sm-4">
-                            {!! Form::label('title', 'Sell When Out Of Stock',['class' => 'control-label']) !!} <br/>
+                            {!! Form::label('title', __('Sell When Out Of Stock'),['class' => 'control-label']) !!} <br/>
                             <input type="checkbox" bid="" id="sell_stock_out" data-plugin="switchery" name="sell_stock_out" class="chk_box" data-color="#43bee1">
                         </div>
 
@@ -172,13 +172,13 @@
                     
                     <div class="row mb-2 bg-light">
                         <div class="col-8" style="margin:auto;">
-                            <h5 class="text-uppercase mt-0 bg-light p-2">Variant Information</h5>
+                            <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
                         </div>
                         <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
-                            <button type="button" class="btn btn-info makeVariantRow"> Create Variants</button>
+                            <button type="button" class="btn btn-info makeVariantRow"> {{ __("Create Variants") }}</button>
                         </div>
                     </div>
-                    <p>Select or change category to get variants</p>
+                    <p>{{ __("Select or change category to get variants") }}</p>
                     <div class="row" style="width:100%; overflow-x: scroll;">
                         <div id="variantAjaxDiv" class="col-12 mb-2" ></div>
 
@@ -192,14 +192,14 @@
             <div class="col-lg-5">
 
                 <div class="card-box">
-                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Other Information</h5>
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Other Information") }}</h5>
 
                     <div class="row mb-2">
-                        {!! Form::label('title', 'New',['class' => 'control-label col-sm-2']) !!}
+                        {!! Form::label('title', __('New'),['class' => 'control-label col-sm-2']) !!}
                         <div class="col-sm-4">
                             <input type="checkbox" bid="" id="is_new" data-plugin="switchery" name="is_new" class="chk_box" data-color="#43bee1">
                         </div>
-                        {!! Form::label('title', 'Featured',['class' => 'control-label col-sm-2']) !!}
+                        {!! Form::label('title', __('Featured'),['class' => 'control-label col-sm-2']) !!}
                         <div class="col-sm-4">
                             <input type="checkbox" bid="" id="is_featured" data-plugin="switchery" name="is_featured" class="chk_box" data-color="#43bee1">
                         </div>
@@ -207,14 +207,14 @@
 
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            {!! Form::label('title', 'Live',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Live'),['class' => 'control-label']) !!}
                             <select class="selectize-select form-control" id="is_live" name="is_live">
-                                <option value="0">Draft</option>
-                                <option value="1">Published</option>
+                                <option value="0">{{ __("Draft") }}</option>
+                                <option value="1">{{ __("Published") }}</option>
                             </select>
                         </div>
                         <div class="col-sm-6">
-                            {!! Form::label('title', 'Tax Category',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Tax Category'),['class' => 'control-label']) !!}
                             <select class="form-control selectizeInput" id="typeSelectBox" name="tax_category">
                                 @foreach($taxCate as $cate)
                                     <option value="{{$cate->id}}">{{$cate->title}}</option>
@@ -224,23 +224,23 @@
                     </div>
 
                     <div class="row mb-2">
-                        {!! Form::label('title', 'Physical',['class' => 'control-label col-sm-2']) !!}
+                        {!! Form::label('title', __('Physical'),['class' => 'control-label col-sm-2']) !!}
                         <div class="col-sm-4">
                             <input type="checkbox" bid="" id="is_physical" data-plugin="switchery" name="is_physical" class="chk_box" data-color="#43bee1">
                         </div>
 
-                        {!! Form::label('title', 'Required Last Mile',['class' => 'control-label col-sm-2']) !!}
+                        {!! Form::label('title', __('Required Last Mile'),['class' => 'control-label col-sm-2']) !!}
                         <div class="col-sm-4">
                             <input type="checkbox" id="last_mile" data-plugin="switchery" name="last_mile" class="chk_box" data-color="#43bee1">
                         </div>
                     </div>
                     <div class="row mb-2 physicalDiv" style="display: none;">
                         <div class="col-sm-6">
-                            {!! Form::label('title', 'Weight',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Weight'),['class' => 'control-label']) !!}
                             {!! Form::text('weight', null,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         <div class="col-sm-6">
-                            {!! Form::label('title', 'Weight Unit',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Weight Unit'),['class' => 'control-label']) !!}
                             {!! Form::text('weight_unit', null,['class' => 'form-control']) !!}
                         </div>
                     </div>
@@ -251,7 +251,7 @@
                         </div>
                         <div class="col-sm-6"></div>
                         <div class="col-sm-6 shippingDiv" style="display: none;">
-                            {!! Form::label('title', 'Country Origin',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Country Origin'),['class' => 'control-label']) !!}
                             <select class="form-control selectizeInput" id="country_origin_id" name="country_origin_id">
                                 @foreach($countries as $coun)
                                     <option value="{{$coun->id}}">{{$coun->name}}</option>
@@ -263,7 +263,7 @@
                 </div>
 
                 <div class="card-box">
-                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Product Images</h5>
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Product Images") }}</h5>
                     <div class="dropzone dropzone-previews" id="my-awesome-dropzone"></div>
 
                     <div class="imageDivHidden" ></div>
@@ -271,12 +271,12 @@
                 </div>
 
                 <div class="card-box">
-                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Relate with other products</h5>
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Relate with other products") }}</h5>
                     <div class="row mb-2">
                         <div class="col-12">
-                            {!! Form::label('title', 'Select Addon Set',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Select Addon Set'),['class' => 'control-label']) !!}
                             <select class="form-control selectizeInput" name="addon_sets[]" multiple placeholder="Select gear...">
-                                <option value="">Select gear...</option>
+                                <option value="">{{ __("Select gear") }}...</option>
                                 @foreach($addons as $set)
                                 <option value="{{$set->id}}">{{$set->title}}</option>
                                 @endforeach
@@ -285,60 +285,60 @@
                     </div> 
                     <div class="row mb-2">
                         <div class="col-12">
-                            {!! Form::label('title', 'Up Cell Products',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Up Cell Products'),['class' => 'control-label']) !!}
                             <select class="form-control selectizeInput" name="up_cell[]" multiple placeholder="Select gear...">
-                                <option value="">Select gear...</option>
+                                <option value="">{{ __("Select gear") }}...</option>
                                 <optgroup label="Climbing">
-                                    <option value="pitons">Pitons</option>
-                                    <option value="cams">Cams</option>
-                                    <option value="nuts">Nuts</option>
-                                    <option value="bolts">Bolts</option>
-                                    <option value="stoppers">Stoppers</option>
-                                    <option value="sling">Sling</option>
+                                    <option value="pitons">{{ __("Pitons") }}</option>
+                                    <option value="cams">{{ __("Cams") }}</option>
+                                    <option value="nuts">{{ __("Nuts") }}</option>
+                                    <option value="bolts">{{ __("Bolts") }}</option>
+                                    <option value="stoppers">{{ __("Stoppers") }}</option>
+                                    <option value="sling">{{ __("Sling") }}</option>
                                 </optgroup>
                                 <optgroup label="Skiing">
-                                    <option value="skis">Skis</option>
-                                    <option value="skins">Skins</option>
-                                    <option value="poles">Poles</option>
+                                    <option value="skis">{{ __("Skis") }}</option>
+                                    <option value="skins">{{ __("Skins") }}</option>
+                                    <option value="poles">{{ __("Poles") }}</option>
                                 </optgroup>
                             </select>
                         </div>
 
                         <div class="col-12">
-                            {!! Form::label('title', 'Cross Cell Products',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Cross Cell Products'),['class' => 'control-label']) !!}
                             <select class="form-control selectizeInput" name="cross_cell[]" multiple placeholder="Select gear...">
-                                <option value="">Select gear...</option>
+                                <option value="">{{ __('Select gear') }}...</option>
                                 <optgroup label="Climbing">
-                                    <option value="pitons">Pitons</option>
-                                    <option value="cams">Cams</option>
-                                    <option value="nuts">Nuts</option>
-                                    <option value="bolts">Bolts</option>
-                                    <option value="stoppers">Stoppers</option>
-                                    <option value="sling">Sling</option>
+                                    <option value="pitons">{{ __('Pitons') }}</option>
+                                    <option value="cams">{{ __('Cams') }}</option>
+                                    <option value="nuts">{{ __('Nuts') }}</option>
+                                    <option value="bolts">{{ __('Bolts') }}</option>
+                                    <option value="stoppers">{{ __('Stoppers') }}</option>
+                                    <option value="sling">{{ __('Sling') }}</option>
                                 </optgroup>
                                 <optgroup label="Skiing">
-                                    <option value="skis">Skis</option>
-                                    <option value="skins">Skins</option>
-                                    <option value="poles">Poles</option>
+                                    <option value="skis">{{ __('Skis') }}</option>
+                                    <option value="skins">{{ __('Skins') }}</option>
+                                    <option value="poles">{{ __('Poles') }}</option>
                                 </optgroup>
                             </select>
                         </div>
                         <div class="col-12">
-                            {!! Form::label('title', 'Related Products',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Related Products'),['class' => 'control-label']) !!}
                             <select class="form-control selectizeInput" name="releted_product[]" multiple placeholder="Select gear...">
-                                <option value="">Select gear...</option>
+                                <option value="">{{ __('Select gear') }}...</option>
                                 <optgroup label="Climbing">
-                                    <option value="pitons">Pitons</option>
-                                    <option value="cams">Cams</option>
-                                    <option value="nuts">Nuts</option>
-                                    <option value="bolts">Bolts</option>
-                                    <option value="stoppers">Stoppers</option>
-                                    <option value="sling">Sling</option>
+                                    <option value="pitons">{{ __('Pitons') }}</option>
+                                    <option value="cams">{{ __('Cams') }}</option>
+                                    <option value="nuts">{{ __('Nuts') }}</option>
+                                    <option value="bolts">{{ __('Bolts') }}</option>
+                                    <option value="stoppers">{{ __('Stoppers') }}</option>
+                                    <option value="sling">{{ __('Sling') }}</option>
                                 </optgroup>
                                 <optgroup label="Skiing">
-                                    <option value="skis">Skis</option>
-                                    <option value="skins">Skins</option>
-                                    <option value="poles">Poles</option>
+                                    <option value="skis">{{ __('Skis') }}</option>
+                                    <option value="skins">{{ __('Skins') }}</option>
+                                    <option value="poles">{{ __('Poles') }}</option>
                                 </optgroup>
                             </select>
                         </div>

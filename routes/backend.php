@@ -26,6 +26,8 @@ Route::get('file-download/{filename}', [DownloadFileController::class, 'index'])
 Route::post('admin/login/client', 'Auth\LoginController@clientLogin')->name('client.login');
 Route::get('admin/wrong/url', 'Auth\LoginController@wrongurl')->name('wrong.client');
 
+// ADMIN LANGUAGE SWITCH
+Route::group(['middleware' => 'adminLanguageSwitch'], function () { 
 Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'], function () {
     Route::any('/logout', 'Auth\LoginController@logout')->name('client.logout');
     Route::get('profile', 'Client\UserController@profile')->name('client.profile');
@@ -214,7 +216,7 @@ Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'],
     Route::any('vendor/subscriptions/filterData', 'Client\VendorSubscriptionController@getSubscriptionsFilterData')->name('vendor.subscriptions.filterData');
     Route::post('vendor/subscription/status/update/{slug}', 'Client\VendorSubscriptionController@updateSubscriptionStatus')->name('vendor.subscription.status.update');
 
-    Route::post('subscription/payment/stripe', 'Client\StripeGatewayController@subscriptionPaymentViaStripe')->name('subscription.payment.stripe');
+            Route::post('subscription/payment/stripe', 'Client\StripeGatewayController@subscriptionPaymentViaStripe')->name('subscription.payment.stripe');
 
     Route::get('/admin/signup', 'Client\AdminSignUpController@index')->name('admin.signup');
     Route::post('save_fcm_token', 'Client\UserController@save_fcm')->name('client.save_fcm');
@@ -225,6 +227,9 @@ Route::group(['middleware' => ['ClientAuth','database'], 'prefix' => '/client'],
         Route::post('updateCreateVendorInDispatchOnDemand', 'Client\VendorController@updateCreateVendorInDispatchOnDemand')->name('update.Create.Vendor.In.Dispatch.OnDemand');
     });
 });
+});
+
+
 Route::get('/search11',[SearchController::class,'search']);
 Route::group(['middleware' => 'auth:client', 'prefix' => '/admin'], function () {
     Route::get('/', 'Client\DashBoardController@index')->name('home');

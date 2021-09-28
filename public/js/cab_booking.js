@@ -71,6 +71,8 @@ $(document).ready(function () {
         initMap2();
     });
     $(document).on("click", "#pickup_now, #pickup_later",function() {
+
+        var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
         var schedule_datetime = '';
         if($(this).data('rel') =='pickup_later'){
             let temp_schedule_datetime = $('#schedule_datetime').val();
@@ -78,17 +80,31 @@ $(document).ready(function () {
                 $('#schedule_datetime_main_div').show();
                 return false;
             }
-            schedule_datetime = moment(temp_schedule_datetime).format('YYYY-MM-DD HH:mm')
+            schedule_datetime = moment(temp_schedule_datetime).format('YYYY-MM-DD HH:mm');
         }
         var tasks = [];
+
+        let schedule_datetimeset = $('#schedule_date').val();
+        if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
+            schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
+            var task_type = 'schedule';
+        }
+        else{
+            var task_type = 'now';
+        }
+        if(time_zone != undefined || time_zone.length != 0){
+            time_zone = time_zone;
+        }
+        
         $('#pickup_now').attr('disabled', true);
-        $('#pickup_later').attr('disabled', true);
+      //  $('#pickup_later').attr('disabled', true);
         var pickup_location_names = $('input[name="pickup_location_name[]"]').map(function(){return this.value;}).get();
         var destination_location_names = $('input[name="destination_location_name[]"]').map(function(){return this.value;}).get();
         var pickup_location_latitudes = $('input[name="pickup_location_latitude[]"]').map(function(){return this.value;}).get();
         var pickup_location_longitudes = $('input[name="pickup_location_longitude[]"]').map(function(){return this.value;}).get();
         var destination_location_latitudes = $('input[name="destination_location_latitude[]"]').map(function(){return this.value;}).get();
         var destination_location_longitudes = $('input[name="destination_location_longitude[]"]').map(function(){return this.value;}).get();
+        
         $(pickup_location_latitudes).each(function(index, latitude) {
             var sample_array = {};
             sample_array.barcode = null;
@@ -117,7 +133,6 @@ $(document).ready(function () {
         let product_image = $(this).data('image');
         let vendor_id = $(this).data('vendor_id');
         let coupon_id = $(this).data('coupon_id');
-        let task_type = $(this).data('task_type');
         let product_id = $(this).data('product_id');
         let payment_option_id = $(this).data('payment_method');
        
@@ -125,7 +140,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: {payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime},
+            data: {time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
@@ -351,7 +366,7 @@ $(document).ready(function () {
                                 $('.vendor-list').first().trigger('click');
                             }
                         }else{
-                            $("#vendor_main_div").html('<p class="text-center my-3">No result found. Please try a new search</p>').show();
+                            $("#vendor_main_div").html('<p class="text-center my-3">{{ __("No result found. Please try a new search") }}</p>').show();
                         }
                        // $('.cab-booking-main-loader').hide();
                     }
@@ -392,7 +407,7 @@ $(document).ready(function () {
                         let products_template = _.template($('#products_template').html());
                         $("#search_product_main_div").append(products_template({results: response.data.products})).show();
                     }else{
-                        $("#search_product_main_div ").html('<p class="text-center my-3">No result found. Please try a new search</p>').show();
+                        $("#search_product_main_div ").html('<p class="text-center my-3">{{ __("No result found. Please try a new search") }}</p>').show();
                     }
                 }
             }
@@ -518,7 +533,7 @@ $(document).ready(function () {
                         $("#cab_detail_box").append(cab_detail_box_template({result: response.data})).show();
                         getDistance();
                     }else{
-                        $("#cab_detail_box ").html('<p class="text-center my-3">No result found. Please try a new search</p>').show();
+                        $("#cab_detail_box ").html('<p class="text-center my-3">{{ __("No result found. Please try a new search") }}</p>').show();
                     }
                 }
             }
@@ -809,6 +824,7 @@ $(document).ready(function () {
                 $('#destination_location_longitude').val(perm[1]);
             }else if(perm[0] == 'schedule_date'){
                 $('#schedule_date').val(perm[1]);
+                $('#schedule_date_time').val(perm[1]);
             }else if(perm[0] == 'schedule_date_set'){
                 $('.scheduleDateTimeApnd').html(perm[1]);
             }
@@ -1108,13 +1124,21 @@ function getScheduleDateTime(thisObj){
     var scheduleDateTimeSet = scheduleDateRadio +" "+ scheduleHourHtml + ":" + scheduleMinuteHtml + " " + scheduleAmPm;
     var currentUrl  = window.location.href;
     var queryString = removeURLParameterNew(currentUrl, 'schedule_date');
-    var perm = "?" + (queryString != '' ? queryString : '') + "&schedule_date=" + scheduleDateTimeSet  + "&schedule_date_set=" + scheduleDateTime;
+    var perm = "?" + (queryString != '' ? queryString : '') + "&schedule_date=" + scheduleDateTimeSet;
     window.history.replaceState(null, null, perm);
 
 
-    $('.scheduleDateTimeApnd').text(scheduleDateTime);
+    var currentUrl  = window.location.href;
+    var queryString = removeURLParameterNew(currentUrl, 'schedule_date_set');
+    var perm = "?" + (queryString != '' ? queryString : '') +"&schedule_date_set=" + scheduleDateTime;
+    window.history.replaceState(null, null, perm);
 
-    $('.location-list').attr("style", "display: block !important");
+    $('#schedule_date').val(scheduleDateTimeSet);
+    $('.scheduleDateTimeApnd').text(scheduleDateTime);
+    $('#schedule_datetime').val(scheduleDateTimeSet);
+  
+
+    $('.cab-detail-box').attr("style", "display: block !important");
     $('.scheduled-ride-list').attr("style", "display: none !important");
 
 }

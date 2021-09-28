@@ -9,7 +9,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Taxes</h4>
+                    <h4 class="page-title">{{ __("Taxes") }}</h4>
                 </div>
             </div>
         </div>     
@@ -24,13 +24,13 @@
                                         <i class="mdi mdi-cart-plus text-primary mdi-24px"></i>
                                         <span data-plugin="counterup" id="type_of_taxes_applied_count">{{$type_of_taxes_applied_count}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">Type Of Taxes Applied</p>
+                                    <p class="text-muted font-15 mb-0">{{ __('Type Of Taxes Applied') }}</p>
                                 </div>
                             </div>
                             <div class="col-sm-6 mb-3 mb-sm-0">
                                 <div class="p-2 text-center">
                                     <h3><i class="fas fa-money-check-alt text-success"></i> <span data-plugin="counterup" id="total_tax_collected">{{$total_tax_collected}}</span></h3>
-                                    <p class="text-muted font-15 mb-0">Total Tax Collected</p>
+                                    <p class="text-muted font-15 mb-0">{{ __("Total Tax Collected") }}</p>
                                 </div>
                             </div>
                         </div>
@@ -54,7 +54,7 @@
                                     </div>
                                     <div class="col">
                                         <select class="form-control" id="tax_type_select_box">
-                                            <option value="">Select Tax Type</option>
+                                            <option value="">{{ __("Select Tax Type") }}</option>
                                             @foreach($tax_category_options as $tax_category_option)
                                                 <option value="{{$tax_category_option->id}}">{{$tax_category_option->title}}</option>
                                             @endforeach
@@ -62,7 +62,7 @@
                                     </div>
                                     <div class="col">
                                         <select class="form-control" id="payment_option_select_box">
-                                            <option value="">Select Payment Method</option>
+                                            <option value="">{{ __("Select Payment Method") }}</option>
                                             @foreach($payment_options as $payment_option)
                                                 <option value="{{$payment_option->id}}">{{$payment_option->title}}</option>
                                             @endforeach
@@ -81,13 +81,13 @@
                         <table class="table table-centered table-nowrap table-striped" id="accounting_tax_datatable" width='100%'>
                             <thead>
                                 <tr>
-                                    <th>Order ID</th>
-                                    <th>Date & Time</th>
-                                    <th>Customer Name</th>
-                                    <th>Final Amount</th>
-                                    <th>Tax Amount</th>
-                                    <th>Tax Types</th>
-                                    <th>Payment Method</th>
+                                    <th>{{ __("Order ID") }}</th>
+                                    <th>{{ __("Date & Time") }}</th>
+                                    <th>{{ __("Customer Name") }}</th>
+                                    <th>{{ __("Final Amount") }}</th>
+                                    <th>{{ __("Tax Amount") }}</th>
+                                    <th>{{ __("Tax Types") }}</th>
+                                    <th>{{ __("Payment Method") }}</th>
                                 </tr>
                             </thead>
                             <tbody id="accounting_vendor_tbody_list">

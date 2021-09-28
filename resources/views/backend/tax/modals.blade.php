@@ -2,19 +2,20 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Tax Category</h4>
+                <h4 class="modal-title">{{ __("Add Tax Category") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_tax_category" method="post" enctype="multipart/form-data">
                 @csrf
+                
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="row mb-2">
                                 <div class="col-md-6">
                                     <div class="form-group" id="titleInput">
-                                        {!! Form::label('title', 'Title',['class' => 'control-label']) !!}
-                                        {!! Form::text('title', null, ['class' => 'form-control', 'placeholder' => 'Tax Category Title']) !!}
+                                        {!! Form::label('title', __('Title'),['class' => 'control-label']) !!}
+                                        {!! Form::text('title', null, ['class' => 'form-control', 'placeholder' => __('Tax Category Title')]) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -22,8 +23,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="codeInput">
-                                        {!! Form::label('title', 'Code',['class' => 'control-label']) !!}
-                                        {!! Form::text('code', null, ['class' => 'form-control', 'placeholder' => 'Tax Category Code']) !!}
+                                        {!! Form::label('title', __('Code'),['class' => 'control-label']) !!}
+                                        {!! Form::text('code', null, ['class' => 'form-control', 'placeholder' => __('Tax Category Code')]) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -31,8 +32,8 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        {!! Form::label('title', 'Description',['class' => 'control-label']) !!}
-                                        {!! Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => 'description', 'rows' => '5']) !!}
+                                        {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
+                                        {!! Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => __('description'), 'rows' => '5']) !!}
                                     </div>
                                 </div>
 
@@ -41,7 +42,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitAddTaxCate">Submit</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitAddTaxCate">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -52,7 +53,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Edit Tax Category</h4>
+                <h4 class="modal-title">{{ __("Edit Tax Category") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
 
@@ -64,7 +65,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitEditTaxCate">Submit</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitEditTaxCate">{{ __("Submit") }}</button>
                 </div>
                 
             </form>
@@ -76,7 +77,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Tax Rate</h4>
+                <h4 class="modal-title">{{ __("Add Tax Rate") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_tax_rate" method="post" enctype="multipart/form-data">
@@ -87,8 +88,8 @@
                             <div class="row mb-2">
                                 <div class="col-md-6">
                                     <div class="form-group" id="identifierInput">
-                                        {!! Form::label('title', 'Identifier',['class' => 'control-label']) !!}
-                                        {!! Form::text('identifier', null, ['class' => 'form-control', 'placeholder' => 'Tax Identifier']) !!}
+                                        {!! Form::label('title', __('Identifier'),['class' => 'control-label']) !!}
+                                        {!! Form::text('identifier', null, ['class' => 'form-control', 'placeholder' => __('Tax Identifier')]) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -96,7 +97,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="categoryInput">
-                                        {!! Form::label('title', 'Tax Category',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('Tax Category'),['class' => 'control-label']) !!}
                                         <select class="form-control select2-multiple" id="category" name="category[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
                                             @foreach($taxCates as $cat)
                                                 <option value="{{$cat->id}}">{{ $cat->title }}</option>
@@ -109,8 +110,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="countryInput">
-                                        {!! Form::label('title', 'Country',['class' => 'control-label']) !!}
-                                        {!! Form::text('country', null, ['class' => 'form-control', 'placeholder' => 'Country']) !!}
+                                        {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
+                                        {!! Form::text('country', null, ['class' => 'form-control', 'placeholder' => __('Country')]) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -118,8 +119,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="stateInput">
-                                        {!! Form::label('title', 'State',['class' => 'control-label']) !!}
-                                        {!! Form::text('state', null, ['class' => 'form-control', 'placeholder' => 'State']) !!}
+                                        {!! Form::label('title', __('State'),['class' => 'control-label']) !!}
+                                        {!! Form::text('state', null, ['class' => 'form-control', 'placeholder' => __('State')]) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -129,9 +130,9 @@
                                     <div class="form-group" id="postal_typeInput">
                                         {!! Form::label('title', 'Applied On',['class' => 'control-label']) !!}
                                         <select class="form-control selectize-select postalSelect" name="postal_type" for="add">
-                                            <option value="0">No Postal Code</option>
-                                            <option value="1">Single Postal Code</option>
-                                            <option value="2">Postal Code Length</option>
+                                            <option value="0">{{ __("No Postal Code") }}</option>
+                                            <option value="1">{{ __("Single Postal Code") }}</option>
+                                            <option value="2">{{ __("Postal Code Length") }}</option>
                                         </select>
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -140,8 +141,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="tax_rateInput">
-                                        {!! Form::label('title', 'Tax Rate',['class' => 'control-label']) !!}
-                                        {!! Form::text('tax_rate', null, ['class' => 'form-control', 'placeholder' => 'Tax Rate', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                        {!! Form::label('title', __('Tax Rate'),['class' => 'control-label']) !!}
+                                        {!! Form::text('tax_rate', null, ['class' => 'form-control', 'placeholder' => __('Tax Rate'), 'onkeypress' => 'return isNumberKey(event)']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -151,8 +152,8 @@
                             <div class="row mb-2" id="singlePostal-add" style="display: none;">
                                 <div class="col-md-6">
                                     <div class="form-group" id="postal_codeInput">
-                                        {!! Form::label('title', 'Postal Code',['class' => 'control-label']) !!}
-                                        {!! Form::text('postal_code', null, ['class' => 'form-control', 'placeholder' => 'Tax Identifier', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                        {!! Form::label('title', __('Postal Code'),['class' => 'control-label']) !!}
+                                        {!! Form::text('postal_code', null, ['class' => 'form-control', 'placeholder' => __('Tax Identifier'), 'onkeypress' => 'return isNumberKey(event)']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -162,8 +163,8 @@
                             <div class="row" id="multiPostal-add" style="display: none;">
                                 <div class="col-md-6">
                                     <div class="form-group" id="postal_code_startInput">
-                                        {!! Form::label('title', 'Postal Code Start',['class' => 'control-label']) !!}
-                                        {!! Form::text('postal_code_start', null, ['class' => 'form-control', 'placeholder' => 'Tax Identifier', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                        {!! Form::label('title', __('Postal Code Start'),['class' => 'control-label']) !!}
+                                        {!! Form::text('postal_code_start', null, ['class' => 'form-control', 'placeholder' => __('Tax Identifier'), 'onkeypress' => 'return isNumberKey(event)']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -171,8 +172,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="postal_code_endInput">
-                                        {!! Form::label('title', 'Postal Code End',['class' => 'control-label']) !!}
-                                        {!! Form::text('postal_code_end', null, ['class' => 'form-control', 'placeholder' => 'Tax Identifier', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                        {!! Form::label('title', __('Postal Code End'),['class' => 'control-label']) !!}
+                                        {!! Form::text('postal_code_end', null, ['class' => 'form-control', 'placeholder' => __('Tax Identifier'), 'onkeypress' => 'return isNumberKey(event)']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -183,7 +184,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitAddTaxRate">Submit</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitAddTaxRate">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -194,7 +195,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Edit Tax Rate</h4>
+                <h4 class="modal-title">{{ __("Edit Tax Rate") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
 
@@ -205,7 +206,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitEditTaxRate">Submit</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitEditTaxRate">{{ __("Submit") }}</button>
                 </div>
                 
             </form>

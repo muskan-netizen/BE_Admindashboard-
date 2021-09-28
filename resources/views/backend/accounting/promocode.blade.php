@@ -11,7 +11,7 @@
                 <div class="page-title-box">
                     <div class="page-title-right">
                     </div>
-                    <h4 class="page-title">Promo Codes</h4>
+                    <h4 class="page-title">{{ __('Promo Codes') }}</h4>
                 </div>
             </div>
         </div>     
@@ -26,7 +26,7 @@
                                         <i class="fas fa-money-check-alt text-success"></i>
                                         <span data-plugin="counterup">{{$admin_paid_total_amt}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">Admin Paid Total</p>
+                                    <p class="text-muted font-15 mb-0">{{ __('Admin Paid Total') }}</p>
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
@@ -35,13 +35,13 @@
                                         <i class="fas fa-money-check-alt text-success"></i>
                                         <span data-plugin="counterup">{{$vendor_paid_total_amt}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">Vendor Paid Total</p>
+                                    <p class="text-muted font-15 mb-0">{{ __('Vendor Paid Total') }}</p>
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
                                 <div class="p-2 text-center">
                                     <h3><i class="mdi mdi-account-group text-danger mdi-24px"></i> <span data-plugin="counterup"> {{$promo_code_uses_count}}</span></h3>
-                                    <p class="text-muted font-15 mb-0">Promo Code Uses</p>
+                                    <p class="text-muted font-15 mb-0">{{ __("Promo Code Uses") }}</p>
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
@@ -50,7 +50,7 @@
                                         <i class="mdi mdi-eye-outline text-blue mdi-24px"></i>
                                         <span data-plugin="counterup">{{$unique_users_to_use_promo_code_count}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">Unique Users To Use Promo Code</p>
+                                    <p class="text-muted font-15 mb-0">{{ __('Unique Users To Use Promo Code') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -74,7 +74,7 @@
                                     </div>
                                     <div class="col">
                                         <select class="form-control" id="order_status_option_select_box">
-                                            <option value="">Select Order Status</option>
+                                            <option value="">{{ __("Select Order Status") }}</option>
                                             @forelse($order_status_options as $order_status_option)
                                                 <option value="{{$order_status_option->title}}">{{$order_status_option->title}}</option>
                                             @empty
@@ -83,7 +83,7 @@
                                     </div>
                                     <div class="col">
                                         <select class="form-control" name="" id="promo_code_option_select_box">
-                                            <option value="">Select Coupon Code</option>
+                                            <option value="">{{ __("Select Coupon Code") }}</option>
                                             @forelse($promo_code_options as $promo_code_option)
                                                 <option value="{{$promo_code_option->coupon_id}}">{{$promo_code_option->coupon_code}}</option>
                                             @empty
@@ -103,16 +103,16 @@
                         <table class="table table-centered table-nowrap table-striped" id="accounting_vendor_datatable" width="100%">
                             <thead>
                                 <tr>
-                                    <th>Order ID</th>
-                                    <th>Date & Time</th>
-                                    <th>Customer Name</th>
-                                    <th>Vendor Name</th>
-                                    <th>Subtotal Amount</th>
-                                    <th>Promo Code Discount [Vendor Paid Promos]</th>
-                                    <th>Promo Code Discount [Admin Paid Promos]</th>
-                                    <th>Final Amount</th>
-                                    <th>Payment Method</th>
-                                    <th>Order Status</th>
+                                    <th>{{ __("Order ID") }}</th>
+                                    <th>{{ __("Date & Time") }}</th>
+                                    <th>{{ __("Customer Name") }}</th>
+                                    <th>{{ __("Vendor Name") }}</th>
+                                    <th>{{ __("Subtotal Amount") }}</th>
+                                    <th>{{ __("Promo Code Discount") }} [{{ __("Vendor Paid Promos") }}]</th>
+                                    <th>{{ __("Promo Code Discount") }} [{{ __("Admin Paid Promos") }}]</th>
+                                    <th>{{ __("Final Amount") }}</th>
+                                    <th>{{ __("Payment Method") }}</th>
+                                    <th>{{ __("Order Status") }}</th>
                                 </tr>
                             </thead>
                             <tbody id="accounting_vendor_tbody_list">

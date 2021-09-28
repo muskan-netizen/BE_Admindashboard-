@@ -27,12 +27,12 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-                <h4 class="page-title">Customers</h4>
+                <h4 class="page-title">{{ __("Customers") }}</h4>
             </div>
         </div>
         <div class="col-sm-6 text-right">
             <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal"
-                userId="0" ><i class="mdi mdi-plus-circle mr-1"></i> Add
+                userId="0" ><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
             </button>
         </div>
     </div>
@@ -47,7 +47,7 @@
                                 <i class="fa fa-user text-primary mdi-24px"></i>
                                 <span data-plugin="counterup" id="total_vendor">{{$active_users}}</span>
                             </h3>
-                            <p class="text-muted font-15 mb-0">Active User Count</p>
+                            <p class="text-muted font-15 mb-0">{{ __("Active User Count") }}</p>
                         </div>
                     </div>
                     <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
@@ -56,7 +56,7 @@
                                 <i class="fas fa-user-clock text-primary mdi-24px"></i>
                                 <span data-plugin="counterup" id="total_product">{{ $inactive_users }}</span>
                             </h3>
-                            <p class="text-muted font-15 mb-0">Inactive User Count</p>
+                            <p class="text-muted font-15 mb-0">{{ __("Inactive User Count") }}</p>
                         </div>
                     </div>
                     <div class="col-sm-4 col-md-4 mb-3 mb-md-0">
@@ -65,7 +65,7 @@
                                 <i class="mdi mdi-login text-primary mdi-24px"></i>
                                 <span data-plugin="counterup" id="total_product">{{ $social_logins }}</span>
                             </h3>
-                            <p class="text-muted font-15 mb-0">Social Login Count</p>
+                            <p class="text-muted font-15 mb-0">{{ __("Social Login Count") }}</p>
                         </div>
                     </div>
                 </div>
@@ -98,18 +98,18 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Login Type</th>
-                                <th>Email/Auth-id</th>
-                                <th>Phone</th>
-                                <th>Email OTP</th>
-                                <th>Phone OTP</th>
-                                <th>Wallet</th>
-                                <th>Orders</th>
-                                <th>Active Orders</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th>{{ __('Image')}}</th>
+                                <th>{{ __('Name')}}</th>
+                                <th>{{ __('Login Type') }}</th>
+                                <th>{{ __('Email/Auth-id')}}</th>
+                                <th>{{ __('Phone')}}</th>
+                                <th>{{ __("Email OTP") }}</th>
+                                <th>{{ __("Phone OTP") }}</th>
+                                <th>{{ __('Wallet')}}</th>
+                                <th>{{ __('Orders')}}</th>
+                                <th>{{ __('Active Orders') }}</th>
+                                <th>{{ __('Status')}}</th>
+                                <th>{{ __('Action')}}</th>
                             </tr>
                         </thead>
                         <tbody id="post_list">

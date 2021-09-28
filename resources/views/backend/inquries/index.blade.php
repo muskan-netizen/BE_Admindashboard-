@@ -7,7 +7,7 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-                <h4 class="page-title">Product Inquiries</h4>
+                <h4 class="page-title">{{ __('Product Inquiries') }}</h4>
             </div>
         </div>
     </div>
@@ -22,7 +22,7 @@
                                     <i class="mdi mdi-storefront text-primary mdi-24px"></i>
                                     <span data-plugin="counterup" id="total_vendor">{{$total_vendor}}</span>
                                 </h3>
-                                <p class="text-muted font-15 mb-0">Total Unique Vendor Count</p>
+                                <p class="text-muted font-15 mb-0">{{ __('Total Unique Vendor Count') }}</p>
                             </div>
                         </div>
                         <div class="col-sm-6 col-md-6 mb-3 mb-md-0">
@@ -31,7 +31,7 @@
                                     <i class="mdi mdi-dump-truck text-primary mdi-24px"></i>
                                     <span data-plugin="counterup" id="total_product">{{$total_product}}</span>
                                 </h3>
-                                <p class="text-muted font-15 mb-0">Total Unique Product Count</p>
+                                <p class="text-muted font-15 mb-0">{{ __('Total Unique Product Count') }}</p>
                             </div>
                         </div>
                     </div>
@@ -49,12 +49,12 @@
                     <table class="table table-centered table-nowrap table-striped" id="inquiry_datatable" width="100%">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Company Name</th>
-                                <th>Message</th>
-                                <th>Product</th>
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Email') }}</th>
+                                <th>{{ __('Phone') }}</th>
+                                <th>{{ __('Company Name') }}</th>
+                                <th>{{ __('Message') }}</th>
+                                <th>{{ __('Product') }}</th>
                             </tr>
                         </thead>
                         <tbody id="post_list">

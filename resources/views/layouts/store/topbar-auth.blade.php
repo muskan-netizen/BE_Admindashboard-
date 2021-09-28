@@ -17,6 +17,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </ul>
                     </div> --}}
             </div>
+
+
+            @php  
+            $applocale = 'en';
+            if(session()->has('applocale')){
+                $applocale = session()->get('applocale');
+            }            
+            @endphp
+
+
             <div class="col-8 text-right">
                 <ul class="header-dropdown">                    
                     <!-- <li class="mobile-wishlist d-inline d-sm-none">
@@ -25,21 +35,35 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </a>
                     </li> -->
                     <li class="onhover-dropdown change-language slected-language">
-                        <a href="javascript:void(0)">{{session()->get('locale')}} 
+                        <a href="javascript:void(0)">{{ $applocale }} 
                         <span class="icon-ic_lang align-middle"></span>
-                        <span class="language ml-1 align-middle">language</span>
+                        <span class="language ml-1 align-middle">{{ __('language') }}</span>
                         </a>
                         <ul class="onhover-show-div">
-                            @foreach($languageList as $key => $listl)
-                                <li class="{{session()->get('locale') ==  $listl->language->sort_code ?  'active' : ''}}">
-                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
-                                </li>
-                            @endforeach
+                        {{-- @foreach($languageList as $key => $listl)
+                            <li class="{{session()->get('locale') ==  $listl->language->sort_code ?  'active' : ''}}">
+                                <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                            </li>
+                        @endforeach --}}
+                        
+                        {{-- language switch --}}
+
+                    
+
+                       <li class={{ $applocale === 'en' ? "active" : "" }} > <a href="/switch/language?lang=en" class="customerLang" langid="1">English</a> </li>
+                       <li class={{ $applocale === 'ar' ? "active" : "" }} > <a href="/switch/language?lang=ar" class="customerLang" langid="1">Arabic</a> </li>
+                       <li class={{ $applocale === 'fr' ? "active" : "" }} > <a href="/switch/language?lang=fr" class="customerLang" langid="1">{{ __("French") }}</a> </li>
+                       <li class={{ $applocale === 'de' ? "active" : "" }} > <a href="/switch/language?lang=de" class="customerLang" langid="1">Germany</a> </li>
+                       <li class={{ $applocale === 'es' ? "active" : "" }} > <a href="/switch/language?lang=es" class="customerLang" langid="1">Spanish</a> </li>
+                       
+                       {{-- language switch --}}
+
+                        
                         </ul>
                     </li>
                     <li class="onhover-dropdown change-currency slected-language">
                         <a href="#">{{session()->get('iso_code')}} <span class="icon-ic_currency align-middle"></span> 
-                        <span class="currency ml-1 align-middle">currency</span> </a>
+                        <span class="currency ml-1 align-middle">{{ __("currency") }}</span> </a>
                         <ul class="onhover-show-div">
                             @foreach($currencyList as $key => $listc)
                                 <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">

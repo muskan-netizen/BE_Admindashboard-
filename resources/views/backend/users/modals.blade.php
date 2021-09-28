@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Customer</h4>
+                <h4 class="modal-title">{{ __("Add Customer") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="add_user" action="{{ route('customer.store') }}" method="POST">
@@ -11,9 +11,9 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group" id="imageInput">
-                                <label>Profile image</label>
+                                <label>{{ __('Profile image') }}</label>
                                 <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify"/>
-                                <label class="logo-size text-right w-100">Image Size 110x110 </label>
+                                <label class="logo-size text-right w-100">{{ __('Image Size') }} 110x110 </label>
                                 <span class="invalid-feedback" role="alert">
                                     <strong></strong>
                                 </span>
@@ -27,7 +27,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group" id="nameInput">
-                                        {!! Form::label('title', 'Name',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                                         {!! Form::text('name', null, ['class' => 'form-control']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -36,7 +36,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="emailInput">
-                                        {!! Form::label('title', 'Email',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('Email'),['class' => 'control-label']) !!}
                                         {!! Form::email('email', null, ['class' => 'form-control']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -45,8 +45,8 @@
                                 </div>                                
                                 <div class="col-md-6">
                                     <div class="form-group" id="phone_numberInput">
-                                        {!! Form::label('title', 'Phone Number',['class' => 'control-label']) !!}
-                                        <input type="tel" class="form-control phone" id="phone" placeholder="Phone Number" name="phone_number" value="{{ old('full_number')}}">
+                                        {!! Form::label('title', __('Phone Number'),['class' => 'control-label']) !!}
+                                        <input type="tel" class="form-control phone" id="phone" placeholder={{ __("Phone Number") }} name="phone_number" value="{{ old('full_number')}}">
 
                                         <input type="hidden" id="addphoneHidden" name="phoneHidden">
                                         <span class="invalid-feedback" role="alert">
@@ -56,8 +56,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="passwordInput">
-                                        {!! Form::label('title', 'Password',['class' => 'control-label']) !!}
-                                        <input type="password" class="form-control" id="password" placeholder="Password" required="" name="password" value="{{ old('password')}}">
+                                        {!! Form::label('title', __('Password'),['class' => 'control-label']) !!}
+                                        <input type="password" class="form-control" id="password" placeholder={{ __("Password") }} required="" name="password" value="{{ old('password')}}">
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -66,9 +66,9 @@
                                
                                 <div class="col-md-6">
                                     <div class="form-group" id="countryInput">
-                                        {!! Form::label('title', 'Country',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
                                         <select class="selectize-select form-control" name="country_id">
-                                            <option value="">Select</option>
+                                            <option value="">{{ __('Select') }}</option>
                                             @foreach($countries as $key => $val)
                                                 <option value="{{$val->id}}">{{$val->name}}</option>
                                             @endforeach
@@ -86,7 +86,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        {!! Form::label('title', 'Email Verified',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Email Verified'),['class' => 'control-label']) !!} 
                                         <div>
                                              <input type="checkbox" data-plugin="switchery" name="email_verified" class="form-control email_verify_add">
                                         </div>
@@ -94,7 +94,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        {!! Form::label('title', 'Phone Verified',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Phone Verified'),['class' => 'control-label']) !!} 
                                         <div>
                                              <input type="checkbox" data-plugin="switchery" name="phone_verified" class="form-control phone_verify_add">
                                         </div>
@@ -106,7 +106,7 @@
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" id="addCountryData" name="countryData" value="us">
-                    <button type="submit" class="btn btn-info w-100">Submit</button>
+                    <button type="submit" class="btn btn-info w-100">{{ __('Submit') }}</button>
                 </div>
             </form>
         </div>
@@ -117,7 +117,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Edit Customer</h4>
+                <h4 class="modal-title">{{ __('Edit Customer') }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
 
@@ -128,7 +128,7 @@
                         <div class="col-md-3"></div>
                         <div class="col-md-6" id="imageInput">
                             <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify"/>
-                            <p class="text-muted text-center mt-2 mb-0">Profile image</p>
+                            <p class="text-muted text-center mt-2 mb-0">{{ __('Profile image') }}</p>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
@@ -141,7 +141,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group" id="nameInputEdit">
-                                        {!! Form::label('title', 'Name',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                                         {!! Form::text('name', null, ['class' => 'form-control']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -150,7 +150,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="emailInputEdit">
-                                        {!! Form::label('title', 'Email',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('Email'),['class' => 'control-label']) !!}
                                         {!! Form::email('email', null, ['class' => 'form-control']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -159,8 +159,8 @@
                                 </div>                                
                                 <div class="col-md-6">
                                     <div class="form-group" id="phone_numberInputEdit">
-                                        {!! Form::label('title', 'Phone Number',['class' => 'control-label']) !!}
-                                        <input type="tel" class="form-control phone" id="phone" placeholder="Phone Number" name="phone_number" value="{{ old('full_number')}}">
+                                        {!! Form::label('title', __('Phone Number'),['class' => 'control-label']) !!}
+                                        <input type="tel" class="form-control phone" id="phone" placeholder={{ __("Phone Number") }} name="phone_number" value="{{ old('full_number')}}">
 
                                         <input type="hidden" id="addphoneHidden" name="phoneHidden">
                                         <span class="invalid-feedback" role="alert">
@@ -170,8 +170,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="passwordInputEdit">
-                                        {!! Form::label('title', 'Password',['class' => 'control-label']) !!}
-                                        <input type="password" class="form-control" id="password" placeholder="Password" required="" name="password" value="{{ old('password')}}">
+                                        {!! Form::label('title', __('Password'),['class' => 'control-label']) !!}
+                                        <input type="password" class="form-control" id="password" placeholder={{ __("Password") }} required="" name="password" value="{{ old('password')}}">
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -179,18 +179,18 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="typeInputEdit">
-                                        {!! Form::label('title', 'Type',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('Type'),['class' => 'control-label']) !!}
                                         <select class="selectize-select form-control" name="role_id">
-                                            <option value="1">Buyer</option>
-                                            <option value="2">Seller</option>
+                                            <option value="1">{{ __('Buyer') }}</option>
+                                            <option value="2">{{ __('Seller') }}</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="countryInputEdit">
-                                        {!! Form::label('title', 'Country',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
                                         <select class="selectize-select form-control" name="country_id">
-                                            <option value="">Select</option>
+                                            <option value="">{{ __('Select') }}</option>
                                             @foreach($countries as $key => $val)
                                                 <option value="{{$val->id}}">{{$val->nicename}}</option>
                                             @endforeach
@@ -203,7 +203,7 @@
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" id="editCountryData" name="editCountryData" value="us">
-                    <button type="submit" class="btn btn-info w-100">Submit</button>
+                    <button type="submit" class="btn btn-info w-100">{{ __('Submit') }}</button>
                 </div>
             </form>
         </div>
@@ -214,7 +214,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Wallet Transactions</h4>
+                <h4 class="modal-title">{{ __('Wallet Transactions') }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
@@ -225,9 +225,9 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th class="text-nowrap">Date</th>
-                                        <th>Description</th>
-                                        <th>Credit / Debit</th>
+                                        <th class="text-nowrap">{{ __('Date') }}</th>
+                                        <th>{{ __("Description") }}</th>
+                                        <th>{{ __("Credit") }} / {{ __("Debit") }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>

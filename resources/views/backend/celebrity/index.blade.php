@@ -30,12 +30,12 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-                <h4 class="page-title">Celebrities</h4>
+                <h4 class="page-title">{{ __('Celebrities') }}</h4>
             </div>
         </div>
         <div class="col-sm-6 text-right">
             <button class="btn btn-info waves-effect waves-light text-sm-right"
-                data-toggle="modal" data-target=".addModal"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                data-toggle="modal" data-target=".addModal"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
             </button>
         </div>
     </div>
@@ -68,12 +68,12 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th class="descript">Description</th>
-                                    <th>Country</th>
+                                    <th>{{ __("Name") }}</th>
+                                    <th class="descript">{{ __("Description") }}</th>
+                                    <th>{{ __("Country") }}</th>
                                     <!-- <th>Brands</th> -->
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th>{{ __("Status") }}</th>
+                                    <th>{{ __("Action") }}</th>
                                 </tr>
                             </thead>
                             <tbody id="post_list">

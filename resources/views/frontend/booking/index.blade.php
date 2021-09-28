@@ -271,12 +271,12 @@ if (strpos($url,'cabservice') !== false) {?>
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                 </h4>
                 <div class="row">
-                    <div class="col-6">
-                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">Pickup Now</button>
+                    <div class="col-12">
+                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">Pickup</button>
                     </div>
-                    <div class="col-6">
+                    <!--<div class="col-6">
                         <button class="btn btn-solid w-100" id="pickup_later" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_later">Pickup Later</button>
-                    </div>
+                    </div>-->
                 </div>
             </div>
         </script>

@@ -28,7 +28,7 @@ class VendorController extends FrontController
                 }
         }
 
-        $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'order_pre_time', 'order_min_amount', 'logo','slug')->where('status', 1);
+        $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where('status', 1);
         
         if (count($ses_vendors) > 0) {
             $vendors = $vendors->whereIn('id', $ses_vendors);
@@ -37,6 +37,22 @@ class VendorController extends FrontController
         $vendors = $vendors->get();
 
         foreach ($vendors as $key => $value) {
+            $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
+            $categoriesList = '';
+            foreach($vendorCategories as $key => $category){
+                if($category->category){
+                    $categoriesList = $categoriesList . $category->category->translation_one->name;
+                    if( $key !=  $vendorCategories->count()-1 ){
+                        $categoriesList = $categoriesList . ', ';
+                    }
+                }
+            }
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $latitude = Session::get('latitude');
+                $longitude = Session::get('longitude');
+                $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
+            }
+            $value->categoriesList = $categoriesList;
             $value->vendorRating = $this->vendorRating($value->products);
         }
         return view('frontend/vendor-all')->with(['navCategories' => $navCategories,'vendors' => $vendors]);

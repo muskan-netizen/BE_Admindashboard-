@@ -44,9 +44,11 @@
         if($theme1 && ($theme1->theme_admin == 'dark' || $theme1->theme_admin == 'Dark')){
             $classBody1 = 'dark';
         } 
+
+        $ll = session()->get('applocale_admin');
         @endphp
 
-    <body class="{{$classBody1}}" @yield('body-extra')>
+    <body class="{{$classBody1}}" @yield('body-extra') @if( isset($ll) && $ll=='ar' ) dir="rtl" @endif>
         <!-- Begin page -->
         <div id="wrapper">
             @include('layouts.shared/topbar')

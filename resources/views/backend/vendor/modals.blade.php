@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add {{getNomenclatureName('vendors', false)}}</h4>
+                <h4 class="modal-title">{{ __("Add") }} {{getNomenclatureName('vendors', false)}}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_banner_form" method="post" enctype="multipart/form-data">
@@ -12,20 +12,20 @@
                         <div class="col-md-12">
                             <div class="row mb-2">
                                 <div class="col-md-3">
-                                    <label>Upload Logo</label>
+                                    <label>{{ __('Upload Logo') }}</label>
                                     <input type="file" accept="image/*" data-plugins="dropify" name="logo" class="dropify" data-default-file="" />
-                                    <label class="logo-size text-right w-100">Logo Size 170x96</label>
+                                    <label class="logo-size text-right w-100">{{ __('Logo Size') }} 170x96</label>
                                 </div> 
                                 <div class="col-md-6">     
-                                    <label>Upload banner image</label>            
+                                    <label>{{ __('Upload banner image') }}</label>            
                                     <input type="file" accept="image/*" data-plugins="dropify" name="banner" class="dropify" data-default-file="" />
-                                    <label class="logo-size text-right w-100">Image Size 830x200</label>
+                                    <label class="logo-size text-right w-100">{{ __("Image Size") }} 830x200</label>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group" id="nameInput">
-                                        {!! Form::label('title', 'Name',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Name'),['class' => 'control-label']) !!} 
                                         {!! Form::text('name', null, ['class'=>'form-control']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -34,7 +34,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group" id="descInput">
-                                        {!! Form::label('title', 'Description',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Description'),['class' => 'control-label']) !!} 
                                         {!! Form::textarea('desc', null, ['class' => 'form-control', 'rows' => '3']) !!}
                                     </div>
                                 </div>
@@ -42,7 +42,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group" id="emailInput">
-                                        <label for="">Email</label>
+                                        <label for="">{{ __('Email') }}</label>
                                         {!! Form::text('email', null, ['class'=>'form-control']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -51,7 +51,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="phone_noInput">
-                                        <label for="">Phone Number</label>
+                                        <label for="">{{ __('Phone Number') }}</label>
                                         {!! Form::tel('phone_no', null, ['class'=>'form-control']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -62,7 +62,7 @@
                             <div class="row" id="add">
                                 <div class="col-md-4">
                                     <div class="form-group mb-3" id="addressInput">
-                                        {!! Form::label('title', 'Address',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Address'),['class' => 'control-label']) !!} 
                                         <div class="input-group">
                                             <input type="text" name="address" id="add-address" placeholder="Delhi, India" class="form-control">
                                             <div class="input-group-append">
@@ -77,7 +77,7 @@
                             
                                 <div class="col-md-4">
                                     <div class="form-group mb-3" id="latitudeInput">
-                                        {!! Form::label('title', 'latitude',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('latitude'),['class' => 'control-label']) !!} 
                                         <input type="text" name="latitude" id="add_latitude" placeholder="24.9876755" class="form-control" value="">
                                         @if($errors->has('latitude'))
                                         <span class="text-danger" role="alert">
@@ -88,7 +88,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group mb-3" id="longitudeInput">
-                                        {!! Form::label('title', 'longitude',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('longitude'),['class' => 'control-label']) !!} 
                                         <input type="text" name="longitude" id="add_longitude" placeholder="11.9871371723" class="form-control" value="">
                                         @if($errors->has('longitude'))
                                         <span class="text-danger" role="alert">
@@ -101,7 +101,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="">Website</label>
+                                        <label for="">{{ __('Website') }}</label>
                                         <input class="form-control" type="text" name="website">
                                     </div>
                                 </div>
@@ -110,7 +110,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                             @if($client_preferences->dinein_check == 1)
-                                                {!! Form::label('title', 'Dine In',['class' => 'control-label']) !!} 
+                                                {!! Form::label('title', __('Dine In'),['class' => 'control-label']) !!} 
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" name="dine_in" class="form-control validity" data-color="#43bee1" checked='checked'>
                                                 </div>
@@ -120,7 +120,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                             @if($client_preferences->takeaway_check == 1)
-                                                {!! Form::label('title', 'Takeaway',['class' => 'control-label']) !!} 
+                                                {!! Form::label('title', __('Takeaway'),['class' => 'control-label']) !!} 
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" name="takeaway" class="form-control validity" data-color="#43bee1" checked='checked'>
                                                 </div>
@@ -130,7 +130,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                             @if($client_preferences->delivery_check == 1)
-                                                {!! Form::label('title', 'Delivery',['class' => 'control-label']) !!} 
+                                                {!! Form::label('title', __('Delivery'),['class' => 'control-label']) !!} 
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" name="delivery" class="form-control validity" data-color="#43bee1" checked='checked'>
                                                 </div>
@@ -144,7 +144,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitAddForm">Submit</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitAddForm">{{ __('Submit') }}</button>
                 </div>
             </form>
         </div>
@@ -154,7 +154,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Import {{getNomenclatureName('vendors', false)}}</h4>
+                <h4 class="modal-title">{{ __('Import') }} {{getNomenclatureName('vendors', false)}}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form method="post" enctype="multipart/form-data" id="save_imported_vendors">
@@ -162,13 +162,13 @@
                 <div class="modal-body">
                     <div class="row">
                     <div class="col-md-12 text-center">
-                            <a href="{{url('file-download'.'/sample_vendor.csv')}}">Download Sample file here!</a>
+                            <a href="{{url('file-download'.'/sample_vendor.csv')}}">{{ __("Download Sample file here!") }}</a>
                         </div>
                         <div class="col-md-12">
                             <div class="row mb-2">
                                 <div class="col-md-12">            
                                     <input type="file" accept=".csv" onchange="submitImportForm()" data-plugins="dropify" name="vendor_csv" class="dropify" data-default-file="" required/>
-                                    <p class="text-muted text-center mt-2 mb-0">Upload {{getNomenclatureName('vendors', true)}} CSV</p>
+                                    <p class="text-muted text-center mt-2 mb-0">{{ __("Upload") }} {{getNomenclatureName('vendors', true)}} CSV</p>
                                 </div>
                             </div>
                         </div>
@@ -177,9 +177,9 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>File Name</th>
-                                        <th colspan="2">Status</th>
-                                        <th>Link</th>
+                                        <th>{{ __('File Name') }}</th>
+                                        <th colspan="2">{{ __('Status') }}</th>
+                                        <th>{{ __('Link') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody id="post_list">
@@ -188,13 +188,13 @@
                                         <td> {{ $loop->iteration }} </td>
                                         <td> {{ $csv->name }} </td>
                                         @if($csv->status == 1)
-                                        <td>Pending</td>
+                                        <td>{{ __('Pending') }}</td>
                                         <td></td>
                                         @elseif($csv->status == 2)
-                                        <td>Success</td>
+                                        <td>{{ __('Success') }}</td>
                                         <td></td>
                                         @else
-                                        <td>Errors</td>
+                                        <td>{{ __('Errors') }}</td>
                                         <td class="position-relative text-center">
                                             <i class="mdi mdi-exclamation-thick"></i>
                                             <ul class="tooltip_error">
@@ -207,7 +207,7 @@
                                             </ul>
                                         </td>
                                         @endif
-                                        <td> <a href="{{ $csv->path }}">Download</a> </td>
+                                        <td> <a href="{{ $csv->path }}">{{ __('Download') }}</a> </td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -224,7 +224,7 @@
         <div class="modal-content">
 
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Select Location</h4>
+                <h4 class="modal-title">{{ __("Select Location") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body p-4">
@@ -252,7 +252,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Dispatcher Login</h4>
+                <h4 class="modal-title">{{ __("Dispatcher Login") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_edit_banner_form" method="post" enctype="multipart/form-data">
@@ -262,7 +262,7 @@
                     
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitDispatcherForm">Submit</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitDispatcherForm">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>

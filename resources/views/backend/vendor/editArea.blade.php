@@ -4,13 +4,13 @@
     <input type="hidden" name="zoom_level_edit" value="13" id="zoom_level_edit" />
 
     <div class="col-lg-12 mb-2">
-        {!! Form::label('title', 'Area Name',['class' => 'control-label']) !!}
+        {!! Form::label('title', __('Area Name'),['class' => 'control-label']) !!}
         {!! Form::text('name', $area->name,['class' => 'form-control',  'placeholder' => 'Area Name']) !!}
         {!! Form::hidden('ven_id', $area->vendor_id,['class' => 'form-control']) !!}
     </div>
 
      <div class="col-lg-12 mb-2">
-        {!! Form::label('title', 'Area Description',['class' => 'control-label']) !!}
+        {!! Form::label('title', __('Area Description'),['class' => 'control-label']) !!}
         {!! Form::textarea('description', $area->description,['class' => 'form-control', 'rows' => '3', 'placeholder' => 'Area Description']) !!}
         
     </div>

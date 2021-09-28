@@ -661,7 +661,7 @@ class OrderController extends BaseController{
                     "notification" => [
                         'title' => $notification_content->subject,
                         'body'  => $body_content,
-                        'sound' => "notification.mp3",
+                        'sound' => "default",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'].'200/200'.$client_preferences->favicon['image_path'] : '',
                         'click_action' => route('user.orders')
                     ],

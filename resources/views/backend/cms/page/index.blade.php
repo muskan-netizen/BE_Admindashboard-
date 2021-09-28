@@ -12,7 +12,7 @@
     <div class="row">
         <div class="col-8">
             <div class="page-title-box">
-                <h4 class="page-title">Pages</h4>
+                <h4 class="page-title">{{ __("Pages") }}</h4>
             </div>
         </div>
     </div>
@@ -21,17 +21,17 @@
             <div class="card">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h4>List</h4>
+                        <h4>{{ __("List") }}</h4>
                         <button class="btn btn-info add_cms_page" data-toggle="modal">
-                            <i class="mdi mdi-plus-circle"></i> Add
+                            <i class="mdi mdi-plus-circle"></i> {{ __("Add") }}
                         </button>
                     </div> 
                    <div class="table-responsive pages-list-data">
                         <table class="table table-striped w-100">
                             <thead>
                                 <tr>
-                                    <th class="border-bottom-0">Page Name</th>
-                                    <th class="text-right border-bottom-0">Action</th>
+                                    <th class="border-bottom-0">{{ __("Page Name") }}</th>
+                                    <th class="text-right border-bottom-0">{{ __("Action") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -75,13 +75,13 @@
                         <div class="col-md-4 col-xl-2">
                             <div class="form-group mb-0">
                                 <select class="form-control" id="published">
-                                    <option value="0">Draft</option>
-                                    <option value="1">Publish</option>
+                                    <option value="0">{{ __("Draft") }}</option>
+                                    <option value="1">{{ __("Publish") }}</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-4 col-xl-2 text-right">
-                            <button type="button" class="btn btn-info w-100" id="update_page_btn"> Update</button>
+                            <button type="button" class="btn btn-info w-100" id="update_page_btn"> {{ __("Update") }}</button>
                         </div>
                     </div>
                     <div class="row">
@@ -89,12 +89,12 @@
                         <div class="col-lg-6">
                             <div class="row">
                                 <div class="col-12 mb-3">
-                                    <label for="title" class="control-label">Title</label>
+                                    <label for="title" class="control-label">{{ __("Title") }}</label>
                                     <input class="form-control" id="edit_title" name="meta_title" type="text">
                                     <span class="text-danger error-text updatetitleError"></span>
                                 </div>
                                 <div class="col-12 mb-3">
-                                    <label for="title" class="control-label">Meta Keyword</label>
+                                    <label for="title" class="control-label">{{ __("Meta Keyword") }}</label>
                                     <textarea class="form-control" id="edit_meta_keyword" rows="3" name="meta_keyword" cols="10"></textarea>
                                 </div>
                             </div>         
@@ -102,12 +102,12 @@
                         <div class="col-lg-6">
                             <div class="row">
                                 <div class="col-12 mb-3">
-                                    <label for="title" class="control-label">Meta Title</label>
+                                    <label for="title" class="control-label">{{ __("Meta Title") }}</label>
                                     <input class="form-control" id="edit_meta_title" name="meta_title" type="text">
                                 </div>
                                 
                                 <div class="col-12 mb-3">
-                                    <label for="title" class="control-label">Meta Description</label>
+                                    <label for="title" class="control-label">{{ __("Meta Description") }}</label>
                                     <textarea class="form-control" id="edit_meta_description" rows="3" name="meta_description" cols="10"></textarea>
                                 </div>                               
                             </div>         
@@ -125,7 +125,7 @@
                             </div>         
                         </div>
                         <div class="col-12 mb-3">
-                            <label for="title" class="control-label">Description</label>
+                            <label for="title" class="control-label">{{ __("Description") }}</label>
                             <textarea class="form-control" id="edit_description" rows="9" name="meta_description" cols="100"></textarea>
                             <span class="text-danger error-text updatedescrpitionError"></span>
                         </div>

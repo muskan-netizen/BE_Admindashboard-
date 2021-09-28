@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Banner</h4>
+                <h4 class="modal-title">{{ __("Add Banner") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_banner_form" method="post" enctype="multipart/form-data">
@@ -11,7 +11,7 @@
                     
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitAddForm">Submit</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitAddForm">{{ __('Submit') }}</button>
                 </div>
             </form>
         </div>
@@ -21,7 +21,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Edit Banner</h4>
+                <h4 class="modal-title">{{ __("Edit Banner") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_edit_banner_form" method="post" enctype="multipart/form-data">
@@ -31,7 +31,7 @@
                     
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">Submit</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>

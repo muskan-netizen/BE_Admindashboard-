@@ -43,7 +43,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <li class="onhover-dropdown change-language">
                                 <a href="javascript:void(0)">{{session()->get('locale')}} 
                                 <span class="icon-ic_lang align-middle"></span>
-                                <span class="language ml-1 align-middle">language</span>
+                                <span class="language ml-1 align-middle">{{ __('language') }}</span>
                                 </a>
                                 <ul class="onhover-show-div">
                                     @foreach($languageList as $key => $listl)
@@ -51,12 +51,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                             <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
                                         </li>
                                     @endforeach
+
+
+
+
                                 </ul>
                             </li>
                             <li class="onhover-dropdown change-currency">
                                 <a href="javascript:void(0)">{{session()->get('iso_code')}}
                                 <span class="icon-ic_currency align-middle"></span>
-                                <span class="currency ml-1 align-middle">currency</span>
+                                <span class="currency ml-1 align-middle">{{ ('currency') }}</span>
                                 </a>
                                 <ul class="onhover-show-div">
                                     @foreach($currencyList as $key => $listc)
@@ -66,6 +70,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                         </a>
                                     </li>
                                     @endforeach
+                                   
                                 </ul>
                             </li>
                             @if(Auth::guest())
@@ -256,7 +261,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                                         <div class="col-xl-12">
                                                             <form>
                                                                 <div class="form-group">
-                                                                    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Search a Product">
+                                                                    <input type="text" class="form-control" id="exampleInputPassword1" placeholder={{ __("Search a Product") }}>
                                                                 </div>
                                                                 <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
                                                             </form>
@@ -270,22 +275,22 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <li class="onhover-div mobile-setting">
                                     <div><i class="ti-settings"></i></div>
                                     <div class="show-div setting">
-                                        <h6>language</h6>
+                                        <h6>{{ __('language') }}</h6>
                                         <ul>
-                                            <li><a href="#">english</a></li>
-                                            <li><a href="#">french</a></li>
+                                            <li><a href="#">{{ __("english") }}</a></li>
+                                            <li><a href="#">{{ __("french") }}</a></li>
                                         </ul>
-                                        <h6>currency</h6>
+                                        <h6>{{ __("currency") }}</h6>
                                         <ul class="list-inline">
-                                            <li><a href="#">euro</a></li>
-                                            <li><a href="#">rupees</a></li>
-                                            <li><a href="#">pound</a></li>
-                                            <li><a href="#">doller</a></li>
+                                            <li><a href="#">{{ __("euro") }}</a></li>
+                                            <li><a href="#">{{ __("rupees") }}</a></li>
+                                            <li><a href="#">{{ __("pound") }}</a></li>
+                                            <li><a href="#">{{ __("doller") }}</a></li>
                                         </ul>
-                                        <h6>Change Theme</h6>
+                                        <h6>{{ __("Change Theme") }}</h6>
                                         @if($client_preference_detail->show_dark_mode == 1)
                                         <ul class="list-inline">
-                                            <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
+                                            <li><a class="theme-layout-version" href="javascript:void(0)">{{ __("Dark") }}</a></li>
                                         </ul>
                                         @endif
                                     </div>

@@ -29,7 +29,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Profile</h4>
+                <h4 class="page-title">{{ __("Profile") }}</h4>
             </div>
         </div>
     </div>
@@ -53,24 +53,24 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title">Organization details</h4>
+                    <h4 class="header-title">{{ __("Organization details") }}</h4>
                     <p class="sub-header">
-                        View and edit your organization's profile details.
+                        {{ __("View and edit your organization's profile details.") }}
                     </p>
                     <form id="UpdateClient" method="post" action="{{route('client.profile.update',Auth::user()->code)}}" enctype="multipart/form-data">
                         @method('PUT')
                         @csrf
                         <div class="row mb-2 d-flex align-items-center">
                             <div class="col-md-4 positoin-relative">
-                                <label>Upload Logo</label>
+                                <label>{{ __("Upload Logo") }}</label>
                                 <input type="file" accept="image/png, image/gif, image/jpeg, image/jpg" data-plugins="dropify" name="logo" data-default-file="{{$client->logo['image_fit'] . '300/100' . $client->logo['image_path']}}" />
-                                <label class="logo-size d-block text-right mt-1">Image Size 300x100</label>
+                                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 300x100</label>
                             </div>
                             <div class="offset-2 col-md-6">
                                 <div class="row">
                                     <div class="col-md-6 mb-2">
                                         <div class="form-group">
-                                        <p class="sub-header">Short Code </p>
+                                        <p class="sub-header">{{ __("Short Code") }} </p>
                                             <h1 class="control-label">{{Auth::user()->code}}</h1>
                                         </div> 
                                     </div>
@@ -88,7 +88,7 @@
                         <div class=" row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="name" class="control-label">NAME</label>
+                                    <label for="name" class="control-label">{{ __("NAME") }}</label>
                                     <input type="text" class="form-control" name="name" id="name" value="{{ old('name', Auth::user()->name ?? '')}}" placeholder="John Doe">
                                     @if($errors->has('name'))
                                     <span class="text-danger" role="alert">
@@ -99,7 +99,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="email" class="control-label">EMAIL</label>
+                                    <label for="email" class="control-label">{{ __("EMAIL") }}</label>
                                     <input type="email" class="form-control" id="email" name="email" value="{{ old('email', Auth::user()->email ?? '')}}" placeholder="Enter email address" disabled="" style="cursor:not-allowed;">
                                     @if($errors->has('email'))
                                     <span class="text-danger" role="alert">
@@ -110,7 +110,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="phone_number" class="control-label">CONTACT NUMBER</label>
+                                    <label for="phone_number" class="control-label">{{ __("CONTACT NUMBER") }}</label>
                                     <div class="input-group">
                                         <input type="text" class="form-control" name="phone_number" id="phone_number" value="{{ old('phone_number', Auth::user()->phone_number ?? '')}}">
                                     </div>
@@ -123,7 +123,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="company_address" class="control-label">COMPANY ADDRESS</label>
+                                    <label for="company_address" class="control-label">{{ __("COMPANY ADDRESS") }}</label>
                                     <input type="text" class="form-control" id="company_address" name="company_address" value="{{ old('company_address', $client->company_address ?? '')}}" placeholder="Enter company address">
                                     @if($errors->has('company_address'))
                                     <span class="text-danger" role="alert">
@@ -134,7 +134,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="company_name" class="control-label">COMPANY NAME</label>
+                                    <label for="company_name" class="control-label">{{ __("COMPANY NAME") }}</label>
                                     <input type="text" class="form-control" name="company_name" id="company_name" value="{{ old('company_name', $client->company_name ?? '')}}" placeholder="Enter company name">
                                     @if($errors->has('company_name'))
                                     <span class="text-danger" role="alert">
@@ -145,7 +145,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group mb-3" id="countryInput">
-                                    <label for="country">COUNTRY</label>
+                                    <label for="country">{{ __("COUNTRY") }}</label>
                                     @if($errors->has('country'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('country') }}</strong>
@@ -165,7 +165,7 @@
                 
                             <div class="col-md-6">
                                 <div class="form-group mb-3" id="timezoneInput">
-                                    <label for="timezone">TIMEZONE</label>
+                                    <label for="timezone">{{ __("TIMEZONE") }}</label>
                                     @if($errors->has('timezone'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('timezone') }}</strong>
@@ -184,7 +184,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <button type="submit" class="btn btn-info waves-effect waves-light">Update</button>
+                                <button type="submit" class="btn btn-info waves-effect waves-light">{{ __("Update") }}</button>
                             </div>
                         </div>
                     </form>

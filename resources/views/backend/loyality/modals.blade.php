@@ -2,22 +2,22 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content p-3">
             <div class="modal-header border-0 p-0 mb-3">
-                <h4 class="modal-title">Add {{getNomenclatureName('Loyalty Cards', false)}}</h4><br>
+                <h4 class="modal-title">{{ __('Add') }} {{getNomenclatureName('Loyalty Cards', false)}}</h4><br>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_loyality_form">
                 @csrf
                 <div class="row mb-2">
                     <div class="col-md-12">
-                        <label>Upload Image</label>
+                        <label>{{ __("Upload Image") }}</label>
                         <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="" />
-                        <label class="logo-size text-right w-100">Image Size 120x120</label>
+                        <label class="logo-size text-right w-100">{{ __('Image Size') }} 120x120</label>
                     </div> 
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <div class="form-group" id="nameInput">
-                            {!! Form::label('title', 'Name',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                             {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Name']) !!}
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
@@ -26,7 +26,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group" id="minimum_pointsInput">
-                            {!! Form::label('title', 'Minimum Points to reach this level *',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Minimum Points to reach this level *'),['class' => 'control-label']) !!}
                             {!! Form::text('minimum_points', null, ['class' => 'form-control']) !!}
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
@@ -35,7 +35,7 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group" id="descriptionInput">
-                            {!! Form::label('title', 'Description *',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Description *'),['class' => 'control-label']) !!}
                             {!! Form::textarea('description', null, ['class' => 'form-control', 'rows' => '3']) !!}
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
@@ -44,10 +44,10 @@
                     </div>
                 </div>
 
-                <h5 class="mb-3">Earnings</h5>
+                <h5 class="mb-3">{{ __('Earnings') }}</h5>
 
                 <div class="form-group" id="per_order_pointsInput">
-                    {!! Form::label('title', 'Earnings Per Order*',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Earnings Per Order*'),['class' => 'control-label']) !!}
                     {!! Form::text('per_order_points', null, ['class' => 'form-control']) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
@@ -62,14 +62,14 @@
                 </div> -->
                 <br>
 
-                <label for="purchase">Order Amount to earn 1 {{getNomenclatureName('Loyalty Cards', false)}} point (as per primary currency)</label>
+                <label for="purchase">{{ __("Order Amount to earn 1") }} {{getNomenclatureName('Loyalty Cards', false)}} {{ __("point") }} ({{ __("as per primary currency") }})</label>
 
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon1">1 {{getNomenclatureName('Loyalty Cards', false)}} Point =</span>
+                                    <span class="input-group-text" id="basic-addon1">1 {{getNomenclatureName('Loyalty Cards', false)}} {{ __("Point") }} =</span>
                                 </div>
                                 <input type="text" onkeypress="return isNumberKey(event);" class="form-control" name="amount_per_loyalty_point" id="amount_per_loyalty_point" placeholder="Value" aria-label="Username" aria-describedby="basic-addon1">
                             </div>
@@ -79,7 +79,7 @@
 
 
                 <div class="modal-footer border-0">
-                    <button type="submit" class="btn btn-info waves-effect waves-light submitAddForm">Submit</button>
+                    <button type="submit" class="btn btn-info waves-effect waves-light submitAddForm">{{ __('Submit') }}</button>
                 </div>
             </form>
         </div>
@@ -90,7 +90,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Edit {{getNomenclatureName('Loyalty Cards', false)}}</h4>
+                <h4 class="modal-title">{{ __("Edit") }} {{getNomenclatureName('Loyalty Cards', false)}}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="update_loyality_form" method="post" enctype="multipart/form-data">
@@ -100,7 +100,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">Submit</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">{{ __('Submit') }}</button>
                 </div>
 
             </form>

@@ -36,6 +36,7 @@
          </div>
       </div>
    </div>
+   
     
     <form method="POST" id="payment_option_form" action="{{route('payoption.updateAll')}}">
         @csrf
@@ -44,12 +45,12 @@
             <div class="col-sm-8">
                 <div class="text-sm-left">
                     <div class="page-title-box">
-                        <h4 class="page-title">Payment Options</h4>
+                        <h4 class="page-title">{{ __("Payment Options") }}</h4>
                     </div>
                 </div>
             </div>
             <div class="col-sm-4 text-right">
-                <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> Save</button>
+                <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
             </div>
         </div>
         <div class="row">
@@ -80,14 +81,14 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
-                                <label for="" class="mr-3">Enable</label>
+                                <label for="" class="mr-3">{{ __("Enable") }}</label>
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
                             </div>
                         </div>
                         @if ( (strtolower($opt->code) != 'cod') )
                         <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
-                                <label for="" class="mr-3">Sandbox</label>
+                                <label for="" class="mr-3">{{ __('Sandbox') }}</label>
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="sandbox[{{$opt->id}}]" class="chk_box" data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
                             </div>
                         </div>
@@ -99,13 +100,13 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-0">
-                                    <label for="stripe_api_key" class="mr-3">Secret Key</label>
+                                    <label for="stripe_api_key" class="mr-3">{{ __("Secret Key") }}</label>
                                     <input type="password" name="stripe_api_key" id="stripe_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-0">
-                                    <label for="stripe_publishable_key" class="mr-3">Publishable Key</label>
+                                    <label for="stripe_publishable_key" class="mr-3">{{ __("Publishable Key") }}</label>
                                     <input type="password" name="stripe_publishable_key" id="stripe_publishable_key" class="form-control" value="{{$publishable_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
@@ -118,19 +119,19 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-0">
-                                    <label for="paypal_username" class="mr-3">Username</label>
+                                    <label for="paypal_username" class="mr-3">{{ __("Username") }}</label>
                                     <input type="textbox" name="paypal_username" id="paypal_username" class="form-control" value="{{$username}}" @if($opt->status == 1) value="" required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-0">
-                                    <label for="paypal_password" class="mr-3">Password</label>
+                                    <label for="paypal_password" class="mr-3">{{ __("Password") }}</label>
                                     <input type="password" name="paypal_password" id="paypal_password" class="form-control" value="{{$password}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-0">
-                                    <label for="paypal_signature" class="mr-3">Signature</label>
+                                    <label for="paypal_signature" class="mr-3">{{ __("Signature") }}</label>
                                     <input type="password" name="paypal_signature" id="paypal_signature" class="form-control" value="{{$signature}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
@@ -143,13 +144,13 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-0">
-                                    <label for="paystack_secret_key" class="mr-3">Secret Key</label>
+                                    <label for="paystack_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
                                     <input type="password" name="paystack_secret_key" id="paystack_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-0">
-                                    <label for="paystack_public_key" class="mr-3">Publishable Key</label>
+                                    <label for="paystack_public_key" class="mr-3">{{ __("Publishable Key") }}</label>
                                     <input type="password" name="paystack_public_key" id="paystack_public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
@@ -162,19 +163,19 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-0">
-                                    <label for="payfast_merchant_id" class="mr-3">Merchant ID</label>
+                                    <label for="payfast_merchant_id" class="mr-3">{{ __("Merchant ID") }}</label>
                                     <input type="text" name="payfast_merchant_id" id="payfast_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-0">
-                                    <label for="payfast_merchant_key" class="mr-3">Merchant Key</label>
+                                    <label for="payfast_merchant_key" class="mr-3">{{ __("Merchant Key") }}</label>
                                     <input type="password" name="payfast_merchant_key" id="payfast_merchant_key" class="form-control" value="{{$merchant_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-0">
-                                    <label for="payfast_passphrase" class="mr-3">Passphrase</label>
+                                    <label for="payfast_passphrase" class="mr-3">{{ __("Passphrase") }}</label>
                                     <input type="text" name="payfast_passphrase" id="payfast_passphrase" class="form-control" value="{{$passphrase}}">
                                 </div>
                             </div>

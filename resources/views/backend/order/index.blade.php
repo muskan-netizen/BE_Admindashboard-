@@ -27,10 +27,10 @@
             <% if(order.vendors.length !== 0) { %>
                 <div class="col-xl-6"  id="full-order-div<%= k %>">
                     <div class="row no-gutters order_head">
-                        <div class="col-md-3"><h4>Order ID</h4></div>
-                        <div class="col-md-3"><h4>Date & Time</h4></div>
-                        <div class="col-md-3"><h4>Customer</h4></div>
-                        <div class="col-md-3"><h4>Address</h4></div>
+                        <div class="col-md-3"><h4>{{ __("Order ID") }}</h4></div>
+                        <div class="col-md-3"><h4>{{ __("Date & Time") }}</h4></div>
+                        <div class="col-md-3"><h4>{{ __("Customer") }}</h4></div>
+                        <div class="col-md-3"><h4>{{ __("Address") }}</h4></div>
                     </div>
                     <div class="row no-gutters order_data mb-lg-2">
                         <div class="col-md-3"><h6 class="m-0">#<%= order.order_number %></h6></div>
@@ -55,14 +55,14 @@
 
                                         <div id="update-single-status">
                                             <% if(vendor.order_status_option_id == 1) { %>
-                                                <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>">Accept</button>
-                                                <button class="update-status btn-danger" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">Reject</button>
+                                                <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Accept') }}</button>
+                                                <button class="update-status btn-danger" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>
                                                 <% } else if(vendor.order_status_option_id == 2) { %>
-                                                    <button class="update-status btn-warning" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="4" data-order_vendor_id="<%= vendor.order_vendor_id %>">Processing</button>
+                                                    <button class="update-status btn-warning" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="4" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Processing') }}</button>
                                                 <% } else if(vendor.order_status_option_id == 4) { %>
-                                                        <button class="update-status btn-success" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="5" data-order_vendor_id="<%= vendor.order_vendor_id %>">Out For Delivery</button>
+                                                        <button class="update-status btn-success" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="5" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Out For Delivery') }}</button>
                                                 <% } else if(vendor.order_status_option_id == 5) { %>
-                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="6" data-order_vendor_id="<%= vendor.order_vendor_id %>">Delivered</button>
+                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="6" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Delivered') }}</button>
                                                 <% } else { %>
                                                     
                                             <% } %> 
@@ -97,15 +97,15 @@
                                             <div class="col-md-3 mt-md-0 mt-sm-2">
                                                 <ul class="price_box_bottom m-0 p-0">
                                                     <li class="d-flex align-items-center justify-content-between">
-                                                        <label class="m-0">Total</label>
+                                                        <label class="m-0">{{ __('Total') }}</label>
                                                         <span>$<%= vendor.subtotal_amount %></span>
                                                     </li>
                                                     <li class="d-flex align-items-center justify-content-between">
-                                                        <label class="m-0">Promocode</label>
+                                                        <label class="m-0">{{ __('Promocode') }}</label>
                                                         <span>$<%= vendor.discount_amount %></span>
                                                     </li>
                                                     <li class="d-flex align-items-center justify-content-between">
-                                                        <label class="m-0">Delivery</label>
+                                                        <label class="m-0">{{ __('Delivery') }}</label>
                                                         <% if(vendor.delivery_fee !== null) { %>
                                                         <span>$<%= vendor.delivery_fee %></span>
                                                         <% }else { %>
@@ -113,7 +113,7 @@
                                                         <% } %> 
                                                     </li>
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
-                                                        <label class="m-0">Amount</label>
+                                                        <label class="m-0">{{ __('Amount') }}</label>
                                                         <span>$<%= vendor.payable_amount %></span>
                                                     </li>
                                                 </ul>
@@ -127,15 +127,15 @@
                             <div class="card-box p-2">
                                 <ul class="price_box_bottom m-0 pl-0 pt-1">
                                     <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">Total</label>
+                                        <label class="m-0">{{ __('Total') }}</label>
                                         <span>$<%= order.total_amount %></span>
                                     </li>
                                     <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">Loyalty Used</label>
+                                        <label class="m-0">{{ __('Loyalty Used') }}</label>
                                         <span>$<%= order.loyalty_amount_saved %></span>
                                     </li>
                                     <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">Tax</label>
+                                        <label class="m-0">{{ __('Tax') }}</label>
                                         <span>$<%= order.taxable_amount %></span>
                                     </li>
                                     <!-- <li class="d-flex align-items-center justify-content-between">
@@ -143,7 +143,7 @@
                                         <span>$<%= order.total_delivery_fee %></span>
                                     </li> -->
                                     <li class="grand_total d-flex align-items-center justify-content-between">
-                                        <label class="m-0">Payable </label>
+                                        <label class="m-0">{{ __('Payable') }} </label>
                                         <span>$<%= order.payable_amount %></span>
                                     </li>
                                 </ul>
@@ -158,7 +158,7 @@
         <div class="row mt-4">
             <div class="col-md-4 offset-md-4 text-center">
                 <button class="ladda-button btn btn-primary load-more-btn" dir="ltr" data-style="expand-left" data-url="<%= next_page_url%>" data-rel="<%= filter_order_status %>">
-                    <span class="ladda-label">Load More</span>
+                    <span class="ladda-label">{{ __('Load More') }}</span>
                     <span class="ladda-spinner"></span>
                     <div class="ladda-progress" style="width: 0px;"></div>
                 </button>
@@ -170,9 +170,9 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="page-title">Orders</h4>
+                <h4 class="page-title">{{ __('Orders') }}</h4>
                 <a class="return-btn" href="{{route('backend.order.returns',['Pending'])}}">
-                    <b>Return Request <sup class="total-items">({{$return_requests}})</sup>
+                    <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
                         <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
                     </b>
                 </a>
@@ -184,7 +184,7 @@
     </div>
 </div>
 <script type="text/template" id="no_order_template">
-    <div class="error-msg"><p>You have not any order yet now.</p></div>
+    <div class="error-msg"><p>{{ __('You have not any order yet now.') }}</p></div>
     </script>
 <div class="loader" id="order_list_order">
     <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
@@ -194,19 +194,19 @@
         <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
             <li class="nav-item">
                 <a class="nav-link active" id="pending_order-tab" data-toggle="tab" href="#pending_orders" role="tab" aria-selected="false" data-rel="pending_orders">
-                    <i class="icofont icofont-man-in-glasses"></i>Pending Orders <sup class="total-items" id="pending-orders">({{$pending_order_count}})</sup>
+                    <i class="icofont icofont-man-in-glasses"></i>{{ __('Pending Orders') }} <sup class="total-items" id="pending-orders">({{$pending_order_count}})</sup>
                 </a>
                 <div class="material-border"></div>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
-                    <i class="icofont icofont-ui-home"></i>Active Orders <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
+                    <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
                 </a>
                 <div class="material-border"></div>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
-                    <i class="icofont icofont-man-in-glasses"></i>Orders History <sup class="total-items" id="history-orders">({{$past_order_count}})</sup>
+                    <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders">({{$past_order_count}})</sup>
                 </a>
                 <div class="material-border"></div>
             </li>
@@ -216,7 +216,7 @@
             <div class="tab-pane fade" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
             <div class="tab-pane fade past-order" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
                 <div class="error-msg">
-                    <p>You have not any order yet now.</p>
+                    <p>{{ __('You have not any order yet now.') }}</p>
                 </div>
             </div>
         </div>

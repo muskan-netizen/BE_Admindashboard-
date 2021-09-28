@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Banner</h4>
+                <h4 class="page-title">{{ __("Banner") }}</h4>
             </div>
         </div>
     </div>
@@ -40,7 +40,7 @@
                         </div>
                         <div class="col-sm-4 text-right">
                             <button class="btn btn-info waves-effect waves-light text-sm-right openBannerModal"
-                             userId="0"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                             userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                             </button>
                         </div>
                     </div>
@@ -52,12 +52,12 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Image</th>
-                                    <th>Name</th>
-                                    <th>Duration</th>
-                                    <th>Redirect To</th>
+                                    <th>{{ __("Image") }}</th>
+                                    <th>{{ __("Name") }}</th>
+                                    <th>{{ __("Duration") }}</th>
+                                    <th>{{ __("Redirect To") }}</th>
                                     <th></th>
-                                    <th>Action</th>
+                                    <th>{{ __("Action") }}</th>
                                 </tr>
                             </thead>
                             <tbody id="post_list">

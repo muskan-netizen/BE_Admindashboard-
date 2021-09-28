@@ -1,9 +1,9 @@
 <input type="hidden" name="lc_id" id="lc_id" url="{{route('celebrity.update', $lc->id)}}">
 <div class="row">
     <div class="col-md-6" id="imageInput">
-        <label>Upload image</label>
+        <label>{{ __('Upload image') }}</label>
         <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$lc->avatar['proxy_url'].'600/400'.$lc->avatar['image_path']}}" />        
-        <label class="logo-size d-block text-right mt-1">Image Size 150x150</label>
+        <label class="logo-size d-block text-right mt-1">{{ __('Image Size') }} 150x150</label>
         <span class="invalid-feedback" role="alert">
             <strong></strong>
         </span>
@@ -12,7 +12,7 @@
 <div class="row mb-2">
     <div class="col-md-6">
         <div class="form-group" id="nameInput">
-            {!! Form::label('title', 'Name',['class' => 'control-label']) !!}
+            {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
             {!! Form::text('name', $lc->name, ['class' => 'form-control', 'placeholder' => 'Name']) !!}
             <span class="invalid-feedback" role="alert">
                 <strong></strong>
@@ -21,7 +21,7 @@
     </div>
     <div class="col-md-6" id="slugInput">
         <div class="form-group">
-            {!! Form::label('title', 'Slug',['class' => 'control-label']) !!} 
+            {!! Form::label('title', __('Slug'),['class' => 'control-label']) !!} 
             {!! Form::text('slug', $lc->slug, ['class'=>'form-control', 'required' => 'required', 'onkeypress' => "return alphaNumeric(event)", 'id' => 'slug']) !!}
             <span class="invalid-feedback" role="alert">
                 <strong></strong>
@@ -30,7 +30,7 @@
     </div>
     <div class="col-md-12" id="country_list">
         <div class="form-group">
-            {!! Form::label('title', 'Country',['class' => 'control-label']) !!}
+            {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
             <select class="form-control" id="countries" name="countries" data-placeholder="Choose ...">
                 @foreach($countries as $ck => $cval)
                 @if($cval->id == $lc->country_id)
@@ -64,7 +64,7 @@
     </div> -->
     <div class="col-md-12">
         <div class="form-group" id="addressInput">
-            {!! Form::label('title', 'Description',['class' => 'control-label']) !!}
+            {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
             <!-- {!! Form::text('desctiption', $lc->desctiption, ['class' => 'form-control']) !!} -->
             <textarea class='form-control' rows="3" name="description">{{$lc->description}}</textarea>
             <span class="invalid-feedback" role="alert">

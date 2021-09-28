@@ -9,7 +9,7 @@
             <div class="col-12">
                 <div class="page-title-box">
                     <div class="page-title-right"></div>
-                    <h4 class="page-title">Vendors</h4>
+                    <h4 class="page-title">{{ __("Vendors") }}</h4>
                 </div>
             </div>
         </div>     
@@ -24,7 +24,7 @@
                                         <i class="fas fa-money-check-alt text-primary"></i>
                                         <span data-plugin="counterup">{{$total_order_value}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">Total Order Value</p>
+                                    <p class="text-muted font-15 mb-0">{{ __("Total Order Value") }}</p>
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
@@ -33,7 +33,7 @@
                                         <i class="fas fa-money-check-alt text-success"></i>
                                         <span data-plugin="counterup" id="total_delivery_fees">{{$total_delivery_fees}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">Total Delivery Fees</p>
+                                    <p class="text-muted font-15 mb-0">{{ __("Total Delivery Fees") }}</p>
                                 </div>
                             </div>
                             <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
@@ -42,7 +42,7 @@
                                         <i class="fas fa-money-check-alt text-success"></i>
                                         <span data-plugin="counterup" id="total_admin_commissions">{{$total_admin_commissions}}</span>
                                     </h3>
-                                    <p class="text-muted font-15 mb-0">Total Admin Commissions</p>
+                                    <p class="text-muted font-15 mb-0">{{ __("Total Admin Commissions") }}</p>
                                 </div>
                             </div>
                         </div>
@@ -68,15 +68,15 @@
                         <table class="table table-centered table-nowrap table-striped" id="accounting_vendor_datatable" width="100%">
                             <thead>
                                 <tr>
-                                    <th>Vendor Name</th>
-                                    <th >Order Value <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="top" title="Order Value Without Delivery Fee."></i></th>
-                                    <th>Delivery Fees</th>
-                                    <th>Admin Commissions</th>
-                                    <th>Promo [Vendor]</th>
-                                    <th>Promo [Admin]</th>
-                                    <th>Cash Collected</th>
-                                    <th>Payment Gateway</th>
-                                    <th>Vendor Earning</th>
+                                    <th>{{ __("Vendor Name") }}</th>
+                                    <th >{{ __("Order Value") }} <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="top" title="Order Value Without Delivery Fee."></i></th>
+                                    <th>{{ __("Delivery Fees") }}</th>
+                                    <th>{{ __("Admin Commissions") }}</th>
+                                    <th>{{ __("Promo [Vendor]") }}</th>
+                                    <th>{{ __("Promo [Admin]") }}</th>
+                                    <th>{{ __("Cash Collected") }}</th>
+                                    <th>{{ __("Payment Gateway") }}</th>
+                                    <th>{{ __("Vendor Earning") }}</th>
                                 </tr>
                             </thead>
                             <tbody id="accounting_vendor_tbody_list">

@@ -12,7 +12,7 @@
         <div class="col-12">
             <div class="page-title-box">
                 @if(isset($subadmin))
-                <h4 class="page-title">Update Customer</h4>
+                <h4 class="page-title">{{ __('Update Customer') }}</h4>
                 @endif
             </div>
         </div>
@@ -35,7 +35,7 @@
                             <div class=" row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="name" class="control-label">NAME</label>
+                                        <label for="name" class="control-label">{{ __("NAME") }}</label>
                                         <input type="text" class="form-control" name="name" id="name"
                                             value="{{ old('name', $subadmin->name ?? '')}}" placeholder="John Doe" readonly>
                                         @if($errors->has('name'))
@@ -47,7 +47,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="email" class="control-label">EMAIL</label>
+                                        <label for="email" class="control-label">{{ __('EMAIL') }}</label>
                                          <input type="email" class="form-control" id="email" name="email"
                                             value="{{ old('email', $subadmin->email ?? '')}}" placeholder="Enter email address" readonly>
                                         @if($errors->has('email'))
@@ -64,10 +64,10 @@
                                
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="password" class="control-label">Status</label>
+                                        <label for="password" class="control-label">{{ __("Status") }}</label>
                                         <select name="status" class="form-control">
-                                            <option value="1" @if($subadmin->status==1) selected @endif>Active</option>
-                                            <option value="3" @if($subadmin->status==3) selected @endif>Inactive</option>
+                                            <option value="1" @if($subadmin->status==1) selected @endif>{{ __("Active") }}</option>
+                                            <option value="3" @if($subadmin->status==3) selected @endif>{{ __("Inactive") }}</option>
                                            
                                         </select>                                        
                                     </div>
@@ -75,10 +75,10 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="password" class="control-label">Provide Admin Access</label>
+                                        <label for="password" class="control-label">{{ __("Provide Admin Access") }}</label>
                                          <select name="is_admin" class="form-control">
-                                            <option value="0" @if($subadmin->is_admin==0) selected @endif>No</option>
-                                            <option value="1" @if($subadmin->is_admin==1) selected @endif>Yes</option>
+                                            <option value="0" @if($subadmin->is_admin==0) selected @endif>{{ __("No") }}</option>
+                                            <option value="1" @if($subadmin->is_admin==1) selected @endif>{{ __("Yes") }}</option>
                                            
                                         </select>                                        
                                     </div>
@@ -100,8 +100,8 @@
         
                                         <thead class="thead-light">
                                             <tr>
-                                                <th>Permission Name</th>
-                                                <th>Status</th>
+                                                <th>{{ __("Permission Name") }}</th>
+                                                <th>{{ __("Status") }}</th>
                                             </tr>
                                             
                                         </thead>
@@ -170,7 +170,7 @@
                                         <thead class="thead-light">
                                             <tr>
                                                 <th>{{__('Vendors')}}</th>
-                                                <th>Status</th>
+                                                <th>{{ __("Status") }}</th>
                                             </tr>
                                             
                                         </thead>
@@ -208,7 +208,7 @@
                             <div class="row mb-2 mt-4">
                                 <div class="col-12">
                                     <div class="form-group mb-0 text-center">
-                                        <button class="btn btn-blue btn-block" type="submit"> Submit </button>
+                                        <button class="btn btn-blue btn-block" type="submit"> {{ __("Submit") }} </button>
                                     </div>
                                 </div>
                             </div>

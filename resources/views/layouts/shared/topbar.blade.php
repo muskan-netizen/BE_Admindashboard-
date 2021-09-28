@@ -5,6 +5,7 @@
   Your browser does not support the audio element.
 </audio>
 <div class="navbar-custom">
+
     <div class="container-fluid d-flex align-items-center justify-content-between justify-content-lg-end">
         
         <ul class="top-site-links d-flex align-items-center p-0 mb-0 mr-xl-2 mr-auto">
@@ -44,7 +45,7 @@
                 </button>
             </li>
             <li class="m-hide"><label class="site-name m-0">{{ucFirst($clientData->custom_domain)}}</label></li>
-            <li class="m-hide"><a href="{{route('userHome')}}" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">View Website</span></a></li>
+            <li class="m-hide"><a href="{{route('userHome')}}" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __("View Website") }}</span></a></li>
             <!-- <li class="m-hide"><a href="#" target="_blank"><i class="fab fa-apple" aria-hidden="true"></i><span class="align-middle">iOS App</span></a></li>
             <li class="m-hide"><a href="#" target="_blank"><i class="fab fa-android" aria-hidden="true"></i><span class="align-middle">Android App</span></a></li> -->
             
@@ -58,24 +59,6 @@
             @endif
         </ul>
 
-        <!-- <ul class=" list-unstyled topnav-menu topnav-menu-left m-0">
-            <li class="">
-                <button id="shortclick" class="button-menu-mobile waves-effect waves-light">
-                    <i class="fe-menu"></i>
-                </button>
-            </li>
-
-            <li>
-                <a class="navbar-toggle nav-link" data-toggle="collapse" data-target="#topnav-menu-content">
-                    <div class="lines">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </a>
-            </li>
-
-        </ul> -->
 
         <!-- LOGO -->
         <!-- <div class="logo-box d-inline-block d-lg-none">
@@ -106,28 +89,50 @@
                 </span>
             </a>
         </div> -->
+
+
+        {{-- ADMIN LANGUAGE SWITCH START --}}
+
+        @php  
+        $applocale_admin = 'en';
+        if(session()->has('applocale_admin')){
+            $applocale_admin = session()->get('applocale_admin');
+        }            
+        @endphp
         
         <ul class="list-unstyled topnav-menu float-right mb-0">
+            <li class="dropdown ">
+                <a class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                Language
+                {{ $applocale_admin }}
+                <i class="mdi mdi-chevron-down"></i>
+                </a>
+                <div class="dropdown-menu">
+                <a href="/switch/admin/language?lang=en" class="dropdown-item" langid="1">English</a>
+                <a href="/switch/admin/language?lang=es" class="dropdown-item" langid="1">Spanish</a>
+                <a href="/switch/admin/language?lang=ar" class="dropdown-item" langid="1">Arabic</a>
+                <a href="/switch/admin/language?lang=fr" class="dropdown-item" langid="1">French</a>
+                <a href="/switch/admin/language?lang=de" class="dropdown-item" langid="1">German</a>
+                <div class="dropdown-divider"></div>
+                </div>
+            </li> 
 
-            <li class="d-none d-lg-block">
-                <form class="app-search">
-                    <div class="app-search-box dropdown">
-                    </div>
-                </form>
-            </li>
+            
+    {{-- ADMIN LANGUAGE SWITCH END --}}
+         
 
             <li class="dropdown d-inline-block d-lg-none">
                 <!-- <a class="nav-link dropdown-toggle arrow-none waves-effect waves-light" data-toggle="dropdown" href="#"
                     role="button" aria-haspopup="false" aria-expanded="false">
                     <i class="fe-search noti-icon"></i>
                 </a> -->
+            
                 <div class="dropdown-menu dropdown-lg dropdown-menu-right p-0">
                     <form class="p-3">
-                        <input type="text" class="form-control" placeholder="Search ..." aria-label="Recipient's username">
+                        <input type="text" class="form-control" placeholder="{{ __("Search") }} ..." aria-label="Recipient's username">
                     </form>
                 </div>
             </li>
-
             <li class="dropdown d-none d-lg-inline-block">
                 <a class="nav-link dropdown-toggle arrow-none waves-effect waves-light" data-toggle="fullscreen"
                     href="#">
@@ -140,6 +145,7 @@
                     <i class="fe-maximize noti-icon"></i>
                 </a>
             </li>
+            
             <li class="dropdown notification-list topbar-dropdown">
                 <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light" data-toggle="dropdown"
                     href="#" role="button" aria-haspopup="false" aria-expanded="false">
@@ -157,16 +163,16 @@
 
                     <a href="{{route('userHome')}}" class="dropdown-item notify-item">
                         <i class="fe-globe"></i>
-                        <span>Website</span>
+                        <span>{{ __("Website") }}</span>
                     </a>
 
                     <a href="{{route('client.profile')}}" class="dropdown-item notify-item">
                         <i class="fe-user"></i>
-                        <span>My Account</span>
+                        <span>{{ __("My Account") }}</span>
                     </a>
                     <a href="javascript:void(0)" class="dropdown-item notify-item" data-toggle="modal" data-target="#change_password">
                         <i class="fe-user"></i>
-                        <span>Change Password</span>
+                        <span>{{ __("Change Password") }}</span>
                     </a>
 
                     <a class="dropdown-item notify-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> <i class="fe-log-out"></i> <span>Logout</span>
@@ -175,16 +181,9 @@
                     <form id="logout-form" action="{{route('client.logout')}}" method="POST">
                         @csrf
                     </form>
-
                 </div>
             </li>
-        </ul>
-
-        
-
-        
-
-        
+        </ul>  
     </div>
 </div>
 
@@ -199,16 +198,16 @@
             <form method="post" action="{{route('client.password.update')}}">
                 @csrf
 
-                <h4 class="header-title">Change Password</h4>
+                <h4 class="header-title">{{ __("Change Password") }}</h4>
                 <p class="sub-header">
                     {{-- <code>Organization details</code>/Change Password. --}}
                 </p>
                 <div class="row">
                     <div class="col">
                         <div class="form-group mb-2">
-                            <label for="old_password">Old Password</label>
+                            <label for="old_password">{{ __("Old Password") }}</label>
                             <div class="input-group input-group-merge ">
-                                <input class="form-control " name="old_password" type="password" required="" id="old_password" placeholder="Enter your old password">
+                                <input class="form-control " name="old_password" type="password" required="" id="old_password" placeholder={{ __("Enter your old password") }}>
                                 <div class="input-group-append" data-password="false">
                                     <div class="input-group-text">
                                         <span class="password-eye"></span>
@@ -227,9 +226,9 @@
                 <div class="row">
                     <div class="col">
                         <div class="form-group mb-2">
-                            <label for="password">New Password</label>
+                            <label for="password">{{ __("New Password") }}</label>
                             <div class="input-group input-group-merge ">
-                                <input class="form-control " name="password" type="password" required="" id="password" placeholder="Enter your password">
+                                <input class="form-control " name="password" type="password" required="" id="password" placeholder={{__("Enter your password")}}>
                                 <div class="input-group-append" data-password="false">
                                     <div class="input-group-text">
                                         <span class="password-eye"></span>
@@ -248,9 +247,9 @@
                 <div class="row">
                     <div class="col">
                         <div class="form-group mb-2">
-                            <label for="confirm_password">Confirm Password</label>
+                            <label for="confirm_password">{{ __("Confirm Password") }}</label>
                             <div class="input-group input-group-merge ">
-                                <input class="form-control " name="password_confirmation" type="password" required="" id="confirm_password" placeholder="Enter your confirm password">
+                                <input class="form-control " name="password_confirmation" type="password" required="" id="confirm_password" placeholder={{ __("Enter your confirm password") }}>
                                 <div class="input-group-append" data-password="false">
                                     <div class="input-group-text">
                                         <span class="password-eye"></span>
@@ -269,7 +268,7 @@
                 <div class="row mt-3">
                     <div class="col-md-12">
                         <div class="form-group mb-0 text-cente2">
-                            <button class="btn btn-info btn-block w-100" type="submit"> Update </button>
+                            <button class="btn btn-info btn-block w-100" type="submit"> {{ __("Update") }} </button>
                         </div>
                     </div>
                 </div>

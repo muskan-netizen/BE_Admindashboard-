@@ -490,7 +490,7 @@
     <div class="row">
         <div class="col-12 text-center pb-3">
             <img class="w-50 pt-3 pb-1" src="{{ asset('front-assets/images/ic_emptycart.svg') }}" alt="">
-            <h5>Your cart is empty<br/>Add an item to begin</h5>
+            <h5>Your cart is empty<br/>{{ __("Add an item to begin") }}</h5>
         </div>
     </div>
 </script>

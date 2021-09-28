@@ -13,20 +13,20 @@
     <div class="col-md-12">
         <div class="row mb-6">
             <div class="col-sm-2">
-                <label>Upload Category Icon</label>
+                <label>{{ __("Upload Category Icon") }}</label>
                 <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify" data-default-file="" />
-                <label class="logo-size d-block text-right mt-1">Image Size 150x150</label>
+                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 150x150</label>
             </div>
             <div class="col-sm-4">              
-                <label>Upload Category image</label>
+                <label>{{ __("Upload Category image") }}</label>
                 <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="" />
-                <label class="logo-size d-block text-right mt-1">Image Size 1026x200</label>
+                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1026x200</label>
             </div>
             <div class="col-sm-6">
                 <div class="row">
                     <div class="col-md-6">
                          <div class="form-group" id="slugInput">
-                            {!! Form::label('title', 'URL Slug',['class' => 'control-label']) !!} 
+                            {!! Form::label('title', __('URL Slug'),['class' => 'control-label']) !!} 
                             {!! Form::text('slug', null, ['class'=>'form-control', 'required' => 'required', 'onkeypress' => "return alphaNumeric(event)", 'id' => 'slug']) !!}
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
@@ -39,7 +39,7 @@
                         <div class="form-group">
                             {!! Form::label('title', 'Select Parent Category',['class' => 'control-label']) !!}
                             <select class="selectize-select form-control parent-category" id="cateSelectBox" name="parent_cate">
-                                <option value="">Select</option>
+                                <option value="">{{ __("Select") }}</option>
                                 @foreach($parCategory as $pc)
                                     <option value="{{$pc->id}}">{{$pc->translation_one ? ucfirst($pc->translation_one['name']) : ' '}}</option>
                                 @endforeach
@@ -53,7 +53,7 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            {!! Form::label('title', 'Visible In Menus',['class' => 'control-label']) !!} 
+                            {!! Form::label('title', __('Visible In Menus'),['class' => 'control-label']) !!} 
                             <div>
                                 <input type="checkbox" data-plugin="switchery" name="is_visible" class="form-control switch_menu" data-color="#43bee1" checked='checked'>
                             </div>
@@ -61,7 +61,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            {!! Form::label('title', 'Wishlist',['class' => 'control-label']) !!} 
+                            {!! Form::label('title', __('Wishlist'),['class' => 'control-label']) !!} 
                             <div>
                                 <input type="checkbox" data-plugin="switchery" name="show_wishlist" class="form-control wishlist_switch" data-color="#43bee1" checked='checked'>
                             </div>
@@ -69,7 +69,7 @@
                     </div>
                     <div class="col-md-3" id="addProductHide">
                         <div class="form-group">
-                            {!! Form::label('title', 'Can Add Products',['class' => 'control-label']) !!} 
+                            {!! Form::label('title', __('Can Add Products'),['class' => 'control-label']) !!} 
                             <div>
                                 <input type="checkbox" data-plugin="switchery" name="can_add_products" class="form-control add_product_switch" data-color="#43bee1" checked='checked'>
                             </div>
@@ -106,7 +106,7 @@
         <div class="row">
             <div class="col-md-4" id="template_type_main_div" style="display:none;">
                 <div class="form-group">
-                    {!! Form::label('title', 'Template Type',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Template Type'),['class' => 'control-label']) !!}
                     <div class="row">
                         @foreach($dispatcher_warning_page_options as $dwpo => $dispatcher_warning_page_option)                       
                             <div class="col-lg-6 custom-radio radio_new mt-2">
@@ -122,7 +122,7 @@
             </div>
             <div class="col-md-4" id="warning_page_main_div" style="display:none;">
                 <div class="form-group">
-                    {!! Form::label('title', 'Warning Page',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Warning Page'),['class' => 'control-label']) !!}
                     <div class="row">
                         @foreach($dispatcher_template_type_options as $dtto => $dispatcher_template_type_option)
                             <div class="col-lg-6 custom-radio radio_new mt-2">
@@ -145,7 +145,7 @@
                             <h4 class="col-md-12"> {{ $langs->langName.' Language' }} </h4>
                             <div class="col-md-6">
                                 <div class="form-group" id="{{ ($langs->langId == 1) ? 'nameInput' : 'nameotherInput' }}">
-                                    {!! Form::label('title', 'Name',['class' => 'control-label']) !!}
+                                    {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                                     @if($langs->is_primary == 1)
                                         {!! Form::text('name[]', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                     @else
@@ -159,19 +159,19 @@
                             {!! Form::hidden('language_id[]', $langs->langId) !!}
                             <div class="col-md-6">
                                 <div class="form-group" id="meta_titleInput">
-                                    {!! Form::label('title', 'Meta Title',['class' => 'control-label']) !!} 
+                                    {!! Form::label('title', __('Meta Title'),['class' => 'control-label']) !!} 
                                     {!! Form::text('meta_title[]', null, ['class' => 'form-control']) !!}
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    {!! Form::label('title', 'Meta Description',['class' => 'control-label']) !!} 
+                                    {!! Form::label('title', __('Meta Description'),['class' => 'control-label']) !!} 
                                     {!! Form::textarea('meta_description[]', null, ['class'=>'form-control', 'rows' => '3']) !!}
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    {!! Form::label('title', 'Meta Keywords',['class' => 'control-label']) !!} 
+                                    {!! Form::label('title', __('Meta Keywords'),['class' => 'control-label']) !!} 
                                     {!! Form::textarea('meta_keywords[]', null, ['class' => 'form-control', 'rows' => '3']) !!}
                                 </div>
                             </div>

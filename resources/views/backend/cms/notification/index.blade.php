@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Notifications</h4>
+                <h4 class="page-title">{{ __("Notifications") }}</h4>
             </div>
         </div>
     </div>
@@ -17,13 +17,13 @@
             <div class="card">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h4>List</h4>
+                        <h4>{{ __("List") }}</h4>
                     </div> 
                    <div class="table-responsive pages-list-data">
                         <table class="table table-striped w-100">
                             <thead>
                                 <tr>
-                                    <th class="border-bottom-0">Notification Name</th>
+                                    <th class="border-bottom-0">{{ __("Notification Name") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,7 +46,7 @@
                 <div class="card-body p-3" id="edit_page_content">
                     <div class="row">
                         <div class="col-12 text-right">
-                            <button type="button" class="btn btn-info" id="update_notification_template"> Publish</button>
+                            <button type="button" class="btn btn-info" id="update_notification_template"> {{ __("Publish") }}</button>
                         </div>
                     </div>
                     <div class="row">
@@ -54,16 +54,16 @@
                         <div class="col-lg-12">
                             <div class="row">
                                 <div class="col-12 mb-3">
-                                    <label for="title" class="control-label">Subject</label>
+                                    <label for="title" class="control-label">{{ __("Subject") }}</label>
                                     <input class="form-control" id="subject" placeholder="Subject" name="subject" type="text">
                                     <span class="text-danger error-text updatetitleError"></span>
                                 </div>
                                 <div class="col-md-10 mb-3">
-                                    <label for="title" class="control-label">Content</label>
+                                    <label for="title" class="control-label">{{ __("Content") }}</label>
                                     <textarea class="form-control" id="content" placeholder="Meta Keyword" rows="6" name="meta_keyword" cols="10" maxlength="250"></textarea>
                                 </div>
                                 <div class="col-md-2 mb-3">
-                                    <label for="title" class="control-label">Tags:-<div id="tags" disabled=""></div></label>
+                                    <label for="title" class="control-label">{{ __("Tags") }}:-<div id="tags" disabled=""></div></label>
                                 </div>
                             </div>         
                         </div>

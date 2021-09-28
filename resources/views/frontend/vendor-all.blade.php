@@ -22,7 +22,50 @@
         </div>
         <div class="row margin-res">
             @foreach($vendors as $vendor)
-            <div class="col-xl-3 col-6 col-grid-box">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-2">
+                    <a class="suppliers-box d-block px-2" href="{{route('vendorDetail', $vendor->slug)}}">
+                        <div class="suppliers-img-outer">
+                            <img class="fluid-img mx-auto" src="{{$vendor->logo['image_fit']}}150/150{{$vendor->logo['image_path']}}" alt="">
+                        </div>
+                        <div class="supplier-rating">
+                            <h6 class="mb-1">{{$vendor->name}}</h6>
+                            <p title="{{$vendor->categoriesList}}" class="vendor-cate border-bottom pb-1 mb-1 ellips">{{$vendor->categoriesList}}</p>
+                            <div class="product-timing">
+                                <small title="{{$vendor->address}}" class="ellips d-block"><i class="fa fa-map-marker"></i> {{$vendor->address}}</small>
+                                @if(isset($vendor->timeofLineOfSightDistance))
+                                    <ul class="timing-box">
+                                        <li>
+                                            <small class="d-block"><img class="d-inline-block mr-1" src="{{ asset('front-assets/images/distance.png') }}" alt=""> {{$vendor->lineOfSightDistance}} km</small>
+                                        </li>
+                                        <li>
+                                            <small class="d-block mx-1"><i class="fa fa-clock-o"></i> {{$vendor->timeofLineOfSightDistance}} min</small>
+                                        </li>
+                                    </ul>
+                                @endif
+                            </div>
+                            @if($client_preference_detail)
+                                @if($client_preference_detail->rating_check == 1)
+                                    @if($vendor->vendorRating > 0)
+                                        <ul class="custom-rating m-0 p-0">
+                                            @for($i=0; $i < 5; $i++)
+                                                @php 
+                                                if($i <= $vendor->vendorRating){
+                                                    $starFillClass = 'fa-star';
+                                                }else{
+                                                    $starFillClass = 'fa-star-o';
+                                                }
+                                                @endphp
+                                                <li><i class="fa {{$starFillClass}}" aria-hidden="true"></i></li>
+                                            @endfor
+                                        </ul>
+                                    @endif
+                                @endif
+                            @endif
+                        </div>
+                    </a>
+                </div>
+
+            {{-- <div class="col-xl-3 col-6 col-grid-box">
                 <div class="product-box scale-effect text-center">
                     <div class="img-wrapper">
                         <div class="front">
@@ -48,7 +91,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             @endforeach
         </div>
     </div>

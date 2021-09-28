@@ -17,7 +17,7 @@ use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
-use Log;
+use Log,DateTime,DateTimeZone;
 class PickupDeliveryController extends FrontController{
 	
     use ApiResponser;
@@ -248,10 +248,18 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-         dd( $request->toArray());
+        
         DB::beginTransaction();
         try {
-             $user = Auth::user();
+            if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
+            {   
+                $timezone = $request->time_zone;
+                $given = new DateTime($request->schedule_datetime, new DateTimeZone($timezone));
+                $given->setTimezone(new DateTimeZone("UTC"));
+                $request->schedule_time = $given->format("Y-m-d H:i:s");
+            }
+            
+            $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
             if($order_place && $order_place['status'] == 200){
                 $data = [];
@@ -460,7 +468,7 @@ class PickupDeliveryController extends FrontController{
 
      // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
-        try {
+        try { 
             $meta_data = '';
             $tasks = array();
             $dispatch_domain = $this->checkIfPickupDeliveryOn();

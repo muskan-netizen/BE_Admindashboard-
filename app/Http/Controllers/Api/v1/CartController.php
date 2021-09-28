@@ -85,9 +85,16 @@ class CartController extends BaseController{
             if(!$productVariant){
                 return $this->errorResponse(__('Invalid product variant.'), 404);
             }
-            if($product->sell_when_out_of_stock == 0 && $productVariant->quantity < $request->quantity){
-                return $this->errorResponse('You Can not order more than '.$productVariant->quantity.' quantity.', 404);
+            
+            if($product->category->categoryDetail->type_id == 8){
+
+            }else{
+                if(($product->sell_when_out_of_stock == 0 && $productVariant->quantity < $request->quantity )){
+                    return $this->errorResponse('You Can not order more than '.$productVariant->quantity.' quantity.', 404);
+                }
             }
+            
+            
             $addonSets = $addon_ids = $addon_options = array();
             if($request->has('addon_ids')){
                 $addon_ids = $request->addon_ids;

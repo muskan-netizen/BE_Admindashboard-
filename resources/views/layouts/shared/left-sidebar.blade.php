@@ -71,14 +71,14 @@
                 <li>
                     <a class="menu-title pl-1" href="#">
                         <!-- <span class="icon-orders"></span> -->
-                        <span>ORDERS</span>
+                        <span>{{ __('ORDERS') }}</span>
                     </a>
                     <ul class="nav-second-level">
                             @if(in_array('dashboard',$allowed) || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="{{route('client.dashboard')}}">
                                         <span class="icon-dash"></span>
-                                        <span>Dashboard</span>
+                                        <span>{{ __('Dashboard') }}</span>
                                     </a>
                                 </li>
                             @endif
@@ -86,7 +86,7 @@
                                 <li>
                                     <a href="{{route('order.index')}}">
                                         <span class="icon-orders"></span>
-                                        <span> Orders </span>
+                                        <span> {{ __('Orders') }} </span>
                                     </a>
                                 </li>
                             @endif
@@ -94,7 +94,13 @@
                                 <li>
                                     <a href="{{route('vendor.index')}}">
                                     <span class="icon-vendor"></span>
-                                        <span>{{getNomenclatureName('Vendors', true)}}</span>
+                                    @php
+                                        $vendormenu = getNomenclatureName('Vendors', true);
+                                        $vendormenulabel = ($vendormenu=="Vendors")?__('Vendors'):$vendormenu;
+
+                                    @endphp
+                                        {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
+                                        <span>{{ $vendormenulabel }}</span>
                                     </a>
                                 </li>
                             @endif
@@ -102,33 +108,42 @@
                                 <li>
                                     <a href="#sidebaraccounting" data-toggle="collapse">
                                     <span class="icon-accounting"></span>
-                                        <span> Accounting </span>
+                                        <span> {{ __('Accounting') }} </span>
                                     </a>
                                     <div class="collapse" id="sidebaraccounting">
                                         <ul class="nav-second-level">
                                             @if(in_array('accounting_orders',$allowed) || Auth::user()->is_superadmin == 1)
                                                 <li>
-                                                    <a href="{{route('account.orders')}}">Orders</a>
+                                                    <a href="{{route('account.orders')}}">{{ __('Orders') }}</a>
                                                 </li>
                                             @endif
                                             @if(in_array('accounting_loyality',$allowed) || Auth::user()->is_superadmin == 1)
                                                 <li>
-                                                    <a href="{{route('account.loyalty')}}">{{getNomenclatureName('Loyalty Cards', true)}}</a>
+
+                                                @php
+                                                    $loyaltyCards = getNomenclatureName('Loyalty Cards', true);
+                                                    $loyaltyCardsLabel = ($loyaltyCards=="Loyalty Cards")?__('Loyalty Cards'):$loyaltyCards;
+                                                @endphp
+                                                    <a href="{{route('account.loyalty')}}">{{ $loyaltyCardsLabel }}</a>
                                                 </li>
                                             @endif
                                             @if(in_array('accounting_promo_codes',$allowed) || Auth::user()->is_superadmin == 1)
                                                 <li>
-                                                    <a href="{{route('account.promo.code')}}">Promo Codes</a>
+                                                    <a href="{{route('account.promo.code')}}">{{ __('Promo Codes') }}</a>
                                                 </li>
                                             @endif
                                             @if(in_array('accounting_taxes',$allowed) || Auth::user()->is_superadmin == 1)
                                                 <li>
-                                                    <a href="{{route('account.tax')}}">Taxes</a>
+                                                    <a href="{{route('account.tax')}}">{{ __('Taxes') }}</a>
                                                 </li>
                                             @endif
                                             @if(in_array('accounting_vendors',$allowed) || Auth::user()->is_superadmin == 1)
                                                 <li>
-                                                    <a href="{{route('account.vendor')}}">{{getNomenclatureName('Vendors', true)}}</a>
+                                                    @php
+                                                    $Vendors = getNomenclatureName('Vendors', true);
+                                                    $VendorsTrans = ($Vendors=="Vendors")?__('Vendors'):$Vendors;
+                                                @endphp
+                                                    <a href="{{route('account.vendor')}}">{{ $VendorsTrans }}</a>
                                                 </li>
                                             @endif
                                         </ul>
@@ -141,18 +156,18 @@
                                     <li>
                                         <a href="#sidebarsubscriptions" data-toggle="collapse">
                                             <span class="icon-subscribe"></span>
-                                            <span> Subscriptions </span>
+                                            <span> {{ __('Subscriptions') }}</span>
                                         </a>
                                         <div class="collapse" id="sidebarsubscriptions">
                                             <ul class="nav-second-level">
                                                 @if(in_array('subscription_plans_customers',$allowed) || Auth::user()->is_superadmin == 1)
                                                     <li>
-                                                        <a href="{{route('subscription.plans.user')}}">Customers</a>
+                                                        <a href="{{route('subscription.plans.user')}}">{{ __('Customers') }}</a>
                                                     </li>
                                                 @endif
                                                 @if(in_array('subscription_plans_vendors',$allowed) || Auth::user()->is_superadmin == 1)
                                                     <li>
-                                                        <a href="{{route('subscription.plans.vendor')}}">{{getNomenclatureName('Vendors', true)}}</a>
+                                                        <a href="{{route('subscription.plans.vendor')}}">{{ $VendorsTrans }}</a>
                                                     </li>
                                                 @endif
                                             </ul>
@@ -165,7 +180,7 @@
                                 <li>
                                     <a href="{{route('customer.index')}}">
                                         <span class="icon-customer-2"></span>
-                                        <span> Customers </span>
+                                        <span> {{ __('Customers') }} </span>
                                     </a>
                                 </li>
                             @endif
@@ -177,14 +192,14 @@
                 <li>
                    <a class="menu-title pl-1" href="#">
                         <!-- <span class="icon-settings-1-1"></span> -->
-                        <span>SETTINGS</span>
+                        <span>{{ __('SETTINGS') }}</span>
                     </a>
                     <ul class="nav-second-level">
                         @if(in_array('profile',$allowed) || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('client.profile')}}">
                                     <span class="icon-profile"></span>
-                                    <span> Profile </span>
+                                    <span> {{ __('Profile') }} </span>
                                 </a>
                             </li>
                         @endif
@@ -192,7 +207,7 @@
                             <li>
                                 <a href="{{route('configure.customize')}}">
                                     <span class="icon-customzie"></span>
-                                    <span> Customize </span>
+                                    <span> {{ __('Customize') }} </span>
                                 </a>
                             </li>
                         @endif
@@ -200,18 +215,18 @@
                             <li>
                                 <a href="#sidebarstyling" data-toggle="collapse">
                                     <span class="icon-styling"></span>
-                                    <span> Styling </span>
+                                    <span> {{ __('Styling') }} </span>
                                 </a>
                                 <div class="collapse" id="sidebarstyling">
                                     <ul class="nav-second-level">
                                         @if(in_array('app_styling',$allowed) || Auth::user()->is_superadmin == 1)
                                             <li>
-                                                <a href="{{route('appStyling.index')}}">App Styling</a>
+                                                <a href="{{route('appStyling.index')}}">{{ __('App Styling') }}</a>
                                             </li>
                                         @endif
                                         @if(in_array('web_styling',$allowed) || Auth::user()->is_superadmin == 1)
                                             <li>
-                                                <a href="{{route('webStyling.index')}}">Web Styling</a>
+                                                <a href="{{route('webStyling.index')}}">{{ __('Web Styling') }}</a>
                                             </li>
                                         @endif
                                     </ul>
@@ -221,23 +236,23 @@
                         <li>
                             <a href="#sidebarcms" data-toggle="collapse">
                                 <span class="icon-cms"></span>
-                                <span>CMS</span>
+                                <span>{{ __("CMS") }}</span>
                             </a>
                             <div class="collapse" id="sidebarcms">
                                 <ul class="nav-second-level">
                                     @if(in_array('cms_pages',$allowed) || Auth::user()->is_superadmin == 1)
                                         <li>
-                                            <a href="{{route('cms.pages')}}">Pages</a>
+                                            <a href="{{route('cms.pages')}}">{{ __('Pages') }}</a>
                                         </li>
                                     @endif
                                     @if(in_array('cms_emails',$allowed) || Auth::user()->is_superadmin == 1)
                                         <li>
-                                            <a href="{{route('cms.emails')}}">Emails</a>
+                                            <a href="{{route('cms.emails')}}">{{ __('Emails') }}</a>
                                         </li>
                                     @endif
                                     @if(in_array('cms_notifications',$allowed) || Auth::user()->is_superadmin == 1)
                                         <li>
-                                            <a href="{{route('cms.notifications')}}">Notifications</a>
+                                            <a href="{{route('cms.notifications')}}">{{ __('Notifications') }}</a>
                                         </li>
                                     @endif
                                 </ul>
@@ -247,7 +262,7 @@
                             <li>
                                 <a href="{{route('category.index')}}">
                                     <span class="icon-catalogue"></span>
-                                    <span> Catalog </span>
+                                    <span> {{ __('Catalog ') }}</span>
                                 </a>
                             </li>
                         @endif
@@ -255,7 +270,7 @@
                             <li>
                                 <a href="{{route('configure.index')}}">
                                     <span class="icon-configuration"></span>
-                                    <span> Configurations </span>
+                                    <span> {{ __('Configurations') }} </span>
                                 </a>
                             </li>
                         @endif
@@ -263,7 +278,7 @@
                             <li>
                                 <a href="{{route('tax.index')}}">
                                     <span class="icon-tax"></span>
-                                    <span> Tax </span>
+                                    <span> {{ __('Tax') }} </span>
                                 </a>
                             </li>
                         @endif
@@ -271,7 +286,7 @@
                             <li>
                                 <a href="{{route('payoption.index')}}">
                                     <span class="icon-payment-options"></span>
-                                    <span> Payment Options </span>
+                                    <span> {{ __('Payment Options') }} </span>
                                 </a>
                             </li>
                         @endif
@@ -282,7 +297,7 @@
                 <li>
                     <a class="menu-title pl-1" href="#">
                         <!-- <span class="icon-marketing"></span> -->
-                        <span>MARKETING</span>
+                        <span>{{ __('MARKETING') }}</span>
                     </a>
                     <ul class="nav-second-level">
                         {{-- @if(in_array('banner',$allowed) || Auth::user()->is_superadmin == 1) --}}
@@ -290,7 +305,7 @@
                         <li>
                                 <a href="{{route('banner.index')}}">
                                     <span class="icon-banners"></span>
-                                    <span> Banner </span>
+                                    <span> {{ __('Banner') }} </span>
                                 </a>
                             </li>
                         @endif
@@ -298,7 +313,7 @@
                             <li>
                                 <a href="{{route('promocode.index')}}">
                                     <span class="icon-discount-voucher"></span>
-                                    <span> Promocode </span>
+                                    <span> {{ __('Promocode') }} </span>
                                 </a>
                             </li>
                         @endif
@@ -306,7 +321,11 @@
                             <li>
                                 <a href="{{route('loyalty.index')}}">
                                     <span class="icon-loyaltycard"></span>
-                                    <span> {{getNomenclatureName('Loyalty Cards', true)}}</span>
+                                    @php
+                                        $LoyaltyCards =  getNomenclatureName('Loyalty Cards', true)
+
+                                    @endphp
+                                    <span> {{ $LoyaltyCards === "Loyalty Cards" ?  __("Loyalty Cards")  : $$LoyaltyCards }}</span>
                                 </a>
                             </li>
                         @endif
@@ -319,7 +338,7 @@
                         <li>
                             <a class="menu-title pl-1">
                                 <!-- <span class="icon-extra"></span> -->
-                                <span>EXTRA</span>
+                                <span>{{ __("EXTRA") }}</span>
                             </a>
                             <ul class="nav-second-level">
                                 {{-- @if(!empty($client_preference) && $client_preference->celebrity_check == 1) --}}
@@ -328,7 +347,7 @@
                                         <li>
                                             <a href="{{ route('celebrity.index') }}">
                                                 <span class="icon-celebrity"></span>
-                                                <span> Celebrities </span>
+                                                <span> {{ __("Celebrities") }} </span>
                                             </a>
                                         </li>
                                     @endif
@@ -338,7 +357,7 @@
                                         <li>
                                             <a href="{{ route('inquiry.index') }}">
                                                 <span class="icon-question"></span>
-                                                <span> Inquiries </span>
+                                                <span> {{ __("Inquiries") }} </span>
                                             </a>
                                         </li>
                                     @endif

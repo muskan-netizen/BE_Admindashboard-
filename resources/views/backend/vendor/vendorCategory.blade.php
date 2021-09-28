@@ -34,14 +34,14 @@
     <div class="row">
         <div class="col-12 d-flex align-items-center">
             <div class="page-title-box">
-                <h4 class="page-title">{{ucfirst($vendor->name)}} profile</h4>
+                <h4 class="page-title">{{ucfirst($vendor->name)}} {{ __("profile") }}</h4>
             </div>
             <div class="form-group mb-0 ml-3">
                 <div class="site_link position-relative">
                     <a href="{{route('vendorDetail',$vendor->slug)}}" target="_blank"><span id="pwd_spn" class="password-span">{{route('vendorDetail',$vendor->slug)}}</span></a>
                     <label class="copy_link float-right" id="cp_btn" title="copy">
                         <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
-                        <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">Copied</span>
+                        <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">{{ __("Copied") }}</span>
                     </label>
                 </div>
             </div>
@@ -72,17 +72,17 @@
                 <ul class="nav nav-pills navtab-bg nav-justified">
                     <li class="nav-item">
                         <a href="{{ route('vendor.catalogs', $vendor->id) }}"  aria-expanded="false" class="nav-link {{($tab == 'catalog') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                            Catalog
+                            {{ __("Catalog") }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ route('vendor.show', $vendor->id) }}"  aria-expanded="false" class="nav-link {{($tab == 'configuration') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                            Configuration
+                            {{ __("Configuration") }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ route('vendor.categories', $vendor->id) }}"  aria-expanded="true" class="nav-link {{($tab == 'category') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
-                            Categories & Add Ons
+                            {{ __("Categories & Add Ons") }}
                         </a>
                     </li>
                 </ul>
@@ -95,11 +95,11 @@
                                 <div class="card-box">
                                     <div class="row" style="max-height: 600px; overflow-x: auto">
                                         <div class="col-sm-6">
-                                            <h4 class="mb-4"> Categories</h4>
+                                            <h4 class="mb-4"> {{ __("Categories") }}</h4>
                                         </div>
                                         <div class="col-sm-6 text-right">
                                             @if($vendor->add_category == 1)
-                                            <button class="btn btn-info waves-effect waves-light text-sm-right openCategoryModal" dataid="0" is_vendor="1" {{$vendor->status == 1 ? '' : 'disabled'}}><i class="mdi mdi-plus-circle mr-1"></i> Add
+                                            <button class="btn btn-info waves-effect waves-light text-sm-right openCategoryModal" dataid="0" is_vendor="1" {{$vendor->status == 1 ? '' : 'disabled'}}><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                                             </button>
                                             @endif
                                         </div> 
@@ -120,11 +120,11 @@
                                 <div class="card-box">
                                     <div class="row" style="max-height: 600px; overflow-x: auto">
                                         <div class="col-sm-8">
-                                            <h4 class="mb-4"> Addon Set</h4>
+                                            <h4 class="mb-4"> {{ __("Addon Set") }}</h4>
                                         </div>
                                         <div class="col-sm-4 text-right">
                                             <button class="btn btn-info waves-effect waves-light text-sm-right openAddonModal" dataid="0" {{$vendor->status == 1 ? '' : 'disabled'}}>
-                                                <i class="mdi mdi-plus-circle mr-1"></i> Add 
+                                                <i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                                             </button>
                                         </div> 
                                         <div class="col-md-12">
@@ -138,10 +138,10 @@
                                                         <thead>
                                                             <tr>
                                                                 <th>#</th>
-                                                                <th>Title</th>
-                                                                <th>Select(Min - Max)</th>
-                                                                <th>Options</th>
-                                                                <th>Action</th>
+                                                                <th>{{ __("Title") }}</th>
+                                                                <th>{{ __("Select(Min - Max)") }}</th>
+                                                                <th>{{ __("Options") }}</th>
+                                                                <th>{{ __("Action") }}</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -189,7 +189,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Create AddOn Set</h4>
+                <h4 class="modal-title">{{ __("Create AddOn Set") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="addAddonForm" method="post" enctype="multipart/form-data" action="{{route('addon.store')}}">
@@ -200,7 +200,7 @@
                         <div class="col-md-12">
                             <div class="row rowYK">
                                 <div class="col-md-12">
-                                    <h5>Addon Title</h5>
+                                    <h5>{{ __("Addon Title") }}</h5>
                                 </div>
                                 <div class="col-md-12" style="overflow-x: auto;">
                                     <table class="table table-borderless mb-0" id="banner-datatable" >
@@ -222,12 +222,12 @@
                             </div>
                             <div class="row rowYK mb-2">
                                 <div class="col-md-12">
-                                    <h5>Addon Options</h5>
+                                    <h5>{{ __("Addon Options") }}</h5>
                                 </div>
                                 <div class="col-md-12" style="overflow-x: auto;">
                                     <table class="table table-borderless mb-0 optionTableAdd" id="banner-datatable">
                                         <tr class="trForClone">
-                                            <th>Price($)</th>
+                                            <th>{{ __("Price") }}($)</th>
                                             @foreach($languages as $langs)
                                                 <th>{{$langs->language->name}}</th>
                                             @endforeach
@@ -244,13 +244,13 @@
                                     </table>
                                 </div>
                                 <div class="col-md-12">
-                                    <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-Add">Add Option</button>
+                                    <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-Add">{{ __("Add Option") }}</button>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group" style="display:none;">
-                                        {!! Form::label('title', 'Min Select',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('Min Select'),['class' => 'control-label']) !!}
                                         {!! Form::text('min_select', 1, ['class' => 'form-control', 'id' => 'min', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -259,7 +259,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" style="display:none;">
-                                        {!! Form::label('title', 'Max Select',['class' => 'control-label']) !!}
+                                        {!! Form::label('title', __('Max Select'),['class' => 'control-label']) !!}
                                         {!! Form::text('max_select', 1, ['class' => 'form-control', 'id' => 'max', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -268,27 +268,27 @@
                                 </div>
                                 <div class="col-12 mb-2">
                                     <div class="price-range-slider"> 
-                                        {!! Form::label('title', 'Min & Max Range',['class' => 'control-label']) !!}:<input type="text" id="slider_output" readonly="" style="border:0; color:#f6931f; font-weight:bold;">
+                                        {!! Form::label('title', __('Min & Max Range'),['class' => 'control-label']) !!}:<input type="text" id="slider_output" readonly="" style="border:0; color:#f6931f; font-weight:bold;">
                                         <div id="slider-range" class="range-bar"></div>
                                     </div>
                                     <div class="row slider-labels">
                                         <div class="col-xs-6 caption">
-                                          <strong>Min:</strong> <span id="slider-range-value1"></span>
+                                          <strong>{{ __("Min") }}:</strong> <span id="slider-range-value1"></span>
                                         </div>
                                         <div class="col-xs-6 text-right caption">
-                                          <strong>Max:</strong> <span id="slider-range-value2"></span>
+                                          <strong>{{ __("Max") }}:</strong> <span id="slider-range-value2"></span>
                                         </div>
                                       </div>
                                 </div>
                                 <div class="col-md-12">
-                                    <p>If max select is greater than total option than max will be total option</p>
+                                    <p>{{ __("If max select is greater than total option than max will be total option") }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-info waves-effect waves-light addAddonSubmit">Submit</button>
+                    <button type="submit" class="btn btn-info waves-effect waves-light addAddonSubmit">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -298,7 +298,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Create AddOn Set</h4>
+                <h4 class="modal-title">{{ __("Create AddOn Set") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="editAddonForm" method="post" enctype="multipart/form-data" action="">
@@ -308,7 +308,7 @@
                     
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-info waves-effect waves-light editAddonSubmit">Submit</button>
+                    <button type="submit" class="btn btn-info waves-effect waves-light editAddonSubmit">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -318,7 +318,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Category</h4>
+                <h4 class="modal-title">{{ __("Add Category") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="addCategoryForm" method="post" enctype="multipart/form-data">
@@ -326,7 +326,7 @@
                 {!! Form::hidden('vendor_id', $vendor->id) !!}
                 <div class="modal-body" id="AddCategoryBox"></div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-info waves-effect waves-light addCategorySubmit">Submit</button>
+                    <button type="submit" class="btn btn-info waves-effect waves-light addCategorySubmit">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -336,7 +336,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Edit Category</h4>
+                <h4 class="modal-title">{{ __("Edit Category") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="editCategoryForm" method="post" enctype="multipart/form-data">
@@ -345,7 +345,7 @@
                 {!! Form::hidden('vendor_id', $vendor->id) !!}
                 <div class="modal-body" id="editCategoryBox"></div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light editCategorySubmit">Submit</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light editCategorySubmit">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>

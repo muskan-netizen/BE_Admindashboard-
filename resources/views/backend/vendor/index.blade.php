@@ -11,15 +11,21 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-                <h4 class="page-title">{{getNomenclatureName('vendors', true)}}</h4>
+
+                @php
+                    $vendors = getNomenclatureName('vendors', true);
+                    $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ; 
+                @endphp
+
+                <h4 class="page-title">{{ $newvendors }}</h4>
             </div>
         </div>
         <div class="col-sm-6 text-sm-right">
             <button class="btn btn-info waves-effect waves-light text-sm-right openImportModal"
-                    userId="0"><i class="mdi mdi-plus-circle mr-1"></i> Import
+                    userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
             </button>
             <button class="btn btn-info waves-effect waves-light text-sm-right openAddModal"
-                userId="0"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
             </button>
         </div>
     </div>
@@ -34,7 +40,7 @@
                                     <i class="mdi mdi-storefront text-primary mdi-24px"></i>
                                     <span data-plugin="counterup" id="total_earnings_by_vendors">{{$active_vendor_count}}</span>
                                 </h3>
-                                <p class="text-muted font-15 mb-0">Total {{getNomenclatureName('vendors', true)}}</p>
+                                <p class="text-muted font-15 mb-0">{{ __('Total') }} {{ $newvendors }}</p>
                             </div>
                         </div>
                         <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
@@ -43,7 +49,7 @@
                                     <i class="mdi mdi-store-24-hour text-primary mdi-24px"></i>
                                     <span data-plugin="counterup" id="total_order_count">{{$available_vendors_count}}</span>
                                 </h3>
-                                <p class="text-muted font-15 mb-0">Open {{getNomenclatureName('vendors', true)}}</p>
+                                <p class="text-muted font-15 mb-0"> {{ __('Open') }} {{getNomenclatureName('vendors', true)}}</p>
                             </div>
                         </div>
                         <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
@@ -52,7 +58,7 @@
                                     <i class="fas fa-money-check-alt text-primary"></i>
                                     <span data-plugin="counterup" id="total_cash_to_collected">{{$vendors_product_count}}</span>
                                 </h3>
-                                <p class="text-muted font-15 mb-0">Total Products</p>
+                                <p class="text-muted font-15 mb-0">{{ __('Total Products') }}</p>
                             </div>
                         </div>
                         <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
@@ -61,7 +67,7 @@
                                     <i class="fas fa-money-check-alt text-primary"></i>
                                     <span data-plugin="counterup" id="total_delivery_fees">{{$vendors_active_order_count}}</span>
                                 </h3>
-                                <p class="text-muted font-15 mb-0">Total Active Orders</p>
+                                <p class="text-muted font-15 mb-0">{{ __('Total Active Orders') }}</p>
                             </div>
                         </div>
                     </div>
@@ -74,19 +80,19 @@
             <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="active-vendor" data-toggle="tab" href="#active_vendor" role="tab" aria-selected="false" data-rel="vendor_active_datatable" data-status="1">
-                        <i class="icofont icofont-man-in-glasses"></i>Active<sup class="total-items" id="active_vendor_count">({{$active_vendor_count}})</sup>
+                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Active') }}<sup class="total-items" id="active_vendor_count">({{$active_vendor_count}})</sup>
                     </a>
                     <div class="material-border"></div>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="awaiting-vendor" data-toggle="tab" href="#awaiting_vendor" role="tab" aria-selected="true" data-rel="awaiting__Approval_vendor_datatble" data-status="0">
-                        <i class="icofont icofont-ui-home"></i>Awaiting Approval<sup class="total-items">({{$awaiting__Approval_vendor_count}})</sup>
+                        <i class="icofont icofont-ui-home"></i>{{ __('Awaiting Approval') }}<sup class="total-items">({{$awaiting__Approval_vendor_count}})</sup>
                     </a>
                     <div class="material-border"></div>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="block-vendor" data-toggle="tab" href="#block_vendor" role="tab" aria-selected="false" data-rel="blocked_vendor_datatble" data-rel="blocked_vendor_datatble" data-status="2">
-                        <i class="icofont icofont-man-in-glasses"></i>Blocked<sup class="total-items">({{$blocked_vendor_count}})</sup>
+                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Blocked') }}<sup class="total-items">({{$blocked_vendor_count}})</sup>
                     </a>
                     <div class="material-border"></div>
                 </li>
@@ -103,17 +109,17 @@
                                         <table class="table table-centered table-nowrap table-striped" id="vendor_active_datatable" width="100%">
                                             <thead>
                                                 <tr>
-                                                    <th>Icon</th>
-                                                    <th>Name</th>
-                                                    <th>Status</th>
-                                                    <th>Address</th>
-                                                    <th>Offers</th>
-                                                    <th class="text-center">Can Add <br> Category</th>
-                                                    <th class="text-center">Commission <br> Percentage</th>
-                                                    <th class="text-center">Products</th>
-                                                    <th class="text-center">Orders</th>
-                                                    <th class="text-center">Active <br> Orders</th>
-                                                    <th class="text-center">Action</th>
+                                                    <th>{{ __('Icon') }}</th>
+                                                    <th>{{ __('Name') }}</th>
+                                                    <th>{{ _('Status') }}</th>
+                                                    <th>{{ __('Address') }}</th>
+                                                    <th>{{ __('Offers') }}</th>
+                                                    <th class="text-center">{{ __('Can Add') }} <br> {{ __('Category') }}</th>
+                                                    <th class="text-center">{{ __('Commission') }} <br> {{ __('Percentage') }}</th>
+                                                    <th class="text-center">{{ __('Products') }}</th>
+                                                    <th class="text-center">{{ __('Orders') }}</th>
+                                                    <th class="text-center">{{ __('Active') }} <br> {{ __('Orders') }}</th>
+                                                    <th class="text-center">{{ __('Action') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="post_list"></tbody>
@@ -138,17 +144,17 @@
                                         <table class="table table-centered table-nowrap table-striped" id="awaiting__Approval_vendor_datatble" width="100%">
                                             <thead>
                                                 <tr>
-                                                    <th>Icon</th>
-                                                    <th>Name</th>
-                                                    <th>Status</th>
-                                                    <th>Address</th>
-                                                    <th>Offers</th>
-                                                    <th class="text-center">Can Add <br> Category</th>
-                                                    <th class="text-center">Commission <br> Percentage</th>
-                                                    <th class="text-center">Products</th>
-                                                    <th class="text-center">Orders</th>
-                                                    <th class="text-center">Active <br> Orders</th>
-                                                    <th class="text-center">Action</th>
+                                                    <th>{{ __("Icon") }}</th>
+                                                    <th>{{ __('Name') }}</th>
+                                                    <th>{{ __('Status') }}</th>
+                                                    <th>{{ __('Address') }}</th>
+                                                    <th>{{ __('Offers') }}</th>
+                                                    <th class="text-center">{{ __('Can Add') }} <br> {{ __('Category') }}</th>
+                                                    <th class="text-center">{{ __('Commission') }} <br> {{ __('Percentage') }}</th>
+                                                    <th class="text-center">{{ __('Products') }}</th>
+                                                    <th class="text-center">{{ __('Orders') }}</th>
+                                                    <th class="text-center">{{ __('Active') }} <br> {{ __('Orders') }}</th>
+                                                    <th class="text-center">{{ __('Action') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="post_list"></tbody>
@@ -171,17 +177,17 @@
                                         <table class="table table-centered table-nowrap table-striped" id="blocked_vendor_datatble" width="100%">
                                             <thead>
                                                 <tr>
-                                                    <th>Icon</th>
-                                                    <th>Name</th>
-                                                    <th>Status</th>
-                                                    <th>Address</th>
-                                                    <th>Offers</th>
-                                                    <th class="text-center">Can Add <br> Category</th>
-                                                    <th class="text-center">Commission <br> Percentage</th>
-                                                    <th class="text-center">Products</th>
-                                                    <th class="text-center">Orders</th>
-                                                    <th class="text-center">Active <br> Orders</th>
-                                                    <th class="text-center">Action</th>
+                                                    <th>{{ __('Icon') }}</th>
+                                                    <th>{{ __('Name') }}</th>
+                                                    <th>{{ __('Status') }}</th>
+                                                    <th>{{ __('Address') }}</th>
+                                                    <th>{{ __('Offers') }}</th>
+                                                    <th class="text-center">{{ __('Can Add') }} <br> {{ __('Category') }}</th>
+                                                    <th class="text-center">{{ __('Commission') }} <br> {{ __('Percentage') }}</th>
+                                                    <th class="text-center">{{ __("Products") }}</th>
+                                                    <th class="text-center">{{ __('Orders') }}</th>
+                                                    <th class="text-center">{{ __("Active") }} <br> {{ __("Orders") }}</th>
+                                                    <th class="text-center">{{ __('Action') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="post_list"></tbody>
@@ -202,7 +208,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header border-bottom">
-                    <h4 class="modal-title">Edit {{getNomenclatureName('vendors', false)}}</h4>
+                    <h4 class="modal-title">{{ __('Edit') }} {{getNomenclatureName('vendors', false)}}</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
                 <form id="update_vendor_form" method="post" enctype="multipart/form-data">
@@ -212,7 +218,7 @@
                         
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-info waves-effect waves-light" id="update_vendor_modal">Submit</button>
+                        <button type="button" class="btn btn-info waves-effect waves-light" id="update_vendor_modal">{{ __('Submit') }}</button>
                     </div>
                 </form>
             </div>

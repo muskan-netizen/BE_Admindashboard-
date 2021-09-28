@@ -7,7 +7,7 @@
    <div class="row">
       <div class="col-12">
          <div class="page-title-box">
-            <h4 class="page-title text-uppercase">Configurations</h4>
+            <h4 class="page-title text-uppercase">{{ __('Configurations') }}</h4>
          </div>
       </div>
    </div>
@@ -34,16 +34,16 @@
                <div class="col-12">
                   <div class="card-box h-100">
                      <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">Hyperlocal</h4>
-                        <button class="btn btn-info d-block" type="submit"> Save </button>
+                        <h4 class="header-title mb-0">{{ __("Hyperlocal") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                      </div>
-                     <p class="sub-header">Enable location based visibility of Vendors and set the Default Location.</p>
+                     <p class="sub-header">{{ __("Enable location based visibility of Vendors and set the Default Location.") }}</p>
                      <input type="hidden" name="hyperlocals" id="hyperlocals" value="1">
 
                      <div class="row">
                         <div class="col-12">
                            <div class="form-group mb-0">
-                              <label for="is_hyperlocal" class="mr-3">Enable</label>
+                              <label for="is_hyperlocal" class="mr-3">{{ __("Enable") }}</label>
                               <input type="checkbox" data-plugin="switchery" name="is_hyperlocal" id="is_hyperlocal" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_hyperlocal == '1')) checked @endif>
                            </div>
                            <div class="row">
@@ -51,7 +51,7 @@
                                  <div class="row">
                                     <div class="col-12">
                                        <div class="form-group mb-0">
-                                          <label for="Default_location_name">Default Location</label>
+                                          <label for="Default_location_name">{{ __("Default Location") }}</label>
                                           <div class="input-group">
                                              <input type="text" name="Default_location_name" id="Default_location_name" placeholder="Delhi, India" class="form-control" value="{{ old('Default_location_name', $preference->Default_location_name ?? '')}}">
                                              <div class="input-group-append">
@@ -65,7 +65,7 @@
                                           @endif
                                        </div>
                                        <div class="form-group mt-3 mb-0">
-                                          <label for="Default_latitude">Latitude</label>
+                                          <label for="Default_latitude">{{ __("Latitude") }}</label>
                                           <input type="text" name="Default_latitude" id="Default_latitude" placeholder="24.9876755" class="form-control" value="{{ old('Default_latitude', $preference->Default_latitude ?? '')}}">
                                           @if($errors->has('Default_latitude'))
                                           <span class="text-danger" role="alert">
@@ -74,7 +74,7 @@
                                           @endif
                                        </div>
                                        <div class="form-group mt-3 mb-0">
-                                          <label for="Default_longitude">Longitude</label>
+                                          <label for="Default_longitude">{{ __("Longitude") }}</label>
                                           <input type="text" name="Default_longitude" id="Default_longitude" placeholder="11.9871371723" class="form-control" value="{{ old('Default_longitude', $preference->Default_longitude ?? '')}}">
                                           @if($errors->has('Default_longitude'))
                                           <span class="text-danger" role="alert">
@@ -95,21 +95,21 @@
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
-                  <h4 class="header-title mb-0">Last Mile Delivery</h4>
-                  <button class="btn btn-info d-block" type="submit"> Save </button>
+                  <h4 class="header-title mb-0">{{ __("Last Mile Delivery") }}</h4>
+                  <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                </div>
-               <p class="sub-header">Offer Last Mile Delivery with Dispatcher.</p>
+               <p class="sub-header">{{ __("Offer Last Mile Delivery with Dispatcher.") }}</p>
                <div class="row">
                   <div class="col-12">
                      <div class="form-group mb-0">
                         <div class="form-group mb-0 switchery-demo">
-                           <label for="need_delivery_service" class="mr-3">Enable</label>
+                           <label for="need_delivery_service" class="mr-3">{{ __("Enable") }}</label>
                            <input data-plugin="switchery" name="need_delivery_service" id="need_delivery_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_delivery_service == '1')) checked @endif >
                         </div>
                      </div>
 
                      <div class="form-group mt-3 mb-0 deliveryServiceFields" style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
-                        <label for="delivery_service_key_url">Dispatcher URL * ( https://www.abc.com )</label>
+                        <label for="delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
                         <input type="text" name="delivery_service_key_url" id="delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('delivery_service_key_url', $preference->delivery_service_key_url ?? '')}}">
                         @if($errors->has('delivery_service_key_url'))
                         <span class="text-danger" role="alert">
@@ -118,7 +118,7 @@
                         @endif
                      </div>
                      <div class="form-group mt-3 mb-0 deliveryServiceFields" style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
-                        <label for="delivery_service_key_code">Dispatcher Short code</label>
+                        <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
                         <input type="text" name="delivery_service_key_code" id="delivery_service_key_code" placeholder="" class="form-control" value="{{ old('delivery_service_key_code', $preference->delivery_service_key_code ?? '')}}">
                         @if($errors->has('delivery_service_key_code'))
                         <span class="text-danger" role="alert">
@@ -127,7 +127,7 @@
                         @endif
                      </div>
                      <div class="form-group mt-3 mb-0 deliveryServiceFields" style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
-                        <label for="delivery_service_key">Dispatcher API key</label>
+                        <label for="delivery_service_key">{{ __("Dispatcher API key") }}</label>
                         <input type="text" name="delivery_service_key" id="delivery_service_key" placeholder="" class="form-control" value="{{ old('delivery_service_key', $preference->delivery_service_key ?? '')}}">
                         @if($errors->has('delivery_service_key'))
                         <span class="text-danger" role="alert">
@@ -159,21 +159,21 @@
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
-                  <h4 class="header-title mb-0">Pickup & Delivery</h4>
-                  <button class="btn btn-info d-block" type="submit"> Save </button>
+                  <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
+                  <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                </div>
-               <p class="sub-header">Offer Pickup & Delivery with Dispatcher.</p>
+               <p class="sub-header">{{ __("Offer Pickup & Delivery with Dispatcher.") }}</p>
                <div class="row">
                   <div class="col-12">
                      <div class="form-group mb-0">
                         <div class="form-group mb-0 switchery-demo">
-                           <label for="need_dispacher_ride" class="mr-3">Enable</label>
+                           <label for="need_dispacher_ride" class="mr-3">{{ __("Enable") }}</label>
                            <input type="checkbox" data-plugin="switchery" name="need_dispacher_ride" id="need_dispacher_ride" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_ride == '1')) checked='checked' @endif>
                         </div>
                      </div>
 
                      <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-                        <label for="pickup_delivery_service_key_url">Dispatcher URL* ( https://www.abc.com )</label>
+                        <label for="pickup_delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
                         <input type="text" name="pickup_delivery_service_key_url" id="pickup_delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('pickup_delivery_service_key_url', $preference->pickup_delivery_service_key_url ?? '')}}">
                         @if($errors->has('pickup_delivery_service_key_url'))
                         <span class="text-danger" role="alert">
@@ -183,7 +183,7 @@
                      </div>
 
                      <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-                        <label for="delivery_service_key_code">Dispatcher Short code</label>
+                        <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
                         <input type="text" name="pickup_delivery_service_key_code" id="pickup_delivery_service_key_code" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key_code', $preference->pickup_delivery_service_key_code ?? '')}}">
                         @if($errors->has('pickup_delivery_service_key_code'))
                         <span class="text-danger" role="alert">
@@ -193,7 +193,7 @@
                      </div>
 
                      <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-                        <label for="pickup_delivery_service_key">Dispatcher API key</label>
+                        <label for="pickup_delivery_service_key">{{ __("Dispatcher API key") }}</label>
                         <input type="text" name="pickup_delivery_service_key" id="pickup_delivery_service_key" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key', $preference->pickup_delivery_service_key ?? '')}}">
                         @if($errors->has('pickup_delivery_service_key'))
                         <span class="text-danger" role="alert">
@@ -210,7 +210,7 @@
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
                   <h4 class="header-title mb-0">{{ __('On Demand Services') }}</h4>
-                  <button class="btn btn-info d-block" type="submit"> Save </button>
+                  <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                </div>
                <p class="sub-header">{{ __('Offer On Demand Services with Dispatcher.') }}</p>
                <div class="row">
@@ -261,7 +261,7 @@
    <div class="row">
       <div class="col-12">
          <div class="page-title-box">
-            <h4 class="page-title text-uppercase">Social Logins</h4>
+            <h4 class="page-title text-uppercase">{{ __("Social Logins") }}</h4>
          </div>
       </div>
    </div>
@@ -275,10 +275,10 @@
                   <div class="col-12">
                      <div class="form-group mb-0 switchery-demo">
                         <label for="fb_login" class="d-flex align-items-center justify-content-between">
-                           <h5 class="social_head"><i class="fab fa-facebook-f"></i> <span>Facebook</span></h5>
-                           <button class="btn btn-info btn-block save_btn" type="submit"> Save </button>
+                           <h5 class="social_head"><i class="fab fa-facebook-f"></i> <span>{{ __("Facebook") }}</span></h5>
+                           <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
                         </label>
-                        <label for="" class="mr-3">Enable</label>
+                        <label for="" class="mr-3">{{ __("Enable") }}</label>
                         <input type="checkbox" data-plugin="switchery" name="fb_login" id="fb_login" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->fb_login == '1')) checked='checked' @endif>
                      </div>
                   </div>
@@ -286,7 +286,7 @@
                <div class="row fb_row" style="{{((isset($preference) && $preference->fb_login == '1')) ? '' : 'display:none;'}}">
                   <div class="col-12">
                      <div class="form-group mb-2 mt-2">
-                        <label for="fb_client_id">Facebook Client Key</label>
+                        <label for="fb_client_id">{{ __("Facebook Client Key") }}</label>
                         <input type="text" name="fb_client_id" id="fb_client_id" placeholder="" class="form-control" value="{{ old('fb_client_id', $preference->fb_client_id ?? '')}}">
                         @if($errors->has('fb_client_id'))
                         <span class="text-danger" role="alert">
@@ -297,7 +297,7 @@
                   </div>
                   <div class="col-12">
                      <div class="form-group mb-2">
-                        <label for="fb_client_secret">Facebook Client Secret</label>
+                        <label for="fb_client_secret">{{ __("Facebook Client Secret") }}</label>
                         <input type="password" name="fb_client_secret" id="fb_client_secret" placeholder="" class="form-control" value="{{ old('fb_client_secret', $preference->fb_client_secret ?? '')}}">
                         @if($errors->has('fb_client_secret'))
                         <span class="text-danger" role="alert">
@@ -308,7 +308,7 @@
                   </div>
                   <div class="col-12">
                      <div class="form-group mb-0">
-                        <label for="fb_client_url">Facebook Redirect URL</label>
+                        <label for="fb_client_url">{{ __("Facebook Redirect URL") }}</label>
                         <input type="text" name="fb_client_url" id="fb_client_url" placeholder="" class="form-control" value="{{ old('fb_client_url', $preference->fb_client_url ?? '')}}">
                         @if($errors->has('fb_client_url'))
                         <span class="text-danger" role="alert">
@@ -327,9 +327,9 @@
                      <div class="form-group mb-0 switchery-demo">
                         <label for="twitter_login" class="d-flex align-items-center justify-content-between">
                            <h5 class="social_head"><i class="fab fa-twitter"></i> <span>Twitter</span></h5>
-                           <button class="btn btn-info btn-block save_btn" type="submit"> Save </button>
+                           <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
                         </label>
-                        <label for="" class="mr-3">Enable</label>
+                        <label for="" class="mr-3">{{ __("Enable") }}</label>
                         <input type="checkbox" data-plugin="switchery" name="twitter_login" id="twitter_login" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->twitter_login == '1')) checked='checked' @endif>
                      </div>
                   </div>
@@ -337,8 +337,8 @@
                <div class="row  twitter_row" style="{{((isset($preference) && $preference->twitter_login == '1')) ? '' : 'display:none;'}}">
                   <div class="col-12">
                      <div class="form-group mb-2 mt-2">
-                        <label for="twitter_client_id">Twitter Client Key</label>
-                        <label for="" class="mr-3">Enable</label>
+                        <label for="twitter_client_id"></label>{{ __("Twitter Client Key") }}</label>
+                        <label for="" class="mr-3">{{ __("Enable") }}</label>
                         <input type="text" name="twitter_client_id" id="twitter_client_id" placeholder="" class="form-control" value="{{ old('twitter_client_id', $preference->twitter_client_id ?? '')}}">
                         @if($errors->has('twitter_client_id'))
                         <span class="text-danger" role="alert">
@@ -349,7 +349,7 @@
                   </div>
                   <div class="col-12">
                      <div class="form-group mb-2">
-                        <label for="twitter_client_secret">Twitter Client Secret</label>
+                        <label for="twitter_client_secret">{{ __("Twitter Client Secret") }}</label>
                         <input type="password" name="twitter_client_secret" id="twitter_client_secret" placeholder="" class="form-control" value="{{ old('twitter_client_secret', $preference->twitter_client_secret ?? '')}}">
                         @if($errors->has('twitter_client_secret'))
                         <span class="text-danger" role="alert">
@@ -360,7 +360,7 @@
                   </div>
                   <div class="col-12">
                      <div class="form-group mb-0">
-                        <label for="twitter_client_url">Twitter Redirect URL</label>
+                        <label for="twitter_client_url">{{ __("Twitter Redirect URL") }}</label>
                         <input type="text" name="twitter_client_url" id="twitter_client_url" placeholder="" class="form-control" value="{{ old('twitter_client_url', $preference->twitter_client_url ?? '')}}">
                         @if($errors->has('twitter_client_url'))
                         <span class="text-danger" role="alert">
@@ -379,9 +379,9 @@
                      <div class="form-group mb-0 switchery-demo">
                         <label for="google_login" class="d-flex align-items-center justify-content-between">
                            <h5 class="social_head"><i class="fab fa-google"></i> <span>Google</span></h5>
-                           <button class="btn btn-info btn-block save_btn" type="submit"> Save </button>
+                           <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
                         </label>
-                        <label for="" class="mr-3">Enable</label>
+                        <label for="" class="mr-3">{{ __("Enable") }}</label>
                         <input type="checkbox" data-plugin="switchery" name="google_login" id="google_login" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->google_login == '1')) checked='checked' @endif>
                      </div>
                   </div>
@@ -389,7 +389,7 @@
                <div class="row google_row" style="{{((isset($preference) && $preference->google_login == '1')) ? '' : 'display:none;'}}">
                   <div class="col-md-12">
                      <div class="form-group mb-2 mt-2">
-                        <label for="google_client_id">Google Client Key</label>
+                        <label for="google_client_id">Google {{ __("Client Key") }}</label>
                         <input type="text" name="google_client_id" id="google_client_id" placeholder="" class="form-control" value="{{ old('google_client_id', $preference->google_client_id ?? '')}}">
                         @if($errors->has('google_client_id'))
                         <span class="text-danger" role="alert">
@@ -400,7 +400,7 @@
                   </div>
                   <div class="col-md-12">
                      <div class="form-group mb-2">
-                        <label for="google_client_secret">Google Client Secret</label>
+                        <label for="google_client_secret">Google {{ __("Client Secret") }}</label>
                         <input type="password" name="google_client_secret" id="google_client_secret" placeholder="" class="form-control" value="{{ old('google_client_secret', $preference->google_client_secret ?? '')}}">
                         @if($errors->has('google_client_secret'))
                         <span class="text-danger" role="alert">
@@ -411,7 +411,7 @@
                   </div>
                   <div class="col-md-12">
                      <div class="form-group mb-0">
-                        <label for="google_client_url">Google Redirect URL</label>
+                        <label for="google_client_url">Google {{ __("Redirect URL") }}</label>
                         <input type="text" name="google_client_url" id="google_client_url" placeholder="" class="form-control" value="{{ old('google_client_url', $preference->google_client_url ?? '')}}">
                         @if($errors->has('google_client_url'))
                         <span class="text-danger" role="alert">
@@ -430,9 +430,9 @@
                      <div class="form-group mb-0 switchery-demo">
                         <label for="apple_login" class="d-flex align-items-center justify-content-between">
                            <h5 class="social_head"><i class="fab fa-apple"></i> <span>Apple</span></h5>
-                           <button class="btn btn-info btn-block save_btn" type="submit"> Save </button>
+                           <button class="btn btn-info btn-block save_btn" type="submit"> {{ __("Save") }} </button>
                         </label>
-                        <label for="" class="mr-3">Enable</label>
+                        <label for="" class="mr-3">{{ __("Enable") }}</label>
                         <input type="checkbox" data-plugin="switchery" name="apple_login" id="apple_login" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->apple_login == '1')) checked='checked' @endif>
                      </div>
                   </div>
@@ -440,7 +440,7 @@
                <div class="row apple_row" style="{{((isset($preference) && $preference->apple_login == '1')) ? '' : 'display:none;'}}">
                   <div class="col-12">
                      <div class="form-group mb-2 mt-2">
-                        <label for="apple_client_id">Apple Client Key</label>
+                        <label for="apple_client_id">Apple {{ __("Client Key") }}</label>
                         <input type="text" name="apple_client_id" id="apple_client_id" placeholder="" class="form-control" value="{{ old('apple_client_id', $preference->apple_client_id ?? '')}}">
                         @if($errors->has('apple_client_id'))
                         <span class="text-danger" role="alert">
@@ -451,7 +451,7 @@
                   </div>
                   <div class="col-12">
                      <div class="form-group mb-2">
-                        <label for="apple_client_secret">Apple Client Secret</label>
+                        <label for="apple_client_secret">Apple {{ __("Client Secret") }}</label>
                         <input type="password" name="apple_client_secret" id="apple_client_secret" placeholder="" class="form-control" value="{{ old('apple_client_secret', $preference->apple_client_secret ?? '')}}">
                         @if($errors->has('apple_client_secret'))
                         <span class="text-danger" role="alert">
@@ -462,7 +462,7 @@
                   </div>
                   <div class="col-12">
                      <div class="form-group mb-0">
-                        <label for="apple_client_url"> Apple Redirect URL</label>
+                        <label for="apple_client_url"> Apple {{ __("Redirect URL") }}</label>
                         <input type="text" name="apple_client_url" id="apple_client_url" placeholder="" class="form-control" value="{{ old('apple_client_url', $preference->apple_client_url ?? '')}}">
                         @if($errors->has('apple_client_url'))
                         <span class="text-danger" role="alert">
@@ -479,7 +479,7 @@
    <div class="row">
       <div class="col-12">
          <div class="page-title-box">
-            <h4 class="page-title text-uppercase">Map Sms Emails</h4>
+            <h4 class="page-title text-uppercase">{{ __("Map Sms Emails") }}</h4>
          </div>
       </div>
    </div>
@@ -488,14 +488,14 @@
          <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
             <div class="card-box h-100 h-100">
-               <h4 class="header-title text-uppercase text-uppercase">Map Configuration</h4>
+               <h4 class="header-title text-uppercase text-uppercase">{{ __("Map Configuration") }}</h4>
                <p class="sub-header">
-                  View and update your Map type and it's API key.
+                  {{ __("View and update your Map type and it's API key.") }}
                </p>
                <div class="row">
                   <div class="col-12">
                      <div class="form-group mb-3">
-                        <label for="currency">MAP PROVIDER</label>
+                        <label for="currency">{{ __("MAP PROVIDER") }}</label>
                         <select class="form-control" id="map_provider" name="map_provider">
                            @foreach($mapTypes as $map)
                            <option value="{{$map->id}}" {{ (isset($preference) && $preference->map_provider == $map->id)? "selected" : "" }}> {{$map->provider}} </option>
@@ -510,7 +510,7 @@
                   </div>
                   <div class="col-12">
                      <div class="form-group mb-3">
-                        <label for="map_key">API KEY</label>
+                        <label for="map_key">{{ __("API KEY") }}</label>
                         <input type="password" name="map_key" id="map_key" placeholder="" class="form-control" value="{{ old('map_key', $preference->map_key ?? '')}}">
                         @if($errors->has('map_key'))
                         <span class="text-danger" role="alert">
@@ -521,7 +521,7 @@
                   </div>
                   <div class="col-md-2">
                      <div class="form-group mb-0 text-center">
-                        <button class="btn btn-info btn-block" type="submit"> Save </button>
+                        <button class="btn btn-info btn-block" type="submit"> {{ __("Save") }} </button>
                      </div>
                   </div>
                </div>
@@ -532,12 +532,12 @@
          <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
             <div class="card-box h-100 h-100">
-               <h4 class="header-title text-uppercase">SMS Configuration</h4>
-               <p class="sub-header">View and update your SMS Gateway and it's API keys.</p>
+               <h4 class="header-title text-uppercase">{{ __("SMS Configuration") }}</h4>
+               <p class="sub-header">{{ __("View and update your SMS Gateway and it's API keys.") }}</p>
                <div class="row mb-0">
                   <div class="col-12">
                      <div class="form-group mb-3">
-                        <label for="sms_provider">SMS PROVIDER</label>
+                        <label for="sms_provider">{{ __("SMS PROVIDER") }}</label>
                         <select class="form-control" id="sms_provider" name="sms_provider">
                            @foreach($smsTypes as $sms)
                            <option value="{{$sms->id}}" {{ (isset($preference) && $preference->sms_provider == $sms->id)? "selected" : "" }}> {{$sms->provider}} </option>
@@ -552,7 +552,7 @@
                   </div>
                   <div class="col-12">
                      <div class="form-group mb-3">
-                        <label for="sms_from">SMS From</label>
+                        <label for="sms_from">{{ __("SMS From") }}</label>
                         <input type="text" name="sms_from" id="sms_from" placeholder="" class="form-control" value="{{ old('sms_from', $preference->sms_from ?? '')}}">
                         @if($errors->has('sms_from'))
                         <span class="text-danger" role="alert">
@@ -563,7 +563,7 @@
                   </div>
                   <div class="col-12">
                      <div class="form-group mb-3">
-                        <label for="sms_key">API KEY</label>
+                        <label for="sms_key">{{ __("API KEY") }}</label>
                         <input type="text" name="sms_key" id="sms_key" placeholder="" class="form-control" value="{{ old('sms_key', $preference->sms_key ?? '')}}">
                         @if($errors->has('sms_key'))
                         <span class="text-danger" role="alert">
@@ -574,7 +574,7 @@
                   </div>
                   <div class="col-12">
                      <div class="form-group mb-3">
-                        <label for="sms_secret">API Secret</label>
+                        <label for="sms_secret">{{ __("API Secret") }}</label>
                         <input type="password" name="sms_secret" id="sms_secret" placeholder="" class="form-control" value="{{ old('sms_secret', $preference->sms_secret ?? '')}}">
                         @if($errors->has('sms_secret'))
                         <span class="text-danger" role="alert">
@@ -585,7 +585,7 @@
                   </div>
                   <div class="col-md-2">
                      <div class="form-group mb-0 text-center">
-                        <button class="btn btn-info btn-block" type="submit"> Save </button>
+                        <button class="btn btn-info btn-block" type="submit"> {{ __("Save") }} </button>
                      </div>
                   </div>
                </div>
@@ -596,12 +596,12 @@
          <form method="POST" action="{{route('configure.update', Auth::user()->code)}}" class="h-100">
             @csrf
             <div class="card-box h-100 h-100">
-               <h4 class="header-title text-uppercase">Mail Configuration</h4>
-               <p class="sub-header"> View and update your SMTP credentials.</p>
+               <h4 class="header-title text-uppercase">{{ __("Mail Configuration") }}</h4>
+               <p class="sub-header"> {{ __("View and update your SMTP credentials.") }}</p>
                <div class="row">
                   <div class="col-md-6">
                      <div class="form-group mb-3">
-                        <label for="mail_type">Mail Type</label>
+                        <label for="mail_type">{{ __("Mail Type") }}</label>
                         <input type="text" name="mail_type" id="mail_type" placeholder="SMTP" class="form-control" value="{{ old('mail_type', $preference->mail_type ?? '')}}">
                         @if($errors->has('mail_type'))
                         <span class="text-danger" role="alert">
@@ -612,7 +612,7 @@
                   </div>
                   <div class="col-md-6">
                      <div class="form-group mb-3">
-                        <label for="mail_driver">Mail Driver</label>
+                        <label for="mail_driver">{{ __("Mail Driver") }}</label>
                         <input type="text" name="mail_driver" id="mail_driver" placeholder="" class="form-control" value="{{ old('mail_driver', $preference->mail_driver ?? '')}}">
                         @if($errors->has('mail_driver'))
                         <span class="text-danger" role="alert">
@@ -623,7 +623,7 @@
                   </div>
                   <div class="col-md-6">
                      <div class="form-group mb-3">
-                        <label for="mail_host">Mail Host</label>
+                        <label for="mail_host">{{ __("Mail Host") }}</label>
                         <input type="text" name="mail_host" id="mail_host" placeholder="SMTP" class="form-control" value="{{ old('mail_host', $preference->mail_host ?? '')}}">
                         @if($errors->has('mail_host'))
                         <span class="text-danger" role="alert">
@@ -634,7 +634,7 @@
                   </div>
                   <div class="col-md-6">
                      <div class="form-group mb-3">
-                        <label for="mail_port">Mail Port</label>
+                        <label for="mail_port">{{ __("Mail Port") }}</label>
                         <input type="text" name="mail_port" id="mail_port" placeholder="" class="form-control" value="{{ old('mail_port', $preference->mail_port ?? '')}}">
                         @if($errors->has('mail_port'))
                         <span class="text-danger" role="alert">
@@ -645,7 +645,7 @@
                   </div>
                   <div class="col-md-6">
                      <div class="form-group mb-3">
-                        <label for="mail_username">Mail Username</label>
+                        <label for="mail_username">{{ __("Mail Username") }}</label>
                         <input type="text" name="mail_username" id="mail_username" placeholder="username" class="form-control" value="{{ old('mail_username', $preference->mail_username ?? '')}}">
                         @if($errors->has('mail_username'))
                         <span class="text-danger" role="alert">
@@ -656,7 +656,7 @@
                   </div>
                   <div class="col-md-6">
                      <div class="form-group mb-3">
-                        <label for="mail_password">Mail Password</label>
+                        <label for="mail_password">{{ __("Mail Password") }}</label>
                         <input type="password" name="mail_password" id="mail_password" placeholder="" class="form-control" value="{{ old('mail_password', $preference->mail_password ?? '')}}">
                         @if($errors->has('mail_password'))
                         <span class="text-danger" role="alert">
@@ -667,7 +667,7 @@
                   </div>
                   <div class="col-md-6">
                      <div class="form-group mb-3">
-                        <label for="mail_encryption">Mail Encryption</label>
+                        <label for="mail_encryption">{{ __("Mail Encryption") }}</label>
                         <input type="text" name="mail_encryption" id="mail_encryption" placeholder="username" class="form-control" value="{{ old('mail_encryption', $preference->mail_encryption ?? '')}}">
                         @if($errors->has('mail_encryption'))
                         <span class="text-danger" role="alert">
@@ -678,7 +678,7 @@
                   </div>
                   <div class="col-md-6">
                      <div class="form-group mb-3">
-                        <label for="mail_from">Mail From</label>
+                        <label for="mail_from">{{ __("Mail From") }}</label>
                         <input type="text" name="mail_from" id="mail_from" placeholder="service@xyz.com" class="form-control" value="{{ old('mail_from', $preference->mail_from ?? '')}}">
                         @if($errors->has('mail_from'))
                         <span class="text-danger" role="alert">
@@ -691,7 +691,7 @@
                <div class="row mb-2">
                   <div class="col-md-2">
                      <div class="form-group mb-0 text-center">
-                        <button class="btn btn-info d-block" type="submit"> Save </button>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                      </div>
                   </div>
                </div>
@@ -797,7 +797,7 @@
                <div class="row">
                   <div class="col-md-2">
                      <div class="form-group mb-0 text-center">
-                        <button class="btn btn-info d-block" type="submit"> Save </button>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                      </div>
                   </div>
                </div>
@@ -814,23 +814,23 @@
                      <h4 class="page-title text-uppercase">User Authentication</h4>
                   </div> -->
                   <div class="card-box">
-                     <h4 class="header-title text-uppercase">User Authentication</h4>
+                     <h4 class="header-title text-uppercase">{{ __("User Authentication") }}</h4>
                      <div class="row align-items-center">
                         <div class="col-sm-5">
                            <div class="form-group mb-md-0 switchery-demo">
-                              <label for="verify_email" class="mr-3 mb-0">Verify Email</label>
+                              <label for="verify_email" class="mr-3 mb-0">{{ __("Verify Email") }}</label>
                               <input type="checkbox" data-plugin="switchery" name="verify_email" id="verify_email" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_email == '1')) checked='checked' @endif>
                            </div>
                         </div>
                         <div class="col-sm-5">
                            <div class="form-group mb-md-0">
-                              <label for="verify_phone" class="mr-3 mb-0">Verify Phone</label>
+                              <label for="verify_phone" class="mr-3 mb-0">{{ __("Verify Phone") }}</label>
                               <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif>
                            </div>
                         </div>
                         <div class="col-sm-2">
                            <div class="form-group mb-0 text-md-right">
-                              <button class="btn btn-info d-block ml-auto" type="submit"> Save </button>
+                              <button class="btn btn-info d-block ml-auto" type="submit"> {{ __("Save") }} </button>
                            </div>
                         </div>
                      </div>
@@ -838,31 +838,31 @@
                </div>
                <div class="col-xl-12 mb-4">
                   <div class="page-title-box">
-                     <h4 class="page-title text-uppercase">Vendor</h4>
+                     <h4 class="page-title text-uppercase">{{ __("Vendor") }}</h4>
                   </div>
                   <div class="card-box mb-0">
                      <div class="row align-items-center">
                         <div class="col-md-3">
                            <div class="form-group mb-md-0">
-                              <label for="dinein_check" class="mr-3 mb-0">Dine In</label>
+                              <label for="dinein_check" class="mr-3 mb-0">{{ __("Dine In") }}</label>
                               <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
                            </div>
                         </div>
                         <div class="col-md-3">
                            <div class="form-group mb-md-0">
-                              <label for="delivery_check" class="mr-3 mb-0">Delivery</label>
+                              <label for="delivery_check" class="mr-3 mb-0">{{ __("Delivery") }}</label>
                               <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
                            </div>
                         </div>
                         <div class="col-md-3">
                            <div class="form-group mb-md-0">
-                              <label for="takeaway_check" class="mr-3 mb-0">Takeaway</label>
+                              <label for="takeaway_check" class="mr-3 mb-0">{{ __("Takeaway") }}</label>
                               <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
                            </div>
                         </div>
                         <div class="col-md-3">
                            <div class="form-group mb-0 text-md-right">
-                              <button class="btn btn-info d-block ml-md-auto" type="submit"> Save </button>
+                              <button class="btn btn-info d-block ml-md-auto" type="submit"> {{ __("Save") }} </button>
                            </div>
                         </div>
                      </div>
@@ -872,32 +872,32 @@
          </form>
 
          <div class="card-box">
-            <h4 class="header-title text-uppercase mb-3">Custom Mods</h4>
+            <h4 class="header-title text-uppercase mb-3">{{ __("Custom Mods") }}</h4>
             <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
                <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
                @csrf
                <div class="row align-items-center">
                   <div class="col-md-4">
                      <div class="form-group mb-3">
-                        <label for="celebrity_check" class="mr-2 mb-0"> Celebrity Mod</label>
+                        <label for="celebrity_check" class="mr-2 mb-0"> {{ __("Celebrity Mod") }}</label>
                         <input type="checkbox" data-plugin="switchery" name="celebrity_check" id="celebrity_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->celebrity_check == '1')) checked='checked' @endif>
                      </div>
                   </div>
                   <div class="col-md-4">
                      <div class="form-group mb-3">
-                        <label for="pharmacy_check" class="mr-2 mb-0">Pharmacy Mod</label>
+                        <label for="pharmacy_check" class="mr-2 mb-0">{{ __('Pharmacy Mod') }}</label>
                         <input type="checkbox" data-plugin="switchery" name="pharmacy_check" id="pharmacy_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->pharmacy_check == '1')) checked='checked' @endif>
                      </div>
                   </div>
                   <div class="col-md-4">
                      <div class="form-group mb-3">
-                        <label for="enquire_mode" class="mr-2 mb-0">Inquiry Mod</label>
+                        <label for="enquire_mode" class="mr-2 mb-0">{{ __("Inquiry Mod") }}</label>
                         <input type="checkbox" data-plugin="switchery" name="enquire_mode" id="	enquire_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->enquire_mode == '1')) checked='checked' @endif>
                      </div>
                   </div>
                   <div class="col-md-4">
                      <div class="form-group mb-3">
-                        <label for="subscription_mode" class="mr-2 mb-0">Subscription Mod</label>
+                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}</label>
                         <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
                      </div>
                   </div>
@@ -927,7 +927,7 @@
                   </div>
                   <div class="col-md-12">
                      <div class="form-group mb-0 text-md-left">
-                        <button class="btn btn-info d-block" type="submit">Save</button>
+                        <button class="btn btn-info d-block" type="submit">{{ __("Save") }}</button>
                      </div>
                   </div>
                </div>
@@ -945,19 +945,19 @@
                   <h4 class="page-title text-uppercase">Vendor Registration Documents</h4>
                </div> -->
                <div class="card-box mb-0 pb-2">
-                  <h4 class="header-title text-uppercase">Vendor Registration Documents</h4>
+                  <h4 class="header-title text-uppercase">{{ __("Vendor Registration Documents") }}</h4>
                   <div class="d-flex align-items-center justify-content-end mt-2">
                      <a class="btn btn-info d-block" id="add_vendor_registration_document_modal_btn">
-                        <i class="mdi mdi-plus-circle mr-1"></i>Add
+                        <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
                      </a>
                   </div>
                   <div class="table-responsive mt-3 mb-1">
                      <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
                         <thead>
                            <tr>
-                              <th>Name</th>
-                              <th>Type</th>
-                              <th>Action</th>
+                              <th>{{ __("Name") }}</th>
+                              <th>{{ __("Type") }}</th>
+                              <th>{{ __("Action") }}</th>
                            </tr>
                         </thead>
                         <tbody id="post_list">
@@ -986,7 +986,7 @@
                            </tr>
                            @empty
                            <tr align="center">
-                              <td colspan="4" style="padding: 20px 0">Result not found.</td>
+                              <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
                            </tr>
                            @endforelse
                         </tbody>
@@ -1000,39 +1000,39 @@
          <div class="row">
             <div class="col-xl-6">
                <div class="page-title-box">
-                  <h4 class="page-title text-uppercase">Data Management</h4>
+                  <h4 class="page-title text-uppercase">{{ __("Data Management") }}</h4>
                </div>
                <div class="card-box">
                   <div class="row align-items-center text-center">
                      <div class="col-md-12">
-                        <button class="btn w-100 btn-danger cleanSoftDeleted">Clean All Soft Deleted</button>
+                        <button class="btn w-100 btn-danger cleanSoftDeleted">{{ __("Clean All Soft Deleted") }}</button>
                      </div>
                      <div class="col-md-12 my-3">
-                        <button class="btn w-100 btn-danger importDemoContent">Import Demo Content</button>
+                        <button class="btn w-100 btn-danger importDemoContent">{{ __("Import Demo Content") }}</button>
                      </div>
                      <div class="col-md-12">
-                        <button class="btn w-100 btn-danger hardDeleteEverything">Hard Delete Everything</button>
+                        <button class="btn w-100 btn-danger hardDeleteEverything">{{ __("Hard Delete Everything") }}</button>
                      </div>
                   </div>
                </div>
             </div>
             <div class="col-xl-6">
             <div class="page-title-box">
-                  <h4 class="page-title text-uppercase">Refer and Earn</h4>
+                  <h4 class="page-title text-uppercase">{{ __("Refer and Earn") }}</h4>
                </div>
                <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
                   @csrf
                   <div class="card-box mb-0 pb-1">
                   <!-- <h4 class="header-title text-uppercase">Refer and Earn</h4> -->
                      <div class="d-flex align-items-center justify-content-end">
-                        <button class="btn btn-info d-block" type="submit"> Save </button>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                      </div>
                      <div class="col-xl-12 my-2" id="addCur-160">
-                        <label class="primaryCurText">Referred To Amount = </label>
+                        <label class="primaryCurText">{{ __("Referred To Amount") }} = </label>
                         <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', $reffer_to ?? '')}}" min="0">
                      </div>
                      <div class="col-xl-12 mb-2 mt-3" id="addCur-160">
-                        <label class="primaryCurText">Referred By Amount = </label>
+                        <label class="primaryCurText">{{ __("Referred By Amount") }} = </label>
                         <input class="form-control" type="number" name="reffered_by_amount" id="reffered_by_amount" value="{{ old('reffered_by_amount', $reffer_by ?? '')}}" min="0">
                      </div>
                   </div>
@@ -1045,22 +1045,22 @@
    <div class="row">
       <div class="col-lg-6">
          <div class="page-title-box">
-            <h4 class="page-title text-uppercase">Driver</h4>
+            <h4 class="page-title text-uppercase">{{ __("Driver") }}</h4>
          </div>
          <div class="card-box pb-2">
-         <h4 class="header-title text-uppercase">Driver Registration Documents</h4>
+         <h4 class="header-title text-uppercase">{{ __("Driver Registration Documents") }}</h4>
             <div class="d-flex align-items-center justify-content-end mt-2">
                <a class="btn btn-info d-block" id="add_driver_registration_document_modal_btn">
-                  <i class="mdi mdi-plus-circle mr-1"></i>Add
+                  <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
                </a>
             </div>
             <div class="table-responsive mt-3 mb-1">
                <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
                   <thead>
                      <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Action</th>
+                        <th>{{ __("Name") }}</th>
+                        <th>{{ __("Type") }}</th>
+                        <th>{{ __("Action") }}</th>
                      </tr>
                   </thead>
                   <tbody id="post_list">
@@ -1089,7 +1089,7 @@
                      </tr>
                      @empty
                      <tr align="center">
-                        <td colspan="4" style="padding: 20px 0">Result not found.</td>
+                        <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
                      </tr>
                      @endforelse
                   </tbody>
@@ -1134,22 +1134,20 @@
          <div class="row">
             <div class="col-xl-11 col-md-offset-1">
                <div class="card-box">
-                  <h4 class="header-title text-uppercase">Email</h4>
+                  <h4 class="header-title text-uppercase">{{ __("Email") }}</h4>
                   <p class="sub-header">
-                     Choose Email paid plan to whitelable "From email address" and "Sender Name" in the Email sent
-                     out
-                     from your account.
+                     {{ __("Choose Email paid plan to whitelable 'From email address' and 'Sender Name' in the Email sent out from your account.") }}
                   </p>
                   <div class="row mb-0">
                      <div class="col-md-6">
                         <div class="form-group mb-3">
-                           <label for="email_plan">CURRENT SELECTION</label>
+                           <label for="email_plan">{{ __("CURRENT SELECTION") }}</label>
                            <select class="form-control" id="email_plan" name="email_plan">
-                              <option>Select Plan</option>
+                              <option>{{ __("Select Plan") }}</option>
                               <option value="free" {{ (isset($preference) && $preference->email_plan =="free")? "selected" : "" }}>
-                                 Free</option>
+                                 {{ __("Free") }}</option>
                               <option value="paid" {{ (isset($preference) && $preference->email_plan =="paid")? "selected" : "" }}>
-                                 Paid</option>
+                                 {{ __("Paid") }}</option>
                            </select>
                            @if($errors->has('email_plan'))
                            <span class="text-danger" role="alert">
@@ -1169,22 +1167,20 @@
             <div class="row">
                <div class="col-xl-11 col-md-offset-1">
                   <div class="card-box">
-                     <h4 class="header-title text-uppercase">Email</h4>
+                     <h4 class="header-title text-uppercase">{{ __("Email") }}</h4>
                      <p class="sub-header">
-                        Choose Email paid plan to whitelable "From email address" and "Sender Name" in the Email sent
-                        out
-                        from your account.
+                        {{ __("Choose Email paid plan to whitelable 'From email address' and 'Sender Name' in the Email sent out from your account.") }}
                      </p>
                      <div class="row mb-0">
                         <div class="col-md-6">
                            <div class="form-group mb-3">
-                              <label for="email_plan">CURRENT SELECTION</label>
+                              <label for="email_plan">{{ __("CURRENT SELECTION") }}</label>
                               <select class="form-control" id="email_plan" name="email_plan">
-                                 <option>Select Plan</option>
+                                 <option>{{ __("Select Plan") }}</option>
                                  <option value="free" {{ (isset($preference) && $preference->email_plan =="free")? "selected" : "" }}>
-                                    Free</option>
+                                    {{ __("Free") }}</option>
                                  <option value="paid" {{ (isset($preference) && $preference->email_plan =="paid")? "selected" : "" }}>
-                                    Paid</option>
+                                    {{ __("Paid") }}</option>
                               </select>
                               @if($errors->has('email_plan'))
                               <span class="text-danger" role="alert">
@@ -1197,18 +1193,18 @@
                      <div class="row mb-2">
                         <div class="col-md-12">
                            <div class="form-group mb-3">
-                              <label for="sms_service_api_key">PREVIEW</label>
+                              <label for="sms_service_api_key">{{ __("PREVIEW") }}</label>
                               <div class="card">
                                  <div class="card-body">
-                                    <p class="mb-2"><span class="font-weight-semibold mr-2">From:</span>
+                                    <p class="mb-2"><span class="font-weight-semibold mr-2">{{ __("From") }}:</span>
                                        johndoe<span>
                                           << /span>contact@royodispatcher.com<span>></span>
                                     </p>
-                                    <p class="mb-2"><span class="font-weight-semibold mr-2">Reply To:</span>
+                                    <p class="mb-2"><span class="font-weight-semibold mr-2">{{ __("Reply To") }}:</span>
                                        johndoe@gmail.com
                                     </p>
                                     <p class="mt-3 text-center">
-                                       Your message hore here..
+                                      {{ __("Your message note here..") }}
                                     </p>
                                  </div>
                               </div>
@@ -1218,7 +1214,7 @@
                      <div class="row mb-2">
                         <div class="col-md-2">
                            <div class="form-group mb-0 text-center">
-                              <button class="btn btn-info btn-block" type="submit"> Save </button>
+                              <button class="btn btn-info btn-block" type="submit"> {{ __("Save") }} </button>
                            </div>
                         </div>
                      </div>
@@ -1232,7 +1228,7 @@
       <div class="modal-dialog modal-full-width">
          <div class="modal-content">
             <div class="modal-header border-bottom">
-               <h4 class="modal-title">Select Location</h4>
+               <h4 class="modal-title">{{ __("Select Location") }}</h4>
                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body p-4">
@@ -1248,7 +1244,7 @@
                </div>
             </div>
             <div class="modal-footer">
-               <button type="submit" class="btn btn-info waves-effect waves-light selectMapLocation">Ok</button>
+               <button type="submit" class="btn btn-info waves-effect waves-light selectMapLocation">{{ __("Ok") }}</button>
             </div>
          </div>
       </div>
@@ -1257,7 +1253,7 @@
       <div class="modal-dialog modal-dialog-centered">
          <div class="modal-content">
             <div class="modal-header border-bottom">
-               <h4 class="modal-title" id="standard-modalLabel">Add Vendor Registration Document</h4>
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Vendor Registration Document") }}</h4>
                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
@@ -1284,7 +1280,7 @@
                            <div class="row">
                               <div class="col-12">
                                  <div class="form-group position-relative">
-                                    <label for="">Name ({{$client_language->langName}})</label>
+                                    <label for="">{{ __("Name") }} ({{$client_language->langName}})</label>
                                     <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
                                     <input class="form-control" name="name[{{$k}}]" type="text" id="vendor_registration_document_name_{{$client_language->langId}}">
                                  </div>
@@ -1301,7 +1297,7 @@
                </form>
             </div>
             <div class="modal-footer">
-               <button type="button" class="btn btn-primary submitSaveVendorRegistrationDocument">Save</button>
+               <button type="button" class="btn btn-primary submitSaveVendorRegistrationDocument">{{ __("Save") }}</button>
             </div>
          </div>
       </div>
@@ -1310,7 +1306,7 @@
       <div class="modal-dialog modal-dialog-centered">
          <div class="modal-content">
             <div class="modal-header border-bottom">
-               <h4 class="modal-title" id="standard-modalLabel">Add Driver Registration Document</h4>
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Driver Registration Document") }}</h4>
                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
@@ -1321,7 +1317,7 @@
                      <div class="row">
                         <div class="col-md-12">
                            <div class="form-group position-relative">
-                              <label for="">Type</label>
+                              <label for="">{{ __('Type') }}</label>
                               <div class="input-group mb-2">
                                  <select class="form-control" name="file_type">
                                     @forelse($file_types_driver as $k => $file_type)
@@ -1337,7 +1333,7 @@
                            <div class="row">
                               <div class="col-12">
                                  <div class="form-group position-relative">
-                                    <label for="">Name ({{$client_language->langName}})</label>
+                                    <label for="">{{ __("Name") }} ({{$client_language->langName}})</label>
                                     <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
                                     <input class="form-control" name="name[{{$k}}]" type="text" id="driver_registration_document_name_{{$client_language->langId}}">
                                  </div>
@@ -1354,7 +1350,7 @@
                </form>
             </div>
             <div class="modal-footer">
-               <button type="button" class="btn btn-primary submitSaveDriverRegistrationDocument">Save</button>
+               <button type="button" class="btn btn-primary submitSaveDriverRegistrationDocument">{{ __("Save") }}</button>
             </div>
          </div>
       </div>

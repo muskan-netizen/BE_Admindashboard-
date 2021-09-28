@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Catalog</h4>
+                <h4 class="page-title">{{ __('Catalog') }}</h4>
             </div>
         </div>
         <div class="col-sm-12">
@@ -31,13 +31,14 @@
             <div class="card-box h-100">
                 <div class="row mb-2">
                     <div class="col-sm-8">
-                        <h4 class="page-title">Category</h4>
+                        <h4 class="page-title">{{ __('Category') }}</h4>
                         <p class="sub-header">
-                            Drag & drop Categories to make child parent relation
+                            {{ __('Drag & drop Categories to make child parent relation') }}
                         </p>
                     </div>
                     <div class="col-sm-4 text-right">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right openCategoryModal" dataid="0" is_vendor="0"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                        <button class="btn btn-info waves-effect waves-light text-sm-right openCategoryModal"
+                         dataid="0" is_vendor="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
                         </button>
                     </div>
                 </div>
@@ -54,7 +55,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-12 text-right btn_bottom">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right saveList">Save Order</button>
+                        <button class="btn btn-info waves-effect waves-light text-sm-right saveList">{{ __('Save Order') }}</button>
                     </div>
                 </div>
             </div>
@@ -63,13 +64,14 @@
             <div class="card-box h-100">
                 <div class="row mb-2">
                     <div class="col-sm-8">
-                        <h4 class="page-title">Variant</h4>
+                        <h4 class="page-title">{{ __("Variant") }}</h4>
                         <p class="sub-header">
-                            Drag & drop Variant to change the position
+                            {{ __("Drag & drop Variant to change the position") }}
                         </p>
                     </div>
                     <div class="col-sm-4 text-right">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right addVariantbtn" dataid="0"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                        <button class="btn btn-info waves-effect waves-light text-sm-right addVariantbtn"
+                         dataid="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
                         </button>
                     </div>
                     <div class="col-sm-8">
@@ -87,9 +89,9 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Name</th>
-                                        <th>Options</th>
-                                        <th>Action</th>
+                                        <th>{{ __('Name') }}</th>
+                                        <th>{{ __('Options') }}</th>
+                                        <th>{{ __('Action') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -126,7 +128,7 @@
                         </div>
                     </div>
                     <div class="col-sm-12 text-right btn_bottom">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right saveVariantOrder">Save Order</button>
+                        <button class="btn btn-info waves-effect waves-light text-sm-right saveVariantOrder">{{ __('Save Order') }}</button>
                     </div>
                 </div>
             </div>
@@ -135,12 +137,13 @@
             <div class="card-box h-100">
                 <div class="row mb-2">
                     <div class="col-sm-8">
-                        <h4 class="page-title">Brand</h4>
+                        <h4 class="page-title">{{ __('Brand') }}</h4>
                         <p class="sub-header"></p>
                     </div>
                     <div class="col-sm-4 text-right">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right addBrandbtn" dataid="0">
-                            <i class="mdi mdi-plus-circle mr-1"></i> Add
+                        <button class="btn btn-info waves-effect waves-light text-sm-right addBrandbtn"
+                         dataid="0">
+                         <i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
                         </button>
                     </div>
                 </div>
@@ -155,9 +158,9 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Icon</th>
-                                        <th>Name</th>
-                                        <th>Action</th>
+                                        <th>{{ __('Icon') }}</th>
+                                        <th>{{ __('Name') }}</th>
+                                        <th>{{ __('Action') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -192,7 +195,7 @@
                         </div>
                     </div>
                     <div class="col-sm-12 text-right btn_bottom">
-                        <button class="btn btn-info waves-effect waves-light text-sm-right saveBrandOrder">Save Order</button>
+                        <button class="btn btn-info waves-effect waves-light text-sm-right saveBrandOrder">{{ __('Save Order') }}</button>
                     </div>
                 </div>
             </div>

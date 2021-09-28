@@ -13,7 +13,7 @@
 <div class="row">
     <div class="col-12">
         <div class="page-title-box">
-            <h4 class="page-title">App Styling</h4>
+            <h4 class="page-title">{{ __("App Styling") }}</h4>
         </div>
     </div>
 </div>
@@ -25,9 +25,9 @@
                 <div class="col-lg-4">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="header-title">Font Styles</h4>
+                            <h4 class="header-title">{{ __("Font Styles") }}</h4>
                             <div class="mb-3">
-                                <label class="form-label">Selecting regular font</label>
+                                <label class="form-label">{{ __("Selecting regular font") }}</label>
                                 <select class="form-control" name="fonts" onchange="submitRegularFontForm()" id="save_regular_fonts">
                                     @foreach($regular_font_options as $regular_font)
                                     <option value="{{$regular_font->id}}" {{$regular_font->is_selected == 1 ? 'selected' : ''}}>{{$regular_font->name}}</option>
@@ -35,7 +35,7 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Selecting medium font</label>
+                                <label class="form-label">{{ __("Selecting medium font") }}</label>
                                 <select class="form-control" name="fonts" onchange="submitMediumFontForm()" id="save_medium_fonts">
                                     @foreach($medium_font_options as $medium_font)
                                     <option value="{{$medium_font->id}}" {{$medium_font->is_selected == 1 ? 'selected' : ''}}>{{$medium_font->name}}</option>
@@ -43,7 +43,7 @@
                                 </select>
                             </div>
                             <div class="mb-0">
-                                <label class="form-label">Selecting bold font</label>
+                                <label class="form-label">{{ __("Selecting bold font") }}</label>
                                 <select class="form-control" name="fonts" onchange="submitBoldFontForm()" id="save_bold_fonts">
                                     @foreach($bold_font_options as $bold_font)
                                     <option value="{{$bold_font->id}}" {{$bold_font->is_selected == 1 ? 'selected' : ''}}>{{$bold_font->name}}</option>
@@ -56,17 +56,17 @@
                 <div class="col-lg-4">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="header-title">Color Picker</h4>
+                            <h4 class="header-title">{{ __("Color Picker") }}</h4>
                             <div class="form-group mb-3">
-                                <label for="primary_color">Primary Color</label>
+                                <label for="primary_color">{{ __("Primary Color") }}</label>
                                 <input type="text" id="primary_color_option" onchange="submitPrimaryColorForm()" name="primary_color" class="form-control" value="{{ old('primary_color', $primary_color_options->name ?? 'cccccc')}}">
                             </div>
                             <div class="form-group mb-3">
-                                <label for="secondary_color">Secondary Color</label>
+                                <label for="secondary_color">{{ __("Secondary Color") }}</label>
                                 <input type="text" id="secondary_color_option" onchange="submitSecondaryColorForm()" name="secondary_color" class="form-control" value="{{ old('secondary_color', $secondary_color_options->name ?? 'cccccc')}}">
                             </div>
                             <div class="form-group mb-0">
-                                <label for="tertiary_color">Tertiary Color</label>
+                                <label for="tertiary_color">{{ __("Tertiary Color") }}</label>
                                 <input type="text" id="tertiary_color_option" onchange="submitTertiaryColorForm()" name="tertiary_color" class="form-control" value="{{ old('tertiary_color', $tertiary_color_options->name ?? 'cccccc')}}">
                             </div>
                         </div>
@@ -75,7 +75,7 @@
                 <div class="col-lg-4">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="header-title mb-2">Tab Bar Style</h4>
+                            <h4 class="header-title mb-2">{{ __("Tab Bar Style") }}</h4>
                             <div class="row">
                                 @foreach($tab_style_options as $tab_style)
                                 <div class="col-12">
@@ -100,7 +100,7 @@
                 <div class="col-lg-4">
                     <div class="card card-box">
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <h4 class="header-title mb-0">Signup Tagline</h4>
+                            <h4 class="header-title mb-0">{{ __("Signup Tagline") }}</h4>
                         </div>
                         <input type="text" class="form-control" data-id="{{ $signup_tag_line_text->id??'' }}" id="signup_tagline" name="signup_tagline" value="{{ $signup_tag_line_text->name??'' }}">
                     </div>
@@ -113,7 +113,7 @@
         <div class="col-xl-6">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title">Home Page Style</h4>
+                    <h4 class="header-title">{{ __("Home Page Style") }}</h4>
                     <div class="row">
                         @foreach($homepage_style_options as $homepage_style)
                         <div class="col-sm-6 col-md-4 col-lg-3">

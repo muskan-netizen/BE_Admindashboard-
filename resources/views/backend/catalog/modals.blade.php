@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Variant</h4>
+                <h4 class="modal-title">{{ __("Add Variant") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="addVariantForm" method="post" enctype="multipart/form-data" action="{{route('variant.store')}}">
@@ -12,7 +12,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-info waves-effect waves-light addVariantSubmit">Submit</button>
+                    <button type="submit" class="btn btn-info waves-effect waves-light addVariantSubmit">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -23,7 +23,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Edit Variant</h4>
+                <h4 class="modal-title">{{ __("Edit Variant") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="editVariantForm" method="post" enctype="multipart/form-data">
@@ -33,7 +33,7 @@
                     
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-info waves-effect waves-light addVariantSubmit">Submit</button>
+                    <button type="submit" class="btn btn-info waves-effect waves-light addVariantSubmit">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -45,7 +45,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Brand</h4>
+                <h4 class="modal-title">{{ __("Add Brand") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="addBrandForm" method="post" enctype="multipart/form-data" action="{{route('brand.store')}}">
@@ -54,7 +54,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-info waves-effect waves-light addbrandSubmit">Submit</button>
+                    <button type="submit" class="btn btn-info waves-effect waves-light addbrandSubmit">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -65,7 +65,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Edit Brand</h4>
+                <h4 class="modal-title">{{ __("Edit Brand") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="editBrandForm" method="post" enctype="multipart/form-data" action="">
@@ -75,7 +75,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-info waves-effect waves-light editbrandSubmit">Submit</button>
+                    <button type="submit" class="btn btn-info waves-effect waves-light editbrandSubmit">{{ __('Submit') }}</button>
                 </div>
             </form>
         </div>

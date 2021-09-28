@@ -4,9 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 
-class Localization{
+class Adminlanguageswitch
+{
     /**
      * Handle an incoming request.
      *
@@ -14,15 +14,14 @@ class Localization{
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next){
-
-      
-        if (session()->has('locale')) {
-            App::setLocale(session()->get('locale'));
-          
+    public function handle(Request $request, Closure $next)
+    {
+       
+        if(session()->has('applocale_admin')){
+            app()->setlocale(session()->get("applocale_admin"));
         }else{
+            app()->setlocale('en');
         }
         return $next($request);
     }
 }
-

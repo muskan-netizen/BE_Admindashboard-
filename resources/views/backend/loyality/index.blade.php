@@ -26,7 +26,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-12">
-                            <label class="mr-2 mb-0">Enable</label>
+                            <label class="mr-2 mb-0">{{ __('Enable') }}</label>
                             <input type="checkbox" id="activeCheck" {{$status == 0 ? 'checked' : ''}} data-plugin="switchery" name="validity_index" class="chk_box1" data-color="#43bee1">
                         </div>
                         <div class="col-12">
@@ -44,7 +44,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-12 mt-3">
-                                        <button type="button" class="btn btn-primary setredeempoints w-100">Save changes</button>
+                                        <button type="button" class="btn btn-primary setredeempoints w-100">{{ __('Save changes') }}</button>
                                     </div>
                                 </div>
                             </form>
@@ -59,7 +59,7 @@
                     <div class="row mb-2">
                         <div class="col-sm-12 text-right">
                             <button class="btn btn-info waves-effect waves-light text-sm-right"
-                              data-toggle="modal" data-target=".addModal"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                              data-toggle="modal" data-target=".addModal"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
                             </button>
                         </div>
                     </div>
@@ -69,13 +69,13 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Image</th>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Minimum Points</th>
-                                    <th>Earnings Per Order</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th>{{ __('Image') }}</th>
+                                    <th>{{ __('Name') }}</th>
+                                    <th>{{ __('Description') }}</th>
+                                    <th>{{ __('Minimum Points') }}</th>
+                                    <th>{{ __('Earnings Per Order') }}</th>
+                                    <th>{{ __('Status') }}</th>
+                                    <th>{{ __('Action') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="post_list">

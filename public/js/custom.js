@@ -306,7 +306,7 @@ $(document).ready(function () {
                             let search_box_category_template = _.template($('#search_box_main_div_template').html());
                             $("#search_box_main_div").append(search_box_category_template({ results: response.data })).show();
                         } else {
-                            $("#search_box_main_div").html('<p class="text-center my-3">No result found. Please try a new search</p>').show();
+                            $("#search_box_main_div").html('<p class="text-center my-3">{{ __("No result found. Please try a new search") }}</p>').show();
                         }
                     }
                 }

@@ -4,19 +4,19 @@
             <img src="{{$vendor->logo['proxy_url'] . '90/90' . $vendor->logo['image_path']}}" class="rounded-circle avatar-lg img-thumbnail" alt="profile-image">
             <h4 class="mb-0 text-white">{{ucfirst($vendor->name)}}</h4>
             <p class="text-white">{{$vendor->address}}</p>
-            <button type="button" class="btn btn-success btn-sm waves-effect mb-2 waves-light openEditModal" data-toggle="modal" data-target="#exampleModal"> Edit </button>
+            <button type="button" class="btn btn-success btn-sm waves-effect mb-2 waves-light openEditModal" data-toggle="modal" data-target="#exampleModal"> {{ __("Edit") }} </button>
             @if($vendor->status == 0 && Auth::user()->is_superadmin == 1)
-            <button type="button" class="btn btn-success btn-sm waves-effect mb-2 waves-light" id="approve_btn" data-vendor_id="{{$vendor->id}}" data-status="1">Accept</button>
-            <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light" id="reject_btn" data-vendor_id="{{$vendor->id}}" data-status="2">Reject</button>
+            <button type="button" class="btn btn-success btn-sm waves-effect mb-2 waves-light" id="approve_btn" data-vendor_id="{{$vendor->id}}" data-status="1">{{ __("Accept") }}</button>
+            <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light" id="reject_btn" data-vendor_id="{{$vendor->id}}" data-status="2">{{ __("Reject") }}</button>
             @else
             @if(Auth::user()->is_superadmin == 1)
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light" id="block_btn" data-vendor_id="{{$vendor->id}}" data-status="{{$vendor->status == 2  ? '1' : '2'}}">{{$vendor->status == 2 ? 'Unblock' : 'Block'}}</button>
             @endif
             @if($client_preferences->need_dispacher_ride == 1)
-            <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcher" data-id="{{ $vendor->id }}"> Login Into Dispatcher (Pickup & Delivery) </button>
+            <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcher" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (Pickup & Delivery)") }} </button>
             @endif
             @if($client_preferences->need_dispacher_home_other_service == 1)
-            <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcherOnDemand" data-id="{{ $vendor->id }}"> Login Into Dispatcher (On Demand Services) </button>
+            <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcherOnDemand" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (On Demand Services)") }} </button>
             @endif
             @endif
         </div>
@@ -58,13 +58,13 @@
                 @csrf
                 <div class="row">
                     <div class="col-md-12">
-                        <h4 class="mb-2 "> <span class="">Configuration</span></h4>
+                        <h4 class="mb-2 "> <span class="">{{ __("Configuration") }}</span></h4>
                     </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-12">
                         <div class="form-group" id="order_pre_timeInput">
-                            {!! Form::label('title', 'Order Prepare Time(In minutes)',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Order Prepare Time(In minutes)'),['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="order_pre_time" type="text" value="{{ ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0 }}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     </div>
@@ -75,15 +75,15 @@
                         </div>
                     </div> --}}
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', '24*7 Availability',['class' => 'control-label']) !!}
+                        {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="show_slot" class="form-control" data-color="#43bee1" @if($vendor->show_slot == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', 'Auto Accept Order',['class' => 'control-label']) !!}
+                        {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', 'Show Profile Details',['class' => 'control-label']) !!}
+                        {!! Form::label('title', __('Show Profile Details'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="is_show_vendor_details" class="form-control" data-color="#43bee1" @if($vendor->is_show_vendor_details == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     <!-- <div class="col-md-12">
@@ -93,7 +93,7 @@
                         </div>
                     </div> -->
                     <div class="col-12">
-                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>Save</button>
+                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
                     </div>
                 </div>
             </form>
@@ -108,20 +108,20 @@
                 @csrf
                 <div class="row">
                     <div class="col-md-12">
-                        <h4 class="mb-2"> <span class="">Commission</span> (Visible For Admin)</h4>
+                        <h4 class="mb-2"> <span class="">{{ __("Commission") }}</span> ({{ __("Visible For Admin") }})</h4>
                     </div>
                 </div>
                 <div class="row mb-2">
 
                     <div class="col-md-12">
                         <div class="form-group" id="commission_percentInput">
-                            {!! Form::label('title', 'Commission Percent',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Commission Percent'),['class' => 'control-label']) !!}
                             <input class="form-control" name="commission_percent" type="text" value="{{$vendor->commission_percent}}" onkeypress="return isNumberKey(event)">
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="form-group" id="commission_fixed_per_orderInput">
-                            {!! Form::label('title', 'Commission Fixed Per Order',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Commission Fixed Per Order'),['class' => 'control-label']) !!}
                             <input class="form-control" name="commission_fixed_per_order" type="text" value="{{$vendor->commission_fixed_per_order}}" onkeypress="return isNumberKey(event)">
                         </div>
                     </div>
@@ -132,7 +132,7 @@
                         </div>
                     </div> -->
                     <div class="col-12">
-                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>Save</button>
+                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
                     </div>
                 </div>
             </form>
@@ -150,18 +150,18 @@
         <div class="col-md-12">
             <div class="row">
                 <div class="col-md-12">
-                    <h4 class="mb-2"> <span class="">Category Setup</span> (Visible For Admin)</h4>
+                    <h4 class="mb-2"> <span class="">{{ __("Category Setup") }}</span> ({{ __("Visible For Admin") }})</h4>
                 </div>
             </div> 
         </div>
     </div>
     <div class="row">
         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-            {!! Form::label('title', 'Can Add Category',['class' => 'control-label']) !!}
+            {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
             <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if($vendor->add_category == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
         </div>
         <div class="col-md-6 mb-3">
-            {!! Form::label('title', 'Vendor Detail To Show',['class' => 'control-label ']) !!}
+            {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
         </div>
         <div class="col-md-6 mb-3">
             <select class="selectize-select form-control assignToSelect" id="assignTo" {{$vendor->status == 1 ? '' : 'disabled'}}>
@@ -171,7 +171,7 @@
             </select>
         </div>
         <div class="col-md-12">
-            {!! Form::label('title', 'Vendor Category',['class' => 'control-label']) !!}
+            {!! Form::label('title', __('Vendor Category'),['class' => 'control-label']) !!}
             <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
                 <ol class="dd-list">
                     @forelse($builds as $build)
@@ -212,8 +212,8 @@
 
 
  <div class="card-box">
-    <h4 class="header-title mb-2 d-inline-block">Users</h4>
-    <h4 class="header-title mb-1 float-right"><a class="btn addUsersBtn" dataid="0" href="javascript:void(0);"><i class="mdi mdi-plus-circle mr-1" ></i> Add Users
+    <h4 class="header-title mb-2 d-inline-block">{{ __('Users') }}</h4>
+    <h4 class="header-title mb-1 float-right"><a class="btn addUsersBtn" dataid="0" href="javascript:void(0);"><i class="mdi mdi-plus-circle mr-1" ></i> {{ __("Add Users") }}
     </a></h4>
     
     <div class="inbox-widget" data-simplebar style="max-height: 350px;">
@@ -244,7 +244,13 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Edit {{getNomenclatureName('vendors', false)}}</h4>
+
+                @php
+                $vendors = getNomenclatureName('vendors', false);
+                $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ; 
+                @endphp
+
+                <h4 class="modal-title">{{ __("Edit") }} {{ $newvendors }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_edit_banner_form" method="post" enctype="multipart/form-data">
@@ -254,7 +260,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">Submit</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>
@@ -266,7 +272,7 @@
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Add User</h4>
+                <h4 class="modal-title">{{ __("Add User") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="add_user_permission_vendor" method="post" enctype="multipart/form-data" action="{{route('permissionsForUserViaVendor')}}" autocomplete="off">
@@ -278,7 +284,7 @@
                             <div class="row">
                                 <div class="col-12 mb-2">
                                     <div class="form-group" id="skuInput">
-                                        {!! Form::text('search', null, ['class' => 'form-control', 'placeholder' => 'Search User', 'id' => 'id_search_user_for_permission', 'required' => 'required']) !!}
+                                        {!! Form::text('search', null, ['class' => 'form-control', 'placeholder' => __('Search User'), 'id' => 'id_search_user_for_permission', 'required' => 'required']) !!}
                                         <input type="hidden" id='cusid' name="ids" readonly>
                                         <div id="userList">
                                         </div>
@@ -293,7 +299,7 @@
                 <span class="text-danger" id="error-msg"></span>
                 <span class="text-success" id="success-msg"></span>
                 <div class="modal-footer">
-                    <button  class="btn btn-info waves-effect waves-light" id="user_permission_form_button">Submit</button>
+                    <button  class="btn btn-info waves-effect waves-light" id="user_permission_form_button">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>

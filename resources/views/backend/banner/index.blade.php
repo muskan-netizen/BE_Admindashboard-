@@ -16,12 +16,12 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-                <h4 class="page-title">Banner</h4>
+                <h4 class="page-title">{{ __('Banner') }}</h4>
             </div>
         </div>
         <div class="col-sm-6 text-right">
             <button class="btn btn-info waves-effect waves-light text-sm-right openBannerModal"
-                userId="0"><i class="mdi mdi-plus-circle mr-1"></i> Add
+                userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
             </button>
         </div>
     </div>
@@ -134,12 +134,12 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Image</th>
-                                    <th>Name</th>
-                                    <th>Duration</th>
-                                    <th>Redirect To</th>
+                                    <th>{{ __("Image") }}</th>
+                                    <th>{{ __("Name") }}</th>
+                                    <th>{{ __("Duration") }}</th>
+                                    <th>{{ __("Redirect To") }}</th>
                                     <th></th>
-                                    <th>Action</th>
+                                    <th>{{ __("Action") }}</th>
                                 </tr>
                             </thead>
                             <tbody id="post_list">
@@ -162,11 +162,11 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                     </span></td>
                                     <td>                                         
                                         @if($ban->link == 'category')
-                                            Category
+                                            {{ __("Category") }}
                                         @elseif($ban->link == 'vendor')
-                                            Vendor
+                                            {{ __("Vendor") }}
                                         @else
-                                            N/A
+                                            {{ __("N/A") }}
                                         @endif
                                      </td>
                                     <td> 

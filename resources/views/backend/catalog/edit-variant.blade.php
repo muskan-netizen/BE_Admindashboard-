@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', 'Select Category',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Select Category'),['class' => 'control-label']) !!}
                     <select class="form-control selectize-select" id="edit_cateSelectBox" name="cate_id">
                         @foreach($categories as $cate)
                             <option value="{{$cate->id}}" @if($variant->varcategory->category_id == $cate->id) selected @endif>{{$cate->translation_one['name']}}</option>
@@ -17,7 +17,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', 'Select List',['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Select List'),['class' => 'control-label']) !!}
                     <select class="form-control selectize-select dropDownType" name="type" dataFor="edit">
                         <option value="1" @if($variant->type == 1) selected @endif>DropDown</option>
                         <option value="2" @if($variant->type == 2) selected @endif>Color</option>
@@ -31,7 +31,7 @@
         
         <div class="row rowYK">
             <div class="col-md-12">
-                <h5>Variant Title</h5>
+                <h5>{{ __("Variant Title") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
                 <input type="hidden" name="submitHide" id="submitEditHidden" value="{{route('variant.update', $variant->id)}}">
@@ -69,12 +69,12 @@
 
         <div class="row rowYK">
             <div class="col-md-12">
-                <h5>Variant Options</h5>
+                <h5>{{ __("Variant Options") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
                 <table class="table table-borderless mb-0 optionTableEdit" id="edit_variant-datatable">
                     <tr class="trForClone">
-                        <td class="hexacodeClass-edit" style="@if($variant->type == 1) display: none @endif">Color Code</td>
+                        <td class="hexacodeClass-edit" style="@if($variant->type == 1) display: none @endif">{{ __("Color Code") }}</td>
                         @foreach($languages as $langs)
                             <td>{{$langs->language->name}}</td>
                         @endforeach
@@ -122,7 +122,7 @@
                 </table>
             </div>
             <div class="col-md-12">
-                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-edit">Add Option</button>
+                <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-edit">{{ __("Add Option") }}</button>
             </div>
         </div>
     </div>

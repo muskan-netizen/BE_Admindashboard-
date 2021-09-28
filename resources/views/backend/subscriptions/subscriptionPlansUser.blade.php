@@ -22,12 +22,12 @@
             <div class="row align-items-center">
                 <div class="col-sm-6">
                     <div class="page-title-box">
-                        <h4 class="page-title">User Subscription Plans</h4>
+                        <h4 class="page-title">{{ __('User Subscription Plans') }}</h4>
                     </div>
                 </div>
                 <div class="col-sm-6 text-sm-right">
                     <button class="btn btn-info waves-effect waves-light text-sm-right" data-toggle="modal" data-target="#add-subscription-plan">
-                        <i class="mdi mdi-plus-circle mr-1"></i> Add Plan
+                        <i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Plan') }}
                     </button>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                                             <i class="mdi mdi-account-multiple-plus text-primary mdi-24px"></i>
                                             <span data-plugin="counterup" id="total_subscribed_users_count">{{ $subscribed_users_count }}</span>
                                         </h3>
-                                        <p class="text-muted font-15 mb-0">Total Subscribed Users</p>
+                                        <p class="text-muted font-15 mb-0">{{ __('Total Subscribed Users') }}</p>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-md-6 mb-3 mb-md-0">
@@ -79,7 +79,7 @@
                                             <i class="mdi mdi-account-multiple-plus text-primary mdi-24px"></i>
                                             <span data-plugin="counterup" id="total_subscribed_users_percentage">{{ $subscribed_users_percentage }}</span>
                                         </h3>
-                                        <p class="text-muted font-15 mb-0">Total Subscribed Users (%)</p>
+                                        <p class="text-muted font-15 mb-0">{{ __("Total Subscribed Users") }} (%)</p>
                                     </div>
                                 </div>
                             </div>
@@ -98,14 +98,14 @@
                                     <table class="table table-centered table-nowrap table-striped" id="sub-plans-datatable">
                                         <thead>
                                             <tr>
-                                                <th>Image</th>
-                                                <th>Title</th>
-                                                <th>Description</th>
-                                                <th>Price</th>
-                                                <th>Features</th>
-                                                <th>Frequency</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
+                                                <th>{{ __("Image") }}</th>
+                                                <th>{{ __("Title") }}</th>
+                                                <th>{{ __("Description") }}</th>
+                                                <th>{{ __("Price") }}</th>
+                                                <th>{{ __("Features") }}</th>
+                                                <th>{{ __("Frequency") }}</th>
+                                                <th>{{ __("Status") }}</th>
+                                                <th>{{ __("Action") }}</th>
                                             </tr>
                                         </thead>
                                         <tbody id="subscriptions_list">
@@ -155,7 +155,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Plan</h4>
+                <h4 class="modal-title">{{ __('Add Plan') }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="user_subscription_form" method="post" enctype="multipart/form-data" action="{{ route('subscription.plan.save.user') }}">
@@ -165,16 +165,16 @@
                         <div class="col-md-12">
                             <div class="row mb-2">
                                 <div class="col-md-12">
-                                    <label>Upload Image</label>
+                                    <label>{{ __('Upload Image') }}</label>
                                     <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="" />
-                                    <label class="logo-size text-right w-100">Image Size 120x120</label>
+                                    <label class="logo-size text-right w-100">{{ __('Image Size') }} 120x120</label>
                                 </div> 
                             </div>
 
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        {!! Form::label('title', 'Enable',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Enable'),['class' => 'control-label']) !!} 
                                         <div class="mt-md-1">
                                             <input type="checkbox" data-plugin="switchery" name="status" class="form-control status" data-color="#43bee1" checked='checked'>
                                         </div>
@@ -182,7 +182,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="nameInput">
-                                        {!! Form::label('title', 'Title',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Title'),['class' => 'control-label']) !!} 
                                         {!! Form::text('title', null, ['class'=>'form-control', 'required'=>'required']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -191,7 +191,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="">Features</label>
+                                        <label for="">{{ __("Features") }}</label>
                                         <select class="form-control select2-multiple" name="features[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required="required">
                                             @foreach($features as $feature)
                                                 <option value="{{$feature->id}}"> {{$feature->title}} </option>
@@ -201,17 +201,17 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="">Price</label>
+                                        <label for="">{{ __('Price') }}</label>
                                         <input class="form-control" type="number" name="price" min="0" required="required">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="">Frequency</label>
+                                        <label for="">{{ __("Frequency") }}</label>
                                         <select class="form-control" name="frequency" required="required">
-                                            <option value="weekly">Weekly</option>
-                                            <option value="monthly">Monthly</option>
-                                            <option value="yearly">Yearly</option>
+                                            <option value="weekly">{{ __("Weekly") }}</option>
+                                            <option value="monthly">{{ __("Monthly") }}</option>
+                                            <option value="yearly">{{ __("Yearly") }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -223,7 +223,7 @@
                                 </div><?php */ ?>
                                 <div class="col-md-12">
                                     <div class="form-group" id="descInput">
-                                        {!! Form::label('title', 'Description',['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Description'),['class' => 'control-label']) !!} 
                                         {!! Form::textarea('description', null, ['class' => 'form-control', 'rows' => '3']) !!}
                                     </div>
                                 </div>
@@ -232,7 +232,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-info waves-effect waves-light submitAddSubscriptionForm">Submit</button>
+                    <button type="submit" class="btn btn-info waves-effect waves-light submitAddSubscriptionForm">{{ __("Submit") }}</button>
                 </div>
             </form>
         </div>

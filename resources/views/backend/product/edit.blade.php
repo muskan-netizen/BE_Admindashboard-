@@ -82,18 +82,18 @@
     <div class="row">
         <div class="col-8 d-flex align-items-center">
             <div class="page-title-box">
-                <h4 class="page-title">Edit Product</h4>
+                <h4 class="page-title">{{ __("Edit Product") }}</h4>
             </div>
             <div class="site_link position-relative ml-3">
                 <a href="{{route('productDetail',$product->url_slug)}}" target="_blank"><span id="pwd_spn" class="password-span">{{route('productDetail',$product->url_slug)}}</span></a>
                 <label class="copy_link float-right" id="cp_btn" title="copy">
                     <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
-                    <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">Copied</span>
+                    <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">{{ __("Copied") }}</span>
                 </label>
             </div>
         </div>
         <div class="col-4 text-right" style="margin: auto;">
-            <button type="button" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> Submit</button>
+            <button type="button" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
         </div>
     </div>
     <div class="row mb-2">
@@ -118,10 +118,10 @@
                 @csrf
                 @method('PUT')
                 <div class="card-box">
-                    <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">General</h5>
+                    <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">{{ __("General") }}</h5>
                     <div class="row mb-2 row-spacing">
                         <div class="col-md-5 mb-2" style="cursor: not-allowed;">
-                            {!! Form::label('title', 'SKU (a-z, A-Z, 0-9, -,_)',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('SKU (a-z, A-Z, 0-9, -,_)'),['class' => 'control-label']) !!}
                             <span class="text-danger">*</span>
                             {!! Form::text('sku', $product->sku, ['class'=>'form-control','id' => 'sku', 'onkeypress' => "return alplaNumeric(event)",'name' => 'sku']) !!}
 
@@ -133,7 +133,7 @@
                         </div>
 
                         <div class="col-md-4" style="cursor: not-allowed;">
-                            {!! Form::label('title', 'URL Slug',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('URL Slug'),['class' => 'control-label']) !!}
                             <span class="text-danger">*</span>
                             {!! Form::text('url_slug', $product->url_slug, ['class'=>'form-control', 'id' => 'url_slug','onkeypress' => "return alplaNumericSlug(event)"]) !!}
                             
@@ -145,7 +145,7 @@
                         </div>
 
                         <div class="col-md-3" style="cursor: not-allowed;">
-                            {!! Form::label('title', 'Category',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Category'),['class' => 'control-label']) !!}
                             {!! Form::text('category', $product->category ? $product->category->cat->name : '', ['class'=>'form-control', 'style' => 'pointer-events:none;']) !!}
                             <input type="hidden" name="category_id" value="{{$product->category ? $product->category->cat->category_id : $product->category_id}}">
                         </div>
@@ -154,7 +154,7 @@
                 <div class="card-box ">
                     <div class="row mb-2 bg-light">
                         <div class="col-8" style="margin:auto; padding: 8px !important;">
-                            <h5 class="text-uppercase  mt-0 mb-0">Product Information</h5>
+                            <h5 class="text-uppercase  mt-0 mb-0">{{ __("Product Information") }}</h5>
                         </div>
                         <div class="col-4 p-2 mt-0" style="margin:auto; padding: 8px !important;">
                             <select class="selectize-select form-control" id="language_id" name="language_id">
@@ -166,23 +166,23 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-12 mb-2">
-                            {!! Form::label('title', 'Product Name',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Product Name'),['class' => 'control-label']) !!}
                             {!! Form::text('product_name', $product->primary ? $product->primary->title : '', ['class'=>'form-control', 'id' => 'product_name', 'placeholder' => 'Apple iMac']) !!}
                         </div>
                         <div class="col-12 mb-2">
-                            {!! Form::label('title', 'Product Description',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Product Description'),['class' => 'control-label']) !!}
                             {!! Form::textarea('body_html', $product->primary ? $product->primary->body_html : '', ['class'=>'form-control', 'id' => 'body_html', 'placeholder' => 'Description', 'rows' => '5']) !!}
                         </div>
                         <div class="col-12 mb-2">
-                            {!! Form::label('title', 'Meta Title',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Meta Title'),['class' => 'control-label']) !!}
                             {!! Form::text('meta_title', $product->primary ? $product->primary->meta_title : '', ['class'=>'form-control', 'id' => 'meta_title', 'placeholder' => 'Meta Title']) !!}
                         </div>
                         <div class="col-12 mb-2">
-                            {!! Form::label('title', 'Meta Keyword',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Meta Keyword'),['class' => 'control-label']) !!}
                             {!! Form::textarea('meta_keyword', $product->primary ? $product->primary->meta_keyword : '', ['class'=>'form-control', 'id' => 'meta_keyword', 'placeholder' => 'Meta Keyword', 'rows' => '3']) !!}
                         </div>
                         <div class="col-12 mb-2">
-                            {!! Form::label('title', 'Meta Description',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Meta Description'),['class' => 'control-label']) !!}
                             {!! Form::textarea('meta_description', $product->primary ? $product->primary->meta_description : '', ['class'=>'form-control', 'id' => 'meta_description', 'placeholder' => 'Meta Description', 'rows' => '3']) !!}
                         </div>
                     </div>
@@ -190,15 +190,15 @@
                 @if($product->category->categoryDetail->type_id != 7)
                 <div class="card-box">
 
-                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Pricing Information</h5>
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pricing Information") }}</h5>
                     @if($product->has_variant == 0)
                     <div class="row mb-2">
                         <div class="col-4 mb-2">
-                            {!! Form::label('title', 'Price', ['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
                             {!! Form::text('price', $product->variant[0]->price, ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         <div class="col-4 mb-2">
-                            {!! Form::label('title', 'Compare at price (Optional)', ['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
                             {!! Form::text('compare_at_price', $product->variant[0]->compare_at_price, ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         {{-- <div class="col-4 mb-2">
@@ -210,7 +210,7 @@
                     <div class="row mb-2">
                         @if($product->category->categoryDetail->type_id != 8)
                         <div class="col-sm-4">
-                            {!! Form::label('title', 'Track Inventory') !!} <br>
+                            {!! Form::label('title', __('Track Inventory')) !!} <br>
                             <input type="checkbox" bid="" id="has_inventory" data-plugin="switchery" name="has_inventory" class="chk_box" data-color="#43bee1" {{$product->has_inventory == 1 ? 'checked' : ''}}>
                         </div>
                         @endif
@@ -220,12 +220,12 @@
                                 @if($product->category->categoryDetail->type_id != 8)
                                 @if($product->has_variant == 0)
                                 <div class="col-sm-4">
-                                    {!! Form::label('title', 'Quantity',['class' => 'control-label']) !!}
+                                    {!! Form::label('title', __('Quantity'),['class' => 'control-label']) !!}
                                     {!! Form::number('quantity', $product->variant[0]->quantity, ['class'=>'form-control', 'id' => 'quantity', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
                                 @endif
                                 <div class="col-sm-4">
-                                    {!! Form::label('title', 'Sell When Out Of Stock',['class' => 'control-label']) !!} <br />
+                                    {!! Form::label('title', __('Sell When Out Of Stock'),['class' => 'control-label']) !!} <br />
                                     <input type="checkbox" bid="" id="sell_stock_out" data-plugin="switchery" name="sell_stock_out" class="chk_box" data-color="#43bee1" @if($product->sell_when_out_of_stock == 1) checked @endif>
                                 </div>
                                 @endif
@@ -247,15 +247,15 @@
                 <div class="card-box">
                     <div class="row mb-2 bg-light">
                         <div class="col-8" style="margin:auto;">
-                            <h5 class="text-uppercase mt-0 bg-light p-2">Variant Information</h5>
+                            <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
                         </div>
                         @if(!empty($productVariants))
                         <div class="col-4 p-2 mt-0 text-right" style="margin:auto; ">
-                            <button type="button" class="btn btn-info makeVariantRow"> Make Variant Sets</button>
+                            <button type="button" class="btn btn-info makeVariantRow"> {{ __("Make Variant Sets") }}</button>
                         </div>
                         @endif
                     </div>
-                    <p>Select or change category to get variants</p>
+                    <p>{{ __("Select or change category to get variants") }}</p>
                     
                     <div class="row" style="width:100%; overflow-x: scroll;">
                         <div id="variantAjaxDiv" class="col-12 mb-2">
@@ -279,17 +279,17 @@
 
                         @if($product->has_variant == 1)
                         <div class="col-12" id="exist_variant_div">
-                            <h5 class="">Applied Variants Set</h5>
+                            <h5 class="">{{ __("Applied Variants Set") }}</h5>
                             <table class="table table-centered table-nowrap table-striped">
                                 <thead>
-                                    <th>Image</th>
-                                    <th>Name</th>
-                                    <th>Variants</th>
-                                    <th>Price</th>
-                                    <th>Compare at price</th>
-                                    <th>Cost Price</th>
-                                    <th class="check_inventory">Quantity</th>
-                                    <th>Action</th>
+                                    <th>{{ __("Image") }}</th>
+                                    <th>{{ __("Name") }}</th>
+                                    <th>{{ __("Variants") }}</th>
+                                    <th>{{ __("Price") }}</th>
+                                    <th>{{ __('Compare at price') }}</th>
+                                    <th>{{ __('Cost Price') }}</th>
+                                    <th class="check_inventory">{{ __("Quantity") }}</th>
+                                    <th>{{ __("Action") }}</th>
                                 </thead>
                                 <tbody id="product_tbody_{{$product->id}}">
                                     @foreach($product->variant as $varnt)
@@ -369,31 +369,31 @@
                     </div>
                 </div> -->
                 <div class="card-box">
-                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Other Information</h5>
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Other Information") }}</h5>
                     <div class="row mb-2">
                         <div class="col-md-6 d-flex justify-content-between mb-2">
-                            {!! Form::label('title', 'New',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('New'),['class' => 'control-label']) !!}
                             <input type="checkbox" id="is_new" data-plugin="switchery" name="is_new" class="chk_box" data-color="#43bee1" @if($product->is_new == 1) checked @endif>
                         </div>
                         <div class="col-md-6 d-flex justify-content-between mb-2">
-                            {!! Form::label('title', 'Featured',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Featured'),['class' => 'control-label']) !!}
                             <input type="checkbox" id="is_featured" data-plugin="switchery" name="is_featured" class="chk_box" data-color="#43bee1" @if($product->is_new == 1) checked @endif>
                         </div>
                         @if($configData->need_delivery_service == 1 && $product->category->categoryDetail->type_id != 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
-                            {!! Form::label('title', 'Requires Last Mile Delivery',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Requires Last Mile Delivery'),['class' => 'control-label']) !!}
                             <input type="checkbox" id="last_mile" data-plugin="switchery" name="last_mile" class="chk_box" data-color="#43bee1" @if($product->Requires_last_mile == 1) checked @endif>
                         </div>
                         @endif
                         @if($configData->pharmacy_check == 1)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
-                            {!! Form::label('title', 'Requires Prescription',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Requires Prescription'),['class' => 'control-label']) !!}
                             <input type="checkbox" bid="" id="pharmacy_check" data-plugin="switchery" name="pharmacy_check" class="chk_box" data-color="#43bee1" @if($product->pharmacy_check == 1) checked @endif>
                         </div>
                         @endif
                         @if($configData->enquire_mode == 1)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
-                            {!! Form::label('title', 'Inquiry Only',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Inquiry Only'),['class' => 'control-label']) !!}
                             <input type="checkbox" bid="" id="inquiry_only" data-plugin="switchery" name="inquiry_only" class="chk_box" data-color="#43bee1" @if($product->inquiry_only == 1) checked @endif>
                         </div>
                         @endif
@@ -401,7 +401,7 @@
 
                         @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                             <div class="col-md-6 d-flex justify-content-between mb-2">
-                                {!! Form::label('title', 'Dispatcher Tags',['class' => 'control-label']) !!}
+                                {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
                                 <select class="selectize-select1 form-control"  name="tags" required>
                                     @if($agent_dispatcher_tags != null && count($agent_dispatcher_tags))
                                     @foreach($agent_dispatcher_tags as $key => $tags)
@@ -414,7 +414,7 @@
                             
                         @if($configData->need_dispacher_home_other_service == 1 && $product->category->categoryDetail->type_id == 8)
                             <div class="col-md-6 d-flex justify-content-between mb-2">
-                                {!! Form::label('title', 'Dispatcher Tags',['class' => 'control-label']) !!}
+                                {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
                                 <select class="selectize-select1 form-control"  name="tags" required>
                                     @if($agent_dispatcher_on_demand_tags != null && count($agent_dispatcher_on_demand_tags))
                                     @foreach($agent_dispatcher_on_demand_tags as $key => $tags)
@@ -440,7 +440,7 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12 mb-2">
-                            {!! Form::label('title', 'Live',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Live'),['class' => 'control-label']) !!}
                             <select class="selectizeInput form-control" id="is_live" name="is_live">
                                 <option value="0" @if($product->is_live == 0) selected @endif>Draft</option>
                                 <option value="1" @if($product->is_live == 1) selected @endif>Published</option>
@@ -449,7 +449,7 @@
 
                         @if($product->category->categoryDetail->type_id != 8 && $product->category->categoryDetail->type_id != 7)
                         <div class="col-md-6 mb-2">
-                            {!! Form::label('title', 'Brand',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Brand'),['class' => 'control-label']) !!}
                             <select class="form-control " id="brand_idBox" name="brand_id">
                                 <option value="">Select</option>
                                 @foreach($brands as $brand)
@@ -460,7 +460,7 @@
                         @endif
 
                         <div class="col-md-6 mb-2">
-                            {!! Form::label('title', 'Tax Category',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Tax Category'),['class' => 'control-label']) !!}
                             <select class="form-control " id="typeSelectBox" name="tax_category">
                                 <option value="">Select</option>
                                 @foreach($taxCate as $cate)
@@ -506,7 +506,7 @@
                 </div>
 
                 <div class="card-box">
-                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Product Images</h5>
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Product Images") }}</h5>
                     <div class="row mb-2">
                         @if(isset($product->media) && !empty($product->media))
                         @foreach($product->media as $media)
@@ -528,16 +528,16 @@
                         @endif
                     </div>
                     <div class="dropzone dropzone-previews" id="my-awesome-dropzone"></div>
-                    <label class="logo-size d-block text-right mt-1">Image Size 540x715</label>
+                    <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 540x715</label>
                     <div class="imageDivHidden"></div>
                 </div>
 
                 <div class="card-box">
-                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Relate with other products</h5>
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Relate with other products") }}</h5>
                     <div class="row">
                         @if($configData->celebrity_check == 1)
                         <div class="col-md-6 mb-2">
-                            {!! Form::label('title', 'Select Celebrity',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Select Celebrity'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="celebrities[]" data-toggle="select2" multiple="multiple" placeholder="Select celebrity...">
                                 @foreach($celebrities as $cel)
                                 <option value="{{$cel->id}}" @if(in_array($cel->id, $celeb_ids)) selected @endif> {{$cel->name}}</option>
@@ -546,7 +546,7 @@
                         </div>
                         @endif
                         <div class="col-md-6 mb-2">
-                            {!! Form::label('title', 'Select Addon Set',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Select Addon Set'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="addon_sets[]" data-toggle="select2" multiple="multiple" placeholder="Select addon...">
                                 @foreach($addons as $set)
                                 <option value="{{$set->id}}" @if(in_array($set->id, $addOn_ids)) selected @endif>{{$set->title}}</option>
@@ -555,7 +555,7 @@
                         </div>
                         @if($product->category->categoryDetail->type_id != 8)
                         <div class="col-md-6 mb-2">
-                            {!! Form::label('title', 'Up Cell Products',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Up Cell Products'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="up_cell[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
                                 @foreach($otherProducts as $otherProduct)
                                 <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $upSell_ids)) selected @endif>{{$otherProduct->primary->title}}</option>
@@ -564,7 +564,7 @@
                         </div>
 
                         <div class="col-md-6 mb-2">
-                            {!! Form::label('title', 'Cross Cell Products',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Cross Cell Products'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="cross_cell[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
                                 @foreach($otherProducts as $otherProduct)
                                 <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $crossSell_ids)) selected @endif>{{$otherProduct->primary->title}}</option>
@@ -572,7 +572,7 @@
                             </select>
                         </div>
                         <div class="col-md-6 mb-2">
-                            {!! Form::label('title', 'Related Products',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Related Products'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="releted_product[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
                                 @foreach($otherProducts as $otherProduct)
                                 <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $related_ids)) selected @endif>{{$otherProduct->primary->title}}</option>
@@ -590,14 +590,14 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Add Product Image</h4>
+                <h4 class="modal-title">{{ __("Add Product Image") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body" id="AddCardBox">
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info waves-effect waves-light selectVaiantImages">Select</button>
+                <button type="button" class="btn btn-info waves-effect waves-light selectVaiantImages">{{ __("Select") }}</button>
             </div>
         </div>
     </div>
