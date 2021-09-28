@@ -217,10 +217,14 @@ body{
     display: block;
 }
 
-.common-product-box:hover,.suppliers-box:hover{
+.common-product-box:hover,.suppliers-box:hover,.product-box:hover{
     border-color: rgb(232, 232, 232);
     box-shadow: rgb(28 28 28 / 12%) 0px 0.4rem 1.8rem;
     box-sizing: border-box;
+}
+
+.product-box{
+    padding: 0 16px;
 }
 
 .suppliers-box {
@@ -374,35 +378,33 @@ body{
 
 .brand-box {
     height: 313px;
-    width: 268px;
-    /* box-shadow: 0 2px 31px 0 rgba(0,0,0,0.13); */
     border-radius: 10px;
-    width: calc(100% - 28px);
+    width: 100%;
     margin: auto;
+    padding: 5px 10px 0; 
+    position: relative;   
 }
 
 .brand-box img{
-    max-width: 100%;
+    width: 100%;
 }
 
-.black-box {
-    background: rgb(0 0 0 / 26%);
-}
-.red-box{
-    background-color: #ED1D24;
-}
-.blue-box{
-    background-color: #1372A4;
-}
 
 .brand-box h6 {
     position: absolute;
-    bottom: 0;
+    bottom: 20px;
     color: #fff;
     font-size: 24px;
     letter-spacing: 0;
     font-weight: 600;
     line-height: 33px;
+    width: 100%;
+    text-align: center;
+}
+
+.product-timing i, .product-timing img {
+    width: 16px;
+    text-align: center;
 }
 
 .suppliers-img-outer {
@@ -508,11 +510,41 @@ body{
     line-height: 26px;
 }
 
-footer ul.social-links li a {
+footer ul.social-links li a{
+    color: #777777;
+}
+
+footer ul.s#777777inks li a:hover{
+    color: var(--theme-deafult);
+}
+
+footer ul.social-links li,.footer-theme .sub-title .contact-list li{
+    padding: 0 !important;
+}
+
+footer ul.social-links li a i, .contact-list li  i {
     width: 30px;
     height: 30px;
     line-height: 30px;
     font-size: 16px;
+    text-align: center;
+    margin-right: 5px;
+    background: #000;
+    border-radius: 50%;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    transition: all 0.5s;
+    color: #fff;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.footer-theme .sub-title .contact-list i{
+    position: initial;
+}
+
+.contact-list li:hover i{
+    background-color: var(--theme-deafult);
 }
 
 .sticky-bottom-cart .product-image {
@@ -630,17 +662,57 @@ footer ul.social-links li a {
     background: rgb(247 247 247 / 15%);
 }
 
-.dark .product-description h3,.dark .supplier-rating h6 {
-    color: #fff;
+.dark .product-description h3,.dark .supplier-rating h6,.dark .product-description b,.dark .product-timing small{
+    color: #cfd4da;
 }
 
 
 
-
-
-
-
-
+/* Arabic Lang css */
+body[dir=rtl] {
+    text-align: right;
+    overflow-x: hidden;
+}
+body[dir=rtl] .slick-prev {
+    left: -60px;
+    right: auto;
+}
+body[dir=rtl] .slick-next {
+    left: auto;
+    right: -60px;
+}
+body[dir=rtl] .left-shape::before {
+    left: auto;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    right: 0;
+}
+body[dir="rtl"] .cab-input input.form-control {
+    padding: 11px 40px 11px 30px;
+}
+body[dir="rtl"] .input-line {
+    left: auto;
+    right: 22px;
+}
+body[dir="rtl"] .mr-3,body[dir="rtl"] .mr-md-3 {
+    margin-right: 0 !important;
+    margin-left: 1.5rem!important;
+}
+body[dir="rtl"] .cab-footer .btn.btn-solid {
+    margin: 12px 0 0 22px;
+}
+body[dir="rtl"] .cab-footer .btn.btn-solid:last-child{
+    margin-left: 0;
+}
+body[dir="rtl"] footer ul.social-links li a i,body[dir="rtl"] .contact-list li i{
+    margin: 0 0 0 5px;
+}
+body[dir="rtl"] #social-links li{
+    margin:0 0 0 20px;
+}
+body[dir="rtl"] #social-links li:last-child{
+    margin-left: 0;
+}
 
 
 
@@ -828,7 +900,12 @@ footer ul.social-links li a {
     .cab-banner-area .container.p-64 {
         padding-left: 0 !important;
     }
-
+    body[dir="rtl"] .cab-banner-area .container.p-64 {
+        padding-right: 0 !important;
+    }
+    body[dir="rtl"] .text-lg-left,body[dir="rtl"] .text-left {
+        text-align: right!important;
+    }
 }
 
 @media (max-width: 1199px){
@@ -865,9 +942,7 @@ footer ul.social-links li a {
     .right-shape::before {
         border-radius: 30px;
     }
-    .brand-box {
-        height: 273px;
-    }
+    
     .nav-cate-img{
         display: none;
     }
@@ -942,6 +1017,9 @@ footer ul.social-links li a {
     }
     .sub-footer .payment-card-bottom {
         padding: 0 0 10px;
+    }
+    .footer-theme{
+        text-align: left;
     }
 }
 

@@ -24,7 +24,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <div class="container">
                 <div class="row">
                     <div class="col-2">
-                        <!-- <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a> -->
+                         <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a> 
                     </div>
                     <div class="top-header bg-transparent col-10 d-flex align-items-center justify-content-end">
                         <ul class="header-dropdown">

@@ -28004,8 +28004,9 @@ body.dark {
     display: none
 }
 
-[dir=rtl] .slick-slide {
-    float: right
+body[dir=rtl] .slick-slide {
+    float: right;
+    display: block;
 }
 
 .slick-slide img {

@@ -668,7 +668,8 @@ class OrderController extends BaseController {
                     ],
                     "data" => [
                         'title' => $notification_content->subject,
-                        'body'  => $body_content
+                        'body'  => $body_content,
+                        "type" => "order_status_change"
                     ],
                     "priority" => "high"
                 ];

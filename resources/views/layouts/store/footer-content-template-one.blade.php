@@ -7,12 +7,30 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
     <section class="section-b-space light-layout py-4">
         <div class="container">
             <div class="row footer-theme partition-f">
-                <div class="col-lg-3 col-md-6 d-flex align-items-center justify-content-center justify-content-md-start">
-                    <div class="footer-logo mb-0">
-                        <a href="{{ route('userHome') }}">
-                            <img class="img-fluid blur-up lazyload" src="{{$urlImg}}">
-                        </a>
+                <!-- <div class="col-lg-3 col-md-6 d-flex align-items-center justify-content-center justify-content-md-start"> -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="sub-title">
+                        <div class="footer-title mt-0">
+                            <h4 class="mt-0">Social Links</h4>
+                        </div>
+                        <div class="footer-contant">                    
+                            <ul class="social-links">
+                                @foreach($social_media_details as $social_media_detail)
+                                    <li>
+                                        <a href="{{http_check($social_media_detail->url)}}" target="_blank">
+                                            <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
+                                            <span>{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span>
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
                     </div>
+                     <!-- <div class="footer-logo mb-0">
+                            <a href="{{ route('userHome') }}">
+                                <img class="img-fluid blur-up lazyload" src="{{$urlImg}}">
+                            </a>
+                        </div> -->
                 </div>
                 @if(count($pages))
                     <div class="col-lg-3 col-md-6 pl-lg-4">
@@ -63,9 +81,9 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                             </div>
                             <div class="footer-contant">
                                 <ul class="contact-list">
-                                    <li><i class="icon-location"></i> {{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}</li>
-                                    <li><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}">{{$clientData ? $clientData->phone_number : '123-456-7898'}}</a></li>
-                                    <li><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}">{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</a></li>
+                                    <li class="pl-0"><i class="icon-location"></i> <span>{{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}</span></li>
+                                    <li class="pl-0"><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}"><span>{{$clientData ? $clientData->phone_number : '123-456-7898'}}</span></a></li>
+                                    <li class="pl-0"><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}"><span>{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</span></a></li>
                                 </ul>
                             </div>
                         </div>
@@ -76,21 +94,6 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <a href="#"><img src="{{asset('front-assets/images/app-store.png')}}" alt=""></a>
                         <a class="ml-2" href="#"><img src="{{asset('front-assets/images/google-play.png')}}" alt=""></a>
                     </div>
-                    <ul class="social-links ml-auto mt-3">
-                        @foreach($social_media_details as $social_media_detail)
-                                    <li>
-                                        <a href="{{http_check($social_media_detail->url)}}" target="_blank">
-                                            <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
-                                            {{-- <span>{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span> --}}
-                                        </a>
-                                    </li>
-                        @endforeach
-
-                        {{-- <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                        <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                        <li><a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-                        <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li> --}}
-                    </ul>
                 </div>                
             </div>
         </div>

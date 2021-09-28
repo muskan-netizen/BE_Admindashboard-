@@ -273,15 +273,21 @@
                                                         }
                                                         $imagePath2 = $data->media[$i]->image->path['image_fit'] . '600/600' . $data->media[$i]->image->path['image_path'];
                                                     } ?>
-                                                    <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-3">
-                                                        <a href="{{route('productDetail', $data->url_slug)}}" class="product-box scale-effect mt-4">
+                                                    <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-3 px-0">
+                                                        <a href="{{route('productDetail', $data->url_slug)}}" class="product-box d-block scale-effect mt-4">
                                                             <div class="product-image p-0">
                                                                 <img class="img-fluid blur-up lazyload" src="{{$imagePath}}" alt="">
                                                             </div>
                                                             <div class="media-body align-self-center">
                                                                 <div class="inner_spacing w-100">
-                                                                    <h3 class="d-flex align-items-center justify-content-between">
-                                                                        <label class="mb-0">{{ $data->translation_title }}</label>
+                                                                    <h3>{{ $data->translation_title }}</h3>
+                                                                    <p>{{$data->description}}</p>
+                                                                    <p class="border-bottom pb-1 mb-1">In Candies & Snacks</p>
+
+                                                                    <div class="d-flex align-items-center justify-content-between">
+                                                                        @if($data['inquiry_only'] == 0)
+                                                                            <h4 class="mt-0">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                        @endif
                                                                         @if($client_preference_detail)
                                                                             @if($client_preference_detail->rating_check == 1)  
                                                                                 @if($data->averageRating > 0)
@@ -289,11 +295,7 @@
                                                                                 @endif
                                                                             @endif
                                                                         @endif
-                                                                    </h3>
-                                                                    <p>{{$data->description}}</p>
-                                                                    @if($data['inquiry_only'] == 0)
-                                                                        <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
-                                                                    @endif
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </a>
@@ -304,7 +306,7 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="pagination pagination-rounded justify-content-end mb-0">
+                                        <div class="pagination pagination-rounded justify-content-end mb-0 mt-4">
                                             {{ $listData->links() }}
                                         </div>
                                     </div>

@@ -92,7 +92,7 @@ class User extends Authenticatable implements Wallet, WalletFloat
             'name'          => 'required|string|min:3|max:50',
             'email'         => 'required|email|max:50||unique:users',
             'password'      => 'required|string|min:6|max:50',
-            'phone_number'  => 'required|string|min:10|max:15|unique:users',
+            'phone_number'  => 'required|string|min:8|max:15|unique:users',
         );
 
         /*if(!empty($id)){

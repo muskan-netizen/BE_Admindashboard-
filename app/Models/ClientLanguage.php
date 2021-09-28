@@ -13,7 +13,7 @@ class ClientLanguage extends Model
 
     public function language()
     {
-      return $this->belongsTo('App\Models\Language','language_id','id')->select('id', 'name', 'sort_code');
+      return $this->belongsTo('App\Models\Language','language_id','id')->select('id', 'name', 'sort_code','nativeName');
     }
 
     public function languageTrans(){

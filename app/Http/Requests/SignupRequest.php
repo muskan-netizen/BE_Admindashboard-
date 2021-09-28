@@ -24,7 +24,7 @@ class SignupRequest extends FormRequest{
             'name' => 'required|min:3|max:50',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|max:50',
-            'phone_number' => 'required|string|min:10|max:15|unique:users',
+            'phone_number' => 'required|string|min:8|max:15|unique:users',
             'device_type' => 'required|string',
             'device_token' => 'required|string',
             'term_and_condition' => 'accepted',

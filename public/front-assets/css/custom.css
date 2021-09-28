@@ -509,41 +509,38 @@ ul.social-links {
     width: max-content;
 }
 
-ul.social-links li {
+/* ul.social-links li {
     padding: 0 10px;
     text-align: center;
+} */
+
+ul.social-links li {
+    padding: 0 10px;
+    display: block;
+    margin-bottom: 10px;
 }
 
 ul.social-links li:last-child {
     padding-right: 0;
+    margin-bottom: 0;
 }
 
-ul.social-links li a {
-    width: 55px;
-    height: 55px;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 4px 7px 0 rgba(0, 0, 0, 0.05);
-    display: block;
-    line-height: 55px;
-    font-size: 26px;
-}
 
-footer ul.social-links li a {
+footer ul.social-links li a i{
     width: 40px;
     height: 40px;
     color: #fff;
     background: #000;
     border-radius: 50%;
     box-shadow: 0 4px 7px 0 rgba(0, 0, 0, 0.05);
-    display: block;
+    display: inline-block;
     line-height: 40px;
     font-size: 20px;
 }
 
-ul.social-links li:hover a,
-ul.social-links li:focus a,
-ul.social-links li:active a {
+ul.social-links li:hover a i,
+ul.social-links li:focus a i,
+ul.social-links li:active a i {
     background: var(--theme-deafult);
     color: #fff;
 }
@@ -2101,7 +2098,7 @@ div#test {
 }
 
 .product-image {
-    height: 170px;
+    height: 225px;
     width: 100%;
     margin: auto;
     padding: 0 10px;
@@ -2202,9 +2199,6 @@ div#test {
 .inner_spacing p {
     font-size: 14px;
     margin: 5px 0 0;
-    /* white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; */
 }
 
 h3#productPriceValue {
@@ -2214,7 +2208,7 @@ h3#productPriceValue {
 .inner_spacing h4 {
     font-size: 16px;
     font-weight: 700;
-    color: rgb(0 0 0 / 41%);
+    color: rgb(0 0 0);
     line-height: 24px;
     margin: 0;
 }
@@ -3412,15 +3406,6 @@ header .homepage-address h2 {
     font-weight: 400;
 }
 
-.page-tabs,
-.location-bar {
-    background: #EEEEEE;
-    /* box-shadow: 0 0 3px #ddd; */
-    border-radius: 50px;
-    overflow: hidden;
-    padding: 8px 10px;
-}
-
 .page-tabs {
     width: 50%;
 }
@@ -3615,9 +3600,9 @@ h4#driver_name {
     color: #fff;
 }
 
-.dark .menu-navigation {
+/* .dark .menu-navigation {
     background: #232323;
-}
+} */
 
 .dark #brand_main_div a {
     background: rgb(255 255 255 / 10%);

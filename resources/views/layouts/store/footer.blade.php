@@ -132,6 +132,29 @@
     }
 
     initFirebaseMessagingRegistration();
+
+    messaging.onMessage(function(payload) {
+        if (!("Notification" in window)) {
+            console.log("This browser does not support system notifications.");
+        } else if (Notification.permission === "granted") {
+            if (payload && payload.data && payload.data.type && payload.data.type == "order_status_change") {
+                var notificationTitle = payload.notification.title;
+                var notificationOptions = {
+                    body: payload.notification.body,
+                    icon: payload.notification.icon
+                };
+                var push_notification = new Notification(
+                    notificationTitle,
+                    notificationOptions
+                );
+                push_notification.onclick = function(event) {
+                    event.preventDefault();
+                    window.open(payload.notification.click_action, "_blank");
+                    push_notification.close();
+                };
+            }
+        }
+    });
 </script>
 @endif
 @endif

@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, ClientPreference, Wallet, UserLoyaltyPoint, LoyaltyCard, Order};
+use App\Models\{Client, Category, Product, ClientPreference, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature};
 
 class BaseController extends Controller{
     private $field_status = 2;
@@ -343,6 +343,16 @@ class BaseController extends Controller{
         // $time = convertDateTimeInTimeZone($datetime, Auth::user()->timezone, $format);
         $time = Carbon::parse($datetime)->format($format);
         return $time;
+    }
+
+    function getNomenclatureName($searchTerm, $langId, $plural = true){
+        $result = Nomenclature::with(['translations' => function($q) use($langId) {
+                    $q->where('language_id', $langId);
+                }])->where('label', 'LIKE', "%{$searchTerm}%")->first();
+        if($result){
+            $searchTerm = $result->translations->count() != 0 ? $result->translations->first()->name : ucfirst($searchTerm);
+        }
+        return $plural ? $searchTerm : rtrim($searchTerm, 's');
     }
 
 }

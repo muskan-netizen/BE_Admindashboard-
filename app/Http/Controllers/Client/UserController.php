@@ -250,7 +250,7 @@ class UserController extends BaseController{
         $client = Client::where('code', $user->code)->firstOrFail();
         $rules = array(
             'name' => 'required|string|max:50',
-            'phone_number' => 'required|min:10|max:15',
+            'phone_number' => 'required|min:8|max:15',
             'company_name' => 'required',
             'company_address' => 'required',
             'country_id' => 'required',

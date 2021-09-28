@@ -1,3 +1,10 @@
+
+if($('body').attr('dir') == 'rtl'){
+    $(".home-banner-slider").slick({rtl: true, autoplay: true, autoplaySpeed: 3000});
+}else{
+    $(".home-banner-slider").slick({autoplay: true, autoplaySpeed: 3000});
+}
+
 jQuery('.home-banner-slider').slick({
     infinite: true,
     slidesToShow: 1,

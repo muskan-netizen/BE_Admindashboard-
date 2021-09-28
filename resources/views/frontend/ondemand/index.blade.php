@@ -337,7 +337,6 @@
                                     @foreach ($cartData as $cd => $cart_data)
                                       @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
                                         <div  id="date_time_set_div{{$cart_data->id}}">
-                                        <h4 class="mb-2"><b>{!! (!empty($cart_data->product->translation->first())) ? $cart_data->product->translation->first()->title : $cart_data->product->sku !!}</b></h4>
                                          
                                         <h4 class="mb-2"><b>When would you like your service?</b></h4>
                                         <div class="date-items radio-btns">
