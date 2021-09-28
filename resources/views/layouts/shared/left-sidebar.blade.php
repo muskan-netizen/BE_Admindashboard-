@@ -325,7 +325,7 @@
                                         $LoyaltyCards =  getNomenclatureName('Loyalty Cards', true)
 
                                     @endphp
-                                    <span> {{ $LoyaltyCards === "Loyalty Cards" ?  __("Loyalty Cards")  : $$LoyaltyCards }}</span>
+                                    <span> {{ $LoyaltyCards === "Loyalty Cards" ?  __("Loyalty Cards")  : $LoyaltyCards }}</span>
                                 </a>
                             </li>
                         @endif

@@ -493,9 +493,14 @@ $(document).ready(function () {
         $('.promo-box').addClass('d-none');
         $('.cab-detail-box').removeClass('d-none');
     });
+ 
     $(document).on("click",".close-cab-detail-box",function() {
         $('.cab-detail-box').addClass('d-none');
         $('.address-form').removeClass('d-none');
+    });
+    $(document).on("click",".skip-clear",function() {
+        $('.cab-detail-box').attr("style", "display: block !important");
+        $('.scheduled-ride-list').attr("style", "display: none !important");
     });
     $(document).on("click",".vehical-view-box",function() {
         $('.cab-booking-main-loader').show();

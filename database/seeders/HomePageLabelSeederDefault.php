@@ -18,23 +18,25 @@ class HomePageLabelSeederDefault extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');  
 
-        $already = CabBookingLayout::where('slug', 'featured_products')->count();
-
-        if($already == 0)
-        $home_page = CabBookingLayout::insertGetId([
-            'title' => 'Featured Products',
-            'slug' => 'featured_products',
-            'order_by' => 1,
-        ]);
-
         $already = CabBookingLayout::where('slug', 'vendors')->count();
 
         if($already == 0)
         $home_page = CabBookingLayout::insertGetId([
             'title' => 'Vendors',
             'slug' => 'vendors',
+            'order_by' => 1,
+        ]);
+
+        $already = CabBookingLayout::where('slug', 'featured_products')->count();
+
+        if($already == 0)
+        $home_page = CabBookingLayout::insertGetId([
+            'title' => 'Featured Products',
+            'slug' => 'featured_products',
             'order_by' => 2,
         ]);
+
+       
 
         $already = CabBookingLayout::where('slug', 'new_products')->count();
 
@@ -57,14 +59,7 @@ class HomePageLabelSeederDefault extends Seeder
             'order_by' => 4,
         ]);
 
-        $already = CabBookingLayout::where('slug', 'brands')->count();
-
-        if($already == 0)
-        $home_page = CabBookingLayout::insertGetId([
-            'title' => 'Brands',
-            'slug' => 'brands',
-            'order_by' => 5,
-        ]);
+       
 
         $already = CabBookingLayout::where('slug', 'best_sellers')->count();
 
@@ -72,10 +67,17 @@ class HomePageLabelSeederDefault extends Seeder
         $home_page = CabBookingLayout::insertGetId([
             'title' => 'Best Sellers',
             'slug' => 'best_sellers',
-            'order_by' => 6,
+            'order_by' => 5,
         ]);
 
-    
+        $already = CabBookingLayout::where('slug', 'brands')->count();
+
+        if($already == 0)
+        $home_page = CabBookingLayout::insertGetId([
+            'title' => 'Brands',
+            'slug' => 'brands',
+            'order_by' => 6,
+        ]);
            
        
     }

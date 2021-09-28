@@ -18,23 +18,26 @@ class HomePageLabelSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');  
 
-        $already = HomePageLabel::where('slug', 'featured_products')->count();
-
-        if($already == 0)
-        $home_page = HomePageLabel::insertGetId([
-            'title' => 'Featured Products',
-            'slug' => 'featured_products',
-            'order_by' => 1,
-        ]);
-
         $already = HomePageLabel::where('slug', 'vendors')->count();
 
         if($already == 0)
         $home_page = HomePageLabel::insertGetId([
             'title' => 'Vendors',
             'slug' => 'vendors',
+            'order_by' => 1,
+        ]);
+
+
+        $already = HomePageLabel::where('slug', 'featured_products')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Featured Products',
+            'slug' => 'featured_products',
             'order_by' => 2,
         ]);
+
+        
 
         $already = HomePageLabel::where('slug', 'new_products')->count();
 
@@ -57,14 +60,7 @@ class HomePageLabelSeeder extends Seeder
             'order_by' => 4,
         ]);
 
-        $already = HomePageLabel::where('slug', 'brands')->count();
-
-        if($already == 0)
-        $home_page = HomePageLabel::insertGetId([
-            'title' => 'Brands',
-            'slug' => 'brands',
-            'order_by' => 5,
-        ]);
+       
 
         $already = HomePageLabel::where('slug', 'best_sellers')->count();
 
@@ -72,6 +68,15 @@ class HomePageLabelSeeder extends Seeder
         $home_page = HomePageLabel::insertGetId([
             'title' => 'Best Sellers',
             'slug' => 'best_sellers',
+            'order_by' => 5,
+        ]);
+
+        $already = HomePageLabel::where('slug', 'brands')->count();
+
+        if($already == 0)
+        $home_page = HomePageLabel::insertGetId([
+            'title' => 'Brands',
+            'slug' => 'brands',
             'order_by' => 6,
         ]);
 
