@@ -110,7 +110,7 @@
                 <div class="dropdown-menu">
                 <a href="/switch/admin/language?lang=en" class="dropdown-item" langid="1">English</a>
                 <a href="/switch/admin/language?lang=es" class="dropdown-item" langid="1">Spanish</a>
-                <a href="/switch/admin/language?lang=ar" class="dropdown-item" langid="1">Arabic</a>
+                {{-- <a href="/switch/admin/language?lang=ar" class="dropdown-item" langid="1">Arabic</a> --}}
                 <a href="/switch/admin/language?lang=fr" class="dropdown-item" langid="1">French</a>
                 <a href="/switch/admin/language?lang=de" class="dropdown-item" langid="1">German</a>
                 <div class="dropdown-divider"></div>
