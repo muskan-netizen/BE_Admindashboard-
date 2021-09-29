@@ -1,3 +1,18 @@
+jQuery(window).scroll(function () {
+	var scroll = jQuery(window).scrollTop();
+
+	if (scroll <= 50) {
+
+		jQuery(".site-header").removeClass("fixed-bar");
+
+	} else {
+
+		jQuery(".site-header").addClass("fixed-bar");
+
+	}
+}); 
+
+
 $(function () {
     document.ajax_loading = false;
     $.hasAjaxRunning = function () {
@@ -306,7 +321,7 @@ $(document).ready(function () {
                             let search_box_category_template = _.template($('#search_box_main_div_template').html());
                             $("#search_box_main_div").append(search_box_category_template({ results: response.data })).show();
                         } else {
-                            $("#search_box_main_div").html('<p class="text-center my-3">{{ __("No result found. Please try a new search") }}</p>').show();
+                            $("#search_box_main_div").html('<p class="text-center my-3">No result found. Please try a new search</p>').show();
                         }
                     }
                 }
@@ -612,6 +627,8 @@ $(document).ready(function () {
         $('.alert-danger').html('');
         if ((typeof guest_cart != undefined) && (guest_cart == 1)) {
             window.location.href = login_url;
+            // $("#login_modal").modal("show");
+            // return false;
         }
         var address = $("input[name='address_id']").val();
         if ((vendor_type == 'delivery') && ((address == '') || (address < 1))) {

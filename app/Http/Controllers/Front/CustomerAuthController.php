@@ -26,7 +26,7 @@ use Kutia\Larafirebase\Facades\Larafirebase;
 
 class CustomerAuthController extends FrontController
 {
-
+    use ApiResponser;
     public function getTestHtmlPage()
     {
         return view('test');
@@ -275,63 +275,135 @@ class CustomerAuthController extends FrontController
     }
 
     /**
-     * Login user via Phone number
+     * Login user via username
      *
      */
-    public function loginViaPhone(Request $request, $domain = ''){
+    public function loginViaUsername(Request $request, $domain = ''){
         try{
             $errors = array();
             $validator = Validator::make($request->all(), [
-                'country_code'  => 'required|string',
-                'phone_number'  => 'required|string|min:8|max:15'
+                'username'  => 'required',
+                'dialCode'  => 'required',
+                'countryData'  => 'required'
             ]);
+
             if($validator->fails()){
                 foreach($validator->errors()->toArray() as $error_key => $error_value){
                     $errors['error'] = __($error_value[0]);
                     return response()->json($errors, 422);
                 }
             }
-            $phone_number = str_ireplace(' ', '', $request->phone_number);
-            $user = User::where('dial_code', $request->country_code)->where('phone_number', $phone_number)->first();
-            if(!$user){
-                $errors['error'] = __('Your phone number is not registered');
-                return response()->json($errors, 422);
-            }
+            $phone_regex = '/[0-9 -()+]+$/';
+            $email_regex = '/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/';
+            $username = str_ireplace(' ', '', $request->username);
 
-            $phoneCode = mt_rand(100000, 999999);
-            $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
-            $user->phone_token = $phoneCode;
-            $user->phone_token_valid_till = $sendTime;
-            $user->save();
+            if(preg_match($phone_regex, $username)){
+                $request->request->add(['is_phone'=>1]);
+                $dialCode = $request->dialCode;
+                $fullNumber = $request->full_number;
+                $fullNumberWithoutPlus = str_replace('+', '', $fullNumber);
+                $phone_number = substr($fullNumberWithoutPlus, strlen($dialCode));
 
-            $response['status'] = 'Success';
-            $response['dial_code'] = $request->country_code;
-            $response['phone_number'] = $phone_number;
-            $verified['is_email_verified'] = $request->is_email_verified;
-            $verified['is_phone_verified'] = $request->is_phone_verified;
-            $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 
-                        'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
-            $response['verify_details'] = $verified;
-            $response['cca2'] = $request->country_code;
-
-            $response['send_otp'] = 1;
-            if($request->country_code == "971"){
-                $to = '+'.$request->country_code."0".$phone_number;
-            } else {
-                $to = '+'.$request->country_code.$phone_number;
-            }
-            $provider = $prefer->sms_provider;
-            $body = "Please enter OTP ".$phoneCode." to verify your account.";
-            if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
-                $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-                if($send){
-                    $message = __('An otp has been sent to your phone. Please check.');
-                    return $this->successResponse([], $message);
-                }else{
-                    return $this->errorResponse(__('Something went wrong in sending OTP. We are sorry to for the inconvenience'), 404);
+                $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
+                if(!$user){
+                    $errors['error'] = __('Your phone number is not registered');
+                    return response()->json($errors, 422);
                 }
-            }else{
-                return $this->errorResponse(__('Provider service is not configured. Please contact administration.'), 404);
+
+                $phoneCode = mt_rand(100000, 999999);
+                $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
+                $user->phone_token = $phoneCode;
+                $user->phone_token_valid_till = $sendTime;
+                $user->save();
+
+                $response['status'] = 'Success';
+                $response['dial_code'] = $dialCode;
+                $response['phone_number'] = $phone_number;
+                $verified['is_email_verified'] = $request->is_email_verified;
+                $verified['is_phone_verified'] = $request->is_phone_verified;
+                $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 
+                            'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
+                $response['verify_details'] = $verified;
+                $response['cca2'] = $dialCode;
+
+                $response['send_otp'] = 1;
+                if($dialCode == "971"){
+                    $to = '+'.$dialCode."0".$phone_number;
+                } else {
+                    $to = '+'.$dialCode.$phone_number;
+                }
+                $provider = $prefer->sms_provider;
+                $body = "Please enter OTP ".$phoneCode." to verify your account.";
+                if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
+                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                    if($send){
+                        $message = __('An otp has been sent to your phone. Please check.');
+                        $response = $request->all();
+                        unset($response->_token);
+                        return $this->successResponse($response, $message);
+                    }else{
+                        return $this->errorResponse(__('Something went wrong in sending OTP. We are sorry to for the inconvenience'), 404);
+                    }
+                }else{
+                    return $this->errorResponse(__('Provider service is not configured. Please contact administration.'), 404);
+                }
+            }
+            elseif (preg_match($email_regex, $username)) {
+                $request->request->add(['is_email'=>1]);
+                if (Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1])) {
+                    $userid = Auth::id();
+                    if($request->has('access_token')){
+                        if($request->access_token){
+                            $user_device = UserDevice::where('user_id', $userid)->where('device_token', $request->access_token)->first();
+                            if(!$user_device){
+                                $user_device = new UserDevice();
+                                $user_device->user_id = $userid;
+                                $user_device->device_type = 'web';
+                                $user_device->device_token = $request->access_token;
+                                $user_device->save();
+                            }
+                        }
+                    }
+                    $this->checkCookies($userid);
+                    $user_cart = Cart::where('user_id', $userid)->first();
+                    if ($user_cart) {
+                        $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
+                        if ($unique_identifier_cart) {
+                            $unique_identifier_cart_products = CartProduct::where('cart_id', $unique_identifier_cart->id)->get();
+                            foreach ($unique_identifier_cart_products as $unique_identifier_cart_product) {
+                                $user_cart_product_detail = CartProduct::where('cart_id', $user_cart->id)->where('product_id', $unique_identifier_cart_product->product_id)->first();
+                                if ($user_cart_product_detail) {
+                                    $user_cart_product_detail->quantity = ($unique_identifier_cart_product->quantity + $user_cart_product_detail->quantity);
+                                    $user_cart_product_detail->save();
+                                    $unique_identifier_cart_product->delete();
+                                } else {
+                                    $unique_identifier_cart_product->cart_id = $user_cart->id;
+                                    $unique_identifier_cart_product->save();
+                                }
+                            }
+                            $unique_identifier_cart->delete();
+                        }
+                    } else {
+                        Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
+                    }
+                    $message = 'Logged in successfully';
+                    if(session()->has('url.intended')){
+                        $url = session()->get('url.intended');
+                        session()->forget('url.intended');
+                        $data['redirect_to'] = $url;
+                    }else{
+                        $data['redirect_to'] = route('user.verify');
+                    }
+                    return $this->successResponse($data, $message);
+                }
+                $checkEmail = User::where('email', $req->email)->first();
+                if ($checkEmail) {
+                    return $this->errorResponse(__('Password not matched. Please enter correct password.'), 404);
+                }
+                return $this->errorResponse(__('Email not exist. Please enter correct email.'), 404);
+            }
+            else {
+                return $this->errorResponse(__('Invalid email or phone number.'), 404);
             }
         }
         catch(\Exception $ex){

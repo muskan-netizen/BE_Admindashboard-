@@ -5,18 +5,7 @@
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/flatpickr/flatpickr.min.css')}}" rel="stylesheet" type="text/css" />
-
-@endsection
-
-@section('content')
-@php
-    $now = \Carbon\Carbon::now()->format('Y-m-d\TH:i');
-    if(Auth::user()){
-        $timezone = Auth::user()->timezone;
-        $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
-    }
-@endphp
-
+<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 <style type="text/css">
     .swal2-title {
         margin: 0px;
@@ -30,6 +19,17 @@
         color: #6c757d;
     }
 </style>
+@endsection
+
+@section('content')
+@php
+    $now = \Carbon\Carbon::now()->format('Y-m-d\TH:i');
+    if(Auth::user()){
+        $timezone = Auth::user()->timezone;
+        $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
+    }
+@endphp
+
 <header>
     <div class="mobile-fix-option"></div>
     @if(isset($set_template)  && $set_template->template_id == 1)
@@ -139,7 +139,7 @@
                                 </div>
                                 <% if(cart_details.pharmacy_check == 1){ %>
                                     <% if(vendor_product.product.pharmacy_check == 1){ %>
-                                        <button type="button" class="btn btn-solid prescription_btn" data-product="<%= vendor_product.product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">Add</button>
+                                        <button type="button" class="btn btn-solid prescription_btn mt-2" data-product="<%= vendor_product.product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">Add Prescription</button>
                                     <% } %>
                                 <% } %>
                             </div>
@@ -649,6 +649,101 @@
     </div>
 </div> -->
 
+<!-- Modal -->
+<div class="modal fade login-modal" id="login_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-body">
+              <div class="login-with-username">
+                <div class="modal-header px-0 pt-0">
+                    <h5 class="modal-title">{{ __('Log in') }}</h5>
+                    <button type="button" class="close m-0 p-0" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="login-form-new" action="">
+                    @csrf
+                    <input type="hidden" name="device_type" value="web">
+                    <input type="hidden" name="device_token" value="web">
+                    <div class="form-group">
+                        <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode','1') }}">
+                        <input type="hidden" id="countryData" name="countryData" value="{{ strtolower(Session::get('default_country_code','US')) }}">
+                        <input type="text" class="form-control" id="username" placeholder="{{ __('Email or Phone Number') }}" required="" name="username" value="{{ old('username')}}">
+                        <span id="error-msg" class="font-14 text-danger" style="display:none"></span>
+                    </div>
+                    <div class="form-group" id="password-wrapper" style="display:none">
+                        <input type="password" class="form-control" name="password" placeholder="{{ __('Password') }}">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-solid w-100 login_continue_btn" type="button">Continue</button>
+                    </div>
+                </form>
+                <div class="divider-line"><span>or</span></div>
+                    {{-- <button class="login-button email-btn">
+                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                        <span>Continue with Email</span>
+                    </button> --}}
+                    
+                    @if(session('preferences'))
+                        @if(session('preferences')->fb_login == 1 || session('preferences')->twitter_login == 1 || session('preferences')->google_login == 1 || session('preferences')->apple_login == 1)
+                            @if(session('preferences')->google_login == 1)
+                                <a class="login-button" href="{{url('auth/google')}}">
+                                    <i class="fa fa-google" aria-hidden="true"></i>
+                                    <span>Continue with gmail</span>
+                                </a>
+                            @endif
+                            @if(session('preferences')->fb_login == 1)
+                                <a class="login-button" href="{{url('auth/facebook')}}">
+                                    <i class="fa fa-facebook" aria-hidden="true"></i>
+                                    <span>Continue with facebook</span>
+                                </a>
+                            @endif
+                            @if(session('preferences')->twitter_login)
+                                <a class="login-button" href="{{url('auth/twitter')}}">
+                                    <i class="fa fa-twitter" aria-hidden="true"></i>
+                                    <span>Continue with twitter</span>
+                                </a>
+                            @endif
+                            @if(session('preferences')->apple_login == 1)
+                                <a class="login-button" href="javascript::void(0);">
+                                    <i class="fa fa-apple" aria-hidden="true"></i>
+                                    <span>Continue with apple</span>
+                                </a>
+                            @endif
+                        @endif
+                    @endif
+
+                <div class="divider-line mb-2"></div>
+                <p class="new-user mb-0">New to Royo? <a href="{{route('customer.register')}}">Create account</a></p>
+              </div>
+              <div class="login-with-mail">
+                  <div class="modal-header px-0 pt-0">
+                      <button type="button" class="close m-0 p-0 back-login">
+                          <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                      </button>
+                      <h5 class="modal-title">Log in</h5>
+                      <button type="button" class="close m-0 p-0" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <form id="email-login-form" action="">
+                      <div class="mail-icon text-center">
+                          <img alt="image" src="https://b.zmtcdn.com/Zwebmolecules/73b3ee9d469601551f2a0952581510831595917292.png" class="img-fluid">
+                      </div>
+                      <div class="form-group">
+                          <input class="from-control" type="text" placeholder="Email">
+                          <a class="forgot_btn font-14" href="{{url('user/forgotPassword')}}">{{ __('Forgot Password?') }}</a>
+                      </div>
+                      <div class="form-group">
+                          <button class="btn btn-solid w-100" type="submit">Login</button>
+                      </div>
+                  </form>
+              </div>                                 
+          </div>
+      </div>
+    </div>
+</div>
+
 <div id="prescription_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -704,11 +799,13 @@
     </div>
   </div>
 </div>
+<?php ?>
 @endsection
 
 @section('script')
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
 <script src="https://js.stripe.com/v3/"></script>
+<script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script type="text/javascript">
     var guest_cart = {{ $guest_user ? 1 : 0 }};
     var base_url = "{{url('/')}}";
@@ -726,6 +823,7 @@
     var apply_promocode_coupon_url = "{{ route('verify.promocode') }}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
     var update_cart_schedule = "{{route('cart.updateSchedule')}}";
+    var login_via_username_url = "{{route('customer.loginViaUsername')}}"
 
     $(document).on('click', '.showMapHeader', function(){
         var lats = document.getElementById('latitude').value;
@@ -785,6 +883,172 @@
         }else{
             $("#cart-payment-form .stripe_element_wrapper").addClass('d-none');
         }
+    });
+    $('.login-with-mail').hide();
+    $('.email-btn').click(function(){
+        $('.login-with-mail').show();
+        $('.login-with-username').hide();
+    });
+    $('.back-login').click(function(){
+        $('.login-with-mail').hide();
+        $('.login-with-username').show();
+    });
+
+    var reset = function() {
+        var input = document.querySelector("#username"),
+        errorMsg = document.querySelector("#error-msg");
+        input.classList.remove("is-invalid");
+        errorMsg.innerHTML = "";
+        errorMsg.style.display = 'none';
+    };
+
+    // here, the index maps to the error code returned from getValidationError - see readme
+    var errorMap = ["Invalid phone number", "Invalid country code", "Phone number too short", "Phone number too long", "Invalid phone number"];
+
+    var iti = '';
+    var phn_filter = /[0-9 -()+]+$/;
+    var email_filter = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    $(document).delegate("#username", "input", function(e){
+        $uname = $.trim($(this).val());
+        if(phn_filter.test($uname)){
+            // get country flags when input is a number
+            assignPhoneInput();
+        }else{
+            // destroy country flags when input is a string
+            if(iti != ''){
+                iti.destroy();
+                iti = '';
+                $(this).css('padding-left', '6px');
+            }
+        }
+        $(this).focus();
+        $(this).removeClass("is-invalid");
+        $("#error-msg").hide();
+    });
+
+    function assignPhoneInput(){
+        var input = document.querySelector("#username");
+        var country = $('#countryData').val();
+        if(iti != ''){
+            iti.destroy();
+            iti = '';
+        }
+        iti = intlTelInput(input, {
+            initialCountry: "{{ strtolower(Session::get('default_country_code','US')) }}",
+            separateDialCode: true,
+            hiddenInput: "full_number",
+            utilsScript: "{{asset('assets/js/utils.js')}}",
+        });
+    }
+
+    $(document).delegate(".login_continue_btn", "click", function(e){
+        var uname = $.trim($("#username").val());
+        var error = 0;
+        var phone = '';
+        if($uname != ''){
+            if(phn_filter.test($uname)){
+                reset();
+                if (!iti.isValidNumber()) {
+                    $("#username").addClass("is-invalid");
+                    var errorCode = iti.getValidationError();
+                    $("#error-msg").html(errorMap[errorCode]);
+                    $("#error-msg").show();
+                    error = 1;
+                }else{
+                    $("#username").removeClass("is-invalid");
+                    $("#error-msg").hide();
+                    phone = iti.getNumber();
+                }
+            }
+            else{
+                if(email_filter.test(uname)){
+                    $("#username").removeClass("is-invalid");
+                    $("#error-msg").hide();
+                    $("#password-wrapper").show();
+                    $("#password-wrapper input").attr("required", true);
+                }else{
+                    error = 1;
+                    $("#username").addClass("is-invalid");
+                    $("#error-msg").show();
+                    $("#error-msg").html('Invalid Email or Phone Number');
+                }
+            }
+        }
+        else{
+            error = 1;
+            $("#username").addClass("is-invalid");
+            $("#error-msg").show();
+            $("#error-msg").html('Email or Phone Number Required');
+        }
+        if(!error){
+            // console.log('valid');
+            var form_inputs = $("#login-form-new").serializeArray();
+            $.each(form_inputs, function(i, input) {
+                if(input.name == 'full_number'){
+                    input.value = phone;
+                }
+            });
+            $.ajax({
+                data: form_inputs,
+                type: "POST",
+                dataType: 'json',
+                url: login_via_username_url,
+                success: function (response) {
+                    if (response.status == "Success") {
+                        console.log(response);
+                    }
+                }, error: function (error) {
+                    var response = $.parseJSON(error.responseText);
+                    let error_messages = response.message;
+                    $.each(error_messages, function (key, error_message) {
+                        console.log(error_message.message);
+                    });
+                }
+            });
+        }
+    });
+
+    // $(document).ready(function() {
+    //     $("#username").keypress(function(e) {
+    //         if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+    // });
+
+    $(document).delegate('.iti__country','click', function() {
+        var code = $(this).attr('data-country-code');
+        $('#countryData').val(code);
+        var dial_code = $(this).attr('data-dial-code');
+        $('#dialCode').val(dial_code);
+    });
+
+    $("#verify_phone_token").click(function(event) {
+        var verifyToken = '';
+        $('.digit-group').find('input').each(function() {
+            if($(this).val()){
+               verifyToken +=  $(this).val();
+            }
+        });
+        var dial_code =  $('#dial_code').val();
+        var phone_number =  $('#phone_number').val();
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "{{ route('user.verifyToken') }}",
+            data: {'verifyToken':verifyToken, 'type': 'phone', phone_number:phone_number, dial_code:dial_code},
+            success: function(response) {
+                $("#verify_phone_main_div").html('');
+                let phone_verified_template = _.template($('#phone_verified_template').html());
+                $("#verify_phone_main_div").append(phone_verified_template());
+                setTimeout(function(){location.reload(); }, 2000);
+            },
+            error: function(data) {
+                $(".invalid_phone_otp_error").html(data.responseJSON.error);
+            },
+        });
     });
 </script>
 <script src="{{asset('js/payment.js')}}"></script>

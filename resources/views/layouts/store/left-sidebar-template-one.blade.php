@@ -95,8 +95,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         </div>
         <!-- End Cab Booking Header From Here -->
 
-
-        <div class="container main-menu d-block">
+    <div class="main-menu">
+        <div class="container d-block">
             <div class="row align-items-center pb-3 pt-2 position-initial">
                 <!-- <div class="col-lg-2 col-3">
                     <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
@@ -433,6 +433,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
             </div>
         </div>
+    </div>
+
     {{--@if(count($navCategories) > 0)--}}
         <div class="menu-navigation">
             <div class="container">
@@ -483,6 +485,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
 
 </header>
+<div class="offset-top"></div>
 <script type="text/template" id="nav_categories_template">
     <li>
         <div class="mobile-back text-end">Back<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>

@@ -173,4 +173,67 @@ class StoreController extends Controller{
         $data = ['dates' => $dates, 'revenue' => $revenue, 'sales' => $sales];
         return $this->successResponse($data, '', 200);
     }
+
+	public function my_pending_orders(Request $request){
+		try {
+    		$user = Auth::user();
+            $paginate = $request->has('limit') ? $request->limit : 12;
+			$order_list = Order::with(['orderStatusVendor','vendors.products','vendors.status'])->select('id','order_number','payable_amount','payment_option_id','user_id');
+			if($user->is_superadmin == 1){
+				$order_list = $order_list->whereHas('vendors', function($query){
+					$query->where('order_status_option_id', 1);
+				 })->with('vendors', function ($query){
+					$query->where('order_status_option_id', 1);
+			   });
+			} else {
+				$user_vendor_ids = UserVendor::where('user_id', $user->id)->pluck('vendor_id');
+				$order_list = $order_list->whereHas('vendors', function($query) use ($user_vendor_ids){
+					$query->whereIn('vendor_id', $user_vendor_ids);
+				 })->with('vendors', function ($query){
+					$query->where('order_status_option_id', 1);
+			   });
+			}
+			$order_list = $order_list->orderBy('id', 'DESC')->paginate($paginate);
+			foreach ($order_list as $order) {
+				$order_status = [];
+				$product_details = [];
+				$order_item_count = 0;
+				$order->user_name = $order->user->name;
+				$order->user_image = $order->user->image;
+				$order->date_time = convertDateTimeInTimeZone($order->created_at, $user->timezone);
+				$order->payment_option_title = $order->paymentOption->title;
+				foreach ($order->vendors as $vendor) {
+					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
+					if($vendor_order_status){
+						$order_status_option_id = $vendor_order_status->order_status_option_id;
+						$current_status = OrderStatusOption::select('id','title')->find($order_status_option_id);
+						$upcoming_status = OrderStatusOption::select('id','title')->where('id', '>', $order_status_option_id)->first();
+						$order->order_status = [
+							'current_status' => $current_status,
+							'upcoming_status' => $upcoming_status,
+						];
+					}
+				}
+				foreach ($order->products as $product) {
+					$order_item_count += $product->quantity;
+					$product_details[] = array(
+						'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
+						'price' => $product->price,
+						'qty' => $product->quantity,
+					);
+				}
+				$order->product_details = $product_details;
+				$order->item_count = $order_item_count;
+				unset($order->user);
+				unset($order->products);
+				unset($order->paymentOption);
+				unset($order->payment_option_id);
+			}
+			$data = ['order_list' => $order_list];
+            return $this->successResponse($data, '', 200);
+    	} catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+    	}
+	}
+
 }

@@ -105,7 +105,7 @@ $(document).ready(function() {
                 "processing": true,
                 "serverSide": true,
                 "iDisplayLength": 20,
-                "dom": '<"toolbar">Bfrtip',
+                "dom": '<"toolbar">Bftrip',
                 language: {
                     search: "",
                     paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },

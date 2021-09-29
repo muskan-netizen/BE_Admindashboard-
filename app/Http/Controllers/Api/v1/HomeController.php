@@ -28,14 +28,16 @@ class HomeController extends BaseController{
         try {
             $homeData = array();
             $langId = $request->header('language');
-            $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
             $homeData['profile'] = Client::with(['preferences','country:id,name,code,phonecode'])->select('country_id', 'company_name', 'code', 'sub_domain', 'logo', 'company_address', 'phone_number', 'email')->first();
             $app_styling_detail = AppStyling::getSelectedData();
             foreach ($app_styling_detail as $app_styling) {
                 $key = $app_styling['key'];
                 $homeData['profile']->preferences->$key = __($app_styling['value']);
             }
+            $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
+            $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
+            $homeData['profile']->preferences->search_nomenclature = $search_nomenclature;
             $homeData['languages'] = ClientLanguage::with('language')->select('language_id', 'is_primary')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
             $banners = Banner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
                         ->where('status', 1)->where('validity_on', 1)

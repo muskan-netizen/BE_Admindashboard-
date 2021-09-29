@@ -23,17 +23,16 @@ use App\Models\{Client, Category, Product, ClientPreference,EmailTemplate, Clien
 class FrontController extends Controller
 {
     private $field_status = 2;
-    protected function sendSms($provider, $sms_key, $sms_secret, $sms_from, $to, $body)
-    {
-        try {
-
-            $client = new TwilioClient($sms_key, '1c649b9207c16c58cd610654ac81025f');
+    protected function sendSms($provider, $sms_key, $sms_secret, $sms_from, $to, $body){
+        try{
+            $client = new TwilioClient($sms_key, $sms_secret);
             $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
-        } catch (\Exception $e) {
+        }
+        catch(\Exception $e){
             return '2';
         }
         return '1';
-    }
+	}
     public function categoryNav($lang_id)
     {
         $preferences = Session::get('preferences');

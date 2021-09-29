@@ -325,8 +325,7 @@ class OrderController extends BaseController {
                     }
                     $order = $order->with(['user_vendor'])->where('order_number', $order->order_number)->first();
                     $user_admins = User::where(function ($query) {
-                        $query->where(['is_admin' => 1])
-                            ->orWhere(['is_superadmin' => 1]);
+                        $query->where(['is_superadmin' => 1]);
                     })->pluck('id')->toArray();
                     $user_vendors = [];
                     if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {

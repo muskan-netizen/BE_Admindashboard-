@@ -10,6 +10,63 @@ a {
     color: var(--theme-deafult);
 }
 
+
+
+.site-header {
+    width: 100%;
+    padding: 0;
+    top: 0;
+    left: 0;
+    background: #fff;
+    position: fixed;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+    z-index: 999;
+}
+
+.offset-top {
+    margin-top: 243px;
+}
+
+header.site-header.fixed-bar {
+    top: -50px;
+}
+.fixed-bar .nav-cate-img {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+}
+
+.fixed-bar .navbar-brand img {
+    width: 100px;
+}
+
+.fixed-bar .navigation-tab-item .nav-link {
+    padding: 5px 0;
+    font-size: 14px;
+}
+
+.fixed-bar .search_form input.form-control {
+    height: 42px;
+}
+
+.fixed-bar .icon-nav .btn.btn-solid {
+    padding: 10px 0;
+}
+
+.fixed-bar .pb-3 {
+    padding-bottom: 0 !important;
+}
+
+.fixed-bar .pixelstrap li > a {
+    padding: 10px 30px 10px 0;
+}
+
+
+
 .productVariants .firstChild {
     min-width: 150px;
     text-align: left !important;
@@ -5901,7 +5958,13 @@ section.royo-business .title-36 {
     margin: 0 2px 0 0;
 }
 
->>>>>>>bbe5807f11c20c30292a76b74625074a19c8bfec
+.product-box a {
+    display: block;
+}
+
+.product-box a img {
+    width: 100%;
+}
 /* New P */
 
 
