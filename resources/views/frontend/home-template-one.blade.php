@@ -16,14 +16,6 @@
     <div class="mobile-fix-option"></div>
     @include('layouts.store/left-sidebar-template-one')
 </header>
-<<<<<<< HEAD
-<div class="offset-top"></div>
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal">
-  Launch demo modal
-</button>
-=======
->>>>>>> 772fa0f481a90988318efdff81af87b92a1c0ab3
 <section class="home-slider-wrapper">
     <div class="container">
         <div class="row">
