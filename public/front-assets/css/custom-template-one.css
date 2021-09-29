@@ -144,9 +144,10 @@ body{
     font-size: 16px;
 }
 
-.icon-nav .btn.btn-solid {
-    background: var(--theme-deafult);
-    border: 0;
+.btn-solid:hover,.btn-solid:focus,.btn-solid:active {
+    background-position: 100%;
+    color: #000000 !important;
+    background-color: #ffffff;
 }
 
 .home-banner-slider img {

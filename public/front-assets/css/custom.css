@@ -4,13 +4,19 @@ html {
 
 body {
     font-size: 16px;
+    position: initial;
 }
 
 a {
     color: var(--theme-deafult);
 }
 
-
+.onhover-dropdown .onhover-show-div{
+    display: none;
+}
+.onhover-dropdown:hover .onhover-show-div{
+    display: block;
+}
 
 .site-header {
     width: 100%;
@@ -24,6 +30,7 @@ a {
     -ms-transition: all 0.5s ease-in-out;
     -o-transition: all 0.5s ease-in-out;
     transition: all 0.5s ease-in-out;
+    border-bottom: 1px solid transparent;
     z-index: 999;
 }
 
@@ -31,9 +38,15 @@ a {
     margin-top: 243px;
 }
 
+.inner-pages-offset {
+    margin-top: 165px;
+}
+
 header.site-header.fixed-bar {
     top: -50px;
+    border-color: rgb(221 221 221 / 50%);
 }
+
 .fixed-bar .nav-cate-img {
     opacity: 0;
     visibility: hidden;
@@ -65,7 +78,9 @@ header.site-header.fixed-bar {
     padding: 10px 30px 10px 0;
 }
 
-
+.top-header .header-dropdown li:hover i{
+    color: #fff;
+}
 
 .productVariants .firstChild {
     min-width: 150px;
@@ -232,7 +247,7 @@ header.site-header.fixed-bar {
 
 .product-img {
     width: 100px;
-    height: 70px;
+    height: 150px;
 }
 
 .product-img img {
@@ -2250,7 +2265,7 @@ div#test {
     font-size: 11px;
     color: #fff;
     background: orange;
-    padding: 3px;
+    padding: 3px 5px;
 }
 
 .inner_spacing p {
@@ -2525,7 +2540,6 @@ footer .form-control {
 
 #productPriceValue b {
     font-weight: 900;
-    color: var(--theme-deafult);
 }
 
 .change-language:before,
@@ -3637,6 +3651,8 @@ h4#driver_name {
     margin-left: 2px;
 }
 
+
+
 .product-rating-star i {
     color: #fdcc0d;
     font-size: 14px;
@@ -3651,6 +3667,10 @@ h4#driver_name {
 
 .dark section.royo-business .title-36 {
     color: #000;
+}
+
+.dark .inner_spacing .productAddonSet {
+    background-color: rgb(243 247 249 / 8%);
 }
 
 .dark .safety-content h3 {
@@ -5965,7 +5985,129 @@ section.royo-business .title-36 {
 .product-box a img {
     width: 100%;
 }
-/* New P */
+
+.vendor_products_tr h4 {
+    font-size: 12px;
+}
+
+.number + .btn.btn-solid.prescription_btn.mt-2 {
+    font-size: 12px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* Arabic Mood Css */

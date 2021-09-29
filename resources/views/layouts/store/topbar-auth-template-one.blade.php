@@ -15,7 +15,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <div class="location-bar d-none d-sm-flex align-items-center justify-content-start m-0 p-0 dropdown-toggle order-1" href="#edit-address" data-toggle="modal">
                                 <div class="map-icon mr-md-2"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
                                 <div class="homepage-address text-left">
-                                    <h2><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
+                                    <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
                                 </div>
                                 <div class="down-icon ml-2">
                                     <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -32,7 +32,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <div class="location-bar d-flex align-items-center justify-content-start dropdown-toggle" href="#edit-address" data-toggle="modal">
                                 <div class="map-icon mr-md-2"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
                                 <div class="homepage-address text-left">
-                                    <h2><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
+                                    <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
                                 </div>
                                 <div class="down-icon ml-2">
                                     <i class="fa fa-angle-down" aria-hidden="true"></i>
