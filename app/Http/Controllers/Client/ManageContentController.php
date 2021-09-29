@@ -64,7 +64,6 @@ class ManageContentController extends BaseController
             ProductAddon::truncate();
             ProductImage::truncate();
             ProductUpSell::truncate();
-            PaymentOption::truncate();
             VariantOption::truncate();
             BrandCategory::truncate();
             VendorSlotDate::truncate();
