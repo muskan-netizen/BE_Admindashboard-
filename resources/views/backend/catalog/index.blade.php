@@ -172,7 +172,7 @@
                                                 @foreach($categories as $cate)
                                                 @foreach($brand->bc as $cat)
                                                 @if($cat->category_id == $cate->id)
-                                                {{$cate->translation_one['name']}}
+                                                {{$cate->translation_one['name']??$cate->slug}}
                                                 @endif
                                                 @endforeach
                                                 @endforeach
