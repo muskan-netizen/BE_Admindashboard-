@@ -41,7 +41,7 @@ class ProductController extends BaseController
                         $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                         $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
                         $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
-                        $q1->where('ast.language_id', $langId);
+                        $q1->where('set.status', 1)->where('ast.language_id', $langId);
                     },
                     'variantSet' => function($z) use($langId){
                         $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
@@ -127,7 +127,7 @@ class ProductController extends BaseController
                             $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                             $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
                             $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
-                            $q1->where('ast.language_id', $langId);
+                            $q1->where('set.status', 1)->where('ast.language_id', $langId);
                         },
                         'variantSet' => function($z) use($langId){
                             $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Contracts\Session\Session as SessionSession;
-use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language,OnboardSetting,CabBookingLayout,WebStylingOption};
+use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption};
 use Illuminate\Contracts\View\View;
 use Illuminate\View\View as ViewView;
 use Redirect;
@@ -100,17 +100,16 @@ class UserhomeController extends FrontController
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
             $url = $dispatch_domain->delivery_service_key_url;
-            $endpoint = $url."/api/send-documents";  
+            $endpoint = $url . "/api/send-documents";
             // $endpoint = "http://192.168.99.177:8006/api/send-documents";
             // $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-             //$dispatch_domain->delivery_service_key_code = '649a9a';
+            //$dispatch_domain->delivery_service_key_code = '649a9a';
             // $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
             $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
 
             $response = $client->post($endpoint);
             $response = json_decode($response->getBody(), true);
             return json_encode($response['data']);
-
         } catch (\Exception $e) {
             $data = [];
             $data['status'] = 400;
@@ -134,7 +133,7 @@ class UserhomeController extends FrontController
         $last_mile_teams = [];
 
         $tag = [];
-    
+
         // if (isset($preference) && $preference->need_delivery_service == '1') {
         //     $last_mile_teams = $this->getLastMileTeams();
         // }
@@ -238,17 +237,15 @@ class UserhomeController extends FrontController
                 return Redirect::route('categoryDetail', 'cabservice');
 
             $home_page_pickup_labels = CabBookingLayout::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
-           
-            $set_template = WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
 
-            if(isset($set_template)  && $set_template->template_id == 1)
-            return view('frontend.home-template-one')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels,'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
-            if(isset($set_template)  && $set_template->template_id == 2)
-            return view('frontend.home')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels,'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+            $last_mile = $this->checkIfLastMileDeliveryOn();
+            if (isset($set_template)  && $set_template->template_id == 1)
+                return view('frontend.home-template-one')->with(['home' => $home,'last_mile'=>$last_mile, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+            if (isset($set_template)  && $set_template->template_id == 2)
+                return view('frontend.home')->with(['home' => $home, 'count' => $count,'last_mile'=>$last_mile, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
             else
-            return view('frontend.home')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels,'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
-           
-
+                return view('frontend.home')->with(['home' => $home, 'count' => $count, 'last_mile'=>$last_mile,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
         } catch (Exception $e) {
             pr($e->getCode());
             die;
@@ -277,7 +274,9 @@ class UserhomeController extends FrontController
         $preferences = Session::get('preferences');
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
-        $brands = Brand::select('id', 'image','title')->with(['translation' => function($q)use($language_id){$q->where('language_id',$language_id);}])->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->get();
+        $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
+            $q->where('language_id', $language_id);
+        }])->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->get();
         foreach ($brands as $brand) {
             $brand->redirect_url = route('brandDetail', $brand->id);
             $brand->translation_title = $brand->translation->first() ? $brand->translation->first()->title : $brand->title;
@@ -315,10 +314,10 @@ class UserhomeController extends FrontController
             }
             $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
             $categoriesList = '';
-            foreach($vendorCategories as $key => $category){
-                if($category->category){
+            foreach ($vendorCategories as $key => $category) {
+                if ($category->category) {
                     $categoriesList = $categoriesList . $category->category->translation_one->name;
-                    if( $key !=  $vendorCategories->count()-1 ){
+                    if ($key !=  $vendorCategories->count() - 1) {
                         $categoriesList = $categoriesList . ', ';
                     }
                 }
@@ -397,7 +396,8 @@ class UserhomeController extends FrontController
 
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type)
     {
-        $products = Product::with(['category.categoryDetail.translation' => function($q) use ($langId){
+        $products = Product::with([
+            'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
             'vendor' => function ($q) use ($type) {

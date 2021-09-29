@@ -84,8 +84,8 @@
                     </li>
                 </ul>
             </div>
-        </div>        
-
+        </div>      
+        @if($client_preference_detail->business_type != 'taxi')
         <div class="col-md-6 col-xl-3">
             <div class="card card-box">
                 <div class="d-flex align-items-center justify-content-between mb-3">
@@ -98,28 +98,37 @@
                 <input type="text" class="form-control" id="age_restriction_title" name="age_restriction_title" value="{{ old('age_restriction_title', $client_preferences->age_restriction_title ?? '')}}">
             </div>
         </div>
+        @endif
 
         <div class="col-md-6 col-xl-3">
             <div class="card card-box">
                 <ul class="pl-0 mb-0">
-                    <li class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title mb-2">{{ __("Show Wishlist Icon") }}</h4>
-                        <div class="mb-0">
-                            <input type="checkbox" id="show_wishlist" data-plugin="switchery" name="show_wishlist" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_wishlist == 1 ? 'checked' : ''}}>
-                        </div>
-                    </li>
+
+                    @if($client_preference_detail->business_type != 'taxi')
+                        <li class="d-flex align-items-center justify-content-between">
+                            <h4 class="header-title mb-2">{{ __("Show Wishlist Icon") }}</h4>
+                            <div class="mb-0">
+                                <input type="checkbox" id="show_wishlist" data-plugin="switchery" name="show_wishlist" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_wishlist == 1 ? 'checked' : ''}}>
+                            </div>
+                        </li>
+                    @endif
+
                     <li class="d-flex align-items-center justify-content-between mt-2">
                         <h4 class="header-title mb-2">{{ __("Show Ratings") }}</h4>
                         <div class="mb-0">
                             <input type="checkbox" id="rating_enable" data-plugin="switchery" name="rating_enable" class="chk_box2" data-color="#43bee1" {{$client_preferences->rating_check == 1 ? 'checked' : ''}}>
                         </div>
                     </li>
+                    
+                    @if($client_preference_detail->business_type != 'taxi')
                     <li class="d-flex align-items-center justify-content-between mt-2">
                         <h4 class="header-title mb-2">{{ __("Show Cart Icon") }}</h4>
                         <div class="mb-0">
                             <input type="checkbox" id="cart_enable" data-plugin="switchery" name="cart_enable" class="chk_box1" data-color="#43bee1" {{$client_preferences->cart_enable == 1 ? 'checked' : ''}}>
                         </div>
                     </li>
+                    @endif
+
                     <li class="d-flex align-items-center justify-content-between mt-2">
                         <h4 class="header-title mb-2">{{ __("Show Contact Us") }}</h4>
                         <div class="mb-0">

@@ -449,7 +449,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 @if($cate['name'])
                                 <li>                                    
                                     <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                        @if($client_preference_detail->show_icons == 1)
+                                        @if($client_preference_detail->show_icons == 1 && \Request::route()->getName() == 'userHome')
                                         <div class="nav-cate-img">
                                             <img src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt="">
                                         </div>
@@ -485,7 +485,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
 
 </header>
-<div class="offset-top"></div>
+<div class="offset-top @if((\Request::route()->getName() != 'userHome')) inner-pages-offset @endif"></div>
 <script type="text/template" id="nav_categories_template">
     <li>
         <div class="mobile-back text-end">Back<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
@@ -493,7 +493,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <% _.each(nav_categories, function(category, key){ %>
         <li>
             <a href="{{route('categoryDetail')}}/<%= category.slug %>">
-                @if($client_preference_detail->show_icons == 1)
+                @if($client_preference_detail->show_icons == 1  && \Request::route()->getName() == 'userHome')
                     <div class="nav-cate-img">
                         <img src="<%= category.icon.image_fit %>200/200<%= category.icon.image_path %>" alt=""> 
                     </div>

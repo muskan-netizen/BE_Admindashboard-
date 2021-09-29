@@ -4,23 +4,27 @@
 <link href="{{asset('assets/libs/nestable2/nestable2.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/ion-rangeslider/ion-rangeslider.min.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
-    span.inner-div{
+    span.inner-div {
         float: right;
         display: block;
         position: absolute;
         top: -5px;
         right: 16px;
     }
-    .dd{
+
+    .dd {
         max-width: 100%;
     }
-    .fc-v-event{
+
+    .fc-v-event {
         border-color: #43bee1;
         background-color: #43bee1;
     }
-    .dd-list .dd3-content{
+
+    .dd-list .dd3-content {
         position: relative;
     }
+
     span.inner-div {
         top: 50%;
         -webkit-transform: translateY(-50%);
@@ -71,17 +75,17 @@
             <div class="">
                 <ul class="nav nav-pills navtab-bg nav-justified">
                     <li class="nav-item">
-                        <a href="{{ route('vendor.catalogs', $vendor->id) }}"  aria-expanded="false" class="nav-link {{($tab == 'catalog') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
+                        <a href="{{ route('vendor.catalogs', $vendor->id) }}" aria-expanded="false" class="nav-link {{($tab == 'catalog') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
                             {{ __("Catalog") }}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('vendor.show', $vendor->id) }}"  aria-expanded="false" class="nav-link {{($tab == 'configuration') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
+                        <a href="{{ route('vendor.show', $vendor->id) }}" aria-expanded="false" class="nav-link {{($tab == 'configuration') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
                             {{ __("Configuration") }}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('vendor.categories', $vendor->id) }}"  aria-expanded="true" class="nav-link {{($tab == 'category') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
+                        <a href="{{ route('vendor.categories', $vendor->id) }}" aria-expanded="true" class="nav-link {{($tab == 'category') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
                             {{ __("Categories & Add Ons") }}
                         </a>
                     </li>
@@ -102,7 +106,7 @@
                                             <button class="btn btn-info waves-effect waves-light text-sm-right openCategoryModal" dataid="0" is_vendor="1" {{$vendor->status == 1 ? '' : 'disabled'}}><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                                             </button>
                                             @endif
-                                        </div> 
+                                        </div>
                                         <div class="col-md-12">
                                             <div class="row mb-2">
                                                 <div class="col-md-12">
@@ -110,7 +114,7 @@
                                                     <div class="custom-dd-empty dd" id="nestable_list_3">
                                                         <?php print_r($html); ?>
                                                     </div>
-                                                </div>                                                        
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -126,7 +130,7 @@
                                             <button class="btn btn-info waves-effect waves-light text-sm-right openAddonModal" dataid="0" {{$vendor->status == 1 ? '' : 'disabled'}}>
                                                 <i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                                             </button>
-                                        </div> 
+                                        </div>
                                         <div class="col-md-12">
                                             <div class="row addon-row">
                                                 <div class="col-md-12">
@@ -152,18 +156,20 @@
                                                                 <td>{{$set->min_select}} - {{$set->max_select}}</td>
                                                                 <td>
                                                                     @foreach($set->option as $opt)
-                                                                        <span>{{$opt->title}} - ${{$opt->price}}</span><br/>
-                                                                        <span></span>
+                                                                    <span>{{$opt->title}} - ${{$opt->price}}</span><br />
+                                                                    <span></span>
                                                                     @endforeach
                                                                 </td>
                                                                 <td>
-                                                                    <a class="action-icon editAddonBtn" dataid="{{$set->id}}" href="javascript:void(0);" > <h3> <i class="mdi mdi-square-edit-outline"></i> </h3></a>
+                                                                    <a class="action-icon editAddonBtn" dataid="{{$set->id}}" href="javascript:void(0);">
+                                                                        <h3> <i class="mdi mdi-square-edit-outline"></i> </h3>
+                                                                    </a>
 
                                                                     <a class="action-icon deleteAddon" dataid="{{$set->id}}" href="javascript:void(0);"> <i class="mdi mdi-delete"></i></a>
                                                                     <form action="{{route('addon.destroy', $set->id)}}" method="POST" style="display: none;" id="addonDeleteForm{{$set->id}}">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        
+
                                                                     </form>
                                                                 </td>
                                                             </tr>
@@ -178,11 +184,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane {{($tab == 'catalog') ? 'active show' : '' }}" id="catalog">  
+                    <div class="tab-pane {{($tab == 'catalog') ? 'active show' : '' }}" id="catalog">
                     </div>
                 </div>
             </div>
-        </div> 
+        </div>
     </div>
 </div>
 <div id="addAddonmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -203,18 +209,18 @@
                                     <h5>{{ __("Addon Title") }}</h5>
                                 </div>
                                 <div class="col-md-12" style="overflow-x: auto;">
-                                    <table class="table table-borderless mb-0" id="banner-datatable" >
+                                    <table class="table table-borderless mb-0" id="banner-datatable">
                                         <tr>
                                             @foreach($languages as $langs)
-                                                <th>{{$langs->language->name}}</th>
+                                            <th>{{$langs->language->name}}</th>
                                             @endforeach
                                         </tr>
                                         <tr>
                                             @foreach($languages as $langs)
-                                                <td>
-                                                    {!! Form::hidden('language_id[]', $langs->language_id) !!}
-                                                    <input type="text" name="title[]" value="" class="form-control" @if($langs->is_primary == 1) required @endif>
-                                                </td>
+                                            <td>
+                                                {!! Form::hidden('language_id[]', $langs->language_id) !!}
+                                                <input type="text" name="title[]" value="" class="form-control" @if($langs->is_primary == 1) required @endif>
+                                            </td>
                                             @endforeach
                                         </tr>
                                     </table>
@@ -229,15 +235,15 @@
                                         <tr class="trForClone">
                                             <th>{{ __("Price") }}($)</th>
                                             @foreach($languages as $langs)
-                                                <th>{{$langs->language->name}}</th>
+                                            <th>{{$langs->language->name}}</th>
                                             @endforeach
                                             <th></th>
                                         </tr>
                                         <tr class="input_tr">
                                             <td>{!! Form::text('price[]', null, ['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'min' => '1', 'required' => 'required']) !!}</td>
                                             @foreach($languages as $k => $langs)
-                                                <td><input type="text" name="opt_value[{{$k}}][]" class="form-control" @if($langs->is_primary == 1) required @endif>
-                                                </td>
+                                            <td><input type="text" name="opt_value[{{$k}}][]" class="form-control" @if($langs->is_primary == 1) required @endif>
+                                            </td>
                                             @endforeach
                                             <td class="lasttd"></td>
                                         </tr>
@@ -267,18 +273,18 @@
                                     </div>
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <div class="price-range-slider"> 
+                                    <div class="price-range-slider">
                                         {!! Form::label('title', __('Min & Max Range'),['class' => 'control-label']) !!}:<input type="text" id="slider_output" readonly="" style="border:0; color:#f6931f; font-weight:bold;">
                                         <div id="slider-range" class="range-bar"></div>
                                     </div>
                                     <div class="row slider-labels">
                                         <div class="col-xs-6 caption">
-                                          <strong>{{ __("Min") }}:</strong> <span id="slider-range-value1"></span>
+                                            <strong>{{ __("Min") }}:</strong> <span id="slider-range-value1"></span>
                                         </div>
                                         <div class="col-xs-6 text-right caption">
-                                          <strong>{{ __("Max") }}:</strong> <span id="slider-range-value2"></span>
+                                            <strong>{{ __("Max") }}:</strong> <span id="slider-range-value2"></span>
                                         </div>
-                                      </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-12">
                                     <p>{{ __("If max select is greater than total option than max will be total option") }}</p>
@@ -305,7 +311,7 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body" id="editAddonBox">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-info waves-effect waves-light editAddonSubmit">{{ __("Submit") }}</button>
@@ -325,7 +331,8 @@
                 @csrf
                 {!! Form::hidden('vendor_id', $vendor->id) !!}
                 <div class="modal-body" id="AddCategoryBox"></div>
-                <div class="modal-footer">
+                <div class="modal-footer justify-content-start mb-2">
+                    <p id="p-error" style="color:red;font-size:20px;text-align:left;justify-content: flex-start;"></p>
                     <button type="submit" class="btn btn-info waves-effect waves-light addCategorySubmit">{{ __("Submit") }}</button>
                 </div>
             </form>
@@ -344,7 +351,8 @@
                 @method('PUT')
                 {!! Form::hidden('vendor_id', $vendor->id) !!}
                 <div class="modal-body" id="editCategoryBox"></div>
-                <div class="modal-footer">
+                <div class="modal-footer justify-content-start mb-2">
+                    <p id="p-error1" style="color:red;font-size:20px;text-align:left;justify-content: flex-start;"></p>
                     <button type="button" class="btn btn-info waves-effect waves-light editCategorySubmit">{{ __("Submit") }}</button>
                 </div>
             </form>
@@ -368,28 +376,29 @@
     var tagList = "";
     tagList = tagList.split(',');
     console.log(tagList);
-    function makeTag(tagList = ''){
+
+    function makeTag(tagList = '') {
         $('.myTag1').tagsInput({
             'autocomplete': {
                 source: tagList
-            } 
+            }
         });
     }
 </script>
 <script>
-$(function() {
-    var $d4 = $("#slider-range");
-    $d4.ionRangeSlider({ 
-        type: "double", 
-        grid: !0, 
-        min: 0, 
-        max: 1,
+    $(function() {
+        var $d4 = $("#slider-range");
+        $d4.ionRangeSlider({
+            type: "double",
+            grid: !0,
+            min: 0,
+            max: 1,
+        });
+        $d4.on("change", function() {
+            var $inp = $(this);
+            $("#min").val($inp.data("from"));
+            $("#max").val($inp.data("to"));
+        });
     });
-    $d4.on("change", function () {
-        var $inp = $(this);
-        $("#min").val($inp.data("from"));
-        $("#max").val($inp.data("to"));
-    });
-});
 </script>
 @endsection

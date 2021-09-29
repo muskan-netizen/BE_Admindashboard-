@@ -86,12 +86,12 @@
                 </div>
             </div>
         </div>
-        <div class="row mt-3 edit-category catalog-cols">
+        <div class="row mt-3 edit-category">
             @foreach($typeArray as $type)
             @if($type->title == 'Celebrity' && $preference->celebrity_check == 0)
             @continue
             @endif
-            <div class="col-sm-6 col-md-4">
+            <div class="col-sm-6 col-md-2">
                 <div class="card p-0 text-center select-category" id="tooltip-container">
                     <input class="form-check-input type-select" for="edit" type="radio" id="type_id_{{$type->id}}" name="type_id" @if($category->type_id == $type->id) checked @endif value="{{$type->id}}">
                     <label for="type_id_{{$type->id}}" class="card-body p-0 mb-0">

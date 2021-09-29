@@ -18,22 +18,31 @@ class WebStylingController extends BaseController{
     public function index()
     { 
         $client_preferences = ClientPreference::first();
-        $home_page_labels = HomePageLabel::with('translations')->orderBy('order_by')->get();
+
+        switch($client_preferences->business_type){
+            case "taxi":
+            $home_page_labels = HomePageLabel::whereIn('slug',['dynamic_page','pickup_delivery'])->with('translations')->orderBy('order_by');
+            $cab_booking_layouts = CabBookingLayout::whereIn('slug',['dynamic_page','pickup_delivery'])->with('translations');
+            break;
+            default:
+            $home_page_labels = HomePageLabel::with('translations')->orderBy('order_by');
+            $cab_booking_layouts = CabBookingLayout::with('translations');
+        }
+
+        
         $all_pickup_category = Category::with('translation_one')->where('type_id',7)->get();
         if(count($all_pickup_category) == 0){
-            $cab_booking_layouts = CabBookingLayout::with('translations')->where('slug','!=','pickup_delivery')->orderBy('order_by')->get();
-            $home_page_labels = HomePageLabel::with('translations')->where('slug','!=','pickup_delivery')->orderBy('order_by')->get();
+            $cab_booking_layouts = $cab_booking_layouts->where('slug','!=','pickup_delivery')->orderBy('order_by')->get();
+            $home_page_labels = $home_page_labels->where('slug','!=','pickup_delivery')->orderBy('order_by')->get();
      
         }
         else{
-            $cab_booking_layouts = CabBookingLayout::with('translations')->orderBy('order_by')->get();
-            $home_page_labels = HomePageLabel::with('translations')->orderBy('order_by')->get();
+            $cab_booking_layouts = $cab_booking_layouts->orderBy('order_by')->get();
+            $home_page_labels = $home_page_labels->orderBy('order_by')->get();
 
         }
       
-        // pr($home_page_labels->toArray());die;
-
-        $if_pickup_on  = HomePageLabel::where('slug','pickup_delivery')->first();
+     
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
                     ->where('client_languages.client_code', Auth::user()->code)
@@ -43,7 +52,7 @@ class WebStylingController extends BaseController{
         if ($homepage_style) {
             $homepage_style_options = WebStylingOption::where('web_styling_id', $homepage_style->id)->get();
         }
-        return view('backend/web_styling/index')->with(['homepage_style_options' => $homepage_style_options,'if_pickup_on' => $if_pickup_on ,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs]);
+        return view('backend/web_styling/index')->with(['homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs]);
     }
 
 

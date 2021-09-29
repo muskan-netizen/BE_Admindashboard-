@@ -74,6 +74,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('promo-code/list', 'Api\v1\PickupDeliveryController@postPromoCodeList');
             Route::post('promo-code/verify', 'Api\v1\PickupDeliveryController@postVerifyPromoCode');
             Route::post('promo-code/remove', 'Api\v1\PickupDeliveryController@postRemovePromoCode');
+            Route::post('order-tracking-details', 'Api\v1\PickupDeliveryController@getOrderTrackingDetails');
             
         });
 

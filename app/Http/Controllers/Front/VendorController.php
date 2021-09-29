@@ -313,7 +313,7 @@ class VendorController extends FrontController
                             $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                             $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
                             $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
-                            $q1->where('ast.language_id', $langId);
+                            $q1->where('set.status', 1)->where('ast.language_id', $langId);
                         },
                         'addOn.setoptions' => function ($q2) use ($langId) {
                             $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
@@ -421,7 +421,7 @@ class VendorController extends FrontController
                     $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                     $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
                     $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
-                    $q1->where('ast.language_id', $langId);
+                    $q1->where('set.status', 1)->where('ast.language_id', $langId);
                 },
                 'addOn.setoptions' => function ($q2) use ($langId) {
                     $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
@@ -589,7 +589,7 @@ class VendorController extends FrontController
                     $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                     $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
                     $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
-                    $q1->where('ast.language_id', $langId);
+                    $q1->where('set.status', 1)->where('ast.language_id', $langId);
                 },
                 'addOn.setoptions' => function ($q2) use ($langId) {
                     $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');

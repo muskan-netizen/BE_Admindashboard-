@@ -115,21 +115,26 @@ class BrandController extends BaseController
             $brand->image = Storage::disk('s3')->put($this->folderName, $file, 'public');
         }
         $brand->save();
-        $cate_array=array();
-        foreach ($request->cate_id as $key=>$cate_id) {
+        $cate_array = array();
+        foreach ($request->cate_id as $key => $cate_id) {
             //$affected = BrandCategory::where('brand_id', $brand->id)->update(['category_id'=>$cate_id]);
             //$affected->cate()->associate($cate_id)->save();
-            $brand=Brand::find($id);
-            $cat=BrandCategory::where('category_id',$cate_id)->first();
-            $brand->bc()->save($cat);
-            //$brand->save();
-            //$cate_array[$key]=$cate_id;
-           
+            $brand = Brand::find($id);
+
+            // $cat = BrandCategory::where('category_id', $cate_id)->first();
+
+            // $cat = BrandCategory::insert(['brand_id' => $id, 'category_id' => $cate_id]);
+           // $cat = BrandCategory::where('category_id', $cate_id)->first();
+            // if ($cat == null)
+            if(BrandCategory::where('brand_id',$id)->where('category_id',$cate_id)->first()==null)
+                $cat = BrandCategory::insert(['brand_id' => $id, 'category_id' => $cate_id]);
+            // else
+            //     $brand->bc()->save($cat);
         }
-      // $affected = BrandCategory::where('brand_id', $id)->with('cate')->get();
-      // dd($affected);
-     //  $affected->cate()->sync($cate_array);
-            
+        // $affected = BrandCategory::where('brand_id', $id)->with('cate')->get();
+        // dd($affected);
+        //  $affected->cate()->sync($cate_array);
+
         foreach ($request->title as $key => $value) {
             $bt = BrandTranslation::where('brand_id', $brand->id)->where('language_id', $request->language_id[$key])->first();
             if (!$bt) {
@@ -153,6 +158,8 @@ class BrandController extends BaseController
     {
         $brand = Brand::where('id', $id)->first();
         $brand->status = 2;
+       // $brand->bc()->save();
+       BrandCategory::where('brand_id',$id)->delete();
         $brand->save();
         return redirect()->back()->with('success', 'Brand deleted successfully!');
     }

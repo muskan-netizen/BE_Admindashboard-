@@ -184,6 +184,14 @@
                                     @endif
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <label for="languages">Business Type</label>
+                                <select class="form-control" id="business_type" name="business_type">
+                                    @foreach($business_types as $business)
+                                        <option value="{{$business->slug}}"> {{$business->title}} </option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-info waves-effect waves-light">Submit</button>
                             </div>

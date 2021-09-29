@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnToBrandCategoriesTable extends Migration
+class Alterproducttypeclientpreftable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class AddColumnToBrandCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::table('brand_categories', function (Blueprint $table) {
-            //
-            $table->bigIncrements('id')->nullable()->first();
+        Schema::table('client_preferences', function (Blueprint $table) {
+            $table->renameColumn('product_type','business_type');
         });
     }
 
@@ -26,9 +25,8 @@ class AddColumnToBrandCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::table('brand_categories', function (Blueprint $table) {
-            //
-            $table->dropColumn('id');
+        Schema::table('client_preferences', function (Blueprint $table) {
+            $table->dropColumn('business_type');
         });
     }
 }

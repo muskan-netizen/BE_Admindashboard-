@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Godpanel;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\{ClientPreference, Currency, Client, Language};
+use App\Models\{ClientPreference, Currency, Client, Language,BusinessType};
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Config;
@@ -41,7 +41,9 @@ class ClientController extends Controller{
     public function create()
     {
         $languages = Language::where('id', '>', '0')->get();
-        return view('godpanel/client-form')->with(['languages' => $languages]);
+        $business_types = BusinessType::get();
+       
+        return view('godpanel/client-form')->with(['languages' => $languages,'business_types' => $business_types]);
     }
 
     /**
@@ -54,7 +56,8 @@ class ClientController extends Controller{
     {
         $client = Client::find($id);
         $languages = Language::where('id', '>', '0')->get();
-        return view('godpanel/client-form')->with(['client' => $client, 'languages' => $languages]);
+        $business_types = BusinessType::get();
+      return view('godpanel/client-form')->with(['client' => $client, 'languages' => $languages, 'business_types' => $business_types]);
     }
     
     /**
@@ -76,11 +79,12 @@ class ClientController extends Controller{
         if(!$data){
             return redirect()->back()->withErrors(['error' => "Something went wrong."]);
         }
+        $business_type = $request->business_type??null;
         $database_name = preg_replace('/\s+/', '', $request->database_name);
         Cache::set($database_name, $data);
         $languId = ($request->has('primary_language')) ? $request->primary_language : 1;
         DB::commit();
-        $this->dispatchNow(new ProcessClientDataBase($data->id, $languId));
+        $this->dispatchNow(new ProcessClientDataBase($data->id, $languId,$business_type));
         return redirect()->route('client.index')->with('success', 'Client Added successfully!');
         } catch (\Exception $e) {
             DB::rollback();

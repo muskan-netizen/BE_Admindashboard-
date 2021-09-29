@@ -29,6 +29,7 @@
    <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
       @csrf
       <div class="row">
+         @if($client_preference_detail->business_type != 'taxi')
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="row h-100">
                <div class="col-12">
@@ -92,6 +93,7 @@
                </div>
             </div>
          </div>
+
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
@@ -156,56 +158,7 @@
                </div>
             </div>
          </div>
-         <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card-box h-100">
-               <div class="d-flex align-items-center justify-content-between mb-2">
-                  <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
-                  <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-               </div>
-               <p class="sub-header">{{ __("Offer Pickup & Delivery with Dispatcher.") }}</p>
-               <div class="row">
-                  <div class="col-12">
-                     <div class="form-group mb-0">
-                        <div class="form-group mb-0 switchery-demo">
-                           <label for="need_dispacher_ride" class="mr-3">{{ __("Enable") }}</label>
-                           <input type="checkbox" data-plugin="switchery" name="need_dispacher_ride" id="need_dispacher_ride" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_ride == '1')) checked='checked' @endif>
-                        </div>
-                     </div>
-
-                     <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-                        <label for="pickup_delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
-                        <input type="text" name="pickup_delivery_service_key_url" id="pickup_delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('pickup_delivery_service_key_url', $preference->pickup_delivery_service_key_url ?? '')}}">
-                        @if($errors->has('pickup_delivery_service_key_url'))
-                        <span class="text-danger" role="alert">
-                           <strong>{{ $errors->first('pickup_delivery_service_key_url') }}</strong>
-                        </span>
-                        @endif
-                     </div>
-
-                     <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-                        <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
-                        <input type="text" name="pickup_delivery_service_key_code" id="pickup_delivery_service_key_code" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key_code', $preference->pickup_delivery_service_key_code ?? '')}}">
-                        @if($errors->has('pickup_delivery_service_key_code'))
-                        <span class="text-danger" role="alert">
-                           <strong>{{ $errors->first('pickup_delivery_service_key_code') }}</strong>
-                        </span>
-                        @endif
-                     </div>
-
-                     <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-                        <label for="pickup_delivery_service_key">{{ __("Dispatcher API key") }}</label>
-                        <input type="text" name="pickup_delivery_service_key" id="pickup_delivery_service_key" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key', $preference->pickup_delivery_service_key ?? '')}}">
-                        @if($errors->has('pickup_delivery_service_key'))
-                        <span class="text-danger" role="alert">
-                           <strong>{{ $errors->first('pickup_delivery_service_key') }}</strong>
-                        </span>
-                        @endif
-                     </div>
-
-                  </div>
-               </div>
-            </div>
-         </div>
+         
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
@@ -256,6 +209,61 @@
                </div>
             </div>
          </div> 
+         @endif
+
+         <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card-box h-100">
+               <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
+                  <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+               </div>
+               <p class="sub-header">{{ __("Offer Pickup & Delivery with Dispatcher.") }}</p>
+               <div class="row">
+                  <div class="col-12">
+                     <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                           <label for="need_dispacher_ride" class="mr-3">{{ __("Enable") }}</label>
+                           <input type="checkbox" data-plugin="switchery" name="need_dispacher_ride" id="need_dispacher_ride" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->need_dispacher_ride == '1')) checked='checked' @endif>
+                        </div>
+                     </div>
+
+                     <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                        <label for="pickup_delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
+                        <input type="text" name="pickup_delivery_service_key_url" id="pickup_delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('pickup_delivery_service_key_url', $preference->pickup_delivery_service_key_url ?? '')}}">
+                        @if($errors->has('pickup_delivery_service_key_url'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('pickup_delivery_service_key_url') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+
+                     <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                        <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
+                        <input type="text" name="pickup_delivery_service_key_code" id="pickup_delivery_service_key_code" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key_code', $preference->pickup_delivery_service_key_code ?? '')}}">
+                        @if($errors->has('pickup_delivery_service_key_code'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('pickup_delivery_service_key_code') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+
+                     <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
+                        <label for="pickup_delivery_service_key">{{ __("Dispatcher API key") }}</label>
+                        <input type="text" name="pickup_delivery_service_key" id="pickup_delivery_service_key" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key', $preference->pickup_delivery_service_key ?? '')}}">
+                        @if($errors->has('pickup_delivery_service_key'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('pickup_delivery_service_key') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+
+                  </div>
+               </div>
+            </div>
+         </div>
+
+        
+
       </div>
    </form>
    <div class="row">
@@ -836,6 +844,7 @@
                      </div>
                   </div>
                </div>
+               @if($client_preference_detail->business_type != 'taxi')
                <div class="col-xl-12 mb-4">
                   <div class="page-title-box">
                      <h4 class="page-title text-uppercase">{{ __("Vendor") }}</h4>
@@ -868,6 +877,8 @@
                      </div>
                   </div>
                </div>
+               @endif
+
             </div>
          </form>
 
@@ -877,6 +888,7 @@
                <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
                @csrf
                <div class="row align-items-center">
+                  @if($client_preference_detail->business_type != 'taxi')
                   <div class="col-md-4">
                      <div class="form-group mb-3">
                         <label for="celebrity_check" class="mr-2 mb-0"> {{ __("Celebrity Mod") }}</label>
@@ -895,24 +907,7 @@
                         <input type="checkbox" data-plugin="switchery" name="enquire_mode" id="	enquire_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->enquire_mode == '1')) checked='checked' @endif>
                      </div>
                   </div>
-                  <div class="col-md-4">
-                     <div class="form-group mb-3">
-                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}</label>
-                        <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
-                     </div>
-                  </div>
-                  <div class="col-md-4">
-                     <div class="form-group mb-3">
-                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Tip Before Order')}}</label>
-                        <input type="checkbox" data-plugin="switchery" name="tip_before_order" id="tip_before_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_before_order == '1')) checked='checked' @endif>
-                     </div>
-                  </div>
-                  <div class="col-md-4">
-                     <div class="form-group mb-3">
-                        <label for="tip_after_order" class="mr-2 mb-0">{{__('Tip After Order')}}</label>
-                        <input type="checkbox" data-plugin="switchery" name="tip_after_order" id="tip_after_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_after_order == '1')) checked='checked' @endif>
-                     </div>
-                  </div>
+                 
                   <div class="col-md-4">
                      <div class="form-group mb-3">
                         <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Off Scheduling  Order')}}</label>
@@ -923,6 +918,27 @@
                      <div class="form-group mb-3">
                         <label for="isolate_single_vendor_order" class="mr-2 mb-0">{{__('Isolate Single Vendor Order')}}</label>
                         <input type="checkbox" data-plugin="switchery" name="isolate_single_vendor_order" id="isolate_single_vendor_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->isolate_single_vendor_order == '1')) checked='checked' @endif>
+                     </div>
+                  </div>
+
+                  <div class="col-md-4">
+                     <div class="form-group mb-3">
+                        <label for="subscription_mode" class="mr-2 mb-0">{{ __("Subscription Mod") }}</label>
+                        <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->subscription_mode == '1')) checked='checked' @endif>
+                     </div>
+                  </div>
+                  @endif
+                 
+                  <div class="col-md-4">
+                     <div class="form-group mb-3">
+                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Tip Before Order')}}</label>
+                        <input type="checkbox" data-plugin="switchery" name="tip_before_order" id="tip_before_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_before_order == '1')) checked='checked' @endif>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group mb-3">
+                        <label for="tip_after_order" class="mr-2 mb-0">{{__('Tip After Order')}}</label>
+                        <input type="checkbox" data-plugin="switchery" name="tip_after_order" id="tip_after_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_after_order == '1')) checked='checked' @endif>
                      </div>
                   </div>
                   <div class="col-md-12">

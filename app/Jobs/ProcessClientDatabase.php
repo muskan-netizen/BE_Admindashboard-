@@ -20,15 +20,17 @@ class ProcessClientDatabase implements ShouldQueue
 
     protected $client_id; 
     protected $languId;
+    protected $business_type;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($client_id, $languId)
+    public function __construct($client_id, $languId,$business_type)
     {
         $this->client_id = $client_id;
         $this->languId = $languId;
+        $this->business_type = $business_type;
     }
 
     /**
@@ -77,6 +79,7 @@ class ProcessClientDatabase implements ShouldQueue
 
             $settings = [
                 'client_code'           => $client['code'],
+                'business_type'           => $this->business_type??null,
                 'theme_admin'           => 'light',
                 'distance_unit'         => 'metric',
                 'date_format'           => 'YYYY-MM-DD',

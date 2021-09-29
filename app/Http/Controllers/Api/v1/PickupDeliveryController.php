@@ -15,6 +15,8 @@ use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSe
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
+
 class PickupDeliveryController extends BaseController{
 	
     use ApiResponser;
@@ -632,6 +634,18 @@ class PickupDeliveryController extends BaseController{
             'coupon_id' => 'required',
             'amount' => 'required'
         ]);
+    }
+
+
+    public function getOrderTrackingDetails(Request $request){
+
+        $order = OrderVendor::where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
+        $response = Http::get($request->new_dispatch_traking_url);
+        if($response->status() == 200){
+           $response = $response->json();
+           $response['order_details'] = $order;
+           return $this->successResponse($response); 
+        }
     }
 
 }

@@ -59,15 +59,14 @@ class CategoryController extends BaseController
         $category = new Category();
         $preference = ClientPreference::first();
 
-        switch($preference->product_type){
-            case "cab_booking":
-            $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
+        switch($preference->business_type){
+            case "taxi":
+            $type =Type::where('title','Pickup/Delivery')->orderBY('sequence', 'ASC')->get();
             break;
             default:
             $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
         }
-        
-     
+       
         $parCategory = Category::with('translation_one')->select('id', 'slug')->where('deleted_at', NULL)->whereIn('type_id', ['1', '3', '6', '8'])->where('is_core', 1)->where('status', 1)->get();
         $vendor_list = Vendor::select('id', 'name')->where('status', '!=', $this->blocking)->get();
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
@@ -143,7 +142,15 @@ class CategoryController extends BaseController
         $vendors = array();
         $tagList = array();
         $preference = ClientPreference::first();
-        $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
+        switch($preference->business_type){
+            case "taxi":
+            $type =Type::where('title','Pickup/Delivery')->orderBY('sequence', 'ASC')->get();
+            break;
+            default:
+            $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
+        }
+
+      
         $category = Category::with('translation', 'tags')->where('id', $id)->first();
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
             ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')

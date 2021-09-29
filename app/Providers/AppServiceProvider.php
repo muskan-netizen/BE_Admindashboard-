@@ -79,8 +79,9 @@ class AppServiceProvider extends ServiceProvider
             $domain = str_replace(array('http://', '.test.com/login'), '', $domain);
             $subDomain = explode('.', $domain);
             $existRedis = Redis::get($domain);
+            
             if ($domain != env('Main_Domain')) {
-
+                
                 if (!$existRedis) {
                     $client = Client::select('name', 'email', 'phone_number', 'is_deleted', 'is_blocked', 'logo', 'company_name', 'company_address', 'status', 'code', 'database_name', 'database_host', 'database_port', 'database_username', 'database_password', 'custom_domain', 'sub_domain')
                         ->where(function ($q) use ($domain, $subDomain) {

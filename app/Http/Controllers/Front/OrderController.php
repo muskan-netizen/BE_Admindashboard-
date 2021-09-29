@@ -1378,12 +1378,12 @@ class OrderController extends FrontController
                 'plate_number' => 'required',
                 'color' => 'required',
             ]);
-            $meta_data = '';
-            $tasks = array();
+            //$meta_data = '';
+            //$tasks = array();
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-            $customer = Auth::user();
+            //$customer = Auth::user();
             if ($dispatch_domain && $dispatch_domain != false) {
-                $unique = Auth::user()->code;
+                //$unique = Auth::user()->code;
                 $driver_registration_documents = json_decode($this->driverDocuments());
 
                 //     $rules_array = [];
@@ -1429,7 +1429,6 @@ class OrderController extends FrontController
                                 'file_type' => $file['file_type'],
                                 'id' => $file['id'],
                                 'filename' => $file_uploaded_name,
-                                'Mime-Type' => $file_mime,
                                 'contents' => fopen($file_path, 'r'),
 
                             ];

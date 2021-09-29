@@ -9,7 +9,7 @@ class BrandCategory extends Model
     protected $fillable = ['brand_id', 'category_id'];
 
     public function cate(){
-       return $this->belongsToMany('App\Models\Category','brand_categories','brand_id','category_id'); 
+       return $this->belongsToMany('App\Models\Category','brand_categories','category_id','brand_id'); 
     }
 
     public function translation(){
