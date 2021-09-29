@@ -102,7 +102,7 @@
                                         <td>
                                             @foreach($variant->option as $key => $value)
                                             <label style="margin-bottom: 3px;">
-                                                @if($variant->type == 2)
+                                                @if(isset($variant) && !empty($variant->type) && $variant->type == 2)
                                                 <span style="padding:8px; float: left; border: 1px dotted #ccc; background:{{$value->hexacode}};"> </span>
                                                 @endif
                                                 &nbsp;&nbsp; {{$value->title}}</label> <br />
