@@ -626,9 +626,9 @@ $(document).ready(function () {
     $(document).on("click", "#order_placed_btn", function () {
         $('.alert-danger').html('');
         if ((typeof guest_cart != undefined) && (guest_cart == 1)) {
-            window.location.href = login_url;
-            // $("#login_modal").modal("show");
-            // return false;
+            // window.location.href = login_url;
+            $("#login_modal").modal("show");
+            return false;
         }
         var address = $("input[name='address_id']").val();
         if ((vendor_type == 'delivery') && ((address == '') || (address < 1))) {

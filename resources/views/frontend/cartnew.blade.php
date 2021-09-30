@@ -51,6 +51,7 @@
     </div>
 </script>
 <script type="text/template" id="empty_cart_template">
+<div class="container">
     <div class="row mt-2 mb-4 mb-lg-5">
         <div class="col-12 text-center">
             <div class="cart_img_outer">
@@ -61,6 +62,7 @@
             <a class="btn btn-solid" href="{{url('/')}}">{{__('Continue Shopping')}}</a>
         </div>
     </div>
+</div>
 </script>
 <div class="container">
     <div class="row">

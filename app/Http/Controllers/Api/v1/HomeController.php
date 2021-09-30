@@ -27,7 +27,7 @@ class HomeController extends BaseController{
     public function headerContent(Request $request){
         try {
             $homeData = array();
-            $langId = $request->header('language');
+            $langId = ($request->hasHeader('language')) ? $request->header('language') : 1;
             $homeData['profile'] = Client::with(['preferences','country:id,name,code,phonecode'])->select('country_id', 'company_name', 'code', 'sub_domain', 'logo', 'company_address', 'phone_number', 'email')->first();
             $app_styling_detail = AppStyling::getSelectedData();
             foreach ($app_styling_detail as $app_styling) {

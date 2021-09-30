@@ -27,19 +27,103 @@
     <div class="collection-wrapper">
         <div class="container">
             <div class="row">
-                <div class="col-sm-3 collection-filter">
+                 <div class="col-12">
+                    <div class="top-banner-wrapper mb-4">
+                    @if(!empty($vendor->banner))
+                        <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1000/300' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                    @endif
+                    <div class="row mt-n4">
+                        <div class="col-12">
+                            <form action="">
+                                <div class="row">
+                                    <div class="col-sm-12 text-center">
+                                        <div class="file file--upload">
+                                            <label>
+                                                <span class="update_pic border-0">
+                                                <img src="{{$vendor->logo['proxy_url'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="name_location d-block py-0">
+                                            <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
+                                        </div>
+                                        @if($vendor->is_show_vendor_details == 1)
+                                            <div class="">
+                                                @if($vendor->email)
+                                                    <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
+                                                @endif
+                                                <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
+                                                @if($vendor->website)
+                                                    <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    </div>
+                                    @if($vendor->desc)
+                                        <div class="col-md-12 text-center">
+                                            <p>{{$vendor->desc}}</p>
+                                        </div>                                                  
+                                    @endif
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-2 collection-filter">
                     <div class="theme-card">
                         <h5 class="title-border">{{__('New Product')}}</h5>
                         <div class="offer-slider slide-1">
                             @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
-                                    <div>
                                     @foreach($newProds as $new)
+                                    <div>
                                         <?php $imagePath = '';
                                         foreach ($new['media'] as $k => $v) {
                                             $imagePath = $v['image']['path']['proxy_url'].'300/300'.$v['image']['path']['image_path'];
                                         } ?>
-                                        <div class="media">
+
+
+                                        <a class="common-product-box scale-effect text-center" href="{{route('productDetail', $new['url_slug'])}}">
+                                            <div class="img-outer-box position-relative">
+                                                <img src="{{$imagePath}}" alt="">
+                                            </div>    
+                                            <div class="media-body align-self-center">
+                                                <div class="inner_spacing px-0">
+                                                    <div class="product-description">
+                                                        <h3 class="m-0">{{ $new['translation_title'] }}</h3>
+                                                        <p>{{$new['vendor']['name']}}</p>
+                                                        <p class="border-bottom pb-1">In Fruits</p>
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <b>
+                                                                @if($new['inquiry_only'] == 0)
+                                                                    <?php $multiply = $new['variant_multiplier']; ?>
+                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                @endif
+                                                            </b>
+
+                                                            @if($client_preference_detail)
+                                                                @if($client_preference_detail->rating_check == 1)
+                                                                    @if($new['averageRating'] > 0)
+                                                                        <div class="rating-box">
+                                                                            <i class="fa fa-star" aria-hidden="true"></i>
+                                                                            <span>{{ $new['averageRating'] }}</span>
+                                                                        </div>
+                                                                    @endif
+                                                                @endif
+                                                            @endif  
+                                                        </div>                       
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+
+
+                                        <!-- <div class="media">
                                             <a href="{{route('productDetail', $new['url_slug'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt="" ></a>
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing">
@@ -48,7 +132,7 @@
                                                         <h6><b>{{$new['vendor']['name']}}</b></h6>
                                                         @if($new['inquiry_only'] == 0)
                                                             <h4 class="mt-1">
-                                                                <?php $multiply = $new['variant_multiplier']; ?>
+                                                                <//?php $multiply = $new['variant_multiplier']; ?>
                                                                 {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
                                                             </h4>
                                                         @endif
@@ -62,9 +146,9 @@
                                                     </a>
                                                 </div>
                                             </div>
-                                        </div>
-                                    @endforeach
+                                        </div> -->
                                     </div>
+                                    @endforeach
                                 @endforeach
                             @endif
                         </div>
@@ -74,47 +158,6 @@
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
-                            <div class="top-banner-wrapper mb-4">
-                                    @if(!empty($vendor->banner))
-                                        <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1000/200' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
-                                    @endif
-                                    <div class="row mt-n4">
-                                        <div class="col-12">
-                                            <form action="">
-                                                <div class="row">
-                                                    <div class="col-sm-12 text-center">
-                                                        <div class="file file--upload">
-                                                            <label>
-                                                                <span class="update_pic border-0">
-                                                                <img src="{{$vendor->logo['proxy_url'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
-                                                                </span>
-                                                            </label>
-                                                        </div>
-                                                        <div class="name_location d-block py-0">
-                                                            <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
-                                                        </div>
-                                                        @if($vendor->is_show_vendor_details == 1)
-                                                            <div class="">
-                                                                @if($vendor->email)
-                                                                    <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
-                                                                @endif
-                                                                <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
-                                                                @if($vendor->website)
-                                                                    <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
-                                                                @endif
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                    @if($vendor->desc)
-                                                        <div class="col-md-12 text-center">
-                                                            <p>{{$vendor->desc}}</p>
-                                                        </div>                                                  
-                                                    @endif
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="collection-product-wrapper">
                                     <div class="product-top-filter">
                                         <div class="row">

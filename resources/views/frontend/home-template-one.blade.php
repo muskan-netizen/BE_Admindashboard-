@@ -16,7 +16,7 @@
     <div class="mobile-fix-option"></div>
     @include('layouts.store/left-sidebar-template-one')
 </header>
-<div class="offset-top"></div>
+<div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div>
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal">
   Launch demo modal
@@ -120,12 +120,6 @@
                 <div class="supplier-rating">
                     <h6 class="mb-1"><%= vendor.name %></h6>
                     <p title="<%= vendor.categoriesList %>" class="vendor-cate border-bottom pb-1 mb-1 ellips"><%= vendor.categoriesList %></p>
-                    <!-- <% if(vendor.timeofLineOfSightDistance != undefined){ %>
-                    <div class="product-timing d-flex justify-content-between">
-                        <small><i class="fa fa-map-marker"></i> <%= vendor.lineOfSightDistance %>km</small>
-                        <small><i class="fa fa-clock-o"></i> <%= vendor.timeofLineOfSightDistance %>min</small>
-                    </div>
-                    <% } %> -->
                     <div class="product-timing">
                         <small title="<%= vendor.address %>" class="ellips d-block"><i class="fa fa-map-marker"></i> <%= vendor.address %></small>
                         <% if(vendor.timeofLineOfSightDistance != undefined){ %>
@@ -138,11 +132,6 @@
                                 </li>
                             </ul>
                         <% } %>
-                        <!-- <small class="ellips d-block"><i class="fa fa-map-marker"></i> <%= vendor.address %></small>
-                        <small class="d-block">
-                            <i class="fa fa-clock-o"></i> <%= vendor.timeofLineOfSightDistance %> min
-                            <i class="fa fa-map-marker"></i> <%= vendor.lineOfSightDistance %> km
-                        </small> -->
                     </div>
                     @if($client_preference_detail)
                         @if($client_preference_detail->rating_check == 1)
@@ -172,7 +161,7 @@
         <div>
             <a class="brand-box d-block black-box" href="<%= brand.redirect_url %>">
                 <div class="brand-ing">
-                    <img src="<%= brand.image.image_fit %>120/120<%= brand.image.image_path %>" alt="">
+                    <img src="<%= brand.image.image_fit %>500/500<%= brand.image.image_path %>" alt="">
                 </div>
                 <h6><%= brand.translation_title %></h6>
             </a>
@@ -185,20 +174,6 @@
         <a class="common-product-box scale-effect text-center" href="{{route('productDetail')}}/<%= product.url_slug %>">
             <div class="img-outer-box position-relative">
                 <img src="<%= product.image_url %>" alt="">
-                <!-- @if($client_preference_detail)
-                    @if($client_preference_detail->rating_check == 1)
-                        <% if(product.averageRating > 0){%>
-                            <div class="rating-box">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <span><%= product.averageRating %></span>
-                            </div>
-                        <% } %>
-                    @endif
-                @endif -->
-                <!-- <div class="off-price">
-                    20<sup>%</sup>    
-                    <span>off</span>
-                </div> -->
             </div>    
             <div class="media-body align-self-center">
                 <div class="inner_spacing px-0">

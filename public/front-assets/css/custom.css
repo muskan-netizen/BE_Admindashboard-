@@ -30,7 +30,7 @@ a {
     -ms-transition: all 0.5s ease-in-out;
     -o-transition: all 0.5s ease-in-out;
     transition: all 0.5s ease-in-out;
-    border-bottom: 1px solid transparent;
+    border-bottom: 1px solid rgb(221 221 221 / 50%);
     z-index: 999;
 }
 
@@ -39,7 +39,11 @@ a {
 }
 
 .inner-pages-offset {
-    margin-top: 165px;
+    margin-top: 148px;
+}
+
+.set-hide-nav-bar {
+    margin-top: 43px;
 }
 
 header.site-header.fixed-bar {
@@ -53,28 +57,28 @@ header.site-header.fixed-bar {
     display: none;
 }
 
-.fixed-bar .navbar-brand img {
+.navbar-brand img {
     width: 100px;
 }
 
-.fixed-bar .navigation-tab-item .nav-link {
+.navigation-tab-item .nav-link {
     padding: 5px 0;
     font-size: 14px;
 }
 
-.fixed-bar .search_form input.form-control {
+.search_form input.form-control {
     height: 42px;
 }
 
-.fixed-bar .icon-nav .btn.btn-solid {
+.icon-nav .btn.btn-solid {
     padding: 10px 0;
 }
 
-.fixed-bar .pb-3 {
+.site-header .pb-3 {
     padding-bottom: 0 !important;
 }
 
-.fixed-bar .pixelstrap li > a {
+.pixelstrap li > a {
     padding: 10px 30px 10px 0;
 }
 
@@ -111,6 +115,10 @@ header.site-header.fixed-bar {
 
 .product-right .size-box ul li.active {
     background-color: inherit;
+}
+
+.collection-filter-block {
+    padding: 20px 10px 10px;
 }
 
 .chiller_cb {
@@ -169,8 +177,8 @@ header.site-header.fixed-bar {
 }
 
 .chiller_cb label {
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     position: relative;
     z-index: 2;
     cursor: pointer;
@@ -183,7 +191,11 @@ header.site-header.fixed-bar {
     font-weight: 300;
     letter-spacing: 0;
     line-height: 24px;
-    margin-right: 10px;
+    margin-right: 6px;
+}
+
+.small_label:last-child {
+    margin-right: 0;
 }
 
 .chiller_cb .check_icon {
@@ -501,7 +513,7 @@ td.items-details h4 {
 
 .number .counter-container {
     border: 1px solid var(--theme-deafult);
-    border-radius: 1rem;
+    border-radius: 4px;
     width: fit-content;
 }
 
@@ -807,12 +819,8 @@ form .btn {
 
 .collection-filter .theme-card .offer-slider .media>a {
     display: block;
-    width: 50%;
+    width: 30%;
     height: 100px;
-}
-
-.offer-slider .media-body {
-    width: 50%;
 }
 
 .theme-card .offer-slider img {
@@ -3054,12 +3062,13 @@ td.order_address {
 }
 
 .common-banner {
-    height: 200px;
+    height: 300px;
 }
 
 .common-banner img,
 .category-block .category-image img {
     height: 100%;
+    width: 100%;
     object-fit: cover;
 }
 
@@ -5994,9 +6003,24 @@ section.royo-business .title-36 {
     font-size: 12px;
 }
 
+.list-view .suppliers-box {
+    display: flex !important;
+    align-items: center;
+}
 
+.displayProducts .suppliers-img-outer {
+    height: auto;
+}
 
+.offer-slider .img-outer-box {
+    width: 40%;
+    height: 110px;
+}
 
+.offer-slider .common-product-box {
+    display: flex;
+    align-items: center;
+}
 
 
 
@@ -6302,6 +6326,15 @@ body[dir=rtl] .slick-next {
     left: 20px;
     right: auto;
 }
+
+body[dir=rtl] .offer-slider .slick-next {
+    left: 20px;
+    right: auto;
+}
+
+body[dir=rtl] .offer-slider .slick-prev {
+    left: 0;
+}   
 
 body[dir=rtl] .checkbox-input label {
     padding-right: 5px;

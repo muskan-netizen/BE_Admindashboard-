@@ -61,8 +61,12 @@ class AppServiceProvider extends ServiceProvider
             if($client_preference_detail->delivery_check == 1){$count++;}
         }
         $stripe_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
-        //$last_mile_common_set = $this->checkIfLastMileDeliveryOn();
-        $last_mile_common_set = false;
+
+        $last_mile_common_set = $this->checkIfLastMileDeliveryOn();
+
+
+        view()->share('last_mile_common_set', $last_mile_common_set);
+       
         view()->share('favicon', $favicon_url);
         view()->share('favicon', $favicon_url);
         view()->share('client_head', $client_head);
@@ -70,7 +74,7 @@ class AppServiceProvider extends ServiceProvider
         view()->share('social_media_details', $social_media_details);
         view()->share('stripe_publishable_key', $stripe_publishable_key);
         view()->share('client_preference_detail', $client_preference_detail);
-        view()->share('last_mile_common_set', $last_mile_common_set);
+       
        
     }
 
@@ -135,16 +139,22 @@ class AppServiceProvider extends ServiceProvider
                         }
                     }
                 }
-            }
+
+               
+            }   
         }
     }
 
     public function checkIfLastMileDeliveryOn()
     {
         $preference = ClientPreference::first();
-        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+        if (isset($preference) && Schema::hasColumn('client_preferences', 'need_delivery_service') && Schema::hasColumn('client_preferences', 'delivery_service_key_url')  && Schema::hasColumn('client_preferences', 'delivery_service_key_code')  ) {
+            if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
             return $preference;
-        else
+            else
             return false;
+        }
+        return false;
+       
     }
 }

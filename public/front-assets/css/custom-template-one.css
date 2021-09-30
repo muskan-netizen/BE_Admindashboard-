@@ -239,11 +239,11 @@ body{
     /* position: absolute;
     top: 30px;
     left: 0; */
-    border-radius: 2.13px;
+    border-radius: 5px;
     background-color: #F7B500;
     font-size: 11px;
     color: #fff;
-    padding: 0 3px;
+    padding: 3px 5px;
 }
 
 .product-description h3{
@@ -664,10 +664,61 @@ footer ul.social-links li a i, .contact-list li  i {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Sticky Header Css */
 
-.fixed-bar .search_form input.form-control,.fixed-bar .search_form input.form-control::-webkit-input-placeholder,
-.fixed-bar .search_form input.form-control::placeholder{
+.site-header .search_form input.form-control,.site-header .search_form input.form-control::-webkit-input-placeholder,
+.site-header .search_form input.form-control::placeholder{
     font-size: 14px;
     line-height: 14px;
 }
@@ -869,7 +920,7 @@ body[dir="rtl"] #social-links li:last-child{
 
 
 @media (min-width: 1367px){
-    .home-banner-slider .slick-prev,.home-banner-slider .slick-prev:focus, .slick-prev:hover{
+    .home-banner-slider .slick-prev,.home-banner-slider .slick-prev:focus,.home-banner-slider  .slick-prev:hover{
         left: -60px;
     }    
     .home-banner-slider .slick-next,.home-banner-slider .slick-next:focus, .home-banner-slider .slick-next:hover{

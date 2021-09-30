@@ -36,35 +36,17 @@ class RatingController extends FrontController{
                 'product_id' => $order_details->product_id,
                 'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??$request->hidden_review]);
                 
-                // if ($image = $request->file('images')) {
-                //     foreach ($image as $files) {
-                //     $file =  substr(md5(microtime()), 0, 15).'_'.$files->getClientOriginalName();
-                //     $storage = Storage::disk('s3')->put('/review', $files, 'public');
-                //     $img = new OrderProductRatingFile();
-                //     $img->order_product_rating_id = $ratings->id;
-                //     $img->file = $storage;
-                //     $img->save();
-                   
-                //     } 
-                // }
-                if(isset($request->add_files) && is_array($request->add_files))    # send  array of insert images 
-                {   
-                   
-                    foreach ($request->add_files as $storage) {
-                        OrderProductRatingFile::updateOrCreate(['order_product_rating_id' => $ratings->id,
-                        'file' => $storage]);
-
-                        // $img = new OrderProductRatingFile();
-                        // $img->order_product_rating_id = $ratings->id;
-                        // $img->file = $storage;
-                        // $img->save();
-                       
-                    }
-                }  
+                   if(isset($request->add_files) && is_array($request->add_files))    # send  array of insert images 
+                    {   
+                        foreach ($request->add_files as $storage) {
+                            OrderProductRatingFile::updateOrCreate(['order_product_rating_id' => $ratings->id,
+                            'file' => $storage]);
+                        }
+                    }  
                 
                 $this->updateaverageRating($order_details->product_id);
                
-              if(isset($request->remove_files) && is_array($request->remove_files))    # send index array of deleted images 
+              if(isset($request->remove_files) && is_array($request->remove_files))    #send index array of deleted images 
                 $removefiles = OrderProductRatingFile::where('order_product_rating_id',$ratings->id)->whereIn('id',$request->remove_files)->delete();
        
             }

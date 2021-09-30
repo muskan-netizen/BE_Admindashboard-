@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
 use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile};
 use App\Http\Traits\ApiResponser;
-
+use GuzzleHttp\Client as GCLIENT;
 use App\Http\Requests\Web\CheckImageRequest;
 
 class RatingController extends BaseController{
@@ -29,7 +29,7 @@ class RatingController extends BaseController{
             $order_deliver = 0;
             $order_details = OrderProduct::where('id',$request->order_vendor_product_id)->whereHas('order',function($q){$q->where('user_id',Auth::id());})->first();
             if($order_details)
-            $order_deliver = VendorOrderStatus::where(['order_id' => $request->order_id,'vendor_id' => $order_details->vendor_id,'order_status_option_id' => 5])->count();
+            $order_deliver = VendorOrderStatus::where(['order_id' => $request->order_id,'vendor_id' => $order_details->vendor_id,'order_status_option_id' => 6])->count();
             if($order_deliver > 0){
                 $ratings = OrderProductRating::updateOrCreate(['order_vendor_product_id' => $request->order_vendor_product_id,
                 'order_id' => $request->order_id,
@@ -49,6 +49,11 @@ class RatingController extends BaseController{
                 $this->updateaverageRating($request->product_id);
                 if(isset($request->remove_files) && is_array($request->remove_files))    # send index array of deleted images 
                 $removefiles = OrderProductRatingFile::where('order_product_rating_id',$ratings->id)->whereIn('id',$request->remove_files)->delete();
+
+                if(isset($request->rating_for_dispatch) && !empty($request->rating_for_dispatch))
+                {
+                    $staus = $this->setRatingOnDispatch($request);
+                } 
        
             }
             if(isset($ratings)) {
@@ -105,6 +110,32 @@ class RatingController extends BaseController{
                return $this->errorResponse($e->getMessage(), 400);
            }
        }
+
+        # set rating at dispatch panel 
+    public function setRatingOnDispatch($request)
+    {
+        try {
+            $dispatch_domain = $this->checkIfPickupDeliveryOnCommon();
+            if ($dispatch_domain && $dispatch_domain != false) {
+                $all_location = array();
+                $postdata =  [ 'order_id' => $request->rating_for_dispatch??'',
+                                'rating' => $request->rating??'',
+                                'review' => $request->review??''];
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;                      
+                $res = $client->post($url.'/api/update-order-feedback',
+                    ['form_params' => ($postdata)]
+                );
+                
+                $response = json_decode($res->getBody(), true); 
+                if($response && $response['message'] == 'success'){
+                   
+                }
+            }
+        }catch(\Exception $e){
+              return $e->getMessage();
+        }
+    }
 
 
 }

@@ -60,7 +60,52 @@
     <div class="collection-wrapper">
         <div class="container">
             <div class="row">
-                <div class="col-sm-3 collection-filter">
+                <div class="col-12">
+                    <div class="top-banner-wrapper mb-4">
+                        @if(!empty($vendor->banner))
+                            <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['image_fit'] . '1000/200' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                        @endif
+                        <div class="row mt-n4">
+                            <div class="col-12">
+                                <form action="">
+                                    <div class="row">
+                                        <div class="col-sm-12 text-center">
+                                            <div class="file file--upload">
+                                                <label>
+                                                    <span class="update_pic border-0">
+                                                    <img src="{{$vendor->logo['image_fit'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
+                                                    </span>
+                                                </label>
+                                            </div>
+                                            <div class="name_location d-block py-0">
+                                                <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
+                                            </div>
+                                            @if($vendor->is_show_vendor_details == 1)
+                                                <div class="">
+                                                    @if($vendor->email)
+                                                        <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
+                                                    @endif
+                                                    <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
+                                                    @if($vendor->website)
+                                                        <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        </div>
+                                        @if($vendor->desc)
+                                            <div class="col-md-12 text-center">
+                                                <p>{{$vendor->desc}}</p>
+                                            </div>                                                  
+                                        @endif
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 collection-filter">
                     <div class="collection-filter-block">
                         <div class="collection-mobile-back"><span class="filter-back"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
                         <div class="collection-collapse-block open">
@@ -132,43 +177,53 @@
                     </div>
                     <div class="theme-card">
                         <h5 class="title-border">{{__('New Product')}}</h5>
-                        <div class="offer-slider slide-1">
-                            @if(!empty($newProducts) && count($newProducts) > 0)
-                            @foreach($newProducts as $newProds)
-                            <div>
-                                @foreach($newProds as $new)
-                                <?php $imagePath = '';
-                                foreach ($new['media'] as $k => $v) {
-                                    $imagePath = $v['image']['path']['image_fit'] . '300/300' . $v['image']['path']['image_path'];
-                                } ?>
-                                <div class="media">
-                                    <a href="{{route('productDetail', $new['url_slug'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt=""></a>
-                                    <div class="media-body align-self-center">
-                                        <div class="inner_spacing">
-                                            <a href="{{route('productDetail', $new['url_slug'])}}">
-                                                <h3 class="d-flex align-items-center justify-content-between">
-                                                    <label class="mb-0">{{ $new['translation_title'] }}</label>
-                                                </h3>
-                                                <h6><b>{{$new['vendor']['name']}}</b></h6>
-                                                @if($new['inquiry_only'] == 0)
-                                                    <h4 class="mt-1">
-                                                        <?php $multiply = $new['variant_multiplier']; ?>
-                                                        {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
-                                                    </h4>
-                                                @endif
-                                                @if($client_preference_detail)
-                                                    @if($client_preference_detail->rating_check == 1)
-                                                        @if($new['averageRating'] > 0)
-                                                            <span class="rating">{{ $new['averageRating'] }} <i class="fa fa-star text-white p-0"></i></span>
-                                                        @endif
-                                                    @endif
-                                                @endif
-                                            </a>
+                            <div class="offer-slider slide-1">
+                                @if(!empty($newProducts) && count($newProducts) > 0)
+                                @foreach($newProducts as $newProds)
+                                
+                                    @foreach($newProds as $new)
+                                    <div>
+                                    <?php $imagePath = '';
+                                    foreach ($new['media'] as $k => $v) {
+                                        $imagePath = $v['image']['path']['image_fit'] . '300/300' . $v['image']['path']['image_path'];
+                                    } ?>
+
+
+                                    <a class="common-product-box scale-effect text-center" href="{{route('productDetail', $new['url_slug'])}}">
+                                        <div class="img-outer-box position-relative">
+                                            <img src="{{$imagePath}}" alt="">
+                                        </div>    
+                                        <div class="media-body align-self-center">
+                                            <div class="inner_spacing px-0">
+                                                <div class="product-description">
+                                                    <h3 class="m-0">{{ $new['translation_title'] }}</h3>
+                                                    <p>{{$new['vendor']['name']}}</p>
+                                                    <p class="border-bottom pb-1">In Fruits</p>
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <b>
+                                                            @if($new['inquiry_only'] == 0)
+                                                                <?php $multiply = $new['variant_multiplier']; ?>
+                                                                {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                            @endif
+                                                        </b>
+
+                                                        @if($client_preference_detail)
+                                                            @if($client_preference_detail->rating_check == 1)
+                                                                @if($new['averageRating'] > 0)
+                                                                    <div class="rating-box">
+                                                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                                                        <span>{{ $new['averageRating'] }}</span>
+                                                                    </div>
+                                                                @endif
+                                                            @endif
+                                                        @endif  
+                                                    </div>                       
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </a>                             
                                 </div>
                                 @endforeach
-                            </div>
                             @endforeach
                             @endif
                         </div>
@@ -179,47 +234,6 @@
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
-                                <div class="top-banner-wrapper mb-4">
-                                    @if(!empty($vendor->banner))
-                                        <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['image_fit'] . '1000/200' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
-                                    @endif
-                                    <div class="row mt-n4">
-                                        <div class="col-12">
-                                            <form action="">
-                                                <div class="row">
-                                                    <div class="col-sm-12 text-center">
-                                                        <div class="file file--upload">
-                                                            <label>
-                                                                <span class="update_pic border-0">
-                                                                <img src="{{$vendor->logo['image_fit'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
-                                                                </span>
-                                                            </label>
-                                                        </div>
-                                                        <div class="name_location d-block py-0">
-                                                            <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
-                                                        </div>
-                                                        @if($vendor->is_show_vendor_details == 1)
-                                                            <div class="">
-                                                                @if($vendor->email)
-                                                                    <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
-                                                                @endif
-                                                                <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
-                                                                @if($vendor->website)
-                                                                    <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
-                                                                @endif
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                    @if($vendor->desc)
-                                                        <div class="col-md-12 text-center">
-                                                            <p>{{$vendor->desc}}</p>
-                                                        </div>                                                  
-                                                    @endif
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="collection-product-wrapper">
                                     <div class="product-top-filter">
                                         <div class="row">
@@ -260,7 +274,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="displayProducts">
+                                    <div class="displayProducts px-0">
                                         <div class="product-wrapper-grid">
                                             <div class="row margin-res">
                                                 @if($listData->isNotEmpty())
@@ -273,8 +287,8 @@
                                                         }
                                                         $imagePath2 = $data->media[$i]->image->path['image_fit'] . '600/600' . $data->media[$i]->image->path['image_path'];
                                                     } ?>
-                                                    <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-3 px-0">
-                                                        <a href="{{route('productDetail', $data->url_slug)}}" class="product-box d-block scale-effect mt-4">
+                                                    <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-4 px-0">
+                                                        <a href="{{route('productDetail', $data->url_slug)}}" class="product-box d-block scale-effect mt-0">
                                                             <div class="product-image p-0">
                                                                 <img class="img-fluid blur-up lazyload" src="{{$imagePath}}" alt="">
                                                             </div>
