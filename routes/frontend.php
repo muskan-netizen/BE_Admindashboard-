@@ -125,7 +125,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('viewcart','Front\CartController@showCart')->name('showCart');
 	Route::post('/getTimeSlotsForOndemand','Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor','Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
-	Route::get('firebase-messaging-sw.js', 'Front\FirebaseController@service_worker')->name('page/driver-registration');
+	Route::get('firebase-messaging-sw.js', 'Front\FirebaseController@service_worker');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('user/orders', 'Front\OrderController@orders')->name('user.orders');
