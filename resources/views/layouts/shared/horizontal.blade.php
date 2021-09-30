@@ -32,16 +32,16 @@
                                     <i class="fe-shopping-cart mr-1"></i> Ecommerce <div class="arrow-down"></div>
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="topnav-ecommerce">
-                                    <a href="{{route('second', ['ecommerce', 'dashboard'])}}" class="dropdown-item">Dashboard</a>
-                                    <a href="{{route('second', ['ecommerce', 'products'])}}" class="dropdown-item">Products</a>
-                                    <a href="{{route('second', ['ecommerce', 'product-detail'])}}" class="dropdown-item">Product Detail</a>
-                                    <a href="{{route('second', ['ecommerce', 'product-edit'])}}" class="dropdown-item">Add Product</a>
-                                    <a href="{{route('second', ['ecommerce', 'customers'])}}" class="dropdown-item">Customers</a>
-                                    <a href="{{route('second', ['ecommerce', 'orders'])}}" class="dropdown-item">Orders</a>
-                                    <a href="{{route('second', ['ecommerce', 'order-detail'])}}" class="dropdown-item">Order Detail</a>
-                                    <a href="{{route('second', ['ecommerce', 'sellers'])}}" class="dropdown-item">Sellers</a>
-                                    <a href="{{route('second', ['ecommerce', 'cart'])}}" class="dropdown-item">Shopping Cart</a>
-                                    <a href="{{route('second', ['ecommerce', 'checkout'])}}" class="dropdown-item">Checkout</a>
+                                    <a href="{{route('second', ['ecommerce', 'dashboard'])}}" class="dropdown-item">{{ __("Dashboard") }}</a>
+                                    <a href="{{route('second', ['ecommerce', 'products'])}}" class="dropdown-item">{{ __("Products") }}</a>
+                                    <a href="{{route('second', ['ecommerce', 'product-detail'])}}" class="dropdown-item">{{ __("Product Detail") }}</a>
+                                    <a href="{{route('second', ['ecommerce', 'product-edit'])}}" class="dropdown-item">{{ __("Add Product") }}</a>
+                                    <a href="{{route('second', ['ecommerce', 'customers'])}}" class="dropdown-item">{{ __("Customers") }}</a>
+                                    <a href="{{route('second', ['ecommerce', 'orders'])}}" class="dropdown-item">{{ __("Orders") }}</a>
+                                    <a href="{{route('second', ['ecommerce', 'order-detail'])}}" class="dropdown-item">{{ __("Order Detail") }}</a>
+                                    <a href="{{route('second', ['ecommerce', 'sellers'])}}" class="dropdown-item">{{ __("Sellers") }}</a>
+                                    <a href="{{route('second', ['ecommerce', 'cart'])}}" class="dropdown-item">{{ __("Shopping Cart") }}</a>
+                                    <a href="{{route('second', ['ecommerce', 'checkout'])}}" class="dropdown-item">{{ __("Checkout") }}</a>
                                 </div>
                             </div>
                             <div class="dropdown">

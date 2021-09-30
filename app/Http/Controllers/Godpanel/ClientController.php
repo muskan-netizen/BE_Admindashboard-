@@ -28,7 +28,7 @@ class ClientController extends Controller{
     public function index(){
         $clients = Client::where('is_deleted', 0)->orderBy('created_at', 'DESC')->paginate(10);
         foreach ($clients as $client) {
-            $client->sub_domain_url = 'https://'.$client->sub_domain.'.royoorders.com';
+            $client->sub_domain_url = 'https://'.$client->sub_domain.env('SUBMAINDOMAIN');
         }
         return view('godpanel/client')->with(['clients' => $clients]);
     }

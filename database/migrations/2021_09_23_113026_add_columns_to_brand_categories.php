@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnToBrandCategoriesTable extends Migration
+class AddColumnsToBrandCategories extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,18 @@ class AddColumnToBrandCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::table('brand_categories', function (Blueprint $table) {
-            //
-            $table->bigIncrements('id')->nullable()->first();
-        });
+        if (Schema::hasColumn('brand_categories', 'id')) {
+
+            Schema::table('brand_categories', function (Blueprint $table) {
+                $table->bigIncrements('id')->change();
+            });
+
+        }
+        else{
+            Schema::table('brand_categories', function (Blueprint $table) {
+                $table->bigIncrements('id')->first();
+            });
+        }   
     }
 
     /**
@@ -25,10 +33,12 @@ class AddColumnToBrandCategoriesTable extends Migration
      * @return void
      */
     public function down()
-    {
-        Schema::table('brand_categories', function (Blueprint $table) {
-            //
-            $table->dropColumn('id');
-        });
+    {   
+        if (Schema::hasColumn('brand_categories', 'id')) {
+            Schema::table('brand_categories', function (Blueprint $table) {
+                //
+                $table->dropColumn('id');
+            });
+        }
     }
 }

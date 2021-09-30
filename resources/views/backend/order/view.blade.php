@@ -8,7 +8,7 @@ $timezone = Auth::user()->timezone;
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Order Detail</h4>
+                    <h4 class="page-title">{{ __("Order Detail") }}</h4>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@ $timezone = Auth::user()->timezone;
                             @if(isset($order->vendors) && isset($order->vendors->first()->dispatch_traking_url) && $order->vendors->first()->dispatch_traking_url !=null)
                             <div class="col-lg-6">
                                 <div class="mb-4">
-                                    <h5 class="mt-0">Tracking ID:</h5>
+                                    <h5 class="mt-0">{{ __("Tracking ID") }}:</h5>
                                     <p>
                                         @php 
                                         $track = explode('/',$order->vendors->first()->dispatch_traking_url);
@@ -123,16 +123,16 @@ $timezone = Auth::user()->timezone;
             <div class="col-lg-8 mb-3">
                 <div class="card mb-0 h-100">
                     <div class="card-body">
-                        <h4 class="header-title mb-3">Items from Order #{{$order->order_number}}</h4>
+                        <h4 class="header-title mb-3">{{ __("Items from Order") }} #{{$order->order_number}}</h4>
                         <div class="table-responsive">
                             <table class="table table-bordered table-centered mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Product Name</th>
-                                        <th>Product</th>
-                                        <th>Quantity</th>
-                                        <th>Price</th>
-                                        <th>Total</th>
+                                        <th>{{ __("Product Name") }}</th>
+                                        <th>{{ __("Product") }}</th>
+                                        <th>{{ __("Quantity") }}</th>
+                                        <th>{{ __("Price") }}</th>
+                                        <th>{{ __("Total") }}</th>
                                     </tr>
                                 </thead>
                                 @foreach($order->vendors as $vendor)
@@ -170,7 +170,7 @@ $timezone = Auth::user()->timezone;
                                         <td>$@money($vendor->delivery_fee)</td>
                                     </tr>
                                     <tr>
-                                        <th scope="row" colspan="4" class="text-end">Sub Total :</th>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Sub Total") }} :</th>
                                         <td>
                                             <div class="fw-bold">$@money($sub_total)</div>
                                         </td>
@@ -181,11 +181,11 @@ $timezone = Auth::user()->timezone;
                                     </tr>
                                    
                                     <tr>
-                                        <th scope="row" colspan="4" class="text-end">Estimated Tax :</th>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Estimated Tax") }} :</th>
                                         <td>$@money($taxable_amount)</td>
                                     </tr>
                                     <tr>
-                                        <th scope="row" colspan="4" class="text-end">Total :</th>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
                                             <div class="fw-bold">$@money($vendor->payable_amount+$taxable_amount)</div>
                                         </td>
@@ -205,10 +205,10 @@ $timezone = Auth::user()->timezone;
             <div class="col-lg-6 mb-3">
                 <div class="card mb-0 h-100">
                     <div class="card-body">
-                        <h4 class="header-title mb-3">Shipping Information</h4>
+                        <h4 class="header-title mb-3">{{ __("Shipping Information") }}</h4>
                         <h5 class="font-family-primary fw-semibold">{{$order->user->name}}</h5>
-                        <p class="mb-2"><span class="fw-semibold me-2">Address:</span> {{ $order->address ? $order->address->address : ''}}</p>
-                        <p class="mb-0"><span class="fw-semibold me-2">Mobile:</span> {{$order->user->phone_number}}</p>
+                        <p class="mb-2"><span class="fw-semibold me-2">{{ __("Address") }}:</span> {{ $order->address ? $order->address->address : ''}}</p>
+                        <p class="mb-0"><span class="fw-semibold me-2">{{ __("Mobile") }}:</span> {{$order->user->phone_number}}</p>
                     </div>
                 </div>
             </div>
@@ -235,14 +235,14 @@ $timezone = Auth::user()->timezone;
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">Delivery Info</h4>
+                <h4 class="modal-title">{{ __("Delivery Info") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body" id="AddCardBox">
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info waves-effect waves-light submitAddForm">Submit</button>
+                <button type="button" class="btn btn-info waves-effect waves-light submitAddForm">{{ __("Submit") }}</button>
             </div>
         </div>
     </div>

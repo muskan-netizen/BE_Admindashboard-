@@ -141,7 +141,7 @@
                      @if($last_mile_teams != null && count($last_mile_teams))
                      <div class="form-group mt-3 mb-0" style="{{(isset($preference) && $preference->need_delivery_service == '1') ? '' : 'display: none;'}}" id="lastMileTeamListDiv">
                         <div class="form-group">
-                            {!! Form::label('title', 'Team Tag For Last Mile',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Team Tag For Last Mile'),['class' => 'control-label']) !!}
                             <select class="form-control" id="lastMileTeamList" name="last_mile_team" data-toggle="select2" >
                               <option value="0">{{__('Select Team Tag')}}</option>
                               @foreach($last_mile_teams as $nm)
@@ -1123,7 +1123,7 @@
             <div class="card-box mb-0">
                <div class="d-flex align-items-center justify-content-end">
                   <!-- <h4 class="header-title mb-0">Refer and Earn</h4> -->
-                  <button class="btn btn-info d-block" type="submit"> Save </button>
+                  <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                </div>
                <div class="row mt-2">
                   <div class="col-xl-6">

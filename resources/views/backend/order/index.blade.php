@@ -76,6 +76,8 @@
                                                 <ul class="status_box mt-3 pl-0">
                                                     <li>
                                                         <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
+
+                                                        
                                                         <label class="m-0 in-progress"><%= vendor.order_status %></label>
                                                     </li>
                                                 </ul>

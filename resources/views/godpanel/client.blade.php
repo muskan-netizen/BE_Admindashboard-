@@ -54,7 +54,7 @@
                                     <td style="width:100px;max-width:100px;"> </td>
                                     <td> {{$client->phone_number}} </td>
                                     <td> {{$client->database_name}} </td>
-                                    <td><a target="_blank" href="{{$client->sub_domain_url}}">{{$client->sub_domain }}.royoorders.com</a> </td>
+                                    <td><a target="_blank" href="{{$client->sub_domain_url}}">{{$client->sub_domain }}{{env('SUBMAINDOMAIN') }}</a> </td>
                                     <td> {{$client->code}} </td>
                                     <td>
                                         <a href="{{route('client.edit', $client->id)}}" class="btn btn-primary-outlineaction-icon p-0"> 

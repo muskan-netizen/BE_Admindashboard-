@@ -188,6 +188,7 @@ class StoreController extends Controller{
 			} else {
 				$user_vendor_ids = UserVendor::where('user_id', $user->id)->pluck('vendor_id');
 				$order_list = $order_list->whereHas('vendors', function($query) use ($user_vendor_ids){
+					$query->where('order_status_option_id', 1);
 					$query->whereIn('vendor_id', $user_vendor_ids);
 				 })->with('vendors', function ($query){
 					$query->where('order_status_option_id', 1);

@@ -115,7 +115,7 @@
                         <div class="col-lg-6">
                             <div class="row">
                                 <div class="col-12 mb-3">
-                                    <label for="title" class="control-label">Attach Form</label>
+                                    <label for="title" class="control-label">{{ __("Attach Form") }}</label>
                                     <select class="form-control" name="type_of_form" id="type_of_form">
                                         <option value="0">None</option>
                                         <option value="1">Vendor Registration</option>

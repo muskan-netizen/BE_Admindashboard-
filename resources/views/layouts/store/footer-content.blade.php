@@ -23,7 +23,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <div class="footer-contant">
                             <ul>
                                 @foreach($pages as $page)
-                                @if($page->slug=='driver-registration'&& $last_mile!=false)
+                                @if($page->slug=='driver-registration'&& isset($last_mile_common_set) && $last_mile_common_set !=false)
                                 <li>
                                     <a href="{{route('page/driver-registration')}}">{{$page->translations->first() ? $page->translations->first()->title : $page->primary->title}}</a>
                                 </li>
