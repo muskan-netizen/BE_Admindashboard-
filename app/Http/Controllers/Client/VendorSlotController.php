@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Client;
 
 use DB;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\{ClientPreference, VendorSlotDate, Vendor, VendorSlot, SlotDay, ServiceArea};
-use Illuminate\Http\Request;
 
 class VendorSlotController extends BaseController
 {
@@ -20,9 +21,9 @@ class VendorSlotController extends BaseController
         $vendor = Vendor::where('id', $id)->firstOrFail();
 
         $slotData = array();
-        $dine_in = in_array('dine_in', $request->slot_type) ? '1' : 0;
-        $takeaway = in_array('takeaway', $request->slot_type) ? '1' : 0;
-        $delivery = in_array('delivery', $request->slot_type) ? '1' : 0;
+        $dine_in = $request->has('slot_type') ? (in_array('dine_in', $request->slot_type) ? '1' : 0) : 0;
+        $takeaway = $request->has('slot_type') ? (in_array('takeaway', $request->slot_type) ? '1' : 0) : 0;
+        $delivery = $request->has('slot_type') ? (in_array('delivery', $request->slot_type) ? '1' : 0) : 0;
 
         // if(empty($request->slot_date) || $request->slot_date == 'null'){
         if($request->stot_type == 'day'){
@@ -65,10 +66,18 @@ class VendorSlotController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
+        // $rules = array(
+        //     'slot_type' => 'required',
+        // );
+        // $validation  = Validator::make($request->all(), $rules);
+        // if ($validation->fails()) {
+        //     return redirect()->back()->withInput()->withErrors($validation);
+        // }
+
         $vendor = Vendor::where('id', $id)->firstOrFail();
-        $dine_in = in_array('dine_in', $request->slot_type) ? '1' : 0;
-        $takeaway = in_array('takeaway', $request->slot_type) ? '1' : 0;
-        $delivery = in_array('delivery', $request->slot_type) ? '1' : 0;
+        $dine_in = $request->has('slot_type') ? (in_array('dine_in', $request->slot_type) ? '1' : 0) : 0;
+        $takeaway = $request->has('slot_type') ? (in_array('takeaway', $request->slot_type) ? '1' : 0) : 0;
+        $delivery = $request->has('slot_type') ? (in_array('delivery', $request->slot_type) ? '1' : 0) : 0;
 
         if($request->edit_type == 'day') {
             $slotDay = SlotDay::where('id', $request->edit_type_id)->where('day', $request->edit_day)->first();
@@ -251,6 +260,9 @@ class VendorSlotController extends BaseController
                         $showData[$count]['type'] = 'date';
                         $showData[$count]['type_id'] = $v->id;
                         $showData[$count]['slot_id'] = $v->id;
+                        $showData[$count]['slot_dine_in'] = ($dinein_check == 1 && $v->dine_in == 1 && $vendor->dine_in == 1) ? 1 : 0;
+                        $showData[$count]['slot_takeaway'] = ($takeaway_check == 1 && $v->takeaway == 1 && $vendor->takeaway == 1) ? 1 : 0;
+                        $showData[$count]['slot_delivery'] = ($delivery_check == 1 && $v->delivery == 1 && $vendor->delivery == 1) ? 1 : 0;
                         $count++;
                     }
                 }
@@ -272,6 +284,9 @@ class VendorSlotController extends BaseController
                         $showData[$count]['color'] = ($v->working_today == 0) ? '#43bee1' : '';
                         $showData[$count]['type_id'] = $v->id;
                         $showData[$count]['slot_id'] = $v->slot_id;
+                        $showData[$count]['slot_dine_in'] = ($dinein_check == 1 && $v->dine_in == 1 && $vendor->dine_in == 1) ? 1 : 0;
+                        $showData[$count]['slot_takeaway'] = ($takeaway_check == 1 && $v->takeaway == 1 && $vendor->takeaway == 1) ? 1 : 0;
+                        $showData[$count]['slot_delivery'] = ($delivery_check == 1 && $v->delivery == 1 && $vendor->delivery == 1) ? 1 : 0;
                         $count++;
                     }
                 }

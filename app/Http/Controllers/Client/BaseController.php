@@ -125,7 +125,7 @@ class BaseController extends Controller
         if (!is_null($tree) && count($tree) > 0) {
             foreach ($tree as $key => $node) {
                 if($node['parent_id'] == 1){
-                    $parentCategory = array($node['translation_one']['name']);
+                    $parentCategory = array($node['translation_one']['name']??'');
                 }
                 // type_id 1 means product in type table
                 if (isset($node['children']) && count($node['children']) > 0) {

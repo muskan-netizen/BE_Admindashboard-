@@ -125,7 +125,7 @@
                         <% if(vendor.timeofLineOfSightDistance != undefined){ %>
                             <ul class="timing-box mb-1">
                                 <li>
-                                    <small class="d-block"><img class="d-inline-block mr-1" src="{{ asset('front-assets/images/distance.png') }}" alt=""> <%= vendor.lineOfSightDistance %> km</small>
+                                    <small class="d-block"><img class="d-inline-block mr-1" src="{{ asset('front-assets/images/distance.png') }}" alt=""> <%= vendor.lineOfSightDistance %></small>
                                 </li>
                                 <li>
                                     <small class="d-block mx-1"><i class="fa fa-clock-o"></i> <%= vendor.timeofLineOfSightDistance %> min</small>

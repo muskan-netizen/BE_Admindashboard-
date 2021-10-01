@@ -90,7 +90,7 @@
 <script src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 @if (Auth::check())
-@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']) && empty(Session::get('current_fcm_token')))
+@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
 <script>
@@ -130,14 +130,16 @@
             console.log(`Token Error :: ${err}`);
         });
     }
-
+    
+    @if(empty(Session::get('current_fcm_token')))
     initFirebaseMessagingRegistration();
+    @endif
 
     messaging.onMessage(function(payload) {
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
         } else if (Notification.permission === "granted") {
-            if (payload && payload.data && payload.data.type && payload.data.type == "order_status_change") {
+            if (payload && payload.data && payload.data.type && (payload.data.type == "order_status_change" || payload.data.type == "reminder_notification")) {
                 var notificationTitle = payload.notification.title;
                 var notificationOptions = {
                     body: payload.notification.body,

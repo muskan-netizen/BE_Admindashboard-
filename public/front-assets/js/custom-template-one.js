@@ -1,9 +1,4 @@
 
-if($('body').attr('dir') == 'rtl'){
-    $(".home-banner-slider").slick({rtl: true, autoplay: true, autoplaySpeed: 3000});
-}else{
-    $(".home-banner-slider").slick({autoplay: true, autoplaySpeed: 3000});
-}
 
 jQuery('.home-banner-slider').slick({
     infinite: true,
@@ -19,8 +14,7 @@ jQuery('.home-banner-slider').slick({
           }
         }
     ]
-});
-      
+});      
 
 $('.newly-arrived-slider').slick({
     dots: true,
@@ -59,6 +53,14 @@ $('.newly-arrived-slider').slick({
       // instead of a settings object
     ]
 });
+
+if($('body').attr('dir') == 'rtl'){
+  $(".home-banner-slider").slick('slickSetOption', {rtl: true, autoplay: true, autoplaySpeed: 3000}, true);
+}
+if($('body').attr('dir') == 'rtl'){
+  $(".newly-arrived-slider").slick('slickSetOption', {rtl: true}, true);
+}
+
 
 // $('.brand-slider').slick({
 //     dots: true,

@@ -157,7 +157,8 @@ class CategoryController extends FrontController{
 
                 $user_addresses = UserAddress::get();
                 $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
-                $wallet_balance = Auth::user()->balanceFloat * $clientCurrency->doller_compare;
+                $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
+               
                 return view('frontend.booking.index')->with(['clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category]);
             }
         }elseif($page == 'on demand service'){ 
@@ -205,7 +206,7 @@ class CategoryController extends FrontController{
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
         
         if(strtolower($type) == 'vendor'){
-            $vendorData = Vendor::with('products')->select('vendors.id', 'name', 'slug', 'logo', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
+            $vendorData = Vendor::with('products')->select('vendors.id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
             $vendorData = $vendorData->join('vendor_categories as vct', 'vct.vendor_id', 'vendors.id')->where('vct.category_id', $category_id)->where('vct.status', 1);
             $preferences= Session::get('preferences');
             if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
@@ -215,6 +216,22 @@ class CategoryController extends FrontController{
             $vendorData = $vendorData->where('vendors.status', '!=', $this->field_status)->paginate($pagiNate);
             foreach ($vendorData as $key => $value) {
                 $value->vendorRating = $this->vendorRating($value->products);
+                if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                    $latitude = Session::get('latitude') ?? '';
+                    $longitude = Session::get('longitude') ?? '';
+                    $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
+                }
+                $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
+                $categoriesList = '';
+                foreach ($vendorCategories as $key => $category) {
+                    if ($category->category) {
+                        $categoriesList = $categoriesList . $category->category->translation_one->name;
+                        if ($key !=  $vendorCategories->count() - 1) {
+                            $categoriesList = $categoriesList . ', ';
+                        }
+                    }
+                }
+                $value->categoriesList = $categoriesList;
             }
             return $vendorData;
         }

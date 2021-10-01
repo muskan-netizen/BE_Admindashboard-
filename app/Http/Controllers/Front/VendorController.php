@@ -165,7 +165,7 @@ class VendorController extends FrontController
 
     /**
      * Display product By Vendor Category
-     *
+     * vendor -> category -> product
      * @return \Illuminate\Http\Response
      */
     public function vendorCategoryProducts(Request $request, $domain = '', $slug1 = 0, $slug2 = 0){

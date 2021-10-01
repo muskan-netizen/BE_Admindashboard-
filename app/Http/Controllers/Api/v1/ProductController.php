@@ -157,6 +157,22 @@ class ProductController extends BaseController
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
             }
+            $product->vendor->is_vendor_closed = 0;
+            if($product->vendor->show_slot == 0){
+                if( ($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty()) ){
+                    $product->vendor->is_vendor_closed = 1;
+                }else{
+                    $product->vendor->is_vendor_closed = 0;
+                    if($product->vendor->slotDate->isNotEmpty()){
+                        $product->vendor->opening_time = Carbon::parse($product->vendor->slotDate->first()->start_time)->format('g:i A');
+                        $product->vendor->closing_time = Carbon::parse($product->vendor->slotDate->first()->end_time)->format('g:i A');
+                    }elseif($product->vendor->slot->isNotEmpty()){
+                        $product->vendor->opening_time = Carbon::parse($product->vendor->slot->first()->start_time)->format('g:i A');
+                        $product->vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
+                    }
+                }
+            }
+
             $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             foreach ($product->variant as $key => $value) {

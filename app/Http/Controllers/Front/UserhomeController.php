@@ -316,7 +316,7 @@ class UserhomeController extends FrontController
             $categoriesList = '';
             foreach ($vendorCategories as $key => $category) {
                 if ($category->category) {
-                    $categoriesList = $categoriesList . $category->category->translation_one->name;
+                    $categoriesList = $categoriesList . @$category->category->translation_one->name;
                     if ($key !=  $vendorCategories->count() - 1) {
                         $categoriesList = $categoriesList . ', ';
                     }
@@ -324,7 +324,7 @@ class UserhomeController extends FrontController
             }
             $value->categoriesList = $categoriesList;
         }
-        // dd($vendors->toArray());
+         
         if (($latitude) && ($longitude)) {
             Session::put('vendors', $vendor_ids);
         }
@@ -346,7 +346,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $new_product_detail->inquiry_only,
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'price' => Session::get('currencySymbol') . ' ' . (number_format($new_product_detail->variant->first()->price * $multiply, 2)),
-                'category' => $new_product_detail->category->categoryDetail->translation->first()->name
+                'category' => ($new_product_detail->category->categoryDetail->translation->first()) ? $new_product_detail->category->categoryDetail->translation->first()->name : $new_product_detail->category->categoryDetail->slug
             );
         }
         foreach ($feature_product_details as  $feature_product_detail) {

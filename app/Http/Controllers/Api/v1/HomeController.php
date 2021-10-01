@@ -99,7 +99,7 @@ class HomeController extends BaseController{
             $vends = [];
             $homeData = [];
             $user = Auth::user();
-            $preferences = ClientPreference::select('is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
+            $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $latitude = $request->latitude;
             $longitude = $request->longitude;
             $user_geo[] = $latitude;
@@ -126,10 +126,27 @@ class HomeController extends BaseController{
                         ->whereRaw("ST_Contains(polygon, ST_GeomFromText('POINT(".$latitude." ".$longitude.")'))");
                 });
             }
-            $vendorData = $vendorData->with('slot')->where('status', 1)->get();
+            $vendorData = $vendorData->with('slot','slotDate')->where('status', 1)->get();
             
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
+
+                $vendor->is_vendor_closed = 0;
+                if($vendor->show_slot == 0){
+                    if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
+                        $vendor->is_vendor_closed = 1;
+                    }else{
+                        $vendor->is_vendor_closed = 0;
+                        if($vendor->slotDate->isNotEmpty()){
+                            $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
+                            $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
+                        }elseif($vendor->slot->isNotEmpty()){
+                            $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
+                            $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
+                        }
+                    }
+                }
+
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
 
                 $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();

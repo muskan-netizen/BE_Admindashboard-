@@ -285,7 +285,7 @@
                     </div> 
                     <div class="row mb-2">
                         <div class="col-12">
-                            {!! Form::label('title', __('Up Cell Products'),['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Up Sell Products'),['class' => 'control-label']) !!}
                             <select class="form-control selectizeInput" name="up_cell[]" multiple placeholder="Select gear...">
                                 <option value="">{{ __("Select gear") }}...</option>
                                 <optgroup label="Climbing">
@@ -305,7 +305,7 @@
                         </div>
 
                         <div class="col-12">
-                            {!! Form::label('title', __('Cross Cell Products'),['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Cross Sell Products'),['class' => 'control-label']) !!}
                             <select class="form-control selectizeInput" name="cross_cell[]" multiple placeholder="Select gear...">
                                 <option value="">{{ __('Select gear') }}...</option>
                                 <optgroup label="Climbing">

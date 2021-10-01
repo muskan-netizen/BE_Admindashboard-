@@ -27,57 +27,56 @@
     <div class="collection-wrapper">
         <div class="container">
             <div class="row">
-                 <div class="col-12">
+                <div class="col-12">
                     <div class="top-banner-wrapper mb-4">
-                    @if(!empty($vendor->banner))
-                        <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1000/300' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
-                    @endif
-                    <div class="row mt-n4">
-                        <div class="col-12">
-                            <form action="">
-                                <div class="row">
-                                    <div class="col-sm-12 text-center">
-                                        <div class="file file--upload">
-                                            <label>
-                                                <span class="update_pic border-0">
-                                                <img src="{{$vendor->logo['proxy_url'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
-                                                </span>
-                                            </label>
-                                        </div>
-                                        <div class="name_location d-block py-0">
-                                            <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
-                                        </div>
-                                        @if($vendor->is_show_vendor_details == 1)
-                                            <div class="">
-                                                @if($vendor->email)
-                                                    <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
-                                                @endif
-                                                <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
-                                                @if($vendor->website)
-                                                    <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
-                                                @endif
+                        @if(!empty($vendor->banner))
+                            <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1000/300' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                        @endif
+                        <div class="row mt-n4">
+                            <div class="col-12">
+                                <form action="">
+                                    <div class="row">
+                                        <div class="col-sm-12 text-center">
+                                            <div class="file file--upload">
+                                                <label>
+                                                    <span class="update_pic border-0">
+                                                    <img src="{{$vendor->logo['proxy_url'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
+                                                    </span>
+                                                </label>
                                             </div>
+                                            <div class="name_location d-block py-0">
+                                                <h4 class="mt-0 mb-1"><b>{{$vendor->name}}</b></h4>
+                                            </div>
+                                            @if($vendor->is_show_vendor_details == 1)
+                                                <div class="">
+                                                    @if($vendor->email)
+                                                        <a href="{{$vendor->email}}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->email}}"><i class="fa fa-envelope"></i></a>
+                                                    @endif
+                                                    <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->address}}"><i class="fa fa-address-card mx-1"></i></a>
+                                                    @if($vendor->website)
+                                                        <a href="{{http_check($vendor->website) }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="{{$vendor->website}}"><i class="fa fa-home"></i></a>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        </div>
+                                        @if($vendor->desc)
+                                            <div class="col-md-12 text-center">
+                                                <p>{{$vendor->desc}}</p>
+                                            </div>                                                  
                                         @endif
                                     </div>
-                                    @if($vendor->desc)
-                                        <div class="col-md-12 text-center">
-                                            <p>{{$vendor->desc}}</p>
-                                        </div>                                                  
-                                    @endif
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
             </div>
         </div>
         <div class="container">
             <div class="row">
-                <div class="col-sm-2 collection-filter">
+                <div class="col-sm-3 collection-filter">
                     <div class="theme-card">
                         <h5 class="title-border">{{__('New Product')}}</h5>
-                        <div class="offer-slider slide-1">
+                        <div class="offer-slider">
                             @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
                                     @foreach($newProds as $new)
@@ -88,7 +87,7 @@
                                         } ?>
 
 
-                                        <a class="common-product-box scale-effect text-center" href="{{route('productDetail', $new['url_slug'])}}">
+                                        <a class="common-product-box scale-effect border-bottom pb-2 mt-2 text-center" href="{{route('productDetail', $new['url_slug'])}}">
                                             <div class="img-outer-box position-relative">
                                                 <img src="{{$imagePath}}" alt="">
                                             </div>    
@@ -97,7 +96,7 @@
                                                     <div class="product-description">
                                                         <h3 class="m-0">{{ $new['translation_title'] }}</h3>
                                                         <p>{{$new['vendor']['name']}}</p>
-                                                        <p class="border-bottom pb-1">In Fruits</p>
+                                                        <p class="pb-1">In {{$new['category_name']}}</p>
                                                         <div class="d-flex align-items-center justify-content-between">
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)

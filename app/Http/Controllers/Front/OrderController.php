@@ -851,7 +851,8 @@ class OrderController extends FrontController
                         'body'  => $notification_content->content,
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                        'click_action' => route('order.index')
+                        'click_action' => route('order.index'),
+                        "android_channel_id" => "high-priority"
                     ],
                     "data" => [
                         'title' => $notification_content->subject,

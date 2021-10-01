@@ -93,7 +93,7 @@ class CategoryController extends BaseController
                 }
                 $vendor->categoriesList = $categoriesList;
                 $user = Auth::user();
-                $preferences = ClientPreference::select('is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
+                $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($user->latitude) && ($user->longitude)) {
                     $vendor = $this->getVendorDistanceWithTime($user->latitude, $user->longitude, $vendor, $preferences);
                 }
@@ -126,6 +126,22 @@ class CategoryController extends BaseController
                         }
                     }else{
                         $product->variant =  $product;
+                    }
+
+                    $product->vendor->is_vendor_closed = 0;
+                    if($product->vendor->show_slot == 0){
+                        if( ($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty()) ){
+                            $product->vendor->is_vendor_closed = 1;
+                        }else{
+                            $product->vendor->is_vendor_closed = 0;
+                            if($product->vendor->slotDate->isNotEmpty()){
+                                $product->vendor->opening_time = Carbon::parse($product->vendor->slotDate->first()->start_time)->format('g:i A');
+                                $product->vendor->closing_time = Carbon::parse($product->vendor->slotDate->first()->end_time)->format('g:i A');
+                            }elseif($product->vendor->slot->isNotEmpty()){
+                                $product->vendor->opening_time = Carbon::parse($product->vendor->slot->first()->start_time)->format('g:i A');
+                                $product->vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
+                            }
+                        }
                     }
                 }
             }
@@ -207,6 +223,22 @@ class CategoryController extends BaseController
                                 $v->is_free = false;
                             }
                             $v->multiplier = $clientCurrency->doller_compare;
+                        }
+                    }
+
+                    $product->vendor->is_vendor_closed = 0;
+                    if($product->vendor->show_slot == 0){
+                        if( ($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty()) ){
+                            $product->vendor->is_vendor_closed = 1;
+                        }else{
+                            $product->vendor->is_vendor_closed = 0;
+                            if($product->vendor->slotDate->isNotEmpty()){
+                                $product->vendor->opening_time = Carbon::parse($product->vendor->slotDate->first()->start_time)->format('g:i A');
+                                $product->vendor->closing_time = Carbon::parse($product->vendor->slotDate->first()->end_time)->format('g:i A');
+                            }elseif($product->vendor->slot->isNotEmpty()){
+                                $product->vendor->opening_time = Carbon::parse($product->vendor->slot->first()->start_time)->format('g:i A');
+                                $product->vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
+                            }
                         }
                     }
 

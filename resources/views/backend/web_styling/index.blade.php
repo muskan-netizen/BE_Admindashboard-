@@ -253,7 +253,7 @@
                                  <option value="{{$category->id}}" 
                                     @if(isset($home_page_label->pickupCategories->first()->categoryDetail) && !empty($home_page_label->pickupCategories->first()) && $home_page_label->pickupCategories->first()->categoryDetail->id == $category->id)
                                      selected="selected"
-                                    @endif>{{$category->translation_one->name}}
+                                    @endif>{{$category->translation_one->name??''}}
                                  </option>
                                  @endforeach
                              </select>

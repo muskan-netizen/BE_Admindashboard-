@@ -27,10 +27,40 @@
     <div class="collection-wrapper">
         <div class="container">
             <div class="row">
+                <div class="col-12">
+                    <div class="top-banner-wrapper text-center">
+                        @if(!empty($category->image))
+                        <div class="common-banner"><img alt="" src="{{$category->image['proxy_url'] . '1000/200' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                        @endif
+                        <div class="top-banner-content small-section">
+                            <h4>{{ $category->translation_name }}</h4>
+                            {{-- <div class="row">
+                                <div class="col-12">
+                                    <div class="slide-6 no-arrow">
+                                        @foreach($category->childs->toArray() as $cate)
+                                        <div class="category-block">
+                                            <a href="{{route('categoryDetail', $cate['id'])}}">
+                                                <div class="category-image"><img alt="" src="{{$cate['icon']['proxy_url'] . '100/80' . $cate['icon']['image_path']}}" ></div>
+                                            </a>
+                                            <div class="category-details">
+                                                <a href="{{route('categoryDetail', $cate['id'])}}">
+                                                    <h5>{{$cate['translation_name']}}</h5>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-sm-3 collection-filter">
                     <div class="theme-card">
                         <h5 class="title-border">{{__('New Product')}}</h5>
-                        <div class="offer-slider slide-1">
+                        <div class="offer-slider">
                             @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
                                     <div>
@@ -39,7 +69,41 @@
                                         foreach ($new['media'] as $k => $v) {
                                             $imagePath = $v['image']['path']['proxy_url'].'300/300'.$v['image']['path']['image_path'];
                                         } ?>
-                                        <div class="media">
+                                        <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', $new['url_slug'])}}">
+                                            <div class="img-outer-box position-relative">
+                                                <img src="{{$imagePath}}" alt="">
+                                            </div>    
+                                            <div class="media-body align-self-center">
+                                                <div class="inner_spacing px-0">
+                                                    <div class="product-description">
+                                                        <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3>
+                                                        <p>{{$new['vendor']['name']}}</p>
+                                                        <p class="pb-1">In {{$new['category_name']}}</p>
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <b>
+                                                                @if($new['inquiry_only'] == 0)
+                                                                    <?php $multiply = $new['variant_multiplier']; ?>
+                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                @endif
+                                                            </b>
+
+                                                            @if($client_preference_detail)
+                                                                @if($client_preference_detail->rating_check == 1)
+                                                                    @if($new['averageRating'] > 0)
+                                                                        <div class="rating-box">
+                                                                            <i class="fa fa-star" aria-hidden="true"></i>
+                                                                            <span>{{ $new['averageRating'] }}</span>
+                                                                        </div>
+                                                                    @endif
+                                                                @endif
+                                                            @endif  
+                                                        </div>                       
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+
+                                        <!-- <div class="media">
                                             <a href="{{route('productDetail', $new['url_slug'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt="" ></a>
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing">
@@ -49,7 +113,7 @@
                                                     <h6 class="mt-0"><b>{{$new['vendor']['name']}}</b></h6>
                                                     @if($new['inquiry_only'] == 0)
                                                     <h4 class="mt-1">
-                                                        <?php $multiply = $new['variant_multiplier']; ?>
+                                                        <//?php $multiply = $new['variant_multiplier']; ?>
                                                         {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}} </h4>
                                                     @endif
                                                     @if($client_preference_detail)
@@ -61,7 +125,7 @@
                                                     @endif
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                     @endforeach
                                     </div>
                                 @endforeach
@@ -73,32 +137,6 @@
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">
-                                <div class="top-banner-wrapper text-center">
-                                    @if(!empty($category->image))
-                                    <div class="common-banner"><img alt="" src="{{$category->image['proxy_url'] . '1000/200' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
-                                    @endif
-                                    <div class="top-banner-content small-section">
-                                        <h4>{{ $category->translation_name }}</h4>
-                                        {{-- <div class="row">
-                                            <div class="col-12">
-                                                <div class="slide-6 no-arrow">
-                                                    @foreach($category->childs->toArray() as $cate)
-                                                    <div class="category-block">
-                                                        <a href="{{route('categoryDetail', $cate['id'])}}">
-                                                            <div class="category-image"><img alt="" src="{{$cate['icon']['proxy_url'] . '100/80' . $cate['icon']['image_path']}}" ></div>
-                                                        </a>
-                                                        <div class="category-details">
-                                                            <a href="{{route('categoryDetail', $cate['id'])}}">
-                                                                <h5>{{$cate['translation_name']}}</h5>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        </div> --}}
-                                    </div>
-                                </div>
                                 <div class="collection-product-wrapper">
                                     <div class="product-top-filter">
                                         <div class="row">

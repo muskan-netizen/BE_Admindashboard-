@@ -140,9 +140,9 @@
             .slick({ dots: !0, nav: !1, vertical: !1, infinite: !1 });
     }
         if($('body').attr('dir') == 'rtl'){
-            e(".slide-1").slick({rtl: true, autoplay: true, autoplaySpeed: 3000});
+            e(".slick-slider").slick({rtl: true, autoplay: true, autoplaySpeed: 3000});
         }else{
-            e(".slide-1").slick({autoplay: true, autoplaySpeed: 3000});
+            e(".slick-slider").slick({autoplay: true, autoplaySpeed: 3000});
         }
         e(".slide-2").slick({ infinite: !0, slidesToShow: 2, slidesToScroll: 2, responsive: [{ breakpoint: 991, settings: { slidesToShow: 1, slidesToScroll: 1 } }] }),
         e(".slide-3").slick({

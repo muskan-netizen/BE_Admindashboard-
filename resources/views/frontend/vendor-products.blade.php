@@ -105,7 +105,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-2 collection-filter">
+                <div class="col-sm-3 collection-filter">
                     <div class="collection-filter-block">
                         <div class="collection-mobile-back"><span class="filter-back"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
                         <div class="collection-collapse-block open">
@@ -177,7 +177,7 @@
                     </div>
                     <div class="theme-card">
                         <h5 class="title-border">{{__('New Product')}}</h5>
-                            <div class="offer-slider slide-1">
+                            <div class="offer-slider">
                                 @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
                                 
@@ -189,7 +189,7 @@
                                     } ?>
 
 
-                                    <a class="common-product-box scale-effect text-center" href="{{route('productDetail', $new['url_slug'])}}">
+                                    <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', $new['url_slug'])}}">
                                         <div class="img-outer-box position-relative">
                                             <img src="{{$imagePath}}" alt="">
                                         </div>    
@@ -198,7 +198,7 @@
                                                 <div class="product-description">
                                                     <h3 class="m-0">{{ $new['translation_title'] }}</h3>
                                                     <p>{{$new['vendor']['name']}}</p>
-                                                    <p class="border-bottom pb-1">In Fruits</p>
+                                                    <p class="pb-1">In {{$new['category_name']}}</p>
                                                     <div class="d-flex align-items-center justify-content-between">
                                                         <b>
                                                             @if($new['inquiry_only'] == 0)

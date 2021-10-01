@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Auth;
 class Category extends Model
 {
   use SoftDeletes;
@@ -15,9 +15,11 @@ class Category extends Model
     public function translation(){
       return $this->hasMany('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->join('languages', 'category_translations.language_id', 'languages.id')->select('category_translations.*', 'languages.id as langId', 'languages.name as langName', 'cl.is_primary')->where('cl.is_active', 1)->orderBy('cl.is_primary', 'desc'); 
     }
+    
     public function translation_one(){
-      return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', 1); 
+       return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', 1); 
     }
+
     public function english(){
        return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', 1); 
     }
@@ -93,6 +95,12 @@ class Category extends Model
   public function allParentsAccount()
   {
     return $this->parent()->select('id', 'slug', 'parent_id')->with('allParentsAccount');
+  }
+
+
+
+  public function translationSet(){
+    return $this->hasMany('App\Models\Category_translation'); 
   }
 
 }

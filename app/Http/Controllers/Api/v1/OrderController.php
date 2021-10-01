@@ -404,7 +404,7 @@ class OrderController extends BaseController {
             $order->user_name = $user->name;
             $order->user_image = $user->image;
             $order->date_time = convertDateTimeInTimeZone($order->orderDetail->created_at, $user->timezone);
-            $order->payment_option_title = __($order->orderDetail->paymentOption->title);
+            $order->payment_option_title = __($order->orderDetail->paymentOption->title??'');
             $order->order_number = $order->orderDetail->order_number;
             $product_details = [];
             $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->orderDetail->id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
@@ -604,7 +604,8 @@ class OrderController extends BaseController {
                         'body'  => $notification_content->content,
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                        'click_action' => $redirect_URL
+                        'click_action' => $redirect_URL,
+                        "android_channel_id" => "high-priority"
                     ],
                     "data" => [
                         'title' => $notification_content->subject,
@@ -663,7 +664,8 @@ class OrderController extends BaseController {
                         'body'  => $body_content,
                         'sound' => "default",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                        'click_action' => $redirect_URL
+                        'click_action' => $redirect_URL,
+                        "android_channel_id" => "high-priority"
                     ],
                     "data" => [
                         'title' => $notification_content->subject,

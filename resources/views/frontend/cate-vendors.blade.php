@@ -91,7 +91,7 @@
                                                     <div class="product-description">
                                                         <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3>
                                                         <p>{{$new['vendor']['name']}}</p>
-                                                        <p class="pb-1">In Fruits</p>
+                                                        <p class="pb-1">In {{$new['category_name']}}</p>
                                                         <div class="d-flex align-items-center justify-content-between">
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
@@ -159,7 +159,6 @@
                                                     {{-- <div class="product-page-per-view">
                                                         <?php $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 8; ?>
                                                         <select class="customerPaginate">
-
                                                             <option value="8" @if($pagiNate == 8) selected @endif>Show 8 
                                                             </option>
                                                             <option value="12" @if($pagiNate == 12) selected @endif>Show 12 
@@ -198,19 +197,19 @@
                                                             </div>
                                                             <div class="supplier-rating">
                                                                 <h6 class="mb-1">{{$data->name}}</h6>
-                                                                <p title="Restaurants, Venezia, Sandwiches, Rolls" class="vendor-cate border-bottom pb-1 mb-1 ellips">Restaurants, Venezia, Sandwiches, Rolls</p>
+                                                                <p title="{{$data->categoriesList}}" class="vendor-cate border-bottom pb-1 mb-1 ellips">{{$data->categoriesList}}</p>
                                                                 <div class="product-timing">
-                                                                    <small title="Sector 8, Chandigarh, India" class="ellips d-block"><i class="fa fa-map-marker"></i> Sector 8, Chandigarh, India</small>
-                                                                    <!-- <% if(vendor.timeofLineOfSightDistance != undefined){ %> -->
+                                                                    <small title="{{$data->address}}" class="ellips d-block"><i class="fa fa-map-marker"></i> {{$data->address}}</small>
+                                                                    @if(isset($data->timeofLineOfSightDistance))
                                                                         <ul class="timing-box mb-1">
                                                                             <li>
-                                                                                <small class="d-block"><img class="d-inline-block mr-1" src="{{ asset('front-assets/images/distance.png') }}" alt=""> 1.5 km</small>
+                                                                                <small class="d-block"><img class="d-inline-block mr-1" src="{{ asset('front-assets/images/distance.png') }}" alt=""> {{$data->lineOfSightDistance}}</small>
                                                                             </li>
                                                                             <li>
-                                                                                <small class="d-block mx-1"><i class="fa fa-clock-o"></i> 18 min</small>
+                                                                                <small class="d-block mx-1"><i class="fa fa-clock-o"></i> {{$data->timeofLineOfSightDistance}} min</small>
                                                                             </li>
                                                                         </ul>
-                                                                    <!-- <% } %> -->
+                                                                    @endif
                                                                 </div>
                                                                 @if($client_preference_detail)
                                                                     @if($client_preference_detail->rating_check == 1)

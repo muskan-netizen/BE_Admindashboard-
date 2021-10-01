@@ -261,7 +261,8 @@ class PickupDeliveryController extends FrontController{
             
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
-            if($order_place && $order_place['status'] == 200){
+           
+           if($order_place && $order_place['status'] == 200){
                 $data = [];
                 $order = $order_place['data'];
                 $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
@@ -287,7 +288,7 @@ class PickupDeliveryController extends FrontController{
             ]);
         }
     }
-
+ 
 
     // order place for pickup delivery 
     
@@ -360,8 +361,9 @@ class PickupDeliveryController extends FrontController{
                 $variant->price = $request->amount;
                 $quantity_price = 0;
                 $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
+                $divider = isset($divider) ? $divider : 1;
                 $price_in_currency = $request->amount / $divider;
-                $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
+                $price_in_dollar_compare = $price_in_currency * $divider;
                 $quantity_price = $price_in_dollar_compare * 1;
                 $payable_amount = $payable_amount + $quantity_price;
                 $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
@@ -474,6 +476,7 @@ class PickupDeliveryController extends FrontController{
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = Auth::user();
             $wallet = $customer->wallet;
+           
             if ($dispatch_domain && $dispatch_domain != false) {
                 if ($request->payment_option_id == 1) {
                     $cash_to_be_collected = 'Yes';
@@ -482,8 +485,6 @@ class PickupDeliveryController extends FrontController{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
                   
-                  $wal =   $wallet->forceWithdrawFloat($order->payable_amount, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
-                  Log::info($wal);
                 }
                 Log::info($cash_to_be_collected);
                 $unique = Auth::user()->code;
@@ -538,7 +539,10 @@ class PickupDeliveryController extends FrontController{
                     'dispatcher_status_option_id' =>  1,
                     'vendor_id' =>  $vendor]);
 
-                   return $response;
+                    if ($request->payment_option_id == 2){
+                        $wal =   $wallet->forceWithdrawFloat($order->payable_amount, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                    }
+                 return $response;
                 }
                 return $response;
             }

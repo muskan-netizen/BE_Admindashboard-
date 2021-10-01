@@ -161,9 +161,6 @@ class ClientPreferenceController extends BaseController{
         /* Hyperlocal update */
         if($request->has('hyperlocals') && $request->hyperlocals == '1'){
             $preference->is_hyperlocal = ($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on') ? 1 : 0;
-            $preference->need_delivery_service = ($request->has('need_delivery_service') && $request->need_delivery_service == 'on') ? 1 : 0;
-            $preference->need_dispacher_ride = ($request->has('need_dispacher_ride') && $request->need_dispacher_ride == 'on') ? 1 : 0;
-            $preference->need_dispacher_home_other_service = ($request->has('need_dispacher_home_other_service') && $request->need_dispacher_home_other_service == 'on') ? 1 : 0;
           
           
             if($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on'){
@@ -177,18 +174,22 @@ class ClientPreferenceController extends BaseController{
                 $preference->Default_latitude = $request->Default_latitude;
                 $preference->Default_longitude = $request->Default_longitude;
             }
-            if($request->has('need_delivery_service') && $request->need_delivery_service == 'on'){
-                $preference->delivery_service_key = $request->delivery_service_key;
-            }
-            if($request->has('need_dispacher_ride') && $request->need_dispacher_ride == 'on'){
-                $preference->dispatcher_key = $request->dispatcher_key;
-            }
-
-            if($request->has('need_dispacher_home_other_service') && $request->need_dispacher_home_other_service == 'on'){
-                $preference->dispacher_home_other_service_key = $request->dispacher_home_other_service_key;
-            }
            
-            
+        }
+        
+        $preference->need_delivery_service = ($request->has('need_delivery_service') && $request->need_delivery_service == 'on') ? 1 : 0;
+        $preference->need_dispacher_ride = ($request->has('need_dispacher_ride') && $request->need_dispacher_ride == 'on') ? 1 : 0;
+        $preference->need_dispacher_home_other_service = ($request->has('need_dispacher_home_other_service') && $request->need_dispacher_home_other_service == 'on') ? 1 : 0;
+   
+        if($request->has('need_delivery_service') && $request->need_delivery_service == 'on'){
+            $preference->delivery_service_key = $request->delivery_service_key;
+        }
+        if($request->has('need_dispacher_ride') && $request->need_dispacher_ride == 'on'){
+            $preference->dispatcher_key = $request->dispatcher_key;
+        }
+
+        if($request->has('need_dispacher_home_other_service') && $request->need_dispacher_home_other_service == 'on'){
+            $preference->dispacher_home_other_service_key = $request->dispacher_home_other_service_key;
         }
         
         /* social login update */        

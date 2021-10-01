@@ -394,6 +394,7 @@ class CartController extends BaseController{
             $action = $type;
             $vendor_details = [];
             $tax_details = [];
+            $is_vendor_closed = 0;
             foreach ($cartData as $ven_key => $vendorData) {
                 $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
@@ -612,6 +613,7 @@ class CartController extends BaseController{
                 $total_tax = $total_tax + $taxable_amount;
                 $total_disc_amount = $total_disc_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
+                $vendorData->vendor->is_vendor_closed = $is_vendor_closed;
                 if(!empty($vendorData->coupon->promo)){
                     unset($vendorData->coupon->promo);
                 }
@@ -624,6 +626,16 @@ class CartController extends BaseController{
                     if($serviceArea->isEmpty()){
                         $vendorData->isDeliverable = 0;
                         $delivery_status = 0;
+                    }
+                }
+                if($vendorData->vendor->show_slot == 0){
+                    if( ($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty()) ){
+                        $vendorData->vendor->is_vendor_closed = 1;
+                        if($delivery_status != 0){
+                            $delivery_status = 0;
+                        }
+                    }else{
+                        $vendorData->vendor->is_vendor_closed = 0;
                     }
                 }
             }

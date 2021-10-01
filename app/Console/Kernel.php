@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        Commands\CartReminder::class
         //
     ];
 
@@ -24,6 +25,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('cart:reminder')
+                ->hourly();
         // $schedule->command('inspire')->hourly();
     }
 

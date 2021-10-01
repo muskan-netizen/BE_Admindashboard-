@@ -555,7 +555,7 @@
                         </div>
                         @if($product->category->categoryDetail->type_id != 8)
                         <div class="col-md-6 mb-2">
-                            {!! Form::label('title', __('Up Cell Products'),['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Up Sell Products'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="up_cell[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
                                 @foreach($otherProducts as $otherProduct)
                                 <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $upSell_ids)) selected @endif>{{$otherProduct->primary->title}}</option>
@@ -564,7 +564,7 @@
                         </div>
 
                         <div class="col-md-6 mb-2">
-                            {!! Form::label('title', __('Cross Cell Products'),['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Cross Sell Products'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="cross_cell[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
                                 @foreach($otherProducts as $otherProduct)
                                 <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $crossSell_ids)) selected @endif>{{$otherProduct->primary->title}}</option>

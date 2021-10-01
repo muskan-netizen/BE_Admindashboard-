@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory};
+use App\Models\{Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, Vendor, Brand, VendorCategory};
 
 class VendorController extends BaseController{
     use ApiResponser;
@@ -49,16 +49,54 @@ class VendorController extends BaseController{
             if($vid == 0){
                 return response()->json(['error' => 'No record found.'], 404);
             }
-            $userid = Auth::user()->id;
+            $user = Auth::user();
+            $userid = $user->id;
+            $latitude = $user->latitude;
+            $longitude = $user->longitude;
             $paginate = $request->has('limit') ? $request->limit : 12;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
+            $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $langId = Auth::user()->language;
-            $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'slug',
-                        'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery')
+            $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'slug', 'show_slot',
+                        'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery')
+                        ->withAvg('product', 'averageRating')
                         ->where('id', $vid)->first();
             if(!$vendor){
                 return response()->json(['error' => 'No record found.'], 200);
             }
+            $vendor->is_vendor_closed = 0;
+            if($vendor->show_slot == 0){
+                if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
+                    $vendor->is_vendor_closed = 1;
+                }else{
+                    $vendor->is_vendor_closed = 0;
+                    if($vendor->slotDate->isNotEmpty()){
+                        $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
+                        $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
+                    }elseif($vendor->slot->isNotEmpty()){
+                        $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
+                        $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
+                    }
+                }
+            }
+            
+            $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
+
+            $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();
+            $categoriesList = '';
+            foreach($vendorCategories as $key => $category){
+                if($category->category){
+                    $categoriesList = $categoriesList . $category->category->translation_one->name;
+                    if( $key !=  $vendorCategories->count()-1 ){
+                        $categoriesList = $categoriesList . ', ';
+                    }
+                }
+            }
+            $vendor->categoriesList = $categoriesList;
+            if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences);
+            }
+            
             $code = $request->header('code');
             $client = Client::where('code',$code)->first();
             $vendor->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/vendor/".$vendor->slug;
@@ -159,8 +197,24 @@ class VendorController extends BaseController{
         try{
             $paginate = $request->has('limit') ? $request->limit : 12;
             // $preferences = Session::get('preferences');
-            $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id')->where('slug', $slug1)->where('status', 1)->firstOrFail();
+            $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'show_slot', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id')->where('slug', $slug1)->where('status', 1)->firstOrFail();
             if(!empty($vendor)){
+                $vendor->is_vendor_closed = 0;
+                if($vendor->show_slot == 0){
+                    if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
+                        $vendor->is_vendor_closed = 1;
+                    }else{
+                        $vendor->is_vendor_closed = 0;
+                        if($vendor->slotDate->isNotEmpty()){
+                            $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
+                            $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
+                        }elseif($vendor->slot->isNotEmpty()){
+                            $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
+                            $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
+                        }
+                    }
+                }
+
                 $code = $request->header('code');
                 $client = Client::where('code',$code)->first();
                 $vendor->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/vendor/".$vendor->slug;

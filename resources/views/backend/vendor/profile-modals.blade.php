@@ -190,19 +190,19 @@
                             @if($vendor->dine_in == 1)
                             <div class="checkbox checkbox-success form-check pl-1 mb-1">
                                 <input name="slot_type[]" type="checkbox" id="edit_dine_in" checked value="dine_in">
-                                <label for="dine_in"> {{ __("Dine in") }} </label>
+                                <label for="edit_dine_in"> {{ __("Dine in") }} </label>
                             </div>
                             @endif
                             @if($vendor->takeaway == 1)
                             <div class="checkbox checkbox-success form-check pl-1 mb-1">
                                 <input name="slot_type[]" type="checkbox" id="edit_takeaway" checked value="takeaway">
-                                <label for="takeaway"> {{ __('Takeaway') }} </label>
+                                <label for="edit_takeaway"> {{ __('Takeaway') }} </label>
                             </div>
                             @endif
                             @if($vendor->delivery == 1)
                             <div class="checkbox checkbox-success form-check pl-1 mb-1">
                                 <input name="slot_type[]" type="checkbox" id="edit_delivery" checked value="delivery">
-                                <label for="delivery"> {{ __("Delivery") }} </label>
+                                <label for="edit_delivery"> {{ __("Delivery") }} </label>
                             </div>
                             @endif
                         </div>

@@ -1133,6 +1133,7 @@
                     //backdrop: 'static',
                     keyboard: false
                 });
+                console.log(ev.event.extendedProps);
                 var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
                 var day = ev.event.start.getDay() + 1;
 
@@ -1151,6 +1152,16 @@
                 }else{
                     $("#edit_slotDay").prop("checked", true);
                     $(".modal .forDateEdit").hide();
+                }
+
+                if(ev.event.extendedProps.slot_delivery == 0){
+                    $("#edit_delivery").prop("checked", false);
+                }
+                if(ev.event.extendedProps.slot_takeaway == 0){
+                    $("#edit_takeaway").prop("checked", false);
+                }
+                if(ev.event.extendedProps.slot_dine_in == 0){
+                    $("#edit_dine_in").prop("checked", false);
                 }
 
                 $('#edit_slot_date').flatpickr({
