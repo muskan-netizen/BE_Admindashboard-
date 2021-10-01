@@ -11,40 +11,30 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 <div class="col-lg-3 col-md-6">
                     <div class="sub-title">
                         <div class="footer-title mt-0">
-                            <h4 class="mt-0">Social Links</h4>
+                            <h4 class="mt-0">{{ __('Quick Links') }}</h4>
                         </div>
-                        <div class="footer-contant">                    
-                            <ul class="social-links">
-                                @foreach($social_media_details as $social_media_detail)
+                        <div class="footer-contant">
+                            <ul>
+                                @foreach($pages as $page)
                                     <li>
-                                        <a href="{{http_check($social_media_detail->url)}}" target="_blank">
-                                            <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
-                                            <span>{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span>
-                                        </a>
+                                        <a href="{{route('extrapage',['slug' => $page->slug])}}">{{$page->translations->first() ? $page->translations->first()->title : $page->primary->title}}</a>
                                     </li>
                                 @endforeach
                             </ul>
                         </div>
                     </div>
-                     <!-- <div class="footer-logo mb-0">
-                            <a href="{{ route('userHome') }}">
-                                <img class="img-fluid blur-up lazyload" src="{{$urlImg}}">
-                            </a>
-                        </div> -->
                 </div>
                 @if(count($pages))
                     <div class="col-lg-3 col-md-6 pl-lg-4">
                         <div class="sub-title">
                             <div class="footer-title mt-0">
-                                <h4 class="mt-0">{{ __('Links') }}</h4>
+                                <h4 class="mt-0">{{ __('Contact Us') }}</h4>
                             </div>
                             <div class="footer-contant">
-                                <ul>
-                                    @foreach($pages as $page)
-                                        <li>
-                                            <a href="{{route('extrapage',['slug' => $page->slug])}}">{{$page->translations->first() ? $page->translations->first()->title : $page->primary->title}}</a>
-                                        </li>
-                                    @endforeach
+                                <ul class="contact-list">
+                                    <li class="pl-0"><i class="icon-location"></i> <span>{{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}</span></li>
+                                    <li class="pl-0"><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}"><span>{{$clientData ? $clientData->phone_number : '123-456-7898'}}</span></a></li>
+                                    <li class="pl-0"><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}"><span>{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</span></a></li>
                                 </ul>
                             </div>
                         </div>
@@ -77,22 +67,73 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <div class="col-lg-3 col-md-6 mb-md-0 mb-3 pl-xl-3">
                         <div class="sub-title">
                             <div class="footer-title mt-0">
-                                <h4 class="mt-0">{{ __('Contact Us') }}</h4>
+                                <h4 class="mt-0">{{ __('Find our app on mobile') }}</h4>
                             </div>
-                            <div class="footer-contant">
-                                <ul class="contact-list">
-                                    <li class="pl-0"><i class="icon-location"></i> <span>{{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}</span></li>
-                                    <li class="pl-0"><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}"><span>{{$clientData ? $clientData->phone_number : '123-456-7898'}}</span></a></li>
-                                    <li class="pl-0"><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}"><span>{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</span></a></li>
+                            <div class="footer-contant">    
+                                <div class="store-btn mb-3">
+                                    <a href="#"><img src="{{asset('front-assets/images/app-store.png')}}" alt=""></a>
+                                    <a class="ml-2" href="#"><img src="{{asset('front-assets/images/google-play.png')}}" alt=""></a>
+                                </div> 
+                                
+                                <div class="footer-title mt-0">
+                                    <h4 class="mt-0">{{ __('Keep in Touch') }}</h4>
+                                </div>
+                                <ul class="social-links d-flex">
+                                    @foreach($social_media_details as $social_media_detail)
+                                        <li>
+                                            <a href="{{http_check($social_media_detail->url)}}" target="_blank">
+                                                <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
+                                                <!-- <span>{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span> -->
+                                            </a>
+                                        </li>
+                                    @endforeach
                                 </ul>
                             </div>
                         </div>
                     </div>
                 @endif  
                 <div class="col-lg-3 col-md-6 mb-md-0 mb-3 text-lg-right text-center">
-                    <div class="store-btn">
-                        <a href="#"><img src="{{asset('front-assets/images/app-store.png')}}" alt=""></a>
-                        <a class="ml-2" href="#"><img src="{{asset('front-assets/images/google-play.png')}}" alt=""></a>
+                    <div class="return-wrapper">
+                        <div class="footer-return-box mb-3">
+                            <div class="return-icon">
+                                <img src="{{asset('front-assets/images/original-icon.svg')}}" alt="">
+                            </div>
+                            <div class="return-text">
+                                <h4 class="m-0">100% ORIGINAL</h4>
+                                <p>guarantee for all products</p>
+                            </div>
+                        </div>
+                        <div class="footer-return-box mb-3">
+                            <div class="return-icon">
+                                <img src="{{asset('front-assets/images/return-icon.svg')}}" alt="">
+                            </div>
+                            <div class="return-text">
+                                <h4 class="m-0">Return within 30 days</h4>
+                                <p>of recieving your product</p>
+                            </div>
+                        </div>
+                        <hr>
+                        @if($client_preference_detail->show_payment_icons == 1)
+                            <div class="payment-card-bottom text-center">
+                                <ul>
+                                    <li>
+                                        <a href="#"><img src="{{asset('assets/images/visa.png')}}"></a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><img src="{{asset('assets/images/mastercard.png')}}"></a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><img src="{{asset('assets/images/paypal.png')}}"></a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><img src="{{asset('assets/images/american-express.png')}}"></a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><img src="{{asset('assets/images/discover.png')}}"></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        @endif
                     </div>
                 </div>                
             </div>
@@ -101,34 +142,11 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
     <div class="sub-footer">
         <div class="container">
             <div class="row">
-                <div class="col-xl-6 col-md-6 col-sm-12">
+                <div class="col-12 text-center">
                     <div class="footer-end">
-                        <p><i class="fa fa-copyright" aria-hidden="true"></i> 2020-21</p>
+                        <p><i class="fa fa-copyright" aria-hidden="true"></i> 2020-21 | All rights reserved</p>
                     </div>
                 </div>
-                @if($client_preference_detail->show_payment_icons == 1)
-                <div class="col-xl-6 col-md-6 col-sm-12">
-                    <div class="payment-card-bottom">
-                        <ul>
-                            <li>
-                                <a href="#"><img src="{{asset('assets/images/visa.png')}}"></a>
-                            </li>
-                            <li>
-                                <a href="#"><img src="{{asset('assets/images/mastercard.png')}}"></a>
-                            </li>
-                            <li>
-                                <a href="#"><img src="{{asset('assets/images/paypal.png')}}"></a>
-                            </li>
-                            <li>
-                                <a href="#"><img src="{{asset('assets/images/american-express.png')}}"></a>
-                            </li>
-                            <li>
-                                <a href="#"><img src="{{asset('assets/images/discover.png')}}"></a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                @endif
             </div>
         </div>
     </div>

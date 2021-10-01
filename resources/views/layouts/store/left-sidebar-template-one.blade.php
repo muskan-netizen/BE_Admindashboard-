@@ -1,6 +1,6 @@
 @php
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
-$urlImg =  $clientData ? $clientData->logo['image_fit'].'100/80'.$clientData->logo['image_path'] : " ";
+$urlImg =  $clientData ? $clientData->logo['image_fit'].'200/92'.$clientData->logo['image_path'] : " ";
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
@@ -97,7 +97,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     <div class="main-menu">
         <div class="container d-block">
-            <div class="row align-items-center pb-3 pt-2 position-initial">
+            <div class="row align-items-center py-2 position-initial">
                 <!-- <div class="col-lg-2 col-3">
                     <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                 </div> -->

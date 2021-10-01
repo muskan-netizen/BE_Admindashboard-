@@ -411,39 +411,43 @@
 <script type="text/template" id="other_cart_products_template">
     <div class="container mt-3 mb-5">
         <% if(cart_details.upSell_products != ''){ %>
-            <h3 class="mb-4 mt-4">{{__('Frequently bought together')}}</h3>
+            <h3 class="mb-2 mt-4">{{__('Frequently bought together')}}</h3>
             <div class="row">
                 <div class="col-12 p-0">
                     <div class="product-4 product-m no-arrow">
-                        <% _.each(cart_details.upSell_products, function(prod, key){%>
-                            <div>
-                                <a class="card scale-effect text-center" href="{{route('productDetail')}}/<%= prod.url_slug %>">
-                                    <label class="product-tag"><%= prod.product_type %></label>
-                                    <div class="product-image">
-                                        <img src="<%= prod.product_media.image.path.proxy_url %>600/800<%= prod.product_media.image.path.image_path %>" alt="">
-                                    </div>
-                                    <div class="media-body align-self-center">
-                                        <div class="inner_spacing">
+                        <% _.each(cart_details.upSell_products, function(product, key){%>
+                            
+                            <a class="common-product-box scale-effect text-center" href="{{route('productDetail')}}/<%= product.url_slug %>">
+                                <div class="img-outer-box position-relative">
+                                    <img src="<%= product.product_media.image.path.proxy_url %>600/800<%= product.product_media.image.path.image_path %>" alt="">
+                                </div>    
+                                <div class="media-body align-self-center">
+                                    <div class="inner_spacing px-0">
+                                        <div class="product-description">
+                                            <h3 class="m-0"><%= product.translation_title %></h3>
+                                            <p><%= product.vendor_name %></p>
+                                            <p class="border-bottom pb-1">In <%= product.category_name %></p>
                                             <div class="d-flex align-items-center justify-content-between">
-                                                <h3 class="m-0"><%= prod.translation_title %></h3>
+                                                <b><% if(product.inquiry_only == 0) { %>
+                                                    {{ Session::get('currencySymbol') }}<%= product.variant_price %>
+                                                <% } %></b>
+
                                                 @if($client_preference_detail)
                                                     @if($client_preference_detail->rating_check == 1)
-                                                        <% if(prod.averageRating > 0){ %>
-                                                            <span class="rating"><%= prod.averageRating %> <i class="fa fa-star text-white p-0"></i></span>
+                                                        <% if(product.averageRating > 0){%>
+                                                            <div class="rating-box">
+                                                                <i class="fa fa-star" aria-hidden="true"></i>
+                                                                <span><%= product.averageRating %></span>
+                                                            </div>
                                                         <% } %>
                                                     @endif
-                                                @endif
-                                            </div>
-                                            <p><%= prod.vendor_name %></p>
-                                            <h4>
-                                                <% if(prod.inquiry_only == 0){ %>
-                                                    {{ Session::get('currencySymbol') }}<%= prod.variant_price %>
-                                                <% } %>
-                                            </h4>
+                                                @endif  
+                                            </div>                       
                                         </div>
                                     </div>
-                                </a>
-                            </div>
+                                </div>
+                            </a>
+
                         <% }); %>
                     </div>
                 </div>
@@ -451,39 +455,43 @@
         <% } %>
 
         <% if(cart_details.crossSell_products != ''){ %>
-            <h3 class="mb-4 mt-4">{{__('You might be interested in')}}</h3>
+            <h3 class="mb-2 mt-3">{{__('You might be interested in')}}</h3>
             <div class="row">
                 <div class="col-12 p-0">
                     <div class="product-4 product-m no-arrow">
-                        <% _.each(cart_details.crossSell_products, function(prod, key){%>
-                            <div>
-                                <a class="card scale-effect text-center" href="{{route('productDetail')}}/<%= prod.url_slug %>">
-                                    <label class="product-tag"><%= prod.product_type %></label>
-                                    <div class="product-image">
-                                        <img src="<%= prod.product_media.image.path.proxy_url %>600/800<%= prod.product_media.image.path.image_path %>" alt="">
-                                    </div>
-                                    <div class="media-body align-self-center">
-                                        <div class="inner_spacing">
+                        <% _.each(cart_details.crossSell_products, function(product, key){%>
+
+                            <a class="common-product-box scale-effect text-center" href="{{route('productDetail')}}/<%= product.url_slug %>">
+                                <div class="img-outer-box position-relative">
+                                    <img src="<%= product.product_media.image.path.proxy_url %>600/800<%= product.product_media.image.path.image_path %>" alt="">
+                                </div>    
+                                <div class="media-body align-self-center">
+                                    <div class="inner_spacing px-0">
+                                        <div class="product-description">
+                                            <h3 class="m-0"><%= product.translation_title %></h3>
+                                            <p><%= product.vendor_name %></p>
+                                            <p class="border-bottom pb-1">In <%= product.category_name %></p>
                                             <div class="d-flex align-items-center justify-content-between">
-                                                <h3 class="m-0"><%= prod.translation_title %></h3>
+                                                <b><% if(product.inquiry_only == 0) { %>
+                                                    {{ Session::get('currencySymbol') }}<%= product.variant_price %>
+                                                <% } %></b>
+
                                                 @if($client_preference_detail)
                                                     @if($client_preference_detail->rating_check == 1)
-                                                        <% if(prod.averageRating > 0){ %>
-                                                            <span class="rating"><%= prod.averageRating %> <i class="fa fa-star text-white p-0"></i></span>
+                                                        <% if(product.averageRating > 0){%>
+                                                            <div class="rating-box">
+                                                                <i class="fa fa-star" aria-hidden="true"></i>
+                                                                <span><%= product.averageRating %></span>
+                                                            </div>
                                                         <% } %>
                                                     @endif
-                                                @endif
-                                            </div>
-                                            <p><%= prod.vendor_name %></p>
-                                            <h4>
-                                                <% if(prod.inquiry_only == 0){ %>
-                                                    {{ Session::get('currencySymbol') }}<%= prod.variant_price %>
-                                                <% } %>
-                                            </h4>
+                                                @endif  
+                                            </div>                       
                                         </div>
                                     </div>
-                                </a>
-                            </div>
+                                </div>
+                            </a>
+
                         <% }); %>
                     </div>
                 </div>
@@ -958,6 +966,7 @@
 
     $(document).delegate('input[name="password"]', 'input', function() {
         $(this).parent('#password-wrapper').show();
+        $("#error-msg").hide();
     });
 
     $(document).delegate("#username", "input", function(e){
@@ -1023,6 +1032,8 @@
                     $("#password-wrapper input").attr("required", true);
                     if($("#password-wrapper input").val() == ''){
                         error = 1;
+                        $("#error-msg").show();
+                        $("#error-msg").html('Password field is required');
                     }
                 }else{
                     error = 1;

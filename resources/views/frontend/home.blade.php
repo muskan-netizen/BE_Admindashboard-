@@ -86,15 +86,12 @@
 
 <script type="text/template" id="banner_template">
     <% _.each(brands, function(brand, k){%>
-        <div>
-            <div class="">
-                <a href="<%= brand.redirect_url %>">
-                    <img src="<%= brand.image.image_fit %>120/120<%= brand.image.image_path %>" alt="">
-                </a>
-            </div>
-        </div>
+        <a class="barnd-img-outer" href="<%= brand.redirect_url %>">
+            <img src="<%= brand.image.image_fit %>500/500<%= brand.image.image_path %>" alt="">
+        </a>
     <% }); %>
 </script>
+
 <script type="text/template" id="products_template">
     <% _.each(products, function(product, k){ %>
         <div>
@@ -138,16 +135,6 @@
                 @include('frontend.included_files.dynamic_page')
          @else
         <div class="container render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-            <div class="row">
-                <div class="col-12 text-center d-flex align-items-center justify-content-between mb-4">
-                    <div class="title1">
-                        <!-- <h2 class="title-inner1 mb-0">{{ $homePageLabel->slug == 'vendors' ? getNomenclatureName('vendors', true) :  __($homePageLabel->title) }}</h2> -->
-                    </div>
-                    @if($homePageLabel->slug == 'vendors')
-                    <a class="view_more_items" href="{{route('vendor.all')}}">{{__('View More')}}</a>
-                    @endif
-                </div>
-            </div>
             <div class="row">
                 <div class="col-12">
                     @if($homePageLabel->slug == 'vendors')

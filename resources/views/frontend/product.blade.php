@@ -663,32 +663,37 @@
             @forelse($product->related_products as $related_product)
                 {{--<div class="col-xl-2 col-md-4 col-sm-6">--}}
                 <div>
-                    <a class="card scale-effect text-center" href="{{route('productDetail')}}/{{ $related_product->url_slug }}">
-                        <label class="product-tag">{{ __($related_product->product_type) }}</label>
-                        <div class="product-image">
-                            <img src="{{ $related_product->media ? $related_product->media->first()->image->path['image_fit'].'600/600'.$related_product->media->first()->image->path['image_path'] : '' }}" alt="">
-                        </div>
-                        <div class="media-body align-self-center">
-                            <div class="inner_spacing">
+                <a class="common-product-box scale-effect text-center" href="{{route('productDetail')}}/{{ $related_product->url_slug }}">
+                    <div class="img-outer-box position-relative">
+                        <img src="{{ $related_product->media ? $related_product->media->first()->image->path['image_fit'].'600/600'.$related_product->media->first()->image->path['image_path'] : '' }}" alt="">
+                    </div>    
+                    <div class="media-body align-self-center">
+                        <div class="inner_spacing px-0">
+                            <div class="product-description">
+                                <h3 class="m-0">{{ $related_product->translation_title }}</h3>
+                                <p>{{ $related_product->vendor_name }}</p>
+                                <p class="border-bottom pb-1">In {{$related_product->category_name}}</p>
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <h3 class="m-0">{{ $related_product->translation_title }}</h3>
+                                    <b>
+                                        @if($related_product->inquiry_only == 0)
+                                            {{ Session::get('currencySymbol') . $related_product->variant_price }}
+                                        @endif
+                                    </b>
+
                                     @if($client_preference_detail)
                                         @if($client_preference_detail->rating_check == 1)
                                             @if($related_product->averageRating > 0)
                                                 <span class="rating">{{ $related_product->averageRating }} <i class="fa fa-star text-white p-0"></i></span>
                                             @endif
                                         @endif
-                                    @endif
-                                </div>
-                                <p>{{ $related_product->vendor_name }}</p>
-                                <h4>
-                                    @if($related_product->inquiry_only == 0)
-                                        {{ Session::get('currencySymbol') . $related_product->variant_price }}
-                                    @endif
-                                </h4>
+                                    @endif  
+                                </div>                       
                             </div>
                         </div>
-                    </a>
+                    </div>
+                </a>
+
+                
                 </div>
                 {{--<div class="col-xl-2 col-md-4 col-sm-6">
                     <div class="product-box">

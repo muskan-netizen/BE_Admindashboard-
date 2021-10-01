@@ -30,35 +30,34 @@ a {
     -ms-transition: all 0.5s ease-in-out;
     -o-transition: all 0.5s ease-in-out;
     transition: all 0.5s ease-in-out;
-    border-bottom: 1px solid rgb(221 221 221 / 50%);
     z-index: 999;
+    border-bottom: 1px solid rgb(221 221 221 / 50%);
+}
+
+.menu-navigation{    
+    border-bottom: 1px solid rgb(221 221 221 / 50%);
 }
 
 .offset-top {
-    margin-top: 243px;
+    margin-top: 226px;
 }
 
 .inner-pages-offset {
-    margin-top: 148px;
+    margin-top: 177px;
 }
 
 .set-hide-nav-bar {
-    margin-top: 43px;
+    margin-top: 40px;
 }
 
 header.site-header.fixed-bar {
     top: -50px;
-    border-color: rgb(221 221 221 / 50%);
 }
 
 .fixed-bar .nav-cate-img {
     opacity: 0;
     visibility: hidden;
     display: none;
-}
-
-.navbar-brand img {
-    width: 100px;
 }
 
 .navigation-tab-item .nav-link {
@@ -74,16 +73,27 @@ header.site-header.fixed-bar {
     padding: 10px 0;
 }
 
-.site-header .pb-3 {
-    padding-bottom: 0 !important;
-}
-
 .pixelstrap li > a {
     padding: 10px 30px 10px 0;
 }
 
 .top-header .header-dropdown li:hover i{
     color: #fff;
+}
+
+.site-topbar .location-bar h2{
+    color: #fff;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.site-topbar .location-bar i {
+    font-size: 20px;
+    color: #fff !important;
+}
+
+.vendors .container {
+    margin: 0 auto 30px;
 }
 
 .productVariants .firstChild {
@@ -3184,8 +3194,8 @@ button.close {
     border-bottom-left-radius: 0;
 }
 
-.pb-250 {
-    padding-bottom: 250px;
+.pb-265 {
+    padding-bottom: 265px;
 }
 
 .btn-outline-secondary {
@@ -6022,9 +6032,41 @@ section.royo-business .title-36 {
     align-items: center;
 }
 
-
-
-
+.barnd-img-outer img{
+    width: 100%;
+}
+.return-wrapper{    
+    width: 80%;
+    margin-left: auto;
+}
+.footer-return-box {
+    text-align: left;
+    padding-left: 50px;
+    position: relative;
+}
+.return-icon {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.return-text h4 {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 16px;
+}
+.return-text p {
+    line-height: normal;
+    font-size: 14px;
+    color: #777777;
+}
+body .footer-theme .sub-title h4 {
+    color: #000000;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 26px;
+    margin-bottom: 15px;
+}
 
 
 
@@ -6139,6 +6181,16 @@ section.royo-business .title-36 {
 body[dir="rtl"] {
     text-align: right;
     overflow-x: hidden;
+}
+
+body[dir="rtl"] .close.edit-close {
+    float: left;
+    padding-top: 0;
+}
+
+body[dir="rtl"] .return-wrapper {
+    margin-left: 0;
+    margin-right: auto;
 }
 
 body[dir="rtl"] .sm,
@@ -6382,7 +6434,7 @@ body[dir="rtl"] .inner_spacing {
 }
 
 body[dir="rtl"] .footer-theme .sub-title .contact-list li {
-    padding: 13px 25px 0 0;
+    padding: 0 25px 0 0;
 }
 
 body[dir="rtl"] .footer-theme .sub-title .contact-list i {

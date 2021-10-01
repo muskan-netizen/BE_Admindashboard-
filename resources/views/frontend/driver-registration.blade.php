@@ -13,7 +13,7 @@
         @include('layouts.store/left-sidebar-template-one')
         @endif
 </header>
-<section class="section-b-space new-pages pb-250">
+<section class="section-b-space new-pages pb-265">
     <div class="container">
         <div class="row">
             <div class="col-12">

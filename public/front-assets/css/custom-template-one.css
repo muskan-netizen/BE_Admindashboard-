@@ -56,6 +56,9 @@ body{
     font-family: 'Eina02';
     font-weight: 400;
 }
+.offset-top {
+    margin-top: 260px;
+}
 
 .top-header.site-topbar {
     background: var(--top-header-color);
@@ -70,15 +73,8 @@ body{
     background: transparent;
 }
 
-.site-topbar .location-bar h2{
-    color: #fff;
-    font-size: 16px;
-    line-height: 24px;
-}
-
-.site-topbar .location-bar i {
-    font-size: 20px;
-    color: #fff !important;
+.site-header .pb-3 {
+    padding-bottom: 0 !important;
 }
 
 .navigation-tab,.navigation-tab-overlay {
@@ -392,6 +388,16 @@ body{
     border-radius: 40px;
 }
 
+.brand-ing:after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    background: rgb(0 0 0 / 20%);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 .brand-box img {
     width: 100%;
     height: 100%;
@@ -410,6 +416,7 @@ body{
     line-height: 33px;
     width: 100%;
     text-align: center;
+    z-index: 1;
 }
 
 .product-timing i, .product-timing img {
@@ -533,10 +540,10 @@ footer ul.social-links li,.footer-theme .sub-title .contact-list li{
 }
 
 footer ul.social-links li a i, .contact-list li  i {
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-    font-size: 16px;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    font-size: 14px;
     text-align: center;
     margin-right: 5px;
     background: #000;
