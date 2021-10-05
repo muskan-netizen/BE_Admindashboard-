@@ -25,14 +25,26 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 @foreach($pages as $page)
 
                                 @if($page->primary->type_of_form == 2)
-                                @if($last_mile_common_set != false)
+                                @if(isset($last_mile_common_set) && $last_mile_common_set != false)
                                 <li>
-                                    <a href="{{route('extrapage',['slug' => $page->slug])}}">{{$page->translations->first() ? $page->translations->first()->title : $page->primary->title}}</a>
+                                    <a href="{{route('extrapage',['slug' => $page->slug])}}">
+                                        @if(isset($page->translations) && $page->translations->first()->title != null)
+                                        {{ $page->translations->first()->title ?? ''}}
+                                        @else
+                                        {{ $page->primary->title ?? ''}}
+                                        @endif
+                                    </a>
                                 </li>
                                 @endif
                                 @else
                                 <li>
-                                    <a href="{{route('extrapage',['slug' => $page->slug])}}">{{$page->translations->first() ? $page->translations->first()->title : $page->primary->title}}</a>
+                                    <a href="{{route('extrapage',['slug' => $page->slug])}}">
+                                        @if(isset($page->translations) && $page->translations->first()->title != null)
+                                        {{ $page->translations->first()->title ?? ''}}
+                                        @else
+                                        {{ $page->primary->title ?? ''}}
+                                        @endif
+                                    </a>
                                 </li>
                                 @endif
                                 @endforeach

@@ -171,7 +171,7 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-2 cw top-heading pr-0 text-center text-lg-left mb-3 mb-lg-0">
-                    <h2 class="h2-heading">{{ $homePageLabel->translations->first()->title ? __($homePageLabel->translations->first()->title) : __($homePageLabel->title) }}</h2>
+                    <h2 class="h2-heading">{{ $homePageLabel->slug == 'brands' ? getNomenclatureName('brands', true) :  __($homePageLabel->title) }}</h2>
                     <!-- <p>Check out the favorites among people.</p> -->
                 </div>
                 <div class="col-lg-10 cw">
@@ -189,7 +189,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-2">
-                    <h2 class="h2-heading">{{ $homePageLabel->translations->first()->title ? __($homePageLabel->translations->first()->title) : __($homePageLabel->title) }}</h2>
+                    <h2 class="h2-heading">{{ $homePageLabel->slug == 'vendors' ? getNomenclatureName('vendors', true) :  __($homePageLabel->title) }}</h2>
                     <a class="btn btn-solid" href="{{route('vendor.all')}}">See all</a>
                 </div>
                 <div class="col-12 px-0">
@@ -205,7 +205,7 @@
         <div class="container render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
                 <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-0">
-                    <h2 class="h2-heading">{{ $homePageLabel->translations->first()->title ? $homePageLabel->translations->first()->title : __($homePageLabel->title) }}</h2>
+                    <h2 class="h2-heading">{{ $homePageLabel->slug == 'vendors' ? getNomenclatureName('vendors', true) :  __($homePageLabel->title) }}</h2>
                     @if($homePageLabel->slug == 'vendors')
                     <a class="btn btn-solid" href="{{route('vendor.all')}}">{{__('View More')}}</a>
                     @endif
