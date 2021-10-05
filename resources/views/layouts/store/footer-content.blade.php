@@ -24,7 +24,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                             <ul>
                                 @foreach($pages as $page)
 
-                                @if($page->primary->type_of_form == 2)
+                                @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
                                 @if(isset($last_mile_common_set) && $last_mile_common_set != false)
                                 <li>
                                     <a href="{{route('extrapage',['slug' => $page->slug])}}">
