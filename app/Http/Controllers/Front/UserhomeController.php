@@ -244,7 +244,7 @@ class UserhomeController extends FrontController
                 return Redirect::route('categoryDetail', 'cabservice');
 
             $home_page_pickup_labels = CabBookingLayout::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
-
+ 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             // $last_mile = $this->checkIfLastMileDeliveryOn();
             if (isset($set_template)  && $set_template->template_id == 1)
