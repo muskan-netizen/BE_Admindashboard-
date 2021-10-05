@@ -143,7 +143,8 @@ class FrontController extends Controller
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
                 }
-                $value->category_name = $value->category->categoryDetail->translation->first()->name;
+                
+                $value->category_name = $value->category->categoryDetail->translation->first() ? $value->category->categoryDetail->translation->first()->name :  $value->category->slug;
             }
         }
         return $products;
