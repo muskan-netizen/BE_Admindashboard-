@@ -110,11 +110,6 @@ class CustomDomain{
                 Session::put('customerCurrency', $primeCurcy->currency_id);
                 Session::put('currencySymbol', $primeCurcy->symbol);
                 Session::put('currencyMultiplier', $primeCurcy->doller_compare);
-              }else{
-                $primeCurcy = Currency::where('id', 147)->first();
-                Session::put('customerCurrency', 147);
-                Session::put('currencySymbol', $primeCurcy->symbol);
-                Session::put('currencyMultiplier', 1);
               }
           }
           // else{
