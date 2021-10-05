@@ -41,7 +41,6 @@ class WalletController extends Controller{
                 $response['wallet_balance'] = $wallet->balanceFloat;
                 $response['transactions'] = $transactions;
                 $message = 'Wallet has been credited successfully';
-                Session::put('success', $message);
                 return $this->successResponse($response, $message, 201);
             }
             else{

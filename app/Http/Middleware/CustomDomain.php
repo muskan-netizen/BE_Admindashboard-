@@ -7,10 +7,11 @@ use Config;
 use Closure;
 use Session;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
-use App\Models\{Client, ClientPreference, ClientLanguage, ClientCurrency, Product,Country};
+use App\Models\{Client, ClientPreference, Language, ClientLanguage, Currency, ClientCurrency, Product,Country};
 
 class CustomDomain{
     /**
@@ -80,21 +81,43 @@ class CustomDomain{
           }
           Session::put('client_config', $redisData);
           Session::put('login_user_type', 'client');
-          if (!session()->has('customerLanguage') || empty(session()->get('customerLanguage'))){
-              $primeLang = ClientLanguage::select('language_id', 'is_primary')->where('is_primary', 1)->first();
+          $primeLang = ClientLanguage::select('language_id', 'is_primary')->where('is_primary', 1)->first();
+          if (!Session::has('customerLanguage') || empty(Session::get('customerLanguage'))){
               if($primeLang){
                 Session::put('customerLanguage', $primeLang->language_id);
               }
+          }else{
+              $customerLang = ClientLanguage::select('language_id', 'is_primary')->where('is_primary', 1)->where('language_id', Session::get('customerLanguage'))->first();
+              if($customerLang){
+                Session::put('customerLanguage', $customerLang->language_id);
+              }else{
+                Session::put('customerLanguage', $primeLang->language_id);
+              }
           }
-          if (!session()->has('customerCurrency') || empty(session()->get('customerCurrency'))){
-              $primeCurcy = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')
-                    ->where('client_currencies.is_primary', 1)->first();
+          $lang_detail = Language::where('id', Session::get('customerLanguage'))->first();
+          App::setLocale($lang_detail->sort_code);
+          Session::put('locale', $lang_detail->sort_code);
+          $primeCurcy = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.is_primary', 1)->first();
+          if (!Session::has('customerCurrency') || empty(Session::get('customerCurrency'))){
               if($primeCurcy){
                 Session::put('customerCurrency', $primeCurcy->currency_id);
                 Session::put('currencySymbol', $primeCurcy->symbol);
                 Session::put('currencyMultiplier', $primeCurcy->doller_compare);
               }
+          }else{
+              $customerCurcy = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.is_primary', 1)->where('client_currencies.currency_id', Session::get('customerCurrency'))->first();
+              if($customerCurcy){
+                Session::put('customerCurrency', $customerCurcy->currency_id);
+                Session::put('currencySymbol', $customerCurcy->symbol);
+                Session::put('currencyMultiplier', $customerCurcy->doller_compare);
+              }else{
+                Session::put('customerCurrency', $primeCurcy->currency_id);
+                Session::put('currencySymbol', $primeCurcy->symbol);
+                Session::put('currencyMultiplier', $primeCurcy->doller_compare);
+              }
           }
+          $currency_detail = Currency::where('id', Session::get('customerCurrency'))->first();
+          Session::put('iso_code', $currency_detail->iso_code);
           $preferData = array();
           if(isset($clientPreference)){
             $preferData = $clientPreference;

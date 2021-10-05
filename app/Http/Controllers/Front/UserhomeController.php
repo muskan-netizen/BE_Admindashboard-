@@ -369,7 +369,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $feature_product_detail->inquiry_only,
                 'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
                 'price' => Session::get('currencySymbol') . ' ' . (number_format($feature_product_detail->variant->first()->price * $multiply, 2)),
-                'category' => $new_product_detail->category->categoryDetail->translation->first()->name
+                'category' => ($feature_product_detail->category->categoryDetail->translation->first()) ? $feature_product_detail->category->categoryDetail->translation->first()->name : $feature_product_detail->category->categoryDetail->slug
             );
         }
         foreach ($on_sale_product_details as  $on_sale_product_detail) {
@@ -385,7 +385,7 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $on_sale_product_detail->inquiry_only,
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'price' => Session::get('currencySymbol') . ' ' . (number_format($on_sale_product_detail->variant->first()->price * $multiply, 2)),
-                'category' => $new_product_detail->category->categoryDetail->translation->first()->name
+                'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
             );
         }
         $home_page_labels = HomePageLabel::with('translations')->get();

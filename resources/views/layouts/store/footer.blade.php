@@ -15,6 +15,8 @@
     if(isset(Session::get('preferences')->theme_admin) && ucwords(session('preferences')->theme_admin) == 'Dark'){
         $darkMode = 'dark';
     }
+    
+    \Session::forget('success');
 @endphp
 <script src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>

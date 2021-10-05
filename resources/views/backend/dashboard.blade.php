@@ -261,7 +261,7 @@
                     <div class="card">
                         <div class="card-body">
                          <h4 class="header-title mb-0">{{ __('Revenue By Location') }}</h4>
-                         <div id="cardCollpase4" class="collapse pt-3 show">
+                         <div id="cardCollpase3" class="collapse pt-3 show">
                             <div id="world-map-markers" style="height: 433px"></div>
                          </div>
                         </div>
