@@ -1,52 +1,6 @@
 @extends('layouts.store', ['title' => 'Booking Details'])
 @section('content')
-<style type="text/css">
-    .cabbooking-loader {
-      width: 30px;
-      height: 30px;
-      animation: loading 1s infinite ease-out;
-      margin: auto;
-      border-radius: 50%;
-      background-color: red;
-    }
-    @keyframes loading {
-      0% {
-        transform: scale(1);
-      }
-      100% {
-        transform: scale(8);
-        opacity: 0;
-      }
-    }
-    .site-topbar,.main-menu.d-block{
-        display: none !important;
-    }
-    
-    .cab-booking-header img.img-fluid {
-        height: 50px;
-    }
-    .cab-booking-header{
-        display: block !important;
-    }
-    </style>
-    
-    <?php
-    $url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-    if (strpos($url,'/looking/details/') !== false) {?>
-    <style>
-        .container .main-menu .d-block{
-             display: none;
-         }
-     </style>
-    <?php
-    } else { ?>
-        <style>
-            .cab-booking-header{
-                 display: none;
-             }
-         </style>
-    <?php }
-    ?>
+
 <header>
     <div class="mobile-fix-option"></div>
     @if(isset($set_template)  && $set_template->template_id == 1)
@@ -271,6 +225,7 @@
 @endsection
 
 @section('script')
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{asset('js/js-toast-master/toast.min.js') }}"></script>
 <script src="{{asset('js/cab_booking_details.js') }}"></script>
