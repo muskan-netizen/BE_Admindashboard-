@@ -411,7 +411,7 @@ $timezone = Auth::user()->timezone;
                                                                                 @endphp
                                                                                 <span>{{Session::get('currencySymbol')}}@money($product_subtotal_amount * $clientCurrency->doller_compare)</span>
                                                                             </li>
-                                                                            @if($hidereturn != 1)
+                                                                            @if(isset($hidereturn) && $hidereturn != 1)
                                                                             <button class="return-order-product btn btn-solid" data-id="{{$order->id??0}}"  data-vendor_id="{{$vendor->vendor_id??0}}"><td class="text-center" colspan="3">{{__('Return')}}</button>
                                                                             @endif    
                                                                         </ul>
