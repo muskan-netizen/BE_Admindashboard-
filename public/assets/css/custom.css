@@ -2344,10 +2344,51 @@
       float: right;
   }
 
+  .order-list-view .dd-list .dd-nochildren .dd-handle+.dd3-content {
+    padding: 5px 70px 5px 46px !important;
+}
 
+  .order-list-view .inner-div.text-right {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+  }
 
+  .order-list-view .dd-list .dd-handle+.dd3-content {
+      padding: 5px 70px !important;
+      position: relative;
+  }
 
+  .order-list-view .dd-list .dd-nochildren .dd-handle.dd3-handle {
+      left: 0;
+      position: absolute;
+      background: transparent;
+  }
 
+  .order-list-view .dd-list .dd-item .dd-handle {
+      position: absolute;
+      top: 0;
+      padding: 10px 16px;
+      left: 13px;
+  }
+
+  .order-list-view .dd-list .dd-item button {
+      position: relative;
+      z-index: 1;
+  }
+
+  .order-list-view .dd-list .dd-item .dd-handle {
+      position: relative;
+      z-index: 1;
+      left: 0;
+      background: transparent;
+  }
+
+  .order-list-view .dd-list .dd-expand + .dd-handle.dd3-handle {
+    padding-left: 0;
+    position: relative;
+  }
 
 
 

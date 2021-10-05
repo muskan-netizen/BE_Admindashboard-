@@ -22,6 +22,7 @@
 </header>
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
 
+@if(count($banners))
 <section class="p-0 small-slider">
     <div class="slide-1 home-slider">
         @foreach($banners as $banner)
@@ -52,6 +53,7 @@
         @endforeach
     </div>
 </section>
+@endif
 <script type="text/template" id="vendors_template">
     <% _.each(vendors, function(vendor, k){%>
         <div class="product-box scale-effect">
@@ -77,7 +79,7 @@
                 </a>
                 <% if(vendor.timeofLineOfSightDistance != undefined){ %>
                     <h6 class="d-flex justify-content-between">
-                        <small><i class="fa fa-map-marker"></i> <%= vendor.lineOfSightDistance %>km</small>
+                        <small><i class="fa fa-map-marker"></i> <%= vendor.lineOfSightDistance %></small>
                         <small><i class="fa fa-clock"></i> <%= vendor.timeofLineOfSightDistance %>min</small>
                     </h6>
                 <% } %>
@@ -126,7 +128,7 @@
         </div>
     <% }); %>
 </script>
-<section class="section-b-space p-t-0 pt-3 pt-md-5 ratio_asos d-none" id="our_vendor_main_div">
+<section class="section-b-space p-t-0 pt-3 pt-md-5 ratio_asos d-none pb-0" id="our_vendor_main_div">
     <div class="vendors">
         @foreach($homePageLabels as $key => $homePageLabel)
         @if($homePageLabel->slug == 'pickup_delivery')

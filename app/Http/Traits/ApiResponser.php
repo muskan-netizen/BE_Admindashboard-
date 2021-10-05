@@ -105,9 +105,20 @@ trait ApiResponser
 		$mail_from = $data->mail_from;
 		$email_template_content = '';
 		$email_template = EmailTemplate::where('id', 7)->first();
+		if (Auth::user()) {
+			$cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', Auth::user()->id)->first();
+		} else {
+			$cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+		}
+		if ($cart) {
+			$cartDetails = $this->getCart($cart);
+		}
 		if ($email_template) {
 			$email_template_content = $email_template->content;
+			$returnHTML = view('email.orderProducts')->with(['cartData' => $cartDetails])->render();
+
 			$email_template_content = str_ireplace("{name}", Auth::user()->name, $email_template_content);
+			$email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
 		}
 		Mail::send('frontend.failmail', compact('email_template_content'), function ($message) use ($mail_from) {
 			$message->from($mail_from);

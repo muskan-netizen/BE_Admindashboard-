@@ -52,13 +52,16 @@ class PaystackGatewayController extends FrontController
                 return $this->successResponse($response->getData());
             }
             elseif ($response->isRedirect()) {
+                $this->failMail();
                 return $this->successResponse($response->getRedirectUrl());
             }
             else {
+                $this->failMail();
                 return $this->errorResponse($response->getMessage(), 400);
             }
         }
         catch(\Exception $ex){
+            $this->failMail();
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }

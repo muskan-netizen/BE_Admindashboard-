@@ -13771,6 +13771,7 @@ header.stickycls {
         position: relative;
         float: none;
         display: inline-block;
+        vertical-align: middle;
     }
 
     .pixelstrap.sm-rtl li {

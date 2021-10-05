@@ -259,7 +259,7 @@
                                                     }
                                                     $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                 } ?>
-                                                <div class="col-xl-3 col-6 col-grid-box">
+                                                <div class="col-xl-3 col-6 col-grid-box mt-3">
                                                     <div class="product-box scale-effect">
                                                         <div class="img-wrapper">
                                                             <div class="front">

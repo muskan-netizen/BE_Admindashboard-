@@ -27,7 +27,7 @@
         </div>
     </div>
     <div class="row catalog_box">
-        <div class="col-xl-4 col-lg-6 mb-4">
+        <div class="col-xl-4 col-lg-6 mb-4 order-list-view">
             <div class="card-box h-100">
                 <div class="row mb-2">
                     <div class="col-sm-8">
@@ -59,6 +59,7 @@
                 </div>
             </div>
         </div>
+
         @if($client_preference_detail->business_type != 'taxi') 
         <div class="col-xl-4 col-lg-6 mb-4">
             <div class="card-box h-100">
@@ -131,8 +132,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-        
+        </div>        
 
         <div class="col-xl-4 col-lg-6 mb-4">
             <div class="card-box h-100">

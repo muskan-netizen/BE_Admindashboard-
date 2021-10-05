@@ -87,7 +87,7 @@
                                         <div class="row margin-res">
                                             @if(!empty($listData))
                                             @foreach($listData as $key => $data)
-                                            <div class="col-xl-3 col-6 col-grid-box">
+                                            <div class="col-xl-3 col-6 col-grid-box mt-3">
                                                 <div class="product-box scale-effect mt-0">
                                                     <div class="img-wrapper">
                                                         <div class="front">

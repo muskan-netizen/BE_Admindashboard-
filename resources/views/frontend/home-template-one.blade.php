@@ -21,6 +21,7 @@
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal">
   Launch demo modal
 </button>
+@if(count($banners))
 <section class="home-slider-wrapper">
     <div class="container">
         <div class="row">
@@ -54,6 +55,7 @@
         </div>
     </div>
 </section>
+@endif
 
 <div class="home-content-area">
    
@@ -203,7 +205,7 @@
         </a>
     <% }); %>
 </script>
-<section class="section-b-space p-t-0 pt-3 pt-md-4 ratio_asos d-none" id="our_vendor_main_div">
+<section class="section-b-space p-t-0 pt-3 pt-md-4 ratio_asos d-none pb-0" id="our_vendor_main_div">
     <div class="vendors">
         @foreach($homePageLabels as $key => $homePageLabel)
             @if($homePageLabel->slug == 'pickup_delivery')

@@ -207,7 +207,7 @@
                                             <div class="row margin-res">
                                             @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $cate)
-                                                <div class="col-xl-3 col-6 col-grid-box">
+                                                <div class="col-xl-3 col-6 col-grid-box mt-3">
                                                     <div class="product-box">
                                                         <div class="img-wrapper">
                                                             <a href="{{ route('vendorCategoryProducts', [$vendor->slug, $cate['slug']]) }}">

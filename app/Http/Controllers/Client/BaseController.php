@@ -53,9 +53,9 @@ class BaseController extends Controller
                         }
                         $icon = $node['icon']['proxy_url'] . '30/30' . $node['icon']['image_path'];
                         if (isset($node['translation_one'])) {
-                            $this->htmlData .= '<div class="dd3-content"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> ' . $node['translation_one']["name"] . '</a><span class="inner-div text-right">';
+                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> ' . $node['translation_one']["name"] . '</a></div><span class="inner-div text-right">';
                         } else {
-                            $this->htmlData .= '<div class="dd3-content"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node['translation_one']["name"] . '<span class="inner-div text-right">';
+                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node['translation_one']["name"] . '</div><span class="inner-div text-right">';
                         }
                         if (!in_array($node["id"], $blockedCategory)) {
                             $status = 2; //$icon = 'mdi-lock-open-variant';
@@ -88,9 +88,9 @@ class BaseController extends Controller
                         }
                         $icon = $node['icon']['proxy_url'] . '30/30' . $node['icon']['image_path'];
                         if (isset($node['translation_one'])) {
-                            $this->htmlData .= '<div class="dd3-content"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal" dataid="' . $node["id"] . '" is_vendor="0" href="#"> ' . $node['translation_one']["name"] . '</a><span class="inner-div text-right">';
+                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal ellips" dataid="' . $node["id"] . '" is_vendor="0" href="#"> ' . $node['translation_one']["name"] . '</a></div><span class="inner-div text-right">';
                         } else {
-                            $this->htmlData .= '<div class="dd3-content"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node['translation_one']["name"] . '<span class="inner-div text-right">';
+                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node['translation_one']["name"] . '</div><span class="inner-div text-right">';
                         }
                         if (!in_array($node["id"], $blockedCategory)) {
                             $status = 2; //$icon = 'mdi-lock-open-variant';
@@ -161,7 +161,7 @@ class BaseController extends Controller
                 if ($node['type_id'] == 1 || $node['type_id'] == 3) {
                     $this->toggleData .= '<li class="dd-item dd3-item" data-id="' . $node["id"] . '">';
                     $icon = $node['icon']['proxy_url'] . '30/30' . $node['icon']['image_path'];
-                    $this->toggleData .= '<div class="dd3-content"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node["slug"] . '<span class="inner-div text-right">';
+                    $this->toggleData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node["slug"] . '</div><span class="inner-div text-right">';
                     $name = 'category[' . $node["id"] . ']';
                     $this->toggleData .= '<a class="action-icon" data-id="' . $node["id"] . '" href="javascript:void(0)">';
                     if ($node['type_id'] == 3) {

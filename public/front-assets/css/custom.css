@@ -3089,7 +3089,7 @@ td.order_address {
 
 .common-banner img{
     max-width: 100%;
-    width: auto;
+    /* width: auto; */
 }
 
 .category-block .category-image img {
@@ -4309,6 +4309,7 @@ form .location-box .form-control::placeholder {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 
 
 /* .location-list {
@@ -6032,7 +6033,7 @@ section.royo-business .title-36 {
 }
 
 .offer-slider .img-outer-box {
-    width: 40%;
+    width: 100px;
     height: 110px;
 }
 
@@ -6082,11 +6083,21 @@ body .footer-theme .sub-title h4 {
 }
 
 
+.breadcrumb-section .breadcrumb{
+    justify-content: flex-start;
+}
 
+.breadcrumb-section.bg-transparent {
+    padding-bottom: 0;
+}
 
+.collection-filter .img-outer-box img {
+    border: 0;
+}
 
-
-
+.offer-slider .img-outer-box + .media-body {
+    width: calc(100% - 100px);
+}
 
 
 

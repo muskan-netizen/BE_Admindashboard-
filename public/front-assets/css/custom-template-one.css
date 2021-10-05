@@ -77,7 +77,7 @@ h2 {
 }
 
 h3 {
-    font-size: 224px;
+    font-size: 24px;
     font-weight: 400;
     color: #777777;
     letter-spacing: 0.03em;
@@ -281,7 +281,7 @@ h6 {
 }
 
 .product-box{
-    padding: 0 16px;
+    padding: 5px 16px 0;
 }
 
 .suppliers-box {
@@ -338,9 +338,9 @@ h6 {
     color: #000;
     font-family: 'Eina02';
     font-weight: 700;   
-    font-size: 28px;
+    font-size: 33px;
     letter-spacing: 0;
-    line-height: 38px;
+    line-height: 40px;
     margin: 0;
 }
 
@@ -492,6 +492,7 @@ h6 {
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid rgb(221 221 221 / 27%);
 }
 
 .supplier-rating h6{

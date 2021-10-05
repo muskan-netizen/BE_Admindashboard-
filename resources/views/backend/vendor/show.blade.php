@@ -1081,6 +1081,18 @@
                 center: 'title',
                 right: 'timeGridWeek,timeGridDay'
             },
+            slotLabelFormat: [
+                {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }
+            ],
+            eventTimeFormat: { // like '14:30:00'
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            },
             navLinks: true,
             selectable: true,
             selectMirror: true,
@@ -1122,7 +1134,7 @@
                 });
             },
             events: {
-                url: "{{route('vendor.calender.data', $vendor->id)}}"
+                url: "{{route('vendor.calender.data', $vendor->id)}}",
             },
             eventResize: function(arg) {
                 // console.log(arg.event.extendedProps);

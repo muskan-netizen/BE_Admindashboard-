@@ -105,13 +105,16 @@ class PayfastGatewayController extends FrontController
             elseif ($response->isRedirect()) {
                 $data['formData'] = $request_arr;
                 $data['redirectUrl'] = $response->getRedirectUrl();
+                $this->failMail();
                 return $this->successResponse($data);
             }
             else {
+                $this->failMail();
                 return $this->errorResponse($response->getMessage(), 400);
             }
         }
         catch(\Exception $ex){
+            $this->failMail();
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }

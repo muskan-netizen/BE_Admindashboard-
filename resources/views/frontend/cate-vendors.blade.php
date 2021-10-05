@@ -189,7 +189,7 @@
                                                         $vendor_url = route('vendorDetail', $data->slug);
                                                     }
                                                     @endphp
-                                                    <div class="col-xl-3 col-6 col-grid-box">
+                                                    <div class="col-xl-3 col-6 col-grid-box mt-3">
                                                         
                                                         <a class="suppliers-box d-block w-100 px-2" href="{{$vendor_url}}">
                                                             <div class="suppliers-img-outer">
