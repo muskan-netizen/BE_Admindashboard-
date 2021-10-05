@@ -30,7 +30,7 @@
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
                         @if(!empty($category->image))
-                        <div class="common-banner"><img alt="" src="{{$category->image['proxy_url'] . '1000/200' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                        <div class="common-banner"><img alt="" src="{{$category->image['proxy_url'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>

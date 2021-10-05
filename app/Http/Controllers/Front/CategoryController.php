@@ -225,7 +225,7 @@ class CategoryController extends FrontController{
                 $categoriesList = '';
                 foreach ($vendorCategories as $key => $category) {
                     if ($category->category) {
-                        $categoriesList = $categoriesList . $category->category->translation_one->name;
+                        $categoriesList = $categoriesList . $category->category->translation ? $category->category->translation->first()->name : $category->category->slug;
                         if ($key !=  $vendorCategories->count() - 1) {
                             $categoriesList = $categoriesList . ', ';
                         }

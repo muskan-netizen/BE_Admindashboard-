@@ -33,7 +33,7 @@
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
                         @if(!empty($category->image))
-                            <div class="common-banner"><img alt="" src="{{$category->image['proxy_url'] . '1000/200' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                            <div class="common-banner"><img alt="" src="{{$category->image['proxy_url'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
@@ -192,7 +192,7 @@
                                                     @foreach($category->childs->toArray() as $cate)
                                                     <div class="col-xl-3 col-6 col-grid-box">
                                                         <a href="{{route('categoryDetail', $cate['slug'])}}"  class="product-box scale-effect mt-3">
-                                                            <div class="product-image p-0"><img width="100%" alt="" src="{{$cate['icon']['proxy_url'] . '150/150' . $cate['icon']['image_path']}}" ></div>                                                        
+                                                            <div class="product-image p-0"><img width="100%" alt="" src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>                                                        
                                                             <div class="media-body align-self-center">
                                                                 <div class="inner_spacing w-100">
                                                                     <h3 class="d-flex align-items-center justify-content-between">

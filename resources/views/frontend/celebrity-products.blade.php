@@ -30,7 +30,7 @@
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
                         @if(!empty($celebrity->avatar))
-                            <div class="common-banner"><img alt="" src="{{$celebrity->avatar['image_fit'] . '1000/200' . $celebrity->avatar['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                            <div class="common-banner"><img alt="" src="{{$celebrity->avatar['image_fit'] . '1920/1080' . $celebrity->avatar['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
                         <div class="top-banner-content small-section">
                             <h4>{{ $celebrity->name }}</h4>
@@ -263,7 +263,7 @@
                                                                     <h3>{{ $data->translation_title }}</h3>
                                                                 </a>
                                                                 <h6 class="mt-0"><b>{{$data->vendor->name}}</b></h6>
-                                                                <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                <h4 class="mt-1">{{Session::get('currencySymbol').' '.(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
                                                                 @if($client_preference_detail)
                                                                     @if($client_preference_detail->rating_check == 1)  
                                                                         @if($data->averageRating > 0)

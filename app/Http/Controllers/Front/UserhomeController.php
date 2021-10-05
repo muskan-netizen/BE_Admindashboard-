@@ -167,8 +167,15 @@ class UserhomeController extends FrontController
         $page_detail = Page::with(['translations' => function ($q) {
             $q->where('language_id', session()->get('customerLanguage'));
         }])->where('slug', $request->slug)->firstOrFail();
-        $vendor_registration_documents = VendorRegistrationDocument::get();
-        return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents'));
+        if ($page_detail->primary->type_of_form != 2) {
+            $vendor_registration_documents = VendorRegistrationDocument::get();
+            return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents'));
+        } else {
+            $tag = [];
+            $showTag = implode(',', $tag);
+            $driver_registration_documents = json_decode($this->driverDocuments());
+            return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents'));
+        }
     }
     public function index(Request $request)
     {
@@ -239,13 +246,13 @@ class UserhomeController extends FrontController
             $home_page_pickup_labels = CabBookingLayout::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-            $last_mile = $this->checkIfLastMileDeliveryOn();
+            // $last_mile = $this->checkIfLastMileDeliveryOn();
             if (isset($set_template)  && $set_template->template_id == 1)
-                return view('frontend.home-template-one')->with(['home' => $home,'last_mile'=>$last_mile, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+                return view('frontend.home-template-one')->with(['home' => $home,  'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
             if (isset($set_template)  && $set_template->template_id == 2)
-                return view('frontend.home')->with(['home' => $home, 'count' => $count,'last_mile'=>$last_mile, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+                return view('frontend.home')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
             else
-                return view('frontend.home')->with(['home' => $home, 'count' => $count, 'last_mile'=>$last_mile,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+                return view('frontend.home')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
         } catch (Exception $e) {
             pr($e->getCode());
             die;
@@ -316,7 +323,7 @@ class UserhomeController extends FrontController
             $categoriesList = '';
             foreach ($vendorCategories as $key => $category) {
                 if ($category->category) {
-                    $categoriesList = $categoriesList . @$category->category->translation_one->name;
+                    $categoriesList = $categoriesList . @$category->category->translation_one->name ?? '';
                     if ($key !=  $vendorCategories->count() - 1) {
                         $categoriesList = $categoriesList . ', ';
                     }
@@ -324,7 +331,7 @@ class UserhomeController extends FrontController
             }
             $value->categoriesList = $categoriesList;
         }
-         
+
         if (($latitude) && ($longitude)) {
             Session::put('vendors', $vendor_ids);
         }

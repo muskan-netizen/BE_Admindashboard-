@@ -347,8 +347,9 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="editCategoryForm" method="post" enctype="multipart/form-data">
-                @csrf
                 @method('PUT')
+                @csrf
+
                 {!! Form::hidden('vendor_id', $vendor->id) !!}
                 <div class="modal-body" id="editCategoryBox"></div>
                 <div class="modal-footer justify-content-start mb-2">

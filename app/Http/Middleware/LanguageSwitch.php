@@ -16,9 +16,11 @@ class LanguageSwitch
      */
     public function handle(Request $request, Closure $next)
     {
-        if(session()->has('applocale')){
+        if (session()->has('locale')) {
+            app()->setlocale(session()->get("locale"));
+        } elseif (session()->has('applocale')) {
             app()->setlocale(session()->get("applocale"));
-        }else{
+        } else {
             app()->setlocale('en');
         }
         return $next($request);

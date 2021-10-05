@@ -25,11 +25,15 @@ class ReturnOrderController extends BaseController{
     */
     public function getOrderDatainModel(Request $request){
         try { 
+            $user = Auth::user();
+            $lang_id = $user->language;
             $order_details = Order::with(['vendors.products.productReturn','products.productRating', 'user', 'address',
             'vendors'=>function($qw)use($request){
                 $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
             },'vendors.products'=>function($qw)use($request){
                 $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
+            },'vendors.products.translation'=>function($qw)use($lang_id){
+                $qw->where('language_id', $lang_id);
             },'products'=>function($qw)use($request){
                 $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
             }])->whereHas('vendors',function($q)use($request){

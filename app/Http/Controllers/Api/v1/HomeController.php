@@ -153,7 +153,7 @@ class HomeController extends BaseController{
                 $categoriesList = '';
                 foreach($vendorCategories as $key => $category){
                     if($category->category){
-                        $categoriesList = $categoriesList . $category->category->translation_one->name;
+                        $categoriesList = $categoriesList . $category->category->translation_one->name??'';
                         if( $key !=  $vendorCategories->count()-1 ){
                             $categoriesList = $categoriesList . ', ';
                         }

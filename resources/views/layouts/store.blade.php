@@ -1,6 +1,8 @@
 @php
 $set_template = \App\Models\WebStylingOption::where('web_styling_id',1)->where('is_selected',1)->first();
+$set_common_business_type = $client_preference_detail->business_type??'';
 @endphp
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,6 +38,50 @@ else if($client_preference_detail->show_dark_mode == 2){
   }
 }
 @endphp
+
+@if($set_common_business_type == 'taxi')
+  <style type="text/css">
+  .cabbooking-loader {
+    width: 30px;
+    height: 30px;
+    animation: loading 1s infinite ease-out;
+    margin: auto;
+    border-radius: 50%;
+    background-color: red;
+  }
+  @keyframes loading {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(8);
+      opacity: 0;
+    }
+  }
+  .site-topbar,.main-menu.d-block{
+      display: none !important;
+  }
+  
+  .cab-booking-header img.img-fluid {
+      height: 50px;
+  }
+  .cab-booking-header{
+      display: block !important;
+  }
+  .container .main-menu .d-block{
+             display: none;
+         }
+  </style>
+  @else
+  <style>
+    .cab-booking-header{
+         display: none;
+     }
+ </style>
+@endif
+
+
+
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
   
   @yield('content')
@@ -59,7 +105,7 @@ else if($client_preference_detail->show_dark_mode == 2){
     </div>
   </div>
   @yield('script')
-  @if($client_preference_detail->hide_nav_bar == 1)
+  @if($client_preference_detail->hide_nav_bar == 1 || $set_common_business_type == 'taxi')
   <script>
     $('.main-menu').addClass('d-none').removeClass('d-block');
     $('.menu-navigation').addClass('d-none').removeClass('d-block'); 

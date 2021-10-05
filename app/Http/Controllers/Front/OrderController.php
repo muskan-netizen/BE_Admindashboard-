@@ -134,6 +134,8 @@ class OrderController extends FrontController
             }
         }
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+
+        
         return view('frontend/account/orders')->with(['navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency]);
     }
 
@@ -852,7 +854,7 @@ class OrderController extends FrontController
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => route('order.index'),
-                        "android_channel_id" => "high-priority"
+                        "android_channel_id" => "sound-channel-id"
                     ],
                     "data" => [
                         'title' => $notification_content->subject,

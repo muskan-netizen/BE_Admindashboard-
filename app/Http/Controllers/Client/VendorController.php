@@ -549,9 +549,13 @@ class VendorController extends BaseController
             $data = Excel::import(new VendorImport($csv_vendor_import->id), $request->file('vendor_csv'));
             return response()->json([
                 'status' => 'success',
-                'message' => 'Uploading!'
+                'message' => 'File Successfully Uploaded!'
             ]);
         }
+        return response()->json([
+            'status' => 'error',
+            'message' => 'File Upload Pending!'
+        ]);
     }
 
      /**

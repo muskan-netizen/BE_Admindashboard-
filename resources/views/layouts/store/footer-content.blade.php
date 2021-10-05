@@ -23,10 +23,13 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <div class="footer-contant">
                             <ul>
                                 @foreach($pages as $page)
-                                @if($page->slug=='driver-registration'&& isset($last_mile_common_set) && $last_mile_common_set !=false)
+
+                                @if($page->primary->type_of_form == 2)
+                                @if($last_mile_common_set != false)
                                 <li>
-                                    <a href="{{route('page/driver-registration')}}">{{$page->translations->first() ? $page->translations->first()->title : $page->primary->title}}</a>
+                                    <a href="{{route('extrapage',['slug' => $page->slug])}}">{{$page->translations->first() ? $page->translations->first()->title : $page->primary->title}}</a>
                                 </li>
+                                @endif
                                 @else
                                 <li>
                                     <a href="{{route('extrapage',['slug' => $page->slug])}}">{{$page->translations->first() ? $page->translations->first()->title : $page->primary->title}}</a>
@@ -62,39 +65,39 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </div>
                 @endif
                 @if($client_preference_detail->show_contact_us == 1)
-                    <div class="col-lg-3 col-md-6 mb-md-0 mb-3">
-                        <div class="sub-title">
-                            <div class="footer-title mt-0">
-                                <h4 class="mt-0">{{ __('Contact Us') }}</h4>
-                            </div>
-                            <div class="footer-contant">
-                                <ul class="contact-list">
-                                    <li><i class="icon-location"></i> {{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}</li>
-                                    <li><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}">{{$clientData ? $clientData->phone_number : '123-456-7898'}}</a></li>
-                                    <li><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}">{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</a></li>
-                                </ul>
-                            </div>
+                <div class="col-lg-3 col-md-6 mb-md-0 mb-3">
+                    <div class="sub-title">
+                        <div class="footer-title mt-0">
+                            <h4 class="mt-0">{{ __('Contact Us') }}</h4>
+                        </div>
+                        <div class="footer-contant">
+                            <ul class="contact-list">
+                                <li><i class="icon-location"></i> {{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}</li>
+                                <li><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}">{{$clientData ? $clientData->phone_number : '123-456-7898'}}</a></li>
+                                <li><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}">{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                @endif
-                <div class="col-lg-3 col-md-6 mb-md-0 mb-3 text-right d-none">
-                    <div class="store-btn">
-                        <a href="#"><img src="{{asset('front-assets/images/app-store.png')}}" alt=""></a>
-                        <a class="ml-2" href="#"><img src="{{asset('front-assets/images/google-play.png')}}" alt=""></a>
-                    </div>
-                    <ul class="social-links ml-md-auto mt-3">
-                        @foreach($social_media_details as $social_media_detail)
-                                    <li>
-                                        <a href="{{http_check($social_media_detail->url)}}" target="_blank">
-                                            <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
-                                            {{-- <span>{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span> --}}
-                                        </a>
-                                    </li>
-                        @endforeach
-                    </ul>
-                </div>
             </div>
+            @endif
+            <div class="col-lg-3 col-md-6 mb-md-0 mb-3 text-right d-none">
+                <div class="store-btn">
+                    <a href="#"><img src="{{asset('front-assets/images/app-store.png')}}" alt=""></a>
+                    <a class="ml-2" href="#"><img src="{{asset('front-assets/images/google-play.png')}}" alt=""></a>
+                </div>
+                <ul class="social-links ml-md-auto mt-3">
+                    @foreach($social_media_details as $social_media_detail)
+                    <li>
+                        <a href="{{http_check($social_media_detail->url)}}" target="_blank">
+                            <i class="fa fa-{{$social_media_detail->icon}}" aria-hidden="true"></i>
+                            {{-- <span>{{$social_media_detail->icon ? ucfirst($social_media_detail->icon) : "Facebook"}}</span> --}}
+                        </a>
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
         </div>
     </section>
     <div class="sub-footer">

@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="card-box mb-0">
-                    <h2>{{ $homePageLabel->translations->first()->title ??  $homePageLabel->pickupCategories->first()->categoryDetail->translation_one->name }}
+                    <h2>{{ $homePageLabel->translations->first() ? $homePageLabel->translations->first()->title : '' }}
                     </h2>
                     <form action="{{ route('categoryDetail',$homePageLabel->pickupCategories->first()->categoryDetail->slug??'')}}" class="cab-booking-form">
                                  <div class="cab-input">

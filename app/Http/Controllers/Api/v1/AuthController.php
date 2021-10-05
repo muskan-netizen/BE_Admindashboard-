@@ -733,8 +733,8 @@ class AuthController extends BaseController{
             $errors = array();
             $validator = Validator::make($request->all(), [
                 'username'  => 'required',
-                'dialCode'  => 'required',
-                'countryData'  => 'required|string',
+                // 'dialCode'  => 'required',
+                // 'countryData'  => 'required|string',
                 // 'dial_code'   => 'required|string',
                 'device_type'   => 'required|string',
                 'device_token'  => 'required|string',
@@ -790,7 +790,6 @@ class AuthController extends BaseController{
                         $request->request->add(['codeSent' => 1]);
                         $message = __('An otp has been sent to your phone. Please check.');
                         $response = $request->all();
-                        unset($response->_token);
                         return $this->successResponse($response, $message);
                     }else{
                         return $this->errorResponse(__('Something went wrong in sending OTP. We are sorry to for the inconvenience'), 404);

@@ -109,31 +109,45 @@ class BrandController extends BaseController
     public function update(Request $request, $domain = '', $id)
     {
         $brand = Brand::where('id', $id)->firstOrFail();
+
         $brand->title = $request->title[0];
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $brand->image = Storage::disk('s3')->put($this->folderName, $file, 'public');
         }
         $brand->save();
-        $cate_array = array();
-        foreach ($request->cate_id as $key => $cate_id) {
-            //$affected = BrandCategory::where('brand_id', $brand->id)->update(['category_id'=>$cate_id]);
-            //$affected->cate()->associate($cate_id)->save();
-            $brand = Brand::find($id);
-
-            // $cat = BrandCategory::where('category_id', $cate_id)->first();
-
-            // $cat = BrandCategory::insert(['brand_id' => $id, 'category_id' => $cate_id]);
-           // $cat = BrandCategory::where('category_id', $cate_id)->first();
-            // if ($cat == null)
-            if(BrandCategory::where('brand_id',$id)->where('category_id',$cate_id)->first()==null)
-                $cat = BrandCategory::insert(['brand_id' => $id, 'category_id' => $cate_id]);
-            // else
-            //     $brand->bc()->save($cat);
+        $cate_array = array($request->cate_id);
+        $database_array = BrandCategory::where('brand_id', $id)->pluck('category_id');
+       // dd($cate_array,$database_array);
+        if (count(BrandCategory::where('brand_id', $id)->pluck('category_id')) >= 1) {
+            foreach ($database_array as $data) {
+                if (!in_array($data, $cate_array)) {
+                    BrandCategory::where('brand_id', $id)->where('category_id', $data)->delete();
+                }
+            }
         }
-        // $affected = BrandCategory::where('brand_id', $id)->with('cate')->get();
-        // dd($affected);
-        //  $affected->cate()->sync($cate_array);
+        if ($request->cate_id != null) {
+            foreach ($request->cate_id as $key => $cate_id) {
+                //$affected = BrandCategory::where('brand_id', $brand->id)->update(['category_id'=>$cate_id]);
+                //$affected->cate()->associate($cate_id)->save();
+                $brand = Brand::find($id);
+
+                // $cat = BrandCategory::where('category_id', $cate_id)->first();
+
+                // $cat = BrandCategory::insert(['brand_id' => $id, 'category_id' => $cate_id]);
+                // $cat = BrandCategory::where('category_id', $cate_id)->first();
+                // if ($cat == null)
+                if (BrandCategory::where('brand_id', $id)->where('category_id', $cate_id)->first() == null) {
+                    $cat = BrandCategory::insert(['brand_id' => $id, 'category_id' => $cate_id]);
+                }
+
+                // else
+                //$brand->bc()->save($cat);
+            }
+        }
+        //  $affected = BrandCategory::where('brand_id', $id)->with('cate')->get();
+        // // dd($affected);
+        //   $affected->cate()->sync($cate_array);
 
         foreach ($request->title as $key => $value) {
             $bt = BrandTranslation::where('brand_id', $brand->id)->where('language_id', $request->language_id[$key])->first();
@@ -158,8 +172,8 @@ class BrandController extends BaseController
     {
         $brand = Brand::where('id', $id)->first();
         $brand->status = 2;
-       // $brand->bc()->save();
-       BrandCategory::where('brand_id',$id)->delete();
+        // $brand->bc()->save();
+        BrandCategory::where('brand_id', $id)->delete();
         $brand->save();
         return redirect()->back()->with('success', 'Brand deleted successfully!');
     }

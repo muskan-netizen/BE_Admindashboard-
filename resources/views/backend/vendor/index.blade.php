@@ -3,7 +3,10 @@
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
-    .pac-container, .pac-container .pac-item { z-index: 99999 !important; }
+    .pac-container,
+    .pac-container .pac-item {
+        z-index: 99999 !important;
+    }
 </style>
 @endsection
 @section('content')
@@ -13,24 +16,23 @@
             <div class="page-title-box">
 
                 @php
-                    $vendors = getNomenclatureName('vendors', true);
-                    $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ; 
+                $vendors = getNomenclatureName('vendors', true);
+                $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ;
                 @endphp
 
                 <h4 class="page-title">{{ $newvendors }}</h4>
             </div>
         </div>
         <div class="col-sm-6 text-sm-right">
-            <button class="btn btn-info waves-effect waves-light text-sm-right openImportModal"
-                    userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
+            <button class="btn btn-info waves-effect waves-light text-sm-right openImportModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
             </button>
-            <button class="btn btn-info waves-effect waves-light text-sm-right openAddModal"
-                userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
+            <button class="btn btn-info waves-effect waves-light text-sm-right openAddModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
             </button>
         </div>
     </div>
     <div class="row">
         <div class="col-12">
+           
             <div class="card widget-inline">
                 <div class="card-body">
                     <div class="row">
@@ -98,14 +100,15 @@
                 </li>
             </ul>
             <div class="tab-content nav-material pt-0   " id="top-tabContent">
-                <div class="tab-pane fade past-order show active" id="active_vendor" role="tabpanel"
-                    aria-labelledby="active-vendor">
+                <div class="tab-pane fade past-order show active" id="active_vendor" role="tabpanel" aria-labelledby="active-vendor">
                     <div class="row">
                         <div class="col-12">
+                           
                             <div class="card">
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <form name="saveOrder" id="saveOrder"> @csrf</form>
+                                       
                                         <table class="table table-centered table-nowrap table-striped" id="vendor_active_datatable" width="100%">
                                             <thead>
                                                 <tr>
@@ -127,14 +130,13 @@
                                     </div>
                                 </div>
                             </div>
-                        </div> 
+                        </div>
                         <div class="row address" id="def" style="display: none;">
                             <input type="text" id="def-address" name="test" class="autocomplete form-control def_address">
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="awaiting_vendor" role="tabpanel"
-                    aria-labelledby="awaiting-vendor">
+                <div class="tab-pane fade" id="awaiting_vendor" role="tabpanel" aria-labelledby="awaiting-vendor">
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
@@ -162,7 +164,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div> 
+                        </div>
                         <div class="row address" id="def" style="display: none;">
                             <input type="text" id="def-address" name="test" class="autocomplete form-control def_address">
                         </div>
@@ -195,7 +197,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div> 
+                        </div>
                         <div class="row address" id="def" style="display: none;">
                             <input type="text" id="def-address" name="test" class="autocomplete form-control def_address">
                         </div>
@@ -215,7 +217,7 @@
                     @csrf
                     @method('PUT')
                     <div class="modal-body" id="editVendorBox">
-                        
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-info waves-effect waves-light" id="update_vendor_modal">{{ __('Submit') }}</button>
@@ -229,8 +231,8 @@
 @endsection
 @section('script')
 @include('backend.vendor.pagescript')
-    <script src="{{asset('js/admin_vendor.js')}}"></script>
-    <script type="text/javascript">
-        var search_text = "{{getNomenclatureName('vendors', false)}}";
-    </script>
+<script src="{{asset('js/admin_vendor.js')}}"></script>
+<script type="text/javascript">
+    var search_text = "{{getNomenclatureName('vendors', false)}}";
+</script>
 @endsection

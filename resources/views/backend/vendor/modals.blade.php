@@ -174,6 +174,7 @@
                         </div>
                         <div class="col-md-12">
                             <table class="table table-centered table-nowrap table-striped" id="">
+                            <p id="p-message" style="color:red;"></p>
                                 <thead>
                                     <tr>
                                         <th>#</th>

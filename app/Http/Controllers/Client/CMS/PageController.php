@@ -87,6 +87,8 @@ class PageController extends Controller{
         );
         $validation  = Validator::make($request->all(), $rules)->validate();
         $page_detail = Page::where('id', $request->page_id)->firstOrFail();
+        $page_detail->slug=Str::slug($request->edit_title, '-');
+        $page_detail->save();
         $page_translation = PageTranslation::where('page_id', $request->page_id)->where('language_id', $request->language_id)->first();
         if(!$page_translation){
             $page_translation = new PageTranslation();

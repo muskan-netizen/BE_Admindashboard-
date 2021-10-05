@@ -73,6 +73,7 @@
                 $('#addVariantForm #AddVariantBox').html(data.html);
                 $('.dropify').dropify();
                 $('.selectize-select').selectize();
+
                 var picker = new jscolor('#add-hexa-colorpicker-1', options);
             },
             error: function(data) {
@@ -110,7 +111,7 @@
                     try {
                         var picker = new jscolor('#' + ids, options);
                     } catch (err) {
-                       console.log(err.message);
+                        console.log(err.message);
                     }
                 });
                 var getURI = document.getElementById('submitEditHidden').value;
@@ -166,9 +167,9 @@
         }
         return false;
     });
-    
-   
-    
+
+
+
 
     $("#varient-datatable tbody").sortable({
         placeholder: "ui-state-highlight",
@@ -233,8 +234,10 @@
         });
     });
     $(document).ready(function() {
+
         $('#addVariantmodal .selectize-select').selectize();
         $('#addBrandmodal .selectize-select').selectize();
+
     });
 
     $("#brand-datatable tbody").sortable({
@@ -258,6 +261,7 @@
         $('#brand_order').submit();
     });
     $('.editBrandBtn').on('click', function(e) {
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -278,7 +282,13 @@
                 $('#editBrandForm #editBrandBox').html(data.html);
                 $('.dropify').dropify();
                 $('.selectize-select').selectize();
+
+               // $("#cateSelectBox")[0].selectize.clear();
+                //$('#cateSelectBox option:selected')[0].selectize.clear();
+
                 document.getElementById('editBrandForm').action = data.submitUrl;
+
+
             },
             error: function(data) {
                 console.log('data2');

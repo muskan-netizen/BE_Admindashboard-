@@ -479,6 +479,7 @@ class OrderController extends BaseController {
                 $order->user_name = $order->user->name;
                 $order->user_image = $order->user->image;
                 $order->payment_option_title = __($order->paymentOption->title);
+                $order->created_date = Carbon::parse($order->created_at)->setTimezone($user->timezone)->format('M d, Y h:i A');
                 foreach ($order->vendors as $vendor) {
                     $couponData = [];
                     $payable_amount = 0;
@@ -605,7 +606,7 @@ class OrderController extends BaseController {
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => $redirect_URL,
-                        "android_channel_id" => "high-priority"
+                        "android_channel_id" => "sound-channel-id"
                     ],
                     "data" => [
                         'title' => $notification_content->subject,
@@ -665,7 +666,7 @@ class OrderController extends BaseController {
                         'sound' => "default",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => $redirect_URL,
-                        "android_channel_id" => "high-priority"
+                        "android_channel_id" => "default-channel-id"
                     ],
                     "data" => [
                         'title' => $notification_content->subject,

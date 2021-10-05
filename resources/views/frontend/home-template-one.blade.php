@@ -16,7 +16,7 @@
     <div class="mobile-fix-option"></div>
     @include('layouts.store/left-sidebar-template-one')
 </header>
-<div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div>
+<!-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> -->
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal">
   Launch demo modal
@@ -43,7 +43,7 @@
                     @if($url)
                     <a class="banner-img-outer" href="{{$url}}">
                         @endif
-                            <img src="{{$banner->image['image_fit'] . '1500/600' . $banner->image['image_path']}}">
+                            <img src="{{$banner->image['image_fit'] . '1920/1080' . $banner->image['image_path']}}">
                         @if($url)
                     </a>
                     @endif
@@ -203,7 +203,7 @@
         </a>
     <% }); %>
 </script>
-<section class="section-b-space p-t-0 pt-3 pt-md-5 ratio_asos d-none" id="our_vendor_main_div">
+<section class="section-b-space p-t-0 pt-3 pt-md-4 ratio_asos d-none" id="our_vendor_main_div">
     <div class="vendors">
         @foreach($homePageLabels as $key => $homePageLabel)
             @if($homePageLabel->slug == 'pickup_delivery')
@@ -232,10 +232,10 @@
         </div>
         </section> 
         @elseif($homePageLabel->slug == 'vendors')
-        <section class="suppliers-section pt-0 mb-3">
+        <section class="suppliers-section pt-0 mb-2">
         <div class="container">
             <div class="row">
-                <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-3">
+                <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-2">
                     <h2 class="h2-heading">{{ $homePageLabel->slug == 'vendors' ? getNomenclatureName('vendors', true) :  __($homePageLabel->title) }}</h2>
                     <a class="btn btn-solid" href="{{route('vendor.all')}}">See all</a>
                 </div>

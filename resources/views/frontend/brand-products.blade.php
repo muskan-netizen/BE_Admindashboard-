@@ -59,7 +59,7 @@
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
                         @if(!empty($brand->image))
-                            <div class="common-banner"><img alt="" src="{{$brand->image['image_fit'] . '1000/200' . $brand->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                            <div class="common-banner"><img alt="" src="{{$brand->image['image_fit'] . '1920/1080' . $brand->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
                         <div class="top-banner-content small-section">
                             <h4>{{ $brand->translation_title }}</h4>

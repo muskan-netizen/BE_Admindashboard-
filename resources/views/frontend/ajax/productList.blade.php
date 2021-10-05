@@ -35,7 +35,7 @@
                                     <p>{{ $data->translation_description }}</p>
                                 @endif
                                 @if($data['inquiry_only'] == 0)
-                                    <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
                                 @endif
                             </div>
                         </div>

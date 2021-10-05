@@ -93,7 +93,9 @@
                </div>
             </div>
          </div>
+         @endif
 
+         @if($client_preference_detail->business_type != 'taxi')
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
@@ -158,7 +160,9 @@
                </div>
             </div>
          </div>
-         
+         @endif
+
+         @if($client_preference_detail->business_type != 'taxi')
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
@@ -211,6 +215,7 @@
          </div> 
          @endif
 
+         @if($client_preference_detail->business_type == 'taxi')
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
@@ -261,7 +266,7 @@
                </div>
             </div>
          </div>
-
+         @endif
         
 
       </div>
@@ -1700,53 +1705,60 @@
          $('#show-map-modal').modal('hide');
       });
 
-
+     
       var hyprlocal = $('#is_hyperlocal');
-
-      hyprlocal[0].onchange = function() {
+      if(hyprlocal.length > 0){
+         hyprlocal[0].onchange = function() {
 
          if ($('#is_hyperlocal:checked').length != 1) {
             $('.disableHyperLocal').hide();
          } else {
             $('.disableHyperLocal').show();
          }
+         }
       }
-
+      
       var delivery_service = $('#need_delivery_service');
       var dispatcherDiv = $('#need_dispacher_ride');
       var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
 
-      delivery_service[0].onchange = function() {
+      if(delivery_service.length > 0){
+         delivery_service[0].onchange = function() {
 
-         if ($('#need_delivery_service:checked').length != 1) {
-            $('.deliveryServiceFields').hide();
-         } else {
-            $('.deliveryServiceFields').show();
+            if ($('#need_delivery_service:checked').length != 1) {
+               $('.deliveryServiceFields').hide();
+            } else {
+               $('.deliveryServiceFields').show();
+            }
          }
       }
 
-      dispatcherDiv[0].onchange = function() {
-
-         if ($('#need_dispacher_ride:checked').length != 1) {
-            $('.dispatcherFields').hide();
-         } else {
-            $('.dispatcherFields').show();
+      if(dispatcherDiv.length > 0){
+         dispatcherDiv[0].onchange = function() {
+            console.log('ok');
+            if ($('#need_dispacher_ride:checked').length != 1) {
+               $('.dispatcherFields').hide();
+            } else {
+               $('.dispatcherFields').show();
+            }
          }
       }
 
-      need_dispacher_home_other_service[0].onchange = function() {
+      if(need_dispacher_home_other_service.length > 0){
+         need_dispacher_home_other_service[0].onchange = function() {
 
-      if ($('#need_dispacher_home_other_service:checked').length != 1) {
-         $('.home_other_dispatcherFields').hide();
-      } else {
-         $('.home_other_dispatcherFields').show();
+         if ($('#need_dispacher_home_other_service:checked').length != 1) {
+            $('.home_other_dispatcherFields').hide();
+         } else {
+            $('.home_other_dispatcherFields').show();
+         }
+         }
       }
-      }
 
 
-      var hyprlocal = $('#fb_login');
+      var fb_login = $('#fb_login');
 
-      hyprlocal[0].onchange = function() {
+      fb_login[0].onchange = function() {
          if ($('#fb_login:checked').length != 1) {
             $('.fb_row').hide();
          } else {
@@ -1754,9 +1766,9 @@
          }
       }
 
-      var hyprlocal = $('#twitter_login');
+      var twitter_login = $('#twitter_login');
 
-      hyprlocal[0].onchange = function() {
+      twitter_login[0].onchange = function() {
          if ($('#twitter_login:checked').length != 1) {
             $('.twitter_row').hide();
          } else {
@@ -1764,9 +1776,9 @@
          }
       }
 
-      var hyprlocal = $('#google_login');
+      var google_login = $('#google_login');
 
-      hyprlocal[0].onchange = function() {
+      google_login[0].onchange = function() {
          if ($('#google_login:checked').length != 1) {
             $('.google_row').hide();
          } else {
@@ -1774,9 +1786,9 @@
          }
       }
 
-      var hyprlocal = $('#apple_login');
+      var apple_login = $('#apple_login');
 
-      hyprlocal[0].onchange = function() {
+      apple_login[0].onchange = function() {
 
          if ($('#apple_login:checked').length != 1) {
             $('.apple_row').hide();
@@ -1786,17 +1798,26 @@
       }
 
       var dinein_option = $('#dinein_check');
-      dinein_option[0].onchange = function() {
+      if(dinein_option.length > 0){
+         dinein_option[0].onchange = function() {
          optionsChecked("dinein_check");
+         }
       }
+      
       var takeaway_option = $('#takeaway_check');
-      takeaway_option[0].onchange = function() {
+      if(takeaway_option.length > 0){
+         takeaway_option[0].onchange = function() {
          optionsChecked("takeaway_check");
       }
-      var delivery_option = $('#delivery_check');
-      delivery_option[0].onchange = function() {
-         optionsChecked("delivery_check");
       }
+      
+      var delivery_option = $('#delivery_check');
+      if(delivery_option > 0){
+         delivery_option[0].onchange = function() {
+         optionsChecked("delivery_check");
+         }
+      }
+     
 
       function optionsChecked(id) {
          var delivery_checked = $("#delivery_check").is(":checked");

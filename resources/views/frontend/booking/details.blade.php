@@ -1,7 +1,6 @@
 @extends('layouts.store', ['title' => 'Booking Details'])
 @section('content')
 <style type="text/css">
-
     .cabbooking-loader {
       width: 30px;
       height: 30px;

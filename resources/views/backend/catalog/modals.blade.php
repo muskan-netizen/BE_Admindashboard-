@@ -1,4 +1,3 @@
-
 <div id="addVariantmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -30,7 +29,7 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body" id="editVariantBox">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-info waves-effect waves-light addVariantSubmit">{{ __("Submit") }}</button>
@@ -69,8 +68,8 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="editBrandForm" method="post" enctype="multipart/form-data" action="">
-                @csrf
                 @method('PUT')
+                @csrf
                 <div class="modal-body" id="editBrandBox">
 
                 </div>

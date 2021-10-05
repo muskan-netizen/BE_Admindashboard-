@@ -20,7 +20,6 @@ a {
 
 .site-header {
     width: 100%;
-    padding: 0;
     top: 0;
     left: 0;
     background: #fff;
@@ -31,10 +30,9 @@ a {
     -o-transition: all 0.5s ease-in-out;
     transition: all 0.5s ease-in-out;
     z-index: 999;
-    border-bottom: 1px solid rgb(221 221 221 / 50%);
 }
 
-.menu-navigation{    
+.menu-navigation{
     border-bottom: 1px solid rgb(221 221 221 / 50%);
 }
 
@@ -48,6 +46,14 @@ a {
 
 .set-hide-nav-bar {
     margin-top: 40px;
+}
+
+.taxi-header+.offset-top {
+    margin-top: 72px !important;
+}
+
+.site-header.taxi-header.fixed-bar {
+    top: -61px;
 }
 
 header.site-header.fixed-bar {
@@ -73,8 +79,8 @@ header.site-header.fixed-bar {
     padding: 10px 0;
 }
 
-.pixelstrap li > a {
-    padding: 10px 30px 10px 0;
+.pixelstrap li > a,.pixelstrap a, .pixelstrap a:hover, .pixelstrap a:active {
+    padding: 10px 20px 10px 0;
 }
 
 .top-header .header-dropdown li:hover i{
@@ -83,13 +89,16 @@ header.site-header.fixed-bar {
 
 .site-topbar .location-bar h2{
     color: #fff;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: 14px;
+    line-height: 20px;
 }
 
 .site-topbar .location-bar i {
     font-size: 20px;
     color: #fff !important;
+}
+.footer-theme .sub-title .payment-card-bottom li{
+    display: inline-block;
 }
 
 .vendors .container {
@@ -2629,10 +2638,6 @@ footer .form-control {
     box-shadow: 0px 0px 2px #ddd;
 }
 
-.menu-navigation {
-    background: #f8f8f8;
-}
-
 .icon-nav .btn.btn-solid {
     padding: 10px;
     border-radius: 50px;
@@ -3080,6 +3085,11 @@ td.order_address {
     height: 100%;
     width: 100%;
     object-fit: cover;
+}
+
+.common-banner img{
+    max-width: 100%;
+    width: auto;
 }
 
 .category-block .category-image img {
@@ -4666,7 +4676,7 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     font-size: 13px;
     letter-spacing: 0.5px;
     text-align: center;
-    border: 1px solid transparent;
+    /* border: 1px solid transparent; */
     width: 100%;
 }
 
@@ -4675,7 +4685,7 @@ input.form-control.pac-target-input.gm-err-autocomplete {
 }
 
 .login-form input[type="radio"]:checked+label {
-    border-color: #6658dd;
+    /* border-color: #6658dd; */
     font-size: 13px;
     letter-spacing: 0.5px;
 }
@@ -5745,7 +5755,6 @@ ul#main-nav-list {
 
 
 /* Cab booking Page Css */
-
 .cab-banner-area {
     background: url(https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_1903,h_644/v1613521692/assets/d9/ce6c00-32b0-4b93-9f0d-6f927d93da08/original/Rider_Home_bg_desktop2x.png) no-repeat center center;
     background-size: cover;
@@ -6036,7 +6045,7 @@ section.royo-business .title-36 {
     width: 100%;
 }
 .return-wrapper{    
-    width: 80%;
+    width: 100%;
     margin-left: auto;
 }
 .footer-return-box {
@@ -6068,6 +6077,9 @@ body .footer-theme .sub-title h4 {
     margin-bottom: 15px;
 }
 
+.theme-card h5 {
+    padding-bottom: 18px;
+}
 
 
 
@@ -6774,6 +6786,13 @@ body[dir="rtl"] .inner_spacing h3 {
 }
 
 @media(max-width:767px) {
+    .mobile-header > div {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    .navigation-tab {
+        margin: auto;
+    }
     .p-64 {
         padding: 24px 20px !important;
     }
@@ -6861,6 +6880,19 @@ body[dir="rtl"] .inner_spacing h3 {
         padding: 10px 0 !important;
         margin-bottom: 10px !important;
     }
+    .popular-brands, .royo-recommends {
+        padding: 25px 0 10px !important;
+    }
+    .footer-theme .sub-title li {
+        display: block;
+    }
+    .footer-theme .sub-title .contact-list li:last-child {
+        margin-bottom: 10px;
+    }
+    .footer-theme .payment-card .sub-title li{
+        display: inline-block;
+    }
+    
 }
 
 @media(max-width: 576px) {
@@ -6889,6 +6921,7 @@ body[dir="rtl"] .inner_spacing h3 {
         bottom: 10px;
         top: auto;
     }
+
     .radius-bar {
         width: 100%;
         position: fixed;
@@ -6898,7 +6931,7 @@ body[dir="rtl"] .inner_spacing h3 {
         right: 0;
         margin: auto;
         display: none;
-        border-radius: 0;
+        border-radius: 0 !important;
     }
     .list-box {
         top: auto;

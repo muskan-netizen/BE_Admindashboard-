@@ -309,11 +309,11 @@
                         <ul class="list-inline">
                             <li class="d-inline-block mr-1">
                                 <input type="radio" class="custom-control-input check" id="tasknow" name="task_type" value="now" <%= ((cart_details.schedule_type == 'now' || cart_details.schedule_type == '' || cart_details.schedule_type == null) ? 'checked' : '') %> >
-                                <label class="custom-control-label" for="tasknow">Now</label>
+                                <label class="btn btn-solid" for="tasknow">Now</label>
                             </li>
                             <li class="d-inline-block">
                                 <input type="radio" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" <%= ((cart_details.schedule_type == 'schedule') ? 'checked' : '') %> >
-                                <label class="custom-control-label" for="taskschedule">Schedule</label>
+                                <label class="btn btn-solid" for="taskschedule">Schedule</label>
                             </li>
                         </ul>
                     </div>
@@ -773,6 +773,7 @@
                     <input class="form-control" type="text" id="digit-6" name="digit-6" data-next="digit-7" data-previous="digit-5" onkeypress="return isNumberKey(event)"/>
                 </div>
                 <span class="invalid_phone_otp_error invalid-feedback2 w-100 d-block text-center text-danger"></span>
+                <span id="phone_otp_success_msg" class="font-14 text-success text-center w-100 d-block" style="display:none"></span>
                 <div class="row text-center mt-2">
                     <div class="col-12 resend_txt">
                         <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
@@ -1069,6 +1070,10 @@
                             $('.login-with-mail').hide();
                             $('.verify-login-code').show();
                             $('.otp_inputs input').val('');
+                            $('#phone_otp_success_msg').html(response.message).show();
+                            setTimeout(function(){ 
+                                $('#phone_otp_success_msg').html('').hide();
+                            }, 5000);
                         }
                         else if(data.is_email != undefined && data.is_email == 1){
                             window.location.reload();

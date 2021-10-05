@@ -36,7 +36,7 @@
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
                         @if(!empty($category->image))
-                            <div class="common-banner"><img alt="" src="{{$category->image['image_fit'] . '1000/200' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                            <div class="common-banner"><img alt="" src="{{$category->image['image_fit'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
@@ -288,7 +288,7 @@
                                                                     <p>{{ $data->translation_description }}</p>
                                                                 @endif
                                                                 @if($data->inquiry_only == 0)
-                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
                                                                 @endif
                                                             </div>
                                                         </div>

@@ -30,7 +30,7 @@
                 <div class="col-12">
                     <div class="top-banner-wrapper mb-4">
                         @if(!empty($vendor->banner))
-                            <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1000/300' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                            <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['proxy_url'] . '1920/1080' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
                         <div class="row mt-n4">
                             <div class="col-12">

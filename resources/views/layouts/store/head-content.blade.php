@@ -5,4 +5,5 @@
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/style.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom.css')}}">
 <meta name="_token" content="{{ csrf_token() }}">
+
 @yield('css')

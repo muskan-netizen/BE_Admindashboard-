@@ -49,7 +49,7 @@ class CartReminder extends Command
         $clients = Client::select('database_name', 'sub_domain')->get();
         foreach ($clients as $client) {
             $database_name = 'royo_' . $client->database_name;
-            Log::info("checking cart start: {$database_name}!");
+            // Log::info("checking cart start: {$database_name}!");
             $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
             $db = DB::select($query, [$database_name]);
             if ($db) {
@@ -95,7 +95,7 @@ class CartReminder extends Command
                                     'sound' => "default",
                                     "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                                     'click_action' => $redirect_URL,
-                                    "android_channel_id" => "high-priority"
+                                    "android_channel_id" => "default-channel-id"
                                 ],
                                 "data" => [
                                     'title' => $notification_content->subject,
@@ -113,16 +113,16 @@ class CartReminder extends Command
                             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
                             $result = curl_exec($ch);
-                            Log::info($result);
+                            // Log::info($result);
                             curl_close($ch);
                         }
                     }
                 }
                 DB::disconnect($database_name);
-                Log::info("checking cart end: {$database_name}!");
+                // Log::info("checking cart end: {$database_name}!");
             } else {
                 DB::disconnect($database_name);
-                Log::info("checking cart  end: {$database_name}!");
+                // Log::info("checking cart  end: {$database_name}!");
             }
         }
     }

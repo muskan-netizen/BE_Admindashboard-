@@ -106,7 +106,7 @@
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" id="addCountryData" name="countryData" value="us">
-                    <button type="submit" class="btn btn-info w-100">{{ __('Submit') }}</button>
+                    <button type="button" class="btn btn-info w-100 submitCustomerForm" >{{ __('Submit') }}</button>
                 </div>
             </form>
         </div>

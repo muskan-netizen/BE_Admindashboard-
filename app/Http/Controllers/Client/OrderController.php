@@ -142,6 +142,7 @@ class OrderController extends BaseController{
       
         foreach ($orders as $key => $order) {
             $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, H:i A');
+            $order->scheduled_date_time = !empty($order->scheduled_date_time) ? convertDateTimeInTimeZone($order->scheduled_date_time, $user->timezone, 'M d, Y h:i A') : '';
             foreach ($order->vendors as $vendor) {
                 $vendor->vendor_detail_url = route('order.show.detail', [$order->id, $vendor->vendor_id]);
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
@@ -211,6 +212,7 @@ class OrderController extends BaseController{
      * @return \Illuminate\Http\Response
      */
     public function changeStatus(Request $request, $domain = ''){   
+   
         DB::beginTransaction();
         try {
             $timezone = Auth::user()->timezone;
@@ -234,7 +236,7 @@ class OrderController extends BaseController{
                     if($order_dispatch && $order_dispatch == 1)
                     $stats = $this->insertInVendorOrderDispatchStatus($request);
                 }
-                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
+                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id,'reject_reason'=>$request->reject_reason]);
                 $orderData = Order::find($request->order_id);
                 DB::commit();
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
@@ -664,7 +666,7 @@ class OrderController extends BaseController{
                         'sound' => "default",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'].'200/200'.$client_preferences->favicon['image_path'] : '',
                         'click_action' => route('user.orders'),
-                        "android_channel_id" => "high-priority"
+                        "android_channel_id" => "default-channel-id"
                     ],
                     "data" => [
                         'title' => $notification_content->subject,

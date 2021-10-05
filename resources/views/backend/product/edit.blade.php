@@ -215,7 +215,7 @@
                         </div>
                         @endif
 
-                        <div class="col-sm-8 check_inventory {{$product->has_inventory == 0 ? 'd-none' : ''}}">
+                        <div class="col-sm-8 check_inventory ">
                             <div class="row">
                                 @if($product->category->categoryDetail->type_id != 8)
                                 @if($product->has_variant == 0)
@@ -223,7 +223,7 @@
                                     {!! Form::label('title', __('Quantity'),['class' => 'control-label']) !!}
                                     {!! Form::number('quantity', $product->variant[0]->quantity, ['class'=>'form-control', 'id' => 'quantity', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
-                                @endif
+                               @endif
                                 <div class="col-sm-4">
                                     {!! Form::label('title', __('Sell When Out Of Stock'),['class' => 'control-label']) !!} <br />
                                     <input type="checkbox" bid="" id="sell_stock_out" data-plugin="switchery" name="sell_stock_out" class="chk_box" data-color="#43bee1" @if($product->sell_when_out_of_stock == 1) checked @endif>
@@ -639,14 +639,7 @@
         }
     });
 
-    $('#has_inventory').change(function() {
-        var val = $(this).prop('checked');
-        if (val == true) {
-            $('.check_inventory').show();
-        } else {
-            $('.check_inventory').hide();
-        }
-    });
+    
 
     var regexp = /^[a-zA-Z0-9-_]+$/;
 
@@ -715,6 +708,7 @@
     var uploadedDocumentMap = {};
     Dropzone.autoDiscover = false;
     $(document).ready(function() {
+        $('.check_inventory').hide();
         // $('#body_html').summernote({
         //     placeholder: 'Description',
         //     tabsize: 2,
@@ -728,6 +722,16 @@
         //         ['view', ['fullscreen', 'codeview', 'help']]
         //     ]
         // });
+        $('#has_inventory').change(function() {
+        var val = $(this).prop('checked');
+        console.log(val);
+        if (val == true) {
+            $('.check_inventory').show();
+        } else {
+            $('.check_inventory').hide();
+        }
+    });
+
         $("div#my-awesome-dropzone").dropzone({
             acceptedFiles: ".jpeg,.jpg,.png,.svg",
             addRemoveLinks: true,

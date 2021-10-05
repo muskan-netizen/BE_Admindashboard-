@@ -64,7 +64,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
 	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
 	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
-	Route::get('page/driver-registration', 'Front\UserhomeController@driverSignup')->name('page/driver-registration');
+	//Route::get('page/driver-registration', 'Front\UserhomeController@driverSignup')->name('page/driver-registration');
 	Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');
 	Route::get('driver-documents', 'Front\UserhomeController@driverDocuments')->name('driver-documents');
 	Route::get('page/{slug}', 'Front\UserhomeController@getExtraPage')->name('extrapage');

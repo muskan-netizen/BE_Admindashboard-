@@ -1,3 +1,8 @@
+body{
+    font-family: 'Eina02';
+    font-weight: 400;
+}
+
 @font-face {
     font-family: 'Eina02';
     src: url('../fonts/Eina02-SemiBold.eot');
@@ -49,20 +54,74 @@
     font-style: normal;
     font-display: swap;
 }
-
-
-
-body{
-    font-family: 'Eina02';
-    font-weight: 400;
+h1 {
+    font-size: 58px;
+    color: #222222;
+    font-weight: 700;
+    text-transform: uppercase;
 }
+
+h1 span {
+    font-size: 105px;
+    font-weight: 700;
+    color: var(--theme-deafult);
+}
+
+h2 {
+    font-size: 34px;
+    color: #222222;
+    text-transform: uppercase;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+}
+
+h3 {
+    font-size: 224px;
+    font-weight: 400;
+    color: #777777;
+    letter-spacing: 0.03em;
+}
+
+h4 {
+    font-size: 16px;
+    text-transform: capitalize;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    line-height: 1;
+}
+
+h5 {
+    font-size: 14px;
+    font-weight: 400;
+    color: #222222;
+    line-height: 24px;
+    letter-spacing: 0.05em;
+}
+
+h6 {
+    font-size: 12px;
+    font-weight: 400;
+    color: #777777;
+    line-height: 24px;
+}
+
 .offset-top {
     margin-top: 260px;
+}
+
+.inner-pages-offset {
+    margin-top: 177px;
+}
+
+.set-hide-nav-bar {
+    margin-top: 40px;
 }
 
 .top-header.site-topbar {
     background: var(--top-header-color);
     padding: 5px 0;
+    display: list-item;
 }
 
 .top-header .header-dropdown li{
@@ -193,6 +252,7 @@ body{
     width: 100%;
     object-position: center;
     border-radius: 10px;
+    border: 1px solid #dddddd45;
 }
 
 .scale-effect {
@@ -203,11 +263,11 @@ body{
 }
 
 .product-4 .slick-slide,.suppliers-slider .slick-slide{
-    padding: 30px 0;
+    padding: 20px 0;
 }
 
 .common-product-box,.suppliers-box {
-    padding: 0 10px;
+    padding: 10px 10px 0;
     -webkit-transition: all 0.5s;
     -moz-transition: all 0.5s;
     transition: all 0.5s;
@@ -260,6 +320,9 @@ body{
     letter-spacing: 0;
     margin: 5px 0;
     line-height: 20px;  
+    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .product-description b{
@@ -540,10 +603,10 @@ footer ul.social-links li,.footer-theme .sub-title .contact-list li{
 }
 
 footer ul.social-links li a i, .contact-list li  i {
-    width: 26px;
-    height: 26px;
-    line-height: 26px;
-    font-size: 14px;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 10px;
     text-align: center;
     margin-right: 5px;
     background: #000;
@@ -989,14 +1052,14 @@ body[dir="rtl"] #social-links li:last-child{
 }
 
 @media (max-width: 991px){
-    .site-header {
-        padding-bottom: 50px;
+    .offset-top {
+        margin-top: 182px;
     }
     .radius-bar {
         width: 100%;
-        position: absolute;
-        bottom: -60px;
-        left: 0;
+    }
+    .pixelstrap li > a {
+        padding: 10px 15px;
     }
     .top-header .header-dropdown li span:last-child {
         display: none;
@@ -1011,12 +1074,11 @@ body[dir="rtl"] #social-links li:last-child{
         width: 100%;
     }
     .left-shape::before {
-        border-radius: 30px;
+        border-radius: 0;
     }
     .right-shape::before {
-        border-radius: 30px;
-    }
-    
+        border-radius: 0;
+    }    
     .nav-cate-img{
         display: none;
     }
@@ -1041,15 +1103,16 @@ body[dir="rtl"] #social-links li:last-child{
     }
 }
 @media (max-width: 767px){
-    .site-header {
-        padding-bottom: 0;
-    }   
-    header {
-        padding: 0 0 50px;
+    
+    .navbar-brand .img-fluid {
+        max-width: initial;
     }
     .location-bar {
-        width: auto;
+        width: 58%;
     }
+    header {
+        padding: 0 0 50px;
+    }    
     .footer-theme .sub-title .contact-list li {
         padding-left: 0 !important;
     }  
@@ -1098,8 +1161,18 @@ body[dir="rtl"] #social-links li:last-child{
 }
 
 @media (max-width: 576px){
-    .top-header.site-topbar{
-        padding: 10px 0;
+    .offset-top {
+        margin-top: 220px;
+    }
+    header.site-header.fixed-bar {
+        top: 0;
+    }
+    .top-header.site-topbar {
+        padding: 10px 10px 10px 0;
+        background: transparent;
+    }
+    .site-topbar .location-bar h2,.site-topbar .location-bar i{
+        color: var(--top-header-color) !important;
     }
     .top-header {
         height: auto;
@@ -1107,15 +1180,8 @@ body[dir="rtl"] #social-links li:last-child{
     header {
         padding: 0;
     }
-    .radius-bar {
+    .location-bar {
         width: 100%;
-        position: fixed;
-        z-index: 11111;
-        bottom: 59px;
-        left: 0;
-        right: 0;
-        margin: auto;
-        display: none;
-        border-radius: 0;
     }
+    
 }

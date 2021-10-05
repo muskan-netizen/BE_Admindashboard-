@@ -9,11 +9,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <div class="row align-items-center">
             <div class="col-6">
                 <div class="d-flex align-items-center">    
-                    <a class="navbar-brand mr-0 mr-sm-3 d-block d-md-none" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
+                    <a class="navbar-brand mr-0 mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
                             <div class="location-bar d-none d-sm-flex align-items-center justify-content-start m-0 p-0 dropdown-toggle order-1" href="#edit-address" data-toggle="modal">
-                                <div class="map-icon mr-md-2"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
+                                <div class="map-icon mr-2"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
                                 <div class="homepage-address text-left">
                                     <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
                                 </div>
@@ -25,12 +25,21 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     @endif
                 </div>
             </div>
-            <div class="col-6 text-right">
+
+            <div class="col-6 d-inline d-sm-none text-right">
+                <div class="icon-nav">
+                    <ul>
+                        <li class="d-inline-block d-lg-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-sm-6 mt-2 mt-sm-0 text-right">
                 <div class="d-inline d-sm-none">
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
                             <div class="location-bar d-flex align-items-center justify-content-start dropdown-toggle" href="#edit-address" data-toggle="modal">
-                                <div class="map-icon mr-md-2"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
+                                <div class="map-icon mr-2"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
                                 <div class="homepage-address text-left">
                                     <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
                                 </div>
