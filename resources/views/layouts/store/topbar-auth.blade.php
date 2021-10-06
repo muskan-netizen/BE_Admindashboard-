@@ -40,25 +40,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <span class="language ml-1 align-middle">{{ __('language') }}</span>
                         </a>
                         <ul class="onhover-show-div">
-                        {{-- @foreach($languageList as $key => $listl)
-                            <li class="{{session()->get('locale') ==  $listl->language->sort_code ?  'active' : ''}}">
-                                <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
-                            </li>
-                        @endforeach --}}
+                            @foreach($languageList as $key => $listl)
+                                <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
+                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                                </li>
+                            @endforeach
                         
-                        {{-- language switch --}}
-
-                    
-
-                       <li class={{ $applocale === 'en' ? "active" : "" }} > <a href="/switch/language?lang=en" class="customerLang" langid="1">English</a> </li>
-                       <li class={{ $applocale === 'ar' ? "active" : "" }} > <a href="/switch/language?lang=ar" class="customerLang" langid="1">Arabic</a> </li>
-                       <li class={{ $applocale === 'fr' ? "active" : "" }} > <a href="/switch/language?lang=fr" class="customerLang" langid="1">{{ __("French") }}</a> </li>
-                       <li class={{ $applocale === 'de' ? "active" : "" }} > <a href="/switch/language?lang=de" class="customerLang" langid="1">Germany</a> </li>
-                       <li class={{ $applocale === 'es' ? "active" : "" }} > <a href="/switch/language?lang=es" class="customerLang" langid="1">Spanish</a> </li>
-                       
-                       {{-- language switch --}}
-
-                        
+                            {{-- language switch --}}
+                            {{-- <li class={{ $applocale === 'en' ? "active" : "" }} > <a href="/switch/language?lang=en" class="customerLang" langid="1">English</a> </li>
+                            <li class={{ $applocale === 'ar' ? "active" : "" }} > <a href="/switch/language?lang=ar" class="customerLang" langid="1">Arabic</a> </li>
+                            <li class={{ $applocale === 'fr' ? "active" : "" }} > <a href="/switch/language?lang=fr" class="customerLang" langid="1">{{ __("French") }}</a> </li>
+                            <li class={{ $applocale === 'de' ? "active" : "" }} > <a href="/switch/language?lang=de" class="customerLang" langid="1">Germany</a> </li>
+                            <li class={{ $applocale === 'es' ? "active" : "" }} > <a href="/switch/language?lang=es" class="customerLang" langid="1">Spanish</a> </li> --}}
+                            {{-- language switch --}}                        
                         </ul>
                     </li>
                     <li class="onhover-dropdown change-currency slected-language">

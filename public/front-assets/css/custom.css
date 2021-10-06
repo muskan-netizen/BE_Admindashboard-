@@ -3689,6 +3689,9 @@ h4#driver_name {
 
 
 /* Website Dark Mood Css Start Form Here */
+.dark .coupon-code h6{
+    color: #fff;
+}
 
 .dark .cab-banner-area .card-box {
     background: rgb(0 0 0 / 50%);
@@ -6003,7 +6006,7 @@ section.royo-business .title-36 {
 }
 
 .product-timing small i {
-    color: var(--theme-deafult);
+    color: #000;
     margin: 0 2px 0 0;
 }
 

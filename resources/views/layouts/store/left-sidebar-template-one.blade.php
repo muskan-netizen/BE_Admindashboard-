@@ -212,7 +212,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                             </script>
                                             <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul>
                                         </li>
-                                        <li class="d-inline-block d-lg-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li>
+                                        <li class="d-sm-inline-block d-none d-xl-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li>
                                     </ul>
                                 </div>
                                 

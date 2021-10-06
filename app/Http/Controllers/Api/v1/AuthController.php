@@ -514,41 +514,46 @@ class AuthController extends BaseController{
     }
 
     public function forgotPassword(Request $request){
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|max:50'
-        ]);
-        if($validator->fails()){
-            foreach($validator->errors()->toArray() as $error_key => $error_value){
-                $errors['error'] = __($error_value[0]);
-                return response()->json($errors, 422);
+        try{
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email|exists:users'
+            ],['email.required' => __('The email field is required.'),'email.exists' => __('You are not registered with us. Please sign up.')]);
+            if($validator->fails()){
+                foreach($validator->errors()->toArray() as $error_key => $error_value){
+                    $errors['error'] = __($error_value[0]);
+                    return response()->json($errors, 422);
+                }
             }
-        }
-        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
-        $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
-        if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
-            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-            $token = Str::random(60);
-            $client_name = $client->name;
-            $mail_from = $data->mail_from;
-            DB::table('password_resets')->insert(['email' => $request->email, 'token' => $token, 'created_at' => Carbon::now()]);
-            $email_template_content = '';
-            $email_template = EmailTemplate::where('id', 3)->first();
-            if($email_template){
-                $email_template_content = $email_template->content;
-                $email_template_content = str_ireplace("{reset_link}", url('/reset-password/'.$token), $email_template_content);
+            $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+            $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+            if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+                $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+                $token = Str::random(60);
+                $client_name = $client->name;
+                $mail_from = $data->mail_from;
+                DB::table('password_resets')->insert(['email' => $request->email, 'token' => $token, 'created_at' => Carbon::now()]);
+                $email_template_content = '';
+                $email_template = EmailTemplate::where('id', 3)->first();
+                if($email_template){
+                    $email_template_content = $email_template->content;
+                    $email_template_content = str_ireplace("{reset_link}", url('/reset-password/'.$token), $email_template_content);
+                }
+                $data = [
+                    'token' => $token,
+                    'mail_from' => $mail_from,
+                    'email' => $request->email,
+                    'client_name' => $client_name,
+                    'logo' => $client->logo['original'],
+                    'subject' => $email_template->subject,
+                    'email_template_content' => $email_template_content,
+                ];
+                dispatch(new \App\Jobs\sendForgotPasswordEmail($data))->onQueue('forgot_password_email');
             }
-            $data = [
-                'token' => $token,
-                'mail_from' => $mail_from,
-                'email' => $request->email,
-                'client_name' => $client_name,
-                'logo' => $client->logo['original'],
-                'subject' => $email_template->subject,
-                'email_template_content' => $email_template_content,
-            ];
-            dispatch(new \App\Jobs\sendForgotPasswordEmail($data))->onQueue('forgot_password_email');
+            return response()->json(['success' => __('We have e-mailed your password reset link!')], 200);
         }
-        return response()->json(['success' => __('We have e-mailed your password reset link!')], 200);
+        catch(\Exception $ex){
+            return $this->errorResponse($e->getMessage(), $e->getCode()); 
+        }
     
         
         // $user = User::where('email', $request->email)->first();

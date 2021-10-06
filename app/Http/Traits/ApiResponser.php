@@ -84,47 +84,52 @@ trait ApiResponser
 	}
 
 	protected function failMail()
-	{
-		$data = ClientPreference::select(
-			'sms_key',
-			'sms_secret',
-			'sms_from',
-			'mail_type',
-			'mail_driver',
-			'mail_host',
-			'mail_port',
-			'mail_username',
-			'sms_provider',
-			'mail_password',
-			'mail_encryption',
-			'mail_from'
-		)->where('id', '>', 0)->first();
-		$confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-
-
-		$mail_from = $data->mail_from;
-		$email_template_content = '';
-		$email_template = EmailTemplate::where('id', 7)->first();
-		if (Auth::user()) {
-			$cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', Auth::user()->id)->first();
-		} else {
-			$cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+	{	
+		try{
+			$data = ClientPreference::select(
+				'sms_key',
+				'sms_secret',
+				'sms_from',
+				'mail_type',
+				'mail_driver',
+				'mail_host',
+				'mail_port',
+				'mail_username',
+				'sms_provider',
+				'mail_password',
+				'mail_encryption',
+				'mail_from'
+			)->where('id', '>', 0)->first();
+			$confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+	
+	
+			$mail_from = $data->mail_from;
+			$email_template_content = '';
+			$email_template = EmailTemplate::where('id', 7)->first();
+			if (Auth::user()) {
+				$cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', Auth::user()->id)->first();
+			} else {
+				$cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+			}
+			if ($cart) {
+				$cartDetails = $this->getCart($cart);
+			}
+			if ($email_template) {
+				$email_template_content = $email_template->content;
+				$returnHTML = view('email.orderProducts')->with(['cartData' => $cartDetails])->render();
+	
+				$email_template_content = str_ireplace("{name}", Auth::user()->name, $email_template_content);
+				$email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
+			}
+			Mail::send('frontend.failmail', compact('email_template_content'), function ($message) use ($mail_from) {
+				$message->from($mail_from);
+				$message->to(Auth::user()->email);
+				$message->subject('Payment Failure Notification');
+			});
+		}catch (\Exception $ex){
+			
 		}
-		if ($cart) {
-			$cartDetails = $this->getCart($cart);
-		}
-		if ($email_template) {
-			$email_template_content = $email_template->content;
-			$returnHTML = view('email.orderProducts')->with(['cartData' => $cartDetails])->render();
-
-			$email_template_content = str_ireplace("{name}", Auth::user()->name, $email_template_content);
-			$email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
-		}
-		Mail::send('frontend.failmail', compact('email_template_content'), function ($message) use ($mail_from) {
-			$message->from($mail_from);
-			$message->to(Auth::user()->email);
-			$message->subject('Payment Failure Notification');
-		});
+		
 	}
 
 

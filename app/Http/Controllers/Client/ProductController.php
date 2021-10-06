@@ -378,7 +378,8 @@ class ProductController extends BaseController
             }
         }
         $toaster = $this->successToaster('Success', 'Product  updated successfully.');
-        return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
+        // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
+        return redirect()->back()->with('toaster', $toaster);
     }
 
     /**

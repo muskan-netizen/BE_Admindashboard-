@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\DispatcherStatusOption;
 use App\Exports\OrderVendorListTaxExport;
+use DB;
 
 class OrderController extends Controller{
     use ApiResponser;
@@ -61,10 +62,10 @@ class OrderController extends Controller{
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $vendor_orders_query = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment','orderstatus']);
         if (!empty($request->get('date_filter'))) {
-            $date_date_filter = explode('to', $request->get('date_filter'));
-            $to_date = $date_date_filter[1];
+            $date_date_filter = explode(' to ', $request->get('date_filter'));
+            $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
             $from_date = $date_date_filter[0];
-            $vendor_orders_query->between($from_date, $to_date);
+            $vendor_orders_query->between($from_date." 00:00:00", $to_date." 23:59:59");
         }
         if (Auth::user()->is_superadmin == 0) {
             $vendor_orders_query = $vendor_orders_query->whereHas('vendor.permissionToUser', function ($query) {

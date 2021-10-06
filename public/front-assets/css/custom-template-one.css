@@ -111,7 +111,7 @@ h6 {
 }
 
 .inner-pages-offset {
-    margin-top: 177px;
+    margin-top: 202px;
 }
 
 .set-hide-nav-bar {
@@ -1110,10 +1110,7 @@ body[dir="rtl"] #social-links li:last-child{
     }
     .location-bar {
         width: 58%;
-    }
-    header {
-        padding: 0 0 50px;
-    }    
+    }   
     .footer-theme .sub-title .contact-list li {
         padding-left: 0 !important;
     }  
@@ -1179,7 +1176,7 @@ body[dir="rtl"] #social-links li:last-child{
         height: auto;
     }
     header {
-        padding: 0;
+        padding: 0 0 10px;
     }
     .location-bar {
         width: 100%;

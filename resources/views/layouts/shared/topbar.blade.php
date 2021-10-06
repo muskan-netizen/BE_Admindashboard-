@@ -1,3 +1,7 @@
+@php
+$languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
+$currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
+@endphp
 <!-- Topbar Start -->
 <audio id="orderAudio">
     <source src="{{ asset('assets/sounds/notification.ogg')}}" type="audio/ogg">
@@ -105,14 +109,21 @@
                     {{ $applocale_admin }}
                     <i class="mdi mdi-chevron-down"></i>
                 </a>
-                <div class="dropdown-menu">
-                    <a href="/switch/admin/language?lang=en" class="dropdown-item" langid="1">English</a>
+                <ul class="dropdown-menu">
+                    {{-- <a href="/switch/admin/language?lang=en" class="dropdown-item" langid="1">English</a>
                     <a href="/switch/admin/language?lang=es" class="dropdown-item" langid="1">Spanish</a>
-                    {{-- <a href="/switch/admin/language?lang=ar" class="dropdown-item" langid="1">Arabic</a> --}}
+                    <a href="/switch/admin/language?lang=ar" class="dropdown-item" langid="1">Arabic</a>
                     <a href="/switch/admin/language?lang=fr" class="dropdown-item" langid="1">French</a>
-                    <a href="/switch/admin/language?lang=de" class="dropdown-item" langid="1">German</a>
+                    <a href="/switch/admin/language?lang=de" class="dropdown-item" langid="1">German</a> --}}
+                    
+                    @foreach($languageList as $key => $listl)
+                        <li>
+                            <a href="/switch/admin/language?lang={{$listl->language->sort_code}}" class="customerLang dropdown-item {{$applocale_admin ==  $listl->language->sort_code ?  'active' : ''}}" langid="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                        </li>
+                    @endforeach
+                    
                     <div class="dropdown-divider"></div>
-                </div>
+                </ul>
             </li>
 
 

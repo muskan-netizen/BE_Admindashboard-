@@ -46,15 +46,22 @@ class VendorController extends Controller{
     }
 
     public function filter(Request $request){
-        $month_number = '';
-        $month_picker_filter = $request->month_picker_filter;
-        if($month_picker_filter){
-            $temp_arr = explode(' ', $month_picker_filter);
-            $month_number =  getMonthNumber($temp_arr[0]);
+        // $month_number = '';
+        // $month_picker_filter = $request->month_picker_filter;
+        // if($month_picker_filter){
+        //     $temp_arr = explode(' ', $month_picker_filter);
+        //     $month_number =  getMonthNumber($temp_arr[0]);
+        // }
+        $from_date = "";
+        $to_date = "";
+        if (!empty($request->get('date_filter'))) {
+            $date_date_filter = explode(' to ', $request->get('date_filter'));
+            $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
+            $from_date = $date_date_filter[0];
         }
-        $vendors = Vendor::with(['orders' => function($query) use($month_number) {
-            if($month_number){
-                $query->whereMonth('created_at', $month_number);
+        $vendors = Vendor::with(['orders' => function($query) use($from_date,$to_date) {
+            if((!empty($from_date)) && (!empty($to_date))){
+                $query->between($from_date." 00:00:00", $to_date." 23:59:59");
             }
         }])->where('status', '!=', '2')->orderBy('id', 'desc');
         

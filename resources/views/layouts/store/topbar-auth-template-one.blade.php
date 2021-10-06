@@ -50,6 +50,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         @endif
                     @endif
                 </div>
+                @php  
+                $applocale = 'en';
+                if(session()->has('applocale')){
+                    $applocale = session()->get('applocale');
+                }            
+                @endphp
                 <ul class="header-dropdown d-none d-sm-inline">                    
                     <!-- <li class="mobile-wishlist d-inline d-sm-none">
                         <a href="{{route('user.wishlists')}}">
@@ -57,13 +63,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </a>
                     </li> -->
                     <li class="onhover-dropdown change-language slected-language">
-                        <a href="javascript:void(0)">{{session()->get('locale')}} 
+                        <a href="javascript:void(0)">{{$applocale}} 
                         <span class="icon-ic_lang align-middle"></span>
                         <span class="language ml-1 align-middle">{{ __('language') }}</span>
                         </a>
                         <ul class="onhover-show-div">
                             @foreach($languageList as $key => $listl)
-                                <li class="{{session()->get('locale') ==  $listl->language->sort_code ?  'active' : ''}}">
+                                <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
                                     <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
                                 </li>
                             @endforeach

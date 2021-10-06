@@ -215,7 +215,7 @@
          </div> 
          @endif
 
-         @if($client_preference_detail->business_type == 'taxi')
+         @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'superapp' )
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">

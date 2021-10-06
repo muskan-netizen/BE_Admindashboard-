@@ -7,9 +7,14 @@
         $label = 'Delivery';
     }
 @endphp
-<div class="row">
-    <div class="col-12 mb-2">
-        <h4 class="page-title">{{ __($label.' Address') }} </h4>
+<div class="row align-items-center mb-3">
+    <div class="col-md-6">
+        <h4 class="page-title m-0">{{ __($label.' Address') }} </h4>
+    </div>
+    <div class="col-md-6 mt-2 mt-md-0 text-center" id="add_new_address_btn">
+        <a class="add-address w-100 mx-auto" href="javascript:void(0)">
+            <i class="fa fa-plus mr-1" aria-hidden="true"></i>{{__('Add New Address')}}
+        </a>
     </div>
 </div>
 @if($action != 'delivery')
@@ -63,11 +68,11 @@
             <p>{{__('Address not available.')}}</p>
         </div>
         @endforelse
-        <div class="col-12 mt-4 text-center" id="add_new_address_btn">
+        <!-- <div class="col-12 mt-4 text-center" id="add_new_address_btn">
             <a class="btn btn-solid w-100 mx-auto mb-4">
                 <i class="fa fa-plus mr-1" aria-hidden="true"></i>{{__('Add New Address')}}
             </a>
-        </div>
+        </div> -->
     </div>
     <div class="row">
         <div class="col-md-12" id="add_new_address_form" style="display:none;">

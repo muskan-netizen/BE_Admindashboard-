@@ -19,6 +19,7 @@
     .order-page .card-box {
         padding: 20px 20px 5px !important;
     }
+
     .progress-order {
         width: calc(100% + 48px);
         margin: -24px 0 20px;
@@ -257,8 +258,9 @@
             <form id="addRejectForm" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body" id="AddRejectBox">
+                    <p id="error-case" style="color:red;"></p>
                     <label style="font-size:medium;">Enter reason for rejecting the order.</label>
-                    <textarea class="reject_reason" data-name="reject_reason" name="reject_reason" id="" cols="107" rows="10" ></textarea>
+                    <textarea class="reject_reason" data-name="reject_reason" name="reject_reason" id="" cols="107" rows="10"></textarea>
 
                 </div>
                 <div class="modal-footer">
@@ -383,9 +385,9 @@
             });
             $('.addrejectSubmit').on('click', function(e) {
                 e.preventDefault();
-                var reject_reason=$('#addRejectForm #AddRejectBox .reject_reason').val();
-                
-               
+                var reject_reason = $('#addRejectForm #AddRejectBox .reject_reason').val();
+
+
                 //  var reject_reason = document.getElementById('reject_reason').value;
 
                 // var formData = new FormData(form);
@@ -406,6 +408,9 @@
                         if (response.status == 'success') {
                             // $(".modal .close").click();
                             location.reload();
+                        } else if (response.status == 'error') {
+                            $('#error-case').empty();
+                            $('#error-case').append(response.message);
                         }
                         if (count == 0) {
                             $(full_div).slideUp(1000, function() {
@@ -431,6 +436,12 @@
 
 
                     },
+                    error: function(response) {
+                        if (response.status == 'error') {
+                            $('#error-case').empty();
+                            $('#error-case').append(response.message);
+                        }
+                    }
 
                 });
 

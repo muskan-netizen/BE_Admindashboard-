@@ -19,7 +19,7 @@ class CabBookingLayout extends Model
 
 
     public function pickupCategories(){
-        return $this->hasMany('App\Models\CabBookingLayoutCategory');
+        return $this->hasMany('App\Models\CabBookingLayoutCategory')->whereHas('categoryDetail',function($q){$q->where('deleted_at',null);});
        
     }
 }

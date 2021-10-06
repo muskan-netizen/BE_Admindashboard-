@@ -60,7 +60,7 @@
                     <div class="top-input position-absolute">
                         <div class="row">
                             <div class="col-md-3">
-                                 <input type="text" class="form-control" data-provide="datepicker" data-date-format="MM yyyy" data-date-min-view-mode="1" id="month_picker_filter" placeholder="Select Month">
+                                 <input type="text" class="form-control flatpickr-input" id="range-datepicker" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
                             </div>
                         </div>  
                    </div>
@@ -97,9 +97,14 @@
             }
         });
         initDataTable();
-        $(document).on("change","#month_picker_filter",function() {
-            initDataTable();
+
+        $("#range-datepicker").flatpickr({ 
+            mode: "range",
+            onClose: function(selectedDates, dateStr, instance) {
+                initDataTable();
+            }
         });
+
         function initDataTable() {
             $('#accounting_vendor_datatable').DataTable({
                 "dom": '<"toolbar">Bfrtip',

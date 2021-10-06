@@ -49,7 +49,7 @@ class ForgotPasswordController extends FrontController{
         try {
             $request->validate([
                 'email' => 'required|email|exists:users',
-            ],['email.required' => __('The email field is required.'),'email.exists' => __('The selected email is invalid.')]);
+            ],['email.required' => __('The email field is required.'),'email.exists' => __('You are not registered with us. Please sign up.')]);
             $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
             $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
             if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
@@ -77,7 +77,7 @@ class ForgotPasswordController extends FrontController{
             }
             return $this->successResponse([],__('We have e-mailed your password reset link!'));
         } catch (Exception $e) {
-
+            return $this->errorResponse($e->getMessage(), $e->getCode());
         }
             
     }

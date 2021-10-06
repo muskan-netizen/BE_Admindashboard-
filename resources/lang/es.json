@@ -18,6 +18,7 @@
    "The name may not be greater than 50 characters.": "El nombre no puede tener más de 50 caracteres.",
    "The phone number field is required.": "El campo de correo electrónico es obligatorio.",
    "The selected email is invalid.": "El correo electrónico seleccionado no es válido.",
+   "You are not registered with us. Please sign up.": "No estás registrado con nosotros. Por favor regístrese.",
    "Send Password Reset Link": "Enviar enlace de restablecimiento de contraseña",
    "We have e-mailed your password reset link!": "¡Hemos enviado un correo electrónico con el enlace de restablecimiento de contraseña!",
    "The password field is required.": "El campo de contraseña es obligatorio.",

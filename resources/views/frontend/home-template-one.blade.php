@@ -21,6 +21,7 @@
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal">
   Launch demo modal
 </button>
+
 @if(count($banners))
 <section class="home-slider-wrapper">
     <div class="container">
@@ -156,17 +157,64 @@
         </a>
     <% }); %>
 </script>
+
+<script type="text/template" id="trending_vendors_template">
+    <% _.each(trending_vendors, function(vendor, k){%>
+
+        <div>
+            <a class="suppliers-box d-block px-2" href="{{route('vendorDetail')}}/<%= vendor.slug %>">
+                <div class="suppliers-img-outer">
+                    <img class="fluid-img mx-auto" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
+                </div>
+                <div class="supplier-rating">
+                    <h6 class="mb-1"><%= vendor.name %></h6>
+                    <p title="<%= vendor.categoriesList %>" class="vendor-cate border-bottom pb-1 mb-1 ellips"><%= vendor.categoriesList %></p>
+                    <div class="product-timing">
+                        <small title="<%= vendor.address %>" class="ellips d-block"><i class="fa fa-map-marker"></i> <%= vendor.address %></small>
+                        <% if(vendor.timeofLineOfSightDistance != undefined){ %>
+                            <ul class="timing-box mb-1">
+                                <li>
+                                    <small class="d-block"><img class="d-inline-block mr-1" src="{{ asset('front-assets/images/distance.png') }}" alt=""> <%= vendor.lineOfSightDistance %></small>
+                                </li>
+                                <li>
+                                    <small class="d-block mx-1"><i class="fa fa-clock-o"></i> <%= vendor.timeofLineOfSightDistance %> min</small>
+                                </li>
+                            </ul>
+                        <% } %>
+                    </div>
+                    @if($client_preference_detail)
+                        @if($client_preference_detail->rating_check == 1)
+                            <% if(vendor.vendorRating > 0){%>
+                                <ul class="custom-rating m-0 p-0">
+                                    <% for(var i=0; i < 5; i++){ %>
+                                        <% if(i <= vendor.vendorRating){
+                                            var starFillClass = 'fa-star';
+                                        }else{
+                                            var starFillClass = 'fa-star-o';
+                                        } %>
+                                        <li><i class="fa <%= starFillClass %>" aria-hidden="true"></i></li>
+                                    <% } %>
+                                </ul>
+                            <% } %>
+                        @endif
+                    @endif
+                </div>
+            </a>
+        </div> 
+
+    <% }); %>
+</script>   
+
 <section class="section-b-space p-t-0 pt-3 pt-md-4 ratio_asos d-none pb-0" id="our_vendor_main_div">
     <div class="vendors">
         @foreach($homePageLabels as $key => $homePageLabel)
-            @if($homePageLabel->slug == 'pickup_delivery')
-                @if(isset($homePageLabel->pickupCategories))
-                 @include('frontend.booking.cabbooking-single-module')
+        @if($homePageLabel->slug == 'pickup_delivery')
+                @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) 
+                  @include('frontend.booking.cabbooking-single-module')
                 @endif 
         @elseif($homePageLabel->slug == 'dynamic_page')
                 @include('frontend.included_files.dynamic_page')
         @elseif($homePageLabel->slug == 'brands')  
-                                
         <section class="popular-brands left-shape position-relative">
         <div class="container">
             <div class="row align-items-center">
@@ -200,7 +248,23 @@
                 </div>
             </div>
         </div>
-       </section> 
+       </section>
+       @elseif($homePageLabel->slug == 'trending_vendors')
+        <section class="suppliers-section pt-0 mt-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-3">
+                    <h2 class="h2-heading">{{ $homePageLabel->slug == 'trending_vendors' ? __('trending')." ".getNomenclatureName('vendors', true) :  __($homePageLabel->title) }}</h2>
+                </div>
+                <div class="col-12 px-0">
+                    <div class="suppliers-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+       </section>
         @else
         <div class="container render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
@@ -213,7 +277,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    @if($homePageLabel->slug == 'vendors')
+                    @if($homePageLabel->slug == 'vendors' || $homePageLabel->slug == 'trending_vendors')
                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
                     @else
                     <div class="product-4 product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}"></div>

@@ -85,10 +85,10 @@ class PromoCodeController extends Controller{
             }
 
             if (!empty($request->get('date_filter'))) {
-                $date_date_filter = explode('to', $request->get('date_filter'));
-                $to_date = $date_date_filter[1];
+                $date_date_filter = explode(' to ', $request->get('date_filter'));
+                $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
                 $from_date = $date_date_filter[0];
-                $vendor_orders_query->between($from_date, $to_date);
+                $vendor_orders_query->between($from_date." 00:00:00", $to_date." 23:59:59");
             }
             $vendor_orders = $vendor_orders_query->orderBy('id', 'desc')->get();
             foreach ($vendor_orders as $vendor_order) {

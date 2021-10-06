@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use Illuminate\Contracts\Session\Session as SessionSession;
-use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption};
+use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ClientPreference, DriverRegistrationDocument, HomePageLabel, Page, VendorRegistrationDocument, Language, OnboardSetting, CabBookingLayout, WebStylingOption, SubscriptionInvoicesVendor};
 use Illuminate\Contracts\View\View;
 use Illuminate\View\View as ViewView;
 use Redirect;
@@ -331,10 +331,42 @@ class UserhomeController extends FrontController
             }
             $value->categoriesList = $categoriesList;
         }
+        $now = Carbon::now()->toDateTimeString();
+        $subscribed_vendors_for_trending = SubscriptionInvoicesVendor::with('features')->whereHas('features', function ($query) {
+            $query->where(['subscription_invoice_features_vendor.feature_id' => 1]);
+        })
+            ->select('id', 'vendor_id', 'subscription_id')
+            ->where('end_date', '>=', $now)
+            ->whereIn('subscription_invoices_vendor.vendor_id', $vendor_ids)
+            ->pluck('vendor_id')->toArray();
 
         if (($latitude) && ($longitude)) {
             Session::put('vendors', $vendor_ids);
         }
+        
+        $trendingVendors = Vendor::whereIn('id',$subscribed_vendors_for_trending)->where('status', 1)->inRandomOrder()->get();
+
+        if ((!empty($trendingVendors) && count($trendingVendors) > 0)) {
+            foreach ($trendingVendors as $key => $value) {
+                $value->vendorRating = $this->vendorRating($value->products);
+                // $value->name = Str::limit($value->name, 15, '..');
+                if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                    $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
+                }
+                $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
+                $categoriesList = '';
+                foreach ($vendorCategories as $key => $category) {
+                    if ($category->category) {
+                        $categoriesList = $categoriesList . @$category->category->translation_one->name;
+                        if ($key !=  $vendorCategories->count() - 1) {
+                            $categoriesList = $categoriesList . ', ';
+                        }
+                    }
+                }
+                $value->categoriesList = $categoriesList;
+            }
+        }
+
         $navCategories = $this->categoryNav($language_id);
         Session::put('navCategories', $navCategories);
         $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
@@ -397,6 +429,7 @@ class UserhomeController extends FrontController
             'homePageLabels' => $home_page_labels,
             'feature_products' => $feature_products,
             'on_sale_products' => $on_sale_products,
+            'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$vendors
         ];
         return $this->successResponse($data);
     }
