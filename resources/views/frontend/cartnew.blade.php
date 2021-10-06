@@ -380,7 +380,7 @@
                     </div>
                 </div>
 
-                <div class="row mb-4">
+                <div class="row mb-md-3">
                     <div class="col-6 mb-2 mb-sm-0">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
                     </div>

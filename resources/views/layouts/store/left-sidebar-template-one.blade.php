@@ -123,8 +123,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 </ul>
                             @endif 
                         </div>
-                        <div class="col-6 my-sm-2 my-md-0">                       
-                            <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end justify-content-lg-between w-100 ">
+                        <div class="col-6 my-sm-2 my-md-0 ipad-view">                       
+                            <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100 ">
                                 @if( (Session::get('preferences')))
                                     @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
                                         <div class="location-bar d-none align-items-center justify-content-start ml-md-2 my-2 my-lg-0 dropdown-toggle" href="#edit-address" data-toggle="modal">
@@ -173,7 +173,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                         <input type="hidden" id="cliLang" name="cliLang" value="{{session('customerLanguage')}}">
                                         <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}">
                                     </form>
-                                    <ul>
+                                    <ul class="d-flex align-items-center">
+                                        <!-- <li class="mx-3 pl-0">t</li> -->
                                         <li class="onhover-div pl-0 shake-effect">
                                             @if($client_preference_detail)
                                                 @if($client_preference_detail->cart_enable == 1)
@@ -212,7 +213,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                             </script>
                                             <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul>
                                         </li>
-                                        <li class="d-sm-inline-block d-none d-xl-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li>
+                                        <li class="mobile-menu-btn d-sm-inline-block d-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li>
                                     </ul>
                                 </div>
                                 

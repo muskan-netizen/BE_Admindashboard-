@@ -6622,6 +6622,44 @@ body[dir="rtl"] .inner_spacing h3 {
     }
 }
 
+
+@media (max-width: 1199px) {
+    .site-header{
+        position: inherit !important;
+    }
+    .offset-top{
+        margin-top: 0;
+    }
+    .pixelstrap>li>a>.sub-arrow {
+        display: block;
+    }
+    .pixelstrap li > a, .pixelstrap a, .pixelstrap a:hover, .pixelstrap a:active,.pixelstrap li a:hover{
+        padding-left: 10px;
+        text-align: left;
+        font-weight: 400 !important;
+        font-size: 13px !important;
+    }
+    .pixelstrap li a, .new-tag{
+        font-weight: 400;
+    }
+    .ipad-view{
+        position: initial !important;
+    }
+
+}
+
+@media screen and (min-device-width: 768px) and (max-device-width: 1200px) { 
+    .radius-bar.d-lg-inline {
+        position: absolute;
+        bottom: -52px;
+        left: 0;
+        width: 100%;
+        z-index: 1;
+        border-radius: 0;
+        display: none !important;
+    }
+}
+
 @media(min-width: 992px) {
     .pixelstrap>li{
         text-align: center;

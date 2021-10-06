@@ -206,7 +206,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <input type="hidden" id="cliLang" name="cliLang" value="{{session('customerLanguage')}}">
                                 <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}">
                             </form>
-                            <ul>
+                            <ul class="d-flex align-items-center">
                                 <li class="onhover-div pl-0 shake-effect">
                                     @if($client_preference_detail)
                                         @if($client_preference_detail->cart_enable == 1)

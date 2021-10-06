@@ -95,7 +95,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <div class="footer-contant">
                             <div class="store-btn mb-3">
                                 <a href="#"><img src="{{asset('front-assets/images/app-store.png')}}" alt=""></a>
-                                <a class="ml-2" href="#"><img src="{{asset('front-assets/images/google-play.png')}}" alt=""></a>
+                                <a class="ml-xl-2 mt-2 mt-xl-0" href="#"><img src="{{asset('front-assets/images/google-play.png')}}" alt=""></a>
                             </div>
 
                             @if(count($social_media_details))
