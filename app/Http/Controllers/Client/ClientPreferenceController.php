@@ -262,7 +262,7 @@ class ClientPreferenceController extends BaseController{
             $preferenceset->delivery_service_key = $request->delivery_service_key;
         }
 
-        if(isset($request->need_delivery_service) && !empty($request->need_delivery_service)){
+        if(isset($request->need_dispacher_ride) && !empty($request->need_dispacher_ride)){
             try {
                 $client = new GClient(['headers' => ['personaltoken' => $request->pickup_delivery_service_key,'shortcode' => $request->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $request->pickup_delivery_service_key_url;                                                   
@@ -345,5 +345,74 @@ class ClientPreferenceController extends BaseController{
             return $preference;
         else
             return false;
+    }
+
+
+    public function postUpdateDomain(Request $request, $id){
+        $rules = array('custom_domain' => 'required|max:30');
+        $validation  = Validator::make($request->all(), $rules);
+        if ($validation->fails()) {
+            return redirect()->back()->withInput()->withErrors($validation);
+        }
+        // $client = Client::where('code', Auth::user()->code)->first();
+        // $client->custom_domain = $request->custom_domain;
+        // $client->save();
+
+          # if submit custom domain by client
+          if ($request->custom_domain && $request->custom_domain != $client->custom_domain) {
+            try {
+                $domain    = str_replace(array('http://', config('domainsetting.domain_set')), '', $request->custom_domain);
+                $domain    = str_replace(array('https://', config('domainsetting.domain_set')), '', $request->custom_domain);
+                $my_url =   $request->custom_domain;
+                
+                $data1 = [
+                    'domain' => $my_url
+                ];
+                
+                $curl = curl_init();
+                
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => "localhost:3000/add_subdomain",
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => "",
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 30000,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => "POST",
+                    CURLOPT_POSTFIELDS => json_encode($data1),
+                    CURLOPT_HTTPHEADER => array(
+                       "content-type: application/json",
+                    ),
+                ));
+                
+                $response = curl_exec($curl);
+                $err = curl_error($curl);
+                
+                curl_close($curl);
+                if ($err) {
+                    return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => $err]));
+                }
+
+               // $process = shell_exec("/var/app/Automation/script.sh '".$my_url."' ");
+            } catch (Exception $e) {
+                return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => $e->getMessage()]));
+            }
+          
+             $exists = Client::on('mysql')->where('code', '<>', $id)->where('custom_domain', $request->custom_domain)->count();
+            if ($exists) {
+                return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => 'Domain name "' . $request->custom_domain . '" is not available. Please select a different domain']));
+            } else {
+                Client::on('mysql')->where('code', $id)->update(['custom_domain' => $request->custom_domain]);
+                 $dbname = DB::connection()->getDatabaseName();
+                if ($dbname != env('DB_DATABASE')) {
+                    Client::where('id', '!=', 0)->update(['custom_domain' => $request->custom_domain]);
+                }
+            }
+        }
+
+
+
+
+        return redirect()->route('configure.customize')->with('success', 'Client customize data updated successfully!');
     }
 }
