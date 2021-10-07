@@ -17,7 +17,20 @@ class Banner extends Model
       }
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
       $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
-      $values['image_mobile_path'] = \Config::get('app.IMG_URL2');
+      $values['image_fit'] = \Config::get('app.FIT_URl');
+
+      return $values;
+    }
+
+    public function getImageMobileAttribute($value)
+    {
+      $values = array();
+      $img = 'default/default_image.png';
+      if(!empty($value)){
+        $img = $value;
+      }
+      $values['proxy_url'] = \Config::get('app.IMG_URL1');
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
       $values['image_fit'] = \Config::get('app.FIT_URl');
 
       return $values;
