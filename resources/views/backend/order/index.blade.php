@@ -70,22 +70,25 @@
                                             <% if(vendor.order_status_option_id == 1) { %>
                                                 <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Accept') }}</button>
                                                 <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>
-                                                <% } else if(vendor.order_status_option_id == 2) { %>
-                                                    <button class="update-status btn-warning" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="4" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Processing') }}</button>
-                                                <% } else if(vendor.order_status_option_id == 4) { %>
-                                                        <button class="update-status btn-success" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="5" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Out For Delivery') }}</button>
-                                                <% } else if(vendor.order_status_option_id == 5) { %>
-                                                    <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="6" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Delivered') }}</button>
-                                                <% } else { %>
+                                            <% } else if(vendor.order_status_option_id == 2) { %>
+                                                <button class="update-status btn-warning" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="4" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Processing') }}</button>
+                                            <% } else if(vendor.order_status_option_id == 4) { %>
+                                                    <button class="update-status btn-success" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="5" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Out For Delivery') }}</button>
+                                            <% } else if(vendor.order_status_option_id == 5) { %>
+                                                <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="6" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Delivered') }}</button>
+                                            <% } else { %>
                                                     
                                             <% } %> 
+                                            <!--<% if((vendor.order_status_option_id == 1) || ((vendor.order_status_option_id != 6) && (vendor.order_status_option_id != 3))) { %>
+                                                <button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>
+                                            <% } %>-->
                                         </div>
 
                                         <a href="<%= vendor.vendor_detail_url %>" class="row order_detail order_detail_data align-items-top pb-1 mb-0 card-box no-gutters h-100">
                                             <% if(order.scheduled_date_time) { %>
                                             <div class="col-sm-12">
                                                 <div class="progress-order font-12">
-                                                    <span class="badge badge-success ml-2">Scheduled on</span>
+                                                    <span class="badge badge-success ml-2">Scheduled</span>
                                                     <span class="ml-2"><%= order.scheduled_date_time %></span>
                                                 </div>
                                             </div>
@@ -147,7 +150,7 @@
                             <% }); %>
                         </div>   
                         <div class="col-md-3 pl-0">
-                            <div class="card-box p-2">
+                            <div class="card-box p-2 mb-0 w-100 h-100">
                                 <ul class="price_box_bottom m-0 pl-0 pt-1">
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Total') }}</label>
@@ -178,7 +181,7 @@
         <% }); %>
     </div>
     <% if(next_page_url) { %>
-        <div class="row mt-4">
+        <div class="row mt-4 mb-4">
             <div class="col-md-4 offset-md-4 text-center">
                 <button class="ladda-button btn btn-primary load-more-btn" dir="ltr" data-style="expand-left" data-url="<%= next_page_url%>" data-rel="<%= filter_order_status %>">
                     <span class="ladda-label">{{ __('Load More') }}</span>

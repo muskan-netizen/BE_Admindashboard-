@@ -118,7 +118,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     
                     @foreach($languageList as $key => $listl)
                         <li>
-                            <a href="/switch/admin/language?lang={{$listl->language->sort_code}}" class="customerLang dropdown-item {{$applocale_admin ==  $listl->language->sort_code ?  'active' : ''}}" langid="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                            <a href="/switch/admin/language?lang={{$listl->language->sort_code}}&langid={{$listl->language_id}}" class="customerLang dropdown-item {{$applocale_admin ==  $listl->language->sort_code ?  'active' : ''}}" langid="{{$listl->language_id}}">{{$listl->language->name}}</a>
                         </li>
                     @endforeach
                     

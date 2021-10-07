@@ -81,6 +81,7 @@ class ProductController extends BaseController
      */
     public function store(Request $request){
         $rule = array(
+            'product_name' => 'required|string',
             'sku' => 'required|unique:products',
             'url_slug' => 'required',
             'category' => 'required',
@@ -218,6 +219,7 @@ class ProductController extends BaseController
     {
         $product = Product::where('id', $id)->firstOrFail();
         $rule = array(
+            'product_name' => 'required|string',
             'sku' => 'required|unique:products,sku,'.$product->id,
             'url_slug' => 'required|unique:products,url_slug,'.$product->id,
         );

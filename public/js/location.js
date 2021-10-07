@@ -298,10 +298,7 @@ $(document).ready(function () {
                         if ($('.vendor-product').html() != '') {
                             $('.vendor-product').slick('destroy');
                         }
-                        $(".slide-6").html('');
-                        $(".product-4").html('');
-                        $(".product-5").html('');
-                        $('.vendor-product').html('');
+                        $(".slide-6, .product-4, .product-5, .vendor-product, .render_vendors, .render_brands").html('');
                         $("#new_products").html('');
                         $("#best_sellers").html('');
                         $("#featured_products").html('');

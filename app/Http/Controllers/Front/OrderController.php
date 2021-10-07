@@ -226,6 +226,30 @@ class OrderController extends FrontController
             }
         }
     }
+    public function sendSuccessSMS($request, $order, $vendor_id = ''){
+        try{
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+
+            $currId = Session::get('customerCurrency');
+            $currSymbol = Session::get('currencySymbol');
+            $customerCurrency = ClientCurrency::where('currency_id', $currId)->first();
+            $user = User::where('id', $order->user_id)->first();
+            if($user){
+                if($user->dial_code == "971"){
+                    $to = '+'.$user->dial_code."0".$user->phone_number;
+                } else {
+                    $to = '+'.$user->dial_code.$user->phone_number;
+                }
+                $provider = $prefer->sms_provider;
+                $body = "Hi ".$user->name.", Your order of amount ".$currSymbol.$order->payable_amount." for order number ".$order->order_number." has been placed successfully.";
+                if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
+                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                }
+            }
+        }
+        catch(\Exception $ex){
+        }
+    }
     /**
      * Get Cart Items
      *
@@ -624,7 +648,7 @@ class OrderController extends FrontController
                     $order_product->product_name = $vendor_cart_product->product->title ?? $vendor_cart_product->product->sku;
                     $order_product->product_dispatcher_tag = $vendor_cart_product->product->tags;
                     $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
-                    $order_product->scheduled_date_time = $vendor_cart_product->scheduled_date_time ?? null;
+                    $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
@@ -741,7 +765,7 @@ class OrderController extends FrontController
             $order->subscription_discount = $total_subscription_discount;
             $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
             $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
-            $order->scheduled_date_time = $cart->scheduled_date_time;
+            $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
             $order->payable_amount = $payable_amount;
             $order->save();
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
@@ -749,6 +773,7 @@ class OrderController extends FrontController
             }
             // $this->sendOrderNotification($user->id, $vendor_ids);
             $this->sendSuccessEmail($request, $order);
+            $this->sendSuccessSMS($request, $order, $vendor_id);
             Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
             CartAddon::where('cart_id', $cart->id)->delete();
             CartCoupon::where('cart_id', $cart->id)->delete();

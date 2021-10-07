@@ -20,16 +20,21 @@ class SignupRequest extends FormRequest{
      * @return array
      */
     public function rules(){
-        return [
+        $rules = [
             'name' => 'required|min:3|max:50',
-            'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|max:50',
-            'phone_number' => 'required|string|min:8|max:15|unique:users',
             'device_type' => 'required|string',
             'device_token' => 'required|string',
             'term_and_condition' => 'accepted',
             'refferal_code' => 'nullable|exists:user_refferals,refferal_code',
         ];
+        if(session('preferences')->verify_email == 1){
+            $rules['email'] = 'required|email|unique:users';
+        }
+        if(session('preferences')->verify_phone == 1){
+            $rules['phone_number'] = 'required|string|min:8|max:15|unique:users';
+        }
+        return $rules;
     }
     public function messages(){
         return [

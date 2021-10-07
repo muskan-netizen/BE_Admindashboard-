@@ -122,7 +122,7 @@ $timezone = Auth::user()->timezone;
                                                 </div>
                                                 <div class="row no-gutters order_data">
                                                     <div class="col-md-3">#{{$order->order_number}}</div>
-                                                    <div class="col-md-3">{{convertDateTimeInTimeZone($order->created_at, $timezone, 'l, F d, Y, H:i A')}}</div>
+                                                    <div class="col-md-3">{{convertDateTimeInTimeZone($order->created_at, $timezone, 'l, F d, Y, h:i A')}}</div>
                                                     <div class="col-md-3">
                                                         <a class="text-capitalize" href="#">{{$order->user->name}}</a>
                                                     </div>
@@ -150,8 +150,10 @@ $timezone = Auth::user()->timezone;
                                                                     <div class="progress-order font-12">
                                                                         @if(!empty($order->scheduled_date_time))
                                                                             <span class="badge badge-success ml-2">Scheduled</span>
+                                                                            <span class="ml-2">Your order will arrive by {{convertDateTimeInTimeZone($order->scheduled_date_time, $timezone, 'M d, Y h:i A')}}</span>
+                                                                        @else
+                                                                            <span class="ml-2">Your order will arrive by {{$vendor->ETA}}</span>
                                                                         @endif
-                                                                        <span class="ml-2">Your order will arrive by {{$vendor->ETA}}</span>
                                                                     </div>
                                                                 @endif
                                                                 <span class="left_arrow pulse"></span>

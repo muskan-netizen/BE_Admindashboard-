@@ -128,7 +128,7 @@ class OrderController extends BaseController{
                 break;
             }
         }
-        $orders = $orders->whereHas('vendors')->paginate(50);
+        $orders = $orders->whereHas('vendors')->paginate(30);
 
 
         $pending_orders = $pending_orders->where('order_status_option_id', 1)->count();
@@ -141,7 +141,7 @@ class OrderController extends BaseController{
         
       
         foreach ($orders as $key => $order) {
-            $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, H:i A');
+            $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, h:i A');
             $order->scheduled_date_time = !empty($order->scheduled_date_time) ? convertDateTimeInTimeZone($order->scheduled_date_time, $user->timezone, 'M d, Y h:i A') : '';
             foreach ($order->vendors as $vendor) {
                 $vendor->vendor_detail_url = route('order.show.detail', [$order->id, $vendor->vendor_id]);

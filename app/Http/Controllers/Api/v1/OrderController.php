@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\OrderStoreRequest;
 use Log;
-use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client};
+use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor};
 
 class OrderController extends BaseController {
     use ApiResponser;
@@ -98,11 +98,11 @@ class OrderController extends BaseController {
                     $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
                 }
                 $client_preference = ClientPreference::first();
-                if ($client_preference->verify_email == 1) {
-                    if ($user->is_email_verified == 0) {
-                        return response()->json(['error' => 'Your account is not verified.'], 404);
-                    }
-                }
+                // if ($client_preference->verify_email == 1) {
+                //     if ($user->is_email_verified == 0) {
+                //         return response()->json(['error' => 'Your account is not verified.'], 404);
+                //     }
+                // }
                 if ($client_preference->verify_phone == 1) {
                     if ($user->is_phone_verified == 0) {
                         return response()->json(['error' => 'Your phone is not verified.'], 404);
@@ -309,10 +309,11 @@ class OrderController extends BaseController {
                     $order->loyalty_amount_saved = $loyalty_amount_saved;
                     $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                     $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
-                    $order->scheduled_date_time = $cart->scheduled_date_time;
+                    $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
                     $order->subscription_discount = $total_subscription_discount;
                     $order->payable_amount = $payable_amount;
                     $order->save();
+                    $this->sendSuccessSMS($request, $order);
                     CartCoupon::where('cart_id', $cart->id)->delete();
                     CartProduct::where('cart_id', $cart->id)->delete();
                     if (($request->payment_option_id != 1) && ($request->payment_option_id != 2)) {
@@ -323,20 +324,31 @@ class OrderController extends BaseController {
                             'balance_transaction' => $order->payable_amount,
                         ]);
                     }
-                    $order = $order->with(['user_vendor'])->where('order_number', $order->order_number)->first();
-                    $user_admins = User::where(function ($query) {
-                        $query->where(['is_superadmin' => 1]);
-                    })->pluck('id')->toArray();
-                    $user_vendors = [];
-                    if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
-                        $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
-                    }
-                    $order->admins = array_unique(array_merge($user_admins, $user_vendors));
-                    DB::commit();
-                    // $this->sendOrderNotification($user->id);
                     $code = $request->header('code');
-                    $this->sendOrderPushNotificationVendors($order->admins, $order, $code);
-                    return $this->successResponse($order, __('Order placed successfully.'), 201); 
+                    $order = $order->with(['vendors:id,order_id,vendor_id', 'user_vendor'])->where('order_number', $order->order_number)->first();
+                    if (!empty($order->vendors)) {
+                        foreach ($order->vendors as $vendor_value) {
+                            $vendor_order_detail = $this->orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                            $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                            $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail, $code);
+                        }
+                    }
+                    $vendor_order_detail = $this->orderDetails_for_notification($order->id);
+                    $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                    $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
+                    DB::commit();
+                    // $user_admins = User::where(function ($query) {
+                    //     $query->where(['is_superadmin' => 1]);
+                    // })->pluck('id')->toArray();
+                    // $user_vendors = [];
+                    // if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
+                    //     $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
+                    // }
+                    // $order->admins = array_unique(array_merge($user_admins, $user_vendors));
+
+                    // $this->sendOrderNotification($user->id);
+                    // $this->sendOrderPushNotificationVendors($order->admins, $order, $code);
+                    return $this->successResponse($order, __('Order placed successfully.'), 201);
                 }
             } else {
                 return $this->errorResponse(['error' => __('Empty cart.')], 404);
@@ -344,6 +356,29 @@ class OrderController extends BaseController {
         } catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+    public function sendSuccessSMS($request, $order, $vendor_id = ''){
+        try{
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+
+            $user = Auth::user();
+            if($user){
+                $customerCurrency = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.currency_id', $user->currency)->first();
+                $currSymbol = $customerCurrency->symbol;
+                if($user->dial_code == "971"){
+                    $to = '+'.$user->dial_code."0".$user->phone_number;
+                } else {
+                    $to = '+'.$user->dial_code.$user->phone_number;
+                }
+                $provider = $prefer->sms_provider;
+                $body = "Hi ".$user->name.", Your order of amount ".$currSymbol.$order->payable_amount." for order number ".$order->order_number." has been placed successfully.";
+                if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
+                    $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+                }
+            }
+        }
+        catch(\Exception $ex){
         }
     }
     public function sendOrderNotification($id)
@@ -480,7 +515,14 @@ class OrderController extends BaseController {
                 $order->user_image = $order->user->image;
                 $order->payment_option_title = __($order->paymentOption->title);
                 $order->created_date = Carbon::parse($order->created_at)->setTimezone($user->timezone)->format('M d, Y h:i A');
+
                 foreach ($order->vendors as $vendor) {
+                    $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order_id)->where('vendor_id', $vendor->vendor->id)->orderBy('id', 'DESC')->first();
+                    if ($vendor_order_status) {
+                        $vendor->order_status =  ['current_status' => ['id' => $vendor_order_status->OrderStatusOption->id, 'title' => __($vendor_order_status->OrderStatusOption->title)]];
+                    } else {
+                        $vendor->current_status = null;
+                    }
                     $couponData = [];
                     $payable_amount = 0;
                     $discount_amount = 0;
@@ -688,6 +730,33 @@ class OrderController extends BaseController {
                 curl_close($ch);
             }
         }
+    }
+
+    public function orderDetails_for_notification($order_id, $vendor_id = "")
+    {
+        $order = Order::with(['vendors.products:id,product_name,product_id,order_id,order_vendor_id', 'vendors.vendor:id,name', 'vendors.products.addon', 'vendors.products.variant:id,sku,product_id,title,quantity', 'user:id,name,timezone', 'address:id,user_id,address'])->select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee');
+        $order = $order->whereHas('vendors', function ($query) use ($vendor_id) {
+            if(!empty($vendor_id)){
+                $query->where('vendor_id', $vendor_id);
+            }
+        })->with('vendors', function ($query) use ($vendor_id) {
+            $query->select('id', 'order_id', 'vendor_id', 'auto_accept_order');
+            if(!empty($vendor_id)){
+                $query->where('vendor_id', $vendor_id);
+            }
+        });
+        $order = $order->find($order_id);
+        $order_item_count = 0;
+        // $order->date_time = convertDateTimeInTimeZone($order->created_at, $user->timezone);
+        $order->payment_option_title = $order->paymentOption->title;
+        $order->item_count = $order_item_count;
+        foreach ($order->products as $product) {
+            $order_item_count += $product->quantity;
+        }
+        $order->item_count = $order_item_count;
+        unset($order->products);
+        unset($order->paymentOption);
+        return $order;
     }
 
     

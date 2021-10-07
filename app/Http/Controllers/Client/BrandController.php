@@ -43,11 +43,17 @@ class BrandController extends BaseController
             if ($brand_pos) {
                 $brand->position = $brand_pos->position + 1;
             }
-            if ($request->hasFile('image')) {
-                $file = $request->file('image');
+            if ($request->hasFile('image1')) {
+                $file = $request->file('image1');
                 $brand->image = Storage::disk('s3')->put($this->folderName, $file, 'public');
             } else {
                 $brand->image = 'default/default_image.png';
+            }
+            if ($request->hasFile('image2')) {
+                $file = $request->file('image2');
+                $brand->image_banner = Storage::disk('s3')->put($this->folderName, $file, 'public');
+            } else {
+                $brand->image_banner = 'default/default_image.png';
             }
             $brand->save();
             if ($brand->id > 0) {
@@ -111,9 +117,13 @@ class BrandController extends BaseController
         $brand = Brand::where('id', $id)->firstOrFail();
 
         $brand->title = $request->title[0];
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
+        if ($request->hasFile('image1')) {
+            $file = $request->file('image1');
             $brand->image = Storage::disk('s3')->put($this->folderName, $file, 'public');
+        }
+        if ($request->hasFile('image2')) {
+            $file = $request->file('image2');
+            $brand->image_banner = Storage::disk('s3')->put($this->folderName, $file, 'public');
         }
         $brand->save();
         $cate_array = array($request->cate_id);

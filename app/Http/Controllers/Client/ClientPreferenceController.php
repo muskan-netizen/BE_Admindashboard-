@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, DriverRegistrationDocument, VariantOptionTranslation};
 use GuzzleHttp\Client as GCLIENT;
+use DB;
 class ClientPreferenceController extends BaseController{
     public function index(){
         $client = Auth::user();
@@ -349,20 +350,18 @@ class ClientPreferenceController extends BaseController{
 
 
     public function postUpdateDomain(Request $request, $id){
-        $rules = array('custom_domain' => 'required|max:30');
+        $rules = array('custom_domain' => 'required|max:150');
         $validation  = Validator::make($request->all(), $rules);
         if ($validation->fails()) {
             return redirect()->back()->withInput()->withErrors($validation);
         }
-        // $client = Client::where('code', Auth::user()->code)->first();
+         $client = Client::where('code', Auth::user()->code)->first();
         // $client->custom_domain = $request->custom_domain;
         // $client->save();
-
+        $id = Auth::user()->code;
           # if submit custom domain by client
           if ($request->custom_domain && $request->custom_domain != $client->custom_domain) {
             try {
-                $domain    = str_replace(array('http://', config('domainsetting.domain_set')), '', $request->custom_domain);
-                $domain    = str_replace(array('https://', config('domainsetting.domain_set')), '', $request->custom_domain);
                 $my_url =   $request->custom_domain;
                 
                 $data1 = [
@@ -387,32 +386,35 @@ class ClientPreferenceController extends BaseController{
                 
                 $response = curl_exec($curl);
                 $err = curl_error($curl);
-                
-                curl_close($curl);
-                if ($err) {
-                    return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => $err]));
-                }
-
-               // $process = shell_exec("/var/app/Automation/script.sh '".$my_url."' ");
-            } catch (Exception $e) {
+                $res = json_decode($response); 
+                if(isset($res->error) && $res->error->statusCode == 400){
+                $error = isset($res->error->customMessage)?$res->error->customMessage:'ERROR';
+                return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => $error]));
+                }	
+ 		
+               $exists = Client::on('god')->where('code',$id)->where('custom_domain', $request->custom_domain)->count();
+               if ($exists) {
+                   return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => 'Domain name "' . $request->custom_domain . '" is not available. Please select a different domain']));
+               } else {
+                   Client::on('god')->where('code',$id)->update(['custom_domain' => $request->custom_domain]);
+                    $dbname = DB::connection()->getDatabaseName();
+                   if ($dbname != env('DB_DATABASE')) {
+                       Client::where('id', '!=', 0)->update(['custom_domain' => $request->custom_domain]);
+                   }
+               }
+               return redirect()->route('configure.customize')->with('success', 'Client customize data updated successfully!');
+            } catch (\Exception $e) {
                 return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => $e->getMessage()]));
             }
           
-             $exists = Client::on('mysql')->where('code', '<>', $id)->where('custom_domain', $request->custom_domain)->count();
-            if ($exists) {
-                return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => 'Domain name "' . $request->custom_domain . '" is not available. Please select a different domain']));
-            } else {
-                Client::on('mysql')->where('code', $id)->update(['custom_domain' => $request->custom_domain]);
-                 $dbname = DB::connection()->getDatabaseName();
-                if ($dbname != env('DB_DATABASE')) {
-                    Client::where('id', '!=', 0)->update(['custom_domain' => $request->custom_domain]);
-                }
-            }
+           
+        }else{
+            return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => 'Domain name "' . $request->custom_domain . '" is already pointed. Please select a different domain']));
         }
 
 
 
 
-        return redirect()->route('configure.customize')->with('success', 'Client customize data updated successfully!');
+       
     }
 }

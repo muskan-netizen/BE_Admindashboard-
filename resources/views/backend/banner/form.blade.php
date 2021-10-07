@@ -90,7 +90,7 @@
                     <select class="selectize-select form-control" name="category_id">
                         <option value="">Select</option>
                         @foreach($categories as $key => $cate)
-                        <option value="{{$cate->id}}" {{($cate->id == $banner->redirect_category_id) ? 'selected' : ''}}>{{$cate->slug}}</option>
+                        <option value="{{$cate->id}}" {{($cate->id == $banner->redirect_category_id) ? 'selected' : ''}}>{{$cate->translation_name}}</option>
                         @endforeach
                     </select>
                 </div>

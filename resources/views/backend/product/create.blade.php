@@ -39,6 +39,16 @@
                     <span>{!! \Session::get('error_delete') !!}</span>
                 </div>
                 @endif
+                @if ( ($errors) && (count($errors) > 0) )
+                    <div class="alert alert-danger">
+                        <button type="button" class="close p-0" data-dismiss="alert">x</button>
+                        <ul class="m-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -106,7 +116,7 @@
                     <div class="row mb-2">
                         <div class="col-12 mb-2">
                             {!! Form::label('title', __('Product Name'),['class' => 'control-label']) !!}
-                            {!! Form::text('product_name', null, ['class'=>'form-control', 'id' => 'product_name', 'placeholder' => 'Apple iMac']) !!}
+                            {!! Form::text('product_name', null, ['class'=>'form-control', 'id' => 'product_name', 'placeholder' => 'Apple iMac', 'required' => 'required']) !!}
                         </div>
 
                         <div class="col-12 mb-2">

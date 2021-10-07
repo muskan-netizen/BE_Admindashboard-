@@ -21,7 +21,7 @@
                 <p>{!!$page_detail->translations->first() ? $page_detail->translations->first()->description : $page_detail->primary->description !!}</p>
             </div>
         </div>
-        @if($page_detail->slug == 'vendor-registration')
+        @if($page_detail->primary->type_of_form == 1)
             <form class="vendor-signup" id="vendor_signup_form">
                 <div class="row justify-content-center">
                     <div class="col-lg-8">

@@ -647,8 +647,6 @@ class AuthController extends BaseController{
         if ($user) {
             Auth::login($user);
             $prefer = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format','time_format', 'map_key','sms_provider','verify_email','verify_phone', 'app_template_id', 'web_template_id')->first();
-            $verified['is_email_verified'] = $user->is_email_verified;
-            $verified['is_phone_verified'] = $user->is_phone_verified;
             $token1 = new Token;
             $token = $token1->make([
                 'key' => 'royoorders-jwt',
@@ -684,9 +682,14 @@ class AuthController extends BaseController{
                     ]
                 );
             }            
-
+            $user->is_phone_verified = 1;
+            $user->phone_token = NULL;
+            $user->phone_token_valid_till = NULL;
             $user->auth_token = $token;
             $user->save();
+
+            $verified['is_email_verified'] = $user->is_email_verified;
+            $verified['is_phone_verified'] = $user->is_phone_verified;
 
             $user_cart = Cart::where('user_id', $user->id)->first();
             if($user_cart){

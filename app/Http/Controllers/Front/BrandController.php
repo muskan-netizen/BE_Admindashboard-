@@ -46,7 +46,7 @@ class BrandController extends FrontController
 
         $brand = Brand::with(['translation' => function($q) use($langId){
                     $q->where('language_id', $langId);
-                    }])->select('id', 'image')
+                    }])->select('id', 'image','image_banner')
                     ->where('status', '!=', 2)
                     ->where('id', $brandId)->firstOrFail();
         $brand->translation_title = ($brand->translation->first()) ? $brand->translation->first()->title : '';

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Brand extends Model
 {
     protected $fillable = [
-        'title', 'image', 'position', 'status'
+        'title', 'image','image_banner', 'position', 'status',
     ];
   	public function translation(){
   		return $this->hasMany('App\Models\BrandTranslation')->join('languages', 'brand_translations.language_id', 'languages.id');
@@ -22,6 +22,22 @@ class Brand extends Model
   	}
 
     public function getImageAttribute($value)
+    {
+     
+      $values = array();
+      $img = 'default/default_image.png';
+      if(!empty($value)){
+        $img = $value;
+      }
+      $values['proxy_url'] = \Config::get('app.IMG_URL1');
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_fit'] = \Config::get('app.FIT_URl');
+
+      //$values['small'] = url('showImage/small/' . $img);
+      return $values;
+    }
+
+    public function getImageBannerAttribute($value)
     {
       $values = array();
       $img = 'default/default_image.png';

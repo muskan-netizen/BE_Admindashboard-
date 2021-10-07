@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 class WalletController extends Controller{
     use ApiResponser;
 
+    # get my wallet details 
     public function getFindMyWalletDetails(Request $request){
     	$user = Auth::user();
         $user = User::with('country')->find($user->id);
@@ -25,6 +26,8 @@ class WalletController extends Controller{
         return $this->successResponse($data, '', 200);
     }
 
+
+    # credit wallet set 
     public function creditMyWallet(Request $request)
     {   
         $user = User::whereHas('device',function  ($qu) use ($request){

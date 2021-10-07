@@ -279,6 +279,10 @@ class CustomerAuthController extends FrontController
         $user = User::where('phone_number', $req->phone_number)->where('dial_code', $req->dialCode)->where('status', 1)->first();
         if ($user) {
             Auth::login($user);
+            $user->is_phone_verified = 1;
+            $user->phone_token = NULL;
+            $user->phone_token_valid_till = NULL;
+            $user->save();
             $userid = $user->id;
             if($req->has('access_token')){
                 if($req->access_token){
