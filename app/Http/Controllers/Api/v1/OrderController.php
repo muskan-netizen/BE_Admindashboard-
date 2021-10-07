@@ -225,7 +225,7 @@ class OrderController extends BaseController {
                         $coupon_id = null;
                         $coupon_name = null;
                         $actual_amount = $vendor_payable_amount;
-                        if ($vendor_cart_product->coupon) {
+                        if ($vendor_cart_product->coupon && !empty($vendor_cart_product->coupon->promo)) {
                             $coupon_id = $vendor_cart_product->coupon->promo->id;
                             $coupon_name = $vendor_cart_product->coupon->promo->name;
                             if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
@@ -734,7 +734,7 @@ class OrderController extends BaseController {
 
     public function orderDetails_for_notification($order_id, $vendor_id = "")
     {
-        $order = Order::with(['vendors.products:id,product_name,product_id,order_id,order_vendor_id', 'vendors.vendor:id,name', 'vendors.products.addon', 'vendors.products.variant:id,sku,product_id,title,quantity', 'user:id,name,timezone', 'address:id,user_id,address'])->select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee');
+        $order = Order::with(['vendors.products:id,product_name,product_id,order_id,order_vendor_id', 'vendors.vendor:id,name', 'vendors.products.addon', 'vendors.products.variant:id,sku,product_id,title,quantity', 'user:id,name,timezone', 'address:id,user_id,address'])->select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee', 'total_amount', 'taxable_amount');
         $order = $order->whereHas('vendors', function ($query) use ($vendor_id) {
             if(!empty($vendor_id)){
                 $query->where('vendor_id', $vendor_id);
