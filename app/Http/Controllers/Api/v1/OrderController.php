@@ -740,7 +740,7 @@ class OrderController extends BaseController {
                 $query->where('vendor_id', $vendor_id);
             }
         })->with('vendors', function ($query) use ($vendor_id) {
-            $query->select('id', 'order_id', 'vendor_id', 'auto_accept_order');
+            $query->select('id', 'order_id', 'vendor_id');
             if(!empty($vendor_id)){
                 $query->where('vendor_id', $vendor_id);
             }
