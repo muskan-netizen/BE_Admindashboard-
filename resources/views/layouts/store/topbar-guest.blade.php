@@ -33,7 +33,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <li class="onhover-dropdown change-language">
                         <a href="javascript:void(0)">{{$applocale}}
                         <span class="icon-ic_lang align-middle"></span>
-                        <span class="language ml-1 align-middle">language</span>
+                        <span class="language ml-1 align-middle">{{ __("language") }}</span>
                         </a>
                         <ul class="onhover-show-div">
                             @foreach($languageList as $key => $listl)
@@ -54,7 +54,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <li class="onhover-dropdown change-currency">
                         <a href="javascript:void(0)">{{session()->get('iso_code')}}
                         <span class="icon-ic_currency align-middle"></span>
-                        <span class="currency ml-1 align-middle">currency</span>
+                        <span class="currency ml-1 align-middle">{{ __("currency") }}</span>
                         </a>
                         <ul class="onhover-show-div">
                             @foreach($currencyList as $key => $listc)

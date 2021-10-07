@@ -1,8 +1,15 @@
+
+ @php
+ $Loyalty_Cards = getNomenclatureName('Loyalty Cards', false);
+ $newLoyalty_Cards = ($Loyalty_Cards === 'Loyalty Cards') ? __('Loyalty Cards') : $Loyalty_Cards ;
+ @endphp
+
+
 <div class="modal fade bd-example-modal-lg addModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content p-3">
             <div class="modal-header border-0 p-0 mb-3">
-                <h4 class="modal-title">{{ __('Add') }} {{getNomenclatureName('Loyalty Cards', false)}}</h4><br>
+                <h4 class="modal-title">{{ __('Add') }} {{ $newLoyalty_Cards }}</h4><br>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_loyality_form">
@@ -62,14 +69,14 @@
                 </div> -->
                 <br>
 
-                <label for="purchase">{{ __("Order Amount to earn 1") }} {{getNomenclatureName('Loyalty Cards', false)}} {{ __("point") }} ({{ __("as per primary currency") }})</label>
+                <label for="purchase">{{ __("Order Amount to earn 1") }} {{ $newLoyalty_Cards }} {{ __("point") }} ({{ __("as per primary currency") }})</label>
 
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon1">1 {{getNomenclatureName('Loyalty Cards', false)}} {{ __("Point") }} =</span>
+                                    <span class="input-group-text" id="basic-addon1">1 {{ $newLoyalty_Cards }} {{ __("Point") }} =</span>
                                 </div>
                                 <input type="text" onkeypress="return isNumberKey(event);" class="form-control" name="amount_per_loyalty_point" id="amount_per_loyalty_point" placeholder="Value" aria-label="Username" aria-describedby="basic-addon1">
                             </div>
@@ -90,7 +97,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">{{ __("Edit") }} {{getNomenclatureName('Loyalty Cards', false)}}</h4>
+                <h4 class="modal-title">{{ __("Edit") }} {{ $newLoyalty_Cards }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="update_loyality_form" method="post" enctype="multipart/form-data">

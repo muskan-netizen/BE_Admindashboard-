@@ -131,10 +131,18 @@
 
     $(document).on('click', '.submitAddForm', function(e) { 
         e.preventDefault();
+
+
         var form =  document.getElementById('save_banner_form');
+        
+        
+        
         var formData = new FormData(form);
+
+
         var url =  document.getElementById('bannerId').getAttribute('url');
         saveData(formData, 'add', url );
+
 
     });
 
@@ -143,7 +151,6 @@
         var form =  document.getElementById('save_edit_banner_form');
         var formData = new FormData(form);
         var url =  document.getElementById('bannerId').getAttribute('url');
-
         saveData(formData, 'edit', url);
 
     });
@@ -154,6 +161,13 @@
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
         });
+      
+
+        // for(var pair of formData.entries()) {
+        //     console.log(pair)
+        // }
+
+     
 
         $.ajax({
             type: "post",
@@ -168,7 +182,7 @@
                 $(".loader_box").show();
             },
             success: function(response) {
-
+                console.log("----",response);
                 if (response.status == 'success') {
                     $(".modal .close").click();
                     location.reload(); 
@@ -179,6 +193,7 @@
                 return response;
             },
             error: function(response) {
+                console.log("====",response)
                 if (response.status === 422) {
                     let errors = response.responseJSON.errors;
                     Object.keys(errors).forEach(function(key) {
@@ -224,7 +239,7 @@
             type: "post",
             dataType: "json",
             url: "{{ url('client/banner/saveOrder') }}",
-            data: {
+             data: {
                 _token: CSRF_TOKEN,
                 order: orderVal
             },

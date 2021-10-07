@@ -2,15 +2,25 @@
     <div class="col-md-12">
         <div class="row">
             <div class="col-12" id="imageInput">
-                <label>{{ __("Upload banner image") }}</label>
                 @if(isset($banner->id))
+                    <label>{{ __("Upload banner image") }}</label>
                     <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$banner->image['proxy_url'].'1900/500'.$banner->image['image_path']}}" />
-                @else
+                   
+                    <label>{{ __("Upload Mobile banner image") }}</label>
+                    <input type="file" accept="image/*" data-plugins="dropify" name="image_mobile" class="dropify" data-default-file="{{"https://imgproxy.royoorders.com/insecure/fill/1900/500/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/".$banner->image_mobile }}" />
+                    
+                
+
+                    @else
+                    <label>{{ __("Upload banner image") }}</label>
                     <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify"/>
-                @endif
+                    <label>{{ __("Upload Mobile banner image") }}</label>
+                    <input data-default-file="" type="file" data-plugins="dropify" name="image_mobile" accept="image/*" class="dropify"/>
+
+
+                    @endif
                 <label class="logo-size text-right w-100">{{ __("Logo Size") }} 1920x550</label>
 
-                
                 <span class="invalid-feedback" role="alert">
                     <strong></strong>
                 </span>

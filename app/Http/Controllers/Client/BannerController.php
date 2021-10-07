@@ -19,7 +19,7 @@ class BannerController extends BaseController
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     */
+     */   
     public function index()
     {
         $banners = Banner::orderBy('sorting', 'asc')->get();
@@ -88,10 +88,19 @@ class BannerController extends BaseController
         if ($request->hasFile('image')) {    /* upload logo file */
             $rules['image'] =  'image|mimes:jpeg,png,jpg,gif';
         }
+        
+        if ($request->hasFile('image_mobile')) {    /* upload logo file */
+            $rules['image'] =  'image|mimes:jpeg,png,jpg,gif';
+        }
 
+    
         $validation  = Validator::make($request->all(), $rules)->validate();
         $banner = new Banner();
+
+    
         $savebanner = $this->save($request, $banner, 'false');
+    
+
         if($savebanner > 0){
             return response()->json([
                 'status'=>'success',
@@ -140,6 +149,12 @@ class BannerController extends BaseController
      */
     public function save(Request $request, Banner $banner, $update = 'false')
     {
+
+       
+        
+
+
+
         $banner->validity_on = ($request->has('validity_on') && $request->validity_on == 'on') ? 1 : 0; 
         $banner->name = $request->name;
         $banner->start_date_time = $request->start_date_time;
@@ -163,7 +178,20 @@ class BannerController extends BaseController
             $file = $request->file('image');
             $banner->image = Storage::disk('s3')->put('/banner', $file,'public');
         }
-        $banner->save();
+
+
+        if ($request->hasFile('image_mobile')) {    /* upload logo file */
+            $file = $request->file('image_mobile');
+            $banner->image_mobile = Storage::disk('s3')->put('/banner', $file,'public');
+        }
+
+        
+        
+        $saveRes = $banner->save();
+        
+
+
+
         return $banner->id;
     }
 

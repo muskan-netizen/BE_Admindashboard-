@@ -110,16 +110,16 @@
                             <div class="nav flex-column nav-pills nav-pills-tab" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                                 <a class="nav-link active show mb-1" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home"
                                     aria-selected="true">
-                                    Home</a>
+                                    {{ __("Home") }}</a>
                                 <a class="nav-link mb-1" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile"
                                     aria-selected="false">
-                                    Profile</a>
+                                    {{ __("Profile") }}</a>
                                 <a class="nav-link mb-1" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
                                     aria-selected="false">
-                                    Messages</a>
+                                    {{ __("Messages") }}</a>
                                 <a class="nav-link mb-1" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings"
                                     aria-selected="false">
-                                    Settings</a>
+                                    {{ __("Settings") }}</a>
                             </div>
                         </div> <!-- end col-->
                         <div class="col-sm-9">

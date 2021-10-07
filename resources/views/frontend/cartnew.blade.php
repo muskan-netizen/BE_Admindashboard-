@@ -58,7 +58,7 @@
                 <img src="{{asset('front-assets/images/empty_cart.png')}}">
             </div>
             <h3>{{__('Your Cart Is Empty!')}}</h3>
-            <p>Add items to it now.</p>
+            <p>{{__('Add items to it now.')}}</p>
             <a class="btn btn-solid" href="{{url('/')}}">{{__('Continue Shopping')}}</a>
         </div>
     </div>

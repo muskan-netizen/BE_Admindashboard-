@@ -262,7 +262,7 @@
                             <li>
                                 <a href="{{route('category.index')}}">
                                     <span class="icon-catalogue"></span>
-                                    <span> {{ __('Catalog ') }}</span>
+                                    <span> {{ __('Catalog') }}</span>
                                 </a>
                             </li>
                         @endif

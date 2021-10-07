@@ -37,7 +37,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            {!! Form::label('title', 'Select Parent Category',['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Select Parent Category'),['class' => 'control-label']) !!}
                             <select class="selectize-select form-control parent-category" id="cateSelectBox" name="parent_cate">
                                 <option value="">{{ __("Select") }}</option>
                                 @foreach($parCategory as $pc)

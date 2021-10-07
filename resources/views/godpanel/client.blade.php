@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">Clients</h4>
+                <h4 class="page-title">{{ __('Clients') }}</h4>
             </div>
         </div>
     </div>
@@ -34,14 +34,14 @@
                         <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Password</th>
-                                    <th>Phone</th>
-                                    <th>DB Name</th>
-                                    <th>SUB Domain</th>
-                                    <th>Client Code</th>
-                                    <th style="width: 85px;">Action</th>
+                                    <th>{{ __("Name") }}</th>
+                                    <th>{{ __("Email") }}</th>
+                                    <th>{{ __("Password") }}</th>
+                                    <th>{{ __("Phone") }}</th>
+                                    <th>{{ __("DB Name") }}</th>
+                                    <th>{{ __("SUB Domain") }}</th>
+                                    <th>{{ __("Client Code") }}</th>
+                                    <th style="width: 85px;">{{ __("Action") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
