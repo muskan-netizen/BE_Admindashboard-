@@ -131,14 +131,13 @@ class VendorController extends BaseController{
                             $categoriesList = $categoriesList . ', ';
                         }
                     }
-                    $products = Product::with(['media.image',
-                            'translation' => function($q) use($langId){
-                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                    $products = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                                $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                                ->where('category_translations.language_id', $langId);
+                            }, 'inwishlist' => function($qry) use($userid){
+                                $qry->where('user_id', $userid);
                             },
-                            'variant' => function($q) use($langId){
-                                $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
-                                // $q->groupBy('product_id');
-                            },'variant.checkIfInCart',
+                            'media.image',
                             'addOn' => function ($q1) use ($langId) {
                                 $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                                 $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
@@ -149,7 +148,14 @@ class VendorController extends BaseController{
                                 $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
                                 $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                                 $q2->where('apt.language_id', $langId);
-                            }
+                            },
+                            'translation' => function($q) use($langId){
+                                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                            },
+                            'variant' => function($q) use($langId){
+                                $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
+                                // $q->groupBy('product_id');
+                            },'variant.checkIfInCartApp',
                         ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
                     $products = $products->where('is_live', 1)->where('category_id', $category->category_id)->where('vendor_id', $vid)->get();
                     
