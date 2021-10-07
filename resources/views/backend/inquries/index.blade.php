@@ -1,6 +1,6 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Product Inquiries'])
 @section('css')
-<link href="{{asset('assets/libs/datatables/datatables.min.css')}}" rel="stylesheet" type="text/css" />
+{{-- <link href="{{asset('assets/libs/datatables/datatables.min.css')}}" rel="stylesheet" type="text/css" /> --}}
 @endsection
 @section('content')
 <div class="container-fluid">

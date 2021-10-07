@@ -7,7 +7,7 @@
                     <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$banner->image['proxy_url'].'1900/500'.$banner->image['image_path']}}" />
                    
                     <label>{{ __("Upload Mobile banner image") }}</label>
-                    <input type="file" accept="image/*" data-plugins="dropify" name="image_mobile" class="dropify" data-default-file="{{"https://imgproxy.royoorders.com/insecure/fill/1900/500/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/".$banner->image_mobile }}" />
+                    <input type="file" accept="image/*" data-plugins="dropify" name="image_mobile" class="dropify" data-default-file="{{$banner->image_mobile['proxy_url'].'1900/500'.$banner->image_mobile['image_path']}}" />
                     
                 
 

@@ -1,6 +1,6 @@
 @extends('layouts.vertical', ['demo' => 'Orders', 'title' => 'Accounting - Orders'])
 @section('css')
-<link href="{{asset('assets/libs/datatables/datatables.min.css')}}" rel="stylesheet" type="text/css" />
+{{-- <link href="{{asset('assets/libs/datatables/datatables.min.css')}}" rel="stylesheet" type="text/css" /> --}}
 @endsection
 @section('content')
 <div class="content">

@@ -197,7 +197,7 @@ class VendorController extends BaseController{
                         $category->products = $products;
                         $category->products_count = $products->count();
                     }else{
-                        if($categorySlug != ''){
+                        if(isset($categorySlug) && ($categorySlug != '')){
                             $category->products_count = $products->count();
                         }
                         else{

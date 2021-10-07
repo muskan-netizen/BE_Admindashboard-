@@ -165,6 +165,14 @@
       float: right !important;
   }
 
+  .dataTables_filter label {
+    float: right !important;
+  }
+  
+  div.dataTables_wrapper div.dataTables_processing{
+      z-index: 1;
+  }
+
   .login-form .custom-control-label::before {
       display: none;
   }
