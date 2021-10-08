@@ -81,7 +81,6 @@ class ProductController extends BaseController
      */
     public function store(Request $request){
         $rule = array(
-            'product_name' => 'required|string',
             'sku' => 'required|unique:products',
             'url_slug' => 'required',
             'category' => 'required',
