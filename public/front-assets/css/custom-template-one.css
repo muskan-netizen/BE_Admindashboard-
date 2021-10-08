@@ -545,10 +545,10 @@ h6 {
 }
 
 
-.pixelstrap a, .pixelstrap a:hover, .pixelstrap a:active{
+/* .pixelstrap a, .pixelstrap a:hover, .pixelstrap a:active{
     padding-top: 0;
     padding-bottom: 0;
-}
+} */
 
 .brand-slider .slick-dots {
     width: auto;
@@ -1000,7 +1000,7 @@ body[dir="rtl"] #social-links li:last-child{
 }
 
 @media (min-width: 1200px) {
-    .mobile-menu-btn {
+    .mobile-menu-btn,.d-ipad {
         display: none !important;
     }
 }
@@ -1055,7 +1055,7 @@ body[dir="rtl"] #social-links li:last-child{
 
 @media (max-width: 1199px){
     section.home-slider-wrapper {
-        padding-top: 0;
+        padding-top: 30px;
     }
     .offset-top {
         margin-top: 0;
@@ -1063,7 +1063,7 @@ body[dir="rtl"] #social-links li:last-child{
     header.site-header.fixed-bar {
         top: 0;
     }
-    .img-fluid {
+    .navbar-brand .img-fluid {
         max-width: initial;
     }
     .store-btn a{

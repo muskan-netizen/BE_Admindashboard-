@@ -22,9 +22,9 @@
                         @foreach($categories as $cate)
                             @if($brand->bc)
                                 <option value="{{$cate->id}}" @foreach($brand->bc as $cat)@if($cat->category_id == $cate->id) selected @endif 
-                                    @endforeach>{{$cate->translation_one['name']}}</option>
+                                    @endforeach>{{$cate->translation_one['name'] ?? $cate->slug}}</option>
                             @else
-                                <option value="{{$cate->id}}">{{$cate->translation_one['name']}}</option>
+                                <option value="{{$cate->id}}">{{$cate->translation_one['name'] ?? $cate->slug}}</option>
                             @endif
                         @endforeach
                     </select>

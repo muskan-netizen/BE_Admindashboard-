@@ -2,7 +2,7 @@
  <section class="cab-banner-area p-0" style="background:url({{asset('images/CabBANNER.jpg')}});background-size: cover;background-repeat: no-repeat;background-position: center;">
     <div class="container p-64">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-8 col-lg-6">
                 <div class="card-box mb-0">
                     <h2>{{ $homePageLabel->translations->first() ? $homePageLabel->translations->first()->title : '' }}
                     </h2>

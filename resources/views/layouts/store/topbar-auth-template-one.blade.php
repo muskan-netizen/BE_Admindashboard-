@@ -4,6 +4,13 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
+
+<style>
+    .modal-backdrop {
+        z-index: 99;
+    }
+</style>
+
 <div class="top-header site-topbar">
     <div class="container">
         <div class="row align-items-center">
@@ -112,8 +119,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <div class="menu-right">
             <ul class="header-dropdown icon-nav">
                 <li class="onhover-div mobile-setting">
-                    <div><i class="ti-settings"></i></div>
-                    <div class="show-div setting">
+                    <div data-toggle="modal" data-target="#setting_modal"><i class="ti-settings"></i></div>
+                    <!-- <div class="show-div setting">
                         <h6>{{ __("language") }}</h6>
                         <ul>
                             <li><a href="#">english</a></li>
@@ -133,7 +140,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
                         </ul>
                         @endif
-                    </div>
+                    </div> -->
                 </li>
                 
                 <li class="onhover-dropdown mobile-account  d-inline d-sm-none"> <i class="fa fa-user" aria-hidden="true"></i>
@@ -199,4 +206,41 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     </div>
 
   
+</div>
+
+<!-- Modal -->
+<div class="modal fade mobile-setting" id="setting_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="setting-modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-bottom">
+        <h5 class="modal-title" id="setting-modalLabel">Language & Currency</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body pt-0">
+        <div class="show-div setting">
+            <h6 class="mb-1">{{ __("language") }}</h6>
+            <ul>
+                <li><a href="#">english</a></li>
+                <li><a href="#">{{ __("french") }}</a></li>
+            </ul>
+            <h6 class="mb-1">{{ __("currency") }}</h6>
+            <ul class="list-inline">
+                @foreach($currencyList as $key => $listc)
+                    <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
+                        <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
+                    </li>
+                @endforeach
+            </ul>
+            <!-- <h6>Change Theme</h6>
+            @if($client_preference_detail->show_dark_mode == 1)
+            <ul class="list-inline">
+                <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
+            </ul>
+            @endif -->
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

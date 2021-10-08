@@ -153,7 +153,7 @@
             <div class="col-lg-6">
                 <div class="outer_box px-3 py-2 mb-3">
                     <div class="row rowYK">
-                        <h4 class="col-md-12"> {{ $trans->langName.' Language' }} </h4>
+                        <h4 class="col-md-12"> {{ $trans->langName.' Language' }}</h4>
                         <div class="col-md-6">
                             <div class="form-group" id="{{ ($trans->is_primary == 1) ? 'nameInputEdit' : 'nameotherInput' }}">
                                 {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}

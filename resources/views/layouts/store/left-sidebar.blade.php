@@ -282,7 +282,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     </div>
                                 </li>
                                 <li class="onhover-div mobile-setting">
-                                    <div><i class="ti-settings"></i></div>
+                                    <div data-toggle="modal" data-target="#staticBackdrop"><i class="ti-settings"></i></div>
                                     <div class="show-div setting">
                                         <h6>{{ __('language') }}</h6>
                                         <ul>

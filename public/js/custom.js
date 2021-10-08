@@ -255,6 +255,10 @@ window.initializeSlider = function initializeSlider() {
 
 $(document).ready(function () {
 
+    $(".mobile-search-btn").click(function(){
+        $(".radius-bar").slideToggle();
+    });
+
     $("#side_menu_toggle").click(function(){
         $(".manu-bars").toggleClass("menu-btn");
         $(".scrollspy-menu").toggleClass("side-menu-open");

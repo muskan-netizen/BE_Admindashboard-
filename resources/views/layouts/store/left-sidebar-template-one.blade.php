@@ -147,7 +147,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                         </div>
                                     @endif
                                 @endif  
-                                <div class="radius-bar d-lg-inline">
+                                <div class="radius-bar d-xl-inline mr-2">
                                     <div class="search_form d-flex align-items-center justify-content-between">
                                         <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
                                         @php
@@ -187,7 +187,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                         <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}">
                                     </form>
                                     <ul class="d-flex align-items-center">
-                                        <!-- <li class="mx-3 pl-0">t</li> -->
+                                        <li class="mr-2 pl-0 d-ipad">
+                                            <span class="mobile-search-btn"><i class="fa fa-search" aria-hidden="true"></i></span>
+                                        </li>
                                         <li class="onhover-div pl-0 shake-effect">
                                             @if($client_preference_detail)
                                                 @if($client_preference_detail->cart_enable == 1)
@@ -254,7 +256,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                             </div>
                                         </li>
                                         <li class="onhover-div mobile-setting">
-                                            <div><i class="ti-settings"></i></div>
+                                            <div data-toggle="modal" data-target="#staticBackdrop"><i class="ti-settings"></i></div>
                                             <div class="show-div setting">
                                                 <h6>language</h6>
                                                 <ul>
