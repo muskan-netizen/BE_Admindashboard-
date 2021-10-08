@@ -296,7 +296,7 @@
                                                                 <div class="inner_spacing w-100">
                                                                     <h3>{{ $data->translation_title }}</h3>
                                                                     <p>{{$data->description}}</p>
-                                                                    <p class="border-bottom pb-1 mb-1">In Candies & Snacks</p>
+                                                                    <p class="border-bottom pb-1 mb-1">In {{$data->category_name}}</p>
 
                                                                     <div class="d-flex align-items-center justify-content-between">
                                                                         @if($data['inquiry_only'] == 0)

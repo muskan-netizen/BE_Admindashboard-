@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Auth;
 
 class Brand extends Model
 {
@@ -12,6 +13,19 @@ class Brand extends Model
   	public function translation(){
   		return $this->hasMany('App\Models\BrandTranslation')->join('languages', 'brand_translations.language_id', 'languages.id');
   	}
+
+    public function translation_one()
+    {
+        $primary = ClientLanguage::orderBy('is_primary', 'desc')->first();
+        if (isset($primary) && !empty($primary)) {
+          $langset = $primary->language_id;
+        } else {
+          $langset = 1;
+        }
+
+        return $this->hasOne('App\Models\BrandTranslation')->select('brand_id', 'title')->where('language_id', $langset);
+    }
+   
 
   	public function english(){
   		return $this->hasMany('App\Models\BrandTranslation')->where('language_id', 1); 

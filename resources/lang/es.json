@@ -71,7 +71,7 @@
    "Subscription Discount": " Descuento de suscripción",
    "Amount Payable": "Cantidad pagable ",
    "Delivery Fee": " Cargo por envío",
-   "Add New Address": " Agregar una nueva dirección",
+   "Add New Address": " Agregar dirección",
    "Continue Shopping": " Seguir comprando ",
    "Apply": " Solicitar",
    "My Profile": " Mi perfil",
@@ -858,5 +858,5 @@
    "Tip After Order": "Sugerencia después del pedido",
    "Off Scheduling  Order": "Orden fuera de programación",
    "Select Parent Category" : "Seleccionar categoría principal",
-   "": ""
+   "Wallet has been debited for order number": "Se ha cargado a Wallet el número de pedido"
 }

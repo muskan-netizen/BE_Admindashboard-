@@ -38,7 +38,7 @@ class BaseController extends Controller
 
     /*      Category tree on vendor col-3 and category  page    */
     public function printTree($tree, $from = 'category', $activeCategory = [], $blockedCategory = [], $html = '')
-    {
+    {   
         if (!is_null($tree) && count($tree) > 0) {
             $this->htmlData .= '<ol class="dd-list">';
             foreach ($tree as $node) {

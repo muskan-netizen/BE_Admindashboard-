@@ -236,7 +236,7 @@ class HomeController extends BaseController{
             $homeData['featured_products'] = $feature_product_details;
             $homeData['brands'] = Brand::with(['translation' => function($q) use($langId){
                                     $q->select('brand_id', 'title')->where('language_id', $langId);
-                                }])->select('id', 'image')->where('status', '!=', $this->field_status)
+                                }])->select('id', 'image', 'image_banner')->where('status', '!=', $this->field_status)
                                 ->orderBy('position', 'asc')->get();
             $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;

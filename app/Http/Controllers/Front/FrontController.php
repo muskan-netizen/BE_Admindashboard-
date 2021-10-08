@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor};
+use App\Models\{Client, Category, Product, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor,ClientLanguage};
 
 class FrontController extends Controller
 {
@@ -35,7 +35,8 @@ class FrontController extends Controller
 	}
     public function categoryNav($lang_id)
     {
-        $preferences = Session::get('preferences');
+       $preferences = Session::get('preferences');
+       $primary = ClientLanguage::orderBy('is_primary','desc')->first();
        $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
        ->select('categories.id', 'categories.icon', 'categories.slug', 'categories.parent_id', 'cts.name')->distinct('categories.id');
         $status = $this->field_status;
@@ -57,7 +58,10 @@ class FrontController extends Controller
             ->whereNotIn('categories.type_id', [7])
             ->where('categories.is_visible', 1)
             ->where('categories.status', '!=', $status)
-            ->where('cts.language_id', $lang_id)
+           // ->where('cts.language_id', $lang_id)
+            ->where(function ($qrt) use($lang_id,$primary){
+                $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
+             })
             ->whereNull('categories.vendor_id')
             ->orderBy('categories.position', 'asc')
             ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();

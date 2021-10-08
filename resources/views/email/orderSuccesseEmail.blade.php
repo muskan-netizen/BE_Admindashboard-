@@ -65,7 +65,10 @@
         }
 
         table {
-            margin-top: 30px
+            margin-top: 10px;
+        }
+        table th {
+            font-size: 14px;
         }
 
         table.top-0 {
@@ -90,8 +93,8 @@
             border: unset !important;
         }
 
-        .pad-left-right-space td {
-            padding: 5px 15px;
+        .pad-left-right-space td{
+            padding: 5px 10px;
         }
 
         .pad-left-right-space td p {
@@ -99,14 +102,13 @@
         }
 
         .pad-left-right-space td b {
-            font-size: 15px;
+            font-size: 14px;
             font-family: 'Roboto', sans-serif;
         }
 
         .order-detail th {
-            font-size: 16px;
-            padding: 15px;
-            text-align: center;
+            font-size: 14px;
+            padding: 10px;
             background: #fafafa;
         }
 
@@ -117,12 +119,18 @@
     </style>
 </head>
 
-<body style="margin: 20px auto;">
+<body style="margin: 20px auto;max-width:100%;width:700px;">
     {!! $mailData['email_template_content'] !!}
     <table class="main-bg-light text-center top-0" align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
         <tr>
-            <td style="padding: 30px;">
-                <div>
+            <td>
+                @php
+                    $currYear = \Carbon\Carbon::now()->year;
+                    $prevYear = $currYear - 1;
+                    $currYear = substr($currYear, -2);
+                @endphp
+                <p>&copy; {{$prevYear}}-{{$currYear}} | All rights reserved</p>
+                {{-- <div>
                     <h4 class="title" style="margin:0;text-align: center;">Follow us</h4>
                 </div>
                 <table border="0" cellpadding="0" cellspacing="0" class="footer-social-icon" align="center" class="text-center" style="margin-top:20px;">
@@ -165,7 +173,7 @@
                             <a href="#" style="font-size:13px; margin:0;text-decoration: underline;">Unsubscribe</a>
                         </td>
                     </tr>
-                </table>
+                </table> --}}
             </td>
         </tr>
     </table>

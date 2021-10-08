@@ -193,16 +193,18 @@ class ClientPreferenceController extends BaseController{
             $exist_language_id = array();
             if($request->has('languages')){
                 foreach ($request->languages as $lan) {
-                    $client_language = ClientLanguage::where('client_code',Auth::user()->code)->where('language_id', $lan)->first();
-                    if(!$client_language){
-                        $client_language = new ClientLanguage();
-                        $client_language->client_code = Auth::user()->code;
+                    if ($lan != $request->primary_language) {
+                        $client_language = ClientLanguage::where('client_code', Auth::user()->code)->where('language_id', $lan)->first();
+                        if (!$client_language) {
+                            $client_language = new ClientLanguage();
+                            $client_language->client_code = Auth::user()->code;
+                        }
+                        $client_language->is_primary = 0;
+                        $client_language->language_id = $lan;
+                        $client_language->is_active = 1;
+                        $client_language->save();
+                        $exist_language_id[] = $client_language->language_id;
                     }
-                    $client_language->is_primary = 0;
-                    $client_language->language_id = $lan;
-                    $client_language->is_active = 1;
-                    $client_language->save();
-                    $exist_language_id[] = $client_language->language_id;
                 }
             }
             $deactivateLanguages = ClientLanguage::where('client_code',Auth::user()->code)->whereNotIn('language_id', $exist_language_id)->where('is_primary', 0)->update(['is_active' => 0]);

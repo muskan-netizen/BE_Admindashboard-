@@ -149,7 +149,7 @@
 
         </div>
         <div class="row">
-            @foreach($category->translation as $trans)
+            @foreach($category->translationSetUnique as $trans)
             <div class="col-lg-6">
                 <div class="outer_box px-3 py-2 mb-3">
                     <div class="row rowYK">

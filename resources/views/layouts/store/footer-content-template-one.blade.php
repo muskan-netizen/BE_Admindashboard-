@@ -159,7 +159,12 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
             <div class="row">
                 <div class="col-12 text-center">
                     <div class="footer-end">
-                        <p><i class="fa fa-copyright" aria-hidden="true"></i> 2020-21 | All rights reserved</p>
+                        @php
+                            $currYear = \Carbon\Carbon::now()->year;
+                            $prevYear = $currYear - 1;
+                            $currYear = substr($currYear, -2);
+                        @endphp
+                        <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} | All rights reserved</p>
                     </div>
                 </div>
             </div>
