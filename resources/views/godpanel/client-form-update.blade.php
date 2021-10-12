@@ -97,7 +97,7 @@
         <div class="col-12">    
                    <div class="card">
                         <div class="card-body"><h3>Import Demo Content [Warning! All data will be lost.]</h3>
-                        {{-- <form id="update_default_data" method="post" action="{{route('client.migrateDefaultData', $client->id)}}"
+                        <form id="update_default_data" method="post" action="{{route('client.migrateDefaultData', $client->id)}}"
                             enctype="multipart/form-data" autocomplete="off">
                             @csrf
                             <div class="col-md-6">
@@ -109,12 +109,12 @@
                                         <option value="sql_files\homeric.sql">Homeric - Home Service </option>
                                         <option value="sql_files\gokab.sql">GoKab - Cab Booking </option>
                                         <option value="sql_files\ace.sql">Ace - Super App </option>
-                                        <option value="sql_files\punnet.sql">Punnet - Single Vendor Food Delivery </option>
+                                        {{-- <option value="sql_files\punnet.sql">Punnet - Single Vendor Food Delivery </option> --}}
                                         <option value="sql_files\suel.sql">Suel - Single Vendor Ecommerce </option>
                                         <option value="sql_files\voltaic.sql">Voltaic - Ecommerce </option>
-                                        <option value="sql_files\gusto.sql">Gusto - Grocery Delivery </option>
+                                        <option value="sql_files/gusto.sql">Gusto - Grocery Delivery </option>
                                         <option value="sql_files\elixir.sql">Elixir - Pharmacy Delivery </option>
-                                        <option value="sql_files\zest.sql">Zest - Pickup & Delivery </option>
+                                        {{-- <option value="sql_files\zest.sql">Zest - Pickup & Delivery </option> --}}
                                     </select>
                                 </div>    
                             </div>
@@ -124,7 +124,7 @@
                                     <button type="submit" class="btn btn-info waves-effect waves-light">{{__('Submit')}}</button>
                                 </div>
                             </div>
-                        </form> --}}
+                        </form>
                         </div>
                     </div>
             
