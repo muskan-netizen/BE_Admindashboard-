@@ -11,7 +11,8 @@
 
     var userActive = $('.chk_box');
 
-    $(userActive).on("change" , function() {
+    // $(userActive).on("change" , function() {
+    $(document).delegate('input[name="userAccountStatus"]', 'change', function() {
         var user_id = $(this).data('id');
         var chk = $('#cur_' + user_id + ':checked').length;
 

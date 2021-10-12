@@ -376,7 +376,9 @@ class HomeController extends BaseController{
                 //     $vendor->response_type = 'vendor';
                 //     // $response[] = $vendor;
                 // }
-                $products = Product::with('media')->join('product_translations as pt', 'pt.product_id', 'products.id')
+                $products = Product::with(['category.categoryDetail.translation' => function($q) use($langId){
+                                $q->where('category_translations.language_id', $langId);
+                            },'media'])->join('product_translations as pt', 'pt.product_id', 'products.id')
                             ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
                             ->where('pt.language_id', $langId)
                             ->where(function ($q) use ($keyword) {

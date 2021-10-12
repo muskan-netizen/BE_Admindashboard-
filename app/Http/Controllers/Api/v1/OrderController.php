@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\OrderStoreRequest;
 use Log;
-use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor};
+use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor};
 
 class OrderController extends BaseController {
     use ApiResponser;
@@ -314,9 +314,11 @@ class OrderController extends BaseController {
                     $order->payable_amount = $payable_amount;
                     $order->save();
                     $this->sendSuccessSMS($request, $order);
+                    Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                     CartCoupon::where('cart_id', $cart->id)->delete();
                     CartProduct::where('cart_id', $cart->id)->delete();
-                    if (($request->payment_option_id != 1) && ($request->payment_option_id != 2)) {
+                    CartProductPrescription::where('cart_id', $cart->id)->delete();
+                    if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                         Payment::insert([
                             'date' => date('Y-m-d'),
                             'order_id' => $order->id,
@@ -326,28 +328,29 @@ class OrderController extends BaseController {
                     }
                     $code = $request->header('code');
                     $order = $order->with(['vendors:id,order_id,vendor_id', 'user_vendor'])->where('order_number', $order->order_number)->first();
-                    if (!empty($order->vendors)) {
-                        foreach ($order->vendors as $vendor_value) {
-                            $vendor_order_detail = $this->orderDetails_for_notification($order->id, $vendor_value->vendor_id);
-                            $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
-                            $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail, $code);
-                        }
-                    }
-                    $vendor_order_detail = $this->orderDetails_for_notification($order->id);
-                    $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                    $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
-                    DB::commit();
-                    // $user_admins = User::where(function ($query) {
-                    //     $query->where(['is_superadmin' => 1]);
-                    // })->pluck('id')->toArray();
-                    // $user_vendors = [];
-                    // if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
-                    //     $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
+                    // if (!empty($order->vendors)) {
+                    //     foreach ($order->vendors as $vendor_value) {
+                    //         $vendor_order_detail = $this->orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                    //         $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                    //         $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail, $code);
+                    //     }
                     // }
-                    // $order->admins = array_unique(array_merge($user_admins, $user_vendors));
+                    // $vendor_order_detail = $this->orderDetails_for_notification($order->id);
+                    // $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                    // $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
+                    $user_admins = User::where(function ($query) {
+                        $query->where(['is_superadmin' => 1]);
+                    })->pluck('id')->toArray();
+                    $user_vendors = [];
+                    if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
+                        $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
+                    }
+                    $order->admins = array_unique(array_merge($user_admins, $user_vendors));
 
                     // $this->sendOrderNotification($user->id);
-                    // $this->sendOrderPushNotificationVendors($order->admins, $order, $code);
+                    $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id], $code);
+                    DB::commit();
+
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
                 }
             } else {
@@ -465,6 +468,9 @@ class OrderController extends BaseController {
                 $ETA = $order_pre_time + $user_to_vendor_time;
                 $order->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $order->created_at, $order->orderDetail->scheduled_date_time) : convertDateTimeInTimeZone($order->created_at, $user->timezone, 'h:i A');
             }
+            if(!empty($order->orderDetail->scheduled_date_time)){
+                $order->scheduled_date_time = convertDateTimeInTimeZone($order->orderDetail->scheduled_date_time, $user->timezone, 'M d, Y h:i A');
+            }
             $order->product_details = $product_details;
             $order->item_count = $order_item_count;
             unset($order->user);
@@ -560,6 +566,9 @@ class OrderController extends BaseController {
                         $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : convertDateTimeInTimeZone($vendor->created_at, $user->timezone, 'h:i A');
                     }
         		}
+                if(!empty($order->scheduled_date_time)){
+                    $order->scheduled_date_time = convertDateTimeInTimeZone($order->scheduled_date_time, $user->timezone, 'M d, Y h:i A');
+                }
     		    $order->order_item_count = $order_item_count;
             }
             return $this->successResponse($order, null, 201);
@@ -659,6 +668,7 @@ class OrderController extends BaseController {
                     "priority" => "high"
                 ];
                 $dataString = $data;
+                Log::info(json_encode($data));
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
                 curl_setopt($ch, CURLOPT_POST, true);
@@ -734,7 +744,28 @@ class OrderController extends BaseController {
 
     public function orderDetails_for_notification($order_id, $vendor_id = "")
     {
-        $order = Order::with(['vendors.products:id,product_name,product_id,order_id,order_vendor_id', 'vendors.vendor:id,name,auto_accept_order', 'vendors.products.addon', 'vendors.products.variant:id,sku,product_id,title,quantity', 'user:id,name,timezone', 'address:id,user_id,address'])->select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee', 'total_amount', 'taxable_amount');
+        $user = Auth::user();
+        if($user->is_superadmin != 1){
+            $userVendorPermissions = UserVendor::where(['user_id' => $user->id])->pluck('vendor_id')->toArray();
+            $vendor_id = OrderVendor::where(['order_id' => $order_id])->whereIn('vendor_id',$userVendorPermissions)->pluck('vendor_id')->first();
+            if (!$vendor_id) {
+                return response()->json(['error' => __('No order found')], 404);
+            }
+        }
+        $language_id = (!empty($user->language))?$user->language:1;
+        $order = Order::with(['vendors.products:id,product_name,product_id,order_id,order_vendor_id,variant_id,quantity,price', 'vendors.vendor:id,name,auto_accept_order,logo', 'vendors.products.addon:id,order_product_id,addon_id,option_id', 'vendors.products.pvariant:id,sku,product_id,title,quantity', 'user:id,name,timezone,dial_code,phone_number', 'address:id,user_id,address','vendors.products.addon.option:addon_options.id,addon_options.title,addon_id,price','vendors.products.addon.set:addon_sets.id,addon_sets.title','vendors.products.translation' => function ($q) use ($language_id) {
+            $q->select('id', 'product_id', 'title');
+            $q->where('language_id', $language_id);
+        },
+        'vendors.products.addon.option.translation_one' => function ($q) use ($language_id) {
+            $q->select('id', 'addon_opt_id', 'title');
+            $q->where('language_id', $language_id);
+        },
+        'vendors.products.addon.set.translation_one' => function ($q) use ($language_id) {
+            $q->select('id', 'addon_id', 'title');
+            $q->where('language_id', $language_id);
+        }
+        ])->select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee', 'total_amount', 'taxable_amount','created_at');
         $order = $order->whereHas('vendors', function ($query) use ($vendor_id) {
             if(!empty($vendor_id)){
                 $query->where('vendor_id', $vendor_id);
@@ -747,7 +778,6 @@ class OrderController extends BaseController {
         });
         $order = $order->find($order_id);
         $order_item_count = 0;
-        // $order->date_time = convertDateTimeInTimeZone($order->created_at, $user->timezone);
         $order->payment_option_title = $order->paymentOption->title;
         $order->item_count = $order_item_count;
         foreach ($order->products as $product) {
@@ -756,8 +786,7 @@ class OrderController extends BaseController {
         $order->item_count = $order_item_count;
         unset($order->products);
         unset($order->paymentOption);
-        return $order;
+        return $this->successResponse($order, __('Order detail.'), 201);
     }
 
-    
 }

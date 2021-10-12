@@ -13,5 +13,8 @@ Route::group(['prefix' => '/godpanel'], function () {
 		Route::get('sms/destroy/{id}', 'Godpanel\SmsProviderController@destroy');
 		Route::post('/logout', 'Godpanel\LoginController@logout')->name('god.logout');
 		Route::get('dashboard','Godpanel\DashBoardController@index')->name('god.dashboard');
+
+		
+		Route::get('migrateDefault', 'Godpanel\ClientController@migrateDefault')->name('godclient.migrateDefault');
 	});
 });

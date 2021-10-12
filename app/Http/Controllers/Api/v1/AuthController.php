@@ -739,28 +739,26 @@ class AuthController extends BaseController{
     public function loginViaUsername(Request $request, $domain = ''){
         try{
             $errors = array();
-            $validator = Validator::make($request->all(), [
-                'username'  => 'required',
-                // 'dialCode'  => 'required',
-                // 'countryData'  => 'required|string',
-                // 'dial_code'   => 'required|string',
-                'device_type'   => 'required|string',
-                'device_token'  => 'required|string',
-                // 'country_code'  => 'required|string',
-            ]);
-
-            if($validator->fails()){
-                foreach($validator->errors()->toArray() as $error_key => $error_value){
-                    $errors['error'] = __($error_value[0]);
-                    return response()->json($errors, 422);
-                }
-            }
+            
             $phone_regex = '/^[0-9\-\(\)\/\+\s]*$/';
             $email_regex = '/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/';
             $username = $request->username;
 
             if(preg_match($phone_regex, $username))
             {
+                $validator = Validator::make($request->all(), [
+                    'username'  => 'required',
+                    'dialCode'  => 'required',
+                    'countryData'  => 'required|string',
+                    'device_type'   => 'required|string',
+                    'device_token'  => 'required|string',
+                ]);
+                if($validator->fails()){
+                    foreach($validator->errors()->toArray() as $error_key => $error_value){
+                        $errors['error'] = __($error_value[0]);
+                        return response()->json($errors, 422);
+                    }
+                }
                 $phone_number = preg_replace('/\D+/', '', $username);
                 $dialCode = $request->dialCode;
                 $fullNumber = $request->full_number;
@@ -808,13 +806,30 @@ class AuthController extends BaseController{
             }
             elseif (preg_match($email_regex, $username))
             {
+                $validator = Validator::make($request->all(), [
+                    'username'  => 'required',
+                    'device_type'   => 'required|string',
+                    'device_token'  => 'required|string',
+                ]);
+    
+                if($validator->fails()){
+                    foreach($validator->errors()->toArray() as $error_key => $error_value){
+                        $errors['error'] = __($error_value[0]);
+                        return response()->json($errors, 422);
+                    }
+                }
                 $username = str_ireplace(' ', '', $username);
 
                 $user = User::with('country')->where('email', $username)->first();
-                if(!$user){
-                    $errors['error'] = __('Invalid email');
-                    return response()->json($errors, 422);
+                if($user){
+                    if($user->status != 1){
+                        $errors['error'] = __('You are unauthorized to access this account.');
+                        return response()->json($errors, 422);
+                    }
+                }else{
+                    return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
                 }
+
                 if(!Auth::attempt(['email' => $username, 'password' => $request->password])){
                     $errors['error'] = __('Invalid password');
                     return response()->json($errors, 422);
@@ -896,61 +911,6 @@ class AuthController extends BaseController{
                 $data['callingCode'] = $user->country ? $user->country->phonecode : '';
                 $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code: '';
                 return response()->json(['data' => $data]);
-
-
-                if (Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1])) {
-                    $userid = Auth::id();
-                    if($request->has('access_token')){
-                        if($request->access_token){
-                            $user_device = UserDevice::where('user_id', $userid)->where('device_token', $request->access_token)->first();
-                            if(!$user_device){
-                                $user_device = new UserDevice();
-                                $user_device->user_id = $userid;
-                                $user_device->device_type = 'web';
-                                $user_device->device_token = $request->access_token;
-                                $user_device->save();
-                            }
-                        }
-                    }
-                    $this->checkCookies($userid);
-                    $user_cart = Cart::where('user_id', $userid)->first();
-                    if ($user_cart) {
-                        $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
-                        if ($unique_identifier_cart) {
-                            $unique_identifier_cart_products = CartProduct::where('cart_id', $unique_identifier_cart->id)->get();
-                            foreach ($unique_identifier_cart_products as $unique_identifier_cart_product) {
-                                $user_cart_product_detail = CartProduct::where('cart_id', $user_cart->id)->where('product_id', $unique_identifier_cart_product->product_id)->first();
-                                if ($user_cart_product_detail) {
-                                    $user_cart_product_detail->quantity = ($unique_identifier_cart_product->quantity + $user_cart_product_detail->quantity);
-                                    $user_cart_product_detail->save();
-                                    $unique_identifier_cart_product->delete();
-                                } else {
-                                    $unique_identifier_cart_product->cart_id = $user_cart->id;
-                                    $unique_identifier_cart_product->save();
-                                }
-                            }
-                            $unique_identifier_cart->delete();
-                        }
-                    } else { 
-                        Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
-                    }
-                    $message = 'Logged in successfully';
-                    $redirect_to = '';
-                    if(session()->has('url.intended')){
-                        $redirect_to = session()->get('url.intended');
-                        session()->forget('url.intended');
-                    }else{
-                        $redirect_to = route('user.verify');
-                    }
-                    $request->request->add(['is_email'=>1, 'redirect_to'=>$redirect_to]);
-                    $response = $request->all();
-                    return $this->successResponse($response, $message);
-                }
-                $checkEmail = User::where('email', $username)->first();
-                if ($checkEmail) {
-                    return $this->errorResponse(__('Incorrect password'), 404);
-                }
-                return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
             }
             else {
                 return $this->errorResponse(__('Invalid email or phone number'), 404);

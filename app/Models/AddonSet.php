@@ -21,4 +21,9 @@ class AddonSet extends Model
 	  public function option(){
 	    return $this->hasMany('App\Models\AddonOption', 'addon_id', 'id')->select('id', 'title', 'addon_id', 'position', 'price'); 
 	  }
+
+	public function translation_one()
+	{
+		return $this->hasOne('App\Models\AddonSetTranslation', 'addon_id', 'id');
+	}
 }

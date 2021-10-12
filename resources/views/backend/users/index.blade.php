@@ -230,9 +230,9 @@
                     {data: 'currently_working_orders_count', name: 'currently_working_orders_count', orderable: false, searchable: false},
                     {data: 'status', name: 'status', orderable: false, searchable: false, "mRender": function ( data, type, full ) {
                             if(full.status == 1){
-                                return "<input type='checkbox' data-id='"+full.id+"' id='cur_"+full.id+"' data-plugin='switchery' name='userAccount' class='chk_box' data-color='#43bee1' checked>";
+                                return "<input type='checkbox' data-id='"+full.id+"' id='cur_"+full.id+"' data-plugin='switchery' name='userAccountStatus' class='chk_box' data-color='#43bee1' checked>";
                             }else{
-                                return "<input type='checkbox' data-id='"+full.id+"' id='cur_"+full.id+"' data-plugin='switchery' name='userAccount' class='chk_box' data-color='#43bee1'>";
+                                return "<input type='checkbox' data-id='"+full.id+"' id='cur_"+full.id+"' data-plugin='switchery' name='userAccountStatus' class='chk_box' data-color='#43bee1'>";
                             }
                     }},
                     {data: 'is_superadmin', name: 'is_superadmin', orderable: false, searchable: false, "mRender": function ( data, type, full ) {

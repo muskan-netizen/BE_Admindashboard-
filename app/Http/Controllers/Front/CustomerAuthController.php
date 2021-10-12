@@ -339,24 +339,26 @@ class CustomerAuthController extends FrontController
     public function loginViaUsername(Request $request, $domain = ''){
         try{
             $errors = array();
-            $validator = Validator::make($request->all(), [
-                'username'  => 'required',
-                'dialCode'  => 'required',
-                'countryData'  => 'required'
-            ]);
-
-            if($validator->fails()){
-                foreach($validator->errors()->toArray() as $error_key => $error_value){
-                    $errors['error'] = __($error_value[0]);
-                    return response()->json($errors, 422);
-                }
-            }
+            
             $phone_regex = '/^[0-9\-\(\)\/\+\s]*$/';
             $email_regex = '/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/';
             $username = $request->username;
 
             if(preg_match($phone_regex, $username))
             {
+                $validator = Validator::make($request->all(), [
+                    'username'  => 'required',
+                    'dialCode'  => 'required',
+                    'countryData'  => 'required'
+                ]);
+    
+                if($validator->fails()){
+                    foreach($validator->errors()->toArray() as $error_key => $error_value){
+                        $errors['error'] = __($error_value[0]);
+                        return response()->json($errors, 422);
+                    }
+                }
+
                 $phone_number = preg_replace('/\D+/', '', $username);
                 $dialCode = $request->dialCode;
                 $fullNumber = $request->full_number;
@@ -409,6 +411,16 @@ class CustomerAuthController extends FrontController
             }
             elseif (preg_match($email_regex, $username))
             {
+                $validator = Validator::make($request->all(), [
+                    'username'  => 'required'
+                ]);
+    
+                if($validator->fails()){
+                    foreach($validator->errors()->toArray() as $error_key => $error_value){
+                        $errors['error'] = __($error_value[0]);
+                        return response()->json($errors, 422);
+                    }
+                }
                 $username = str_ireplace(' ', '', $username);
                 if (Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1])) {
                     $userid = Auth::id();
@@ -460,7 +472,11 @@ class CustomerAuthController extends FrontController
                 }
                 $checkEmail = User::where('email', $username)->first();
                 if ($checkEmail) {
-                    return $this->errorResponse(__('Incorrect password'), 404);
+                    if($checkEmail->status != 1){
+                        return $this->errorResponse(__('You are unauthorized to access this account.'), 404);
+                    }else{
+                        return $this->errorResponse(__('Incorrect Password'), 404);
+                    }
                 }
                 return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
             }

@@ -88,7 +88,7 @@
                                     <div class="form-group">
                                         {!! Form::label('title', __('Email Verified'),['class' => 'control-label']) !!} 
                                         <div>
-                                             <input type="checkbox" data-plugin="switchery" name="email_verified" class="form-control email_verify_add">
+                                             <input type="checkbox" data-plugin="switchery" name="is_email_verified" class="form-control email_verify_add">
                                         </div>
                                     </div>
                                 </div>
@@ -96,7 +96,7 @@
                                     <div class="form-group">
                                         {!! Form::label('title', __('Phone Verified'),['class' => 'control-label']) !!} 
                                         <div>
-                                             <input type="checkbox" data-plugin="switchery" name="phone_verified" class="form-control phone_verify_add">
+                                             <input type="checkbox" data-plugin="switchery" name="is_phone_verified" class="form-control phone_verify_add">
                                         </div>
                                     </div>
                                 </div>

@@ -381,7 +381,7 @@ class CartController extends BaseController{
                 }
             }
             $user = User::find($cart->user_id);
-            $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
+            $cart->scheduled_date_time = !empty($cart->scheduled_date_time) ? convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i') : NULL;
             $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
             $address_id = ($address) ? $address->id : 0;
         }
