@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use DB;
 use App;
 use Config;
+use Log;
 use Validation;
 use Carbon\Carbon;
 use ConvertCurrency;

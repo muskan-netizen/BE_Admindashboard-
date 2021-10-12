@@ -17,6 +17,7 @@ use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vend
 use Illuminate\Contracts\View\View;
 use Illuminate\View\View as ViewView;
 use Redirect;
+use DB;
 
 class UserhomeController extends FrontController
 {
@@ -366,6 +367,27 @@ class UserhomeController extends FrontController
                 $value->categoriesList = $categoriesList;
             }
         }
+        $mostSellingVendors = Vendor::select('vendors.*',DB::raw('count(vendor_id) as max_sales'))->join('order_vendors','vendors.id','=','order_vendors.vendor_id')->whereIn('vendors.id',$vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'),'desc')->get();
+        if ((!empty($mostSellingVendors) && count($trendingVendors) > 0)) {
+            foreach ($trendingVendors as $key => $value) {
+                $value->vendorRating = $this->vendorRating($value->products);
+                // $value->name = Str::limit($value->name, 15, '..');
+                if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                    $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
+                }
+                $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
+                $categoriesList = '';
+                foreach ($vendorCategories as $key => $category) {
+                    if ($category->category) {
+                        $categoriesList = $categoriesList . @$category->category->translation_one->name;
+                        if ($key !=  $vendorCategories->count() - 1) {
+                            $categoriesList = $categoriesList . ', ';
+                        }
+                    }
+                }
+                $value->categoriesList = $categoriesList;
+            }
+        }
 
         $navCategories = $this->categoryNav($language_id);
         Session::put('navCategories', $navCategories);
@@ -429,7 +451,7 @@ class UserhomeController extends FrontController
             'homePageLabels' => $home_page_labels,
             'feature_products' => $feature_products,
             'on_sale_products' => $on_sale_products,
-            'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$vendors
+            'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors
         ];
         return $this->successResponse($data);
     }

@@ -19,11 +19,18 @@
                     <div class="row mb-2">
                         <div class="col-sm-8">
                             <div class="text-sm-left">
-                                @if (\Session::has('success'))
+                                @if(\Session::has('success'))
                                 <div class="alert alert-success">
                                     <span>{!! \Session::get('success') !!}</span>
                                 </div>
                                 @endif
+
+                                @if(\Session::has('error'))
+                                <div class="alert alert-error">
+                                    <span>{!! \Session::get('error') !!}</span>
+                                </div>
+                                @endif
+
                             </div>
                         </div>
                         <div class="col-sm-4 text-right">

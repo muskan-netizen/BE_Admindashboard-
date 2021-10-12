@@ -73,10 +73,12 @@
                                 <div class="form-group">
                                     <label for="languages">Business Type</label>
                                     <select class="form-control" id="business_type" name="business_type">
-                                        <option value="">None</option>
                                         @foreach($business_types as $business)
                                             <option value="{{$business->slug}}" @if($client->business_type == $business->slug) selected="selected" @endif> {{$business->title}} </option>
                                         @endforeach
+
+                                    
+
                                     </select>
                                 </div>    
                             </div>
@@ -89,6 +91,47 @@
             </div>
         </div>
     </div>
+
+    <!-- default data after on board -->
+    <div class="row">
+        <div class="col-12">    
+                   <div class="card">
+                        <div class="card-body"><h3>Import Demo Content [Warning! All data will be lost.]</h3>
+                        {{-- <form id="update_default_data" method="post" action="{{route('client.migrateDefaultData', $client->id)}}"
+                            enctype="multipart/form-data" autocomplete="off">
+                            @csrf
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="languages">Business Type </label>
+                                    <select class="form-control" id="business_type" name="business_type">
+                                        <option value=""></option>
+                                        <option value="sql_files\grub.sql">Grub - Food Delivery</option>
+                                        <option value="sql_files\homeric.sql">Homeric - Home Service </option>
+                                        <option value="sql_files\gokab.sql">GoKab - Cab Booking </option>
+                                        <option value="sql_files\ace.sql">Ace - Super App </option>
+                                        <option value="sql_files\punnet.sql">Punnet - Single Vendor Food Delivery </option>
+                                        <option value="sql_files\suel.sql">Suel - Single Vendor Ecommerce </option>
+                                        <option value="sql_files\voltaic.sql">Voltaic - Ecommerce </option>
+                                        <option value="sql_files\gusto.sql">Gusto - Grocery Delivery </option>
+                                        <option value="sql_files\elixir.sql">Elixir - Pharmacy Delivery </option>
+                                        <option value="sql_files\zest.sql">Zest - Pickup & Delivery </option>
+                                    </select>
+                                </div>    
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="row">
+                                    <button type="submit" class="btn btn-info waves-effect waves-light">{{__('Submit')}}</button>
+                                </div>
+                            </div>
+                        </form> --}}
+                        </div>
+                    </div>
+            
+        </div>
+    </div>
+    <!--end default --> 
+
 </div>
 @endsection
 @section('script')

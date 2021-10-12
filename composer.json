@@ -40,6 +40,7 @@
         "league/glide-laravel": "^1.0",
         "league/omnipay": "^3.2",
         "maatwebsite/excel": "^3.1",
+        "mobbex/sdk": "0.1.0",
         "omnipay/payfast": "^3.0",
         "omnipay/paypal": "^3.0",
         "omnipay/stripe": "^3.1",

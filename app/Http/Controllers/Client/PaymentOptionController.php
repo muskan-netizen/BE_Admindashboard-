@@ -143,6 +143,16 @@ class PaymentOptionController extends BaseController
                         'passphrase' => $request->payfast_passphrase
                     ));
                 }
+                else if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'mobbex') ){
+                    $validatedData = $request->validate([
+                        'mobbex_api_key'=> 'required',
+                        'mobbex_api_access_token'=> 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'api_key' => $request->mobbex_api_key,
+                        'api_access_token' => $request->mobbex_api_access_token
+                    ));
+                }
             }
             PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
         }

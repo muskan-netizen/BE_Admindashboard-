@@ -36,5 +36,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('promo-code/list', 'Api\v1\PromoCodeController@postPromoCodeList');
         Route::post('promo-code/verify', 'Api\v1\PromoCodeController@postVerifyPromoCode');
         Route::post('promo-code/remove', 'Api\v1\PromoCodeController@postRemovePromoCode');
+        Route::post('cart/product-schedule/update', 'Api\v1\CartController@updateProductSchedule');
     });
 });

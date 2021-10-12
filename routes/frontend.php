@@ -22,8 +22,11 @@ Route::group(['middleware' => ['domain']], function () {
 
 		dd('send mail successfully !!');
 	});
+	// Stripe
 	Route::post('payment/stripe', 'Front\StripeGatewayController@postPaymentViaStripe')->name('payment.stripe');
 	Route::post('user/subscription/payment/stripe', 'Front\StripeGatewayController@subscriptionPaymentViaStripe')->name('user.subscription.payment.stripe');
+	
+	// Paypal
 	Route::post('payment/paypal', 'Front\PaypalGatewayController@paypalPurchase')->name('payment.paypalPurchase');
 	Route::get('payment/paypal/CompletePurchase', 'Front\PaypalGatewayController@paypalCompletePurchase')->name('payment.paypalCompletePurchase');
 
@@ -31,15 +34,18 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/checkoutSuccess/{id}', 'Front\PaymentController@getCheckoutSuccess')->name('payment.getCheckoutSuccess');
 	Route::get('payment/paypal/notify', 'Front\PaypalGatewayController@paypalNotify')->name('payment.paypalNotify');
 
+	// Paystack
 	Route::post('payment/paystack', 'Front\PaystackGatewayController@paystackPurchase')->name('payment.paystackPurchase');
 	Route::post('payment/paystack/completePurchase', 'Front\PaystackGatewayController@paystackCompletePurchase')->name('payment.paystackCompletePurchase');
 
+	// Payfast
 	Route::post('payment/payfast', 'Front\PayfastGatewayController@payfastPurchase')->name('payment.payfastPurchase');
 	Route::post('payment/payfast/notify', 'Front\PayfastGatewayController@payfastNotify')->name('payment.payfastNotify');
-	// Route::get('payment/payfast/notify', function (Request $request) {
-	// 	return view('frontend.payfastNotify', ['name' => 'payment.payfastNotify']);
-	// });
 	Route::post('payment/payfast/completePurchase', 'Front\PayfastGatewayController@payfastCompletePurchase')->name('payment.payfastCompletePurchase');
+
+	// Mobbex
+	Route::post('payment/mobbex', 'Front\MobbexGatewayController@mobbexPurchase')->name('payment.mobbexPurchase');
+	Route::post('payment/mobbex/notify', 'Front\MobbexGatewayController@mobbexNotify')->name('payment.mobbexNotify');
 
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');

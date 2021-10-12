@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, CartProductPrescription, ProductVariantSet, Country, UserAddress, ClientPreference, Vendor, CartCoupon, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, Order, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, CartProductPrescription, ProductVariantSet, Country, UserAddress, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, CartCoupon, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation};
 
 class CartController extends FrontController
 {
@@ -22,8 +22,33 @@ class CartController extends FrontController
         }
         return $random_string;
     }
-    public function showCart($domain = '')
+    public function showCart(Request $request, $domain = '')
     {
+        if(($request->has('gateway')) && ($request->gateway == 'mobbex')){
+            if($request->has('order')){
+                $order = Order::where('order_number', $request->order)->first();
+                if($order){
+                    if($request->status == 0){
+                        $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                        foreach($order_products as $order_prod){
+                            OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                        }
+                        OrderProduct::where('order_id', $order->id)->delete();
+                        OrderProductPrescription::where('order_id', $order->id)->delete();
+                        VendorOrderStatus::where('order_id', $order->id)->delete();
+                        OrderVendor::where('order_id', $order->id)->delete();
+                        OrderTax::where('order_id', $order->id)->delete();
+                        $order->delete();
+                        return redirect()->route('showCart')->with('error', 'Your order has been cancelled');
+                    }
+                    elseif($request->status == 200){
+                        return redirect()->route('order.success', $order->id);
+                    }
+                }
+            }
+            return redirect()->route('showCart');
+        }
+
         $cartData = [];
         $user = Auth::user();
         $countries = Country::get();

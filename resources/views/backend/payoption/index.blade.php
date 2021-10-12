@@ -66,6 +66,7 @@
                 $password = (isset($creds->password)) ? $creds->password : '';
                 $signature = (isset($creds->signature)) ? $creds->signature : '';
                 $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+                $api_access_token = (isset($creds->api_access_token)) ? $creds->api_access_token : '';
                 $publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
                 $secret_key = (isset($creds->secret_key)) ? $creds->secret_key : '';
                 $public_key = (isset($creds->public_key)) ? $creds->public_key : '';
@@ -182,6 +183,25 @@
                         </div>
                     </div>
                     @endif
+
+                    @if ( (strtolower($opt->code) == 'mobbex') )
+                    <div id="mobbex_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="mobbex_api_key" class="mr-3">{{ __("API Key") }}</label>
+                                    <input type="text" name="mobbex_api_key" id="mobbex_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="mobbex_api_access_token" class="mr-3">{{ __("API Access Token") }}</label>
+                                    <input type="password" name="mobbex_api_access_token" id="mobbex_api_access_token" class="form-control" value="{{$api_access_token}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     <!-- <div class="d-flex align-items-center justify-content-between mb-2">
                         <button class="btn btn-info d-block" type="submit"> Save </button>
                     </div> -->
@@ -207,47 +227,56 @@
             var id = $(this).data('id');
             // console.log(id);
             var title = $(this).data('title');
-
-            if( title.toLowerCase() == 'stripe' ){
-                if($(this).is(":checked")){
-                    $("#stripe_fields_wrapper").show();
-                    $("#stripe_fields_wrapper").find('input').attr('required', true);
-                }
-                else{
-                    $("#stripe_fields_wrapper").hide();
-                    $("#stripe_fields_wrapper").find('input').removeAttr('required');
-                }
+            var code = title.toLowerCase();
+            if($(this).is(":checked")){
+                $("#"+code+"_fields_wrapper").show();
+                $("#"+code+"_fields_wrapper").find('input').attr('required', true);
             }
-            if( title.toLowerCase() == 'paypal' ){
-                if($(this).is(":checked")){
-                    $("#paypal_fields_wrapper").show();
-                    $("#paypal_fields_wrapper").find('input').attr('required', true);
-                }
-                else{
-                    $("#paypal_fields_wrapper").hide();
-                    $("#paypal_fields_wrapper").find('input').removeAttr('required');
-                }
+            else{
+                $("#"+code+"_fields_wrapper").hide();
+                $("#"+code+"_fields_wrapper").find('input').removeAttr('required');
             }
-            if( title.toLowerCase() == 'paystack' ){
-                if($(this).is(":checked")){
-                    $("#paystack_fields_wrapper").show();
-                    $("#paystack_fields_wrapper").find('input').attr('required', true);
-                }
-                else{
-                    $("#paystack_fields_wrapper").hide();
-                    $("#paystack_fields_wrapper").find('input').removeAttr('required');
-                }
-            }
-            if( title.toLowerCase() == 'payfast' ){
-                if($(this).is(":checked")){
-                    $("#payfast_fields_wrapper").show();
-                    $("#payfast_fields_wrapper").find('input').attr('required', true);
-                }
-                else{
-                    $("#payfast_fields_wrapper").hide();
-                    $("#payfast_fields_wrapper").find('input').removeAttr('required');
-                }
-            }
+            
+            // if( title.toLowerCase() == 'stripe' ){
+            //     if($(this).is(":checked")){
+            //         $("#stripe_fields_wrapper").show();
+            //         $("#stripe_fields_wrapper").find('input').attr('required', true);
+            //     }
+            //     else{
+            //         $("#stripe_fields_wrapper").hide();
+            //         $("#stripe_fields_wrapper").find('input').removeAttr('required');
+            //     }
+            // }
+            // if( title.toLowerCase() == 'paypal' ){
+            //     if($(this).is(":checked")){
+            //         $("#paypal_fields_wrapper").show();
+            //         $("#paypal_fields_wrapper").find('input').attr('required', true);
+            //     }
+            //     else{
+            //         $("#paypal_fields_wrapper").hide();
+            //         $("#paypal_fields_wrapper").find('input').removeAttr('required');
+            //     }
+            // }
+            // if( title.toLowerCase() == 'paystack' ){
+            //     if($(this).is(":checked")){
+            //         $("#paystack_fields_wrapper").show();
+            //         $("#paystack_fields_wrapper").find('input').attr('required', true);
+            //     }
+            //     else{
+            //         $("#paystack_fields_wrapper").hide();
+            //         $("#paystack_fields_wrapper").find('input').removeAttr('required');
+            //     }
+            // }
+            // if( title.toLowerCase() == 'payfast' ){
+            //     if($(this).is(":checked")){
+            //         $("#payfast_fields_wrapper").show();
+            //         $("#payfast_fields_wrapper").find('input').attr('required', true);
+            //     }
+            //     else{
+            //         $("#payfast_fields_wrapper").hide();
+            //         $("#payfast_fields_wrapper").find('input').removeAttr('required');
+            //     }
+            // }
 
             // $('#form_'+id).submit();
 

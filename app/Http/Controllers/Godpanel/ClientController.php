@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Redis;
 use Session;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
-use App\Models\{AddonOption, AddonOptionTranslation, AddonSet, AddonSetTranslation, OrderVendorProduct, Banner, Brand, BrandCategory, BrandTranslation, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Category, CategoryHistory, CategoryTranslation, Celebrity, CsvProductImport, CsvVendorImport, LoyaltyCard, Order, OrderProductAddon, OrderProductPrescription, OrderProductRating, OrderProductRatingFile, OrderReturnRequest, OrderReturnRequestFile, OrderTax, OrderVendor, Payment, PaymentOption, Product, ProductAddon, ProductCategory, ProductCelebrity, ProductCrossSell, ProductImage, ProductInquiry, ProductRelated, ProductTranslation, ProductUpSell, ProductVariant, ProductVariantImage, ProductVariantSet, Promocode, PromoCodeDetail, PromocodeRestriction, ServiceArea, SlotDay, SocialMedia, Transaction, User, UserAddress, UserDevice, UserLoyaltyPoint, UserPermissions, UserRefferal, UserVendor, UserWishlist, Variant, VariantCategory, VariantOption, VariantOptionTranslation, VariantTranslation, Vendor, VendorCategory, VendorMedia, VendorOrderStatus, VendorSlot, VendorSlotDate, Wallet};
+use App\Models\{AddonOption, AddonOptionTranslation, AddonSet, AddonSetTranslation, OrderVendorProduct, Banner, Brand, BrandCategory, BrandTranslation, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Category, CategoryHistory, CategoryTranslation, Celebrity, CsvProductImport, CsvVendorImport, LoyaltyCard, Order, OrderProductAddon, OrderProductPrescription, OrderProductRating, OrderProductRatingFile, OrderReturnRequest, OrderReturnRequestFile, OrderTax, OrderVendor, Payment, PaymentOption, Product, ProductAddon, ProductCategory, ProductCelebrity, ProductCrossSell, ProductImage, ProductInquiry, ProductRelated, ProductTranslation, ProductUpSell, ProductVariant, ProductVariantImage, ProductVariantSet, Promocode, PromoCodeDetail, PromocodeRestriction, ServiceArea, SlotDay, SocialMedia, Transaction, User, UserAddress, UserDevice, UserLoyaltyPoint, UserPermissions, UserRefferal, UserVendor, UserWishlist, Variant, VariantCategory, VariantOption, VariantOptionTranslation, VariantTranslation, Vendor, VendorCategory, VendorMedia, VendorOrderStatus, VendorSlot, VendorSlotDate, Wallet,CabBookingLayout,CabBookingLayoutCategory,CabBookingLayoutTranslation};
 use Exception;
 use Spatie\DbDumper\Databases\MySql;
 
@@ -105,13 +105,7 @@ class ClientController extends Controller{
     public function update(Request $request, $id)
     {
         $client = Client::findOrFail($id);
-        dd($client);
-        if((isset($client->business_type) && !empty($client->business_type) && $client->business_type != $request->business_type) || 1 == 1){
-            $save = $this->migrateDefault($request,$client);
-        }
-
-        dd($save);
-      //  $save = $this->saveClient($request, $client, 'true');
+        $save = $this->saveClient($request, $client, 'true');
 
         if(!$save){
             return redirect()->back()->withErrors(['error' => "Something went wrong."]);
@@ -285,17 +279,20 @@ class ClientController extends Controller{
 
     /////////////// *********************** migrate Default********************************* ////////////////////////////////////////
 
-    public function migrateDefault($request,$client)
+    public function migrateDefaultData(Request $request,$id)
     {
         try {
+            
+            if (isset($request->business_type) && !empty($request->business_type)) {
+                $client = Client::find($id);
 
-            $schemaName = 'royo_' . $client->database_name;
-            $database_host = !empty($client->database_host) ? $client->database_host : env('DB_HOST', '127.0.0.1');
-            $database_port = !empty($client->database_port) ? $client->database_port : env('DB_PORT', '3306');
-            $database_username = !empty($client->database_username) ? $client->database_username : env('DB_USERNAME', 'root');
-            $database_password = !empty($client->database_password) ? $client->database_password : env('DB_PASSWORD', '');
+                $schemaName = 'royo_' . $client->database_name;
+                $database_host = !empty($client->database_host) ? $client->database_host : env('DB_HOST', '127.0.0.1');
+                $database_port = !empty($client->database_port) ? $client->database_port : env('DB_PORT', '3306');
+                $database_username = !empty($client->database_username) ? $client->database_username : env('DB_USERNAME', 'root');
+                $database_password = !empty($client->database_password) ? $client->database_password : env('DB_PASSWORD', '');
 
-            $default = [
+                $default = [
                 'driver' => env('DB_CONNECTION', 'mysql'),
                 'host' => $database_host,
                 'port' => $database_port,
@@ -310,86 +307,94 @@ class ClientController extends Controller{
                 'engine' => null
             ];
            
-            Config::set("database.connections.$schemaName", $default);
-            config(["database.connections.mysql.database" => $schemaName]);
+                Config::set("database.connections.$schemaName", $default);
+                config(["database.connections.mysql.database" => $schemaName]);
             
-            DB::connection($schemaName)->beginTransaction();
-            DB::connection($schemaName)->statement("SET foreign_key_checks=0");
-            Cart::on($schemaName)->truncate();
-            Brand::on($schemaName)->truncate();
-            Order::on($schemaName)->truncate();
-            Banner::on($schemaName)->truncate();
-            Vendor::on($schemaName)->truncate();
-            SlotDay::on($schemaName)->truncate();
-            Payment::on($schemaName)->truncate();
-            Variant::on($schemaName)->truncate();
-            Product::on($schemaName)->truncate();
-            AddonSet::on($schemaName)->truncate();
-            Category::on($schemaName)->truncate();
-            OrderTax::on($schemaName)->truncate();
-            Promocode::on($schemaName)->truncate();
-            CartAddon::on($schemaName)->truncate();
-            Celebrity::on($schemaName)->truncate();
-            VendorSlot::on($schemaName)->truncate();
-            CartCoupon::on($schemaName)->truncate();
-            AddonOption::on($schemaName)->truncate();
-            LoyaltyCard::on($schemaName)->truncate();
-            ServiceArea::on($schemaName)->truncate();
-            VendorMedia::on($schemaName)->truncate();
-            CartProduct::on($schemaName)->truncate();
-            SocialMedia::on($schemaName)->truncate();
-            Transaction::on($schemaName)->truncate();
-            OrderVendor::on($schemaName)->truncate();
-            ProductAddon::on($schemaName)->truncate();
-            ProductImage::on($schemaName)->truncate();
-            ProductUpSell::on($schemaName)->truncate();
-            VariantOption::on($schemaName)->truncate();
-            BrandCategory::on($schemaName)->truncate();
-            VendorSlotDate::on($schemaName)->truncate();
-            VendorCategory::on($schemaName)->truncate();
-            ProductRelated::on($schemaName)->truncate();
-            ProductVariant::on($schemaName)->truncate();
-            ProductInquiry::on($schemaName)->truncate();
-            ProductCategory::on($schemaName)->truncate();
-            CsvVendorImport::on($schemaName)->truncate();
-            VariantCategory::on($schemaName)->truncate();
-            PromoCodeDetail::on($schemaName)->truncate();
-            CategoryHistory::on($schemaName)->truncate();
-            CsvProductImport::on($schemaName)->truncate();
-            BrandTranslation::on($schemaName)->truncate();
-            ProductCelebrity::on($schemaName)->truncate();
-            ProductCrossSell::on($schemaName)->truncate();
-            ProductVariantSet::on($schemaName)->truncate();
-            VendorOrderStatus::on($schemaName)->truncate();
-            OrderProductAddon::on($schemaName)->truncate();
-            OrderProductRating::on($schemaName)->truncate();
-            ProductTranslation::on($schemaName)->truncate();
-            VariantTranslation::on($schemaName)->truncate();
-            OrderVendorProduct::on($schemaName)->truncate();
-            OrderReturnRequest::on($schemaName)->truncate();
-            AddonSetTranslation::on($schemaName)->truncate();
-            CategoryTranslation::on($schemaName)->truncate();
-            ProductVariantImage::on($schemaName)->truncate();
-            PromocodeRestriction::on($schemaName)->truncate();
-            AddonOptionTranslation::on($schemaName)->truncate();
-            OrderProductRatingFile::on($schemaName)->truncate();
-            OrderReturnRequestFile::on($schemaName)->truncate();
-            CartProductPrescription::on($schemaName)->truncate();
-            CartProductPrescription::on($schemaName)->truncate();
-            VariantOptionTranslation::on($schemaName)->truncate();
-            OrderProductPrescription::on($schemaName)->truncate();
+                DB::connection($schemaName)->beginTransaction();
+                DB::connection($schemaName)->statement("SET foreign_key_checks=0");
+                Cart::on($schemaName)->truncate();
+                Brand::on($schemaName)->truncate();
+                Order::on($schemaName)->truncate();
+                Banner::on($schemaName)->truncate();
+                Vendor::on($schemaName)->truncate();
+                SlotDay::on($schemaName)->truncate();
+                Payment::on($schemaName)->truncate();
+                Variant::on($schemaName)->truncate();
+                Product::on($schemaName)->truncate();
+                AddonSet::on($schemaName)->truncate();
+                Category::on($schemaName)->truncate();
+                OrderTax::on($schemaName)->truncate();
+                Promocode::on($schemaName)->truncate();
+                CartAddon::on($schemaName)->truncate();
+                Celebrity::on($schemaName)->truncate();
+                VendorSlot::on($schemaName)->truncate();
+                CartCoupon::on($schemaName)->truncate();
+                AddonOption::on($schemaName)->truncate();
+                LoyaltyCard::on($schemaName)->truncate();
+                ServiceArea::on($schemaName)->truncate();
+                VendorMedia::on($schemaName)->truncate();
+                CartProduct::on($schemaName)->truncate();
+                SocialMedia::on($schemaName)->truncate();
+                Transaction::on($schemaName)->truncate();
+                OrderVendor::on($schemaName)->truncate();
+                ProductAddon::on($schemaName)->truncate();
+                ProductImage::on($schemaName)->truncate();
+                ProductUpSell::on($schemaName)->truncate();
+                VariantOption::on($schemaName)->truncate();
+                BrandCategory::on($schemaName)->truncate();
+                VendorSlotDate::on($schemaName)->truncate();
+                VendorCategory::on($schemaName)->truncate();
+                ProductRelated::on($schemaName)->truncate();
+                ProductVariant::on($schemaName)->truncate();
+                ProductInquiry::on($schemaName)->truncate();
+                ProductCategory::on($schemaName)->truncate();
+                CsvVendorImport::on($schemaName)->truncate();
+                VariantCategory::on($schemaName)->truncate();
+                PromoCodeDetail::on($schemaName)->truncate();
+                CategoryHistory::on($schemaName)->truncate();
+                CsvProductImport::on($schemaName)->truncate();
+                BrandTranslation::on($schemaName)->truncate();
+                ProductCelebrity::on($schemaName)->truncate();
+                ProductCrossSell::on($schemaName)->truncate();
+                ProductVariantSet::on($schemaName)->truncate();
+                VendorOrderStatus::on($schemaName)->truncate();
+                OrderProductAddon::on($schemaName)->truncate();
+                OrderProductRating::on($schemaName)->truncate();
+                ProductTranslation::on($schemaName)->truncate();
+                VariantTranslation::on($schemaName)->truncate();
+                OrderVendorProduct::on($schemaName)->truncate();
+                OrderReturnRequest::on($schemaName)->truncate();
+                AddonSetTranslation::on($schemaName)->truncate();
+                CategoryTranslation::on($schemaName)->truncate();
+                ProductVariantImage::on($schemaName)->truncate();
+                PromocodeRestriction::on($schemaName)->truncate();
+                AddonOptionTranslation::on($schemaName)->truncate();
+                OrderProductRatingFile::on($schemaName)->truncate();
+                OrderReturnRequestFile::on($schemaName)->truncate();
+                CartProductPrescription::on($schemaName)->truncate();
+                CartProductPrescription::on($schemaName)->truncate();
+                VariantOptionTranslation::on($schemaName)->truncate();
+                OrderProductPrescription::on($schemaName)->truncate();
+                CabBookingLayout::on($schemaName)->truncate();
+                CabBookingLayoutCategory::on($schemaName)->truncate();
+                CabBookingLayoutTranslation::on($schemaName)->truncate();
+                DB::connection($schemaName)->statement("SET foreign_key_checks=1");
+            
+                $sql_file = $request->business_type;
+                DB::connection($schemaName)->unprepared(file_get_contents($sql_file));
+
+                $busines = ucwords(str_replace("sql_files", " ", $request->business_type));
+
+                DB::connection($schemaName)->commit();
+              
+                return redirect()->route('client.index')->with('success', $busines.' Data added successfully!');
            
-            DB::connection($schemaName)->statement("SET foreign_key_checks=1");
-            
-            DB::connection($schemaName)->commit();
-            $sql_file = $request->business_type.".sql";
-            DB::connection($schemaName)->unprepared(file_get_contents($sql_file));
-            $data = (['status' => 200 ,'message' => $request->business_type.' On Board Successfully']);
-            return $data;
+            }
         } catch (\PDOException $e) {
             DB::connection($schemaName)->rollBack();
-            $data = (['status' => 400 ,'message' => $e->getMessage()]);
-            return $data;
+            return redirect()->route('client.index')->with('error', $e->getMessage());
         }
+            
+            
     }
 }

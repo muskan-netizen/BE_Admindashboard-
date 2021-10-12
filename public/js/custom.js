@@ -941,7 +941,7 @@ $(document).ready(function () {
         });
     }
     
-    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id, tip = 0) {
+    window.placeOrder = function placeOrder(address_id = 0, payment_option_id, transaction_id = 0, tip = 0) {
         var task_type = $("input[name='task_type']:checked").val();
         var schedule_dt = $("#schedule_datetime").val();
         if( (task_type == 'schedule') && (schedule_dt == '') ){
@@ -996,11 +996,65 @@ $(document).ready(function () {
             }
         });
     }
+    window.placeOrderBeforePayment = function placeOrderBeforePayment(address_id = 0, payment_option_id, tip = 0) {
+        var task_type = $("input[name='task_type']:checked").val();
+        var schedule_dt = $("#schedule_datetime").val();
+        if( (task_type == 'schedule') && (schedule_dt == '') ){
+            $("#proceed_to_pay_modal").modal('hide');
+            $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+            success_error_alert('error', 'Schedule date time is required', ".cart_response");
+            return false;
+        }
+        var orderResponse = '';
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            async: false,
+            url: place_order_url,
+            data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt },
+            success: function (response) {
+                if (response.status == "Success") {
+                    // var ip_address = window.location.host;
+                    // var host_arr = ip_address.split(".");
+                    // let socket = io(constants.socket_domain, {
+                    //       query: {"user_id": host_arr[0]+"_cus", "subdomain":host_arr[0]}
+                    //     });
+                    // socket.emit("createOrder", response.data );
+                    orderResponse = response.data;
+                    // return orderResponse;
+                } 
+                else {
+                    if ($(".payment_response").length > 0) {
+                        $(".payment_response").removeClass("d-none");
+                        success_error_alert("error", response.message, ".payment_response");
+                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                    }
+                }
+            },
+            error: function (error) {
+                var response = $.parseJSON(error.responseText);
+                // success_error_alert('error', response.message, ".payment_response");
+                if($('.payment_response').length > 0){
+                    $(".payment_response").removeClass('d-none');
+                    success_error_alert('error', response.message, ".payment_response");
+                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                }
+            },
+            complete: function(data){
+                $('.spinner-overlay').hide();
+            }
+        });
+        return orderResponse;
+    }
     $(document).on("click", ".proceed_to_pay", function () {
         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
         let address_id = $("input:radio[name='address_id']:checked").val();
+        if ((vendor_type == 'delivery') && ((address_id == '') || (address_id < 1) || ($("input[name='address_id']").length < 1))) {
+            success_error_alert('error', 'Please add a valid address to continue', ".payment_response");
+            return false;
+        }
         // let payment_option_id = $('#proceed_to_pay_modal #v_pills_tab').find('.active').data('payment_option_id');
-        let payment_option_id = $("#cart-payment-form input[name='cart_payment_method']:checked").val();
+        let payment_option_id = $("#cart_payment_form input[name='cart_payment_method']:checked").val();
         let tip = $("#cart_tip_amount").val();
         if (payment_option_id == 1) {
             placeOrder(address_id, payment_option_id, '', tip);
@@ -1021,6 +1075,14 @@ $(document).ready(function () {
         }
         else if (payment_option_id == 6) {
             paymentViaPayfast(address_id, payment_option_id);
+        }
+        else if (payment_option_id == 7) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if(order != ''){
+                paymentViaMobbex(address_id, order);
+            }else{
+                return false;
+            }
         }
     });
     window.creditWallet = function creditWallet(amount, payment_option_id, transaction_id) {

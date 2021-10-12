@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Front;
 
+use MB;
+use Log;
 use Auth;
 use Omnipay\Omnipay;
 use Illuminate\Http\Request;
@@ -9,81 +11,94 @@ use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{PaymentOption, Client, ClientPreference, ClientCurrency};
+use App\Http\Controllers\Front\OrderController;
+use App\Models\{User, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Order, Payment, PaymentOption, Client, ClientPreference, ClientCurrency};
 
 class MobbexGatewayController extends FrontController
 {
     use ApiResponser;
     public $API_KEY;
     public $API_ACCESS_TOKEN;
+    public $test_mode;
+    public $mb;
 
     public function __construct()
     {
-        // $paystack_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'paystack')->where('status', 1)->first();
-        // $creds_arr = json_decode($paystack_creds->credentials);
-        // $secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
-        // $public_key = (isset($creds_arr->public_key)) ? $creds_arr->public_key : '';
-        // $testmode = (isset($paystack_creds->test_mode) && ($paystack_creds->test_mode == '1')) ? true : false;
-        // $this->gateway = Omnipay::create('Paystack');
-        // $this->gateway->setSecretKey($secret_key);
-        // $this->gateway->setPublicKey($public_key);
-        // $this->gateway->setTestMode($testmode); //set it to 'false' when go live
+        $mobbex_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'mobbex')->where('status', 1)->first();
+        $creds_arr = json_decode($mobbex_creds->credentials);
+        $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+        $api_access_token = (isset($creds_arr->api_access_token)) ? $creds_arr->api_access_token : '';
+        $this->test_mode = (isset($mobbex_creds->test_mode) && ($mobbex_creds->test_mode == '1')) ? true : false;
 
-        $this->API_KEY = '9u2ZVG2Jyj3WHdboDGWrM5IJRmk1kZt8eVcDWMf0';
-        $this->API_ACCESS_TOKEN ='a1eee705-86be-45d9-8280-864914a1f63e';
+        $this->API_KEY = $api_key;
+        $this->API_ACCESS_TOKEN = $api_access_token;
 
         try {
-            $mb = new MB($this->API_KEY, $this->API_ACCESS_TOKEN);
+            $this->mb = new MB($api_key, $api_access_token);
         } catch (Exception $ex) {
             return $this->errorResponse($ex->getMessage(), $ex->getCode());
         }
-
-        // dd($this->gateway);
     }
 
     public function mobbexPurchase(Request $request){
         try{
             $user = Auth::user();
+            $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $amount = $this->getDollarCompareAmount($request->amount);
-            $returnUrlParams = '?amount='.$amount;
-            if($request->has('tip')){
-                $tip = $request->tip;
-                $returnUrlParams = $returnUrlParams.'&tip='.$tip;
-            }
-            if( ($request->has('address_id')) && ($request->address_id > 0) ){
-                $address_id = $request->address_id;
-                $returnUrlParams = $returnUrlParams.'&address_id='.$address_id;
-            }
-            $returnUrlParams = $returnUrlParams.'&gateway=mobbex';
+            // $returnUrlParams = '?amount='.$amount;
+            // if($request->has('tip')){
+            //     $tip = $request->tip;
+            //     $returnUrlParams = $returnUrlParams.'&tip='.$tip;
+            // }
+            // if( ($request->has('address_id')) && ($request->address_id > 0) ){
+            //     $address_id = $request->address_id;
+            //     $returnUrlParams = $returnUrlParams.'&address_id='.$address_id;
+            // }
+            $returnUrlParams = '?gateway=mobbex&order='.$request->order_number;
 
             $returnUrl = route('order.return.success');
             if($request->payment_form == 'wallet'){
                 $returnUrl = route('user.wallet');
             }
 
-            $response = $this->gateway->purchase([
+            $checkout_data = array(
                 'total' => $amount,
                 'currency' => 'ARS',
-                'email' => $user->email,
-                'returnUrl' => url($request->returnUrl . $returnUrlParams),
-                'cancelUrl' => url($request->cancelUrl),
-                'metadata' => ['user_id' => $user->id],
-                'description' => 'This is a test purchase transaction.',
-            ])->send();
-            if ($response->isSuccessful()) {
-                return $this->successResponse($response->getData());
+                'description' => 'Order Checkout',
+                'return_url' => url($request->returnUrl . $returnUrlParams),
+                'reference' => $request->order_number,
+                'webhook' => url('payment/mobbex/notify'),
+                'redirect' => false,
+                'test' => $this->test_mode, // True, testing, false, production
+                // 'options' => array(
+                //     'theme' => array(
+                //         'type' => 'light', // dark or light color scheme
+                //         'showHeader' => true,
+                //         'header' => array(
+                //             'name' => 'Your brand name',
+                //             'logo' => 'https://www.yourstore.com/store-logo.jpg', // Must be https!
+                //         ),
+                //     ),
+                // ),
+                'customer' => array(
+                    'email' => $user->email,
+                    'name' => $user->name,
+                    // 'identification' => '12123123',
+                    'cart_id' => $cart->id
+                )
+            );
+            $response = $this->mb->mobbex_checkout($checkout_data);
+            if($response['response']['result']){
+                return $this->successResponse($response['response']['data']['url']);
             }
-            elseif ($response->isRedirect()) {
-                $this->failMail();
-                return $this->successResponse($response->getRedirectUrl());
+            elseif(!$response['response']['result']){
+                return $this->errorResponse($response['response']['error'], 400);
             }
-            else {
-                $this->failMail();
+            else{
                 return $this->errorResponse($response->getMessage(), 400);
             }
         }
         catch(\Exception $ex){
-            $this->failMail();
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
@@ -91,58 +106,76 @@ class MobbexGatewayController extends FrontController
     public function mobbexNotify(Request $request, $domain = '')
     {
         // Notify Mobbex that information has been received
-        header( 'HTTP/1.0 200 OK' );
-        flush();
+        // header( 'HTTP/1.0 200 OK' );
+        // flush();
+        // Log::info($request->all());
 
-        // Posted variables from ITN
-        $pfData = $request;
-        $pfData->payment_status = 'COMPLETE';
-        //update db
-        switch( $pfData->payment_status )
-        {
-        case 'COMPLETE':
-            // If complete, update your application, email the buyer and process the transaction as paid
-            $pfData->request->add([
-                'user_id' => $pfData->custom_int1,
-                'payment_option_id' => $pfData->custom_int3,
-                'transaction_id' => $pfData->pf_payment_id
-            ]);
-            if($pfData->custom_str2 == 'cart'){
-                $pfData->request->add([
-                    'address_id' => $pfData->custom_int2,
-                    'tip' => $pfData->custom_str1,
-                ]);
-                $order = new OrderController();
-                $placeOrder = $order->placeOrder($pfData);
-                $response = $placeOrder->getData();
-            }
-            elseif($pfData->custom_str2 == 'wallet'){
-                $pfData->request->add([
-                    'wallet_amount' => $pfData->amount_gross
-                ]);
-                $wallet = new WalletController();
-                $creditWallet = $wallet->creditWallet($pfData);
-                $response = $creditWallet->getData();
-            }
+        $data = $request->data;
+        if($data['result'] == 'true'){
+            $payment_details = $data['payment'];
+            $transactionId = $payment_details['id'];
+            $order_number = $payment_details['reference'];
+            $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+            if($order){
+                if($payment_details['status']['code'] == 200){
+                    $order->payment_status = 1;
+                    $order->save();
+                    $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                    if(!$payment_exists){
+                        Payment::insert([
+                            'date' => date('Y-m-d'),
+                            'order_id' => $order->id,
+                            'transaction_id' => $transactionId,
+                            'balance_transaction' => $payment_details['total'],
+                        ]);
+                        // Remove cart
+                        $user = $data['customer'];
+                        Cart::where('id', $user['cart_id'])->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
+                        CartAddon::where('cart_id', $user['cart_id'])->delete();
+                        CartCoupon::where('cart_id', $user['cart_id'])->delete();
+                        CartProduct::where('cart_id', $user['cart_id'])->delete();
+                        CartProductPrescription::where('cart_id', $user['cart_id'])->delete();
 
-            if($response->status == 'Success'){
-                $this->successMail();
-                return $this->successResponse($response->data, 'Payment completed successfully.', 200);
-            }else{
-                $this->failMail();
-                return $this->errorResponse($response->message, 400);
+                        // Send Notification
+                        $user_admins = User::where(function ($query) {
+                            $query->where(['is_superadmin' => 1]);
+                        })->pluck('id')->toArray();
+                        $user_vendors = [];
+                        if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
+                            $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
+                        }
+                        $order->admins = array_unique(array_merge($user_admins, $user_vendors));
+                        $orderController = new OrderController();
+                        $orderController->sendOrderPushNotificationVendors($order->admins, $order);
+
+                        // Send Email
+                        $this->successMail();
+                    }
+                }else{
+                    $this->failMail();
+                }
             }
-        break;
-        case 'FAILED':
-            $this->failMail();
-            // There was an error, update your application
-            return $this->errorResponse('Payment failed', 400);
-        break;
-        default:
-        $this->failMail();
-            // If unknown status, do nothing (safest course of action)
-            // return $this->errorResponse($response->getMessage(), 400);
-        break;
         }
+
+    }
+
+    public function getTransactionDetails($transactionId){
+        
+        $url = "https://api.mobbex.com/2.0/transactions/status";
+        $payload =  [ "id" => $transactionId];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'x-api-key: '. $this->API_KEY ,
+            'x-access-token: '. $this->API_ACCESS_TOKEN)
+        );
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
     }
 }

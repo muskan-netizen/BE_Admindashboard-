@@ -553,7 +553,7 @@
                 <div class="alert p-0 m-0" role="alert"></div>
             </div>
             <h5 class="text-17 mb-2">{{__('Debit From')}}</h5>
-            <form method="POST" id="cart-payment-form">
+            <form method="POST" id="cart_payment_form">
                 @csrf
                 @method('POST')
                 <% _.each(payment_options, function(payment_option, k){%>
@@ -863,6 +863,7 @@
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
     var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
     var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
+    var payment_mobbex_url = "{{route('payment.mobbexPurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";
@@ -871,6 +872,8 @@
     var update_cart_schedule = "{{route('cart.updateSchedule')}}";
     var login_via_username_url = "{{route('customer.loginViaUsername')}}";
     var forgot_password_url = "{{route('customer.forgotPass')}}";
+    var order_success_return_url = "{{route('order.return.success')}}";
+    var my_orders_url = "{{route('user.orders')}}";
 
     $(document).on('click', '.showMapHeader', function(){
         var lats = document.getElementById('latitude').value;
@@ -923,12 +926,12 @@
         });
     });
 
-    $(document).delegate('#cart-payment-form input[name="cart_payment_method"]', 'change', function() {
+    $(document).delegate('#cart_payment_form input[name="cart_payment_method"]', 'change', function() {
         var method = $(this).attr('id');
         if(method.replace('radio-', '') == 'stripe'){
-            $("#cart-payment-form .stripe_element_wrapper").removeClass('d-none');
+            $("#cart_payment_form .stripe_element_wrapper").removeClass('d-none');
         }else{
-            $("#cart-payment-form .stripe_element_wrapper").addClass('d-none');
+            $("#cart_payment_form .stripe_element_wrapper").addClass('d-none');
         }
     });
 

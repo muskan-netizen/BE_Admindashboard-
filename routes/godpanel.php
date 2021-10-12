@@ -3,6 +3,7 @@ Route::group(['prefix' => '/godpanel'], function () {
 	Route::get('login', function(){return view('godpanel/login');});
 	Route::post('login','Godpanel\LoginController@Login')->name('god.login');
 	Route::middleware(['middleware' => 'auth:admin'])->group(function () {
+
 		Route::resource('client','Godpanel\ClientController');
 		Route::resource('map','Godpanel\MapProviderController');
 		Route::resource('sms','Godpanel\SmsProviderController');
@@ -13,8 +14,8 @@ Route::group(['prefix' => '/godpanel'], function () {
 		Route::get('sms/destroy/{id}', 'Godpanel\SmsProviderController@destroy');
 		Route::post('/logout', 'Godpanel\LoginController@logout')->name('god.logout');
 		Route::get('dashboard','Godpanel\DashBoardController@index')->name('god.dashboard');
-
 		
-		Route::get('migrateDefault', 'Godpanel\ClientController@migrateDefault')->name('godclient.migrateDefault');
+		Route::post('migrateDefaultData/{id}', 'Godpanel\ClientController@migrateDefaultData')->name('client.migrateDefaultData');
+		
 	});
 });
