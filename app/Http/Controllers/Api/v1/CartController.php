@@ -353,6 +353,8 @@ class CartController extends BaseController
         $address_id = 0;
         $delivery_status = 1;
         $cartID = $cart->id;
+        $upSell_products = collect();
+        $crossSell_products = collect();
         $cartData = CartProduct::with([
             'vendor', 'coupon' => function ($qry) use ($cartID) {
                 $qry->where('cart_id', $cartID);
@@ -588,6 +590,26 @@ class CartController extends BaseController
                     $prod->variant_options = $variant_options;
                     $payable_amount = $payable_amount;
                     $prod->product_addons = $vendorAddons;
+
+                    $product = Product::with([
+                        'variant' => function ($sel) {
+                            $sel->groupBy('product_id');
+                        },
+                        'variant.media.pimage.image', 'upSell', 'crossSell', 'vendor', 'media.image', 'translation' => function ($q) use ($langId) {
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                            $q->where('language_id', $langId);
+                        }])->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating')
+                        ->where('url_slug', $prod->product->url_slug)
+                        ->first();
+                    $doller_compare = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
+                    $up_prods = $this->metaProduct($langId, $doller_compare, 'upSell', $product->upSell);
+                    if($up_prods){
+                        $upSell_products->push($up_prods);
+                    }
+                    $cross_prods = $this->metaProduct($langId, $doller_compare, 'crossSell', $product->crossSell);
+                    if($cross_prods){
+                        $crossSell_products->push($cross_prods);
+                    }
                 }
                 $couponApplied = 0;
                 if (!empty($vendorData->coupon->promo) && ($vendorData->coupon->promo->restriction_on == 1)) {
@@ -706,6 +728,8 @@ class CartController extends BaseController
         );
         $cart->vendor_details = $vendor_details;
         $cart->cart_dinein_table_id = $cart_dinein_table_id;
+        $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
+        $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
         return $cart;
     }
 

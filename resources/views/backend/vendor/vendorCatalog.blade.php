@@ -123,6 +123,7 @@
                             {{ __("Catalog") }}
                         </a>
                     </li>
+                    @if($client_preference_detail->business_type != 'taxi')
                     <li class="nav-item">
                         <a href="{{ route('vendor.show', $vendor->id) }}" aria-expanded="false" class="nav-link {{($tab == 'configuration') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
                             {{ __("Configuration") }}
@@ -133,6 +134,7 @@
                             {{ __("Categories & Add Ons") }}
                         </a>
                     </li>
+                    @endif
                 </ul>
                 <div class="row mt-4">
                     <div class="col-12">
@@ -157,6 +159,7 @@
                                             <p class="text-muted font-15 mb-0">{{ __('Published Products') }}</p>
                                         </div>
                                     </div>
+                                    @if($client_preference_detail->business_type != 'taxi')
                                     <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
                                         <div class="text-center">
                                             <h3>
@@ -184,6 +187,7 @@
                                             <p class="text-muted font-15 mb-0">{{ __("Featured Products") }}</p>
                                         </div>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -211,13 +215,18 @@
                                                     <th>#</th>
                                                     <th>{{ __("Name") }}</th>
                                                     <th>{{ __("Category") }}</th>
+                                                    @if($client_preference_detail->business_type != 'taxi')
                                                     <th>{{ __("Brand") }}</th>
                                                     <th>{{ __("Quantity") }}</th>
                                                     <th>{{ __("Price") }}</th>
+                                                    @endif
                                                     <th>{{ __("Status") }}</th>
+                                                    @if($client_preference_detail->business_type != 'taxi')
                                                     <th>{{ __("New") }}</th>
                                                     <th>{{ __("Featured") }}</th>
                                                     <th>{{ __("Requires Last") }}<br>{{ __("Mile Delivery") }}</th>
+                                                    @endif
+                                                   
                                                     <th>{{ __("Action") }}</th>
                                                 </tr>
                                             </thead>
@@ -233,13 +242,17 @@
                                                     </td>
                                                     <td> <a href="{{ route('product.edit', $product->id) }}" target="_blank">{{ Str::limit((isset($product->primary->title) && !empty($product->primary->title)) ? $product->primary->title : '' , 30)}}</a> </td>
                                                     <td> {{ $product->category ? $product->category->cat->name: 'N/A' }}</td>
+                                                    @if($client_preference_detail->business_type != 'taxi')
                                                     <td> {{ !empty($product->brand) ? $product->brand->title : 'N/A'  }}</td>
                                                     <td> {{ $product->variant->first() ? $product->variant->first()->quantity : 0 }}</td>
                                                     <td> {{ $product->variant->first() ? $product->variant->first()->price : 0 }}</td>
+                                                    @endif
                                                     <td> {{ ($product->is_live == 1) ? 'Published' : 'Draft'}}</td>
+                                                    @if($client_preference_detail->business_type != 'taxi')
                                                     <td> {{ ($product->is_new == 0) ? 'No' : 'Yes' }}</td>
                                                     <td> {{ ($product->is_featured == 0) ? 'No' : 'Yes' }}</td>
                                                     <td> {{ ($product->Requires_last_mile == 0) ? 'No' : 'Yes' }}</td>
+                                                    @endif
                                                     <td>
                                                         <div class="form-ul" style="width: 60px;">
                                                             <div class="inner-div" style="float: left;">

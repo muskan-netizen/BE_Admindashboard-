@@ -105,7 +105,8 @@ class ProcessClientDatabase implements ShouldQueue
             $cli_currs = [
                 'client_code' => $client['code'],
                 'currency_id' => '147',
-                'is_primary' => '1'
+                'is_primary' => '1',
+                'doller_compare' => 1.00
             ];            
 
             $query = "CREATE DATABASE $schemaName;";

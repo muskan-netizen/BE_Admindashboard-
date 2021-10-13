@@ -62,26 +62,32 @@
                     </div>
                 </div>
                 <div class="row mb-2">
+                    @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12">
                         <div class="form-group" id="order_pre_timeInput">
                             {!! Form::label('title', __('Order Prepare Time(In minutes)'),['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="order_pre_time" type="text" value="{{ ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0 }}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     </div>
+                    @endif
                     {{-- <div class="col-md-12">
                         <div class="form-group" id="auto_reject_timeInput">
                             {!! Form::label('title', 'Auto Reject Time(In minutes, 0 for no rejection)',['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="auto_reject_time" type="text" value="{{$vendor->auto_reject_time}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
                     </div> --}}
+                    @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="show_slot" class="form-control" data-color="#43bee1" @if($vendor->show_slot == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    @endif
+                    @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    @endif
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Show Profile Details'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="is_show_vendor_details" class="form-control" data-color="#43bee1" @if($vendor->is_show_vendor_details == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
@@ -156,6 +162,7 @@
         </div>
     </div>
     <div class="row">
+        @if($client_preference_detail->business_type != 'taxi')
         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
             {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
             <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if($vendor->add_category == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
@@ -163,6 +170,7 @@
         <div class="col-md-6 mb-3">
             {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
         </div>
+        
         <div class="col-md-6 mb-3">
             <select class="selectize-select form-control assignToSelect" id="assignTo" {{$vendor->status == 1 ? '' : 'disabled'}}>
                 @foreach($templetes as $templete)
@@ -170,6 +178,7 @@
                 @endforeach
             </select>
         </div>
+        @endif
         <div class="col-md-12">
             {!! Form::label('title', __('Vendor Category'),['class' => 'control-label']) !!}
             <div class="custom-dd dd nestable_list_1" id="nestable_list_1">

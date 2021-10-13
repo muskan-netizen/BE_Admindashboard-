@@ -160,21 +160,6 @@ INSERT INTO `products` (`id`, `sku`, `title`, `url_slug`, `description`, `body_h
 (8, 'Medium2', NULL, 'medium2', NULL, NULL, 1, 2, 1, NULL, 1, 1, 1, 0, NULL, NULL, 0, 0, 0, 0, 0, NULL, 0, '2021-09-29 07:02:55', '2021-09-29 07:02:25', '2021-09-29 07:02:55', NULL, NULL, NULL, 0, NULL, '0', NULL),
 (9, 'Large3', NULL, 'large3', NULL, NULL, 1, 2, 1, NULL, 1, 1, 1, 0, NULL, NULL, 0, 0, 0, 0, 0, NULL, 0, '2021-09-29 07:03:30', '2021-09-29 07:03:07', '2021-09-29 07:03:30', NULL, NULL, NULL, 0, NULL, '0', NULL);
 
--- --------------------------------------------------------
-
---
--- Dumping data for table `product_addons`
---
-INSERT INTO `products` (`id`, `sku`, `title`, `url_slug`, `description`, `body_html`, `vendor_id`, `category_id`, `type_id`, `country_origin_id`, `is_new`, `is_featured`, `is_live`, `is_physical`, `weight`, `weight_unit`, `has_inventory`, `has_variant`, `sell_when_out_of_stock`, `requires_shipping`, `Requires_last_mile`, `averageRating`, `inquiry_only`, `publish_at`, `created_at`, `updated_at`, `brand_id`, `tax_category_id`, `deleted_at`, `pharmacy_check`, `tags`, `need_price_from_dispatcher`, `mode_of_service`) VALUES
-(1, 'sku-id1632898865', '1', 'sku-id1632898865', NULL, NULL, 1, NULL, 1, NULL, 1, 1, 1, 1, NULL, NULL, 0, 0, 0, 0, 0, NULL, 0, NULL, NULL, '2021-09-29 07:01:05', NULL, NULL, '2021-09-29 07:01:05', 0, NULL, NULL, NULL),
-(2, 'CAB584', 'RoyoXL', 'CAB584', NULL, '', 2, 14, 1, NULL, 1, 1, 1, 0, NULL, NULL, 0, 0, 0, 0, 0, NULL, 0, '2021-09-29 06:56:35', NULL, '2021-09-29 07:16:34', NULL, NULL, '2021-09-29 07:16:34', 0, NULL, '0', NULL),
-(3, 'CAB585', 'Royo Platinum', 'CAB585', NULL, '', 2, 14, 1, NULL, 1, 1, 1, 0, NULL, NULL, 0, 0, 0, 0, 0, NULL, 0, '2021-09-29 06:57:19', NULL, '2021-09-29 07:16:34', NULL, NULL, '2021-09-29 07:16:34', 0, NULL, '0', NULL),
-(4, 'CAB586', 'Royo Pool', 'CAB586', NULL, '', 2, 14, 1, NULL, 1, 1, 1, 0, NULL, NULL, 0, 0, 0, 0, 0, NULL, 0, '2021-09-29 06:58:10', NULL, '2021-09-29 07:16:34', NULL, NULL, '2021-09-29 07:16:34', 0, NULL, '0', NULL),
-(5, 'CAB587', 'Royo Moto', 'CAB587', NULL, '', 2, 15, 1, NULL, 1, 1, 1, 0, NULL, NULL, 0, 0, 0, 0, 0, NULL, 0, '2021-09-29 06:59:24', NULL, '2021-09-29 07:16:39', NULL, NULL, '2021-09-29 07:16:39', 0, NULL, '0', NULL),
-(6, 'CAB588', 'Royo Auto', 'CAB588', NULL, '', 2, 16, 1, NULL, 1, 1, 1, 0, NULL, NULL, 0, 0, 0, 0, 0, NULL, 0, '2021-09-29 06:59:45', NULL, '2021-09-29 07:16:43', NULL, NULL, '2021-09-29 07:16:43', 0, NULL, '0', NULL),
-(7, 'Small1', NULL, 'small1', NULL, NULL, 1, 2, 1, NULL, 1, 1, 1, 0, NULL, NULL, 0, 0, 0, 0, 0, NULL, 0, '2021-09-29 07:02:07', '2021-09-29 07:01:37', '2021-09-29 07:02:07', NULL, NULL, NULL, 0, NULL, '0', NULL),
-(8, 'Medium2', NULL, 'medium2', NULL, NULL, 1, 2, 1, NULL, 1, 1, 1, 0, NULL, NULL, 0, 0, 0, 0, 0, NULL, 0, '2021-09-29 07:02:55', '2021-09-29 07:02:25', '2021-09-29 07:02:55', NULL, NULL, NULL, 0, NULL, '0', NULL),
-(9, 'Large3', NULL, 'large3', NULL, NULL, 1, 2, 1, NULL, 1, 1, 1, 0, NULL, NULL, 0, 0, 0, 0, 0, NULL, 0, '2021-09-29 07:03:30', '2021-09-29 07:03:07', '2021-09-29 07:03:30', NULL, NULL, NULL, 0, NULL, '0', NULL);
 
 -- --------------------------------------------------------
 
@@ -400,3 +385,12 @@ INSERT INTO `cab_booking_layout_transaltions` (`id`, `title`, `cab_booking_layou
 (5, NULL, 5, 1, '2021-09-29 07:05:19', '2021-09-29 07:05:19', NULL),
 (6, NULL, 6, 1, '2021-09-29 07:05:19', '2021-09-29 07:05:19', NULL),
 (7, NULL, 7, 1, '2021-09-29 07:05:19', '2021-09-29 07:05:19', NULL);
+
+
+
+
+
+UPDATE `client_preferences` SET `business_type` = 'taxi' WHERE `client_preferences`.`id` = 1;
+
+
+UPDATE `client_preferences` SET `business_type` = 'taxi' WHERE `client_preferences`.`id` = 1;

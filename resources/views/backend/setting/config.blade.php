@@ -1014,6 +1014,34 @@
                      </table>
                   </div>
                </div>
+
+
+               <div class="card-box mb-0 pb-2">
+                  <h4 class="header-title text-uppercase">{{ __("Android/IOS Link") }}</h4>
+                
+                  <div class="table-responsive mt-3 mb-1">
+                     <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                        <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
+                        @csrf
+                        <div class="card-box mb-0">
+                           <div class="d-flex align-items-center justify-content-end">
+                              <!-- <h4 class="header-title mb-0">Refer and Earn</h4> -->
+                              <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                           </div>
+                           <div class="row mt-2">
+                              <div class="col-xl-6">
+                                 <label class="primaryCurText">{{__('Android App Link')}}</label>
+                                 <input class="form-control" type="text" id="android_app_link" name="android_app_link" value="{{ old('android_app_link', $preference->android_app_link  ?? '')}}">
+                              </div>
+                              <div class="col-xl-6">
+                                 <label class="primaryCurText">{{__('IOS App Link')}}</label>
+                                 <input class="form-control" type="text" id="ios_link" name="ios_link" value="{{ old('ios_link', $preference->ios_link  ?? '')}}" >
+                              </div>
+                           </div>
+                        </div>
+                     </form>
+                  </div>
+               </div>
             </div>
          </div>
       </div>

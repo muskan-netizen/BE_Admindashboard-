@@ -39,25 +39,37 @@ class OrderController extends FrontController
         'vendors.dineInTable.translations' => function ($qry) use ($langId) {
             $qry->where('language_id', $langId);
         }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address'])
-            ->whereHas('vendors', function ($q) {
-                $q->where('order_status_option_id', 6);
-            })
-            ->where('orders.user_id', $user->id)
-            ->orderBy('orders.id', 'DESC')->paginate(10);
+        ->whereHas('vendors', function ($q) {
+            $q->where('order_status_option_id', 6);
+        })
+        ->where(function ($q1) {
+            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+            $q1->orWhere(function ($q2) {
+                $q2->where('payment_option_id', 1);
+            });
+        })
+        ->where('orders.user_id', $user->id)
+        ->orderBy('orders.id', 'DESC')->paginate(10);
+
         $activeOrders = Order::with(['vendors' => function ($q) {
             $q->where('order_status_option_id', '!=', 6);
         },
         'vendors.dineInTable.translations' => function ($qry) use ($langId) {
             $qry->where('language_id', $langId);
         }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address'])
-            ->whereHas('vendors', function ($q) {
-                $q->where('order_status_option_id', '!=', 6);
-            })
-            ->where('orders.user_id', $user->id)
-            ->orderBy('orders.id', 'DESC')->paginate(10);
+        ->whereHas('vendors', function ($q) {
+            $q->where('order_status_option_id', '!=', 6);
+        })
+        ->where(function ($q1) {
+            $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+            $q1->orWhere(function ($q2) {
+                $q2->where('payment_option_id', 1);
+            });
+        })
+        ->where('orders.user_id', $user->id)
+        ->orderBy('orders.id', 'DESC')->paginate(10);
         foreach ($activeOrders as $order) {
             foreach ($order->vendors as $vendor) {
-                // dd($vendor->toArray());
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
                 foreach ($vendor->products as $product) {
@@ -113,8 +125,9 @@ class OrderController extends FrontController
             'vendors' => function ($q) {
                 $q->whereHas('products.productReturn');
             }
-        ])->whereHas('vendors.products.productReturn')->whereHas('vendors.products.productReturn')
-            ->where('orders.user_id', $user->id)->orderBy('orders.id', 'DESC')->paginate(20);
+        ])
+        ->whereHas('vendors.products.productReturn')
+        ->where('orders.user_id', $user->id)->orderBy('orders.id', 'DESC')->paginate(20);
         foreach ($returnOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 foreach ($vendor->products as $product) {
@@ -480,8 +493,11 @@ class OrderController extends FrontController
         $order_response = $this->orderSave($request, "1");
         $response = $order_response->getData();
         if ($response->status == 'Success') {
-            # if vendor selected auto accept
-            $autoaccept = $this->autoAcceptOrderIfOn($response->data->id);
+            # if payment type cash on delivery or payment status is 'Paid'
+            if( ($response->data->payment_option_id == 1) || (($response->data->payment_option_id != 1) && ($response->data->payment_status == 1)) ){
+                # if vendor selected auto accept
+                $autoaccept = $this->autoAcceptOrderIfOn($response->data->id);
+            }
             return $this->successResponse($response->data, 'Order placed successfully.', 201);
         } else {
             return $this->errorResponse($response->message, 400);
@@ -768,10 +784,10 @@ class OrderController extends FrontController
             $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
             $order->payable_amount = $payable_amount;
-            $order->save();
             if ( ($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id))) ) {
                 $order->payment_status = 1;
             }
+            $order->save();
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $this->sendSuccessEmail($request, $order, $vendor_id);
             }

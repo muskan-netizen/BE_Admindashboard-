@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{AppStyling, AppStylingOption};
+use App\Models\{AppStyling, AppStylingOption,ClientPreference};
 
 class AppStylingController extends BaseController
 {
@@ -40,10 +40,25 @@ class AppStylingController extends BaseController
         if ($tab_style) {
             $tab_style_options = AppStylingOption::where('app_styling_id', $tab_style->id)->get();
         }
-        $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
-        if ($homepage_style) {
-            $homepage_style_options = AppStylingOption::where('app_styling_id', $homepage_style->id)->get();
+
+
+        $client_preferences = ClientPreference::first();
+
+        switch($client_preferences->business_type){
+            case "taxi":    # if business type is taxi
+            $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
+            if ($homepage_style) {
+                $homepage_style_options = AppStylingOption::where('image', 'home_six.png')->get();
+            }
+            break;
+            default:
+            $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
+            if ($homepage_style) {
+                $homepage_style_options = AppStylingOption::where('app_styling_id', $homepage_style->id)->get();
+            }
         }
+
+      
         $primary_color = AppStyling::where('name', 'Primary Color')->first();
         if ($primary_color) {
             $primary_color_options = AppStylingOption::where('app_styling_id', $primary_color->id)->first();

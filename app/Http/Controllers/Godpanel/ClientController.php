@@ -378,15 +378,19 @@ class ClientController extends Controller{
                 CabBookingLayout::on($schemaName)->truncate();
                 CabBookingLayoutCategory::on($schemaName)->truncate();
                 CabBookingLayoutTranslation::on($schemaName)->truncate();
-                DB::connection($schemaName)->statement("SET foreign_key_checks=1");
-            
+               
                 $sql_file = $request->business_type;
-                DB::connection($schemaName)->unprepared(file_get_contents($sql_file));
 
-                $busines = ucwords(str_replace("sql_files", " ", $request->business_type));
+
+                
+
+                DB::connection($schemaName)->unprepared(file_get_contents((asset('sql_files/'.$sql_file))));
+
+                $busines = ucwords(str_replace("_", " ", $request->business_type));
 
                 DB::connection($schemaName)->commit();
-              
+                DB::connection($schemaName)->statement("SET foreign_key_checks=1");
+            
                 return redirect()->route('client.index')->with('success', $busines.' Data added successfully!');
            
             }

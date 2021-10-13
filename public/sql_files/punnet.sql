@@ -554,16 +554,6 @@ INSERT INTO `variant_options` (`id`, `title`, `variant_id`, `hexacode`, `positio
 (9, 'Xiaomi', 3, '', 1, NULL, NULL);
 
 
-INSERT INTO `variant_option_translations` (`id`, `title`, `variant_option_id`, `language_id`, `created_at`, `updated_at`) VALUES
-(1, 'Small', 1, 1, NULL, '2021-10-04 15:45:43'),
-(2, 'White', 2, 1, NULL, '2021-10-04 15:45:43'),
-(3, 'Black', 3, 1, NULL, '2021-10-04 15:45:43'),
-(4, 'Grey', 4, 1, NULL, '2021-10-04 15:45:43'),
-(5, 'Medium', 5, 1, NULL, '2021-10-04 15:45:43'),
-(6, 'Large', 6, 1, NULL, '2021-10-04 15:45:43'),
-(7, 'IPhone', 7, 1, NULL, '2021-10-04 15:45:43'),
-(8, 'Samsung', 8, 1, NULL, '2021-10-04 15:45:43'),
-(9, 'Xiaomi', 9, 1, NULL, '2021-10-04 15:45:43');
 
 
 -- --------------------------------------------------------

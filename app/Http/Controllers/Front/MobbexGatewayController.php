@@ -12,7 +12,7 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\OrderController;
-use App\Models\{User, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Order, Payment, PaymentOption, Client, ClientPreference, ClientCurrency};
+use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor};
 
 class MobbexGatewayController extends FrontController
 {
@@ -128,6 +128,11 @@ class MobbexGatewayController extends FrontController
                             'transaction_id' => $transactionId,
                             'balance_transaction' => $payment_details['total'],
                         ]);
+
+                        // Auto accept order
+                        $orderController = new OrderController();
+                        $orderController->autoAcceptOrderIfOn($order->id);
+
                         // Remove cart
                         $user = $data['customer'];
                         Cart::where('id', $user['cart_id'])->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
@@ -137,21 +142,31 @@ class MobbexGatewayController extends FrontController
                         CartProductPrescription::where('cart_id', $user['cart_id'])->delete();
 
                         // Send Notification
-                        $user_admins = User::where(function ($query) {
-                            $query->where(['is_superadmin' => 1]);
-                        })->pluck('id')->toArray();
-                        $user_vendors = [];
-                        if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
-                            $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
+                        if (!empty($order->vendors)) {
+                            foreach ($order->vendors as $vendor_value) {
+                                $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                                $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                                $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                            }
                         }
-                        $order->admins = array_unique(array_merge($user_admins, $user_vendors));
-                        $orderController = new OrderController();
-                        $orderController->sendOrderPushNotificationVendors($order->admins, $order);
+                        $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                        $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                        $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
 
                         // Send Email
                         $this->successMail();
                     }
                 }else{
+                    $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                    foreach($order_products as $order_prod){
+                        OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                    }
+                    OrderProduct::where('order_id', $order->id)->delete();
+                    OrderProductPrescription::where('order_id', $order->id)->delete();
+                    VendorOrderStatus::where('order_id', $order->id)->delete();
+                    OrderVendor::where('order_id', $order->id)->delete();
+                    OrderTax::where('order_id', $order->id)->delete();
+                    Order::where('id', $order->id)->delete();
                     $this->failMail();
                 }
             }

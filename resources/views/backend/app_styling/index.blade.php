@@ -116,20 +116,20 @@
                     <h4 class="header-title">{{ __("Home Page Style") }}</h4>
                     <div class="row">
                         @foreach($homepage_style_options as $homepage_style)
-                        <div class="col-sm-6 col-md-4 col-lg-3">
-                            <div class="card mb-0">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-sm-12 custom-control custom-radio radio_new p-0">
-                                            <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
-                                            <label class="custom-control-label" for="{{$homepage_style->id}}">
-                                                <img class="card-img-top img-fluid" src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap">
-                                            </label>
+                                <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="card mb-0">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-sm-12 custom-control custom-radio radio_new p-0">
+                                                    <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
+                                                    <label class="custom-control-label" for="{{$homepage_style->id}}">
+                                                        <img class="card-img-top img-fluid" src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap">
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
                         @endforeach
                     </div>
                 </div>

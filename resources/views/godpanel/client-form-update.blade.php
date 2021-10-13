@@ -105,16 +105,16 @@
                                     <label for="languages">Business Type </label>
                                     <select class="form-control" id="business_type" name="business_type">
                                         <option value=""></option>
-                                        <option value="sql_files\grub.sql">Grub - Food Delivery</option>
-                                        <option value="sql_files\homeric.sql">Homeric - Home Service </option>
-                                        <option value="sql_files\gokab.sql">GoKab - Cab Booking </option>
-                                        <option value="sql_files\ace.sql">Ace - Super App </option>
-                                        {{-- <option value="sql_files\punnet.sql">Punnet - Single Vendor Food Delivery </option> --}}
-                                        <option value="sql_files\suel.sql">Suel - Single Vendor Ecommerce </option>
-                                        <option value="sql_files\voltaic.sql">Voltaic - Ecommerce </option>
-                                        <option value="sql_files/gusto.sql">Gusto - Grocery Delivery </option>
-                                        <option value="sql_files\elixir.sql">Elixir - Pharmacy Delivery </option>
-                                        {{-- <option value="sql_files\zest.sql">Zest - Pickup & Delivery </option> --}}
+                                        <option value="grub.sql">Grub - Food Delivery</option>
+                                        <option value="homeric.sql">Homeric - Home Service </option>
+                                        <option value="gokab.sql">GoKab - Cab Booking </option>
+                                        <option value="ace.sql">Ace - Super App </option>
+                                        <option value="punnet.sql">Punnet - Single Vendor Food Delivery </option>
+                                        <option value="suel.sql">Suel - Single Vendor Ecommerce </option>
+                                        <option value="voltaic.sql">Voltaic - Ecommerce </option>
+                                        <option value="gusto.sql">Gusto - Grocery Delivery </option>
+                                        <option value="elixir.sql">Elixir - Pharmacy Delivery </option>
+                                        <option value="zest.sql">Zest - Pickup & Delivery </option>
                                     </select>
                                 </div>    
                             </div>

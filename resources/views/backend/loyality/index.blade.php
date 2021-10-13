@@ -37,7 +37,11 @@
                                         <div class="form-group mb-0">
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
-                                                    <span class="input-group-text primaryKey" id="basic-addon1"></span>
+                                                    <span class="input-group-text primaryKey" id="basic-addon1">
+                                                        @if(isset($client_cur) && !empty($client_cur->currency))
+                                                            {{$client_cur->currency->symbol ?? ''}}
+                                                        @endif
+                                                    </span>
                                                 </div>
                                                 <input type="text" onkeypress="return isNumberKey(event);" class="form-control" name="redeem_points_per_primary_currency" id="redeem_points_per_primary_currency" placeholder="Value" aria-label="Username" aria-describedby="basic-addon1">
                                             </div>

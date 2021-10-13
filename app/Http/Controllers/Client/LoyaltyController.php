@@ -23,9 +23,10 @@ class LoyaltyController extends BaseController
         $status = 0;
         $client_preferences = ClientPreference::first();
         $loyaltycards = LoyaltyCard::where('status', '!=', '2')->get();
+        $client_cur = ClientCurrency::where('is_primary',1)->first();
         // dd($loyaltycards->toArray());
         $status = $client_preferences ? $client_preferences->loyalty_check : 0;
-        return view('backend/loyality/index')->with(['loyaltycards' => $loyaltycards, 'status' => $status]);
+        return view('backend/loyality/index')->with(['loyaltycards' => $loyaltycards, 'status' => $status,'client_cur' => $client_cur]);
     }
 
     /**

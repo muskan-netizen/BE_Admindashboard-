@@ -75,12 +75,18 @@
                                         </div> 
                                     </div>
                                     <div class="col-md-6 mb-2">
+                                        @if(isset($client_preference_detail->ios_link) && !empty($client_preference_detail->ios_link))
                                         <div class="text-center mb-3">
-                                            <a href="#" target="_blank"><img src="{{asset('assets/images/iosstore.png')}}" alt="image" > </a>
+                                            <a href="{{ $client_preference_detail->ios_link }}" target="_blank"><img src="{{asset('assets/images/iosstore.png')}}" alt="image" > </a>
                                         </div>
+                                        @endif
+
+                                        @if(isset($client_preference_detail->android_app_link) && !empty($client_preference_detail->android_app_link))
                                         <div class="text-center">
-                                            <a href="#" target="_blank"><img src="{{asset('assets/images/playstore.png')}}" alt="image" > </a>
+                                            <a href="{{ $client_preference_detail->android_app_link }}" target="_blank"><img src="{{asset('assets/images/playstore.png')}}" alt="image" > </a>
                                         </div>
+                                        @endif
+
                                     </div>
                                 </div>                              
                             </div>
