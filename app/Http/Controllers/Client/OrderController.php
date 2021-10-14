@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use Auth;
+use Session;
 use App\Models\Tax;
 use App\Models\Order;
 use App\Models\User;
@@ -10,7 +11,7 @@ use App\Models\VendorOrderDispatcherStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{OrderStatusOption,DispatcherStatusOption, VendorOrderStatus,ClientPreference, NotificationTemplate, OrderProduct,OrderVendor,UserAddress,Vendor,OrderReturnRequest, UserDevice, UserVendor};
+use App\Models\{OrderStatusOption,DispatcherStatusOption, VendorOrderStatus,ClientPreference, NotificationTemplate, OrderProduct,OrderVendor,UserAddress,Vendor,OrderReturnRequest, UserDevice, UserVendor, LuxuryOption};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Transaction;
@@ -104,6 +105,7 @@ class OrderController extends BaseController{
 
     public function postOrderFilter(Request $request, $domain = ''){
         $user = Auth::user();
+        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
         $orders = Order::with(['vendors.products','vendors.status','orderStatusVendor', 'address','user'])->orderBy('id', 'DESC');
         if (Auth::user()->is_superadmin == 0) {
@@ -194,6 +196,18 @@ class OrderController extends BaseController{
                 $vendor->product_total_count = $product_total_count;
                 $vendor->final_amount = $vendor->taxable_amount+ $product_total_count;
             }
+            $luxury_option_name = '';
+            if($order->luxury_option_id > 0){
+                $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+                if($luxury_option->title == 'takeaway'){
+                    $luxury_option_name = getNomenclatureName('Takeaway', $langId, false);
+                }elseif($luxury_option->title == 'dine_in'){
+                    $luxury_option_name = 'Dine-In';
+                }else{
+                    $luxury_option_name = 'Delivery';
+                }
+            }
+            $order->luxury_option_name = $luxury_option_name;
             if($order->vendors->count() == 0){
                 $orders->forget($key);
             }

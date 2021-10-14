@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{AppStyling, AppStylingOption, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice};
 use Kutia\Larafirebase\Facades\Larafirebase;
@@ -174,16 +175,26 @@ class CustomerAuthController extends FrontController
     /**     * Display register Form     */
     public function register(SignupRequest $req, $domain = ''){
         try {
+            if( (empty($req->email)) && (empty($req->phone_number)) ){
+                $validator = $req->validate([
+                    'email'  => 'required',
+                    'phone_number'  => 'required'
+                ],[
+                    "email.required" => __('The email or phone number field is required.'),
+                    "phone_number.required" => __('The email or phone number field is required.'),
+                ]);
+            }
             $user = new User();
             $county = Country::where('code', strtoupper($req->countryData))->first();
             $phoneCode = mt_rand(100000, 999999);
             $emailCode = mt_rand(100000, 999999);
             $sendTime = \Carbon\Carbon::now()->addMinutes(10)->toDateTimeString();
+            $email = (!empty($req->email)) ? $req->email : ('ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com');
             $user->type = 1;
             $user->status = 1;
             $user->role_id = 1;
             $user->name = $req->name;
-            $user->email = $req->email;
+            $user->email = $email;
             $user->is_email_verified = 0;
             $user->is_phone_verified = 0;
             $user->country_id = $county->id;
@@ -526,11 +537,12 @@ class CustomerAuthController extends FrontController
             $user = new User();
             $country = Country::where('code', strtoupper($req->countryData))->first();
             // $emailCode = mt_rand(100000, 999999);
+            $email = 'ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com';
             $user->type = 1;
             $user->status = 1;
             $user->role_id = 1;
             $user->name = 'RO'.substr($req->phone_number, -6);
-            $user->email = $req->phone_number; //$req->email;
+            $user->email = $email; //$req->email;
             $user->is_email_verified = 0;
             $user->is_phone_verified = 0;
             $user->country_id = $country->id;

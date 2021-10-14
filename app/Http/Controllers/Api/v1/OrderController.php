@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\OrderStoreRequest;
 use Log;
-use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor};
+use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption};
 
 class OrderController extends BaseController {
     use ApiResponser;
@@ -112,6 +112,8 @@ class OrderController extends BaseController {
                 if (!$user_address) {
                     return response()->json(['error' => 'Invalid address id.'], 404);
                 }
+                $action = ($request->has('type')) ? $request->type : 'delivery';
+                $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->first();
                 if ($cart) {
                     $loyalty_points_used;
@@ -166,19 +168,21 @@ class OrderController extends BaseController {
                                     $vendor_payable_amount = $vendor_payable_amount;
                                 }
                             }
-                            if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) {
-                                $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
-                                if (!empty($delivery_fee) && $delivery_count == 0) {
-                                    $delivery_count = 1;
-                                    $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2, '.', '');
-                                    // $payable_amount = $payable_amount + $delivery_fee;
-                                    $delivery_fee_charges = $delivery_fee;
-                                    $latitude = $request->header('latitude');
-                                    $longitude = $request->header('longitude');
-                                    $vendor_cart_product->vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor_cart_product->vendor, $client_preference);
-                                    $order_vendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
-                                    if($vendor_cart_product->vendor->timeofLineOfSightDistance > 0){
-                                        $order_vendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $order_vendor->order_pre_time;
+                            if ($action == 'delivery') {
+                                if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) {
+                                    $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
+                                    if (!empty($delivery_fee) && $delivery_count == 0) {
+                                        $delivery_count = 1;
+                                        $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2, '.', '');
+                                        // $payable_amount = $payable_amount + $delivery_fee;
+                                        $delivery_fee_charges = $delivery_fee;
+                                        $latitude = $request->header('latitude');
+                                        $longitude = $request->header('longitude');
+                                        $vendor_cart_product->vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor_cart_product->vendor, $client_preference);
+                                        $order_vendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
+                                        if($vendor_cart_product->vendor->timeofLineOfSightDistance > 0){
+                                            $order_vendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $order_vendor->order_pre_time;
+                                        }
                                     }
                                 }
                             }
@@ -311,6 +315,7 @@ class OrderController extends BaseController {
                     $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                     $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
                     $order->subscription_discount = $total_subscription_discount;
+                    $order->luxury_option_id = $luxury_option->id;
                     $order->payable_amount = $payable_amount;
                     if ( ($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id))) ) {
                         $order->payment_status = 1;
@@ -802,6 +807,18 @@ class OrderController extends BaseController {
             if(!empty($order->orderDetail->scheduled_date_time)){
                 $order->scheduled_date_time = convertDateTimeInTimeZone($order->orderDetail->scheduled_date_time, $user->timezone, 'M d, Y h:i A');
             }
+            $luxury_option_name = '';
+            if($order->orderDetail->luxury_option_id > 0){
+                $luxury_option = LuxuryOption::where('id', $order->orderDetail->luxury_option_id)->first();
+                if($luxury_option->title == 'takeaway'){
+                    $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
+                }elseif($luxury_option->title == 'dine_in'){
+                    $luxury_option_name = 'Dine-In';
+                }else{
+                    $luxury_option_name = 'Delivery';
+                }
+            }
+            $order->luxury_option_name = $luxury_option_name;
             $order->product_details = $product_details;
             $order->item_count = $order_item_count;
             unset($order->user);
@@ -914,6 +931,18 @@ class OrderController extends BaseController {
                 if(!empty($order->scheduled_date_time)){
                     $order->scheduled_date_time = convertDateTimeInTimeZone($order->scheduled_date_time, $user->timezone, 'M d, Y h:i A');
                 }
+                $luxury_option_name = '';
+                if($order->luxury_option_id > 0){
+                    $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+                    if($luxury_option->title == 'takeaway'){
+                        $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
+                    }elseif($luxury_option->title == 'dine_in'){
+                        $luxury_option_name = 'Dine-In';
+                    }else{
+                        $luxury_option_name = 'Delivery';
+                    }
+                }
+                $order->luxury_option_name = $luxury_option_name;
     		    $order->order_item_count = $order_item_count;
             }
             return $this->successResponse($order, null, 201);

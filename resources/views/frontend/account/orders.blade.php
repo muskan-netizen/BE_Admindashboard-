@@ -150,12 +150,25 @@ $timezone = Auth::user()->timezone;
                                                                 $product_total_count = $product_subtotal_amount = $product_taxable_amount = 0;
                                                             @endphp
                                                             <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0">
-                                                                @if(($vendor->delivery_fee > 0) || (!empty($order->scheduled_date_time)))
+                                                                @if(($vendor->delivery_fee > 0) || (!empty($order->scheduled_date_time)) || ($order->luxury_option_id > 0))
                                                                     <div class="progress-order font-12">
+                                                                        @if($order->luxury_option_id > 0)
+                                                                            @php
+                                                                                $luxury_option = \App\Models\LuxuryOption::where('id', $order->luxury_option_id)->first();
+                                                                                if($luxury_option->title == 'takeaway'){
+                                                                                    $luxury_option_name = getNomenclatureName('Takeaway', Session::get('customerLanguage'), false);
+                                                                                }elseif($luxury_option->title == 'dine_in'){
+                                                                                    $luxury_option_name = 'Dine-In';
+                                                                                }else{
+                                                                                    $luxury_option_name = 'Delivery';
+                                                                                }
+                                                                            @endphp
+                                                                            <span class="badge badge-info ml-2">{{$luxury_option_name}}</span>
+                                                                        @endif
                                                                         @if(!empty($order->scheduled_date_time))
                                                                             <span class="badge badge-success ml-2">Scheduled</span>
-                                                                            <span class="ml-2">Your order will arrive by {{convertDateTimeInTimeZone($order->scheduled_date_time, $timezone, 'M d, Y h:i A')}}</span>
-                                                                        @else
+                                                                            <span class="ml-2">{{convertDateTimeInTimeZone($order->scheduled_date_time, $timezone, 'M d, Y h:i A')}}</span>
+                                                                        @elseif(!empty($vendor->ETA))
                                                                             <span class="ml-2">Your order will arrive by {{$vendor->ETA}}</span>
                                                                         @endif
                                                                     </div>

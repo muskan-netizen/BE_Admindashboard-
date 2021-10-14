@@ -106,6 +106,21 @@ class CategoryController extends BaseController
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($user->latitude) && ($user->longitude)) {
                     $vendor = $this->getVendorDistanceWithTime($user->latitude, $user->longitude, $vendor, $preferences);
                 }
+                $vendor->is_vendor_closed = 0;
+                if ($vendor->show_slot == 0) {
+                    if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
+                        $vendor->is_vendor_closed = 1;
+                    } else {
+                        $vendor->is_vendor_closed = 0;
+                        if ($vendor->slotDate->isNotEmpty()) {
+                            $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
+                            $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
+                        } elseif ($vendor->slot->isNotEmpty()) {
+                            $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
+                            $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
+                        }
+                    }
+                }
             }
             return $vendorData;
         } elseif ($type == 'vendor' && $product_list == 'true') {

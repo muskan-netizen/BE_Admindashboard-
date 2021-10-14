@@ -15,7 +15,7 @@ use App\Models\Client as CP;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus, OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, VendorOrderDispatcherStatus, Page, DriverRegistrationDocument};
+use App\Models\{Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus, OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, VendorOrderDispatcherStatus, Page, DriverRegistrationDocument, LuxuryOption};
 use GuzzleHttp\Client as GCLIENT;
 
 class OrderController extends FrontController
@@ -509,6 +509,7 @@ class OrderController extends FrontController
             DB::beginTransaction();
             $preferences = ClientPreference::select('is_hyperlocal','Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier')->first();
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
+            $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (!empty($request->user_id))) {
                 $user = User::find($request->user_id);
@@ -783,6 +784,7 @@ class OrderController extends FrontController
             $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
             $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
+            $order->luxury_option_id = $luxury_option->id;
             $order->payable_amount = $payable_amount;
             if ( ($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id))) ) {
                 $order->payment_status = 1;

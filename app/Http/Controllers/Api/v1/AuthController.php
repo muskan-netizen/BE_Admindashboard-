@@ -1014,11 +1014,12 @@ class AuthController extends BaseController
             $user = new User();
             $country = Country::where('code', strtoupper($req->countryData))->first();
             // $emailCode = mt_rand(100000, 999999);
+            $email = 'ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com';
             $user->type = 1;
             $user->status = 1;
             $user->role_id = 1;
-            $user->name = 'RO' . substr($req->phone_number, -6);
-            $user->email = $req->phone_number; //$req->email;
+            $user->name = 'RO'.substr($req->phone_number, -6);
+            $user->email = $email; //$req->email;
             $user->is_email_verified = 0;
             $user->is_phone_verified = 0;
             $user->country_id = $country->id;
