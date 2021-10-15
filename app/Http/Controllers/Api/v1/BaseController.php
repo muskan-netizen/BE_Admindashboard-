@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, ClientPreference, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature};
+use App\Models\{Client, Category, Product, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature};
 
 class BaseController extends Controller{
     private $field_status = 2;
@@ -412,6 +412,23 @@ class BaseController extends Controller{
             $searchTerm = $result->translations->count() != 0 ? $result->translations->first()->name : ucfirst($searchTerm);
         }
         return $plural ? $searchTerm : rtrim($searchTerm, 's');
+    }
+
+    /* doller compare amount */
+    public function getDollarCompareAmount($amount, $customerCurrency='')
+    {
+        $user = Auth::user();
+        $customerCurrency = $user->currency ? $user->currency : '';
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        if(empty($customerCurrency)){
+            $clientCurrency = $primaryCurrency;
+        }else{
+            $clientCurrency = ClientCurrency::where('currency_id', $customerCurrency)->first();
+        }
+        $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
+        $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
+        $amount = number_format($amount, 2);
+        return $amount;
     }
 
 }

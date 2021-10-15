@@ -10,12 +10,13 @@ use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\v1\BaseController;
+use App\Http\Controllers\Api\v1\MobbexGatewayController;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, User, Payment, Transaction};
 
-class PaymentOptionController extends Controller{
+class PaymentOptionController extends BaseController{
     use ApiResponser;
     public $gateway;
 
@@ -23,7 +24,7 @@ class PaymentOptionController extends Controller{
         if($page == 'wallet'){
             $code = array('paypal', 'stripe');
         }else{
-            $code = array('cod', 'paypal', 'stripe');
+            $code = array('cod', 'paypal', 'stripe', 'mobbex');
         }
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'title', 'off_site']);
         return $this->successResponse($payment_options, '', 201);
@@ -40,10 +41,10 @@ class PaymentOptionController extends Controller{
             if(method_exists($this, $function)) {
                 if(!empty($request->action)){
                     $response = $this->$function($request); // call related gateway for payment processing
-                    $responseArray = $response->getOriginalContent();
-                    if($responseArray['status'] == 'Success'){
-                        if($gateway != 'paypal'){
-                            $request->transaction_id = $responseArray['data'];
+                    $responseData = $response->getData(); //getOriginalContent();
+                    if($responseData->status == 'Success'){
+                        if( ($gateway != 'paypal') && ($gateway != 'mobbex') ){
+                            $request->transaction_id = $responseData->data;
                             if($request->action == 'cart'){
                                 $orderResponse = $this->postPlaceOrder($request);
                                 return $orderResponse;
@@ -62,6 +63,11 @@ class PaymentOptionController extends Controller{
         }else{
             return $this->errorResponse("Invalid Gateway Request", 400);
         }
+    }
+
+    public function postPaymentVia_mobbex(Request $request){
+        $mobbex = new MobbexGatewayController();
+        return $mobbex->mobbexPurchase($request);
     }
 
     public function postPaymentVia_paypal(Request $request){

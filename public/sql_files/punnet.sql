@@ -1147,6 +1147,14 @@ INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sor
 (5, 'Salad', NULL, 'banner/2QvL8oecRrfR2uoURR0HfractaWHIPrTk0dOQE6U.png', 1, 3, 1, '2021-10-05 17:48:00', '2021-12-31 12:00:00', 17, NULL, 'category', '2021-10-05 12:18:42', '2021-10-11 10:30:29', 'banner/YcFQUvjkr6l1Bif1HxF49U2J7qirVx7yyv3em7g7.png'),
 (6, 'Italian', NULL, 'banner/pRWVx8LhTYrGb3fK0fcOv1lHNlovjCxgk48piwwn.png', 1, 2, 1, '2021-10-05 17:50:00', '2021-12-31 12:00:00', 15, NULL, 'category', '2021-10-05 12:21:57', '2021-10-11 10:11:12', 'banner/wPww1rOhkV6bcC4W7X0oTLHKNnoVHDIzz99ogEkJ.png');
 
+
+INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
+(4, 'Continental', NULL, 'banner/fM5TlTbnutPR7u4pfg5L30LQYlachfhCjIvOHiQu.png', 1, 1, 1, '2021-10-05 17:46:00', '2021-12-31 12:00:00', 14, NULL, 'category', '2021-10-05 12:16:54', '2021-10-11 10:10:46'),
+(5, 'Salad', NULL, 'banner/2QvL8oecRrfR2uoURR0HfractaWHIPrTk0dOQE6U.png', 1, 3, 1, '2021-10-05 17:48:00', '2021-12-31 12:00:00', 17, NULL, 'category', '2021-10-05 12:18:42', '2021-10-11 10:30:29'),
+(6, 'Italian', NULL, 'banner/pRWVx8LhTYrGb3fK0fcOv1lHNlovjCxgk48piwwn.png', 1, 2, 1, '2021-10-05 17:50:00', '2021-12-31 12:00:00', 15, NULL, 'category', '2021-10-05 12:21:57', '2021-10-11 10:11:12');
+
+
+
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, 'Vendors', 'vendors', 1, 0, NULL, '2021-10-04 15:14:43'),
 (2, 'Featured Products', 'featured_products', 2, 1, NULL, NULL),

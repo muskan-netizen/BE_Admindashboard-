@@ -108,7 +108,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                               {{-- <div class="col-md-6">
                                     <div class="form-group" id="countryInput">
                                         {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
                                         {!! Form::text('country', null, ['class' => 'form-control', 'placeholder' => __('Country')]) !!}
@@ -138,7 +138,7 @@
                                             <strong></strong>
                                         </span>
                                     </div>
-                                </div>
+                                </div>--}}
                                 <div class="col-md-6">
                                     <div class="form-group" id="tax_rateInput">
                                         {!! Form::label('title', __('Tax Rate'),['class' => 'control-label']) !!}

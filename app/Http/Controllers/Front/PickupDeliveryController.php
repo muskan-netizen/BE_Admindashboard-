@@ -83,6 +83,11 @@ class PickupDeliveryController extends FrontController{
             }
         }
         $product->loyalty_amount_saved = number_format((float)$loyalty_amount_saved, 2, '.', '') ??0.00;
+
+        if($product->loyalty_amount_saved > $product->tags_price)
+        $product->loyalty_amount_saved = $product->tags_price;
+
+
         return $this->successResponse($product);
     }
     # get all vehicles category by vendor

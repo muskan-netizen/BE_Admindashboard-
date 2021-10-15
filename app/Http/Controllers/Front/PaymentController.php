@@ -94,4 +94,9 @@ class PaymentController extends FrontController{
     {
         return view('frontend.account.checkout-success');
     }
+
+    public function getGatewayReturnResponse(Request $request)
+    {
+        return view('frontend.account.gatewayReturnResponse');
+    }
 }

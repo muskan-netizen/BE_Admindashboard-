@@ -203,12 +203,115 @@
         </div> 
 
     <% }); %>
-</script>   
+</script>
+
+<script type="text/template" id="recent_orders_template">
+    <% _.each(recent_orders, function(order, k){ %>
+        <% subtotal_order_price = total_order_price = total_tax_order_price = 0; %>
+        <% _.each(order.vendors, function(vendor, k){ %>
+        <%   product_total_count = product_subtotal_amount = product_taxable_amount = 0; %>
+        <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0 mt-3">
+            <% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){ %>
+                <div class="progress-order font-12">
+                <% if(order.scheduled_date_time){ %>
+                        <span class="badge badge-success ml-2">Scheduled</span>
+                        <span class="ml-2">Your order will arrive by <%= order.converted_scheduled_date_time %></span>
+                    <% } else { %>
+                        <span class="ml-2">Your order will arrive by <%= vendor.ETA %></span>
+                    <% } %>
+                </div>
+            <% } %>
+            <span class="left_arrow pulse"></span>
+            <div class="row">
+                <div class="col-5 col-sm-3">
+                    <h5 class="m-0">{{__('Order Status')}}</h5>
+                    <ul class="status_box mt-3 pl-0"> 
+                    <% if(vendor.order_status){ %>
+                        <li>
+                        <% if(vendor.order_status == 'placed'){ %>
+                                <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
+                        <% }else if(vendor.order_status == 'accepted'){ %>
+                                <img src="{{ asset('assets/images/payment_icon.svg') }}" alt="">
+                        <% } else if(vendor.order_status == 'processing'){ %>
+                                <img src="{{ asset('assets/images/customize_icon.svg') }}" alt="">
+                        <% } else if(vendor.order_status == 'out for delivery'){ %>
+                                <img src="{{ asset('assets/images/driver_icon.svg') }}" alt="">
+                        <% } %>
+                            <label class="m-0 in-progress"><%= (vendor.order_status).charAt(0).toUpperCase() + (vendor.order_status).slice(1) %></label>
+                        </li>
+                    <% } %>
+                    
+                    <% if(vendor.dispatch_traking_url){ %>
+                        <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
+                        <a href="{{route('front.booking.details')}}/<%= order.order_number %>" target="_blank">{{ __('Details') }}</a>
+                    <% } %>
+
+                    <% if(vendor.dineInTable){ %>
+                        <li>
+                            <h5 class="mb-1">{{ __('Dine-in') }}</h5>
+                            <h6 class="m-0"><%= vendor.dineInTableName %></h6>
+                            <h6 class="m-0">Category : <%=  vendor.dineInTableCategory %></h6>
+                            <h6 class="m-0">Capacity : <%= vendor.dineInTableCapacity %></h6>
+                        </li>
+                    <% } %>
+
+                    </ul>
+                </div>
+                <div class="col-7 col-sm-4">
+                    <ul class="product_list d-flex align-items-center p-0 flex-wrap m-0">
+                    <% _.each(vendor.products, function(product, k){ %>
+                            <% if(vendor.vendor_id == product.vendor_id){ %>
+                                <li class="text-center">
+                                    <img src="<%= product.image_url %>" alt="">
+                                    <span class="item_no position-absolute">x <%= product.quantity %></span>
+                                    <label class="items_price">{{Session::get('currencySymbol')}}<%= product.price  * product.pricedoller_compare %></label>
+                                </li>
+                                <%
+                                    product_total_price = product.price * product.doller_compare;
+                                    product_total_count += product.quantity * product_total_price;
+                                    product_taxable_amount += product.taxable_amount;
+                                    total_tax_order_price += product.taxable_amount;
+                                %>
+                            <% } %>
+                        <% }); %>
+                    </ul>
+                </div>
+                <div class="col-md-5 mt-md-0 mt-sm-2">
+                    <ul class="price_box_bottom m-0 p-0">
+                        <li class="d-flex align-items-center justify-content-between">
+                            <label class="m-0">{{__('Product Total')}}</label>
+                            <span>{{Session::get('currencySymbol')}} <%=(vendor.subtotal_amount)%></span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between">
+                            <label class="m-0">{{__('Coupon Discount')}}</label>
+                            <span>{{Session::get('currencySymbol')}} <%=(vendor.discount_amount)%></span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between">
+                            <label class="m-0">{{__('Delivery Fee')}}</label>
+                            <span>{{Session::get('currencySymbol')}} <%= (vendor.delivery_fee)%></span>
+                        </li>
+                        <li class="grand_total d-flex align-items-center justify-content-between">
+                            <label class="m-0">{{__('Amount')}}</label>
+                            <%
+                                product_subtotal_amount = product_total_count - vendor.discount_amount + vendor.delivery_fee;
+                                subtotal_order_price += product_subtotal_amount;
+                            %>
+                            <span>{{Session::get('currencySymbol')}} <%=(vendor.payable_amount)%></span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <% }); %>
+    <% }); %>
+</script>
 
 <section class="section-b-space p-t-0 pt-3 pt-md-4 ratio_asos d-none pb-0" id="our_vendor_main_div">
     <div class="vendors">
         @foreach($homePageLabels as $key => $homePageLabel)
-        @if($homePageLabel->slug == 'pickup_delivery')
+        @if($homePageLabel->slug == 'pickup_delivery') 
                 @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) 
                   @include('frontend.booking.cabbooking-single-module')
                 @endif 
@@ -269,7 +372,18 @@
         <div class="container render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
                 <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-0">
-                    <h2 class="h2-heading">{{ $homePageLabel->slug == 'vendors' ? getNomenclatureName('vendors', true) :  __($homePageLabel->title) }}</h2>
+                    <h2 class="h2-heading">
+                    @php    
+                    if($homePageLabel->slug == 'vendors'){
+                        echo getNomenclatureName('vendors', true);
+                    } elseif($homePageLabel->slug == 'recent_orders'){
+                        echo (!empty($homePageLabel->translations->first()->title))?$homePageLabel->translations->first()->title:"Your Recent Orders";
+                    } else {
+                        echo (!empty($homePageLabel->translations->first()->title))?$homePageLabel->translations->first()->title:$homePageLabel->title;
+                    }
+                    @endphp
+
+                    </h2>
                     @if($homePageLabel->slug == 'vendors')
                     <a class="btn btn-solid" href="{{route('vendor.all')}}">{{__('View More')}}</a>
                     @endif
@@ -279,6 +393,8 @@
                 <div class="col-12">
                     @if($homePageLabel->slug == 'vendors' || $homePageLabel->slug == 'trending_vendors')
                     <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+                    @elseif($homePageLabel->slug == 'recent_orders')
+                    <div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
                     @else
                     <div class="product-4 product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}"></div>
                     @endif

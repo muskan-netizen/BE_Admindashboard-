@@ -61,10 +61,10 @@
                                 </div>
                                 <div class="col-md-12 mb-3" id="phone_numberInput">
                                     <label for="validationCustom02">{{__('CONTACT NUMBER.')}}</label>
-                                    <input type="tel" class="form-control" name="phone_number" id="phone" value="">
+                                    <input type="tel" class="form-control" name="phone_number" id="phone" value="{{old('full_number')}}">
                                     <div class="invalid-feedback" id="phone_number_error"><strong></strong></div>
-                                    <input type="hidden" id="countryCode" name="country" value="">
-                                    <input type="hidden" id="dialCode" name="country_code" value="">
+                                    <input type="hidden" id="countryCode" name="country" value="{{ old('countryData') ? old('countryData') : 'us'}}">
+                                    <input type="hidden" id="dialCode" name="country_code" value="{{ old('dialCode') ? old('dialCode') : $client->country->phonecode }}">
                                 </div>
                                 <div class="col-md-12 mb-3" id="full_nameInput">
                                     <div class="form-group" id="typeInputEdit">

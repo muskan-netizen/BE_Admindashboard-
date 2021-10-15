@@ -1711,6 +1711,12 @@ INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sor
 (6, 'Italian', NULL, 'banner/3rv5FpfNUeePxlLaRmRywCnClfmNo7nzuwrdSvfk.png', 1, 2, 1, '2021-10-06 12:08:00', '2022-02-25 12:00:00', 16, NULL, 'category', '2021-10-06 06:38:37', '2021-10-11 10:51:12', 'banner/jz13PvkmcMyAOv5ucAOMvQifRTISgCyaZpjvlBVr.png');
 
 
+INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
+(3, 'Chinese', NULL, 'banner/hal2ZNmJCSoF8ijY3QDgYAVXKw9HhFy6wLNtGvpr.png', 1, 1, 1, '2021-10-05 16:51:00', '2021-12-31 12:00:00', 18, NULL, 'category', NULL, '2021-10-11 10:51:01'),
+(5, 'Beverages', NULL, 'banner/iIrzlu5rHvqTkMsnEBjrIzRlVOI54nyAUWg6tGN9.png', 1, 3, 1, '2021-10-05 17:19:00', '2021-12-31 12:00:00', 15, NULL, 'category', '2021-10-05 11:49:33', '2021-10-11 10:31:37'),
+(6, 'Italian', NULL, 'banner/3rv5FpfNUeePxlLaRmRywCnClfmNo7nzuwrdSvfk.png', 1, 2, 1, '2021-10-06 12:08:00', '2022-02-25 12:00:00', 16, NULL, 'category', '2021-10-06 06:38:37', '2021-10-11 10:51:12');
+
+
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, 'Vendors', 'vendors', 1, 1, NULL, '2021-10-08 14:59:45'),
 (2, 'Featured Products', 'featured_products', 2, 1, NULL, '2021-10-08 14:59:45'),

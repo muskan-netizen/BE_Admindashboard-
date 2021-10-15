@@ -22,28 +22,30 @@ $(document).ready(function () {
             longitude = $("#address-longitude").val();
         }
         getHomePage(latitude, longitude);
-    //     $(document).ready(function () {
-    //         $.ajax({
-    //             url: client_preferences_url,
-    //             type: "POST",
-    //             success: function (response) {
-    //                 if ($.cookie("age_restriction") != 1) {
-    //                     if (response.age_restriction == 1) {
-    //                         $('#age_restriction').modal({backdrop: 'static', keyboard: false});
-    //                     }
-    //                 }
-    //                 if (response.delivery_check == 1) {
-    //                     getHomePage("", "", "delivery");
-    //                 }
-    //                 else if (response.dinein_check == 1) {
-    //                     getHomePage("", "", "dine_in");
-    //                 }
-    //                 else {
-    //                     getHomePage("", "", "takeaway");
-    //                 }
-    //             },
-    //         });
-    //     });
+        $(document).ready(function () {
+            $.ajax({
+                url: client_preferences_url,
+                type: "POST",
+                success: function (response) {
+                    if ($.cookie("age_restriction") != 1) {
+                        if (response.age_restriction == 1) {
+                            $('#age_restriction').modal({backdrop: 'static', keyboard: false});
+                        }
+                    }
+                    // if (response.delivery_check == 1) {
+                    //     getHomePage("", "", "delivery");
+                    // }
+                    // else if (response.dinein_check == 1) {
+                    //     getHomePage("", "", "dine_in");
+                    // }
+                    // else {
+                    //     getHomePage("", "", "takeaway");
+                    // }
+                },
+            });
+        });
+
+    
     }
 
     $(".age_restriction_no").click(function () {
@@ -295,10 +297,11 @@ $(document).ready(function () {
                         $(".product-5").slick('destroy');
                         $(".brand-slider").slick('destroy');
                         $(".suppliers-slider").slick('destroy');
+                        $(".recent-orders").slick('destroy');
                         if ($('.vendor-product').html() != '') {
                             $('.vendor-product').slick('destroy');
                         }
-                        $(".slide-6, .product-4, .product-5, .vendor-product, .render_vendors, .render_brands").html('');
+                        $(".slide-6, .product-4, .product-5, .vendor-product, .render_vendors, .render_brands, .recent-orders").html('');
                         $("#new_products").html('');
                         $("#best_sellers").html('');
                         $("#featured_products").html('');
@@ -308,6 +311,7 @@ $(document).ready(function () {
                         let vendors_template = _.template($('#vendors_template').html());
                         let products_template = _.template($('#products_template').html());
                         let trending_vendors_template = _.template($('#trending_vendors_template').html());
+                        let recent_orders_template = _.template($('#recent_orders_template').html());
                         $(".render_brands").append(banner_template({ brands: response.data.brands, type: brand_language }));
                         $(".render_vendors").append(vendors_template({ vendors: response.data.vendors , type: vendor_language}));
                         $(".render_new_products").append(products_template({ products: response.data.new_products, type: new_product_language }));
@@ -315,6 +319,8 @@ $(document).ready(function () {
                         $(".render_featured_products").append(products_template({ products: response.data.feature_products, type: featured_product_language }));
                         $(".render_on_sale").append(products_template({ products: response.data.on_sale_products, type: on_sale_product_language }));
                         $(".render_trending_vendors").append(trending_vendors_template({ trending_vendors: response.data.trending_vendors , type: vendor_language}));
+                        $(".render_recent_orders").append(recent_orders_template({ recent_orders: response.data.active_orders}));
+                        
                         if (response.data.new_products.length > 0) {
                             $('.render_full_new_products').removeClass('d-none');
                         } else {
@@ -339,6 +345,11 @@ $(document).ready(function () {
                             $('#our_vendor_main_div').removeClass('d-none');
                         } else {
                             $('#our_vendor_main_div').addClass('d-none');
+                        }
+                        if (response.data.active_orders.length > 0) {
+                            $('.render_full_recent_orders').removeClass('d-none');
+                        } else {
+                            $('.render_full_recent_orders').addClass('d-none');
                         }
                         initializeSlider();
                     }

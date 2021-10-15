@@ -285,8 +285,8 @@ class VendorController extends BaseController{
             }
             $vendor->categoriesList = $categoriesList;
             $response['vendor'] = $vendor;
-            $response['products'] = $products;
-            $response['categories'] = ($vendor->vendor_templete_id == 5) ? $listData : $products;
+            $response['products'] = ($vendor->vendor_templete_id != 5) ? $products : [];
+            $response['categories'] = ($vendor->vendor_templete_id == 5) ? $listData : [];
             $response['filterData'] = $variantSets;
             return response()->json(['data' => $response]);
         } catch (Exception $e) {

@@ -16,6 +16,7 @@ Route::group(['prefix' => '/godpanel'], function () {
 		Route::get('dashboard','Godpanel\DashBoardController@index')->name('god.dashboard');
 		
 		Route::post('migrateDefaultData/{id}', 'Godpanel\ClientController@migrateDefaultData')->name('client.migrateDefaultData');
+		Route::post('singleVendorSetting/{id}', 'Godpanel\ClientController@singleVendorSetting')->name('client.update_single_vendor');
 		
 	});
 });

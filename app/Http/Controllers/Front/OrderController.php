@@ -1667,7 +1667,7 @@ class OrderController extends FrontController
         'vendors.products.addon.set.translation_one' => function ($q) use ($language_id) {
             $q->select('id', 'addon_id', 'title');
             $q->where('language_id', $language_id);
-        }])->select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee', 'total_amount', 'taxable_amount','created_at');
+        }])->select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee', 'total_amount', 'taxable_amount', 'wallet_amount_used', 'created_at');
         $order = $order->whereHas('vendors', function ($query) use ($vendor_id) {
             if(!empty($vendor_id)){
                 $query->where('vendor_id', $vendor_id);

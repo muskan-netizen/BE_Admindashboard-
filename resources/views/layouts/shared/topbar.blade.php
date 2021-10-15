@@ -173,11 +173,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <i class="fe-globe"></i>
                         <span>{{ __("Website") }}</span>
                     </a>
-
+                    @if(Auth::user()->is_superadmin == 1)
                     <a href="{{route('client.profile')}}" class="dropdown-item notify-item">
                         <i class="fe-user"></i>
                         <span>{{ __("My Account") }}</span>
                     </a>
+                    @endif
                     <a href="javascript:void(0)" class="dropdown-item notify-item" data-toggle="modal" data-target="#change_password">
                         <i class="fe-user"></i>
                         <span>{{ __("Change Password") }}</span>

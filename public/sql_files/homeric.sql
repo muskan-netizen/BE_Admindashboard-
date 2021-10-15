@@ -555,6 +555,12 @@ INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sor
 (4, 'home services 3', NULL, 'banner/pJA6aYGXt27Q6lXuirz0rH3fjPC9FhDzfqHzW2wW.jpg', 1, 2, 1, '2021-09-29 17:58:00', '2025-09-30 12:00:00', NULL, NULL, 'category', '2021-09-29 12:29:12', '2021-10-11 10:29:29', 'banner/h6gHMJfVd1YnSW7t2XFdzIDt6ZVkWqh5hZspIYWO.png');
 
 
+INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
+(2, 'Home services 1', NULL, 'banner/6VYX3rkzeAHONCxo9uXovfeTPpPdodXC3einIkn1.jpg', 1, 3, 1, '2021-09-29 17:56:00', '2024-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-10-11 10:29:39'),
+(3, 'home services2', NULL, 'banner/WXu2FODrtjOgbn1UWIg844On4BBgL7nRIecNl1Dc.jpg', 1, 1, 1, '2021-09-29 17:57:00', '2023-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-10-11 10:29:19'),
+(4, 'home services 3', NULL, 'banner/pJA6aYGXt27Q6lXuirz0rH3fjPC9FhDzfqHzW2wW.jpg', 1, 2, 1, '2021-09-29 17:58:00', '2025-09-30 12:00:00', NULL, NULL, 'category', '2021-09-29 12:29:12', '2021-10-11 10:29:29');
+
+
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, 'Vendors', 'vendors', 1, 0, NULL, '2021-10-04 12:36:47'),
 (2, 'Featured Products', 'featured_products', 2, 0, NULL, '2021-10-06 05:10:03'),

@@ -17,20 +17,22 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor,VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature};
+use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature};
 
-class HomeController extends BaseController{
+class HomeController extends BaseController
+{
     use ApiResponser;
 
     private $curLang = 0;
     private $field_status = 2;
 
     /** Return header data, client profile and configure data */
-    public function headerContent(Request $request){
+    public function headerContent(Request $request)
+    {
         try {
             $homeData = array();
             $langId = ($request->hasHeader('language')) ? $request->header('language') : 1;
-            $homeData['profile'] = Client::with(['preferences','country:id,name,code,phonecode'])->select('country_id', 'company_name', 'code', 'sub_domain', 'logo', 'company_address', 'phone_number', 'email')->first();
+            $homeData['profile'] = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('country_id', 'company_name', 'code', 'sub_domain', 'logo', 'company_address', 'phone_number', 'email')->first();
             $app_styling_detail = AppStyling::getSelectedData();
             foreach ($app_styling_detail as $app_styling) {
                 $key = $app_styling['key'];
@@ -42,31 +44,70 @@ class HomeController extends BaseController{
             $homeData['profile']->preferences->search_nomenclature = $search_nomenclature;
             $homeData['languages'] = ClientLanguage::with('language')->select('language_id', 'is_primary')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
             $banners = Banner::select("id", "name", "description", "image", "image_mobile", "link", 'redirect_category_id', 'redirect_vendor_id')
-                        ->where('status', 1)->where('validity_on', 1)
-                        ->where(function($q){
-                            $q->whereNull('start_date_time')->orWhere(function($q2){
-                                $q2->whereDate('start_date_time', '<=', Carbon::now())
-                                    ->whereDate('end_date_time', '>=', Carbon::now());
-                            });
-                        })->orderBy('sorting', 'asc')->get();
-            if($banners){
+                ->where('status', 1)->where('validity_on', 1)
+                ->where(function ($q) {
+                    $q->whereNull('start_date_time')->orWhere(function ($q2) {
+                        $q2->whereDate('start_date_time', '<=', Carbon::now())
+                            ->whereDate('end_date_time', '>=', Carbon::now());
+                    });
+                })->orderBy('sorting', 'asc')->get();
+            if ($banners) {
                 foreach ($banners as $key => $value) {
                     $bannerLink = '';
                     $is_show_category = null;
                     $vendor_name = null;
-                    if(!empty($value->link) && $value->link == 'category'){
+                    if (!empty($value->link) && $value->link == 'category') {
                         $bannerLink = $value->redirect_category_id;
-                        if($bannerLink){
+                        if ($bannerLink) {
                             $categoryData = Category::where('status', '!=', $this->field_status)->where('id', $value->redirect_category_id)->with('translation_one')->first();
                             $value->redirect_name = (($categoryData) && ($categoryData->translation_one)) ? $categoryData->translation_one->name : '';
                         }
                     }
-                    if(!empty($value->link) && $value->link == 'vendor'){
+                    if (!empty($value->link) && $value->link == 'vendor') {
                         $bannerLink = $value->redirect_vendor_id;
-                        if($bannerLink){
+                        if ($bannerLink) {
                             $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude')->where('status', 1)->where('id', $value->redirect_vendor_id)->first();
-                            if($vendorData){
-                                $vendorData->is_show_category = ($vendorData->vendor_templete_id == 2 || $vendorData->vendor_templete_id == 4 ) ? 1 : 0;
+                            if ($vendorData) {
+                                $vendorData->is_show_category = ($vendorData->vendor_templete_id == 2 || $vendorData->vendor_templete_id == 4) ? 1 : 0;
+                            }
+                            $is_show_category = (($vendorData) && ($vendorData->vendor_templete_id == 1)) ? 0 : 1;
+                            $value->is_show_category = $is_show_category;
+                            $value->redirect_name = $vendorData->name ?? '';
+                            $value->vendor = $vendorData;
+                        }
+                    }
+                    $value->redirect_to = ucwords($value->link);
+                    $value->redirect_id = $bannerLink;
+                    unset($value->redirect_category_id);
+                    unset($value->redirect_vendor_id);
+                }
+            }
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
+                ->where('status', 1)->where('validity_on', 1)
+                ->where(function ($q) {
+                    $q->whereNull('start_date_time')->orWhere(function ($q2) {
+                        $q2->whereDate('start_date_time', '<=', Carbon::now())
+                            ->whereDate('end_date_time', '>=', Carbon::now());
+                    });
+                })->orderBy('sorting', 'asc')->get();
+            if ($mobile_banners) {
+                foreach ($mobile_banners as $key => $value) {
+                    $bannerLink = '';
+                    $is_show_category = null;
+                    $vendor_name = null;
+                    if (!empty($value->link) && $value->link == 'category') {
+                        $bannerLink = $value->redirect_category_id;
+                        if ($bannerLink) {
+                            $categoryData = Category::where('status', '!=', $this->field_status)->where('id', $value->redirect_category_id)->with('translation_one')->first();
+                            $value->redirect_name = (($categoryData) && ($categoryData->translation_one)) ? $categoryData->translation_one->name : '';
+                        }
+                    }
+                    if (!empty($value->link) && $value->link == 'vendor') {
+                        $bannerLink = $value->redirect_vendor_id;
+                        if ($bannerLink) {
+                            $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude')->where('status', 1)->where('id', $value->redirect_vendor_id)->first();
+                            if ($vendorData) {
+                                $vendorData->is_show_category = ($vendorData->vendor_templete_id == 2 || $vendorData->vendor_templete_id == 4) ? 1 : 0;
                             }
                             $is_show_category = (($vendorData) && ($vendorData->vendor_templete_id == 1)) ? 0 : 1;
                             $value->is_show_category = $is_show_category;
@@ -81,9 +122,10 @@ class HomeController extends BaseController{
                 }
             }
             $homeData['banners'] = $banners;
+            $homeData['mobile_banners'] = $mobile_banners;
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
-            if($stripe_creds){
+            if ($stripe_creds) {
                 $creds_arr = json_decode($stripe_creds->credentials);
             }
             $homeData['profile']->preferences->stripe_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
@@ -96,7 +138,7 @@ class HomeController extends BaseController{
     /** return dashboard content like categories, vendors, brands, products     */
     public function homepage(Request $request)
     {
-        try{
+        try {
             $vends = [];
             $vends = [];
             $homeData = [];
@@ -104,70 +146,70 @@ class HomeController extends BaseController{
             $langId = $user->language;
             $currency_id = $user->currency;
             $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-            $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
+            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $latitude = $request->latitude;
             $longitude = $request->longitude;
             $user_geo[] = $latitude;
             $user_geo[] = $longitude;
             $paginate = $request->has('limit') ? $request->limit : 12;
             $type = 'delivery';
-            if($request->has('type') ){
-                if(empty($request->type)){
+            if ($request->has('type')) {
+                if (empty($request->type)) {
                     $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating');
-                }else{
+                } else {
                     $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating')->where($request->type, 1);
                     $type = $request->type;
                 }
-            }else{
+            } else {
                 $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating');
             }
-            if(($preferences) && ($preferences->is_hyperlocal == 1)){
-                if( (empty($latitude)) && (empty($longitude)) ){
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                if ((empty($latitude)) && (empty($longitude))) {
                     $address = $preferences->Default_location_name;
                     $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
                     $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
                     $request->request->add(['latitude' => $latitude, 'longitude' => $longitude, 'address' => $address]);
                 }
-                $vendorData = $vendorData->whereHas('serviceArea', function($query) use($latitude, $longitude){
-                        $query->select('vendor_id')
-                        ->whereRaw("ST_Contains(polygon, ST_GeomFromText('POINT(".$latitude." ".$longitude.")'))");
+                $vendorData = $vendorData->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                    $query->select('vendor_id')
+                        ->whereRaw("ST_Contains(polygon, ST_GeomFromText('POINT(" . $latitude . " " . $longitude . ")'))");
                 });
             }
-            $vendorData = $vendorData->with('slot','slotDate')->where('status', 1)->get();
-            
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get();
+
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
 
                 $vendor->is_vendor_closed = 0;
-                if($vendor->show_slot == 0){
-                    if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
+                if ($vendor->show_slot == 0) {
+                    if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
                         $vendor->is_vendor_closed = 1;
-                    }else{
+                    } else {
                         $vendor->is_vendor_closed = 0;
-                        if($vendor->slotDate->isNotEmpty()){
+                        if ($vendor->slotDate->isNotEmpty()) {
                             $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
                             $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
-                        }elseif($vendor->slot->isNotEmpty()){
+                        } elseif ($vendor->slot->isNotEmpty()) {
                             $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
                             $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
                         }
                     }
                 }
 
-                $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
+                $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4) ? 1 : 0;
 
                 $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();
                 $categoriesList = '';
-                foreach($vendorCategories as $key => $category){
-                    if($category->category){
-                        $categoriesList = $categoriesList . $category->category->translation_one->name??'';
-                        if( $key !=  $vendorCategories->count()-1 ){
+                foreach ($vendorCategories as $key => $category) {
+                    if ($category->category) {
+                        $categoriesList = $categoriesList . $category->category->translation_one->name ?? '';
+                        if ($key !=  $vendorCategories->count() - 1) {
                             $categoriesList = $categoriesList . ', ';
                         }
                     }
                 }
                 $vendor->categoriesList = $categoriesList;
-                
+
                 $vends[] = $vendor->id;
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                     $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences);
@@ -235,10 +277,10 @@ class HomeController extends BaseController{
             $homeData['on_sale_products'] = $on_sale_product_details;
             $homeData['new_products'] = $new_product_details;
             $homeData['featured_products'] = $feature_product_details;
-            $homeData['brands'] = Brand::with(['translation' => function($q) use($langId){
-                                    $q->select('brand_id', 'title')->where('language_id', $langId);
-                                }])->select('id', 'image', 'image_banner')->where('status', '!=', $this->field_status)
-                                ->orderBy('position', 'asc')->get();
+            $homeData['brands'] = Brand::with(['translation' => function ($q) use ($langId) {
+                $q->select('brand_id', 'title')->where('language_id', $langId);
+            }])->select('id', 'image', 'image_banner')->where('status', '!=', $this->field_status)
+                ->orderBy('position', 'asc')->get();
             $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
             return $this->successResponse($homeData);
@@ -292,26 +334,27 @@ class HomeController extends BaseController{
     public function productList($venderIds, $langId = 1, $currency = 147, $where = '')
     {
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
-        $products = Product::with(['media' => function($q){
-                            $q->groupBy('product_id');
-                        }, 'media.image',
-                        'translation' => function($q) use($langId){
-                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
-                        },
-                        'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
-                            $q->groupBy('product_id');
-                        },
-                    ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating')
-                    ->where('is_live', 1);
-        if($where !== ''){
+        $products = Product::with([
+            'media' => function ($q) {
+                $q->groupBy('product_id');
+            }, 'media.image',
+            'translation' => function ($q) use ($langId) {
+                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+            },
+            'variant' => function ($q) use ($langId) {
+                $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                $q->groupBy('product_id');
+            },
+        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating')
+            ->where('is_live', 1);
+        if ($where !== '') {
             $products = $products->where($where, 1);
         }
-        if(is_array($venderIds) && count($venderIds) > 0){
+        if (is_array($venderIds) && count($venderIds) > 0) {
             $products = $products->whereIn('vendor_id', $venderIds);
         }
         $products = $products->get();
-        if(!empty($products)){
+        if (!empty($products)) {
             foreach ($products as $key => $value) {
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = $clientCurrency->doller_compare;
@@ -328,46 +371,46 @@ class HomeController extends BaseController{
             $langId = Auth::user()->language;
             $curId = Auth::user()->language;
             $response = array();
-            if($for == 'all'){
+            if ($for == 'all') {
                 $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-                        ->leftjoin('types', 'types.id', 'categories.type_id')
-                        ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
-                        ->where('categories.id', '>', '1')
-                        ->where('categories.is_visible', 1)
-                        ->where('categories.status', '!=', 2)
-                        ->where('categories.is_core', 1)
-                        ->where('cts.language_id', $langId)
-                        ->where(function ($q) use ($keyword) {
-                            $q->where('cts.name', ' LIKE', '%' . $keyword . '%')
+                    ->leftjoin('types', 'types.id', 'categories.type_id')
+                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
+                    ->where('categories.id', '>', '1')
+                    ->where('categories.is_visible', 1)
+                    ->where('categories.status', '!=', 2)
+                    ->where('categories.is_core', 1)
+                    ->where('cts.language_id', $langId)
+                    ->where(function ($q) use ($keyword) {
+                        $q->where('cts.name', ' LIKE', '%' . $keyword . '%')
                             ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
                             ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
-                        })->orderBy('categories.parent_id', 'asc')
-                        ->orderBy('categories.position', 'asc')->get();
+                    })->orderBy('categories.parent_id', 'asc')
+                    ->orderBy('categories.position', 'asc')->get();
                 foreach ($categories as $category) {
                     $category->response_type = 'category';
-                    $category->image_url = $category->image['proxy_url'].'80/80'.$category->image['image_path'];
+                    $category->image_url = $category->image['proxy_url'] . '80/80' . $category->image['image_path'];
                     $response[] = $category;
                 }
 
                 $brands = Brand::join('brand_translations as bt', 'bt.brand_id', 'brands.id')
-                        ->select('brands.id', 'bt.title  as dataname', 'image')
-                        ->where('bt.title', 'LIKE', '%' . $keyword . '%')
-                        ->where('brands.status', '!=', '2')
-                        ->where('bt.language_id', $langId)
-                        ->orderBy('brands.position', 'asc')->get();
+                    ->select('brands.id', 'bt.title  as dataname', 'image')
+                    ->where('bt.title', 'LIKE', '%' . $keyword . '%')
+                    ->where('brands.status', '!=', '2')
+                    ->where('bt.language_id', $langId)
+                    ->orderBy('brands.position', 'asc')->get();
                 foreach ($brands as $brand) {
                     $brand->response_type = 'brand';
-                    $brand->image_url = $brand->image['proxy_url'].'80/80'.$brand->image['image_path'];
+                    $brand->image_url = $brand->image['proxy_url'] . '80/80' . $brand->image['image_path'];
                     $response[] = $brand;
                 }
 
-                $vendors = Vendor::select('id', 'name  as dataname', 'logo','slug', 'address');
+                $vendors = Vendor::select('id', 'name  as dataname', 'logo', 'slug', 'address');
                 $vendors = $vendors->where(function ($q) use ($keyword) {
-                                $q->where('name', 'LIKE', "%$keyword%")->orWhere('address', 'LIKE', '%' . $keyword . '%');
-                            })->where('status', 1)->get();
+                    $q->where('name', 'LIKE', "%$keyword%")->orWhere('address', 'LIKE', '%' . $keyword . '%');
+                })->where('status', 1)->get();
                 foreach ($vendors as $vendor) {
                     $vendor->response_type = 'vendor';
-                    $vendor->image_url = $vendor->logo['proxy_url'].'80/80'.$vendor->logo['image_path'];
+                    $vendor->image_url = $vendor->logo['proxy_url'] . '80/80' . $vendor->logo['image_path'];
                     $response[] = $vendor;
                 }
                 // $vendors  = Vendor::select('id', 'name  as dataname', 'address')->where(function ($q) use ($keyword) {
@@ -377,47 +420,47 @@ class HomeController extends BaseController{
                 //     $vendor->response_type = 'vendor';
                 //     // $response[] = $vendor;
                 // }
-                $products = Product::with(['category.categoryDetail.translation' => function($q) use($langId){
-                                $q->where('category_translations.language_id', $langId);
-                            },'media'])->join('product_translations as pt', 'pt.product_id', 'products.id')
-                            ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
-                            ->where('pt.language_id', $langId)
-                            ->where(function ($q) use ($keyword) {
-                                $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
-                            })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->get();
+                $products = Product::with(['category.categoryDetail.translation' => function ($q) use ($langId) {
+                    $q->where('category_translations.language_id', $langId);
+                }, 'media'])->join('product_translations as pt', 'pt.product_id', 'products.id')
+                    ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
+                    ->where('pt.language_id', $langId)
+                    ->where(function ($q) use ($keyword) {
+                        $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
+                    })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->get();
                 foreach ($products as $product) {
                     $product->response_type = 'product';
                     $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
                     $response[] = $product;
                 }
                 return $this->successResponse($response);
-            }else{
+            } else {
                 $products = Product::join('product_translations as pt', 'pt.product_id', 'products.id')
-                            ->select('products.id', 'products.sku', 'pt.title', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
-                            ->where('pt.language_id', $langId)
-                            ->where(function ($q) use ($keyword) {
-                                    $q->where('products.sku', ' LIKE', '%' . $keyword . '%')
-                                    ->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')
-                                    ->orWhere('pt.title', 'LIKE', '%' . $keyword . '%')
-                                    ->orWhere('pt.body_html', 'LIKE', '%' . $keyword . '%')
-                                    ->orWhere('pt.meta_title', 'LIKE', '%' . $keyword . '%')
-                                    ->orWhere('pt.meta_keyword', 'LIKE', '%' . $keyword . '%')
-                                    ->orWhere('pt.meta_description', 'LIKE', '%' . $keyword . '%');
+                    ->select('products.id', 'products.sku', 'pt.title', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
+                    ->where('pt.language_id', $langId)
+                    ->where(function ($q) use ($keyword) {
+                        $q->where('products.sku', ' LIKE', '%' . $keyword . '%')
+                            ->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')
+                            ->orWhere('pt.title', 'LIKE', '%' . $keyword . '%')
+                            ->orWhere('pt.body_html', 'LIKE', '%' . $keyword . '%')
+                            ->orWhere('pt.meta_title', 'LIKE', '%' . $keyword . '%')
+                            ->orWhere('pt.meta_keyword', 'LIKE', '%' . $keyword . '%')
+                            ->orWhere('pt.meta_description', 'LIKE', '%' . $keyword . '%');
                     });
-                if($for == 'category'){
+                if ($for == 'category') {
                     $prodIds = array();
                     $productCategory = ProductCategory::select('product_id')->where('category_id', $dataId)->distinct()->get();
-                    if($productCategory){
+                    if ($productCategory) {
                         foreach ($productCategory as $key => $value) {
                             $prodIds[] = $value->product_id;
                         }
                     }
                     $products = $products->whereIn('products.id', $prodIds);
                 }
-                if($for == 'vendor'){
+                if ($for == 'vendor') {
                     $products = $products->where('products.vendor_id', $dataId);
                 }
-                if($for == 'brand'){
+                if ($for == 'brand') {
                     $products = $products->where('products.brand_id', $dataId);
                 }
                 $products = $products->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->get();
@@ -439,19 +482,19 @@ class HomeController extends BaseController{
             'email' => 'required',
             'message' => 'required'
         ]);
-        if($validator->fails()){
-            foreach($validator->errors()->toArray() as $error_key => $error_value){
+        if ($validator->fails()) {
+            foreach ($validator->errors()->toArray() as $error_key => $error_value) {
                 return $this->errorResponse($error_value[0], 400);
             }
         }
         $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
         $superAdmin = User::where('is_superadmin', 1)->first();
-        if($superAdmin){
-            try{
+        if ($superAdmin) {
+            try {
                 if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
                     $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-                }else{
+                } else {
                     return $this->errorResponse('We are sorry for inconvenience. Please contact us later', 400);
                 }
                 $mail_from = $request->email;
@@ -465,17 +508,19 @@ class HomeController extends BaseController{
                     'customer_phone_number' => $request->phone_number,
                     'customer_message' => $request->message,
                 ];
-                Mail::send('email.contactUs', ['mailData'=>$data],
-                function ($message) use($sendto, $customer_name, $mail_from) {
-                    $message->from($mail_from, $customer_name);
-                    $message->to($sendto)->subject('Customer Request for Contact');
-                });
+                Mail::send(
+                    'email.contactUs',
+                    ['mailData' => $data],
+                    function ($message) use ($sendto, $customer_name, $mail_from) {
+                        $message->from($mail_from, $customer_name);
+                        $message->to($sendto)->subject('Customer Request for Contact');
+                    }
+                );
                 return $this->successResponse('', 'Thank you for contacting us. We will get to you shortly');
-            }
-            catch(\Exception $e){
+            } catch (\Exception $e) {
                 return $this->errorResponse($e->getMessage(), $e->getCode());
             }
-        }else{
+        } else {
             return $this->errorResponse('We are sorry for inconvenience. Please contact us later', 400);
         }
     }

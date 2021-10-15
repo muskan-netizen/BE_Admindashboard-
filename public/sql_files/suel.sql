@@ -1895,6 +1895,13 @@ INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sor
 (5, 'Pharmacy', NULL, 'banner/HdNkAXsIgB6rSEBQQSFScoPj4An01ZTftiTRE551.jpg', 0, 4, 1, '2021-10-03 20:56:00', '2024-10-31 12:00:00', NULL, NULL, NULL, '2021-10-03 15:27:40', '2021-10-11 07:40:53', NULL);
 
 
+INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
+(1, 'Supermarket', NULL, 'banner/6tKRaCYpA05ZPZjlkPtk3twBOyDhMIlJ3lAp3rFo.png', 1, 3, 1, '2021-10-06 13:11:00', '2025-10-29 12:00:00', 8, NULL, 'category', NULL, '2021-10-11 10:18:48'),
+(2, 'Electronics', NULL, 'banner/VYTHD1Jd3ZXclEcfp95RWJjyJgBrJmU6jOs4HHCU.png', 1, 2, 1, '2021-10-01 11:24:00', '2024-10-30 12:00:00', 24, NULL, 'category', NULL, '2021-10-11 10:18:32'),
+(4, 'Fashion', NULL, 'banner/sR4RvrIUoz3RezV8lGVBsQbNjbrrovXR2qL9S2ph.png', 1, 1, 1, '2021-10-03 20:54:00', '2024-10-31 12:00:00', 21, NULL, 'category', '2021-10-01 05:59:21', '2021-10-11 10:18:19'),
+(5, 'Pharmacy', NULL, 'banner/HdNkAXsIgB6rSEBQQSFScoPj4An01ZTftiTRE551.jpg', 0, 4, 1, '2021-10-03 20:56:00', '2024-10-31 12:00:00', NULL, NULL, NULL, '2021-10-03 15:27:40', '2021-10-11 07:40:53');
+
+
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, 'Vendors', 'vendors', 1, 0, NULL, '2021-10-04 11:33:02'),
 (2, 'Featured Products', 'featured_products', 2, 1, NULL, NULL),

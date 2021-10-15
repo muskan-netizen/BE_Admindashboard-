@@ -1414,6 +1414,13 @@ INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sor
 (7, 'Voltaic Cloths', NULL, 'banner/x3w0dxghln3cGuLXmd8aTu4II0Rjs3hJf6IA5zwk.png', 1, 2, 1, '2021-10-03 15:01:00', '2024-10-31 12:00:00', 22, NULL, 'category', '2021-10-03 09:33:06', '2021-10-11 10:23:17', 'banner/RR0KbYvyzxCmv8DvsWgLFQZCulebG4tRSe5ygbly.png');
 
 
+INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
+(1, 'Grocery', NULL, 'banner/LASrxkkBVHcfsMjxOczvpP6sJn1T1GSoV45BNQ1Y.png', 1, 1, 1, '2021-09-30 15:40:00', '2024-09-30 12:00:00', NULL, 3, 'vendor', NULL, '2021-10-11 10:23:02'),
+(3, 'electronics', NULL, 'banner/3dDPzQvmBl0yb8T5RDhU6ucEvRBLVA6PHgrT8fkk.png', 1, 3, 1, '2021-09-30 16:33:00', '2024-09-30 12:00:00', NULL, 5, 'vendor', NULL, '2021-10-11 10:23:34'),
+(5, 'Banner', NULL, 'banner/6H1PO631pguQBQut94RqD3W5Skb0kpSO6I2oc8Ja.png', 0, 4, 1, '2021-10-02 21:35:00', '2024-10-24 12:00:00', NULL, NULL, NULL, '2021-10-02 16:06:08', '2021-10-08 06:08:12'),
+(7, 'Voltaic Cloths', NULL, 'banner/x3w0dxghln3cGuLXmd8aTu4II0Rjs3hJf6IA5zwk.png', 1, 2, 1, '2021-10-03 15:01:00', '2024-10-31 12:00:00', 22, NULL, 'category', '2021-10-03 09:33:06', '2021-10-11 10:23:17');
+
+
 
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, 'Vendors', 'vendors', 1, 1, NULL, '2021-10-02 11:52:09'),

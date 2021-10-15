@@ -169,10 +169,14 @@
                                         <label class="m-0">{{ __('Tax') }}</label>
                                         <span>$<%= order.taxable_amount %></span>
                                     </li>
-                                    <!-- <li class="d-flex align-items-center justify-content-between">
-                                        <label class="m-0">Delivery Fee</label>
+                                    <li class="d-flex align-items-center justify-content-between">
+                                        <label class="m-0">{{__('Delivery Fee')}}</label>
                                         <span>$<%= order.total_delivery_fee %></span>
-                                    </li> -->
+                                    </li>
+                                    <li class="d-flex align-items-center justify-content-between">
+                                        <label class="m-0">{{__('Wallet Amount Used')}}</label>
+                                        <span>$<%= order.wallet_amount_used %></span>
+                                    </li>
                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Payable') }} </label>
                                         <span>$<%= order.payable_amount %></span>

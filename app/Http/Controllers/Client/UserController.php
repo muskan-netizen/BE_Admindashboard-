@@ -195,7 +195,7 @@ class UserController extends BaseController{
      */
     public function newEdit($domain = '', $id){
         $subadmin = User::find($id);
-        $permissions = Permissions::all();
+        $permissions = Permissions::where('status',1)->get();
         $user_permissions = UserPermissions::where('user_id', $id)->get();
         $vendor_permissions = UserVendor::where('user_id', $id)->pluck('vendor_id')->toArray();
         $vendors = Vendor::where('status',1)->get();

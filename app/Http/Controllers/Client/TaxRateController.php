@@ -23,19 +23,19 @@ class TaxRateController extends BaseController{
             'tax_rate' => 'required|regex:/^\d*(\.\d{2})?$/',
             'category' => 'required',
         );
-        if($request->postal_type == 1){
-            $rules['postal_code'] = 'required|min:5|max:6';
-        }
-        if($request->postal_type == 2){
-            $rules['postal_code_start'] = 'required|min:5|max:6';
-            $rules['postal_code_end'] = 'required|min:5|max:6';
-        }
+        // if($request->postal_type == 1){
+        //     $rules['postal_code'] = 'required|min:5|max:6';
+        // }
+        // if($request->postal_type == 2){
+        //     $rules['postal_code_start'] = 'required|min:5|max:6';
+        //     $rules['postal_code_end'] = 'required|min:5|max:6';
+        // }
         $validation  = Validator::make($request->all(), $rules)->validate();
         $taxRate = new TaxRate();
         $taxRate->state = $request->state;
         $taxRate->country = $request->country;
         $taxRate->tax_rate = $request->tax_rate;
-        $taxRate->is_zip = $request->postal_type;
+        //$taxRate->is_zip = $request->postal_type;
         $taxRate->identifier = $request->identifier;
         $taxRate->zip_code = ($request->postal_type == 1) ? $request->postal_code : '';
         $taxRate->zip_to = ($request->postal_type == 2) ? $request->postal_code_end : '';
@@ -90,17 +90,17 @@ class TaxRateController extends BaseController{
             'tax_rate' => 'required|regex:/^\d*(\.\d{2})?$/',
             'category' => 'required',
         );
-        if($request->postal_type == 1){
-            $rules['postal_code'] = 'required|min:5|max:6';
-        }
-        if($request->postal_type == 2){
-            $rules['postal_code_start'] = 'required|min:5|max:6';
-            $rules['postal_code_end'] = 'required|min:5|max:6';
-        }
+        // if($request->postal_type == 1){
+        //     $rules['postal_code'] = 'required|min:5|max:6';
+        // }
+        // if($request->postal_type == 2){
+        //     $rules['postal_code_start'] = 'required|min:5|max:6';
+        //     $rules['postal_code_end'] = 'required|min:5|max:6';
+        // }
         $validation  = Validator::make($request->all(), $rules)->validate();
         $taxRate = TaxRate::findOrFail($id);
         $taxRate->identifier = $request->identifier;
-        $taxRate->is_zip = $request->postal_type;
+       // $taxRate->is_zip = $request->postal_type;
         $taxRate->zip_code = ($request->postal_type == 1) ? $request->postal_code : '';
         $taxRate->zip_from = ($request->postal_type == 2) ? $request->postal_code_start : '';
         $taxRate->zip_to = ($request->postal_type == 2) ? $request->postal_code_end : '';

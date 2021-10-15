@@ -196,6 +196,19 @@
                 { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
             ],
         }),
+        e(".recent-orders").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 2.1,
+            slidesToScroll: 2,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
+            ],
+        }),
         e('.suppliers-slider').slick({
             dots: false,
             infinite: true,

@@ -236,9 +236,19 @@ class VendorController extends BaseController
     /*  /**   show vendor page - config tab      */
     public function show($domain = '', $id)
     {
+        
         $active = array();
         $categoryToggle = array();
+        $user = Auth::user();
         $vendor = Vendor::findOrFail($id);
+
+        // if ($user->is_superadmin == 0) {
+        //     $vendor = $vendor->whereHas('permissionToUser', function ($query) use($user) {
+        //         $query->where('user_id', $user->id);
+        //     });
+        // }
+        // dd($vendor);
+        
         $client_preferences = ClientPreference::first();
         $dinein_categories = VendorDineinCategory::where('vendor_id', $id)->get();
         $vendor_tables = VendorDineinTable::where('vendor_id', $id)->with('category')->get();

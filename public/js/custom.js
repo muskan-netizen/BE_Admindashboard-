@@ -114,6 +114,20 @@ window.initializeSlider = function initializeSlider() {
             { breakpoint: 420, settings: { slidesToShow: 1, arrows: true,slidesToScroll: 1 } },
         ],
     });
+    $(".recent-orders").slick({
+        arrows: !0,
+        dots: !1,
+        infinite: !1,
+        speed: 300,
+        slidesToShow: 2.1,
+        slidesToScroll: 2,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 767, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true,slidesToScroll: 1 } },
+        ],
+    });
     $(".brand-slider").slick({
         arrows: false,
         dots: !1,

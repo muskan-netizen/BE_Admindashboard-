@@ -321,6 +321,11 @@ INSERT INTO `vendor_categories` (`id`, `vendor_id`, `category_id`, `status`, `cr
 -- (2, 'Taxi 2', NULL, 'banner/v8zLyWDHUH7NuukbTFZgGKDYSsMOdORbsD6HSOqa.jpg', 0, 2, 1, '2021-09-29 11:49:00', '2024-09-30 12:00:00', NULL, 2, 'vendor', NULL, '2021-10-07 12:25:10', NULL),
 -- (3, 'Taxi 3', NULL, 'banner/Cz8dolyAhvbeHuLtaqF1dwYawM91EYTIPWl8l5sh.jpg', 1, 1, 1, '2021-09-29 11:50:00', '2024-09-30 12:00:00', NULL, 2, 'vendor', NULL, '2021-10-07 11:11:53', NULL);
 
+INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
+(1, 'Taxi 1', NULL, 'banner/6MRxYyJHyo1JMLim7KDDp4aWbDkjMy9CpaPMvu4y.png', 0, 3, 1, '2021-09-29 11:47:00', '2025-09-30 12:00:00', NULL, 2, 'vendor', NULL, '2021-10-07 12:25:12'),
+(2, 'Taxi 2', NULL, 'banner/v8zLyWDHUH7NuukbTFZgGKDYSsMOdORbsD6HSOqa.jpg', 0, 2, 1, '2021-09-29 11:49:00', '2024-09-30 12:00:00', NULL, 2, 'vendor', NULL, '2021-10-07 12:25:10'),
+(3, 'Taxi 3', NULL, 'banner/Cz8dolyAhvbeHuLtaqF1dwYawM91EYTIPWl8l5sh.jpg', 1, 1, 1, '2021-09-29 11:50:00', '2024-09-30 12:00:00', NULL, 2, 'vendor', NULL, '2021-10-07 11:11:53');
+
 
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, 'Vendors', 'vendors', 1, 0, NULL, '2021-09-29 06:30:05'),
@@ -350,3 +355,4 @@ INSERT INTO `cab_booking_layout_transaltions` (`id`, `title`, `cab_booking_layou
 
 
 UPDATE `client_preferences` SET `business_type` = 'taxi' WHERE `client_preferences`.`id` = 1;
+UPDATE `client_preferences` SET `is_hyperlocal` = 0 WHERE `client_preferences`.`id` = 1;

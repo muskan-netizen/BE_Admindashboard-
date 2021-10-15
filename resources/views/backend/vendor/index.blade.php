@@ -23,12 +23,24 @@
                 <h4 class="page-title">{{ $newvendors }}</h4>
             </div>
         </div>
-        <div class="col-sm-6 text-sm-right">
-            <button class="btn btn-info waves-effect waves-light text-sm-right openImportModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
-            </button>
-            <button class="btn btn-info waves-effect waves-light text-sm-right openAddModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
-            </button>
-        </div>
+        
+      
+        @if(isset($client_preference_detail) && $client_preference_detail->single_vendor == 1)
+            @if($total_vendor_count == 0)
+            <div class="col-sm-6 text-sm-right">
+                <button class="btn btn-info waves-effect waves-light text-sm-right openAddModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
+                </button>
+            </div>
+            @endif
+        @else    
+            <div class="col-sm-6 text-sm-right">
+                <button class="btn btn-info waves-effect waves-light text-sm-right openImportModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
+                </button>
+                <button class="btn btn-info waves-effect waves-light text-sm-right openAddModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
+                </button>
+            </div>
+        @endif
+
     </div>
     <div class="row">
         <div class="col-12">

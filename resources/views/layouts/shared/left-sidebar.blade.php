@@ -300,15 +300,28 @@
                         <span>{{ __('MARKETING') }}</span>
                     </a>
                     <ul class="nav-second-level">
-                        {{-- @if(in_array('banner',$allowed) || Auth::user()->is_superadmin == 1) --}}
+
                         @if(Auth::user()->is_superadmin == 1)    
                         <li>
-                                <a href="{{route('banner.index')}}">
-                                    <span class="icon-banners"></span>
-                                    <span> {{ __('Banner') }} </span>
-                                </a>
-                            </li>
+                            <a href="#sidebarbanner" data-toggle="collapse">
+                                <span class="icon-styling"></span>
+                                <span> {{ __('Banner') }} </span>
+                            </a>
+                            <div class="collapse" id="sidebarbanner">
+                                <ul class="nav-second-level">
+                                        <li>
+                                            <a href="{{route('banner.index')}}">{{ __('Banner') }}</a>
+                                        </li>
+                                         <li>
+                                            <a href="{{route('mobilebanner.index')}}">{{ __('Mobile Banner') }}</a>
+                                        </li>
+                                </ul>
+                            </div>
+                        </li>
                         @endif
+
+
+                       
                         @if(in_array('promocode',$allowed) || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('promocode.index')}}">
