@@ -12,7 +12,7 @@
                         <div class="col-md-6">
                             <div class="form-group" id="imageInput">
                                 <label>{{ __('Profile image') }}</label>
-                                <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify"/>
+                                <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify" />
                                 <label class="logo-size text-right w-100">{{ __('Image Size') }} 110x110 </label>
                                 <span class="invalid-feedback" role="alert">
                                     <strong></strong>
@@ -22,7 +22,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            
+
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -42,12 +42,13 @@
                                             <strong></strong>
                                         </span>
                                     </div>
-                                </div>                                
+                                </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="phone_numberInput">
                                         {!! Form::label('title', __('Phone Number'),['class' => 'control-label']) !!}
                                         <input type="tel" class="form-control phone" id="phone" placeholder={{ __("Phone Number") }} name="phone_number" value="{{ old('full_number')}}">
-
+                                        <input type="hidden" id="countryCode" name="country" value="{{ old('countryData') ? old('countryData') : 'us'}}">
+                                        <input type="hidden" id="dialCode" name="country_code" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode',1) }}">
                                         <input type="hidden" id="addphoneHidden" name="phoneHidden">
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -63,14 +64,14 @@
                                         </span>
                                     </div>
                                 </div>
-                               
+
                                 <div class="col-md-6">
                                     <div class="form-group" id="countryInput">
                                         {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
                                         <select class="selectize-select form-control" name="country_id">
                                             <option value="">{{ __('Select') }}</option>
                                             @foreach($countries as $key => $val)
-                                                <option value="{{$val->id}}">{{$val->name}}</option>
+                                            <option value="{{$val->id}}">{{$val->name}}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -86,17 +87,17 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        {!! Form::label('title', __('Email Verified'),['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Email Verified'),['class' => 'control-label']) !!}
                                         <div>
-                                             <input type="checkbox" data-plugin="switchery" name="is_email_verified" class="form-control email_verify_add">
+                                            <input type="checkbox" data-plugin="switchery" name="is_email_verified" class="form-control email_verify_add">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        {!! Form::label('title', __('Phone Verified'),['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Phone Verified'),['class' => 'control-label']) !!}
                                         <div>
-                                             <input type="checkbox" data-plugin="switchery" name="is_phone_verified" class="form-control phone_verify_add">
+                                            <input type="checkbox" data-plugin="switchery" name="is_phone_verified" class="form-control phone_verify_add">
                                         </div>
                                     </div>
                                 </div>
@@ -106,7 +107,7 @@
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" id="addCountryData" name="countryData" value="us">
-                    <button type="button" class="btn btn-info w-100 submitCustomerForm" >{{ __('Submit') }}</button>
+                    <button type="button" class="btn btn-info w-100 submitCustomerForm">{{ __('Submit') }}</button>
                 </div>
             </form>
         </div>
@@ -127,7 +128,7 @@
                     <div class="row">
                         <div class="col-md-3"></div>
                         <div class="col-md-6" id="imageInput">
-                            <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify"/>
+                            <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify" />
                             <p class="text-muted text-center mt-2 mb-0">{{ __('Profile image') }}</p>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
@@ -136,7 +137,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            
+
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -156,11 +157,13 @@
                                             <strong></strong>
                                         </span>
                                     </div>
-                                </div>                                
+                                </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="phone_numberInputEdit">
                                         {!! Form::label('title', __('Phone Number'),['class' => 'control-label']) !!}
                                         <input type="tel" class="form-control phone" id="phone" placeholder={{ __("Phone Number") }} name="phone_number" value="{{ old('full_number')}}">
+                                        <input type="hidden" id="countryCode" name="country" value="{{ old('countryData') ? old('countryData') : 'us'}}">
+                                        <input type="hidden" id="dialCode" name="country_code" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode',1) }}">
 
                                         <input type="hidden" id="addphoneHidden" name="phoneHidden">
                                         <span class="invalid-feedback" role="alert">
@@ -192,7 +195,7 @@
                                         <select class="selectize-select form-control" name="country_id">
                                             <option value="">{{ __('Select') }}</option>
                                             @foreach($countries as $key => $val)
-                                                <option value="{{$val->id}}">{{$val->nicename}}</option>
+                                            <option value="{{$val->id}}">{{$val->nicename}}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -231,7 +234,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    
+
                                 </tbody>
                             </table>
                         </div>
@@ -239,7 +242,7 @@
                 </div>
                 <div class="modal-footer">
                 </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>

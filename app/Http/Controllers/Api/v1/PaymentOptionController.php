@@ -34,7 +34,7 @@ class PaymentOptionController extends BaseController{
         if(!empty($gateway)){
             $code = $request->header('code');
             $client = Client::where('code',$code)->first();
-            $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN');
+            $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
             $function = 'postPaymentVia_'.$gateway;

@@ -58,7 +58,7 @@ class FrontController extends Controller
             ->whereNotIn('categories.type_id', [7])
             ->where('categories.is_visible', 1)
             ->where('categories.status', '!=', $status)
-           // ->where('cts.language_id', $lang_id)
+            ->where('cts.language_id', $lang_id)
             ->where(function ($qrt) use($lang_id,$primary){
                 $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
              })
@@ -70,7 +70,7 @@ class FrontController extends Controller
             $categories = $this->buildTree($categories->toArray());
         }
 
-       
+      
         return $categories;
     }
 

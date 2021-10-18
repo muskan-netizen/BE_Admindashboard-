@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\CartReminder::class
+        Commands\CartReminder::class,
+        Commands\SetDummyDataForDemo::class
         //
     ];
 
@@ -25,9 +26,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('cart:reminder')
-                ->hourly();
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('cart:reminder')->hourly();
+        // $schedule->command('set_default_dummy:data')->everyMinute();
     }
 
     /**

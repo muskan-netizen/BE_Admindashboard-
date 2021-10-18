@@ -82,7 +82,9 @@
                     <select class="selectize-select form-control assignToSelect" name="assignTo">
                         <option value="">{{ __("Select") }}</option>
                         <option value="category" {{($banner->link == 'category') ? 'selected' : ''}}>{{ __('Category') }}</option>
+                        @if($client_preference_detail->business_type != 'taxi')
                         <option value="vendor" {{($banner->link == 'vendor') ? 'selected' : ''}}>{{ __("Vendor") }}</option>
+                        @endif
                     </select>
 
                     <span class="invalid-feedback" role="alert">

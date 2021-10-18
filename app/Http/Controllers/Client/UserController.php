@@ -142,6 +142,7 @@ class UserController extends BaseController{
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request){
+      
         $customer = new User();
         $validation  = Validator::make($request->all(), $customer->rules())->validate();
         $saveId = $this->save($request, $customer, 'false');
@@ -164,8 +165,9 @@ class UserController extends BaseController{
     public function save(Request $request, User $user, $update = 'false'){
         $request->contact;
         $request->phone_number;
-        $phone = ($request->has('contact') && !empty($request->contact)) ? $request->contact : '+1'.$request->phone_number;
+        $phone = ($request->has('contact') && !empty($request->contact)) ? $request->contact : $request->phone_number;
         $user->name = $request->name; 
+        $user->dial_code=$request->country_code;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->phone_number = $phone;

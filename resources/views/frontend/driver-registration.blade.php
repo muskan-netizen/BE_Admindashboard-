@@ -5,19 +5,19 @@
 @section('content')
 <header>
     <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
+    @if(isset($set_template) && $set_template->template_id == 1)
+    @include('layouts.store/left-sidebar-template-one')
+    @elseif(isset($set_template) && $set_template->template_id == 2)
+    @include('layouts.store/left-sidebar')
+    @else
+    @include('layouts.store/left-sidebar-template-one')
+    @endif
 </header>
 <section class="section-b-space new-pages pb-265">
     <div class="container">
         <div class="row">
             <div class="col-12">
-            <h2 class="mb-3">{{$page_detail->translations->first() ? $page_detail->translations->first()->title : $page_detail->primary->title}}</h2>
+                <h2 class="mb-3">{{$page_detail->translations->first() ? $page_detail->translations->first()->title : $page_detail->primary->title}}</h2>
                 <p>{!!$page_detail->translations->first() ? $page_detail->translations->first()->description : $page_detail->primary->description !!}</p>
             </div>
         </div>
@@ -36,7 +36,7 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label for="">{{__('UPLOAD PROFILE PHOTO')}}</label>
-                                    <div class="file file--upload" >
+                                    <div class="file file--upload">
                                         <label for="input_file_logo">
                                             <span class="update_pic">
                                                 <img src="" id="upload_logo_preview">
@@ -64,7 +64,7 @@
                                     <input type="tel" class="form-control" name="phone_number" id="phone" value="{{old('full_number')}}">
                                     <div class="invalid-feedback" id="phone_number_error"><strong></strong></div>
                                     <input type="hidden" id="countryCode" name="country" value="{{ old('countryData') ? old('countryData') : 'us'}}">
-                                    <input type="hidden" id="dialCode" name="country_code" value="{{ old('dialCode') ? old('dialCode') : $client->country->phonecode }}">
+                                    <input type="hidden" id="dialCode" name="country_code" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode',1) }}">
                                 </div>
                                 <div class="col-md-12 mb-3" id="full_nameInput">
                                     <div class="form-group" id="typeInputEdit">
@@ -80,7 +80,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row ">
                             <div class="col-md-12">
                                 <div class="form-group" id="vehicle_type_idInput">
@@ -182,6 +182,7 @@
                         @endforeach
                     </div>
                     <p id="data-error" style="color:red;"></p>
+                    <p id="data-error1" style="color:green;"></p>
 
                     <button class="btn btn-solid mt-3 w-100" dir="ltr" data-style="expand-right" id="register_btn" type="button">
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="register_btn_loader" style="display:none !important;"></span>
@@ -514,7 +515,7 @@
         });
         $('#register_btn').click(function() {
             var that = $(this);
-     
+
             $(this).attr('disabled', true);
             $('#register_btn_loader').show();
             $('.form-control').removeClass("is-invalid");
@@ -533,11 +534,11 @@
                 success: function(data) {
                     $('#register_btn_loader').hide();
                     that.attr('disabled', false);
-                    if (data.status == 'success') {
+                    if (data.status == 200) {
                         $('input[type=file]').val('');
                         $("#vendor_signup_form")[0].reset();
                         $('#vendor_signup_form img').attr('src', '');
-                      
+
                         $('html,body').animate({
                             scrollTop: '0px'
                         }, 1000);
@@ -546,15 +547,19 @@
                             $('#success_msg').html('').hide();
                         }, 3000);
                     }
-                 
+
                     console.log(data);
-               
-                    $("#data-error").empty();
-                    $("#data-error").html(data.message);
+                    if (data.status == 200) {
+                        $("#data-error1").empty();
+                        $("#data-error1").html(data.message);
+                    } else {
+                        $("#data-error").empty();
+                        $("#data-error").html(data.message);
+                    }
                 },
                 error: function(data) {
                     $("#data-error").empty();
-                   // console.log(data);
+                    // console.log(data);
                     $("#data-error").append(response.data);
                     that.attr('disabled', false);
                     $('html,body').animate({
@@ -574,7 +579,7 @@
                         $(".show_all_error.invalid-feedback").text('Something went wrong, Please try Again.');
                     }
                 }
-               
+
             });
         });
     });

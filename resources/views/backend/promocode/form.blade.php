@@ -86,7 +86,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4  @if($client_preference_detail->business_type == 'taxi') d-none @endif">
                 <div class="form-group">
                     {!! Form::label('title', __('Allow Free Delivery'),['class' => 'control-label']) !!}
                     <div>
