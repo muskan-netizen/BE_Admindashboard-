@@ -25,7 +25,7 @@
     let queryString = window.location.search;
     let path = window.location.pathname;
     let urlParams = new URLSearchParams(queryString);
-    if((urlParams.has('gateway')) && (urlParams.get('gateway') == 'mobbex')) {
+    if((urlParams.has('gateway')) && (urlParams.get('gateway') != '')) {
         $('.spinner-overlay').show();
         if((urlParams.has('status')) && (urlParams.get('status') == '200')) {
             $('.payment_response').html('<div class="alert mt-2 alert-success"><span>Thank you for your payment.</span></div>');

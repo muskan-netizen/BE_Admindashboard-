@@ -360,7 +360,20 @@
                                 <h4 class="mb-4 "> {{ __('Weekly Slot') }}</h4>
                                 <div class="col-md-12">
                                     <div class="row mb-2">
-                                        <div class="col-md-12">
+                                        <div class="col-md-12 col-lg-4">
+                                            <div id='calendar_slot_alldays'>
+                                                <table class="table table-centered table-nowrap table-striped" id="calendar_slot_alldays_table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="2">This week</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-lg-8">
                                             <div id='calendar'>
 
                                             </div>
@@ -691,7 +704,7 @@
 
 <script src="{{asset('assets/js/calendar_main-5.9.js')}}"></script>
 <script src="{{ asset('assets/js/pages/jquery.cookie.js') }}"></script>
-<script>
+<scrip>
     $( document ).ready(function() {
         $(".base_url").html(base_url);
     }); 
@@ -1072,6 +1085,24 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        // var getSlots = function (data){
+        //     $.ajax({
+        //         url:"{{route('vendor.calender.data', $vendor->id)}}",
+        //         type:"GET",
+        //         async:false,
+        //         headers: {
+        //             'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         dataType:"JSON",
+        //         success: function (response) {
+        //             // calendar.addEventSource( response );
+        //             // calendar.refetchEvents();
+        //             return response;
+        //         },
+        //         error: function(response) {
+        //         }
+        //       });
+        // }
         var calendarEl = document.getElementById('calendar');
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -1135,7 +1166,101 @@
             },
             events: {
                 url: "{{route('vendor.calender.data', $vendor->id)}}",
+                success: function (response) {
+                    $("#calendar_slot_alldays_table tbody").html("");
+                    var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    var slotDayList = [];
+                    $.each(response, function(index, data){
+                        var slotDay = parseInt(moment(data.start).format('d')) + 1;
+                        var slotStartTime = moment(data.start).format('h:mm A');
+                        var slotEndTime = moment(data.end).format('h:mm A');
+                        $.each(days, function(key, value){
+                            if(slotDay == key + 1){
+                                if(slotDayList.includes(slotDay)){
+                                    $("#calendar_slot_alldays_table tbody tr[data-slotDay='"+slotDay+"'] td:nth-child(2)").append("<br>"+slotStartTime+" - "+slotEndTime);
+                                }
+                                else{
+                                    $("#calendar_slot_alldays_table tbody").append("<tr data-slotDay="+slotDay+"><td>"+value+"</td><td>"+slotStartTime+" - "+slotEndTime+"</td></tr>");
+                                }
+                            }
+                        });
+                        slotDayList.push(slotDay);
+                    });
+                },
             },
+
+            // events: function(info, successCallback, failureCallback) {
+            //     var startDate = moment(info.start).format('YYYY-MM-DD');
+            //     var startTime = encodeURIComponent(moment(info.start).format('HH:mm:ssZ'));
+            //     var start = startDate +'T'+ startTime;
+            //     var endDate = moment(info.end).format('YYYY-MM-DD');
+            //     var endTime = encodeURIComponent(moment(info.start).format('HH:mm:ssZ'));
+            //     var end = endDate +'T'+ endTime;
+            //     $.ajax({
+            //         url: "{{route('vendor.calender.data', $vendor->id)}}",
+            //         type: "GET",
+            //         data: "start="+start+"&end="+end,
+            //         success: function (response) {
+            //             $("#calendar_slot_alldays_table tbody").html("");
+            //             var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            //             var slotDayList = [];
+            //             var events = [];
+            //             $.each(response, function(index, data){
+            //                 var slotDay = parseInt(moment(data.start).format('d')) + 1;
+            //                 var slotStartTime = moment(data.start).format('h:mm A');
+            //                 var slotEndTime = moment(data.end).format('h:mm A');
+            //                 $.each(days, function(key, value){
+            //                     if(slotDay == key + 1){
+            //                         if(slotDayList.includes(slotDay)){
+            //                             $("#calendar_slot_alldays_table tbody tr[data-slotDay='"+slotDay+"'] td:nth-child(2)").append("<br>"+slotStartTime+" - "+slotEndTime);
+            //                         }
+            //                         else{
+            //                             $("#calendar_slot_alldays_table tbody").append("<tr data-slotDay="+slotDay+"><td>"+value+"</td><td>"+slotStartTime+" - "+slotEndTime+"</td></tr>");
+            //                         }
+            //                     }
+            //                 });
+            //                 slotDayList.push(slotDay);
+
+            //                 events.push({ 
+            //                     title: data.title,
+            //                     start: data.start,
+            //                     end: data.end
+            //                 });
+            //             });
+
+            //             // successCallback(events);
+            //             successCallback(
+            //                 Array.prototype.slice.call( // convert to array
+            //                 response
+            //                 ).map(function(eventEl) {
+            //                 return {
+            //                     title: eventEl.getAttribute('title'),
+            //                     start: eventEl.getAttribute('start')
+            //                 }
+            //                 })
+            //             );
+            //         }
+            //     });
+            // },
+
+            // eventDidMount: function(ev) {
+            //     var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            //     var day = ev.event.start.getDay() + 1;
+            //     $.each(days, function(key, value){
+            //         if(day == key + 1){
+            //             var startTime = ("0" + ev.event.start.getHours()).slice(-2) + ":" + ("0" + ev.event.start.getMinutes()).slice(-2);
+            //             var endTime = '';
+            //             if (ev.event.end) {
+            //                 endTime = ("0" + ev.event.end.getHours()).slice(-2) + ":" + ("0" + ev.event.end.getMinutes()).slice(-2);
+            //             }
+            //             if($("#calendar_slot_alldays_table tbody tr[data-slotDay='"+day+"']").length > 0){
+            //                 $("#calendar_slot_alldays_table tbody tr[data-slotDay='"+day+"']").html("<td>"+value+"</td><td>"+startTime+" - "+endTime+"</td>");
+            //             }else{
+            //                 $("#calendar_slot_alldays_table tbody").append("<tr data-slotDay="+day+"><td>"+value+"</td><td>"+startTime+" - "+endTime+"</td></tr>");
+            //             }
+            //         }
+            //     });
+            // },
             eventResize: function(arg) {
                 // console.log(arg.event.extendedProps);
 
@@ -1145,7 +1270,7 @@
                     //backdrop: 'static',
                     keyboard: false
                 });
-                console.log(ev.event.extendedProps);
+                // console.log(ev.event.extendedProps);
                 var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
                 var day = ev.event.start.getDay() + 1;
 

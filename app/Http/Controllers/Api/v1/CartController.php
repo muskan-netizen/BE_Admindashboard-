@@ -14,7 +14,7 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Product, Cart, ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation};
+use App\Models\{User, Product, Cart, ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus};
 use GuzzleHttp\Client as GCLIENT;
 
 class CartController extends BaseController
@@ -26,6 +26,27 @@ class CartController extends BaseController
     public function index(Request $request)
     {
         try {
+
+            if(($request->has('gateway')) && ($request->gateway == 'mobbex')){
+                if($request->has('order')){
+                    $order = Order::where('order_number', $request->order)->first();
+                    if($order){
+                        if($request->status == 0){
+                            $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                            foreach($order_products as $order_prod){
+                                OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                            }
+                            OrderProduct::where('order_id', $order->id)->delete();
+                            OrderProductPrescription::where('order_id', $order->id)->delete();
+                            VendorOrderStatus::where('order_id', $order->id)->delete();
+                            OrderVendor::where('order_id', $order->id)->delete();
+                            OrderTax::where('order_id', $order->id)->delete();
+                            $order->delete();
+                        }
+                    }
+                }
+            }
+
             $user = Auth::user();
             if (!$user->id) {
                 $cart = Cart::where('unique_identifier', $user->system_user);

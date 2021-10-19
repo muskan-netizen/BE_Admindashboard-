@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use DB,Log;
+use Illuminate\Support\Facades\Validator;
 class WebStylingController extends BaseController{
     //
      /**
@@ -394,6 +395,50 @@ class WebStylingController extends BaseController{
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
+
+
+      /**
+     * get Layout background image in Modal
+    */
+    public function getImageDatainModal(Request $request){
+        try {
+            $banner = CabBookingLayout::where('id',$request->id)->first();
+           
+            $returnHTML = view('backend.web_styling.image-edit-modal')->with(['banner' => $banner])->render();
+            return response()->json(array('success' => true, 'html'=>$returnHTML));    
+           
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+      /**
+     * update Image Data in Modal
+    */
+    public function updateImageDatainModal(Request $request){
+        
+        if ($request->hasFile('image')) {    /* upload logo file */
+            $rules['image'] =  'image|mimes:jpeg,png,jpg,gif';
+        }
+        $validation  = Validator::make($request->all(), $rules)->validate();
+        $id = $request->id;
+        $banner = CabBookingLayout::find($id);
+        if ($request->hasFile('image')) {    /* upload logo file */
+            $file = $request->file('image');
+            $banner->image = Storage::disk('s3')->put('/banner', $file,'public');
+        }
+        $banner = $banner->save();
+
+        if($banner){
+            return response()->json([
+                'status'=>'success',
+                'message' => 'Banner updated Successfully!',
+                'data' => $banner
+            ]);
+        }
+    }
+
+    
 
 
        # edit Dynamic Html Section

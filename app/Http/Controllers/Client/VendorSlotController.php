@@ -93,7 +93,7 @@ class VendorSlotController extends BaseController
                     // delete slot day
                     $slotDay->delete();
                     // delete vendor slot
-                    $slot->delete();
+                    // $slot->delete();
 
                     $dateSlot = new VendorSlotDate();
                     $dateSlot->vendor_id        = $vendor->id;
