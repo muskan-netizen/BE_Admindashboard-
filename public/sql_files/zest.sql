@@ -354,17 +354,8 @@ INSERT INTO `vendor_categories` (`id`, `vendor_id`, `category_id`, `status`, `cr
 
 -- --------------------------------------------------------
 
-
-
--- INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`, `image_mobile`) VALUES
--- (1, 'Taxi 1', NULL, 'banner/UKarszRa3k84hl0d7uFJO8MWxeTTuqTqq140iQ0W.jpg', 0, 1, 1, '2021-09-29 12:36:00', '2022-09-30 12:00:00', NULL, NULL, NULL, NULL, '2021-09-29 07:07:34', NULL),
--- (2, 'Ecommerce', NULL, 'default/default_image.png', 0, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
--- (3, 'Pharmacy', NULL, 'default/default_image.png', 0, 3, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-
 INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
-(1, 'Taxi 1', NULL, 'banner/UKarszRa3k84hl0d7uFJO8MWxeTTuqTqq140iQ0W.jpg', 0, 1, 1, '2021-09-29 12:36:00', '2022-09-30 12:00:00', NULL, NULL, NULL, NULL, '2021-09-29 07:07:34'),
-(2, 'Ecommerce', NULL, 'default/default_image.png', 0, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(3, 'Pharmacy', NULL, 'default/default_image.png', 0, 3, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+(1, 'Taxi 1', NULL, 'banner/UKarszRa3k84hl0d7uFJO8MWxeTTuqTqq140iQ0W.jpg', 0, 1, 1, '2021-09-29 12:36:00', '2022-09-30 12:00:00', NULL, NULL, NULL, NULL, '2021-09-29 07:07:34');
 
 
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
