@@ -704,7 +704,7 @@
 
 <script src="{{asset('assets/js/calendar_main-5.9.js')}}"></script>
 <script src="{{ asset('assets/js/pages/jquery.cookie.js') }}"></script>
-<scrip>
+<script>
     $( document ).ready(function() {
         $(".base_url").html(base_url);
     }); 
