@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus, OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, VendorOrderDispatcherStatus, Page, DriverRegistrationDocument, LuxuryOption};
 use GuzzleHttp\Client as GCLIENT;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Models\AutoRejectOrderCron;
 
 class OrderController extends FrontController
 {
@@ -507,7 +509,7 @@ class OrderController extends FrontController
     {
         try {
             DB::beginTransaction();
-            $preferences = ClientPreference::select('is_hyperlocal','Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier')->first();
+            $preferences = ClientPreference::select('is_hyperlocal','Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code')->first();
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
@@ -819,10 +821,15 @@ class OrderController extends FrontController
                     'balance_transaction' => $order->payable_amount,
                 ]);
             }
-            $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order->order_number)->first();
+            $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
             if($request->payment_option_id != 7){ // if not mobbex
                 if (!empty($order->vendors)) {
                     foreach ($order->vendors as $vendor_value) {
+                        $vendorDetail = $vendor_value->vendor;
+                        if($vendorDetail->auto_accept_order == 0 && $vendorDetail->auto_reject_time > 0){
+                            $clientDetail = CP::on('mysql')->where(['code' => $preferences->client_code])->first();
+                            AutoRejectOrderCron::on('mysql')->create(['database_host' => $clientDetail->database_path,'database_name' => $clientDetail->database_name,'database_username' => $clientDetail->database_username,'database_password' => $clientDetail->database_password,'order_vendor_id' => $vendor_value->id,'auto_reject_time' => Carbon::now()->addMinute($vendorDetail->auto_reject_time)]);
+                        }
                         $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
                         $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
                         $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);

@@ -115,7 +115,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     {{__('My Account')}}
                     <ul class="onhover-show-div">
                         <li>
-                            <a href="{{route('login')}}" data-lng="en">{{__('Login')}}</a>
+                            <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
                         </li>
                         
                     </ul>

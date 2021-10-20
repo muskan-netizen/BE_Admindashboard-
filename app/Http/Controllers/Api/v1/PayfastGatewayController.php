@@ -184,7 +184,7 @@ class PayfastGatewayController extends BaseController
                             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
 
                             // Send Email
-                            $this->successMail();
+                       //     $this->successMail();
                     //     }
                     // }else{
                     }
@@ -200,7 +200,7 @@ class PayfastGatewayController extends BaseController
             }
 
             if($response->status == 'Success'){
-                $this->successMail();
+            //    $this->successMail();
                 return $this->successResponse($response->data, 'Payment completed successfully.', 200);
             }else{
                 $this->failMail();

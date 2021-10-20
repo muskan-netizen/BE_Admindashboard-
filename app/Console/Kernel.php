@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\CartReminder::class,
+        Commands\AutoRejectOrders::class,
         Commands\SetDummyDataForDemo::class
         //
     ];
@@ -27,7 +28,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('cart:reminder')->hourly();
+        $schedule->command('auto:reject_order')->everyMinute();
         $schedule->command('set_default_dummy:data')->dailyAt('00:30');
+        // $schedule->command('inspire')->hourly();
     }
 
     /**

@@ -154,7 +154,7 @@ class MobbexGatewayController extends FrontController
                         $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
 
                         // Send Email
-                        $this->successMail();
+                     //   $this->successMail();
                     }
                 }else{
                     $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();

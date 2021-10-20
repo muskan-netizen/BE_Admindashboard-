@@ -51,13 +51,21 @@ class CustomerExport implements FromCollection, WithHeadings, WithMapping
     }
 
     public function map($user_detail): array
-    {
+    {   
+        if($user_detail->dial_code){
+            $dialcode =$user_detail->dial_code;
+            $phone_number = '+ '. $user_detail->dial_code . $user_detail->phone_number;
+            }else{
+                $phone_number = $user_detail->phone_number;
+            }
+
+        
         return [
             $user_detail->id ?? "",
             $user_detail->name ?? "",
             $user_detail->login_type ?? "",
             $user_detail->login_type_value ?? "",
-            $user_detail->phone_number ?? "",
+            $phone_number ?? "",
             $user_detail->balanceFloat ?? "",
             (!empty($user_detail->orders_count)) ? $user_detail->orders_count : "0",
             (!empty($user_detail->currently_working_orders_count)) ? $user_detail->currently_working_orders_count : "0",

@@ -14,7 +14,9 @@ use App\Http\Controllers\Client\BaseController;
 use App\Models\{OrderStatusOption,DispatcherStatusOption, VendorOrderStatus,ClientPreference, NotificationTemplate, OrderProduct,OrderVendor,UserAddress,Vendor,OrderReturnRequest, UserDevice, UserVendor, LuxuryOption};
 use DB;
 use GuzzleHttp\Client;
+use App\Models\Client as CP;
 use App\Models\Transaction;
+use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\ApiResponser;
 use Log;
 class OrderController extends BaseController{
@@ -161,8 +163,8 @@ class OrderController extends BaseController{
             $q1->orWhere(function ($q2) {
                 $q2->where('payment_option_id', 1);
             });
-        })->paginate(30);
-
+        })->select('*','id as total_discount_calculate')->paginate(30);
+       
 
         $pending_orders = $pending_orders->whereHas('vendors', function ($query) {
             $query->where('order_status_option_id',1);
@@ -265,6 +267,7 @@ class OrderController extends BaseController{
     public function changeStatus(Request $request, $domain = ''){   
    
         DB::beginTransaction();
+        $client_preferences = ClientPreference::first();
         try {
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
@@ -282,6 +285,10 @@ class OrderController extends BaseController{
                 $vendor_order_status->order_vendor_id = $request->order_vendor_id;
                 $vendor_order_status->order_status_option_id = $request->status_option_id;
                 $vendor_order_status->save();
+                if($request->status_option_id == 2 || $request->status_option_id == 3){
+                    $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
+                    AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name,'order_vendor_id' => $currentOrderStatus->id])->delete();
+                }
                 if ($request->status_option_id == 2) {
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if($order_dispatch && $order_dispatch == 1)

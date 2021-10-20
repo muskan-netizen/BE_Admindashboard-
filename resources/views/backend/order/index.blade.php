@@ -127,14 +127,19 @@
                                             </div>
                                             <div class="col-md-3 mt-md-0 mt-sm-2">
                                                 <ul class="price_box_bottom m-0 p-0">
+                                                    <% if(vendor.subtotal_amount > 0 || vendor.subtotal_amount < 0) { %>
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Total') }}</label>
                                                         <span>$<%= vendor.subtotal_amount %></span>
                                                     </li>
+                                                    <% } %> 
+                                                    <% if(vendor.discount_amount > 0 || vendor.discount_amount < 0) { %>
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Promocode') }}</label>
                                                         <span>$<%= vendor.discount_amount %></span>
                                                     </li>
+                                                    <% } %> 
+                                                    <% if(vendor.delivery_fee > 0 || vendor.delivery_fee < 0) { %>
                                                     <li class="d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Delivery') }}</label>
                                                         <% if(vendor.delivery_fee !== null) { %>
@@ -143,6 +148,8 @@
                                                             <span>$ 0.00</span>
                                                         <% } %> 
                                                     </li>
+                                                    <% } %> 
+                                                    
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Amount') }}</label>
                                                         <span>$<%= vendor.payable_amount %></span>
@@ -161,25 +168,40 @@
                                         <label class="m-0">{{ __('Total') }}</label>
                                         <span>$<%= order.total_amount %></span>
                                     </li>
+                                    <% if(order.loyalty_amount_saved > 0 || order.loyalty_amount_saved < 0) { %>
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Loyalty Used') }}</label>
                                         <span>$<%= order.loyalty_amount_saved %></span>
                                     </li>
+                                    <% } %> 
+
+                                    <% if(order.taxable_amount > 0 || order.taxable_amount < 0) { %>
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Tax') }}</label>
                                         <span>$<%= order.taxable_amount %></span>
                                     </li>
+                                    <% } %> 
+                                    <% if(order.total_delivery_fee > 0 || order.total_delivery_fee < 0) { %>
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{__('Delivery Fee')}}</label>
                                         <span>$<%= order.total_delivery_fee %></span>
                                     </li>
+                                    <% } %> 
+                                    <% if(order.wallet_amount_used > 0 || order.wallet_amount_used < 0) { %>
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{__('Wallet Amount Used')}}</label>
                                         <span>$<%= order.wallet_amount_used %></span>
                                     </li>
+                                    <% } %> 
+                                    <% if(order.total_discount_calculate > 0 || order.total_discount_calculate < 0) { %>
+                                    <li class="d-flex align-items-center justify-content-between">
+                                        <label class="m-0">{{__('Total Discount')}}</label>
+                                        <span>$<%= order.total_discount_calculate %></span>
+                                    </li>
+                                    <% } %> 
                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Payable') }} </label>
-                                        <span>$<%= order.payable_amount %></span>
+                                        <span>$<%= order.payable_amount - order.total_discount_calculate%></span>
                                     </li>
                                 </ul>
                             </div>

@@ -53,4 +53,9 @@ class Order extends Model{
             'vendor_id' // Local key on the environments table...
         );
 	}
+
+	
+	public function getTotalDiscountCalculateAttribute(){
+		return $this->vendors()->sum('discount_amount');
+	}
 }

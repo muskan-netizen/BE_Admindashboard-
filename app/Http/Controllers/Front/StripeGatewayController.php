@@ -58,7 +58,7 @@ class StripeGatewayController extends FrontController
                 // 'address' => $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode,
             ])->send();
             if ($response->isSuccessful()) {
-                $this->successMail();
+               // $this->successMail();
                 return $this->successResponse($response->getData());
             }
             // elseif ($response->isRedirect()) {
@@ -119,7 +119,7 @@ class StripeGatewayController extends FrontController
                     'customerReference' => $customer_id
                 ])->send();
                 if ($purchaseResponse->isSuccessful()) {
-                    $this->successMail();
+                  //  $this->successMail();
                     return $this->successResponse($purchaseResponse->getData());
                 } else {
                     $this->failMail();

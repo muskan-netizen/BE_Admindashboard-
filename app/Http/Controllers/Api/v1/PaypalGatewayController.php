@@ -88,7 +88,7 @@ class PaypalGatewayController extends BaseController
              ));
             $response = $transaction->send();
             if ($response->isSuccessful()) {
-                $this->successMail();
+              //  $this->successMail();
                 return $this->successResponse($response->getTransactionReference());
             } else {
                 $this->failMail();

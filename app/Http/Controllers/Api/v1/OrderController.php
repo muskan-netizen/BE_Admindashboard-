@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\OrderStoreRequest;
 use Log;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption};
+use App\Models\AutoRejectOrderCron;
 
 class OrderController extends BaseController {
     use ApiResponser;
@@ -338,13 +339,18 @@ class OrderController extends BaseController {
                             'balance_transaction' => $order->payable_amount,
                         ]);
                     }
-                    $order = $order->with(['vendors:id,order_id,vendor_id', 'user_vendor'])->where('order_number', $order->order_number)->first();
+                    $order = $order->with(['vendors:id,order_id,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
                     if(($request->payment_option_id != 7) && ($request->payment_option_id != 6)){ // if not mobbex, payfast
                         $code = $request->header('code');
                         if (!empty($order->vendors)) {
                             foreach ($order->vendors as $vendor_value) {
                                 $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
                                 $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                                $vendorDetail = $vendor_value->vendor;
+                                if ($vendorDetail->auto_accept_order == 0 && $vendorDetail->auto_reject_time > 0) {
+                                    $clientDetail = Client::on('mysql')->where(['code' => $client_preference->client_code])->first();
+                                    AutoRejectOrderCron::on('mysql')->create(['database_host' => $clientDetail->database_path, 'database_name' => $clientDetail->database_name, 'database_username' => $clientDetail->database_username, 'database_password' => $clientDetail->database_password, 'order_vendor_id' => $vendor_value->id, 'auto_reject_time' => Carbon::now()->addMinute($vendorDetail->auto_reject_time)]);
+                                }
                                 $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail, $code);
                             }
                         }
@@ -960,6 +966,7 @@ class OrderController extends BaseController {
             $vendor_id = $request->vendor_id;
             $order_vendor_id = $request->order_vendor_id;
             $order_status_option_id = $request->order_status_option_id;
+            $client_preference = ClientPreference::first();
             if ($order_status_option_id == 7) {
                 $order_status_option_id = 2;
             } else if ($order_status_option_id == 8) {
@@ -974,7 +981,12 @@ class OrderController extends BaseController {
                 $vendor_order_status->order_status_option_id = $order_status_option_id;
                 $vendor_order_status->order_vendor_id = $vendor_order_status->order_vendor_id;
                 $vendor_order_status->save();
+                $currentOrderStatus = OrderVendor::where('vendor_id', $vendor_id)->where('order_id', $order_id)->first();
                 OrderVendor::where('vendor_id', $vendor_id)->where('order_id', $order_id)->update(['order_status_option_id' => $order_status_option_id]);
+                if($order_status_option_id == 2 || $order_status_option_id == 3){
+                    $clientDetail = Client::on('mysql')->where(['code' => $client_preference->client_code])->first();
+                    AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name,'order_vendor_id' => $currentOrderStatus->id])->delete();
+                }
                 $current_status = OrderStatusOption::select('id', 'title')->find($order_status_option_id);
                 if ($order_status_option_id == 2) {
                     $upcoming_status = OrderStatusOption::select('id', 'title')->where('id', '>', 3)->first();

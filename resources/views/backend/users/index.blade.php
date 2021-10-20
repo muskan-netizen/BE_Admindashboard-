@@ -255,6 +255,13 @@
                             orderable: false,
                             searchable: true,
                             "mRender": function(data, type, full) {
+                                if(full.dial_code){
+                                var dialcode = full.dial_code;
+                                full.phone_number = '+'+ dialcode + full.phone_number;
+                                }else{
+                                    full.phone_number =  full.phone_number;
+                                }
+                                
                                 if (full.is_phone_verified == 1) {
                                     if (full.phone_number) {
                                         return "<i class='mdi mdi-phone-check mr-1 mdi-icons'></i>" + full.phone_number;

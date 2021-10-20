@@ -319,21 +319,20 @@
                 @include('frontend.included_files.dynamic_page')
         @elseif($homePageLabel->slug == 'brands')  
         <section class="popular-brands left-shape position-relative">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-2 cw top-heading pr-0 text-center text-lg-left mb-3 mb-lg-0">
-                    <h2 class="h2-heading">{{ $homePageLabel->slug == 'brands' ? getNomenclatureName('brands', true) :  __($homePageLabel->title) }}</h2>
-                    <!-- <p>Check out the favorites among people.</p> -->
-                </div>
-                <div class="col-lg-10 cw">
-                    <div class="brand-slider render_{{$homePageLabel->slug }}"  id="{{$homePageLabel->slug.$key}}">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-2 cw top-heading pr-0 text-center text-lg-left mb-3 mb-lg-0">
+                        <h2 class="h2-heading">{{ $homePageLabel->slug == 'brands' ? getNomenclatureName('brands', true) :  __($homePageLabel->title) }}</h2>
+                        <!-- <p>Check out the favorites among people.</p> -->
+                    </div>
+                    <div class="col-lg-10 cw">
+                        <div class="brand-slider render_{{$homePageLabel->slug }}"  id="{{$homePageLabel->slug.$key}}">
+
+                        </div>
 
                     </div>
-
-                </div>
                 </div>
             </div>
-        </div>
         </section> 
         @elseif($homePageLabel->slug == 'vendors')
         <section class="suppliers-section pt-0 mb-2">

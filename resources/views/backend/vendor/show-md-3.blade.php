@@ -70,12 +70,6 @@
                         </div>
                     </div>
                     @endif
-                    {{-- <div class="col-md-12">
-                        <div class="form-group" id="auto_reject_timeInput">
-                            {!! Form::label('title', 'Auto Reject Time(In minutes, 0 for no rejection)',['class' => 'control-label']) !!}
-                            <input class="form-control" onkeypress="return isNumberKey(event)" name="auto_reject_time" type="text" value="{{$vendor->auto_reject_time}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
-                        </div>
-                    </div> --}}
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
@@ -86,6 +80,12 @@
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-md-12" id="auto_reject_timeInput" style="display:{{$vendor->auto_accept_order == 1 ? 'none' : 'block'}}">
+                        <div class="form-group">
+                            {!! Form::label('title', __('Auto Reject Time(In minutes, 0 for no rejection)'),['class' => 'control-label']) !!}
+                            <input class="form-control" name="auto_reject_time" type="number" value="{{$vendor->auto_reject_time}}" min="0" {{$vendor->status == 1 ? '' : 'disabled'}} >
+                        </div>
                     </div>
                     @endif
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
@@ -474,4 +474,12 @@ $('#add_user_permission_vendor').submit(function(e) {
         });
     });
 });
+
+$("input[name='auto_accept_order']").change(function() {
+    if($(this).prop('checked')){
+        $("#auto_reject_timeInput").css("display", "none");
+    } else {
+        $("#auto_reject_timeInput").css("display", "block"); 
+    }
+})
 </script>

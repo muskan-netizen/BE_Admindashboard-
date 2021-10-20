@@ -158,7 +158,7 @@ class PayfastGatewayController extends FrontController
             }
 
             if($response->status == 'Success'){
-                $this->successMail();
+            //    $this->successMail();
                 return $this->successResponse($response->data, 'Payment completed successfully.', 200);
             }else{
                 $this->failMail();
@@ -240,7 +240,7 @@ class PayfastGatewayController extends FrontController
                             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
 
                             // Send Email
-                            $this->successMail();
+                        //    $this->successMail();
                     //     }
                     // }else{
                     }
@@ -256,7 +256,7 @@ class PayfastGatewayController extends FrontController
             // }
 
             if($response->status == 'Success'){
-                $this->successMail();
+            //    $this->successMail();
                 return $this->successResponse($response->data, 'Payment completed successfully.', 200);
             }else{
                 $this->failMail();
