@@ -27,7 +27,7 @@ class CartController extends BaseController
     {
         try {
 
-            if(($request->has('gateway')) && ($request->gateway == 'mobbex')){
+            if(($request->has('gateway')) && ($request->gateway != '')){
                 if($request->has('order')){
                     $order = Order::where('order_number', $request->order)->first();
                     if($order){

@@ -62,7 +62,7 @@ class PickupDeliveryController extends FrontController{
         $product->original_tags_price = $tags_price;
         $product->tags_price = number_format($tags_price);
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
-        $product->description = $product->translation->first() ? $product->translation->first()->meta_description :'';
+        $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
         foreach ($product->variant as $k => $v) {
             $product->variant[$k]->price = $product->tags_price;

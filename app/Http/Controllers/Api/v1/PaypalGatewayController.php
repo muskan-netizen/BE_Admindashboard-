@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace App\Http\Controllers\Api\v1;
 
 use Auth;
 
@@ -11,13 +11,13 @@ use Illuminate\Http\Request;
 use Omnipay\Common\CreditCard;
 use App\Models\{PaymentOption, Client, ClientPreference, ClientCurrency};
 use App\Http\Traits\ApiResponser;
-use App\Http\Controllers\Front\FrontController;
+use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use DB;
 
-class PaypalGatewayController extends FrontController
+class PaypalGatewayController extends BaseController
 {
     use ApiResponser;
     public $gateway;
@@ -88,7 +88,7 @@ class PaypalGatewayController extends FrontController
              ));
             $response = $transaction->send();
             if ($response->isSuccessful()) {
-                // $this->successMail();
+                $this->successMail();
                 return $this->successResponse($response->getTransactionReference());
             } else {
                 $this->failMail();
