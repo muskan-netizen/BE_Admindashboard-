@@ -340,7 +340,7 @@ class ProductController extends BaseController
             }
 
             $variantData = ProductVariant::join('products as pro', 'product_variants.product_id', 'pro.id')
-                        ->with(['wishlist', 'product.media.image', 'media.image', 'translation' => function($q) use($langId){
+                        ->with(['wishlist', 'product.media.image', 'media.pimage.image', 'translation' => function($q) use($langId){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $langId);
                         },'wishlist' =>  function($q) use($userid){
@@ -360,7 +360,7 @@ class ProductController extends BaseController
                 foreach ($variantData->media as $media_key => $media_value) {
                     $data_image[$media_key]['product_variant_id'] = $media_value->product_variant_id;
                     $data_image[$media_key]['media_id'] = $media_value->product_image_id;
-                    $data_image[$media_key]['image'] = $media_value->image;
+                    $data_image[$media_key]['image'] = $media_value->pimage->image;
                 }
             }else{
                 foreach ($variantData->product->media as $media_key => $media_value) {
