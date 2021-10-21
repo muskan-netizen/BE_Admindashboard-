@@ -201,12 +201,11 @@ class VendorController extends BaseController{
                             $category->products_count = $products->count();
                         }
                         else{
-                            unset($vendor_categories[$ckey]);
+                            $vendor_categories->forget($ckey);
                         }
                     }
                 }
-                //  dd($vendor_categories->toArray());
-                $listData = $vendor_categories;
+                $listData =  array_values($vendor_categories->toArray());
             }
             else{
                 $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){

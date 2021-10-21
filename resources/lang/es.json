@@ -16,7 +16,7 @@
    "Reset Password": "Restablecer la contraseña",
    "The name must be at least 3 characters.": "El nombre debe tener al menos 3 caracteres.",
    "The name may not be greater than 50 characters.": "El nombre no puede tener más de 50 caracteres.",
-   "The phone number field is required.": "El campo de correo electrónico es obligatorio.",
+   "The phone number field is required.": "El campo del número de teléfono es obligatorio.",
    "The selected email is invalid.": "El correo electrónico seleccionado no es válido.",
    "You are not registered with us. Please sign up.": "No estás registrado con nosotros. Por favor regístrese.",
    "Send Password Reset Link": "Enviar enlace de restablecimiento de contraseña",

@@ -94,16 +94,7 @@ class VendorController extends FrontController
                 }
             }
         }
-        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-            if(Session::has('vendors')){
-                $vendors = Session::get('vendors');
-                if(!in_array($vendor->id, $vendors)){
-                    abort(404);
-                }
-            }else{
-                // abort(404);
-            }
-        }
+       
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
@@ -159,6 +150,19 @@ class VendorController extends FrontController
         }else{
             $page = 'products';
         }
+
+        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+            if(Session::has('vendors')){
+                $vendors = Session::get('vendors');
+                if(!in_array($vendor->id, $vendors)){
+                    return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
+                //  return view('frontend.vendor-not-in-location')->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
+                    abort(404);
+                }
+            }else{
+                // abort(404);
+            }
+        }
         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
         return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
     }
@@ -190,16 +194,7 @@ class VendorController extends FrontController
                 }
             }
         }
-        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-            if(Session::has('vendors')){
-                $vendors = Session::get('vendors');
-                if(!in_array($vendor->id, $vendors)){
-                    abort(404);
-                }
-            }else{
-                // abort(404);
-            }
-        }
+       
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
@@ -257,6 +252,22 @@ class VendorController extends FrontController
         }
         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
         $range_products = Product::join('product_variants', 'product_variants.product_id', '=', 'products.id')->orderBy('product_variants.price', 'desc')->select('*')->where('is_live', 1)->where('vendor_id', $vendor->id)->get();
+        
+        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+            if(Session::has('vendors')){
+                $vendors = Session::get('vendors');
+                if(!in_array($vendor->id, $vendors)){
+                    return view('frontend/vendor-'.$page)->with(['vendor' => $vendor, 'show_range' => $show_range, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands, 'range_products' => $range_products, 'vendor_category' => $slug2]);
+ 
+                //    return view('frontend.vendor-not-in-location')->with(['vendor' => $vendor, 'show_range' => $show_range, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands, 'range_products' => $range_products, 'vendor_category' => $slug2]);
+                    abort(404);
+                }
+            }else{
+                // abort(404);
+            }
+        }
+        
+        
         return view('frontend/vendor-'.$page)->with(['vendor' => $vendor, 'show_range' => $show_range, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands, 'range_products' => $range_products, 'vendor_category' => $slug2]);
     }
 

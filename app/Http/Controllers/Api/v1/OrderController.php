@@ -821,9 +821,9 @@ class OrderController extends BaseController {
                 if($luxury_option->title == 'takeaway'){
                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
                 }elseif($luxury_option->title == 'dine_in'){
-                    $luxury_option_name = 'Dine-In';
+                    $luxury_option_name = __('Dine-In');
                 }else{
-                    $luxury_option_name = 'Delivery';
+                    $luxury_option_name = __('Delivery');
                 }
             }
             $order->luxury_option_name = $luxury_option_name;

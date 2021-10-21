@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api\v1;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
-use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor};
+use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption};
 
-class StoreController extends Controller{
+class StoreController extends BaseController{
     use ApiResponser;
 
     public function getMyStoreProductList(Request $request){
@@ -83,7 +83,7 @@ class StoreController extends Controller{
 			if($user_vendor_ids){
 				$is_selected_vendor_id = $selected_vendor_id ? $selected_vendor_id : $user_vendor_ids->first();
 			}
-			$order_list = Order::with('orderStatusVendor')->select('id','order_number','payable_amount','payment_option_id','user_id')
+			$order_list = Order::with('orderStatusVendor')
 						->whereHas('vendors', function($query) use ($is_selected_vendor_id){
 						   $query->where('vendor_id', $is_selected_vendor_id);
 						})->orderBy('id', 'DESC')->paginate($paginate);
@@ -125,6 +125,21 @@ class StoreController extends Controller{
 	    				);
     				}
 				}
+				if(!empty($order->scheduled_date_time)){
+					$order->scheduled_date_time = convertDateTimeInTimeZone($order->scheduled_date_time, $user->timezone, 'M d, Y h:i A');
+				}
+				$luxury_option_name = '';
+				if($order->luxury_option_id > 0){
+					$luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+					if($luxury_option->title == 'takeaway'){
+						$luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
+					}elseif($luxury_option->title == 'dine_in'){
+						$luxury_option_name = __('Dine-In');
+					}else{
+						$luxury_option_name = __('Delivery');
+					}
+				}
+				$order->luxury_option_name = $luxury_option_name;
 				$order->product_details = $product_details;
 				$order->item_count = $order_item_count;
 				unset($order->user);

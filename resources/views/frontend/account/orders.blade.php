@@ -297,6 +297,12 @@ $timezone = Auth::user()->timezone;
                                                                     <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 @endif
+                                                                @if($order->total_discount_calculate > 0)
+                                                                <li class="d-flex align-items-center justify-content-between">
+                                                                    <label class="m-0">{{__('Discount')}}</label>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_discount_calculate * $clientCurrency->doller_compare)</span>
+                                                                </li>
+                                                                @endif
                                                                 @if($order->total_delivery_fee > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Delivery Fee')}}</label>
@@ -305,7 +311,7 @@ $timezone = Auth::user()->timezone;
                                                                 @endif
                                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Total Payable')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->payable_amount * $clientCurrency->doller_compare)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->payable_amount - $order->total_discount_calculate * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                             </ul>
                                                         </div>
@@ -376,6 +382,10 @@ $timezone = Auth::user()->timezone;
                                                                                 <label class="m-0 in-progress">{{ ucfirst($vendor->order_status) }}</label>
                                                                             </li>
                                                                         @endif
+
+
+                                                                      
+
                                                                         @if(!empty($vendor->dispatch_traking_url))
                                                                         <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
                                                                         <a href="{{route('front.booking.details',$order->order_number)}}" target="_blank">{{ __('Details') }}</a>
@@ -491,6 +501,12 @@ $timezone = Auth::user()->timezone;
                                                                     <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 @endif
+                                                                @if($order->total_discount_calculate > 0)
+                                                                <li class="d-flex align-items-center justify-content-between">
+                                                                    <label class="m-0">{{__('Discount')}}</label>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_discount_calculate * $clientCurrency->doller_compare)</span>
+                                                                </li>
+                                                                @endif
                                                                 @if($order->total_delivery_fee > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Delivery Fee')}}</label>
@@ -499,9 +515,57 @@ $timezone = Auth::user()->timezone;
                                                                 @endif
                                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Total Payable')}}</label>
-                                                                    <span>{{Session::get('currencySymbol')}}@money($order->payable_amount * $clientCurrency->doller_compare)</span>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->payable_amount-$order->total_discount_calculate * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                             </ul>
+
+                                                            @if($client_preference_detail->tip_after_order == 1 && $order->tip_amount <= 0 && 1==2)
+                                                            <hr>
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <div class="mb-2">{{__('Do you want to give a tip?')}}</div>
+                                                                    <div class="tip_radio_controls">
+                                                                        @if($order->payable_amount > 0) 
+                                                                            <input type="radio" class="tip_radio" id="control_01" name="select{{$order->order_number}}" value="{{$order->payable_amount*0.05}}">
+                                                                            <label class="tip_label" for="control_01">
+                                                                                <h5 class="m-0" id="tip_5">{{Session::get('currencySymbol')}}{{$order->payable_amount*0.05}}</h5>
+                                                                                <p class="m-0">5%</p>
+                                                                            </label>
+                                                                        
+                                                                            <input type="radio" class="tip_radio" id="control_02" name="select{{$order->order_number}}" value="{{$order->payable_amount*0.10}}" >
+                                                                            <label class="tip_label" for="control_02">
+                                                                                <h5 class="m-0" id="tip_10">{{Session::get('currencySymbol')}}{{$order->payable_amount*0.10}}</h5>
+                                                                                <p class="m-0">10%</p>
+                                                                            </label>
+                                                                        
+                                                                            <input type="radio" class="tip_radio" id="control_03" name="select{{$order->order_number}}" value="{{$order->payable_amount*0.15}}" >
+                                                                            <label class="tip_label" for="control_03">
+                                                                                <h5 class="m-0" id="tip_15">{{Session::get('currencySymbol')}}{{$order->payable_amount*0.15}}</h5>
+                                                                                <p class="m-0">15%</p>
+                                                                            </label>
+                                                
+                                                                            <input type="radio" class="tip_radio" id="custom_control{{$order->order_number}}" name="select{{$order->order_number}}" value="custom" >
+                                                                            <label class="tip_label" for="custom_control{{$order->order_number}}">
+                                                                                <h5 class="m-0">{{__('Custom')}}<br>{{__('Amount')}}</h5>
+                                                                            </label>
+                                                                        @else
+                                                                            <input type="radio" class="tip_radio" id="custom_control{{$order->order_number}}" name="select{{$order->order_number}}" value="custom" checked>
+                                                                            <label class="tip_label" for="custom_control{{$order->order_number}}">
+                                                                                <h5 class="m-0">{{__('Custom')}}<br>{{__('Amount')}}</h5>
+                                                                            </label>
+                                                                        @endif
+                                                                    </div>
+                                                                    <div class="custom_tip mb-1 @if($order->payable_amount  > 0)  d-none @endif">
+                                                                        <input class="input-number form-control" name="custom_tip_amount{{$order->order_number}}" id="custom_tip_amount" placeholder="Enter Custom Amount" type="number" value="" step="0.1">
+                                                                    </div>
+                                                                    <div class="col-md-6 text-md-right text-center">
+                                                                        <button type="button" class="btn btn-solid topup_wallet_btn_tip topup_wallet_btn_for_tip"  data-order_number={{$order->order_number}} data-payableamount={{$order->payable_amount}} >{{__('Submit')}}</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="my-2">
+                                                            @endif
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -740,8 +804,58 @@ $timezone = Auth::user()->timezone;
         </div>
     </div>
 </div>
+
+
+<!-- tip after order complete -->
+@include('frontend.modals.tip_after_order')
+
+<!-- end tip order after complete -->
+
+
+
 @endsection
 @section('script')
+<script src="https://js.stripe.com/v3/"></script>
+<script src="{{asset('js/tip_after_order.js')}}"></script>
+<script src="{{asset('js/payment.js')}}"></script>
+<script type="text/javascript">
+ $(document).delegate(".topup_wallet_btn_tip", "click", function () {
+     $('#topup_wallet').modal('show'); 
+     var payable_amount = $(this).attr('data-payableamount');
+     var order_number = $(this).attr('data-order_number');
+     var input_name = "select"+order_number;
+     var custom_tip_amount = "custom_tip_amount"+order_number;
+
+     var select_tip =  $('input[name="' + input_name + '"]:checked').val();
+     if(select_tip != 'custom'){
+         $('.wallet_balance').html(select_tip);
+        var tip_amount = select_tip;
+    }
+     else{
+        $('.wallet_balance').html($('input[name="' + custom_tip_amount + '"]').val());
+        var tip_amount = $('input[name="' + custom_tip_amount + '"]').val();
+    }
+   
+     $("#wallet_amount").val(tip_amount);
+     $("#cart_tip_amount").val(tip_amount);
+     
+
+       
+    });
+    var ajaxCall = 'ToCancelPrevReq';
+    var credit_tip_url = "{{route('user.tip_after_order')}}";
+    var payment_stripe_url = "{{route('payment.stripe')}}";
+    var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
+    var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
+    var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
+    var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
+    var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
+    var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
+    var amount_required_error_msg = "{{__('Please enter amount.') }}";
+    var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
+   
+</script>
+
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
     $('.verifyEmail').click(function() {

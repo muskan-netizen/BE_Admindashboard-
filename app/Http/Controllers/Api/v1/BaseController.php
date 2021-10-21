@@ -404,7 +404,7 @@ class BaseController extends Controller{
         return $time;
     }
 
-    function getNomenclatureName($searchTerm, $langId, $plural = true){
+    public function getNomenclatureName($searchTerm, $langId, $plural = true){
         $result = Nomenclature::with(['translations' => function($q) use($langId) {
                     $q->where('language_id', $langId);
                 }])->where('label', 'LIKE', "%{$searchTerm}%")->first();

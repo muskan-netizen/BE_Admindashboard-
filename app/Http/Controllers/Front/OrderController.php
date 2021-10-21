@@ -51,8 +51,7 @@ class OrderController extends FrontController
             });
         })
         ->where('orders.user_id', $user->id)
-        ->orderBy('orders.id', 'DESC')->paginate(10);
-
+        ->orderBy('orders.id', 'DESC')->select('*','id as total_discount_calculate')->paginate(10);
         $activeOrders = Order::with(['vendors' => function ($q) {
             $q->where('order_status_option_id', '!=', 6);
         },
@@ -69,7 +68,7 @@ class OrderController extends FrontController
             });
         })
         ->where('orders.user_id', $user->id)
-        ->orderBy('orders.id', 'DESC')->paginate(10);
+        ->orderBy('orders.id', 'DESC')->select('*','id as total_discount_calculate')->paginate(10);
         foreach ($activeOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
@@ -150,7 +149,7 @@ class OrderController extends FrontController
         }
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
 
-        
+        //dd($pastOrders->toArray());
         return view('frontend/account/orders')->with(['navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency]);
     }
 
@@ -1695,6 +1694,44 @@ class OrderController extends FrontController
         unset($order->products);
         unset($order->paymentOption);
         return $order;
+    }
+
+
+    
+     /**
+     * Credit Money Into Wallet
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function tipAfterOrder(Request $request, $domain = '')
+    {
+      
+        $user = Auth::user();
+        
+        if($user){
+            $credit_amount = $request->wallet_amount;
+            $wallet = $user->wallet;
+            if ($credit_amount > 0) {
+                $saved_transaction = Transaction::where('meta', 'like', '%'.$request->transaction_id.'%')->first();
+                if($saved_transaction){
+                    return $this->errorResponse('Transaction has already been done', 400);
+                }
+
+                $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
+                $transactions = Transaction::where('payable_id', $user->id)->get();
+                $response['wallet_balance'] = $wallet->balanceFloat;
+                $response['transactions'] = $transactions;
+                $message = 'Tip has been credited successfully';
+                Session::put('success', $message);
+                return $this->successResponse($response, $message, 200);
+            }
+            else{
+                return $this->errorResponse('Amount is not sufficient', 400);
+            }
+        }
+        else{
+            return $this->errorResponse('Invalid User', 400);
+        }
     }
 
 }

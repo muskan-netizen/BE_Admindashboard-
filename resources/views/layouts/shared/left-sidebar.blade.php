@@ -148,7 +148,7 @@
                                             @endif
                                         </ul>
                                     </div>
-                                </li>
+                                </li> 
                             @endif
                             @if(Auth::user()->is_superadmin == 1)
                             {{-- @if(count(array_intersect($subscription_permissions, $allowed)) || Auth::user()->is_superadmin == 1) --}}

@@ -29,6 +29,7 @@ Route::get('admin/wrong/url', 'Auth\LoginController@wrongurl')->name('wrong.clie
 // ADMIN LANGUAGE SWITCH
 Route::group(['middleware' => 'adminLanguageSwitch'], function () {
     Route::group(['middleware' => ['ClientAuth', 'database'], 'prefix' => '/client'], function () {
+        
         Route::any('/logout', 'Auth\LoginController@logout')->name('client.logout');
         Route::get('profile', 'Client\UserController@profile')->name('client.profile');
         Route::get('dashboard', 'Client\DashBoardController@index')->name('client.dashboard');
@@ -70,24 +71,24 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/loyalty/filter', [LoyaltyController::class, 'filter'])->name('account.loyalty.filter');
         Route::get('account/loyalty/export', [LoyaltyController::class, 'export'])->name('account.loyalty.export');
         Route::get('account/order/export', [OrderController::class, 'export'])->name('account.order.export');
-        Route::get('configure', 'Client\ClientPreferenceController@index')->name('configure.index');
+        Route::get('configure', 'Client\ClientPreferenceController@index')->name('configure.index')->middleware('onlysuperadmin');
         Route::post('nomenclature/add', 'Client\NomenclatureController@store')->name('nomenclature.store');
         Route::post('cleanSoftDeleted', 'Client\ManageContentController@deleteAllSoftDeleted')->name('config.cleanSoftDeleted');
         Route::post('importDemoContent', 'Client\ManageContentController@importDemoContent')->name('config.importDemoContent');
         Route::post('hardDeleteEverything', 'Client\ManageContentController@hardDeleteEverything')->name('config.hardDeleteEverything');
-        Route::get('customize', 'Client\ClientPreferenceController@getCustomizePage')->name('configure.customize');
+        Route::get('customize', 'Client\ClientPreferenceController@getCustomizePage')->name('configure.customize')->middleware('onlysuperadmin');
         Route::post('configUpdate/{code}', 'Client\ClientPreferenceController@update')->name('configure.update');
         Route::post('referandearnUpdate/{code}', 'Client\ClientPreferenceController@referandearnUpdate')->name('referandearn.update');
         Route::post('updateDomain/{code}', 'Client\ClientPreferenceController@postUpdateDomain')->name('client.updateDomain');
-        Route::resource('banner', 'Client\BannerController');
+        Route::resource('banner', 'Client\BannerController')->middleware('onlysuperadmin');
         Route::post('banner/saveOrder', 'Client\BannerController@saveOrder');
         Route::post('banner/changeValidity', 'Client\BannerController@validity');
         Route::post('banner/toggle', 'Client\BannerController@toggleAllBanner')->name('banner.toggle');
-        Route::resource('mobilebanner', 'Client\MobileBannerController');
+        Route::resource('mobilebanner', 'Client\MobileBannerController')->middleware('onlysuperadmin');
         Route::post('mobilebanner/saveOrder', 'Client\MobileBannerController@saveOrder');
         Route::post('mobilebanner/changeValidity', 'Client\MobileBannerController@validity');
         Route::post('mobilebanner/toggle', 'Client\MobileBannerController@toggleAllBanner')->name('mobilebanner.toggle');
-        Route::get('web-styling', 'Client\WebStylingController@index')->name('webStyling.index');
+        Route::get('web-styling', 'Client\WebStylingController@index')->name('webStyling.index')->middleware('onlysuperadmin');
         Route::post('web-styling/updateWebStyles', 'Client\WebStylingController@updateWebStyles')->name('styling.updateWebStyles');
         Route::post('web-styling/updateWebStylesNew', 'Client\WebStylingController@updateWebStylesNew')->name('styling.updateWebStylesNew');
         Route::get('web-styling/get-html-data-in-modal', 'Client\WebStylingController@getHtmlDatainModal')->name('get-html-data-in-modal');
@@ -101,7 +102,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('web-styling/pickup-append-section', 'Client\WebStylingController@appendPickupSection')->name('pickup.append.section');
         Route::get('web-styling/pickup-delete-section/{id}', 'Client\WebStylingController@deletePickupSection')->name('pickup.delete.section');
         Route::post('web-styling/updateHomePageStyle', 'Client\WebStylingController@updateHomePageStyle')->name('web.styling.updateHomePageStyle');
-        Route::get('app-styling', 'Client\AppStylingController@index')->name('appStyling.index');
+        Route::get('app-styling', 'Client\AppStylingController@index')->name('appStyling.index')->middleware('onlysuperadmin');
         Route::post('app-styling/updateFont', 'Client\AppStylingController@updateFont')->name('styling.updateFont');
         Route::post('app-styling/updateColor', 'Client\AppStylingController@updateColor')->name('styling.updateColor');
         Route::post('app-styling/updateTabBar', 'Client\AppStylingController@updateTabBar')->name('styling.updateTabBar');
@@ -167,7 +168,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('order/update-product-return-client', 'Client\OrderController@updateProductReturn')->name('update.order.return.client');
         Route::get('order/{order_id}/{vendor_id}', 'Client\OrderController@getOrderDetail')->name('order.show.detail');
         Route::post('order/updateStatus', 'Client\OrderController@changeStatus')->name('order.changeStatus');
-        Route::resource('customer', 'Client\UserController');
+        Route::resource('customer', 'Client\UserController')->middleware('onlysuperadmin');
         Route::get('customer/account/{user}/{action}', 'Client\UserController@deleteCustomer')->name('customer.account.action');
         Route::get('customer/edit/{id}', 'Client\UserController@newEdit')->name('customer.new.edit');
         Route::put('newUpdate/edit/{id}', 'Client\UserController@newUpdate')->name('customer.new.update');
@@ -202,12 +203,12 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('inquiry', 'Client\ProductInquiryController');
         Route::get('inquiry/filter', [ProductInquiryController::class, 'show'])->name('inquiry.filter');
 
-        Route::get('subscription/plans/user', 'Client\SubscriptionPlansUserController@getSubscriptionPlans')->name('subscription.plans.user');
+        Route::get('subscription/plans/user', 'Client\SubscriptionPlansUserController@getSubscriptionPlans')->name('subscription.plans.user')->middleware('onlysuperadmin');
         Route::post('subscription/plan/save/user/{slug?}', 'Client\SubscriptionPlansUserController@saveSubscriptionPlan')->name('subscription.plan.save.user');
         Route::get('subscription/plan/edit/user/{slug}', 'Client\SubscriptionPlansUserController@editSubscriptionPlan')->name('subscription.plan.edit.user');
         Route::get('subscription/plan/delete/user/{slug}', 'Client\SubscriptionPlansUserController@deleteSubscriptionPlan')->name('subscription.plan.delete.user');
         Route::post('subscription/plan/updateStatus/user/{slug}', 'Client\SubscriptionPlansUserController@updateSubscriptionPlanStatus')->name('subscription.plan.updateStatus.user');
-        Route::get('subscription/plans/vendor', 'Client\SubscriptionPlansVendorController@getSubscriptionPlans')->name('subscription.plans.vendor');
+        Route::get('subscription/plans/vendor', 'Client\SubscriptionPlansVendorController@getSubscriptionPlans')->name('subscription.plans.vendor')->middleware('onlysuperadmin');
         Route::post('subscription/plan/save/vendor/{slug?}', 'Client\SubscriptionPlansVendorController@saveSubscriptionPlan')->name('subscription.plan.save.vendor');
         Route::get('subscription/plan/edit/vendor/{slug}', 'Client\SubscriptionPlansVendorController@editSubscriptionPlan')->name('subscription.plan.edit.vendor');
         Route::get('subscription/plan/delete/vendor/{slug}', 'Client\SubscriptionPlansVendorController@deleteSubscriptionPlan')->name('subscription.plan.delete.vendor');

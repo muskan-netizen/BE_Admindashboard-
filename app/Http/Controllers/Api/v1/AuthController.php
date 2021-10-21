@@ -147,29 +147,46 @@ class AuthController extends BaseController
      */
     public function signup(Request $signReq)
     {
-        $validator = Validator::make($signReq->all(), [
+        $preferences = ClientPreference::first();
+        $rules = [
             'dial_code'   => 'required|string',
             'device_type'   => 'required|string',
             'device_token'  => 'required|string',
             'country_code'  => 'required|string',
             'name'          => 'required|string|min:3|max:50',
             'password'      => 'required|string|min:6|max:50',
-            'email'         => 'required|email|max:50||unique:users',
-            'phone_number'  => 'required|string|min:8|max:15|unique:users',
             'refferal_code' => 'nullable|exists:user_refferals,refferal_code',
-        ]);
+        ];
+        if($preferences->verify_email == 1){
+            $rules['email'] = 'required|email|unique:users';
+        }
+        if($preferences->verify_phone == 1){
+            $rules['phone_number'] = 'required|string|min:8|max:15|unique:users';
+        }
+        $validator = Validator::make($signReq->all(), $rules);
+        if( (empty($signReq->email)) && (empty($signReq->phone_number)) ){
+            $validator = Validator::make($signReq->all(), [
+                'email'  => 'required',
+                'phone_number'  => 'required'
+            ],[
+                "email.required" => __('The email or phone number field is required.'),
+                "phone_number.required" => __('The email or phone number field is required.'),
+            ]);
+        }
         if ($validator->fails()) {
             foreach ($validator->errors()->toArray() as $error_key => $error_value) {
                 $errors['error'] = __($error_value[0]);
                 return response()->json($errors, 422);
             }
         }
+
         $user = new User();
 
-        foreach ($signReq->only('name', 'email', 'phone_number', 'country_id', 'dial_code') as $key => $value) {
+        foreach ($signReq->only('name', 'country_id', 'phone_number', 'dial_code') as $key => $value) {
             $user->{$key} = $value;
         }
         $country_detail = Country::where('code', $signReq->country_code)->first();
+        $email = (!empty($signReq->email)) ? $signReq->email : ('ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com');
         $phoneCode = mt_rand(100000, 999999);
         $emailCode = mt_rand(100000, 999999);
         $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
@@ -177,6 +194,7 @@ class AuthController extends BaseController
         $user->type = 1;
         $user->status = 1;
         $user->role_id = 1;
+        $user->email = $email;
         $user->is_email_verified = 0;
         $user->is_phone_verified = 0;
         $user->phone_token = $phoneCode;

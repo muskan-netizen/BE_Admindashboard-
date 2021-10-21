@@ -77,5 +77,6 @@ class Kernel extends HttpKernel
         'ClientAuth' => \App\Http\Middleware\ClientAuth::class,
         'systemAuth'    =>\App\Http\Middleware\SystemAuth::class,
         'ApiLocalization' => \App\Http\Middleware\ApiLocalization::class,
+        'onlysuperadmin' => \App\Http\Middleware\OnlySuperAdmin::class,
     ];
 }

@@ -170,11 +170,11 @@ class SetDummyDataForDemo extends Command
                 ClientPreference::on($schemaName)->where('id', 1)->update(['is_hyperlocal' => 0]);
                 
                 DB::disconnect($schemaName);
-                Log::info("import dummy data: {$schemaName}!");
+              //  Log::info("import dummy data: {$schemaName}!");
             }
         } catch (\PDOException $e) {
             DB::connection($schemaName)->rollBack();
-            Log::info("import dummy data: {$schemaName}!{$e->getMessage()}");
+          //  Log::info("import dummy data: {$schemaName}!{$e->getMessage()}");
             
         }
             

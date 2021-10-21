@@ -33,7 +33,14 @@ class Category extends Model
     }
 
     public function english(){
-       return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', 1); 
+      $primary = ClientLanguage::orderBy('is_primary','desc')->first();
+      if(isset($primary) && !empty($primary))
+      {
+        $langset = $primary->language_id ;
+      }else{
+        $langset = 1;
+      }
+       return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset); 
     }
     
     public function primary(){

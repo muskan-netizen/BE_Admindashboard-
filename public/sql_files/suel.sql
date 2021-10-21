@@ -1918,3 +1918,7 @@ INSERT INTO `cab_booking_layout_transaltions` (`id`, `title`, `cab_booking_layou
 (4, NULL, 4, 1, '2021-10-04 11:33:02', '2021-10-04 11:33:02', NULL),
 (5, NULL, 5, 1, '2021-10-04 11:33:02', '2021-10-04 11:33:02', NULL),
 (6, NULL, 6, 1, '2021-10-04 11:33:02', '2021-10-04 11:33:02', NULL);
+
+UPDATE `client_preferences` SET `dinein_check` = 0 WHERE `client_preferences`.`id` = 1;
+UPDATE `client_preferences` SET `takeaway_check` = 0 WHERE `client_preferences`.`id` = 1;
+UPDATE `client_preferences` SET `delivery_check` = 1 WHERE `client_preferences`.`id` = 1;
