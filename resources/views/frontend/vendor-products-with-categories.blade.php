@@ -314,6 +314,7 @@
                                 @endif
                             </section>
                             @empty
+                                <h4 class="mt-3 mb-3 text-center">No product found</h4>
                             @endforelse
                         </div>
                         <div class="col-12 col-lg-3 d-lg-inline-block d-none">

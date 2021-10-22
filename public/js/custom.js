@@ -787,6 +787,12 @@ $(document).ready(function () {
         let walletElement = $("input[name='wallet_amount']");
         let subscriptionElement = $("input[name='subscription_amount']");
         let tipElement = $("#cart_tip_amount");
+        // *** for tip after order **** //
+        let order_number = $("#order_number");
+        if (order_number.length > 0) {
+            order_number = order_number;
+        }
+        // ***** end for tip after order *****//////
         let ajaxData = [];
         if (cartElement.length > 0) {
             total_amount = cartElement.val();
@@ -821,7 +827,7 @@ $(document).ready(function () {
                     else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
                         creditWallet(total_amount, payment_option_id, resp.data.id);
                     }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
-                        creditTipAfterOrder(total_amount, payment_option_id, resp.data.id);
+                        creditTipAfterOrder(total_amount, payment_option_id, resp.data.id,order_number);
                     }else if (path.indexOf("subscription") !== -1) {
                         userSubscriptionPurchase(total_amount, payment_option_id, resp.data.id);
                     }
@@ -2453,12 +2459,12 @@ $(document).ready(function () {
 
     ///////////////// tip after order place /////////////////////////////////
 
-    window.creditTipAfterOrder = function creditTipAfterOrder(amount, payment_option_id, transaction_id) {
+    window.creditTipAfterOrder = function creditTipAfterOrder(amount, payment_option_id, transaction_id,order_number) {
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: credit_tip_url,
-            data: { wallet_amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id },
+            data: { wallet_amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id , order_number: order_number},
             success: function (response) {
                // var currentUrl = window.location.href;
                 location.href = path;

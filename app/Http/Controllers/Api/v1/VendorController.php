@@ -118,12 +118,20 @@ class VendorController extends BaseController{
                     $vendor_categories = $vendor_categories->whereHas('category', function($query) use($categorySlug) {
                         $query->where('slug', $categorySlug);
                     });
+                    $vendor_categories = $vendor_categories->where('status', 1)->get();
+                    foreach($vendor_categories as $category){
+                        $childs = $this->getChildCategoriesForVendor($category->category_id, $langId, $vid);
+                        foreach($childs as $child){
+                            $vendor_categories->push($child);
+                        }
+                    }
                 }else{
-                    $vendor_categories = $vendor_categories->whereHas('category', function($query) {
-                        $query->whereIn('type_id', [1]);
-                    });
+                    // $vendor_categories = $vendor_categories->whereHas('category', function($query) {
+                    //     $query->whereIn('type_id', [1]);
+                    // });
+                    $vendor_categories = $vendor_categories->where('status', 1)->get();
                 }
-                $vendor_categories = $vendor_categories->where('status', 1)->get();
+                
                 foreach($vendor_categories as $ckey => $category) {
                     if($category->category){
                         $categoriesList = $categoriesList . ($category->category->translation->first()->name ?? '');
@@ -197,12 +205,12 @@ class VendorController extends BaseController{
                         $category->products = $products;
                         $category->products_count = $products->count();
                     }else{
-                        if(isset($categorySlug) && ($categorySlug != '')){
-                            $category->products_count = $products->count();
-                        }
-                        else{
+                        // if(isset($categorySlug) && ($categorySlug != '')){
+                        //     $category->products_count = $products->count();
+                        // }
+                        // else{
                             $vendor_categories->forget($ckey);
-                        }
+                        // }
                     }
                 }
                 $listData =  array_values($vendor_categories->toArray());

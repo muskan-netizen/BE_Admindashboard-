@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature};
+use App\Models\{Client, Category, Product, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, VendorCategory};
 
 class BaseController extends Controller{
     private $field_status = 2;
@@ -42,6 +42,42 @@ class BaseController extends Controller{
             }
         }
         return $branch;
+    }
+
+    public function getChildCategoriesForVendor($category_id, $langId=1, $vid=0)
+    {
+        $category_list = array();
+
+        $categories = Category::with(['translation' => function($q) use($langId){
+                $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                ->where('category_translations.language_id', $langId);
+            }, 'childs'])
+            ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id')
+            ->where('parent_id', $category_id)->where('status', 1)->get();
+        if($categories){
+            foreach($categories as $cate){
+                if($cate->childs){
+                    foreach($cate->childs as $child){
+                        $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
+                            $q->where('category_translations.language_id', $langId);
+                        }])->where('vendor_id', $vid)->where('category_id', $child->id)->where('status', 1)->first();
+                        if($vendorCategory){
+                            $category_list[] = $vendorCategory;
+                        }
+                        $this->getChildCategoriesForVendor($child->id, $langId, $vid);
+                    }
+                }
+                
+                $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
+                    $q->where('category_translations.language_id', $langId);
+                }])->where('vendor_id', $vid)->where('category_id', $cate->id)->where('status', 1)->first();
+                if($vendorCategory){
+                    $category_list[] = $vendorCategory;
+                }
+                $this->getChildCategoriesForVendor($cate->id, $langId, $vid);
+            }
+        }
+        return $category_list;
     }
 
     public function categoryNav($lang_id, $vends=[]) {

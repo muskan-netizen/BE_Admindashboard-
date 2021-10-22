@@ -519,7 +519,7 @@ $timezone = Auth::user()->timezone;
                                                                 </li>
                                                             </ul>
 
-                                                            @if($client_preference_detail->tip_after_order == 1 && $order->tip_amount <= 0 && 1==2)
+                                                            @if($client_preference_detail->tip_after_order == 1 && $order->tip_amount <= 0 && 1 == 2)
                                                             <hr>
                                                             <div class="row">
                                                                 <div class="col-12">
@@ -556,7 +556,7 @@ $timezone = Auth::user()->timezone;
                                                                         @endif
                                                                     </div>
                                                                     <div class="custom_tip mb-1 @if($order->payable_amount  > 0)  d-none @endif">
-                                                                        <input class="input-number form-control" name="custom_tip_amount{{$order->order_number}}" id="custom_tip_amount" placeholder="Enter Custom Amount" type="number" value="" step="0.1">
+                                                                        <input class="input-number form-control" name="custom_tip_amount{{$order->order_number}}" id="custom_tip_amount{{$order->order_number}}" placeholder="Enter Custom Amount" type="number" value="" step="0.1">
                                                                     </div>
                                                                     <div class="col-md-6 text-md-right text-center">
                                                                         <button type="button" class="btn btn-solid topup_wallet_btn_tip topup_wallet_btn_for_tip"  data-order_number={{$order->order_number}} data-payableamount={{$order->payable_amount}} >{{__('Submit')}}</button>
@@ -838,8 +838,8 @@ $timezone = Auth::user()->timezone;
    
      $("#wallet_amount").val(tip_amount);
      $("#cart_tip_amount").val(tip_amount);
+     $("#order_number").val(order_number);
      
-
        
     });
     var ajaxCall = 'ToCancelPrevReq';

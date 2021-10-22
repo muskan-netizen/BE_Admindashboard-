@@ -19,6 +19,7 @@
                 
                   <input class="form-control" name="wallet_amount" id="wallet_amount" type="hidden" placeholder="Enter Amount">
                   <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
+                  <input type="hidden" name="order_number" id="order_number" value="0"> 
                   <span class="error-msg" id="wallet_amount_error"></span>
               </div>
                <hr class="mt-0 mb-1" />
