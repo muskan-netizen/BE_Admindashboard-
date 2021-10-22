@@ -78,10 +78,14 @@ $timezone = Auth::user()->timezone;
                                     @endif
 
                                     <li class="{{$class}} {{$glow}}  @if(in_array($order_status_option->id, $open_option))open-for-update-status @else disabled @endif" data-status_option_id="{{$order_status_option->id}}" data-order_vendor_id="{{$order_status_option->order_vendor_id}}">
-                                        <h5 class="mt-0 mb-1">{{$order_status_option->title}}</h5>
+                                        @if( ($order_status_option->id == 5) && (($order->luxury_option_id == 2) || ($order->luxury_option_id == 3)) )
+                                            <h5 class="mt-0 mb-1">{{__('Order Prepared')}}</h5>
+                                        @else
+                                            <h5 class="mt-0 mb-1">{{$order_status_option->title}}</h5>
+                                        @endif
                                         <p class="text-muted" id="text_muted_{{$order_status_option->id}}">
                                             @if($date)
-                                            <small class="text-muted">{{convertDateTimeInTimeZone($date, $timezone, 'l, F d, Y, H:i A')}}</small>
+                                                <small class="text-muted">{{convertDateTimeInTimeZone($date, $timezone, 'l, F d, Y, H:i A')}}</small>
                                             @endif
                                         </p>
                                     </li>

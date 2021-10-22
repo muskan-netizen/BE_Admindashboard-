@@ -86,7 +86,14 @@ class StoreController extends BaseController{
 			$order_list = Order::with('orderStatusVendor')
 						->whereHas('vendors', function($query) use ($is_selected_vendor_id){
 						   $query->where('vendor_id', $is_selected_vendor_id);
-						})->orderBy('id', 'DESC')->paginate($paginate);
+						})
+						->where(function ($q1) {
+							$q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+							$q1->orWhere(function ($q2) {
+								$q2->where('payment_option_id', 1);
+							});
+						})
+						->orderBy('id', 'DESC')->paginate($paginate);
 			foreach ($order_list as $order) {
 				$order_status = [];
 				$product_details = [];

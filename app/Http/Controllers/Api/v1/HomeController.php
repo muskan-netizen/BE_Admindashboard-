@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature};
+use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial};
 
 class HomeController extends BaseController
 {
@@ -40,8 +40,10 @@ class HomeController extends BaseController
             }
             $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
+            $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
             $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
             $homeData['profile']->preferences->search_nomenclature = $search_nomenclature;
+            $homeData['profile']->preferences->vendors_nomenclature = $vendors_nomenclature;
             $homeData['languages'] = ClientLanguage::with('language')->select('language_id', 'is_primary')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
             $banners = Banner::select("id", "name", "description", "image", "image_mobile", "link", 'redirect_category_id', 'redirect_vendor_id')
                 ->where('status', 1)->where('validity_on', 1)
@@ -125,6 +127,7 @@ class HomeController extends BaseController
             $homeData['banners'] = $banners;
             $homeData['mobile_banners'] = $mobile_banners;
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
+            $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
             $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
             if ($stripe_creds) {
                 $creds_arr = json_decode($stripe_creds->credentials);

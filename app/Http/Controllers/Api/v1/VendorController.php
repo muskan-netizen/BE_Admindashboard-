@@ -44,7 +44,7 @@ class VendorController extends BaseController{
         }
     }
 
-    public function productsByVendor(Request $request, $vid = 0){
+    public function productsByVendor(Request $request, $vid = 0, $categorySlug=''){
         try {
             if($vid == 0){
                 return response()->json(['error' => 'No record found.'], 404);

@@ -75,14 +75,14 @@
                     <h6 class="mb-1"><%= vendor.name %></h6>
                     <p title="<%= vendor.categoriesList %>" class="vendor-cate border-bottom pb-1 mb-1 ellips"><%= vendor.categoriesList %></p>
                     <div class="product-timing">
-                        <small title="<%= vendor.address %>" class="ellips d-block"><i class="fa fa-map-marker"></i> <%= vendor.address %></small>
+                        <small title="<%= vendor.address %>" class="ellips d-block"><span class="icon-location2"></span> <%= vendor.address %></small>
                         <% if(vendor.timeofLineOfSightDistance != undefined){ %>
                             <ul class="timing-box mb-1">
                                 <li>
-                                    <small class="d-block"><img class="d-inline-block mr-1" src="{{ asset('front-assets/images/distance.png') }}" alt=""> <%= vendor.lineOfSightDistance %></small>
+                                    <small class="d-block"><span class="icon-location2"></span> <%= vendor.lineOfSightDistance %></small>
                                 </li>
                                 <li>
-                                    <small class="d-block mx-1"><i class="fa fa-clock-o"></i> <%= vendor.timeofLineOfSightDistance %> min</small>
+                                    <small class="d-block mx-1"><span class="icon-clock"></span> <%= vendor.timeofLineOfSightDistance %> min</small>
                                 </li>
                             </ul>
                         <% } %>

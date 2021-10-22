@@ -202,9 +202,11 @@
                                                 @endif
                                             </div>
                                         </div>
+                                        @if(count($listData))
                                         <div class="pagination pagination-rounded justify-content-end mb-0">
                                             {{ $listData->links() }}
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

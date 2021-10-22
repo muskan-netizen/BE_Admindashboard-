@@ -1,11 +1,11 @@
- 
+
   @font-face {
     font-family: 'icomoon';
-    src:  url('../fonts/icomoon.eot?k382lc');
-    src:  url('../fonts/icomoon.eot?k382lc#iefix') format('embedded-opentype'),
-      url('../fonts/icomoon.ttf?k382lc') format('truetype'),
-      url('../fonts/icomoon.woff?k382lc') format('woff'),
-      url('../fonts/icomoon.svg?k382lc#icomoon') format('svg');
+    src:  url('../fonts/icomoon.eot?27nj8m');
+    src:  url('../fonts/icomoon.eot?27nj8m#iefix') format('embedded-opentype'),
+      url('../fonts/icomoon.ttf?27nj8m') format('truetype'),
+      url('../fonts/icomoon.woff?27nj8m') format('woff'),
+      url('../fonts/icomoon.svg?27nj8m#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -20,6 +20,16 @@
     font-variant: normal;
     text-transform: none;
     line-height: 1;
+    
+    /* Enable Ligatures ================ */
+    letter-spacing: 0;
+    -webkit-font-feature-settings: "liga";
+    -moz-font-feature-settings: "liga=1";
+    -moz-font-feature-settings: "liga";
+    -ms-font-feature-settings: "liga" 1;
+    font-feature-settings: "liga";
+    -webkit-font-variant-ligatures: discretionary-ligatures;
+    font-variant-ligatures: discretionary-ligatures;
   
     /* Better Font Rendering =========== */
     -webkit-font-smoothing: antialiased;
@@ -57,6 +67,12 @@
   .icon-ic_lang:before {
     content: "\e901";
     color: #fff;
+  }
+  .icon-location2:before {
+    content: "\e948";
+  }
+  .icon-clock:before {
+    content: "\e94e";
   }
   
   
@@ -27443,11 +27459,12 @@ body.dark {
 .dark-light {
     position: fixed;
     right: 0;
-    width: 80px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
+    text-align: center;
     z-index: 1;
     -webkit-box-align: center;
     -ms-flex-align: center;
@@ -27468,7 +27485,11 @@ body.dark {
     cursor: pointer;
 }
 
-.theme-layout-version:before {
+.theme-layout-version {
+    opacity: 0;
+}
+
+/* .theme-layout-version:before {
     content: "\f186";
     font-family: 'FontAwesome';
     position: absolute;
@@ -27488,6 +27509,42 @@ body.dark {
     top: 50%;
     transform: translateY(-50%);
     animation-name: spin;
+} */
+
+.dark-light:before {
+    content: "\e908";
+    font-family: 'icomoon' !important;
+    font-size: 18px;
+    position: absolute;
+    left: 0;
+    color: #fff;
+    top: 50%;
+    margin: auto;
+    right: 0;
+    transform: translateY(-50%);
+    animation-name: spin;
+}
+
+.dark .dark-light:before {
+    content: "\e909";
+    font-family: 'icomoon' !important;
+    font-size: 24px;
+    position: absolute;
+    left: 0;
+    color: #fff;
+    top: 50%;
+    margin: auto;
+    right: 0;
+    transform: translateY(-50%);
+    animation-name: spin;
+}
+
+.dark .dark-light {
+    background: #fff;
+}
+
+.dark .dark-light:before {
+    color: #000;
 }
 
 .setting-sidebar {

@@ -5,33 +5,26 @@
 
 
     <!-- Cab Booking Start From Here -->
-    <section class="cab-banner-area p-0">
-        <div class="container p-64">
+    <section class="jet-taxi-banner">
+        <div class="container">
             <div class="row">
-                <div class="col-md-6">
-                    <div class="card-box mb-0">
-                        <h1>Request a ride now</h1>
-                        <form action="" class="cab-booking-form">
-
-                            <div class="cab-input">
-                                <div class="form-group mb-1 position-relative">
-                                    <input class="form-control" type="text" placeholder="Enter pickup location">
-                                    <a class="location-btn" href="#">
-                                        <img src="{{asset('front-assets/images/arrow.svg')}}" alt="">
-                                    </a>
-                                </div>
-                                <div class="form-group mb-0">
-                                    <input class="form-control" type="text" placeholder="Enter pickup location">
-                                </div>
-                                <div class="input-line"></div>
-                            </div>
-
-                            <div class="cab-footer">
-                                <button class="btn btn-solid new-btn request-btn">Request now</button>
-                                <button class="btn btn-solid new-btn schedule-btn">Schedule for later</button>
-                            </div>
-
-                        </form>
+                <div class="col-md-6 mb-md-0 mb-4">
+                    <div class="jet-left-content">
+                        <h1>Download App, <br class="d-none d-md-block"> Start driving,<br class="d-none d-md-block"> Earn money !</h1>
+                        <p>Download the Jet App from playstore, create <br class="d-none d-md-block"> account, use your car and drive by yourself. Get rides and <br class="d-none d-md-block">earn money with Jet.</p>
+                        <ul class="d-flex align-items-center">
+                            <li class="mr-3">
+                                <a href="#"><img src="{{asset('assets/images/iosstore.png')}}" alt=""></a>
+                            </li>
+                            <li>
+                                <a href="#"><img src="{{asset('assets/images/playstore.png')}}" alt=""></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center">
+                    <div class="jet-banner-right">
+                        <img class="img-fluid" src="{{asset('assets/images/ic_bannerimage@2x.png')}}" alt="">
                     </div>
                 </div>
             </div>
@@ -42,113 +35,110 @@
 
     <div class="cab-content-area">
 
-        <!-- Royo Business Start From Here -->
-        <section class="royo-business p-0">
-            <div class="container p-64">
-                <div class="row">
-                    <div class="col-12">
-                        <h2 class="title-36">Royo for Business</h2>
-                        <div class="description-text">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, labore!</p>
+    <!-- How It Works Section -->
+    <section class="how-it-works py-lg-5 py-4">
+        <div class="container">
+            <div class="row mb-lg-4 mb-3">
+                <div class="col-12 text-center">
+                    <h2>How It Works</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 col-lg-3 mb-lg-4 mb-3">
+                    <div class="work-box text-center">
+                        <div class="work-icon">
+                            <img src="{{asset('assets/images/ic_online.svg')}}" alt="">
                         </div>
-                        <a class="btn btn-solid new-btn d-inline-block" href="#">See how</a>
+                        <h3>Get Online</h3>
+                        <p>Turn your availability on and start getting requests from nearby for tasks.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3 mb-lg-4 mb-3">
+                    <div class="work-box text-center">
+                        <div class="work-icon">
+                            <img src="{{asset('assets/images/ic_accept.svg')}}" alt="">
+                        </div>
+                        <h3>Acccept request</h3>
+                        <p>Accept the task request on viewing the task details and head to the pickup location.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3 mb-lg-4 mb-3">
+                    <div class="work-box text-center">
+                        <div class="work-icon">
+                            <img src="{{asset('assets/images/ic_ride.svg')}}" alt="">
+                        </div>
+                        <h3>Start ride</h3>
+                        <p>Once you have reached the pickup location, start the ride after pickup.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3 mb-lg-4 mb-3">
+                    <div class="work-box text-center">
+                        <div class="work-icon">
+                            <img src="{{asset('assets/images/ic_end.svg')}}" alt="">
+                        </div>
+                        <h3>End ride</h3>
+                        <p>End the ride after dropping off the customer. Get the detailed bill on your App.</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Royo Business Start From Here -->
-        <section class="royo-rental p-0">
-            <div class="container">                
-               
-                <div class="row align-items-center p-64">
-                    <div class="col-sm-6">
-                        <div class="cab-img-box">
-                            <img class="img-fluid" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_1116,h_744/v1624484990/assets/fa/f20c42-425a-4243-866b-b480d3bd68b4/original/gettyimages-1139275491-2048x2048_With-Mask.png" alt="">
-                        </div>
-                    </div>
-                    <div class="offset-md-1 col-sm-6 col-md-5 pl-lg-4">
-                        <div class="">
-                            <h2 class="title-52">Royo for Business</h2>
-                            <div class="description-text">
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem nisi officiis numquam!</p>
-                            </div>
-                            <a class="learn-more bottom-line" href="#">Learn more</a>
-                        </div>
-                    </div>
+    <!-- Enjoy unlimited benifits with Jet App -->
+    <section class="jet-app-section pb-5">
+        <div class="container">
+            <div class="row mb-lg-5 mb-4">
+                <div class="col-12 text-center">
+                    <h2>Enjoy unlimited benifits with Jet App</h2>
                 </div>
-
-                <div class="row align-items-center p-64">
-                    <div class="col-sm-6 order-md-1">
-                        <div class="cab-img-box">
-                            <img class="img-fluid" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1623719981/assets/4d/b05e4c-7340-40c4-a3e9-da0de41f14fc/original/rentals-iindia.jpg" alt="">
-                        </div>
-                    </div>
-                    <div class="col-sm-6 order-md-0">
-                        <div class="pr-lg-5 mr-lg-5">
-                            <h2 class="title-52">Royo Intercity </h2>
-                            <div class="description-text">
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem nisi officiis numquam!</p>
-                            </div>
-                            <a class="learn-more" href="#">Learn more</a>
-                        </div>
-                    </div>
-                </div>
-                
             </div>
-        </section>
-
-        <!-- Focused On Safety Start From Here -->
-        <section class="focused-on-safety p-0">
-            <div class="container p-64">
-                <div class="row mb-4 pb-2">
-                    <div class="col-12">
-                        <div class="title-36">Focused on safety, wherever you go</div>
+            <div class="row">
+                <div class="col-lg-4 order-lg-1">
+                    <div class="app-img">
+                        <img class="img-fluid" src="{{asset('assets/images/ic_phone1@2x.png')}}" alt="">
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="safety-box">
-                            <div class="safety-img">
-                                <img class="img-fluid" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1613520218/assets/3e/e98625-31e6-4536-8646-976a1ee3f210/original/Safety_Home_Img2x.png" alt="">
-                            </div>
-                            <div class="safety-content">
-                                <h3 class="mt-0">Our commitment to your safety</h3>
-                                <div class="safety-text">
-                                    <p>With every safety feature and every standard in our Community Guidelines, we're committed to helping to create a safe environment for our users.</p>
-                                </div>
-                                <div class="safety-links">
-                                    <a class="bottom-line" href="#">
-                                        <span>Read about our Community Guidelines</span>
-                                    </a>
-                                    <a class="bottom-line" href="#">
-                                        <span>See all safety features</span>
-                                    </a>
-                                </div>
-                            </div>
+                <div class="col-sm-6 col-lg-4 py-xl-5 text-lg-right d-flex align-items-lg-end justify-content-between flex-column pr-lg-5 order-lg-0">
+                    <div class="app-content">
+                        <div class="number ml-lg-auto">
+                            1
                         </div>
+                        <h4>Unlimited ride requets</h4>
+                        <p>Get non- Stop ride requests once you register as a driver.</p>
                     </div>
-                    <div class="col-md-6">
-                        <div class="safety-box">
-                            <div class="safety-img">
-                                <img class="img-fluid" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1613520218/assets/3e/e98625-31e6-4536-8646-976a1ee3f210/original/Safety_Home_Img2x.png" alt="">
-                            </div>
-                            <div class="safety-content">
-                                <h3 class="mt-0">Setting 10,000+ cities in motion</h3>
-                                <div class="safety-text">
-                                    <p>With every safety feature and every standard in our Community Guidelines, we're committed to helping to create a safe environment for our users.</p>
-                                </div>
-                                <div class="safety-links">
-                                    <a class="bottom-line" href="#">
-                                        <span>View all cities</span>
-                                    </a>
-                                </div>
-                            </div>
+                    <div class="app-content">
+                        <div class="number ml-lg-auto">
+                            3
                         </div>
+                        <h4>No hidden costs</h4>
+                        <p>Get non- Stop ride requests once you register as a driver.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4 py-xl-5 d-flex align-items-start justify-content-between flex-column pl-lg-5 order-lg-2">
+                    <div class="app-content">
+                        <div class="number">
+                            2
+                        </div>
+                        <h4>Easy to operate</h4>
+                        <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
+                    </div>
+                    <div class="app-content">
+                        <div class="number">
+                            4
+                        </div>
+                        <h4>Maximum Profits</h4>
+                        <p>Get non- Stop ride requests once you register as a driver.</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
+
+    <!-- Cab Section -->
+    <section class="cab-bottom-banner">
+        <img class="img-fluid" src="{{asset('assets/images/ic_bg1@2x.png')}}" alt="">
+    </section>
+        
 
     </div>
 

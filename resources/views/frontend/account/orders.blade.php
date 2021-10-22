@@ -73,6 +73,31 @@ $timezone = Auth::user()->timezone;
 <section class="section-b-space order-page">
     <div class="container">
         <div class="row">
+            <div class="col-sm-12">
+                <div class="text-sm-left" id="wallet_response">
+                    @if (\Session::has('success'))
+                        <div class="alert alert-success">
+                            <span>{!! \Session::get('success') !!}</span>
+                        </div>
+                        @php
+                            \Session::forget('success');
+                        @endphp
+                    @endif
+                    @if (\Session::has('error'))
+                        <div class="alert alert-danger">
+                            <span>{!! \Session::get('error') !!}</span>
+                        </div>
+                        @php
+                            \Session::forget('error');
+                        @endphp
+                    @endif
+                    <div class="message d-none">
+                        <div class="alert p-0"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-lg-3">
                 <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
                 <div class="dashboard-left">
@@ -519,7 +544,7 @@ $timezone = Auth::user()->timezone;
                                                                 </li>
                                                             </ul>
 
-                                                            @if($client_preference_detail->tip_after_order == 1 && $order->tip_amount <= 0 && 1 == 2)
+                                                            @if($client_preference_detail->tip_after_order == 1 && $order->tip_amount <= 0 && $payments > 0 && 1==2) 
                                                             <hr>
                                                             <div class="row">
                                                                 <div class="col-12">
@@ -549,10 +574,8 @@ $timezone = Auth::user()->timezone;
                                                                                 <h5 class="m-0">{{__('Custom')}}<br>{{__('Amount')}}</h5>
                                                                             </label>
                                                                         @else
-                                                                            <input type="radio" class="tip_radio" id="custom_control{{$order->order_number}}" name="select{{$order->order_number}}" value="custom" checked>
-                                                                            <label class="tip_label" for="custom_control{{$order->order_number}}">
-                                                                                <h5 class="m-0">{{__('Custom')}}<br>{{__('Amount')}}</h5>
-                                                                            </label>
+                                                                            <input type="hidden" class="tip_radio" id="custom_control{{$order->order_number}}" name="select{{$order->order_number}}" value="custom" checked>
+                                                                            
                                                                         @endif
                                                                     </div>
                                                                     <div class="custom_tip mb-1 @if($order->payable_amount  > 0)  d-none @endif">
@@ -815,8 +838,9 @@ $timezone = Auth::user()->timezone;
 
 @endsection
 @section('script')
-<script src="https://js.stripe.com/v3/"></script>
 <script src="{{asset('js/tip_after_order.js')}}"></script>
+<script src="https://js.stripe.com/v3/"></script>
+
 <script src="{{asset('js/payment.js')}}"></script>
 <script type="text/javascript">
  $(document).delegate(".topup_wallet_btn_tip", "click", function () {
@@ -827,15 +851,18 @@ $timezone = Auth::user()->timezone;
      var custom_tip_amount = "custom_tip_amount"+order_number;
 
      var select_tip =  $('input[name="' + input_name + '"]:checked').val();
-     if(select_tip != 'custom'){
+     console.log(custom_tip_amount);
+     console.log(select_tip);
+
+     if(select_tip != 'custom' && select_tip != undefined){
          $('.wallet_balance').html(select_tip);
         var tip_amount = select_tip;
     }
-     else{
+    else{
         $('.wallet_balance').html($('input[name="' + custom_tip_amount + '"]').val());
         var tip_amount = $('input[name="' + custom_tip_amount + '"]').val();
     }
-   
+  
      $("#wallet_amount").val(tip_amount);
      $("#cart_tip_amount").val(tip_amount);
      $("#order_number").val(order_number);

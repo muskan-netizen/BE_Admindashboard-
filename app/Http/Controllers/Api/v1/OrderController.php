@@ -964,6 +964,7 @@ class OrderController extends BaseController {
         try {
             $order_id = $request->order_id;
             $vendor_id = $request->vendor_id;
+            $reject_reason = $request->reject_reason;
             $order_vendor_id = $request->order_vendor_id;
             $order_status_option_id = $request->order_status_option_id;
             $client_preference = ClientPreference::first();
@@ -982,7 +983,7 @@ class OrderController extends BaseController {
                 $vendor_order_status->order_vendor_id = $vendor_order_status->order_vendor_id;
                 $vendor_order_status->save();
                 $currentOrderStatus = OrderVendor::where('vendor_id', $vendor_id)->where('order_id', $order_id)->first();
-                OrderVendor::where('vendor_id', $vendor_id)->where('order_id', $order_id)->update(['order_status_option_id' => $order_status_option_id]);
+                OrderVendor::where('vendor_id', $vendor_id)->where('order_id', $order_id)->update(['order_status_option_id' => $order_status_option_id, 'reject_reason' => $reject_reason]);
                 if($order_status_option_id == 2 || $order_status_option_id == 3){
                     $clientDetail = Client::on('mysql')->where(['code' => $client_preference->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name,'order_vendor_id' => $currentOrderStatus->id])->delete();

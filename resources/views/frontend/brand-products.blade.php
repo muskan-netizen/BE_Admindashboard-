@@ -294,9 +294,11 @@
                                               @endif
                                             </div>
                                         </div>
+                                        @if(count($products))
                                         <div class="pagination pagination-rounded justify-content-end mb-0">
                                             {{ $products->links() }}
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

@@ -781,18 +781,13 @@ $(document).ready(function () {
     }
 
     function paymentViaStripe(stripe_token, address_id, payment_option_id) {
-        let total_amount = 0;
+       let total_amount = 0;
         let tip = 0;
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
         let subscriptionElement = $("input[name='subscription_amount']");
         let tipElement = $("#cart_tip_amount");
-        // *** for tip after order **** //
-        let order_number = $("#order_number");
-        if (order_number.length > 0) {
-            order_number = order_number;
-        }
-        // ***** end for tip after order *****//////
+        
         let ajaxData = [];
         if (cartElement.length > 0) {
             total_amount = cartElement.val();
@@ -824,12 +819,17 @@ $(document).ready(function () {
                     else if (path.indexOf("wallet") !== -1) {
                         creditWallet(total_amount, payment_option_id, resp.data.id);
                     }
-                    else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
-                        creditWallet(total_amount, payment_option_id, resp.data.id);
-                    }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
-                        creditTipAfterOrder(total_amount, payment_option_id, resp.data.id,order_number);
-                    }else if (path.indexOf("subscription") !== -1) {
+                    else if (path.indexOf("subscription") !== -1) {
                         userSubscriptionPurchase(total_amount, payment_option_id, resp.data.id);
+                    }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+                         
+                        let order_number = $("#order_number").val();
+                        if (order_number.length > 0) {
+                            order_number = order_number;
+                        }
+                        creditTipAfterOrder(total_amount, payment_option_id, resp.data.id,order_number);
+                    } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
+                        creditWallet(total_amount, payment_option_id, resp.data.id);
                     }
                 } else {
                     if (path.indexOf("cart") !== -1) {

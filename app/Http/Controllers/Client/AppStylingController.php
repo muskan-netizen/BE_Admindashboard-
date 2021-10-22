@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{AppStyling, AppStylingOption,ClientPreference};
+use App\Models\{AppStyling, AppStylingOption,ClientPreference,AppDynamicTutorial};
+use Illuminate\Support\Facades\Storage;
 
 class AppStylingController extends BaseController
 {
@@ -75,7 +76,9 @@ class AppStylingController extends BaseController
         if($signup_tag_line){
             $signup_tag_line_text = AppStylingOption::where('app_styling_id', $signup_tag_line->id)->first();
         }
-        return view('backend/app_styling/index')->with(['tertiary_color_options' => $tertiary_color_options, 'secondary_color_options' => $secondary_color_options, 'primary_color_options' => $primary_color_options, 'medium_font_options' => $medium_font_options, 'bold_font_options' => $bold_font_options, 'regular_font_options' => $regular_font_options, 'tab_style_options' => $tab_style_options, 'homepage_style_options' => $homepage_style_options, 'signup_tag_line_text' => $signup_tag_line_text]);
+
+        $dynamicTutorials = AppDynamicTutorial::orderBy('sort')->get();
+        return view('backend/app_styling/index')->with(['tertiary_color_options' => $tertiary_color_options, 'secondary_color_options' => $secondary_color_options, 'primary_color_options' => $primary_color_options, 'medium_font_options' => $medium_font_options, 'bold_font_options' => $bold_font_options, 'regular_font_options' => $regular_font_options, 'tab_style_options' => $tab_style_options, 'homepage_style_options' => $homepage_style_options, 'signup_tag_line_text' => $signup_tag_line_text, 'dynamicTutorials' => $dynamicTutorials]);
     }
     /**
      * Store a regular font.
@@ -167,4 +170,25 @@ class AppStylingController extends BaseController
             'message' => 'Updated successfully!'
         ]);
     }
+
+    public function addTutorials(Request $request)
+    {
+        $tutorialObj = new AppDynamicTutorial;
+        if ($request->hasFile('file_name')) {    /* upload logo file */
+            $file = $request->file('file_name');
+            $file_name = uniqid() .'.'.  $file->getClientOriginalExtension();
+            $s3filePath = '/app_styling/tutorials/' . $file_name;
+            $tutorialObj->file_name = Storage::disk('s3')->put($s3filePath, $file, 'public');
+        }
+        $tutorialObj->save();
+        return redirect()->back()->with('success', __("Tutorial updated successfully"));
+    }
+
+    public function deleteTutorials(Request $request, $domain, $id)
+    {
+        $tutorialObj = AppDynamicTutorial::find($id);
+        $tutorialObj->delete();
+        return redirect()->back()->with('success', __("Tutorial deleted successfully"));
+    }
+
 }
