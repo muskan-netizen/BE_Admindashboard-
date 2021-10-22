@@ -20,17 +20,25 @@ class VariantController extends BaseController
      */
     public function create()
     {
-        $categories = Category::select('id', 'slug')
-                        ->where('status', '!=', $this->blockdata)
-                        ->orderBy('parent_id', 'asc')
-                        ->orderBy('position', 'asc')
-                        ->whereIn('type_id', ['1', '3', '6'])
-                        ->get();
+        $categories = Category::with('translation_one')
+            ->where('status', 1)
+            ->orderBy('parent_id', 'asc')
+            ->orderBy('position', 'asc')
+            ->whereIn('type_id', ['1', '3', '6'])
+            ->where('slug', '!=', 'root')
+            ->whereNull('vendor_id')
+            ->get();
         $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')
-                    ->where('is_active', 1)
-                    ->orderBy('is_primary', 'desc')->get();
+            ->where('is_active', 1)
+            ->orderBy('is_primary', 'desc')->get();
 
-        $returnHTML = view('backend.catalog.add-variant')->with(['categories' => $categories,  'languages' => $langs])->render();
+        $categories_hierarchy = '';
+        if($categories){
+            $categories_build = $this->buildTree($categories->toArray());
+            $categories_hierarchy = $this->printCategoryOptionsHeirarchy($categories_build);
+        }
+
+        $returnHTML = view('backend.catalog.add-variant')->with(['categories' => $categories_hierarchy,  'languages' => $langs])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
     }
 
