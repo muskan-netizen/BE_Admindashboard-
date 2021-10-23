@@ -173,6 +173,18 @@ class AuthController extends BaseController
                 "phone_number.required" => __('The email or phone number field is required.'),
             ]);
         }
+        else{
+            if(!empty($signReq->email) && ($preferences->verify_email == 0)){
+                $validator = Validator::make($signReq->all(), [
+                    'email'  => 'email|unique:users'
+                ]);
+            }
+            if(!empty($signReq->phone_number) && ($preferences->verify_phone == 0) && (!$validator->fails())){
+                $validator = Validator::make($signReq->all(), [
+                    'phone_number' => 'string|min:8|max:15|unique:users'
+                ]);
+            }
+        }
         if ($validator->fails()) {
             foreach ($validator->errors()->toArray() as $error_key => $error_value) {
                 $errors['error'] = __($error_value[0]);

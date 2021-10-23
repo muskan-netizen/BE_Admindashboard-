@@ -184,6 +184,18 @@ class CustomerAuthController extends FrontController
                     "phone_number.required" => __('The email or phone number field is required.'),
                 ]);
             }
+            else{
+                if(!empty($req->email) && (session('preferences')->verify_email == 0)){
+                    $validator = $req->validate([
+                        'email'  => 'email|unique:users'
+                    ]);
+                }
+                if(!empty($signReq->phone_number) && ($preferences->verify_phone == 0) && (!$validator->fails())){
+                    $validator = $req->validate([
+                        'phone_number' => 'string|min:8|max:15|unique:users'
+                    ]);
+                }
+            }
             $user = new User();
             $county = Country::where('code', strtoupper($req->countryData))->first();
             $phoneCode = mt_rand(100000, 999999);
