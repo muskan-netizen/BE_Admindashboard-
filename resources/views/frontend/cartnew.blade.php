@@ -6,6 +6,7 @@
 <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/flatpickr/flatpickr.min.css')}}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
+<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <style type="text/css">
     .swal2-title {
         margin: 0px;
@@ -23,22 +24,22 @@
 
 @section('content')
 @php
-    $now = \Carbon\Carbon::now()->format('Y-m-d\TH:i');
-    if(Auth::user()){
-        $timezone = Auth::user()->timezone;
-        $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
-    }
+$now = \Carbon\Carbon::now()->format('Y-m-d\TH:i');
+if(Auth::user()){
+$timezone = Auth::user()->timezone;
+$now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
+}
 @endphp
 
 <header>
     <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
+    @if(isset($set_template) && $set_template->template_id == 1)
+    @include('layouts.store/left-sidebar-template-one')
+    @elseif(isset($set_template) && $set_template->template_id == 2)
+    @include('layouts.store/left-sidebar')
+    @else
+    @include('layouts.store/left-sidebar-template-one')
+    @endif
 </header>
 <script type="text/template" id="address_template">
     <div class="col-md-12">
@@ -51,7 +52,7 @@
     </div>
 </script>
 <script type="text/template" id="empty_cart_template">
-<div class="container">
+    <div class="container">
     <div class="row mt-2 mb-4 mb-lg-5">
         <div class="col-12 text-center">
             <div class="cart_img_outer">
@@ -364,9 +365,9 @@
             <div class="card-box">
                 <div class="row d-flex justify-space-around">
                     @if(!$guest_user)
-                        <div class="col-lg-4 left_box">
-                            
-                        </div>
+                    <div class="col-lg-4 left_box">
+
+                    </div>
                     @endif
                     <div class="{{ $guest_user ? 'col-md-12' : 'col-lg-8' }}">
                         <div class="spinner-box">
@@ -573,6 +574,16 @@
                                 <span class="error text-danger" id="stripe_card_error"></span>
                             </div>
                         <% } %>
+                        <% if(payment_option.slug == 'yoco') { %>
+                            <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper d-none">
+                                <div class="form-control">
+                                    <div id="yoco-card-frame">
+                                    <!-- Yoco Inline form will be added here -->
+                                    </div>
+                                </div>
+                                <span class="error text-danger" id="yoco_card_error"></span>
+                            </div>
+                        <% } %>
                     </div>
                 <% }); %>
             </form>
@@ -588,17 +599,17 @@
 </script>
 
 <div class="modal fade" id="proceed_to_pay_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="pay-billLabel">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-        <div class="modal-header border-bottom">
-            <h5 class="modal-title" id="pay-billLabel">{{__('Total Amount')}}: <span id="total_amt"></span></h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="pay-billLabel">{{__('Total Amount')}}: <span id="total_amt"></span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="v_pills_tabContent"></div>
         </div>
-        <div id="v_pills_tabContent"></div>
     </div>
-  </div>
 </div>
 <!-- <script type="text/template" id="payment_method_tab_pane_template">
     <% _.each(payment_options, function(payment_option, k){%>
@@ -662,76 +673,78 @@
 <!-- Modal -->
 <div class="modal fade login-modal" id="login_modal" tabindex="-1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-          <div class="modal-body">
-            <form id="login-form-new" action="">
-              @csrf
-              <input type="hidden" name="device_type" value="web">
-              <input type="hidden" name="device_token" value="web">
-              <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode','1') }}">
-              <input type="hidden" id="countryData" name="countryData" value="{{ strtolower(Session::get('default_country_code','US')) }}">
-              
-              <div class="login-with-username">
-                <div class="modal-header px-0 pt-0">
-                    <h5 class="modal-title">{{ __('Log in') }}</h5>
-                    <button type="button" class="close m-0 p-0" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" id="username" placeholder="{{ __('Email or Phone Number') }}" required="" name="username" value="{{ old('username')}}">
-                </div>
-                <div class="form-group" id="password-wrapper" style="display:none; position:relative">
-                    <input type="password" class="form-control pr-3" name="password" placeholder="{{ __('Password') }}">
-                    <a class="font-14" href="javascript:void(0)" id="send_password_reset_link" style="position:absolute; right:10px; top:7px;">Forgot?</a>
-                </div>
-                <div class="form-group">
-                    <span id="error-msg" class="font-14 text-danger" style="display:none"></span>
-                    <span id="success-msg" class="font-14 text-success" style="display:none"></span>
-                </div>
-                <div class="form-group">
-                    <button class="btn btn-solid w-100 login_continue_btn" type="button">Continue</button>
-                </div>
-                
-                <div class="divider-line"><span>or</span></div>
-                    {{-- <button class="login-button email-btn">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form id="login-form-new" action="">
+                    @csrf
+                    <input type="hidden" name="device_type" value="web">
+                    <input type="hidden" name="device_token" value="web">
+                    <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode','1') }}">
+                    <input type="hidden" id="countryData" name="countryData" value="{{ strtolower(Session::get('default_country_code','US')) }}">
+
+                    <div class="login-with-username">
+                        <div class="modal-header px-0 pt-0">
+                            <h5 class="modal-title">{{ __('Log in') }}</h5>
+                            <button type="button" class="close m-0 p-0" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="username" placeholder="{{ __('Email or Phone Number') }}" required="" name="username" value="{{ old('username')}}">
+                        </div>
+                        <div class="form-group" id="password-wrapper" style="display:none; position:relative">
+                            <input type="password" class="form-control pr-3" name="password" placeholder="{{ __('Password') }}">
+                            <a class="font-14" href="javascript:void(0)" id="send_password_reset_link" style="position:absolute; right:10px; top:7px;">Forgot?</a>
+                        </div>
+                        <div class="form-group">
+                            <span id="error-msg" class="font-14 text-danger" style="display:none"></span>
+                            <span id="success-msg" class="font-14 text-success" style="display:none"></span>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-solid w-100 login_continue_btn" type="button">Continue</button>
+                        </div>
+
+                        <div class="divider-line"><span>or</span></div>
+                        {{-- <button class="login-button email-btn">
                         <i class="fa fa-envelope" aria-hidden="true"></i>
                         <span>Continue with Email</span>
                     </button> --}}
-                    
-                    @if(session('preferences'))
-                        @if(session('preferences')->fb_login == 1 || session('preferences')->twitter_login == 1 || session('preferences')->google_login == 1 || session('preferences')->apple_login == 1)
-                            @if(session('preferences')->google_login == 1)
-                                <a class="login-button" href="{{url('auth/google')}}">
-                                    <i class="fa fa-google" aria-hidden="true"></i>
-                                    <span>Continue with gmail</span>
-                                </a>
-                            @endif
-                            @if(session('preferences')->fb_login == 1)
-                                <a class="login-button" href="{{url('auth/facebook')}}">
-                                    <i class="fa fa-facebook" aria-hidden="true"></i>
-                                    <span>Continue with facebook</span>
-                                </a>
-                            @endif
-                            @if(session('preferences')->twitter_login)
-                                <a class="login-button" href="{{url('auth/twitter')}}">
-                                    <i class="fa fa-twitter" aria-hidden="true"></i>
-                                    <span>Continue with twitter</span>
-                                </a>
-                            @endif
-                            @if(session('preferences')->apple_login == 1)
-                                <a class="login-button" href="javascript::void(0);">
-                                    <i class="fa fa-apple" aria-hidden="true"></i>
-                                    <span>Continue with apple</span>
-                                </a>
-                            @endif
-                        @endif
-                    @endif
 
-                <div class="divider-line mb-2"></div>
-                <p class="new-user mb-0">New to Royo? <a href="{{route('customer.register')}}">Create an account</a></p>
-              </div>
-              {{-- <div class="login-with-mail">
+                        @if(session('preferences'))
+                        @if(session('preferences')->fb_login == 1 || session('preferences')->twitter_login == 1 ||
+                        session('preferences')->google_login == 1 || session('preferences')->apple_login == 1)
+                        @if(session('preferences')->google_login == 1)
+                        <a class="login-button" href="{{url('auth/google')}}">
+                            <i class="fa fa-google" aria-hidden="true"></i>
+                            <span>Continue with gmail</span>
+                        </a>
+                        @endif
+                        @if(session('preferences')->fb_login == 1)
+                        <a class="login-button" href="{{url('auth/facebook')}}">
+                            <i class="fa fa-facebook" aria-hidden="true"></i>
+                            <span>Continue with facebook</span>
+                        </a>
+                        @endif
+                        @if(session('preferences')->twitter_login)
+                        <a class="login-button" href="{{url('auth/twitter')}}">
+                            <i class="fa fa-twitter" aria-hidden="true"></i>
+                            <span>Continue with twitter</span>
+                        </a>
+                        @endif
+                        @if(session('preferences')->apple_login == 1)
+                        <a class="login-button" href="javascript::void(0);">
+                            <i class="fa fa-apple" aria-hidden="true"></i>
+                            <span>Continue with apple</span>
+                        </a>
+                        @endif
+                        @endif
+                        @endif
+
+                        <div class="divider-line mb-2"></div>
+                        <p class="new-user mb-0">New to Royo? <a href="{{route('customer.register')}}">Create an
+                                account</a></p>
+                    </div>
+                    {{-- <div class="login-with-mail">
                   <div class="modal-header px-0 pt-0">
                       <button type="button" class="close m-0 p-0 back-login">
                           <i class="fa fa-arrow-left" aria-hidden="true"></i>
@@ -748,46 +761,46 @@
                       <div class="form-group">
                           <input class="from-control" type="text" placeholder="Email">
                           <a class="forgot_btn font-14" href="{{url('user/forgotPassword')}}">{{ __('Forgot Password?') }}</a>
-                      </div>
-                      <div class="form-group">
-                          <button class="btn btn-solid w-100" type="submit">Login</button>
-                      </div>
-                  </form>
-              </div> --}}
-              <div class="verify-login-code" style="display:none">
-                <div class="modal-header px-0 pt-0">
-                    <button type="button" class="close m-0 p-0 back-login">
-                        <i class="fa fa-arrow-left" aria-hidden="true"></i>
-                    </button>
-                    <h5 class="modal-title">Verify OTP</h5>
-                    <button type="button" class="close m-0 p-0" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div method="get" class="digit-group otp_inputs d-flex justify-content-between" data-group-name="digits" data-autosubmit="false" autocomplete="off">
-                    <input class="form-control" type="text" id="digit-1" name="digit-1" data-next="digit-2" onkeypress="return isNumberKey(event)"/>
-                    <input class="form-control" type="text" id="digit-2" name="digit-2" data-next="digit-3" data-previous="digit-1" onkeypress="return isNumberKey(event)"/>
-                    <input class="form-control" type="text" id="digit-3" name="digit-3" data-next="digit-4" data-previous="digit-2" onkeypress="return isNumberKey(event)"/>
-                    <input class="form-control" type="text" id="digit-4" name="digit-4" data-next="digit-5" data-previous="digit-3" onkeypress="return isNumberKey(event)"/>
-                    <input class="form-control" type="text" id="digit-5" name="digit-5" data-next="digit-6" data-previous="digit-4" onkeypress="return isNumberKey(event)"/>
-                    <input class="form-control" type="text" id="digit-6" name="digit-6" data-next="digit-7" data-previous="digit-5" onkeypress="return isNumberKey(event)"/>
-                </div>
-                <span class="invalid_phone_otp_error invalid-feedback2 w-100 d-block text-center text-danger"></span>
-                <span id="phone_otp_success_msg" class="font-14 text-success text-center w-100 d-block" style="display:none"></span>
-                <div class="row text-center mt-2">
-                    <div class="col-12 resend_txt">
-                        <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
-                        <a class="verifyPhone" href="javascript:void(0)"><u>{{__('RESEND')}}</u></a>
-                    </div>
-                    <div class="col-md-12 mt-3">
-                        <button type="button" class="btn btn-solid" id="verify_phone_token">{{__('VERIFY')}}</button>
-                    </div>
-                </div>
-              </div>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-solid w-100" type="submit">Login</button>
+            </div>
             </form>
-          </div>
-      </div>
+        </div> --}}
+        <div class="verify-login-code" style="display:none">
+            <div class="modal-header px-0 pt-0">
+                <button type="button" class="close m-0 p-0 back-login">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                </button>
+                <h5 class="modal-title">Verify OTP</h5>
+                <button type="button" class="close m-0 p-0" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div method="get" class="digit-group otp_inputs d-flex justify-content-between" data-group-name="digits" data-autosubmit="false" autocomplete="off">
+                <input class="form-control" type="text" id="digit-1" name="digit-1" data-next="digit-2" onkeypress="return isNumberKey(event)" />
+                <input class="form-control" type="text" id="digit-2" name="digit-2" data-next="digit-3" data-previous="digit-1" onkeypress="return isNumberKey(event)" />
+                <input class="form-control" type="text" id="digit-3" name="digit-3" data-next="digit-4" data-previous="digit-2" onkeypress="return isNumberKey(event)" />
+                <input class="form-control" type="text" id="digit-4" name="digit-4" data-next="digit-5" data-previous="digit-3" onkeypress="return isNumberKey(event)" />
+                <input class="form-control" type="text" id="digit-5" name="digit-5" data-next="digit-6" data-previous="digit-4" onkeypress="return isNumberKey(event)" />
+                <input class="form-control" type="text" id="digit-6" name="digit-6" data-next="digit-7" data-previous="digit-5" onkeypress="return isNumberKey(event)" />
+            </div>
+            <span class="invalid_phone_otp_error invalid-feedback2 w-100 d-block text-center text-danger"></span>
+            <span id="phone_otp_success_msg" class="font-14 text-success text-center w-100 d-block" style="display:none"></span>
+            <div class="row text-center mt-2">
+                <div class="col-12 resend_txt">
+                    <p class="mb-1">{{__('If you didn’t receive a code?')}}</p>
+                    <a class="verifyPhone" href="javascript:void(0)"><u>{{__('RESEND')}}</u></a>
+                </div>
+                <div class="col-md-12 mt-3">
+                    <button type="button" class="btn btn-solid" id="verify_phone_token">{{__('VERIFY')}}</button>
+                </div>
+            </div>
+        </div>
+        </form>
     </div>
+</div>
+</div>
 </div>
 
 <div id="prescription_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
@@ -820,40 +833,57 @@
     </div>
 </div>
 <div class="modal fade pick-address" id="pick_address" tabindex="-1" aria-labelledby="pick-addressLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog  modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header border-bottom">
-        <h5 class="modal-title" id="pick-addressLabel">{{ __('Select Location') }}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body p-0">
-        <div class="row">
-            <div class="col-md-12">
-                <div id="address-map-container" class="w-100" style="height: 500px; min-width: 500px;">
-                    <div id="pick-address-map" class="h-100"></div>
-                </div>
-                <div class="pick_address p-2 mb-2 position-relative">
-                    <div class="text-center">
-                        <button type="button" class="btn btn-solid ml-auto pick_address_confirm w-100" data-dismiss="modal">{{ __('Ok') }}</button>
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="pick-addressLabel">{{ __('Select Location') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="address-map-container" class="w-100" style="height: 500px; min-width: 500px;">
+                            <div id="pick-address-map" class="h-100"></div>
+                        </div>
+                        <div class="pick_address p-2 mb-2 position-relative">
+                            <div class="text-center">
+                                <button type="button" class="btn btn-solid ml-auto pick_address_confirm w-100" data-dismiss="modal">{{ __('Ok') }}</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-      </div>
     </div>
-  </div>
+
 </div>
 <?php ?>
 @endsection
 
 @section('script')
-<script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+<script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
+</script>
+<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
+
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script>
+    // Replace the supplied `publicKey` with your own.
+    // Ensure that in production you use a production public_key.
+    var yoco_public_key="<?php echo $public_key_yoco; ?>";
+    console.log(yoco_public_key);
+    var sdk = new window.YocoSDK({
+        publicKey: yoco_public_key
+    });
+    var inline='';
+  
+
+   
+</script>
 <script type="text/javascript">
-    var guest_cart = {{ $guest_user ? 1 : 0 }};
+   var guest_cart = {{ $guest_user ? 1 : 0 }};
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
@@ -864,6 +894,8 @@
     var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
     var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
     var payment_mobbex_url = "{{route('payment.mobbexPurchase')}}";
+    var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
+    var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";
@@ -875,63 +907,81 @@
     var order_success_return_url = "{{route('order.return.success')}}";
     var my_orders_url = "{{route('user.orders')}}";
 
-    $(document).on('click', '.showMapHeader', function(){
+    $(document).on('click', '.showMapHeader', function() {
         var lats = document.getElementById('latitude').value;
         var lngs = document.getElementById('longitude').value;
 
         var myLatlng = new google.maps.LatLng(lats, lngs);
         var mapProp = {
-            center:myLatlng,
-            zoom:13,
-            mapTypeId:google.maps.MapTypeId.ROADMAP
-            
+            center: myLatlng,
+            zoom: 13,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+
         };
-        var map=new google.maps.Map(document.getElementById("pick-address-map"), mapProp);
+        var map = new google.maps.Map(document.getElementById("pick-address-map"), mapProp);
         var marker = new google.maps.Marker({
             position: myLatlng,
             map: map,
-            draggable:true  
+            draggable: true
         });
         // marker drag event
-        google.maps.event.addListener(marker,'drag',function(event) {
+        google.maps.event.addListener(marker, 'drag', function(event) {
             document.getElementById('latitude').value = event.latLng.lat();
             document.getElementById('longitude').value = event.latLng.lng();
         });
         //marker drag event end
-        google.maps.event.addListener(marker,'dragend',function(event) {
+        google.maps.event.addListener(marker, 'dragend', function(event) {
             document.getElementById('latitude').value = event.latLng.lat();
             document.getElementById('longitude').value = event.latLng.lng();
         });
         $('#pick_address').modal('show');
     });
 
-    $(document).delegate("#vendor_table", "change", function(){
+    $(document).delegate("#vendor_table", "change", function() {
         var table = $(this).val();
         var vendor = $(this).attr('data-id');
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: "{{ route('addVendorTableToCart') }}",
-            data: {table:table, vendor:vendor},
+            data: {
+                table: table,
+                vendor: vendor
+            },
             success: function(response) {
-                if (response.status == "Success") {
-                }else{
+                if (response.status == "Success") {} else {
                     alert(response.message);
                 }
             },
-            error: function(error){
+            error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 success_error_alert('error', response.message, ".payment_response");
             }
         });
     });
-
+   
     $(document).delegate('#cart_payment_form input[name="cart_payment_method"]', 'change', function() {
         var method = $(this).attr('id');
-        if(method.replace('radio-', '') == 'stripe'){
+        if (method.replace('radio-', '') == 'stripe') {
             $("#cart_payment_form .stripe_element_wrapper").removeClass('d-none');
-        }else{
+        } else {
             $("#cart_payment_form .stripe_element_wrapper").addClass('d-none');
+        }
+        if (method.replace('radio-', '') == 'yoco') {
+            $("#cart_payment_form .yoco_element_wrapper").removeClass('d-none');
+            // Create a new dropin form instance
+
+            var yoco_amount_payable = $("input[name='cart_total_payable_amount']").val();
+        console.log( yoco_amount_payable*100);
+            inline = sdk.inline({
+                layout: 'field',
+                amountInCents:  yoco_amount_payable*100,
+                currency: 'ZAR'
+            });
+            // this ID matches the id of the element we created earlier.
+            inline.mount('#yoco-card-frame');
+        } else {
+            $("#cart_payment_form .yoco_element_wrapper").addClass('d-none');
         }
     });
 
@@ -940,11 +990,11 @@
         $('.verify-login-code').hide();
     });
 
-    $('.email-btn').click(function(){
+    $('.email-btn').click(function() {
         $('.login-with-mail').show();
         $('.login-with-username').hide();
     });
-    $('.back-login').click(function(){
+    $('.back-login').click(function() {
         $('.login-with-mail').hide();
         $('.verify-login-code').hide();
         $('.login-with-username').show();
@@ -952,7 +1002,7 @@
 
     var reset = function() {
         var input = document.querySelector("#username"),
-        errorMsg = document.querySelector("#error-msg");
+            errorMsg = document.querySelector("#error-msg");
         input.classList.remove("is-invalid");
         errorMsg.innerHTML = "";
         errorMsg.style.display = 'none';
@@ -962,28 +1012,31 @@
     };
 
     // here, the index maps to the error code returned from getValidationError - see readme
-    var errorMap = ["Invalid phone number", "Invalid country code", "Phone number too short", "Phone number too long", "Invalid phone number"];
+    var errorMap = ["Invalid phone number", "Invalid country code", "Phone number too short", "Phone number too long",
+        "Invalid phone number"
+    ];
 
     var iti = '';
     var phn_filter = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/;
-    var email_filter = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    var email_filter =
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     $(document).delegate('input[name="password"]', 'input', function() {
         $(this).parent('#password-wrapper').show();
         $("#error-msg").hide();
     });
 
-    $(document).delegate("#username", "input", function(e){
+    $(document).delegate("#username", "input", function(e) {
         var uname = $.trim($(this).val());
-        if(phn_filter.test(uname)){
+        if (phn_filter.test(uname)) {
             // get country flags when input is a number
             assignPhoneInput();
             $("#password-wrapper").hide();
             $("#password-wrapper input").removeAttr("required");
             $("#password-wrapper input").val('');
-        }else{
+        } else {
             // destroy country flags when input is a string
-            if(iti != ''){
+            if (iti != '') {
                 iti.destroy();
                 iti = '';
                 $(this).css('padding-left', '6px');
@@ -994,10 +1047,10 @@
         $("#error-msg").hide();
     });
 
-    function assignPhoneInput(){
+    function assignPhoneInput() {
         var input = document.querySelector("#username");
         var country = $('#countryData').val();
-        if(iti != ''){
+        if (iti != '') {
             iti.destroy();
             iti = '';
         }
@@ -1010,12 +1063,12 @@
         $("input[name='full_number']").val(iti.getNumber());
     }
 
-    $(document).delegate(".login_continue_btn, .verifyPhone", "click", function(e){
+    $(document).delegate(".login_continue_btn, .verifyPhone", "click", function(e) {
         var uname = $.trim($("#username").val());
         var error = 0;
         var phone = $("input[name='full_number']").val();
-        if(uname != ''){
-            if(phn_filter.test(uname)){
+        if (uname != '') {
+            if (phn_filter.test(uname)) {
                 reset();
                 if (!iti.isValidNumber()) {
                     $("#username").addClass("is-invalid");
@@ -1023,40 +1076,38 @@
                     $("#error-msg").html(errorMap[errorCode]);
                     $("#error-msg").show();
                     error = 1;
-                }else{
+                } else {
                     $("#username").removeClass("is-invalid");
                     $("#error-msg").hide();
                 }
-            }
-            else{
-                if(email_filter.test(uname)){
+            } else {
+                if (email_filter.test(uname)) {
                     $("#username").removeClass("is-invalid");
                     $("#error-msg").hide();
                     $("#password-wrapper").show();
                     $("#password-wrapper input").attr("required", true);
-                    if($("#password-wrapper input").val() == ''){
+                    if ($("#password-wrapper input").val() == '') {
                         error = 1;
                         $("#error-msg").show();
                         $("#error-msg").html('Password field is required');
                     }
-                }else{
+                } else {
                     error = 1;
                     $("#username").addClass("is-invalid");
                     $("#error-msg").show();
                     $("#error-msg").html('Invalid Email or Phone Number');
                 }
             }
-        }
-        else{
+        } else {
             error = 1;
             $("#username").addClass("is-invalid");
             $("#error-msg").show();
             $("#error-msg").html('Email or Phone Number Required');
         }
-        if(!error){
+        if (!error) {
             var form_inputs = $("#login-form-new").serializeArray();
             $.each(form_inputs, function(i, input) {
-                if(input.name == 'full_number'){
+                if (input.name == 'full_number') {
                     input.value = phone;
                 }
             });
@@ -1065,27 +1116,27 @@
                 type: "POST",
                 dataType: 'json',
                 url: login_via_username_url,
-                success: function (response) {
+                success: function(response) {
                     if (response.status == "Success") {
                         var data = response.data;
-                        if(data.is_phone != undefined && data.is_phone == 1){
+                        if (data.is_phone != undefined && data.is_phone == 1) {
                             $('.login-with-username').hide();
                             $('.login-with-mail').hide();
                             $('.verify-login-code').show();
                             $('.otp_inputs input').val('');
                             $('#phone_otp_success_msg').html(response.message).show();
-                            setTimeout(function(){ 
+                            setTimeout(function() {
                                 $('#phone_otp_success_msg').html('').hide();
                             }, 5000);
-                        }
-                        else if(data.is_email != undefined && data.is_email == 1){
+                        } else if (data.is_email != undefined && data.is_email == 1) {
                             window.location.reload();
-                        }else{
+                        } else {
                             $("#error-msg").html('Something went wrong');
                             $("#error-msg").show();
                         }
                     }
-                }, error: function (error) {
+                },
+                error: function(error) {
                     var response = $.parseJSON(error.responseText);
                     // let error_messages = response.message;
                     $("#error-msg").html(response.message);
@@ -1104,7 +1155,7 @@
     //     });
     // });
 
-    $(document).delegate('.iti__country','click', function() {
+    $(document).delegate('.iti__country', 'click', function() {
         var code = $(this).attr('data-country-code');
         $('#countryData').val(code);
         var dial_code = $(this).attr('data-dial-code');
@@ -1114,31 +1165,34 @@
     $("#verify_phone_token").click(function(event) {
         var verifyToken = '';
         $('.digit-group').find('input').each(function() {
-            if($(this).val()){
-               verifyToken +=  $(this).val();
+            if ($(this).val()) {
+                verifyToken += $(this).val();
             }
         });
         var form_inputs = $("#login-form-new").serializeArray();
-        form_inputs.push({name : 'verifyToken', value : verifyToken});
-        
+        form_inputs.push({
+            name: 'verifyToken',
+            value: verifyToken
+        });
+
         $.ajax({
             type: "POST",
             dataType: "json",
             url: "{{ route('customer.verifyPhoneLoginOtp') }}",
             data: form_inputs,
             success: function(response) {
-                if(response.status == 'Success'){
+                if (response.status == 'Success') {
                     window.location.reload();
-                }else{
+                } else {
                     $(".invalid_phone_otp_error").html(response.message);
-                    setTimeout(function(){ 
-                		$('.invalid_phone_otp_error').html('').hide();
-                	}, 5000);
+                    setTimeout(function() {
+                        $('.invalid_phone_otp_error').html('').hide();
+                    }, 5000);
                 }
             },
             error: function(data) {
                 $(".invalid_phone_otp_error").html(data.responseJSON.message);
-                setTimeout(function(){ 
+                setTimeout(function() {
                     $('.invalid_phone_otp_error').html('').hide();
                 }, 5000);
             },
@@ -1149,17 +1203,18 @@
         $(this).attr('maxlength', 1);
         $(this).on('keyup', function(e) {
             var parent = $($(this).parent());
-            if(e.keyCode === 8 || e.keyCode === 37) {
+            if (e.keyCode === 8 || e.keyCode === 37) {
                 var prev = parent.find('input#' + $(this).data('previous'));
-                if(prev.length) {
+                if (prev.length) {
                     $(prev).select();
                 }
-            } else if((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 && e.keyCode <= 90) || (e.keyCode >= 96 && e.keyCode <= 105) || e.keyCode === 39) {
+            } else if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 && e.keyCode <= 90) || (e
+                    .keyCode >= 96 && e.keyCode <= 105) || e.keyCode === 39) {
                 var next = parent.find('input#' + $(this).data('next'));
-                if( (next.length) && ($(this).val() != '') ) {
+                if ((next.length) && ($(this).val() != '')) {
                     $(next).select();
                 } else {
-                    if(parent.data('autosubmit')) {
+                    if (parent.data('autosubmit')) {
                         parent.submit();
                     }
                 }
@@ -1167,25 +1222,27 @@
         });
     });
 
-    $('#send_password_reset_link').click(function(){
+    $('#send_password_reset_link').click(function() {
         var that = $(this);
         var email = $('#username').val();
         $('.invalid-feedback').html('');
         $.ajax({
             type: "POST",
             dataType: "json",
-            data: {"email": email},
+            data: {
+                "email": email
+            },
             url: forgot_password_url,
             success: function(res) {
-                if(res.status == "Success"){
+                if (res.status == "Success") {
                     $('#success-msg').html(res.message).show();
-                	setTimeout(function(){ 
-                		$('#success-msg').html('').hide();
-                	}, 5000);
+                    setTimeout(function() {
+                        $('#success-msg').html('').hide();
+                    }, 5000);
                 }
             },
-            error:function(error){
-            	var response = $.parseJSON(error.responseText);
+            error: function(error) {
+                var response = $.parseJSON(error.responseText);
                 let error_messages = response.errors;
                 $.each(error_messages, function(key, error_message) {
                     $('#error-msg').html(error_message[0]).show();
@@ -1194,7 +1251,7 @@
         });
     });
 
-    function isNumberKey(evt){
+    function isNumberKey(evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode
         if (charCode > 31 && (charCode < 48 || charCode > 57))
             return false;
@@ -1202,4 +1259,5 @@
     }
 </script>
 <script src="{{asset('js/payment.js')}}"></script>
+
 @endsection

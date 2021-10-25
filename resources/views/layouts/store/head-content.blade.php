@@ -4,6 +4,7 @@
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/color1.css')}}" media="screen" id="color">
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/style.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom.css')}}">
+<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <meta name="_token" content="{{ csrf_token() }}">
 
 @yield('css')

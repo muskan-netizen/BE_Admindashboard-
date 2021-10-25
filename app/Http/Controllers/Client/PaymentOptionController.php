@@ -23,7 +23,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $code = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex');
+    $code = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex','yoco','paylink');
         $payOption = PaymentOption::whereIn('code', $code)->get();
         return view('backend/payoption/index')->with(['payOption' => $payOption]);
     }
@@ -122,6 +122,18 @@ class PaymentOptionController extends BaseController
                         'publishable_key' => $request->stripe_publishable_key
                     ));
                 }
+                else if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'yoco') ){
+                    $validatedData = $request->validate([
+                        'yoco_secret_key'        => 'required',
+                        'yoco_public_key'=> 'required'
+                    ], [
+                        'yoco_secret_key.required'=> 'Yoco secret key field is required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'secret_key' => $request->yoco_secret_key,
+                        'public_key' => $request->yoco_public_key
+                    ));
+                }
                 else if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paystack') ){
                     $validatedData = $request->validate([
                         'paystack_secret_key'=> 'required',
@@ -130,6 +142,16 @@ class PaymentOptionController extends BaseController
                     $json_creds = json_encode(array(
                         'secret_key' => $request->paystack_secret_key,
                         'public_key' => $request->paystack_public_key
+                    ));
+                }
+                else if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paylink') ){
+                    $validatedData = $request->validate([
+                        'paylink_api_key'=> 'required',
+                        'paylink_api_secret_key'=> 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'api_key' => $request->paylink_api_key,
+                        'api_secret_key' => $request->paylink_api_secret_key
                     ));
                 }
                 else if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'payfast') ){

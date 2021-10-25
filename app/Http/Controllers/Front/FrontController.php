@@ -65,7 +65,6 @@ class FrontController extends Controller
             ->whereNull('categories.vendor_id')
             ->orderBy('categories.position', 'asc')
             ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();
-
         if ($categories) {
             $categories = $this->buildTree($categories->toArray());
         }

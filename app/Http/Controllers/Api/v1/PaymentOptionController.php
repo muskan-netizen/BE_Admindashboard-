@@ -12,6 +12,7 @@ use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\MobbexGatewayController;
+use App\Http\Controllers\Api\v1\YocoGatewayController;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, User, Payment, Transaction};
@@ -24,7 +25,7 @@ class PaymentOptionController extends BaseController{
         if($page == 'wallet'){
             $code = array('paypal', 'stripe');
         }else{
-            $code = array('cod', 'paypal', 'payfast', 'stripe', 'mobbex');
+        $code = array('cod', 'paypal', 'payfast', 'stripe'/*, 'mobbex','yoco'*/);
         }
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'title', 'off_site']);
         return $this->successResponse($payment_options, '', 201);
@@ -74,6 +75,11 @@ class PaymentOptionController extends BaseController{
     public function postPaymentVia_mobbex(Request $request){
         $gateway = new MobbexGatewayController();
         return $gateway->mobbexPurchase($request);
+    }
+
+    public function postPaymentVia_yoco(Request $request){
+        $gateway = new YocoGatewayController();
+        return $gateway->yocoPurchase($request);
     }
 
     public function postPaymentVia_paypal(Request $request){

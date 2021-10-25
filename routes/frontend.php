@@ -49,6 +49,13 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/mobbex', 'Front\MobbexGatewayController@mobbexPurchase')->name('payment.mobbexPurchase');
 	Route::post('payment/mobbex/notify', 'Front\MobbexGatewayController@mobbexNotify')->name('payment.mobbexNotify');
 
+	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
+	
+
+	Route::post('payment/paylink', 'Front\PaylinkGatewayController@paylinkPurchase')->name('payment.paylinkPurchase');
+	Route::get('payment/paylink/notify', 'Front\PaylinkGatewayController@paylinkNotify')->name('payment.paylinkNotify');
+
+
 	Route::post('payment/user/placeorder', 'Front\OrderController@postPaymentPlaceOrder')->name('user.postPaymentPlaceOrder');
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');
 

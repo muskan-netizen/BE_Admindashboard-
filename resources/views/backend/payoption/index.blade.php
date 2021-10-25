@@ -67,6 +67,7 @@
                 $signature = (isset($creds->signature)) ? $creds->signature : '';
                 $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                 $api_access_token = (isset($creds->api_access_token)) ? $creds->api_access_token : '';
+                $api_secret_key = (isset($creds->api_secret_key)) ? $creds->api_secret_key : '';
                 $publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
                 $secret_key = (isset($creds->secret_key)) ? $creds->secret_key : '';
                 $public_key = (isset($creds->public_key)) ? $creds->public_key : '';
@@ -202,6 +203,43 @@
                         </div>
                     </div>
                     @endif
+                    @if ( (strtolower($opt->code) == 'yoco') )
+                    <div id="yoco_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="yoco_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="yoco_secret_key" id="yoco_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="yoco_public_key" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="password" name="yoco_public_key" id="yoco_public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @if ( (strtolower($opt->code) == 'paylink') )
+                    <div id="paylink_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="paylink_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="password" name="paylink_api_key" id="paylink_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="paylink_api_secret_key" class="mr-3">{{ __("Api Secret Key") }}</label>
+                                    <input type="password" name="paylink_api_secret_key" id="paylink_api_secret_key" class="form-control" value="{{$api_secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- <div class="d-flex align-items-center justify-content-between mb-2">
                         <button class="btn btn-info d-block" type="submit"> Save </button>
                     </div> -->

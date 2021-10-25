@@ -46,6 +46,7 @@
         "omnipay/stripe": "^3.1",
         "orangehill/iseed": "^3.0",
         "pallares/laravel-nuxt": "^1.5",
+        "paylink/paylink": "^2.0",
         "paystackhq/omnipay-paystack": "^1.0",
         "predis/predis": "^1.1",
         "r0bdiablo/laravel5-phumbor": "^1.0",
@@ -56,10 +57,13 @@
         "socialiteproviders/apple": "^5.0",
         "spatie/db-dumper": "^2.21.1",
         "spatie/geocoder": "^3.10",
+        "spatie/laravel-webhook-client": "^2.7",
+        "spatie/laravel-webhook-server": "^2.0",
         "staudenmeir/laravel-adjacency-list": "^1.0",
         "twilio/sdk": "^6.13",
         "webpatser/laravel-uuid": "^4.0",
-        "yajra/laravel-datatables-oracle": "^9.18"
+        "yajra/laravel-datatables-oracle": "^9.18",
+        "yoco/yoco-php-laravel": "^0.1.0@beta"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.6",

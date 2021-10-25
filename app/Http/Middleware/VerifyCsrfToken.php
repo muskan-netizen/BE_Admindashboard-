@@ -15,6 +15,7 @@ class VerifyCsrfToken extends Middleware
         'payment/payfast/notify',
         'payment/payfast/notify/app',
         'payment/paypal/notify',
-        'payment/mobbex/notify'
+        'payment/mobbex/notify',
+        'payment/paylink/notify'
     ];
 }
