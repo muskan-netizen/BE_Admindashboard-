@@ -17,8 +17,6 @@
 </header>
 <section class="wrapper-main mb-5 py-lg-5">
     <div class="container">
-        <form id="login-form-new" class="px-lg-4" action="">
-        @csrf
         <div class="row" id="login-section">
             <div class="col-lg-6 mb-lg-0 mb-3 text-center border-right pb-4">
                 <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
@@ -99,7 +97,8 @@
                                 </div>
                             </div>
                         </form> --}}
-
+                        <form id="login-form-new" class="px-lg-4" action="">
+                        @csrf
                         <input type="hidden" name="device_type" value="web">
                         <input type="hidden" name="device_token" value="web">
                         <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode','1') }}">
@@ -118,9 +117,10 @@
                                 <span id="success-msg" class="font-14 text-success" style="display:none"></span>
                             </div>
                             <div class="form-group">
-                                <button class="btn btn-solid w-100 login_continue_btn" type="button">Continue</button>
+                                <button class="btn btn-solid w-100 login_continue_btn" type="submit">Continue</button>
                             </div>
                         </div>
+                        </form>
                     </div>
                 </div>    
             </div>
@@ -135,6 +135,7 @@
         </div>
         <div class="row justify-content-center" id="verify-phone-section" style="display:none">
             <div class="verify-login-code">
+                <form id="verify-otp-form" class="px-lg-4" action="">
                 <h3 class="mb-2 text-center">{{ __('Verify OTP') }}</h3>
                 <div method="get" class="digit-group otp_inputs d-flex justify-content-between" data-group-name="digits" data-autosubmit="false" autocomplete="off">
                     <input class="form-control" type="text" id="digit-1" name="digit-1" data-next="digit-2" onkeypress="return isNumberKey(event)"/>
@@ -155,9 +156,10 @@
                         <a class="verifyPhone" href="javascript:void(0)"><u>{{__('RESEND')}}</u></a>
                     </div>
                     <div class="col-md-12 mt-3">
-                        <button type="button" class="btn btn-solid" id="verify_phone_token">{{__('VERIFY')}}</button>
+                        <button type="submit" class="btn btn-solid" id="verify_phone_token">{{__('VERIFY')}}</button>
                     </div>
                 </div>
+                </form>
             </div>
         </div>
         </form>
@@ -263,7 +265,13 @@
         $("input[name='full_number']").val(iti.getNumber());
     }
 
-    $(document).delegate(".login_continue_btn, .verifyPhone", "click", function(e){
+    $(document).delegate(".verifyPhone", "click", function(){
+        $("#login-form-new").submit();
+    });
+
+    $(document).delegate("#login-form-new", "submit", function(e){
+    // $(document).delegate(".login_continue_btn, .verifyPhone", "click", function(e){
+        e.preventDefault();
         var uname = $.trim($("#username").val());
         var error = 0;
         var phone = $("input[name='full_number']").val();
@@ -293,9 +301,10 @@
                         }
                     }else{
                         error = 1;
+                        $("#password-wrapper").show();
+                        $("#password-wrapper input").attr("required", true);
+                        $("#password-wrapper input").trigger("focus");
                     }
-                    $("#password-wrapper").show();
-                    $("#password-wrapper input").attr("required", true);
                 }else{
                     error = 1;
                     $("#username").addClass("is-invalid");
@@ -367,7 +376,9 @@
         $('#dialCode').val(dial_code);
     });
 
-    $("#verify_phone_token").click(function(event) {
+    // $("#verify_phone_token").click(function(event) {
+    $(document).delegate("#verify-otp-form", "submit", function(e){
+        e.preventDefault();
         var verifyToken = '';
         $('.digit-group').find('input').each(function() {
             if($(this).val()){
