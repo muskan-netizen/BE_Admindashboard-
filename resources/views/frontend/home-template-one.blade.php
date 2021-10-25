@@ -376,9 +376,9 @@
                     if($homePageLabel->slug == 'vendors'){
                         echo getNomenclatureName('vendors', true);
                     } elseif($homePageLabel->slug == 'recent_orders'){
-                        echo (!empty($homePageLabel->translations->first()->title))?$homePageLabel->translations->first()->title:"Your Recent Orders";
+                        echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");
                     } else {
-                        echo (!empty($homePageLabel->translations->first()->title))?$homePageLabel->translations->first()->title:$homePageLabel->title;
+                        echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
                     }
                     @endphp
 

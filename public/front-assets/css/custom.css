@@ -630,7 +630,7 @@ ul.social-links li {
 
 ul.social-links li:last-child {
     padding-right: 0;
-    margin-bottom: 0;
+    /* margin-bottom: 0; */
 }
 
 

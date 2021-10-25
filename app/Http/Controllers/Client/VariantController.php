@@ -104,12 +104,19 @@ class VariantController extends BaseController
         $variant = Variant::select('id', 'title', 'type', 'position')
                         ->with('translation', 'option.translation', 'varcategory')
                         ->where('id', $id)->firstOrFail();
-        $categories = Category::with('translation_one')->select('id', 'slug')
-                        ->where('status', '!=', $this->blockdata)
+        $categories = Category::with('translation_one')
+                        ->where('status', 1)
                         ->orderBy('parent_id', 'asc')
                         ->orderBy('position', 'asc')
                         ->whereIn('type_id', ['1', '3', '6'])
+                        ->where('slug', '!=', 'root')
+                        ->whereNull('vendor_id')
                         ->get();
+        $categories_hierarchy = '';
+        if($categories){
+            $categories_build = $this->buildTree($categories->toArray());
+            $categories_hierarchy = $this->printCategoryOptionsHeirarchy($categories_build);
+        }
         $langs = ClientLanguage::with(['language', 'variantTrans' => function($query) use ($id) {
                         $query->where('variant_id', $id);
                       }])
@@ -118,7 +125,7 @@ class VariantController extends BaseController
                     ->orderBy('is_primary', 'desc')->get();
         $submitUrl = route('variant.update', $id);
 
-        $returnHTML = view('backend.catalog.edit-variant')->with(['categories' => $categories,  'languages' => $langs, 'variant' => $variant])->render();
+        $returnHTML = view('backend.catalog.edit-variant')->with(['categories' => $categories_hierarchy,  'languages' => $langs, 'variant' => $variant])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML, 'submitUrl' => $submitUrl));
     }
 

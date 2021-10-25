@@ -126,11 +126,11 @@
     <div class="row">
         <div class="col-xl-6">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body" id="homepage_tutorial_dropzone">
                     <h4 class="header-title">{{ __("Tutorial images") }}</h4>
-                    <div class="row">
+                    <div class="row tutorial_main_div">
                         @foreach($dynamicTutorials as $dynamicTutorial)
-                            <div class="col-sm-6 col-md-4 col-lg-3">
+                            <div class="col-sm-6 col-md-4 col-lg-3 tutorial_inner_div" data-id="{{$dynamicTutorial->id}}" data-sort="{{$dynamicTutorial->sort}}">
                                 <div class="card mb-0">
                                     <div class="card-body">
                                         <div class="row">
@@ -443,6 +443,39 @@
             }
         });
     });
+
+    $("#homepage_tutorial_dropzone .tutorial_main_div").sortable({
+        axis: 'x',
+        placeholder: "ui-state-highlight",
+        update: function(event, ui) {
+            var post_order_ids = new Array();
+            $('#homepage_tutorial_dropzone .tutorial_inner_div').each(function() {
+                post_order_ids.push({"row_id" : $(this).data("id"), "sort" : $(this).data("sort")});
+            });
+            saveTutorialOrder(post_order_ids);
+        }
+    });
+
+    function saveTutorialOrder(orderVal) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{{ url('client/app_styling/saveOrderTutorials') }}",
+            data: {
+                order: orderVal
+            },
+            success: function(response) {
+                if (response.status == 'success') {
+                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                }
+            },
+        });
+    }
 </script>
 
 @endsection

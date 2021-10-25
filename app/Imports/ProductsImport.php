@@ -119,7 +119,8 @@ class ProductsImport implements ToCollection{
                     }
 
                     if ($variant_check && $variant_option) {
-                        if (($variant_option->variant_id) != ($variant_check->id)) {
+                        $checkVariantMatch = VariantOption::where(['title' => $row[6], 'variant_id' => $variant_check->id])->first();
+                        if (!$checkVariantMatch) {
                             $error[] = "Row " . $i . " : Option1 value is not available for this Name";
                             $checker = 1;
                         } else {
@@ -141,7 +142,8 @@ class ProductsImport implements ToCollection{
                     }
 
                     if ($variant_check && $variant_option) {
-                        if (($variant_option->variant_id) != ($variant_check->id)) {
+                        $checkVariantMatch = VariantOption::where(['title' => $row[8], 'variant_id' => $variant_check->id])->first();
+                        if (!$checkVariantMatch) {
                             $error[] = "Row " . $i . " : Option2 value is not available for this Name";
                             $checker = 1;
                         } else {
@@ -164,7 +166,8 @@ class ProductsImport implements ToCollection{
                     }
 
                     if ($variant_check && $variant_option) {
-                        if (($variant_option->variant_id) != ($variant_check->id)) {
+                        $checkVariantMatch = VariantOption::where(['title' => $row[10], 'variant_id' => $variant_check->id])->first();
+                        if (!$checkVariantMatch) {
                             $error[] = "Row " . $i . " : Option3 value is not available for this Name";
                             $checker = 1;
                         } else {
@@ -309,7 +312,7 @@ class ProductsImport implements ToCollection{
 
                         if ($da[5] != "") {
                             $variant = Variant::where('title', $da[5])->first();
-                            $variant_optionn = VariantOption::where('title', $da[6])->first();
+                            $variant_optionn = VariantOption::where(['title' => $da[6], 'variant_id' => $variant->id])->first();
                             //inserting product variant sets
                             $proVariantSet = new ProductVariantSet();
                             $proVariantSet->product_id = $product;
@@ -321,7 +324,7 @@ class ProductsImport implements ToCollection{
 
                         if ($da[7] != "") {
                             $variant = Variant::where('title', $da[7])->first();
-                            $variant_optionn = VariantOption::where('title', $da[8])->first();
+                            $variant_optionn = VariantOption::where(['title' => $da[8], 'variant_id' => $variant->id])->first();
                             //inserting product variant sets
                             $proVariantSet = new ProductVariantSet();
                             $proVariantSet->product_id = $product;
@@ -333,7 +336,7 @@ class ProductsImport implements ToCollection{
 
                         if ($da[9] != "") {
                             $variant = Variant::where('title', $da[9])->first();
-                            $variant_optionn = VariantOption::where('title', $da[10])->first();
+                            $variant_optionn = VariantOption::where(['title' => $da[10], 'variant_id' => $variant->id])->first();
                             //inserting product variant sets
                             $proVariantSet = new ProductVariantSet();
                             $proVariantSet->product_id = $product;

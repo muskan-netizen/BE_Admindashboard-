@@ -4,7 +4,6 @@
             <div class="col-md-6">
                 <div class="form-group">
                     {!! Form::label('title', __('Select Category'),['class' => 'control-label']) !!}
-                    {{-- {{$categories->count()}} --}}
                     <select class="selectize-select form-control" id="cateSelectBox" name="cate_id">
                         <option value="">{{ __("Select Category") }}...</option>
                         {!! $categories !!}
