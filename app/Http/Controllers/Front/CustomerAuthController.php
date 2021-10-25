@@ -190,11 +190,7 @@ class CustomerAuthController extends FrontController
                         'email'  => 'email|unique:users'
                     ]);
                 }
-<<<<<<< HEAD
-                if(!empty($signReq->phone_number) && ($preferences->verify_phone == 0) && (!$validator->fails())){
-=======
                 if(!empty($req->phone_number) && ($preferences->verify_phone == 0) && (!$validator->fails())){
->>>>>>> afd1cc396631fbb02886cdf2b5e49f14dc668b02
                     $validator = $req->validate([
                         'phone_number' => 'string|min:8|max:15|unique:users'
                     ]);
@@ -818,3 +814,4 @@ class CustomerAuthController extends FrontController
         return redirect()->route('customer.login');
     }
 }
+
