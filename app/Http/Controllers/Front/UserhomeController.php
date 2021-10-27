@@ -335,6 +335,9 @@ class UserhomeController extends FrontController
             }
             $value->categoriesList = $categoriesList;
         }
+        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+            $vendors = $vendors->sortBy('lineOfSightDistance')->values()->all();
+        }
         $now = Carbon::now()->toDateTimeString();
         $subscribed_vendors_for_trending = SubscriptionInvoicesVendor::with('features')->whereHas('features', function ($query) {
             $query->where(['subscription_invoice_features_vendor.feature_id' => 1]);
@@ -370,6 +373,9 @@ class UserhomeController extends FrontController
                 $value->categoriesList = $categoriesList;
             }
         }
+        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+            $trendingVendors = $trendingVendors->sortBy('lineOfSightDistance')->values()->all();
+        }
         $mostSellingVendors = Vendor::select('vendors.*',DB::raw('count(vendor_id) as max_sales'))->join('order_vendors','vendors.id','=','order_vendors.vendor_id')->whereIn('vendors.id',$vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'),'desc')->get();
         if ((!empty($mostSellingVendors) && count($mostSellingVendors) > 0)) {
             foreach ($mostSellingVendors as $key => $value) {
@@ -391,6 +397,9 @@ class UserhomeController extends FrontController
                 $value->categoriesList = $categoriesList;
             }
         }
+        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+            $mostSellingVendors = $mostSellingVendors->sortBy('lineOfSightDistance')->values()->all();
+        }
 
         $navCategories = $this->categoryNav($language_id);
         Session::put('navCategories', $navCategories);
@@ -400,7 +409,7 @@ class UserhomeController extends FrontController
         foreach ($new_product_details as  $new_product_detail) {
             $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
-            $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : '';
+            $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $new_products[] = array(
                 'image_url' => $image_url,
                 'sku' => $new_product_detail->sku,
@@ -416,7 +425,7 @@ class UserhomeController extends FrontController
         foreach ($feature_product_details as  $feature_product_detail) {
             $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
             $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
-            $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : '';
+            $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $feature_products[] = array(
                 'image_url' => $image_url,
                 'sku' => $feature_product_detail->sku,
@@ -432,7 +441,7 @@ class UserhomeController extends FrontController
         foreach ($on_sale_product_details as  $on_sale_product_detail) {
             $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
             $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
-            $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : '';
+            $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $on_sale_products[] = array(
                 'image_url' => $image_url,
                 'sku' => $on_sale_product_detail->sku,

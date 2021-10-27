@@ -148,6 +148,14 @@ class FrontController extends Controller
         return $vendors;
     }
 
+    public function loadDefaultImage(){
+        $proxy_url = \Config::get('app.IMG_URL1');
+        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
+        $image_fit = \Config::get('app.FIT_URl');
+        $default_url = $image_fit .'300/300'. $image_path;
+        return $default_url;
+    }
+
     public function productList($vendorIds, $langId, $currency = 'USD', $where = '')
     {
         $products = Product::with([
@@ -182,7 +190,7 @@ class FrontController extends Controller
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
                 }
-                
+                $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $value->category_name = $value->category->categoryDetail->translation->first() ? $value->category->categoryDetail->translation->first()->name :  $value->category->slug;
             }
         }

@@ -232,7 +232,7 @@
                                                             </div>
                                                         </a>
 
-                                                        <!-- <div class="product-box">
+                                                        {{-- <div class="product-box">
                                                             <div class="img-wrapper">
                                                                 <div class="front">
                                                                     <a href="{{$vendor_url}}"><img class="img-fluid blur-up lazyload" alt="" src="{{$imagePath}}" width="300" height="300"></a>
@@ -252,7 +252,7 @@
                                                                     @endif
                                                                 </div>
                                                             </div>
-                                                        </div> -->
+                                                        </div> --}}
                                                     </div>
                                                 @endforeach
                                             @else

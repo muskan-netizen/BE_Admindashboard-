@@ -130,14 +130,14 @@
                                 @foreach($newProducts as $newProds)
                                     <div>
                                     @foreach($newProds as $new)
-                                        <?php $imagePath = '';
+                                        <?php /*$imagePath = '';
                                         foreach ($new['media'] as $k => $v) {
                                             $imagePath = $v['image']['path']['image_fit'].'300/300'.$v['image']['path']['image_path'];
-                                        } ?>
+                                        }*/ ?>
 
                                         <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', $new['url_slug'])}}">
                                             <div class="img-outer-box position-relative">
-                                                <img src="{{$imagePath}}" alt="">
+                                                <img src="{{$new['image_url']}}" alt="">
                                             </div>    
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing px-0">
@@ -169,7 +169,7 @@
                                             </div>
                                         </a>
 
-                                        <!-- <div class="media">
+                                        {{-- <div class="media">
                                             <a href="{{route('productDetail', $new['sku'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt="" ></a>
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing">
@@ -191,7 +191,7 @@
                                                     @endif
                                                 </div>
                                             </div>
-                                        </div> -->
+                                        </div> --}}
                                     @endforeach
                                     </div>
                                 @endforeach
@@ -251,19 +251,19 @@
                                               @if($products->isNotEmpty())
                                                 @foreach($products as $key => $data)
 
-                                                <?php $imagePath = $imagePath2 = '';
+                                                <?php /*$imagePath = $imagePath2 = '';
                                                 $mediaCount = count($data->media);
                                                 for ($i = 0; $i < $mediaCount && $i < 2; $i++) { 
                                                     if($i == 0){
                                                         $imagePath = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                     }
                                                     $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                } ?>
+                                                }*/ ?>
                                                 <div class="col-xl-3 col-6 col-grid-box mt-3">
                                                     <div class="product-box scale-effect">
                                                         <div class="img-wrapper">
                                                             <div class="front">
-                                                                <a href="{{route('productDetail', $data->sku)}}"><img class="img-fluid blur-up lazyload" src="{{$imagePath}}" alt=""></a>
+                                                                <a href="{{route('productDetail', $data->sku)}}"><img class="img-fluid blur-up lazyload" src="{{$data->image_url}}" alt=""></a>
                                                             </div>
                                                             <div class="cart-info cart-wrap">
                                                                 <button data-toggle="modal" data-target="#addtocart" title="Add to cart"><i class="ti-shopping-cart"></i></button> 

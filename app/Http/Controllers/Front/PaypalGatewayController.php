@@ -49,6 +49,9 @@ class PaypalGatewayController extends FrontController
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
+            if ($request->has('order_number')) {
+                $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->order_number;
+            }
             $response = $this->gateway->purchase([
                 'currency' => 'USD', //$this->currency,
                 'amount' => $amount,

@@ -544,7 +544,7 @@ $timezone = Auth::user()->timezone;
                                                                 </li>
                                                             </ul>
 
-                                                            @if($client_preference_detail->tip_after_order == 1 && $order->tip_amount <= 0 && $payments > 0 && 1==2) 
+                                                            @if($client_preference_detail->tip_after_order == 1 && $order->tip_amount <= 0 && $payments > 0) 
                                                             <hr>
                                                             <div class="row">
                                                                 <div class="col-12">

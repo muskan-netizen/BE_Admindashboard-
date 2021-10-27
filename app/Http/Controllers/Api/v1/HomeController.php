@@ -219,6 +219,9 @@ class HomeController extends BaseController
                     $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences);
                 }
             }
+            if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                $vendorData = $vendorData->sortBy('lineOfSightDistance')->values()->all();
+            }
 
             $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type);
             $new_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);

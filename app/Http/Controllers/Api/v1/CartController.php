@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{User, Product, Cart, ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus};
 use GuzzleHttp\Client as GCLIENT;
-
+use Log;
 class CartController extends BaseController
 {
     use ApiResponser;
@@ -376,6 +376,7 @@ class CartController extends BaseController
         $cartID = $cart->id;
         $upSell_products = collect();
         $crossSell_products = collect();
+        $delifproductnotexist = CartProduct::where('cart_id', $cartID)->doesntHave('product')->delete();
         $cartData = CartProduct::with([
             'vendor', 'coupon' => function ($qry) use ($cartID) {
                 $qry->where('cart_id', $cartID);
@@ -431,7 +432,9 @@ class CartController extends BaseController
             $vendor_details = [];
             $tax_details = [];
             $is_vendor_closed = 0;
+           
             foreach ($cartData as $ven_key => $vendorData) {
+             
                 $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
 
@@ -502,7 +505,11 @@ class CartController extends BaseController
                         }
                     }
                 }
+                
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
+                    if(isset($prod->product) && !empty($prod->product)){   
+
+
                     $price_in_currency = $price_in_doller_compare = $pro_disc = $quantity_price = 0;
                     $variantsData = $taxData = $vendorAddons = array();
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
@@ -613,7 +620,7 @@ class CartController extends BaseController
                     $prod->variant_options = $variant_options;
                     $payable_amount = $payable_amount;
                     $prod->product_addons = $vendorAddons;
-
+                    Log::info($prod);
                     $product = Product::with([
                         'variant' => function ($sel) {
                             $sel->groupBy('product_id');
@@ -633,7 +640,11 @@ class CartController extends BaseController
                     if($cross_prods){
                         $crossSell_products->push($cross_prods);
                     }
+                
+                
                 }
+            }
+
                 $couponApplied = 0;
                 if (!empty($vendorData->coupon->promo) && ($vendorData->coupon->promo->restriction_on == 1)) {
                     $minimum_spend = $vendorData->coupon->promo->minimum_spend * $clientCurrency->doller_compare;

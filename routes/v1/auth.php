@@ -24,6 +24,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('profile', 'Api\v1\ProfileController@profile');
         Route::get('account', 'Api\v1\ProfileController@account');
         Route::get('orders', 'Api\v1\OrderController@getOrdersList');
+        Route::post('orders/tip-after-order', 'Api\v1\OrderController@tipAfterOrder'); 
         Route::get('wishlists', 'Api\v1\ProfileController@wishlists');
         Route::get('newsLetter', 'Api\v1\ProfileController@newsLetter');
         Route::get('mystore', 'Api\v1\StoreController@getMyStoreDetails');

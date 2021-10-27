@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\{Client, Category, Product, ClientPreference, UserDevice, UserLoyaltyPoint, Wallet, VendorSavedPaymentMethods};
+use App\Models\{Client, Category, Product, ClientPreference, UserDevice, UserLoyaltyPoint, Wallet, VendorSavedPaymentMethods, Nomenclature};
 use Illuminate\Support\Facades\Storage;
 use Session;
 
@@ -290,5 +290,15 @@ class BaseController extends Controller
         $saved_payment_method = VendorSavedPaymentMethods::where('user_id', $request->user_id)
                         ->where('payment_option_id', $request->payment_option_id)->first();
         return $saved_payment_method;
+    }
+
+    public function getNomenclatureName($searchTerm, $langId, $plural = true){
+        $result = Nomenclature::with(['translations' => function($q) use($langId) {
+                    $q->where('language_id', $langId);
+                }])->where('label', 'LIKE', "%{$searchTerm}%")->first();
+        if($result){
+            $searchTerm = $result->translations->count() != 0 ? $result->translations->first()->name : ucfirst($searchTerm);
+        }
+        return $plural ? $searchTerm : rtrim($searchTerm, 's');
     }
 }

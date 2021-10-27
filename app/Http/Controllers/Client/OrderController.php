@@ -203,7 +203,7 @@ class OrderController extends BaseController{
             if($order->luxury_option_id > 0){
                 $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
                 if($luxury_option->title == 'takeaway'){
-                    $luxury_option_name = getNomenclatureName('Takeaway', $langId, false);
+                    $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
                 }elseif($luxury_option->title == 'dine_in'){
                     $luxury_option_name = 'Dine-In';
                 }else{
@@ -226,6 +226,7 @@ class OrderController extends BaseController{
      */
 
     public function getOrderDetail($domain = '', $order_id, $vendor_id){
+        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $vendor_order_status_option_ids = [];
         $vendor_order_status_created_dates = [];
         $order = Order::with(array(
@@ -243,6 +244,18 @@ class OrderController extends BaseController{
                 $product->image_path  = $product->media->first() ? $product->media->first()->image->path : '';
             }
         }
+        $luxury_option_name = '';
+        if($order->luxury_option_id > 0){
+            $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+            if($luxury_option->title == 'takeaway'){
+                $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
+            }elseif($luxury_option->title == 'dine_in'){
+                $luxury_option_name = 'Dine-In';
+            }else{
+                $luxury_option_name = 'Delivery';
+            }
+        }
+        $order->luxury_option_name = $luxury_option_name;
         $order_status_options = OrderStatusOption::where('type', 1)->get();
         $dispatcher_status_options = DispatcherStatusOption::with(['vendorOrderDispatcherStatus' => function ($q) use($order_id,$vendor_id){
             $q->where(['order_id' => $order_id,'vendor_id' => $vendor_id]);
@@ -489,8 +502,10 @@ class OrderController extends BaseController{
                         );
                         $response = json_decode($res->getBody(), true);
                         if($response && $response['task_id'] > 0){
-                            $up_web_hook_code = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])
-                                    ->update(['web_hook_code' => $dynamic]);
+                            $dispatch_traking_url = $response['dispatch_traking_url']??'';
+                            $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
+                                ->update(['web_hook_code' => $dynamic,'dispatch_traking_url' => $dispatch_traking_url]);
+
                             return 1;
                         }
                         return 2;
@@ -584,8 +599,10 @@ class OrderController extends BaseController{
                         );
                         $response = json_decode($res->getBody(), true);
                         if($response && $response['task_id'] > 0){
-                            $up_web_hook_code = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])
-                                    ->update(['web_hook_code' => $dynamic]);
+                            $dispatch_traking_url = $response['dispatch_traking_url']??'';
+                            $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
+                                ->update(['web_hook_code' => $dynamic,'dispatch_traking_url' => $dispatch_traking_url]);
+            
                             return 1;
                         }
                         return 2;

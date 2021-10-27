@@ -38,6 +38,9 @@ class PaystackGatewayController extends FrontController
             if($request->has('tip')){
                 $returnUrlParams = $returnUrlParams.'&tip='.$request->tip.'&gateway=paystack';
             }
+            if ($request->has('order_number')) {
+                $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->order_number;
+            }
             $returnUrlParams = $returnUrlParams.'&gateway=paystack';
             $response = $this->gateway->purchase([
                 'amount' => $amount,

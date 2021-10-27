@@ -279,6 +279,7 @@ class CategoryController extends FrontController{
                     $value->translation_description = (!empty($value->translation->first())) ? html_entity_decode(strip_tags($value->translation->first()->body_html)) : $value->sku;
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
+                    $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                     // foreach ($value->variant as $k => $v) {
                     //     $value->variant[$k]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     // }
@@ -367,6 +368,7 @@ class CategoryController extends FrontController{
                 $value->translation_description = ($value->translation->isNotEmpty()) ? html_entity_decode(strip_tags($value->translation->first()->body_html)) : '';
                 $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                 $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
+                $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             }
         }
         $listData = $products;
@@ -483,6 +485,7 @@ class CategoryController extends FrontController{
                 $value->translation_description = (!empty($value->translation->first())) ? strip_tags($value->translation->first()->body_html) : $value->sku;
                 $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                 $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
+                $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 // foreach ($value->variant as $k => $v) {
                 //     $value->variant[$k]->multiplier = $clientCurrency->doller_compare;
                 // }

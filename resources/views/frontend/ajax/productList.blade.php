@@ -3,18 +3,18 @@
       @if($listData->isNotEmpty())
         @foreach($listData as $key => $data)
             @if(($data->variant)->isNotEmpty())
-                <?php $imagePath = $imagePath2 = '';
+                <?php /*$imagePath = $imagePath2 = '';
                 $mediaCount = count($data->media);
                 for ($i = 0; $i < $mediaCount && $i < 2; $i++) { 
                     if($i == 0){
                         $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
                     }
                     $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
-                } ?>
+                }*/ ?>
                 <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-3">
                     <a href="{{route('productDetail', $data->url_slug)}}" class="product-box scale-effect mt-0">
                         <div class="product-image p-0">
-                            <img class="img-fluid blur-up lazyload" src="{{$imagePath}}" alt="">
+                            <img class="img-fluid blur-up lazyload" src="{{$data->image_url}}" alt="">
                         </div>
                         <div class="media-body align-self-center">
                             <div class="inner_spacing w-100">

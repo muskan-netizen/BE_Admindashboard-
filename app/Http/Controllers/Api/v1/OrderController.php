@@ -556,8 +556,10 @@ class OrderController extends BaseController {
             );
             $response = json_decode($res->getBody(), true);
             if ($response && $response['task_id'] > 0) {
+                $dispatch_traking_url = $response['dispatch_traking_url']??'';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
-                    ->update(['web_hook_code' => $dynamic]);
+                    ->update(['web_hook_code' => $dynamic,'dispatch_traking_url' => $dispatch_traking_url]);
+
                 return 1;
             }
             return 2;
@@ -652,8 +654,11 @@ class OrderController extends BaseController {
             );
             $response = json_decode($res->getBody(), true);
             if ($response && $response['task_id'] > 0) {
+                $dispatch_traking_url = $response['dispatch_traking_url']??'';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
-                    ->update(['web_hook_code' => $dynamic]);
+                    ->update(['web_hook_code' => $dynamic,'dispatch_traking_url' => $dispatch_traking_url]);
+
+               
                 return 1;
             }
             return 2;
@@ -867,7 +872,7 @@ class OrderController extends BaseController {
                         $q2->where('payment_option_id', 1);
                     });
                 })
-                ->where('id', $order_id)->first();
+                ->where('id', $order_id)->select('*','id as total_discount_calculate')->first();
             } else {
                 $order = Order::with(
                     [
@@ -885,14 +890,19 @@ class OrderController extends BaseController {
                         $q2->where('payment_option_id', 1);
                     });
                 })
-                ->where('user_id', $user->id)->where('id', $order_id)->first();
+                ->where('user_id', $user->id)->where('id', $order_id)->select('*','id as total_discount_calculate')->first();
             }
             if ($order) {
                 $order->user_name = $order->user->name;
                 $order->user_image = $order->user->image;
                 $order->payment_option_title = __($order->paymentOption->title);
                 $order->created_date = Carbon::parse($order->created_at)->setTimezone($user->timezone)->format('M d, Y h:i A');
-
+                $order->tip_amount = $order->tip_amount;
+                $order->tip = array(
+                    ['label' => '5%', 'value' => number_format((0.05 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')],
+                    ['label' => '10%', 'value' => number_format((0.1 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')],
+                    ['label' => '15%', 'value' => number_format((0.15 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')]
+                );
                 foreach ($order->vendors as $vendor) {
                     $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order_id)->where('vendor_id', $vendor->vendor->id)->orderBy('id', 'DESC')->first();
                     if ($vendor_order_status) {
@@ -1200,5 +1210,32 @@ class OrderController extends BaseController {
         unset($order->paymentOption);
         return $this->successResponse($order, __('Order detail.'), 201);
     }
+
+
+    /**
+     * Credit Money Into order tip
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function tipAfterOrder(Request $request)
+    {
+       $user = Auth::user();
+        if($user){
+            $order_number = $request->order_number;
+            if ($order_number > 0) {
+                $tip = Order::where('order_number',$order_number)->update(['tip_amount' => $request->tip_amount]);
+                $message = 'Tip has been submitted successfully';
+                $response['tip_amount'] = $request->tip_amount;
+                return $this->successResponse($response, $message, 200);
+            }
+            else{
+                return $this->errorResponse('Amount is not sufficient', 400);
+            }
+        }
+        else{
+            return $this->errorResponse('Invalid User', 400);
+        }
+    }
+
 
 }

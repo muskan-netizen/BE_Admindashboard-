@@ -783,7 +783,13 @@ $(document).ready(function() {
         if (urlParams.has('tip')) {
             tipAmount = urlParams.get('tip');
         }
-        paymentSuccessViaPaypal(urlParams.get('amount'), urlParams.get('token'), urlParams.get('PayerID'), path, tipAmount);
+        order_number = 0;
+        if (urlParams.has('ordernumber')) {
+            order_number = urlParams.get('ordernumber');
+            console.log('ordernumber');
+        }
+       
+        paymentSuccessViaPaypal(urlParams.get('amount'), urlParams.get('token'), urlParams.get('PayerID'), path, tipAmount,order_number);
     }
 
     function paymentViaStripe(stripe_token, address_id, payment_option_id) {
@@ -840,6 +846,9 @@ $(document).ready(function() {
                     } else if (path.indexOf("subscription") !== -1) {
                         success_error_alert('error', resp.message, "#subscription_payment_form .payment_response");
                         $(".subscription_confirm_btn").removeAttr("disabled");
+                    } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
                     } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
                         success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
                         $(".topup_wallet_confirm").removeAttr("disabled");
@@ -881,13 +890,24 @@ $(document).ready(function() {
         ajaxData.amount = total_amount;
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
+
+        if (typeof tip_for_past_order !== 'undefined') {
+            if (tip_for_past_order != undefined && tip_for_past_order == 1) 
+                {
+                    let order_number = $("#order_number").val();
+                    ajaxData.order_number = order_number;
+                    order_number = order_number;
+                }
+           
+         }
+        
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: payment_paypal_url,
             data: ajaxData,
             success: function(response) {
-                if (response.status == "Success") {
+                 if (response.status == "Success") {
                     window.location.href = response.data;
                 } else {
                     if (cartElement.length > 0) {
@@ -912,7 +932,7 @@ $(document).ready(function() {
         });
     }
 
-    function paymentSuccessViaPaypal(amount, token, payer_id, path, tip = 0) {
+    function paymentSuccessViaPaypal(amount, token, payer_id, path, tip = 0,order_number = 0) {
         let address_id = 0;
         if (path.indexOf("cart") !== -1) {
             // $('#order_placed_btn').trigger('click');
@@ -920,6 +940,10 @@ $(document).ready(function() {
             $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
             address_id = $("input:radio[name='address_id']:checked").val();
         } else if (path.indexOf("wallet") !== -1) {
+            // $('#topup_wallet_btn').trigger('click');
+            // $('#wallet_topup_form #radio-paypal').prop("checked", true);
+            $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", true);
+        } else if (path.indexOf("orders") !== -1) {
             // $('#topup_wallet_btn').trigger('click');
             // $('#wallet_topup_form #radio-paypal').prop("checked", true);
             $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", true);
@@ -935,6 +959,8 @@ $(document).ready(function() {
                         placeOrder(address_id, 3, response.data, tip);
                     } else if (path.indexOf("wallet") !== -1) {
                         creditWallet(amount, 3, response.data);
+                    }else if (path.indexOf("orders") !== -1) {
+                        creditTipAfterOrder(amount, 3, response.data,order_number);
                     } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
                         creditWallet(amount, 3, response.data);
                     }
@@ -2620,7 +2646,7 @@ $(document).ready(function() {
             type: "POST",
             dataType: 'json',
             url: credit_tip_url,
-            data: { wallet_amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id , order_number: order_number},
+            data: { tip_amount: amount, payment_option_id: payment_option_id, transaction_id: transaction_id , order_number: order_number},
             success: function (response) {
                // var currentUrl = window.location.href;
                 location.href = path;

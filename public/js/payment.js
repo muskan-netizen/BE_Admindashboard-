@@ -13,7 +13,12 @@ $(document).ready(function() {
         if (urlParams.has('tip')) {
             tipAmount = urlParams.get('tip');
         }
-        paymentSuccessViaPaystack(urlParams.get('amount'), urlParams.get('trxref'), path, tipAmount);
+        order_number = 0;
+        if (urlParams.has('ordernumber')) {
+            order_number = urlParams.get('ordernumber');
+           
+        }
+        paymentSuccessViaPaystack(urlParams.get('amount'), urlParams.get('trxref'), path, tipAmount,order_number);
     }
 
     window.paymentViaPaystack = function paymentViaPaystack() {
@@ -33,6 +38,17 @@ $(document).ready(function() {
         ajaxData.amount = total_amount;
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
+
+        if (typeof tip_for_past_order !== 'undefined') {
+            if (tip_for_past_order != undefined && tip_for_past_order == 1) 
+                {
+                    let order_number = $("#order_number").val();
+                    ajaxData.order_number = order_number;
+                  
+                }
+           
+        }
+         
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -64,7 +80,7 @@ $(document).ready(function() {
         });
     }
 
-    function paymentSuccessViaPaystack(amount, reference, path, tip = 0) {
+    function paymentSuccessViaPaystack(amount, reference, path, tip = 0,order_number=0) {
         let address_id = 0;
         if (path.indexOf("cart") !== -1) {
             // $('#order_placed_btn').trigger('click');
@@ -87,7 +103,9 @@ $(document).ready(function() {
                         placeOrder(address_id, 5, response.data, tip);
                     } else if (path.indexOf("wallet") !== -1) {
                         creditWallet(amount, 5, response.data);
-                    }
+                    }else if (path.indexOf("orders") !== -1) {
+                        creditTipAfterOrder(amount, 3, response.data,order_number);
+                    } 
                 } else {
                     $('.spinner-overlay').hide();
                     if (path.indexOf("cart") !== -1) {

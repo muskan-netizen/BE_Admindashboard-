@@ -1210,9 +1210,10 @@ class OrderController extends FrontController
                 ['form_params' => ($postdata)]
             );
             $response = json_decode($res->getBody(), true);
-            if ($response && $response['task_id'] > 0) {
+            if ($response && $response['task_id'] > 0) { 
+                $dispatch_traking_url = $response['dispatch_traking_url']??'';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
-                    ->update(['web_hook_code' => $dynamic]);
+                    ->update(['web_hook_code' => $dynamic,'dispatch_traking_url' => $dispatch_traking_url]);
                 return 1;
             }
             return 2;
@@ -1307,8 +1308,11 @@ class OrderController extends FrontController
             );
             $response = json_decode($res->getBody(), true);
             if ($response && $response['task_id'] > 0) {
+                $dispatch_traking_url = $response['dispatch_traking_url']??'';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
-                    ->update(['web_hook_code' => $dynamic]);
+                    ->update(['web_hook_code' => $dynamic,'dispatch_traking_url' => $dispatch_traking_url]);
+
+               
                 return 1;
             }
             return 2;
@@ -1699,7 +1703,7 @@ class OrderController extends FrontController
 
     
      /**
-     * Credit Money Into Wallet
+     * Credit Money Into order tip
      *
      * @return \Illuminate\Http\Response
      */
@@ -1711,9 +1715,9 @@ class OrderController extends FrontController
         if($user){
             $order_number = $request->order_number;
             if ($order_number > 0) {
-                $tip = Order::where('order_number',$order_number)->update(['tip_amount' => $request->wallet_amount]);
+            //    $tip = Order::where('order_number',$order_number)->update(['tip_amount' => $request->tip_amount]);
                 $message = 'Tip has been submitted successfully';
-                $response['wallet_balance'] = $request->wallet_amount;
+                $response['tip_amount'] = $request->tip_amount;
                 Session::put('success', $message);
                 return $this->successResponse($response, $message, 200);
             }

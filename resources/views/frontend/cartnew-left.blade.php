@@ -11,11 +11,13 @@
     <div class="col-lg-6">
         <h4 class="page-title m-0">{{ __($label.' Address') }} </h4>
     </div>
+    @if($action != 'dine_in' && $action != 'takeaway')
     <div class="col-lg-6 mt-2 mt-lg-0 text-center" id="add_new_address_btn">
         <a class="add-address w-100 mx-auto" href="javascript:void(0)">
             <i class="fa fa-plus mr-1" aria-hidden="true"></i>{{__('Add New Address')}}
         </a>
     </div>
+    @endif
 </div>
 @if($action != 'delivery')
     @if(isset($vendor_details['vendor_address']))

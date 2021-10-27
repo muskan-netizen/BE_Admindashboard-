@@ -18,6 +18,7 @@
               <div class="form-group">
                 
                   <input class="form-control" name="wallet_amount" id="wallet_amount" type="hidden" placeholder="Enter Amount">
+                  <input class="form-control" name="tip_for_past_order" id="tip_for_past_order" type="hidden" value="1">
                   <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
                   <input type="hidden" name="order_number" id="order_number" value="0"> 
                   <span class="error-msg" id="wallet_amount_error"></span>

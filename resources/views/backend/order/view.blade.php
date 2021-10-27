@@ -162,7 +162,12 @@ $timezone = Auth::user()->timezone;
             <div class="col-lg-8 mb-3">
                 <div class="card mb-0 h-100">
                     <div class="card-body">
-                        <h4 class="header-title mb-3">{{ __("Items from Order") }} #{{$order->order_number}}</h4>
+                        <h4 class="header-title mb-3">
+                            @if($order->luxury_option_name != '')
+                                <span class="badge badge-info mr-2">{{$order->luxury_option_name}}</span>
+                            @endif
+                            {{ __("Items from Order") }} #{{$order->order_number}}
+                        </h4>
                         <div class="table-responsive">
                             <table class="table table-bordered table-centered mb-0">
                                 <thead class="table-light">
@@ -254,6 +259,17 @@ $timezone = Auth::user()->timezone;
                         <h5 class="font-family-primary fw-semibold">{{$order->user->name}}</h5>
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("Address") }}:</span> {{ $order->address ? $order->address->address : ''}}</p>
                         <p class="mb-0"><span class="fw-semibold me-2">{{ __("Mobile") }}:</span> {{$order->user->phone_number}}</p>
+                    </div>
+                </div>
+            </div>
+            @elseif( ($order->luxury_option_id == 2) || ($order->luxury_option_id == 3) )
+            <div class="col-lg-6 mb-3">
+                <div class="card mb-0 h-100">
+                    <div class="card-body">
+                        <h4 class="header-title mb-3">{{ __("User Information") }}</h4>
+                        <h5 class="font-family-primary fw-semibold">{{$order->user->name}}</h5>
+                        <p class="mb-2"><span class="fw-semibold me-2">{{ __("Address") }}:</span> {{ $order->user->address->first() ? $order->user->address->first()->address : 'Not Available'}}</p>
+                        <p class="mb-0"><span class="fw-semibold me-2">{{ __("Mobile") }}:</span> {{$order->user->phone_number ? $order->user->phone_number : 'Not Available'}}</p>
                     </div>
                 </div>
             </div>

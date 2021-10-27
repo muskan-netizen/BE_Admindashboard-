@@ -283,6 +283,9 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: home_page_data_url,
+            beforeSend: function(){
+                $("#shimmer_effect").show();
+            },
             success: function (response) {
                 if (response.status == "Success") {
                     $('#main-menu').smartmenus('destroy');
@@ -360,7 +363,11 @@ $(document).ready(function () {
                     }
                 } else {
                 }
-            }
+            },
+            complete:function(data){
+                // Hide image container
+                $("#shimmer_effect").hide();
+               }
         });
     }
 
