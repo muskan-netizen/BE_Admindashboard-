@@ -184,6 +184,7 @@
                                                     if(empty($data->vendor_templete_id) || ($data->vendor_templete_id == 1)){
                                                         $vendor_url = route('categoryVendorProducts', [$category->slug, $data->slug]);
                                                     }elseif($data->vendor_templete_id == 5){
+                                                        if(isset($data->slug) && isset($category->slug))
                                                         $vendor_url = route('vendorCategoryProducts', [$data->slug, $category->slug]);
                                                     }else{
                                                         $vendor_url = route('vendorDetail', $data->slug);
