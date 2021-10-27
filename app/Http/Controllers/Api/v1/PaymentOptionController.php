@@ -25,7 +25,7 @@ class PaymentOptionController extends BaseController{
         if($page == 'wallet'){
             $code = array('paypal', 'stripe');
         }else{
-        $code = array('cod', 'paypal', 'payfast', 'stripe'/*, 'mobbex','yoco'*/);
+        $code = array('cod', 'paypal', 'payfast', 'stripe', 'mobbex'/*,'yoco'*/);
         }
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'title', 'off_site']);
         return $this->successResponse($payment_options, '', 201);
