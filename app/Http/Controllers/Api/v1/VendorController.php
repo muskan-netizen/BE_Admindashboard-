@@ -133,12 +133,17 @@ class VendorController extends BaseController{
                 }
                 
                 foreach($vendor_categories as $ckey => $category) {
-                    if($category->category){
-                        $categoriesList = $categoriesList . ($category->category->translation->first()->name ?? '');
-                        if( $ckey !=  $vendor_categories->count()-1 ){
+                    if ($category->category) {
+
+                        $cckey = 0;
+                        $categoriesList = $categoriesList . $category->category->translation_one->name ?? '';
+                         if($cckey != $vendor_categories->count() - 1){
                             $categoriesList = $categoriesList . ', ';
                         }
+                        
                     }
+                    
+
                     $products = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
                                 $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                                 ->where('category_translations.language_id', $langId);
