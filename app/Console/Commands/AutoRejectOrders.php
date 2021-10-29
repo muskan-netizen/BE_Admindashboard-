@@ -10,6 +10,7 @@ use App\Models\ClientPreference;
 use App\Models\OrderVendor;
 use App\Models\Vendor;
 use App\Models\UserDevice;
+use App\Models\User;
 use App\Models\NotificationTemplate;
 use App\Models\AutoRejectOrderCron;
 use Log;
@@ -81,6 +82,14 @@ class AutoRejectOrders extends Command
                     $orderVendorDetail->save();
                     $orderDetail = Order::on($database_name)->find($orderVendorDetail->order_id);
                     AutoRejectOrderCron::where(['order_vendor_id' => $order_value->order_vendor_id, 'database_name' => $client->database_name])->delete();
+                    if ($orderVendorDetail->payment_option_id != 1) {
+                        $user = User::on($database_name)->find($orderVendorDetail->user_id);
+                        $wallet = $user->wallet;
+                        $wallet_amount_used = $orderVendorDetail->payable_amount;
+                        if ($wallet_amount_used > 0) {
+                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>credited</b> for order number <b>' . $orderDetail->order_number . '</b>']);
+                        }
+                    }
                     $devices = UserDevice::on($database_name)->whereNotNull('device_token')->where(['user_id' => $orderVendorDetail->user_id])->pluck('device_token')->toArray();
                     if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
                         $from = $client_preferences->fcm_server_key;
