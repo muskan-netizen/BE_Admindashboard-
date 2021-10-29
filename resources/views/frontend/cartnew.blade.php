@@ -110,9 +110,11 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
                 <div class="row align-items-md-center vendor_products_tr" id="tr_vendor_products_<%= vendor_product.id %>">
                     <div class="product-img col-4 col-md-2 pr-0">
                         <% if(vendor_product.pvariant.media_one) { %>
-                            <img class="mr-2 w-100" src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>100/70<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>" alt="">
+                            <img class='mr-2' src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
+                        <% }else if(vendor_product.pvariant.media_second){ %>
+                            <img class='mr-2' src="<%= vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_second.image.path.image_path %>">
                         <% }else{ %>
-                            <img class="mr-2 w-100" src="<%= vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_second.image.path.image_path %>">
+                            <img class='mr-2' src="<%= vendor_product.image_url %>">
                         <% } %>
                     </div>
                     <div class="col-8 col-md-10">
