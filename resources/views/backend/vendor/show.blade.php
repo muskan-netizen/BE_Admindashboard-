@@ -1222,7 +1222,14 @@
                             events.push({
                                 title: data.title,
                                 start: data.start,
-                                end: data.end
+                                end: data.end,
+                                type: data.type,
+                                color: data.color,
+                                type_id: data.type_id,
+                                slot_id: data.slot_id,
+                                slot_dine_in: data.slot_dine_in,
+                                slot_takeaway: data.slot_takeaway,
+                                slot_delivery: data.slot_delivery,
                             });
                         });
                         successCallback(events);
