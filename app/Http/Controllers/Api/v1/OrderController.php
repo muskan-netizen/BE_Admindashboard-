@@ -492,9 +492,9 @@ class OrderController extends BaseController {
             $dynamic = uniqid($order->id . $vendor);
             $client = Client::orderBy('id','asc')->first();
             if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
-            $call_back_url = "https://".$client->custom_domain."/'dispatch-order-status-update/".$dynamic;
+            $call_back_url = "https://".$client->custom_domain."/dispatch-order-status-update/".$dynamic;
             else
-            $call_back_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/'dispatch-order-status-update/".$dynamic;
+            $call_back_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/dispatch-order-status-update/".$dynamic;
          //   $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'longitude', 'address')->first();
             $tasks = array();
@@ -594,9 +594,9 @@ class OrderController extends BaseController {
             $dynamic = uniqid($order->id . $vendor);
             $client = Client::orderBy('id','asc')->first();
             if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
-            $call_back_url = "https://".$client->custom_domain."/'dispatch-order-status-update/".$dynamic;
+            $call_back_url = "https://".$client->custom_domain."/dispatch-order-status-update/".$dynamic;
             else
-            $call_back_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/'dispatch-order-status-update/".$dynamic;
+            $call_back_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/dispatch-order-status-update/".$dynamic;
             // $call_back_url = route('dispatch-order-update', $dynamic);
 
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'longitude', 'address')->first();
