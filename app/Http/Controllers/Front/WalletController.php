@@ -25,7 +25,14 @@ class WalletController extends FrontController
         $navCategories = $this->categoryNav($langId);
         $auth_user = Auth::user();
         $user_transactions = Transaction::where('payable_id', $auth_user->id)->orderBy('id', 'desc')->paginate(10);
-        return view('frontend/account/wallet')->with(['user'=>$user, 'navCategories'=>$navCategories, 'user_transactions'=>$user_transactions, 'clientCurrency'=>$clientCurrency]);
+        $public_key_yoco=PaymentOption::where('code','yoco')->first();
+        if($public_key_yoco){
+
+            $public_key_yoco= $public_key_yoco->credentials??'';
+            $public_key_yoco= json_decode($public_key_yoco);
+            $public_key_yoco= $public_key_yoco->public_key??'';
+        }
+        return view('frontend/account/wallet',compact('public_key_yoco'))->with(['user'=>$user, 'navCategories'=>$navCategories, 'user_transactions'=>$user_transactions, 'clientCurrency'=>$clientCurrency]);
     }
 
     /**

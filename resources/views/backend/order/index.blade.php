@@ -71,9 +71,15 @@
                                                 <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Accept') }}</button>
                                                 <!--<button class="update-status btn-danger" id="reject" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Reject') }}</button>-->
                                             <% } else if(vendor.order_status_option_id == 2) { %>
-                                                <button class="update-status btn-warning" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="4" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Processing') }}</button>
+                                                <button class="update-status btn-warning" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="4" data-order_vendor_id="<%= vendor.order_vendor_id %>" data-order_luxury_option="<%= order.luxury_option_id %>">{{ __('Processing') }}</button>
                                             <% } else if(vendor.order_status_option_id == 4) { %>
-                                                    <button class="update-status btn-success" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="5" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Out For Delivery') }}</button>
+                                                    <button class="update-status btn-success" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="5" data-order_vendor_id="<%= vendor.order_vendor_id %>">
+                                                        <% if( (order.luxury_option_id == 2) || (order.luxury_option_id == 3) ){ %>
+                                                            {{ __('Order Prepared') }}
+                                                        <% }else{ %>
+                                                            {{ __('Out For Delivery') }}
+                                                        <% } %>
+                                                    </button>
                                             <% } else if(vendor.order_status_option_id == 5) { %>
                                                 <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="6" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Delivered') }}</button>
                                             <% } else { %>
@@ -497,6 +503,7 @@
             var full_div = that.data("full_div");
             var single_div = that.data("single_div");
             var status_option_id = that.data("status_option_id");
+            var luxury_option = that.data("order_luxury_option");
             var status_option_id_next = status_option_id + 1;
             var order_vendor_id = that.data("order_vendor_id");
             var order_id = that.data("order_id");
@@ -519,10 +526,15 @@
                         success: function(response) {
 
                             if (status_option_id == 4 || status_option_id == 5) {
-                                if (status_option_id == 4)
-                                    var next_status = 'Out For Delivery';
-                                else
+                                if (status_option_id == 4){
+                                    if((luxury_option == 2) || (luxury_option == 3)){
+                                        var next_status = 'Order Prepared';
+                                    }else{
+                                        var next_status = 'Out For Delivery';
+                                    }
+                                }else{
                                     var next_status = 'Delivered';
+                                }
                                 that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
                                 return false;
                             } else {

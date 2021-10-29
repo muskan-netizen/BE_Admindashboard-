@@ -214,7 +214,8 @@ class ProfileController extends BaseController{
             Storage::disk('s3')->delete($user->image); 
         }
         $imgType = ($request->has('type')) ? $request->type : 'jpg';
-        $imageName = 'profile/'.$user->id.substr(md5(microtime()), 0, 15).'.'.$imgType;
+        $code = Client::orderBy('id','asc')->value('code');
+        $imageName = '/'.$code.'/profile/'.$user->id.substr(md5(microtime()), 0, 15).'.'.$imgType;
         $save = Storage::disk('s3')->put($imageName, $img, 'public');
         $user->image = $imageName;
         $user->save();

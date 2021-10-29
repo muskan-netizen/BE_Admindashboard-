@@ -22,6 +22,11 @@ class SubscriptionPlansUserController extends BaseController
 {
     use ApiResponser;
     private $folderName = '/subscriptions/image';
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/subscriptions/image';
+    }
     /**
      * Handle the incoming request.
      *

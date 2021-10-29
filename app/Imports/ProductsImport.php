@@ -7,14 +7,17 @@ use Illuminate\Support\Collection;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use App\Models\{Brand, Category, ClientLanguage, CategoryTranslation, CsvProductImport, Product, ProductCategory, ProductTranslation, ProductVariant, ProductVariantSet, TaxCategory, Variant, VariantOption, VendorCategory, VendorMedia, ProductImage};
+use App\Models\{Brand, Category, ClientLanguage, CategoryTranslation, CsvProductImport, Product, ProductCategory, ProductTranslation, ProductVariant, ProductVariantSet, TaxCategory, Variant, VariantOption, VendorCategory, VendorMedia, ProductImage,Client};
 
 class ProductsImport implements ToCollection{
     private $folderName = 'prods';
-    
+  
     public function  __construct($vendor_id ,$csv_product_import_id){
         $this->vendor_id= $vendor_id;
         $this->csv_product_import_id = $csv_product_import_id;
+
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/prods';
     }
     public function collection(Collection $rows){
         $i = 0;

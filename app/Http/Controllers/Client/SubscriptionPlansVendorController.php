@@ -29,12 +29,18 @@ class SubscriptionPlansVendorController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function __construct(request $request)
-    {
+    {   
+
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/subscriptions/image';
+
         $preferences = ClientPreference::where(['id' => 1])->first();
         if((isset($preferences->subscription_mode)) && ($preferences->subscription_mode == 0)){
             abort(404);
         }
     }
+
+    
 
     /**
      * Get user subscriptions

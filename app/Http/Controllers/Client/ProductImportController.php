@@ -18,6 +18,7 @@ use App\Models\CategoryHistory;
 use App\Models\ProductCategory;
 use App\Models\CsvProductImport;
 use App\Models\ProductTranslation;
+use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Category_translation;
 use App\Http\Controllers\Controller;
@@ -27,6 +28,13 @@ use Symfony\Component\Process\Process;
 
 class ProductImportController extends Controller{
     private $folderName = 'prods';
+
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/prods';
+    }
+
     public function postWoocommerceDetail(Request $request){
         try {
             $request->validate([

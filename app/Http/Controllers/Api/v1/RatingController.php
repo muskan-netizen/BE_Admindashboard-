@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile};
+use App\Models\{Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,Client};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Requests\Web\CheckImageRequest;
@@ -38,7 +38,8 @@ class RatingController extends BaseController{
                 if ($image = $request->file('files')) {
                     foreach ($image as $files) {
                     $file =  substr(md5(microtime()), 0, 15).'_'.$files->getClientOriginalName();
-                    $storage = Storage::disk('s3')->put('/review', $files, 'public');
+                    $code = Client::orderBy('id','asc')->value('code');
+                    $storage = Storage::disk('s3')->put('/'.$code.'/review', $files, 'public');
                     $img = new OrderProductRatingFile();
                     $img->order_product_rating_id = $ratings->id;
                     $img->file = $storage;
@@ -86,9 +87,10 @@ class RatingController extends BaseController{
 
      */
     public function uploadFile(CheckImageRequest $request){
-        try {
+        try {   
+                  $code = Client::orderBy('id','asc')->value('code');
                   $files_set = [];
-                  $folder =$request->folder ??'';
+                  $folder = '/'.$code.$request->folder ??'';
                   if ($image = $request->file('images')) {
                        foreach ($image as $key => $files) {
                        $file =  substr(md5(microtime()), 0, 15).'_'.$files->getClientOriginalName();

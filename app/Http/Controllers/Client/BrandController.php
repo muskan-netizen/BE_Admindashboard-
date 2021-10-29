@@ -13,6 +13,12 @@ use App\Models\{Client, ClientPreference, Brand, Category, Category_translation,
 class BrandController extends BaseController
 {
     private $folderName = 'brand';
+
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/brand';
+    }
     /**
      * Show the form for creating a new resource.
      *

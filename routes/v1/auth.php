@@ -1,10 +1,12 @@
 <?php
+
 Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], function () {
     Route::get('country-list', 'Api\v1\AuthController@countries');
     Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {
         Route::get('logout', 'Api\v1\AuthController@logout');
         Route::post('sendToken', 'Api\v1\AuthController@sendToken');
         Route::post('verifyAccount', 'Api\v1\AuthController@verifyToken');
+      
     });
     Route::group(['middleware' => ['dbCheck', 'apilogger']], function() {
         Route::post('login', 'Api\v1\AuthController@login');
@@ -13,14 +15,18 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
         Route::post('register', 'Api\v1\AuthController@signup');
         Route::post('resetPassword', 'Api\v1\AuthController@resetPassword');
         Route::post('forgotPassword', 'Api\v1\AuthController@forgotPassword');
+      
     });
 });
 Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
+   
     Route::group(['middleware' => ['dbCheck', 'apilogger']], function() {
+      
         Route::post('social/info', 'Api\v1\SocialController@getKeys');
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');
     });
     Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {
+        
         Route::get('profile', 'Api\v1\ProfileController@profile');
         Route::get('account', 'Api\v1\ProfileController@account');
         Route::get('orders', 'Api\v1\OrderController@getOrdersList');
@@ -48,7 +54,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('primary/address/{id}', 'Api\v1\AddressController@postUpdatePrimaryAddress');
         Route::post('update/order/status', 'Api\v1\OrderController@postVendorOrderStatusUpdate');
         Route::get('payment/options/{page}', 'Api\v1\PaymentOptionController@getPaymentOptions');
+      
         Route::get('payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
+        Route::get('payment/yoco-functionality', 'Api\v1\PaymentOptionController@postPayment')->name('payment.yocoFunctionality');
+    
         Route::post('payment/place/order', 'Api\v1\PaymentOptionController@postPlaceOrder');
         Route::get('user/loyalty/info', 'Api\v1\LoyaltyController@index');
         Route::post('add/vendorTable/cart','Api\v1\CartController@addVendorTableToCart');

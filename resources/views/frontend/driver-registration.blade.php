@@ -158,7 +158,7 @@
                             <label for="">{{$driver_registration_document->name ? $driver_registration_document->name : ''}}</label>
                             @if(strtolower($driver_registration_document->file_type) == 'text')
                             <div class="form-group">
-                                <input type="text" class="form-control" id="input_file_logo_{{$driver_registration_document->id}}" name="{{$driver_registration_document->name}}" placeholder="Enter Text" value="">
+                                <input type="text" class="form-control {{ $driver_registration_document->is_required?'required':''}}" id="input_file_logo_{{$driver_registration_document->id}}" name="{{$driver_registration_document->name}}" placeholder="Enter Text" value="">
                             </div>
                             @else
                             <div class="file file--upload">
@@ -171,9 +171,9 @@
                                     </span>
                                 </label>
                                 @if(strtolower($driver_registration_document->file_type) == 'image')
-                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->name}}" v accept="image/*" data-rel="{{$driver_registration_document->id}}">
+                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->name}}" accept="image/*" data-rel="{{$driver_registration_document->id}}" class="{{ $driver_registration_document->is_required?'required':''}}">
                                 @elseif(strtolower($driver_registration_document->file_type) == 'pdf')
-                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->name}}" accept=".pdf" data-rel="{{$driver_registration_document->id}}">
+                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->name}}" accept=".pdf" data-rel="{{$driver_registration_document->id}}" class="{{ $driver_registration_document->is_required?'required':''}}">
                                 @endif
                                 <div class="invalid-feedback" id="{{$driver_registration_document->name}}_error"><strong></strong></div>
                             </div>
@@ -515,7 +515,19 @@
         });
         $('#register_btn').click(function() {
             var that = $(this);
-
+            
+            var loop_length = $('.required').length;
+            if(loop_length){
+                for(var i = 0; i < loop_length; i++){
+                    var data_val = $('.required')[i].value;
+                    var attr_name = $('.required')[i].getAttribute('name');
+                    if (data_val.length < 1) {
+                        $("#data-error").text(attr_name+ " is required");
+                        return false;
+                    }
+                }
+            }
+            
             $(this).attr('disabled', true);
             $('#register_btn_loader').show();
             $('.form-control').removeClass("is-invalid");

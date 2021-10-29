@@ -54,17 +54,19 @@ class SocialController extends BaseController{
             }
         }
         $email = ($request->has('email') && !empty($request->email)) ? $request->email : 'xyz';
-        $customer = User::where('id', '>', 0)->where('email', $email)->first();
+        $customer = User::where('email', $email)->first();
         if(!$customer){
-            $customer = User::where('id', '>', 0);
+            $customer = '';
             if($driver == 'facebook'){
-                $customer = $customer->where('facebook_auth_id', $request->auth_id);
+                $customer = User::where('facebook_auth_id', $request->auth_id)->first();
             } elseif ($driver == 'twitter'){
-                $customer = $customer->where('twitter_auth_id', $request->auth_id);
+                $customer = User::where('twitter_auth_id', $request->auth_id)->first();
             } elseif ($driver == 'google'){
-                $customer = $customer->where('google_auth_id', $request->auth_id);
+                $customer = User::where('google_auth_id', $request->auth_id)->first();
+            } elseif ($driver == 'apple'){
+                $customer = User::where('apple_auth_id', $request->auth_id)->first();
             }
-            $customer = $customer->first();
+           
             if(!$customer){
                 $customer = new User();
                 $customer->name = $request->name;

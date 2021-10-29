@@ -17,7 +17,12 @@ use App\Models\{UserWishlist, User, Product, UserAddress, UserRefferal, ClientPr
 class ProfileController extends FrontController
 {
     private $folderName = '/profile/image';
-    
+
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/profile/image';
+    }
     /**
      * Display send refferal page
      *

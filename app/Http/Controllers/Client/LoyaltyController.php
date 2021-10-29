@@ -13,6 +13,11 @@ use App\Models\{Client, ClientCurrency, ClientPreference, LoyaltyCard};
 class LoyaltyController extends BaseController
 {
     private $folderName = '/loyalty/image';
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/loyalty/image';
+    }
     /**
      * Display a listing of the resource.
      *

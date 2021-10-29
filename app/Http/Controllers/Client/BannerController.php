@@ -9,12 +9,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Banner, Vendor, Category, ClientLanguage};
+use App\Models\{Banner, Vendor, Category, ClientLanguage,Client};
 
 class BannerController extends BaseController
 {
     private $folderName = 'banner';
     private $fstatus = 1;
+
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/banner';
+    }
+
+    
     /**
      * Display a listing of the resource.
      *

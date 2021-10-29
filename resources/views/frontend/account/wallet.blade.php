@@ -257,6 +257,18 @@ $timezone = Auth::user()->timezone;
                         <span class="error text-danger" id="stripe_card_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'yoco') { %>
+                    <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper d-none">
+                        <div class="form-control">
+                            <label class="d-flex flex-row pt-1 pb-1 mb-0">
+                            <div id="yoco-card-frame">
+                                    <!-- Yoco Inline form will be added here -->
+                                    </div>
+                            </label>
+                        </div>
+                        <span class="error text-danger" id="yoco_card_error"></span>
+                    </div>
+                <% } %>
             <% } %>
         <% }); %>
     <% } %>
@@ -269,6 +281,8 @@ $timezone = Auth::user()->timezone;
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
+    var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
+    var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
@@ -276,7 +290,13 @@ $timezone = Auth::user()->timezone;
     var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
     var amount_required_error_msg = "{{__('Please enter amount.') }}";
     var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
-    
+
+    var yoco_public_key="<?php echo $public_key_yoco; ?>";
+    console.log(yoco_public_key);
+    var sdk = new window.YocoSDK({
+        publicKey: yoco_public_key
+    });
+    var inline='';
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();
@@ -323,6 +343,22 @@ $timezone = Auth::user()->timezone;
             $("#wallet_payment_methods .stripe_element_wrapper").removeClass('d-none');
         }else{
             $("#wallet_payment_methods .stripe_element_wrapper").addClass('d-none');
+        }
+        if (method == 'yoco') {
+            $("#wallet_payment_methods .yoco_element_wrapper").removeClass('d-none');
+            // Create a new dropin form instance
+
+            var yoco_amount_payable = $("input[name='wallet_amount']").val();
+     
+            inline = sdk.inline({
+                layout: 'field',
+                amountInCents:  yoco_amount_payable*100,
+                currency: 'ZAR'
+            });
+            // this ID matches the id of the element we created earlier.
+            inline.mount('#yoco-card-frame');
+        } else {
+            $("#wallet_payment_methods .yoco_element_wrapper").addClass('d-none');
         }
     });
 </script>

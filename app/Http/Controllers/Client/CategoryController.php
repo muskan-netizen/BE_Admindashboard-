@@ -15,6 +15,11 @@ class CategoryController extends BaseController
 {
     private $blocking = '2';
     private $folderName = 'category/icon';
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/category/icon';
+    }
     /**
      * Display a listing of the resource.
      *

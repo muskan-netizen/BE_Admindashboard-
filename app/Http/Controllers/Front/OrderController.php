@@ -19,6 +19,7 @@ use App\Models\{Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProduc
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Models\AutoRejectOrderCron;
+use Redirect;
 
 class OrderController extends FrontController
 {
@@ -160,6 +161,18 @@ class OrderController extends FrontController
         $navCategories = $this->categoryNav($langId);
         $order = Order::with(['products.pvariant.vset', 'products.pvariant.translation_one', 'address'])->findOrfail($request->order_id);
         // dd($order->toArray());
+
+
+       $order_vendors =  OrderVendor::where('order_id',$request->order_id)->whereNotNull('dispatch_traking_url')->get();
+       if(count($order_vendors)){
+        $home_service = ClientPreference::where('business_type','home_service')->where('id', '>', 0)->first();
+        if($home_service)
+        return Redirect::route('front.booking.details',$order->order_number);
+        
+     
+       }
+
+
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         return view('frontend.order.success', compact('order', 'navCategories', 'clientCurrency'));
     }
@@ -797,7 +810,7 @@ class OrderController extends FrontController
             // $this->sendOrderNotification($user->id, $vendor_ids);
             $this->sendSuccessEmail($request, $order);
             $this->sendSuccessSMS($request, $order, $vendor_id);
-            if($request->payment_option_id != 7 && $request->payment_option_id != 8 && $request->payment_option_id != 9){ // if not mobbex
+            if($request->payment_option_id != 7||$request->payment_option_id != 8||$request->payment_option_id != 9){ // if not mobbex
                 Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                 CartAddon::where('cart_id', $cart->id)->delete();
                 CartCoupon::where('cart_id', $cart->id)->delete();
@@ -821,7 +834,7 @@ class OrderController extends FrontController
                 ]);
             }
             $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
-            if($request->payment_option_id != 7 && $request->payment_option_id != 8 && $request->payment_option_id != 9){ // if not mobbex
+            if($request->payment_option_id != 7||$request->payment_option_id != 8||$request->payment_option_id != 9){ // if not mobbex
                 if (!empty($order->vendors)) {
                     foreach ($order->vendors as $vendor_value) {
                         $vendorDetail = $vendor_value->vendor;
@@ -1002,7 +1015,7 @@ class OrderController extends FrontController
                         'longitude' => $cus_address->longitude ?? 76.803508700000
                     );
                     $postdata =  ['locations' => $location];
-                    $client = new Client([
+                    $client = new GCLIENT([
                         'headers' => [
                             'personaltoken' => $dispatch_domain->delivery_service_key,
                             'shortcode' => $dispatch_domain->delivery_service_key_code,
@@ -1050,23 +1063,23 @@ class OrderController extends FrontController
         $order_vendors = OrderVendor::where('order_id', $order_id)->whereHas('vendor', function ($q) {
             $q->where('auto_accept_order', 1);
         })->get();
-        Log::info($order_vendors);
+      //  Log::info($order_vendors);
         foreach ($order_vendors as $ov) {
-            Log::info($ov);
-            Log::info($ov->order_id);
+       //     Log::info($ov);
+      //      Log::info($ov->order_id);
             $request = $ov;
 
             DB::beginTransaction();
             //try {
 
             $request->order_id = $ov->order_id;
-            Log::info($ov->order_id);
-            Log::info($request->order_id);
+     //       Log::info($ov->order_id);
+     //       Log::info($request->order_id);
             $request->vendor_id = $ov->vendor_id;
             $request->order_vendor_id = $ov->id;
             $request->status_option_id = 2;
             $timezone = Auth::user()->timezone;
-            Log::info($request);
+      //      Log::info($request);
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
             Log::info($vendor_order_status_check);
             if (!$vendor_order_status_check) {
@@ -1077,7 +1090,7 @@ class OrderController extends FrontController
                 $vendor_order_status->order_status_option_id = $request->status_option_id;
                 $vendor_order_status->save();
                 if ($request->status_option_id == 2) {
-                    Log::info($request->status_option_id);
+       //             Log::info($request->status_option_id);
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if ($order_dispatch && $order_dispatch == 1)
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
@@ -1196,7 +1209,7 @@ class OrderController extends FrontController
             ];
 
 
-            $client = new Client([
+            $client = new GCLIENT([
                 'headers' => [
                     'personaltoken' => $dispatch_domain->delivery_service_key,
                     'shortcode' => $dispatch_domain->delivery_service_key_code,
@@ -1293,7 +1306,7 @@ class OrderController extends FrontController
             ];
 
 
-            $client = new Client([
+            $client = new GCLIENT([
                 'headers' => [
                     'personaltoken' => $dispatch_domain->dispacher_home_other_service_key,
                     'shortcode' => $dispatch_domain->dispacher_home_other_service_key_code,

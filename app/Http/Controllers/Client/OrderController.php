@@ -140,19 +140,25 @@ class OrderController extends BaseController{
                 case 'pending_orders':
                     $orders = $orders->with('vendors', function ($query){
                         $query->where('order_status_option_id', 1);
-                   });
+                    })->whereHas('vendors', function ($query) {
+                        $query->where('order_status_option_id', 1);
+                    });
                    
                 break;
                 case 'active_orders':
                     $order_status_options = [2,4,5];
-                    $orders = $orders->whereHas('vendors', function ($query) use($order_status_options){
+                    $orders = $orders->with('vendors', function ($query) use($order_status_options){
+                        $query->whereIn('order_status_option_id', $order_status_options);
+                    })->whereHas('vendors', function ($query) use($order_status_options){
                         $query->whereIn('order_status_option_id', $order_status_options);
                     });
                     
                 break;
                 case 'orders_history':
                     $order_status_options = [6,3];
-                    $orders = $orders->whereHas('vendors', function ($query) use($order_status_options){
+                    $orders = $orders->with('vendors', function ($query) use($order_status_options){
+                        $query->whereIn('order_status_option_id', $order_status_options);
+                    })->whereHas('vendors', function ($query) use($order_status_options){
                         $query->whereIn('order_status_option_id', $order_status_options);
                     });
                    
@@ -167,18 +173,24 @@ class OrderController extends BaseController{
         })->select('*','id as total_discount_calculate')->paginate(30);
        
 
-        $pending_orders = $pending_orders->whereHas('vendors', function ($query) {
+        $pending_orders = $pending_orders->with('vendors', function ($query) {
+            $query->where('order_status_option_id', 1);
+        })->whereHas('vendors', function ($query) {
             $query->where('order_status_option_id',1);
         })->count();
 
         $order_status_optionsa = [2,4,5];
-        $active_orders = $active_orders->whereHas('vendors', function ($query) {
-            $query->whereIn('order_status_option_id', [2,4,5]);
+        $active_orders = $active_orders->with('vendors', function ($query) use($order_status_optionsa){
+            $query->whereIn('order_status_option_id', $order_status_optionsa);
+        })->whereHas('vendors', function ($query) use($order_status_optionsa) {
+            $query->whereIn('order_status_option_id', $order_status_optionsa);
         })->count();
 
         $order_status_optionsd = [6,3];
-        $orders_history = $orders_history->whereHas('vendors', function ($query) {
-            $query->whereIn('order_status_option_id', [6,3]);
+        $orders_history = $orders_history->with('vendors', function ($query) use($order_status_optionsd){
+            $query->whereIn('order_status_option_id', $order_status_optionsd);
+        })->whereHas('vendors', function ($query) use($order_status_optionsd){
+            $query->whereIn('order_status_option_id', $order_status_optionsd);
         })->count();
         
       
