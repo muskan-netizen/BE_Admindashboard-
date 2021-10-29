@@ -277,6 +277,7 @@ class OrderController extends BaseController{
             $vendor_order_status_created_dates[$vendor_order_status->order_status_option_id]= $vendor_order_status->created_at;
             $vendor_order_status_option_ids[]= $vendor_order_status->order_status_option_id;
         }
+        dd($order->address->toArray());
          return view('backend.order.view')->with(['vendor_id' => $vendor_id, 'order' => $order, 
         'vendor_order_statuses' => $vendor_order_statuses,
         'vendor_order_status_option_ids' => $vendor_order_status_option_ids,
