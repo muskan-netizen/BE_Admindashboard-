@@ -100,7 +100,7 @@
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
                   <h4 class="header-title mb-0">{{ __("Last Mile Delivery") }}</h4>
-                  <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                  <button class="btn btn-info d-block" type="submit" name="last_mile_submit_btn" value ="1"> {{ __("Save") }} </button>
                </div>
                <p class="sub-header">{{ __("Offer Last Mile Delivery with Dispatcher.") }}</p>
                <div class="row">
@@ -167,7 +167,7 @@
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
                   <h4 class="header-title mb-0">{{ __('On Demand Services') }}</h4>
-                  <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                  <button class="btn btn-info d-block" type="submit"  name="need_dispacher_home_other_service_submit_btn" value ="1"> {{ __("Save") }} </button>
                </div>
                <p class="sub-header">{{ __('Offer On Demand Services with Dispatcher.') }}</p>
                <div class="row">
@@ -220,7 +220,7 @@
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
                   <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
-                  <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                  <button class="btn btn-info d-block" type="submit"  name="need_dispacher_ride_submit_btn" value ="1"> {{ __("Save") }} </button>
                </div>
                <p class="sub-header">{{ __("Offer Pickup & Delivery with Dispatcher.") }}</p>
                <div class="row">

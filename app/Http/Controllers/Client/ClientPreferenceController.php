@@ -104,7 +104,7 @@ class ClientPreferenceController extends BaseController{
             $preference = new ClientPreference();
             $preference->client_code = $code;
         }
-        $keyShouldNot = array('dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','custom_mods_config', 'distance_to_time_calc_config');
+        $keyShouldNot = array('need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','custom_mods_config', 'distance_to_time_calc_config');
    
         foreach ($request->all() as $key => $value) {
             if(!in_array($key, $keyShouldNot)){
@@ -247,46 +247,55 @@ class ClientPreferenceController extends BaseController{
 
       
         $preferenceset = ClientPreference::where('client_code', Auth::user()->code)->first();
-        if(isset($request->need_delivery_service) && !empty($request->need_delivery_service)){   
-            try {
-                $client = new GClient(['headers' => ['personaltoken' => $request->delivery_service_key,'shortcode' => $request->delivery_service_key_code,'content-type' => 'application/json']]);
-                $url = $request->delivery_service_key_url;                                                   
-                $res = $client->post($url.'/api/check-dispatcher-keys');
-                $response = json_decode($res->getBody(), true);
-                if($response && $response['status'] == 400){
-                    return redirect()->route('configure.index')->with('error', 'Last Mile Delivery Keys incorrect !'); 
-                }
-            }catch(\Exception $e){
-                return redirect()->route('configure.index')->with('error', 'Invalid Last Mile Delivery Dispatcher URL !'); 
-            }                           
-            $preferenceset->need_delivery_service = ($request->has('need_delivery_service') && $request->need_delivery_service == 'on') ? 1 : 0;
-            $preferenceset->delivery_service_key_url = $request->delivery_service_key_url;
-            $preferenceset->delivery_service_key_code = $request->delivery_service_key_code;
-            $preferenceset->delivery_service_key = $request->delivery_service_key;
-        }else{
-            $preferenceset->need_delivery_service = $preferenceset->need_delivery_service;
+        if(isset($request->last_mile_submit_btn) && !empty($request->last_mile_submit_btn))
+        {  
+            if(isset($request->need_delivery_service) && !empty($request->need_delivery_service)){   
+                try {
+                    $client = new GClient(['headers' => ['personaltoken' => $request->delivery_service_key,'shortcode' => $request->delivery_service_key_code,'content-type' => 'application/json']]);
+                    $url = $request->delivery_service_key_url;                                                   
+                    $res = $client->post($url.'/api/check-dispatcher-keys');
+                    $response = json_decode($res->getBody(), true);
+                    if($response && $response['status'] == 400){
+                        return redirect()->route('configure.index')->with('error', 'Last Mile Delivery Keys incorrect !'); 
+                    }
+                }catch(\Exception $e){
+                    return redirect()->route('configure.index')->with('error', 'Invalid Last Mile Delivery Dispatcher URL !'); 
+                }                           
+                $preferenceset->need_delivery_service = ($request->has('need_delivery_service') && $request->need_delivery_service == 'on') ? 1 : 0;
+                $preferenceset->delivery_service_key_url = $request->delivery_service_key_url;
+                $preferenceset->delivery_service_key_code = $request->delivery_service_key_code;
+                $preferenceset->delivery_service_key = $request->delivery_service_key;
+            }else{
+                $preferenceset->need_delivery_service =  ($request->has('need_delivery_service') && $request->need_delivery_service == 'on') ? 1 : 0;
+            }
         }
+        
 
-        if(isset($request->need_dispacher_ride) && !empty($request->need_dispacher_ride)){
-            try {
-                $client = new GClient(['headers' => ['personaltoken' => $request->pickup_delivery_service_key,'shortcode' => $request->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
-                $url = $request->pickup_delivery_service_key_url;                                                   
-                $res = $client->post($url.'/api/check-dispatcher-keys');
-                $response = json_decode($res->getBody(), true);
-                if($response && $response['status'] == 400){
-                    return redirect()->route('configure.index')->with('error', 'Pickup & Delivery Keys incorrect !'); 
+        if (isset($request->need_dispacher_ride_submit_btn) && !empty($request->need_dispacher_ride_submit_btn)) {
+            if (isset($request->need_dispacher_ride) && !empty($request->need_dispacher_ride)) {
+                try {
+                    $client = new GClient(['headers' => ['personaltoken' => $request->pickup_delivery_service_key,'shortcode' => $request->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
+                    $url = $request->pickup_delivery_service_key_url;
+                    $res = $client->post($url.'/api/check-dispatcher-keys');
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['status'] == 400) {
+                        return redirect()->route('configure.index')->with('error', 'Pickup & Delivery Keys incorrect !');
+                    }
+                } catch (\Exception $e) {
+                    return redirect()->route('configure.index')->with('error', 'Invalid Pickup & Delivery Dispatcher URL !');
                 }
-            }catch(\Exception $e){
-                return redirect()->route('configure.index')->with('error', 'Invalid Pickup & Delivery Dispatcher URL !'); 
-            } 
-            $preferenceset->need_dispacher_ride = ($request->has('need_dispacher_ride') && $request->need_dispacher_ride == 'on') ? 1 : 0;
-           $preferenceset->pickup_delivery_service_key_url = $request->pickup_delivery_service_key_url;
-            $preferenceset->pickup_delivery_service_key_code = $request->pickup_delivery_service_key_code;
-            $preferenceset->pickup_delivery_service_key = $request->pickup_delivery_service_key;
-        }else{
-            $preferenceset->need_dispacher_ride = $preferenceset->need_dispacher_ride;
-        }   
+                $preferenceset->need_dispacher_ride = ($request->has('need_dispacher_ride') && $request->need_dispacher_ride == 'on') ? 1 : 0;
+                $preferenceset->pickup_delivery_service_key_url = $request->pickup_delivery_service_key_url;
+                $preferenceset->pickup_delivery_service_key_code = $request->pickup_delivery_service_key_code;
+                $preferenceset->pickup_delivery_service_key = $request->pickup_delivery_service_key;
+            } else {
+                $preferenceset->need_dispacher_ride = ($request->has('need_dispacher_ride') && $request->need_dispacher_ride == 'on') ? 1 : 0;
+            }
+        } 
 
+        if(isset($request->need_dispacher_home_other_service_submit_btn) && !empty($request->need_dispacher_home_other_service_submit_btn))
+        { 
+        
         if(isset($request->need_dispacher_home_other_service) && !empty($request->need_dispacher_home_other_service))
         {
             try {
@@ -308,8 +317,10 @@ class ClientPreferenceController extends BaseController{
             $preferenceset->dispacher_home_other_service_key_code = $request->dispacher_home_other_service_key_code;
             $preferenceset->dispacher_home_other_service_key = $request->dispacher_home_other_service_key;
         }else{
-            $preferenceset->need_dispacher_home_other_service = $preferenceset->need_dispacher_home_other_service;
+            $preferenceset->need_dispacher_home_other_service = ($request->has('need_dispacher_home_other_service') && $request->need_dispacher_home_other_service == 'on') ? 1 : 0;
         }
+        }   
+
         $preferenceset->save();
      
 
