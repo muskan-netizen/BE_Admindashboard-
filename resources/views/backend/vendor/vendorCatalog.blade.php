@@ -754,7 +754,6 @@
                 type: "get",
                 url: "{{route('vendor.specific_categories',$vendor->id)}}",
                 success: function(response) {
-                    console.log('ok');
                     if(response.status == 1){
                         $("#category_list").find('option').remove();
                         $("#category_list").append(response.options);
