@@ -337,9 +337,9 @@
     <div class="row address" id="def" style="display: none;">
         <input type="text" id="def-address" name="test" class="autocomplete form-control def_address">
     </div>
-    <div id="add-product" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    <div id="add-product" class="modal fade add_product" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true" style="display: none;">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-bottom">
                     <h4 class="modal-title">{{ __('Add Product') }}</h4>
@@ -348,11 +348,10 @@
                 <form id="save_product_form" method="post" enctype="multipart/form-data"
                     action="{{ route('product.store') }}">
                     @csrf
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-12">
+                    <div class="modal-body pb-0">
+                      
                                 <div class="row">
-                                    <div class="col-6 mb-2">
+                                    <div class="col-12 mb-2">
                                         <div class="form-group" id="product_nameInput">
                                             {!! Form::label('title', __('Product Name'), ['class' => 'control-label']) !!}
                                             <span class="text-danger">*</span>
@@ -363,7 +362,10 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="col-6 mb-2">
+                                   
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
                                         <div class="form-group" id="skuInput">
                                             {!! Form::label('title', __('SKU (Allowed Keys->a-z,A-Z,0-9,-,_)'), ['class' => 'control-label']) !!}
                                             <span class="text-danger">*</span>
@@ -375,44 +377,40 @@
                                             {!! Form::hidden('vendor_id', $vendor->id) !!}
                                         </div>
                                     </div>
+                                    <div class="col-6">
+                                        <div class="form-group" id="url_slugInput">
+                                            {!! Form::label('title', __('URL Slug'), ['class' => 'control-label']) !!}
+                                            {!! Form::text('url_slug', null, ['class' => 'form-control', 'id' => 'url_slug', 'placeholder' => 'Apple iMac', 'onkeypress' => 'return slugify(event)']) !!}
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong></strong>
+                                            </span>
+                                        </div>
+                                    </div>    
+
+                                    <div class="col-12">
+                                        <div class="form-group" id="categoryInput">
+                                            {!! Form::label('title', __('Category'),['class' => 'control-label']) !!}
+                                        <select class="form-control selectizeInput" id="category_list" name="category">
+                                            <option value="">{{ __("Select Category") }}...</option>
+                                            @foreach($product_categories as $product_category)
+                                                <option value="{{$product_category['id']}}">{{$product_category['hierarchy']}}</option>
+                                            @endforeach
+                                                
+                                            {{--@foreach($product_categories as $product_category)
+                                                @if($product_category->category)
+                                                    @if( ($product_category->category->type_id == 1) || ($product_category->category->type_id == 3) || ($product_category->category->type_id == 7))
+                                                        <option value="{{$product_category->category_id}}">{{(isset($product_category->category->primary->name)) ? $product_category->category->primary->name : $product_category->category->slug}}</option>
+                                                    @endif
+                                                @endif
+                                            @endforeach --}}
+                                            </select>
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong></strong>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-12">
-                                    <div class="row">
-                                            <div class="col-6 mb-2">
-                                                <div class="form-group" id="url_slugInput">
-                                                    {!! Form::label('title', __('URL Slug'), ['class' => 'control-label']) !!}
-                                                    {!! Form::text('url_slug', null, ['class' => 'form-control', 'id' => 'url_slug', 'placeholder' => 'Apple iMac', 'onkeypress' => 'return slugify(event)']) !!}
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong></strong>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-6 mb-2">
-                                                    <div class="form-group" id="categoryInput">
-                                                    {!! Form::label('title', __('Category'),['class' => 'control-label']) !!}
-                                                    <select class="form-control selectizeInput" id="category_list" name="category">
-                                                        <option value="">{{ __("Select Category") }}...</option>
-                                                        @foreach($product_categories as $product_category)
-                                                            <option value="{{$product_category['id']}}">{{$product_category['hierarchy']}}</option>
-                                                        @endforeach
-                                                            
-                                                        {{--@foreach($product_categories as $product_category)
-                                                            @if($product_category->category)
-                                                                @if( ($product_category->category->type_id == 1) || ($product_category->category->type_id == 3) || ($product_category->category->type_id == 7))
-                                                                    <option value="{{$product_category->category_id}}">{{(isset($product_category->category->primary->name)) ? $product_category->category->primary->name : $product_category->category->slug}}</option>
-                                                                @endif
-                                                            @endif
-                                                        @endforeach --}}
-                                                        </select>
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong></strong>
-                                                        </span>
-                                                    </div>
-                                            </div>
-                                    </div>        
-                                </div>
-                            </div>
-                        </div>
+                       
                     </div>
                     <div class="modal-footer">
                         <button type="button"

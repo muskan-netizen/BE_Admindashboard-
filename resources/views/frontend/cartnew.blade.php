@@ -422,7 +422,7 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
                             
                             <a class="common-product-box scale-effect text-center" href="{{route('productDetail')}}/<%= product.url_slug %>">
                                 <div class="img-outer-box position-relative">
-                                    <img src="<%= product.product_media.image.path.proxy_url %>600/800<%= product.product_media.image.path.image_path %>" alt="">
+                                    <img src="<%= product.image_url %>" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing px-0">
@@ -466,7 +466,7 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
 
                             <a class="common-product-box scale-effect text-center" href="{{route('productDetail')}}/<%= product.url_slug %>">
                                 <div class="img-outer-box position-relative">
-                                    <img src="<%= product.product_media.image.path.proxy_url %>600/800<%= product.product_media.image.path.image_path %>" alt="">
+                                    <img src="<%= product.image_url %>" alt="">
                                 </div>    
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing px-0">

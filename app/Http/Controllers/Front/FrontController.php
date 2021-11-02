@@ -247,6 +247,7 @@ class FrontController extends Controller
                 $value->variant_price = (!empty($value->variant->first())) ? number_format(($value->variant->first()->price * $multiplier),2,'.','') : 0;
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
                 $value->category_name = $value->category->categoryDetail->translation->first()->name;
+                $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '600/600' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 // foreach ($value->variant as $k => $v) {
                 //     $value->variant[$k]->multiplier = $multiplier;
                 // }

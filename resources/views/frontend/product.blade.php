@@ -665,7 +665,7 @@
                 <div>
                 <a class="common-product-box scale-effect text-center" href="{{route('productDetail')}}/{{ $related_product->url_slug }}">
                     <div class="img-outer-box position-relative">
-                        <img src="{{ $related_product->media ? $related_product->media->first()->image->path['image_fit'].'600/600'.$related_product->media->first()->image->path['image_path'] : '' }}" alt="">
+                        <img src="{{ $related_product->image_url }}" alt="">
                     </div>    
                     <div class="media-body align-self-center">
                         <div class="inner_spacing px-0">

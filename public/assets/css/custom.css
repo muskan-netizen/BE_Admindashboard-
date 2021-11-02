@@ -2692,6 +2692,9 @@
       .received-orders .modal-dialog.modal-dialog-centered {
           max-width: 600px;
       }
+      .add_product .modal-dialog {
+        max-width: 650px;
+    }
   }
 
   @media(min-width:992px) {
