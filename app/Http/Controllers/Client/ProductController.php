@@ -859,7 +859,7 @@ class ProductController extends BaseController
                     $update_product = Product::whereIn('id',$request->product_id)->update(['is_live' => $request->is_live]);
                 break;
                 case "for_tax":
-                    $update_product = Product::whereIn('id',$request->product_id)->update(['tax_category' => $request->tax_category]);
+                    $update_product = Product::whereIn('id',$request->product_id)->update(['tax_category_id' => $request->tax_category]);
                 break;
                 default:
                 '';
