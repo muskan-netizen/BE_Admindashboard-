@@ -20,12 +20,16 @@ class VariantController extends BaseController
      */
     public function create()
     {
-        $categories = Category::with('translation_one')
+        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
+        $categories = Category::with(['translation' => function($q) use($langId){
+                $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                ->where('category_translations.language_id', $langId);
+            }])
             ->where('status', 1)
             ->orderBy('parent_id', 'asc')
             ->orderBy('position', 'asc')
             ->whereIn('type_id', ['1', '3', '6'])
-            ->where('slug', '!=', 'root')
+            ->where('id', '>', 1)
             ->whereNull('vendor_id')
             ->get();
         $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')
@@ -36,6 +40,11 @@ class VariantController extends BaseController
         if($categories){
             $categories_build = $this->buildTree($categories->toArray());
             $categories_hierarchy = $this->printCategoryOptionsHeirarchy($categories_build);
+            // foreach($categories_hierarchy as $k => $cat){
+            //     if ($cat['type_id'] != 1 && $cat['type_id'] != 3 && $cat['type_id'] != 6) {
+            //         unset($categories_hierarchy[$k]);
+            //     }
+            // }
         }
 
         $returnHTML = view('backend.catalog.add-variant')->with(['categories' => $categories_hierarchy,  'languages' => $langs])->render();
@@ -101,21 +110,30 @@ class VariantController extends BaseController
      */
     public function edit($domain = '', $id)
     {
+        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $variant = Variant::select('id', 'title', 'type', 'position')
                         ->with('translation', 'option.translation', 'varcategory')
                         ->where('id', $id)->firstOrFail();
-        $categories = Category::with('translation_one')
-                        ->where('status', 1)
-                        ->orderBy('parent_id', 'asc')
-                        ->orderBy('position', 'asc')
-                        ->whereIn('type_id', ['1', '3', '6'])
-                        ->where('slug', '!=', 'root')
-                        ->whereNull('vendor_id')
-                        ->get();
+        $categories = Category::with(['translation' => function($q) use($langId){
+                $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                ->where('category_translations.language_id', $langId);
+            }])
+            ->where('status', 1)
+            ->orderBy('parent_id', 'asc')
+            ->orderBy('position', 'asc')
+            ->whereIn('type_id', ['1', '3', '6'])
+            ->where('id', '>', 1)
+            ->whereNull('vendor_id')
+            ->get();
         $categories_hierarchy = '';
         if($categories){
             $categories_build = $this->buildTree($categories->toArray());
             $categories_hierarchy = $this->printCategoryOptionsHeirarchy($categories_build);
+            // foreach($categories_hierarchy as $k => $cat){
+            //     if ($cat['type_id'] != 1 && $cat['type_id'] != 3 && $cat['type_id'] != 6) {
+            //         unset($categories_hierarchy[$k]);
+            //     }
+            // }
         }
         $langs = ClientLanguage::with(['language', 'variantTrans' => function($query) use ($id) {
                         $query->where('variant_id', $id);

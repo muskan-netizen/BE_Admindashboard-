@@ -53,9 +53,13 @@ class Order extends Model{
             'vendor_id' // Local key on the environments table...
         );
 	}
-
 	
 	public function getTotalDiscountCalculateAttribute(){
 		return $this->vendors()->sum('discount_amount');
 	}
+
+	public function luxury_option(){
+		return $this->belongsTo('App\Models\LuxuryOption', 'luxury_option_id', 'id');
+	}
+
 }

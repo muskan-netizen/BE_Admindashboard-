@@ -91,10 +91,13 @@
                 <div class="form-group">
                     {!! Form::label('title', __('Select Category'),['class' => 'control-label']) !!}
                     <select class="selectize-select form-control" name="category_id">
-                        <option value="">Select</option>
-                        @foreach($categories as $key => $cate)
-                        <option value="{{$cate->id}}" {{($cate->id == $banner->redirect_category_id) ? 'selected' : ''}}>{{$cate->translation_name}}</option>
+                        <option value="">{{ __("Select Category") }}...</option>
+                        @foreach($categories as $cate)
+                            <option value="{{$cate['id']}}" @if($banner->redirect_category_id == $cate['id']) selected @endif>{{$cate['hierarchy']}}</option>
                         @endforeach
+                        {{-- @foreach($categories as $key => $cate)
+                        <option value="{{$cate->id}}" {{($cate->id == $banner->redirect_category_id) ? 'selected' : ''}}>{{$cate->translation_name}}</option>
+                        @endforeach --}}
                     </select>
                 </div>
             </div>

@@ -4824,6 +4824,7 @@ input.form-control.pac-target-input.gm-err-autocomplete {
 
 .product-4 .slick-slide img {
     margin: auto;
+    max-width: 100%;
 }
 
 .product-4 .slick-track {

@@ -5,6 +5,7 @@ use App\Http\Controllers\Client\CMS\PageController;
 use App\Http\Controllers\Client\CMS\EmailController;
 use App\Http\Controllers\Client\CMS\NotificationController;
 use App\Http\Controllers\Client\SocialMediaController;
+use App\Http\Controllers\Client\VendorPayoutController;
 use App\Http\Controllers\Client\DownloadFileController;
 use App\Http\Controllers\Client\ProductImportController;
 use App\Http\Controllers\Client\Accounting\TaxController;
@@ -63,6 +64,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/loyalty', [LoyaltyController::class, 'index'])->name('account.loyalty');
         Route::get('account/tax', [TaxController::class, 'index'])->name('account.tax');
         Route::get('account/vendor', [VendorController::class, 'index'])->name('account.vendor');
+        Route::get('account/vendor/payout', [VendorPayoutController::class, 'index'])->name('account.vendor.payout');
+        Route::get('account/vendor/payout/filter', [VendorPayoutController::class, 'filter'])->name('account.vendor.payout.filter');
         Route::get('account/tax/filter', [TaxController::class, 'filter'])->name('account.tax.filter');
         Route::get('account/tax/export', [TaxController::class, 'export'])->name('account.tax.export');
         Route::get('account/vendor/filter', [VendorController::class, 'filter'])->name('account.vendor.filter');
@@ -147,6 +150,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/saveConfig/{id}', 'Client\VendorController@updateConfig')->name('vendor.config.update');
         Route::post('vendor/activeCategory/{id}', 'Client\VendorController@activeCategory')->name('vendor.category.update');
         Route::post('vendor/addCategory/{id}', 'Client\TableBookingController@storeCategory')->name('vendor.addCategory');
+        Route::get('vendor/vendor_specific_categories/{id}', 'Client\VendorController@vendor_specific_categories')->name('vendor.specific_categories');
         Route::post('vendor/updateCategory/{id}', 'Client\TableBookingController@updateCategory')->name('vendor.updateCategory');
         Route::get('vendor/table/category/edit', 'Client\TableBookingController@editCategory')->name('vendor_table_category_edit');
         Route::get('vendor/table/number/edit', 'Client\TableBookingController@editTable')->name('vendor_table_edit');
@@ -181,6 +185,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('customer/wallet/transactions', 'Client\UserController@filterWalletTransactions')->name('customer.filterWalletTransactions');
         Route::get('customer/export/export', 'Client\UserController@export')->name('customer.export');
         Route::resource('product', 'Client\ProductController');
+        Route::post('product/updateActions', 'Client\ProductController@updateActions')->name('product.update.action');   # update all product actions
         Route::post('product/importCSV', 'Client\ProductController@importCsv')->name('product.import');
         Route::post('product/validate', 'Client\ProductController@validateData')->name('product.validate');
         Route::get('product/add/{vendor_id}', 'Client\ProductController@create')->name('product.add');

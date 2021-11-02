@@ -154,7 +154,7 @@ class productImportData extends Command{
                         });
                     }
                     
-                Log::info('End command:productImportData !'.time());
+            //    Log::info('End command:productImportData !'.time());
             }catch(Exception $ex){
                 $this->info($ex->getMessage());
                 continue;

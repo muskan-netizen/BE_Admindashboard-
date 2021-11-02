@@ -162,7 +162,7 @@
          </div>
          @endif
 
-         @if($client_preference_detail->business_type != 'taxi')
+         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce')
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
@@ -268,7 +268,26 @@
          </div>
          @endif
         
-
+         <div class="col-lg-3 col-md-6 mb-3">
+            <div class="row h-100">
+               <div class="col-12">
+                  <div class="card-box h-100">
+                     <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title mb-0">{{ __("Stripe Connect") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                     </div>
+                     <div class="row">
+                        <div class="col-12">
+                           <div class="form-group mb-0">
+                              <label for="stripe_connect" class="mr-3">{{ __("Enable") }}</label>
+                              <input type="checkbox" data-plugin="switchery" name="stripe_connect" id="stripe_connect" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->stripe_connect == 1)) checked @endif>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
       </div>
    </form>
    <div class="row">
@@ -965,7 +984,7 @@
                <!-- <div class="page-title-box">
                   <h4 class="page-title text-uppercase">Vendor Registration Documents</h4>
                </div> -->
-               <div class="card-box mb-0 pb-2">
+               <div class="card-box pb-2">
                   <h4 class="header-title text-uppercase">{{ __("Vendor Registration Documents") }}</h4>
                   <div class="d-flex align-items-center justify-content-end mt-2">
                      <a class="btn btn-info d-block" id="add_vendor_registration_document_modal_btn">
@@ -1016,7 +1035,7 @@
                </div>
 
 
-               <div class="card-box mb-0 pb-2">
+               <div class="card-box pb-2">
                   <h4 class="header-title text-uppercase">{{ __("Android/IOS Link") }}</h4>
                 
                   <div class="table-responsive mt-3 mb-1">

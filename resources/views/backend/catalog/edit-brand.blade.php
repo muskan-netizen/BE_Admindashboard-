@@ -19,14 +19,22 @@
                 <div class="form-group">
                     {!! Form::label('title', __('Select Category'),['class' => 'control-label']) !!}
                     <select class="form-control selectize-select" data-toggle="select2" id="cateSelectBox" name="cate_id[]" multiple="multiple" >
+                        <option value="">{{ __("Select Category") }}...</option>
                         @foreach($categories as $cate)
+                            @if($brand->bc)
+                                <option value="{{$cate['id']}}" @foreach($brand->bc as $cat)@if($cat->category_id == $cate['id']) selected @endif @endforeach>{{$cate['hierarchy']}}</option>
+                            @else
+                                <option value="{{$cate['id']}}">{{$cate['hierarchy']}}</option>
+                            @endif
+                        @endforeach
+                        {{-- @foreach($categories as $cate)
                             @if($brand->bc)
                                 <option value="{{$cate->id}}" @foreach($brand->bc as $cat)@if($cat->category_id == $cate->id) selected @endif 
                                     @endforeach>{{$cate->translation_one['name'] ?? $cate->slug}}</option>
                             @else
                                 <option value="{{$cate->id}}">{{$cate->translation_one['name'] ?? $cate->slug}}</option>
                             @endif
-                        @endforeach
+                        @endforeach --}}
                     </select>
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>

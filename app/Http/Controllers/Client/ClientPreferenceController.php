@@ -131,7 +131,7 @@ class ClientPreferenceController extends BaseController{
            
         }
         
-      
+        // $preference->stripe_connect = ($request->has('stripe_connect') && $request->stripe_connect == 'on') ? 1 : 0; 
         
         /* social login update */        
         if($request->has('social_login') && $request->social_login == '1'){

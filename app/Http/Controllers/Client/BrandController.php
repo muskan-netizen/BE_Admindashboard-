@@ -26,9 +26,24 @@ class BrandController extends BaseController
      */
     public function create()
     {
-        $categories = Category::with('english')->select('id', 'slug')->where('id', '>', '1')->where('status', '!=', '2')->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->whereIn('type_id', ['1', '3', '6'])->get();
+        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
+        $categories = Category::with(['english', 'translation' => function($q) use($langId){
+            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+            ->where('category_translations.language_id', $langId);
+        }])
+        ->where('id', '>', '1')
+        ->where('status', 1)
+        ->whereIn('type_id', ['1', '3', '6'])
+        ->whereNull('vendor_id')
+        ->orderBy('parent_id', 'asc')
+        ->orderBy('position', 'asc')->get();
+        $categories_hierarchy = '';
+        if($categories){
+            $categories_build = $this->buildTree($categories->toArray());
+            $categories_hierarchy = $this->printCategoryOptionsHeirarchy($categories_build);
+        }
         $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
-        $returnHTML = view('backend.catalog.add-brand')->with(['categories' => $categories,  'languages' => $langs])->render();
+        $returnHTML = view('backend.catalog.add-brand')->with(['categories' => $categories_hierarchy,  'languages' => $langs])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
     }
 
@@ -92,22 +107,32 @@ class BrandController extends BaseController
      */
     public function edit($domain = '', $id)
     {
+        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $brand = Brand::with('translation', 'bc')->where('id', $id)->firstOrFail();
-        $categories = Category::with('translation_one', 'english')
-            ->select('id', 'slug')
+        $categories = Category::with(['english', 'translation' => function($q) use($langId){
+                $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                ->where('category_translations.language_id', $langId);
+            }])
             ->where('id', '>', '1')
-            ->where('status', '!=', '2')
+            ->where('status', 1)
+            ->whereIn('type_id', ['1', '3', '6'])
+            ->whereNull('vendor_id')
             ->orderBy('parent_id', 'asc')
             ->orderBy('position', 'asc')
-            ->whereIn('type_id', ['1', '3', '6'])->get();
+            ->get();
+        $categories_hierarchy = '';
+        if($categories){
+            $categories_build = $this->buildTree($categories->toArray());
+            $categories_hierarchy = $this->printCategoryOptionsHeirarchy($categories_build);
+        }
         $langs = ClientLanguage::with(['language', 'brand_trans' => function ($query) use ($id) {
-            $query->where('brand_id', $id);
-        }])
+                $query->where('brand_id', $id);
+            }])
             ->select('language_id', 'is_primary', 'is_active')
             ->where('is_active', 1)
             ->orderBy('is_primary', 'desc')->get();
         $submitUrl = route('brand.update', $id);
-        $returnHTML = view('backend.catalog.edit-brand')->with(['categories' => $categories,  'languages' => $langs, 'brand' => $brand])->render();
+        $returnHTML = view('backend.catalog.edit-brand')->with(['categories' => $categories_hierarchy,  'languages' => $langs, 'brand' => $brand])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML, 'submitUrl' => $submitUrl));
     }
 

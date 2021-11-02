@@ -1187,7 +1187,7 @@ class OrderController extends BaseController {
             }
         }
         $language_id = (!empty($user->language))?$user->language:1;
-        $order = Order::with(['vendors.products:id,product_name,product_id,order_id,order_vendor_id,variant_id,quantity,price', 'vendors.vendor:id,name,auto_accept_order,logo', 'vendors.products.addon:id,order_product_id,addon_id,option_id', 'vendors.products.pvariant:id,sku,product_id,title,quantity', 'user:id,name,timezone,dial_code,phone_number', 'address:id,user_id,address','vendors.products.addon.option:addon_options.id,addon_options.title,addon_id,price','vendors.products.addon.set:addon_sets.id,addon_sets.title','vendors.products.translation' => function ($q) use ($language_id) {
+        $order = Order::with(['vendors.products:id,product_name,product_id,order_id,order_vendor_id,variant_id,quantity,price', 'vendors.vendor:id,name,auto_accept_order,logo', 'vendors.products.addon:id,order_product_id,addon_id,option_id', 'vendors.products.pvariant:id,sku,product_id,title,quantity', 'user:id,name,timezone,dial_code,phone_number', 'address:id,user_id,address','vendors.products.addon.option:addon_options.id,addon_options.title,addon_id,price','vendors.products.addon.set:addon_sets.id,addon_sets.title', 'luxury_option', 'vendors.products.translation' => function ($q) use ($language_id) {
             $q->select('id', 'product_id', 'title');
             $q->where('language_id', $language_id);
         },
@@ -1199,7 +1199,7 @@ class OrderController extends BaseController {
             $q->select('id', 'addon_id', 'title');
             $q->where('language_id', $language_id);
         }
-        ])->select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee', 'total_amount', 'taxable_amount', 'wallet_amount_used', 'created_at');
+        ])->select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee', 'total_amount', 'taxable_amount', 'wallet_amount_used', 'scheduled_date_time', 'payment_method', 'payment_status', 'luxury_option_id', 'created_at');
         $order = $order->whereHas('vendors', function ($query) use ($vendor_id) {
             if(!empty($vendor_id)){
                 $query->where('vendor_id', $vendor_id);
@@ -1211,6 +1211,7 @@ class OrderController extends BaseController {
             }
         });
         $order = $order->find($order_id);
+        $order->admin_profile = Client::select('company_name', 'code', 'sub_domain', 'logo')->first();
         $order_item_count = 0;
         $order->payment_option_title = $order->paymentOption->title;
         $order->item_count = $order_item_count;

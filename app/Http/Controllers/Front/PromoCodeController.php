@@ -137,4 +137,35 @@ class PromoCodeController extends Controller{
             'coupon_id' => 'required',
         ]);
     }
+
+    public function validate_code(Request $request){
+        try {
+            $user = Auth::user();
+            // $promo_codes = new \Illuminate\Database\Eloquent\Collection;
+            $vendor_id = $request->vendor_id;
+            $total_minimum_spend = $request->amount;
+            $validator = $this->validatePromoCodeList();
+            if($validator->fails()){
+                return $this->errorResponse($validator->messages(), 422);
+            }
+            $vendor = Vendor::where('id', $request->vendor_id)->first();
+            if(!$vendor){
+                return response()->json(['error' => 'Invalid vendor id.'], 404);
+            }
+            // $order_vendor_coupon_list = OrderVendor::whereNotNull('coupon_id')->where('user_id', $user->id)->get([DB::raw('coupon_id'),  DB::raw('sum(coupon_id) as total')]);
+            $now = Carbon::now()->toDateTimeString();
+            $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id')->toArray();
+            $promo_result = Promocode::where(['name' => $request->promocode])->whereIn('id', $vendor_promo_code_details)->where('restriction_on', 1)->whereHas('details', function($q) use($vendor_id){
+                $q->where('refrence_id', $vendor_id);
+            })->where('restriction_on', 1)->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->first();
+            if(!empty($promo_result)){
+                return $this->successResponse($promo_result, '', 200);
+            } else {
+                return $this->errorResponse("Invalid promocode", 422);
+            }
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
 }

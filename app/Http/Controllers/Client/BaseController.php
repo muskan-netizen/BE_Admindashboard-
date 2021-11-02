@@ -13,6 +13,7 @@ class BaseController extends Controller
     private $htmlData = '';
     private $toggleData = '';
     private $optionData = ''; 
+    private $categoryOptionData = []; 
     private $successCount = 0;
     private $parent_cat_id = 0;
     private $makeArray = array();
@@ -78,7 +79,7 @@ class BaseController extends Controller
                         $this->htmlData .= '</li>';
                     }
                 }else{
-                    if($node['type_id'] == 4 || $node['type_id']==5|| $node['type_id']==1){
+                    if($node['type_id'] == 4 || $node['type_id']==5 || $node['type_id']==1 || $node['type_id']==3){
                         $this->htmlData .= '<li class="dd-item dd3-item dd-nochildren" data-id="' . $node["id"] . '">';
                     } else {
                         $this->htmlData .= '<li class="dd-item dd3-item" data-id="' . $node["id"] . '">';
@@ -125,17 +126,18 @@ class BaseController extends Controller
         if (!is_null($tree) && count($tree) > 0) {
             foreach ($tree as $key => $node) {
                 if($node['parent_id'] == 1){
-                    $parentCategory = array($node['translation_one']['name']??'');
+                    $parentCategory = array($node['translation'][0]['name']??'');
                 }
                 // type_id 1 means product in type table
                 if (isset($node['children']) && count($node['children']) > 0) {
                     if($node['parent_id'] != 1){
-                        $parentCategory[] = $node['translation_one']['name'];
+                        $parentCategory[] = $node['translation'][0]['name'];
                     }
                     $this->printCategoryOptionsHeirarchy($node['children'], $parentCategory);
-                }else{
-                    if ($node['type_id'] == 1 || $node['type_id'] == 3 || $node['type_id'] == 7 || $node['type_id'] == 8) {
-                        $category = (isset($node['translation_one']['name'])) ? $node['translation_one']['name'] : $node['slug'];
+                }
+                else{
+                    // if ($node['type_id'] == 1 || $node['type_id'] == 3 || $node['type_id'] == 7 || $node['type_id'] == 8) {
+                        $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
                         if($node['parent_id'] == 1){
                             $parentCategory = [];
                             $hierarchyName = $category;
@@ -143,12 +145,13 @@ class BaseController extends Controller
                             $hierarchyName = implode(' > ', $parentCategory);
                             $hierarchyName = $hierarchyName.' > '.$category;
                         }
-                        $this->optionData .= '<option value="'.$node['id'].'">'.$hierarchyName.'</option>';
-                    }
+                        // $this->optionData .= '<option value="'.$node['id'].'">'.$hierarchyName.'</option>';
+                        $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                    // }
                 }
             }
         }
-        return $this->optionData;
+        return $this->categoryOptionData;
     }
 
     /*      Category tree for vendor to enable & disable category      */

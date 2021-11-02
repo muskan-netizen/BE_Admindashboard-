@@ -511,7 +511,23 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body mt-0 pt-0">
+            <div class="modal-body mt-0 pb-0 pt-4">
+                <div class="row validate_promo_div">
+                    <div class="col-md-4">
+                        <div class="form-group" >
+                            <input class="form-control manual_promocode_input" name="name" type="text" placeholder="{{ __('Enter a promocode')}}" >
+                            <button class="btn btn-solid apply_promo_code_btn" data-vendor_id="" data-cart_id=""
+                            data-coupon_id="" data-amount="" style="display:none">Apply</button>
+                            <span class="invalid-feedback manual_promocode" role="alert">
+                                
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-solid validate_promo_code_btn" data-vendor_id="" data-cart_id=""
+                            data-coupon_id="" data-amount="" style="cursor: pointer;">Apply</button>
+                    </div>
+                </div>
                 <div class="coupon-box">
                     <div class="row" id="promo_code_list_main_div">
 
@@ -906,6 +922,7 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
     var forgot_password_url = "{{route('customer.forgotPass')}}";
     var order_success_return_url = "{{route('order.return.success')}}";
     var my_orders_url = "{{route('user.orders')}}";
+    var validate_promocode_coupon_url = "{{ route('verify.promocode.validate_code') }}";
 
     $(document).on('click', '.showMapHeader', function() {
         var lats = document.getElementById('latitude').value;

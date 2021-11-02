@@ -168,6 +168,11 @@ $timezone = Auth::user()->timezone;
                             @endif
                             {{ __("Items from Order") }} #{{$order->order_number}}
                         </h4>
+                        @if($order->luxury_option_id == 2)
+                            @foreach($order->vendors as $vendor)
+                                <p>{{ $vendor->dineInTableName }} | Category : {{ $vendor->dineInTableCategory }} | Capacity : {{ $vendor->dineInTableCapacity }}</p>
+                            @endforeach
+                        @endif
                         <div class="table-responsive">
                             <table class="table table-bordered table-centered mb-0">
                                 <thead class="table-light">
@@ -190,24 +195,42 @@ $timezone = Auth::user()->timezone;
                                     @if($product->order_id == $order->id)
                                     @php
                                     $taxable_amount += $product->taxable_amount;
-                                    $sub_total += $product->quantity * $product->price;
+                                    // $sub_total += $product->quantity * $product->price;
+                                    $sub_total += $product->total_amount;
                                     @endphp
                                     <tr>
                                         <th scope="row">{{$product->product_name}}
-                                            <p>
+                                            <p class="p-0 m-0">
                                                 @if(isset($product->scheduled_date_time)) {{convertDateTimeInTimeZone($product->scheduled_date_time, $timezone, 'l, F d, Y, H:i A')}} @endif
-                                            <p>
+                                            </p>
                                                 @foreach($product->prescription as $pres)
                                                 <br><a target="_blank" href="{{ ($pres) ? @$pres->prescription['proxy_url'].'74/100'.@$pres->prescription['image_path'] : ''}}">{{($product->prescription) ? 'Prescription' : ''}}</a>
                                                 @endforeach
+
+                                            @if($product->addon)
+                                                <hr class="my-2">
+                                                <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
+                                                @foreach($product->addon as $addon)
+                                                    <p class="p-0 m-0">{{ $addon->option->translation_one->title }}</p>
+                                                @endforeach
+                                            @endif
                                         </th>
                                         <td>
                                             <img src="{{@$product->image_path['proxy_url'].'32/32'.@$product->image_path['image_path']}}" alt="product-img" height="32">
                                         </td>
                                         <td>{{ $product->quantity }}</td>
-                                        <td>$@money($product->price)</td>
+                                        <td>
+                                            $@money($product->price)
+                                            @if($product->addon)
+                                                <hr class="my-2">
+                                                @foreach($product->addon as $addon)
+                                                    <p class="p-0 m-0">${{ $addon->option->price_in_cart }}</p>
+                                                    {{-- <p class="p-0 m-0">${{ $addon->option->quantity_price }}</p> --}}
+                                                @endforeach
+                                            @endif
+                                        </td>
 
-                                        <td>$@money($product->quantity * $product->price)</td>
+                                        <td>$@money($product->total_amount)</td>
                                     </tr>
                                     @endif
                                     @endforeach

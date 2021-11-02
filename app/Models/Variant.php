@@ -38,4 +38,9 @@ class Variant extends Model
   public function trans(){
        return $this->hasOne('App\Models\VariantTranslation')->select('title', 'variant_id'); 
   }
+
+  public function category(){
+    return $this->belongsToMany(Category::class, 'variant_categories', 'variant_id', 'category_id');
+  }
+
 }

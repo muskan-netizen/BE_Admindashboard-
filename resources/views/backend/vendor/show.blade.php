@@ -384,7 +384,7 @@
                         </div>
                         @endif
 
-                        @if($vendor->dine_in == 1)
+                        @if(($client_preferences->dinein_check == 1) && ($vendor->dine_in == 1))
                         <div class="card-box">
                             <div class="row">
                                 <h4 class="mb-4 "> {{ __('Table Booking ') }}</h4>

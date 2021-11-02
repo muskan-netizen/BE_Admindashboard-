@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\VendorOrderDispatcherStatus;
-use App\Models\{OrderStatusOption,DispatcherStatusOption, VendorOrderStatus,ClientPreference, NotificationTemplate, OrderProduct,OrderVendor,UserAddress,Vendor,OrderReturnRequest, UserDevice, UserVendor, LuxuryOption};
+use App\Models\{OrderStatusOption,DispatcherStatusOption, VendorOrderStatus,ClientPreference, NotificationTemplate, OrderProduct,OrderVendor,UserAddress,Vendor,OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -239,6 +239,7 @@ class OrderController extends BaseController{
 
     public function getOrderDetail($domain = '', $order_id, $vendor_id){
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $vendor_order_status_option_ids = [];
         $vendor_order_status_created_dates = [];
         $order = Order::with(array(
@@ -250,12 +251,47 @@ class OrderController extends BaseController{
                 },
                 'vendors.products' => function($query) use ($vendor_id){
                     $query->where('vendor_id', $vendor_id);
-                }))->findOrFail($order_id);
+                },
+                'vendors.products.addon',
+                'vendors.products.addon.set',
+                'vendors.products.addon.option',
+                'vendors.products.addon.option.translation_one' => function ($q) use ($langId) {
+                    $q->select('id', 'addon_opt_id', 'title');
+                    $q->where('language_id', $langId);
+                },
+                'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                    $qry->where('language_id', $langId);
+                },
+                'vendors.dineInTable.category'
+                ))->findOrFail($order_id);
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
                 $product->image_path  = $product->media->first() ? $product->media->first()->image->path : '';
+                $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
+                $total_amount = $product->quantity * $product->price;
+                foreach ($product->addon as $ck => $addons) {
+                    $opt_price_in_currency = $addons->option->price;
+                    $opt_price_in_doller_compare = $addons->option->price;
+                    if($clientCurrency){
+                        $opt_price_in_currency = $addons->option->price / $divider;
+                        $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                    }
+                    $opt_quantity_price = number_format($opt_price_in_doller_compare * $product->quantity, 2, '.', '');
+                    $addons->option->price_in_cart = $addons->option->price;
+                    $addons->option->price = number_format($opt_price_in_currency, 2, '.', '');
+                    $addons->option->multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
+                    $addons->option->quantity_price = $opt_quantity_price;
+                    $total_amount = $total_amount + $opt_quantity_price;
+                }
+                $product->total_amount = $total_amount;
+            }
+            if($vendor->dineInTable){
+                $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                $vendor->dineInTableCategory = $vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
             }
         }
+        // dd($order->toArray());
         $luxury_option_name = '';
         if($order->luxury_option_id > 0){
             $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();

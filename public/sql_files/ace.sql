@@ -1774,7 +1774,8 @@ INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on
 (1, 'Electronics', NULL, 'banner/WuzCZXWQqt4dkrtGox6rQ7zIZPWiZnq4cJJ3pLEO.png', 1, 1, 1, '2021-10-05 01:06:00', '2021-12-31 12:00:00', 19, NULL, 'category', NULL, '2021-10-11 10:22:17'),
 (2, 'Vegetables', NULL, 'banner/hg4qAjmf6SzObNE6lSgGRjIjMbKYW1QA8GtaIDmX.png', 1, 2, 1, '2021-10-05 01:07:00', '2021-12-31 12:00:00', 8, NULL, 'category', NULL, '2021-10-11 10:22:06'),
 (3, 'Pharmacy', NULL, 'banner/EfrnNn6R6QxonjB9tdVDhLZCBuje1XxUw1gjXvFR.jpg', 0, 3, 1, '2021-10-05 01:07:00', '2021-12-31 12:00:00', 5, NULL, 'category', NULL, '2021-10-08 06:23:46'),
-(4, 'Fashion', NULL, 'banner/r1e1x91RGF3M2xG8iXxxYSOyOqSs6qtHHG0EGx3n.png', 1, 4, 1, '2021-10-05 01:07:00', '2021-12-31 12:00:00', 26, NULL, 'category', '2021-10-04 18:49:39', '2021-10-11 10:21:53');
+(4, 'Fashion', NULL, 'banner/r1e1x91RGF3M2xG8iXxxYSOyOqSs6qtHHG0EGx3n.png', 1, 4, 1, '2021-10-05 01:07:00', '2021-12-31 12:00:00', 26, NULL, 'category', '2021-10-04 18:49:39', '2021-10-11 10:21:53'
+);
 
 
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES

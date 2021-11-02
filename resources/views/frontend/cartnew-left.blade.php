@@ -39,6 +39,7 @@
             <h4>Book a table</h4>
             @if($vendor_details['vendor_tables']->isNotEmpty())
                 <select name="vendor_table" id="vendor_table" data-id="{{ $vendor_details['vendor_address']->id }}" class="form-control">
+                    <option value="">{{__('Select...')}}</option>
                     @foreach($vendor_details['vendor_tables'] as $k => $table)
                         <option value="{{$table->id}}" {{ ($cart_dinein_table_id == $table->id) ? 'selected' : '' }}>Category : {{ $table->category->title }} | Table : {{ $table->table_number }} | Seat Capacity : {{ $table->seating_number }}</option>
                     @endforeach
