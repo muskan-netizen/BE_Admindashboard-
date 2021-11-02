@@ -185,7 +185,8 @@ class CustomerAuthController extends FrontController
                 ]);
             }
             else{
-                if(!empty($req->email) && (session('preferences')->verify_email == 0)){
+                $preferences = ClientPreference::first();
+                if(!empty($req->email) && ($preferences->verify_email == 0)){
                     $validator = $req->validate([
                         'email'  => 'email|unique:users'
                     ]);
