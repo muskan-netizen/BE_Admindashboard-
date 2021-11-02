@@ -85,7 +85,7 @@
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
-                            <h2>{{__('Wishlist')}}</h2>
+                            <h2>{{ getNomenclatureName('Wishlist', true) }}</h2>
                         </div>
                         <div class="box-account box-info mt-3">
                             <div class="row">

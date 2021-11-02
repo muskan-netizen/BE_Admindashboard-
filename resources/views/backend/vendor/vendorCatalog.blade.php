@@ -367,7 +367,7 @@
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="form-group" id="skuInput">
-                                            {!! Form::label('title', __('SKU (Allowed Keys->a-z,A-Z,0-9,-,_)'), ['class' => 'control-label']) !!}
+                                            {!! Form::label('title', __('SKU'), ['class' => 'control-label']) !!}
                                             <span class="text-danger">*</span>
                                             {!! Form::text('sku', null, ['class' => 'form-control', 'id' => 'sku', 'onkeyup' => 'return alplaNumeric(event)', 'placeholder' => 'Apple-iMac']) !!}
                                             <span class="invalid-feedback" role="alert">
@@ -754,10 +754,10 @@
                 type: "get",
                 url: "{{route('vendor.specific_categories',$vendor->id)}}",
                 success: function(response) {
-                    console.log(response.product_categories);
+                    console.log('ok');
                     if(response.status == 1){
-                        $("#category_list").find('option').not(':first').remove();
-                        $("#category_list").append(response.product_categories);
+                        $("#category_list").find('option').remove();
+                        $("#category_list").append(response.options);
                         $('#category_list').selectize()[0].selectize.destroy();
                     }
                 },

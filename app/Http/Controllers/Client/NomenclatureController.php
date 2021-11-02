@@ -22,10 +22,12 @@ class NomenclatureController extends BaseController
         $loyalty_cards_names = $request->loyalty_cards_names;
         $takeaway_names = $request->takeaway_names;
         $search_names = $request->search_names;
+        $wishlist_names = $request->wishlist_names;
         NomenClature::updateOrCreate(['id' => 1], ['label' => 'vendors']);
         NomenClature::updateOrCreate(['id' => 2], ['label' => 'Loyalty Cards']);
         NomenClature::updateOrCreate(['id' => 3], ['label' => 'Takeaway']);
         NomenClature::updateOrCreate(['id' => 4], ['label' => 'Search']);
+        NomenClature::updateOrCreate(['id' => 5], ['label' => 'Wishlist']);
         if (count($names) > 0) {
             $names_value_exists = [];
             foreach ($names as $name) {
@@ -113,6 +115,28 @@ class NomenclatureController extends BaseController
                 }
             } else {
                 NomenclatureTranslation::where('nomenclature_id', 4)->delete();
+            }
+        }
+        if (count($wishlist_names) > 0) {
+            $names_value_exists = [];
+            foreach ($wishlist_names as $name) {
+                if ($name) {
+                    $names_value_exists[] = $name;
+                }
+            }
+            if (count($names_value_exists) > 0) {
+                $this->validate($request, [
+                    'wishlist_names.0' => 'required|string',
+                ]);
+                $wishlist_language_ids = $request->wishlist_language_ids;
+                foreach ($wishlist_names as $wishlist_key => $wishlist_name) {
+                    if ($wishlist_name) {
+                        $nomenclature = NomenClature::where('label', 'Wishlist')->first();
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $wishlist_language_ids[$wishlist_key], 'nomenclature_id' => $nomenclature->id], ['name' => $wishlist_name]);
+                    }
+                }
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', 5)->delete();
             }
         }
         return redirect()->route('configure.customize')->with('success', 'Nomenclature Saved Successfully!');
