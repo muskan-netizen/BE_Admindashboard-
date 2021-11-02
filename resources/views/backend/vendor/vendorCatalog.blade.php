@@ -391,7 +391,7 @@
                                         <div class="form-group" id="categoryInput">
                                             {!! Form::label('title', __('Category'),['class' => 'control-label']) !!}
                                         <select class="form-control selectizeInput" id="category_list" name="category">
-                                            <option value="">{{ __("Select Category") }}...</option>
+                                            {{-- <option value="">{{ __("Select Category") }}...</option> --}}
                                             @foreach($product_categories as $product_category)
                                                 <option value="{{$product_category['id']}}">{{$product_category['hierarchy']}}</option>
                                             @endforeach

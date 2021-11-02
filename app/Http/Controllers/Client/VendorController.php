@@ -920,7 +920,6 @@ class VendorController extends BaseController
             }
         }
         $options = [];
-        $options[] = "<option value='0'>Select Category</option>";
         foreach($product_categories_hierarchy as $key => $product_category){
             $options[] = "<option value=".$product_category['id'].">".$product_category['hierarchy']."</option>";
         }
