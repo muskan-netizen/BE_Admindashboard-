@@ -268,7 +268,7 @@
          </div>
          @endif
         
-         <div class="col-lg-3 col-md-6 mb-3">
+         {{-- <div class="col-lg-3 col-md-6 mb-3">
             <div class="row h-100">
                <div class="col-12">
                   <div class="card-box h-100">
@@ -287,7 +287,7 @@
                   </div>
                </div>
             </div>
-         </div>
+         </div> --}}
       </div>
    </form>
    <div class="row">
