@@ -115,6 +115,122 @@
 
 </style>
 
+    <!-- royo default demo -->
+    
+    <div class="cab-content-area">
+
+        <!-- Royo Business Start From Here -->
+        <section class="royo-business p-0">
+            <div class="container p-64">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="title-36">Royo for Business</h2>
+                        <div class="description-text">
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, labore!</p>
+                        </div>
+                        <a class="btn btn-solid new-btn d-inline-block" href="#">See how</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Royo Business Start From Here -->
+        <section class="royo-rental p-0">
+            <div class="container">                
+               
+                <div class="row align-items-center p-64">
+                    <div class="col-sm-6">
+                        <div class="cab-img-box">
+                            <img class="img-fluid" src="{{asset('front-assets/images/gettyimages-1139275491-2048x2048_With-Mask.jpg')}}" alt="">
+                        </div>
+                    </div>
+                    <div class="offset-md-1 col-sm-6 col-md-5 pl-lg-4">
+                        <div class="">
+                            <h2 class="title-52">Royo for Business</h2>
+                            <div class="description-text">
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem nisi officiis numquam!</p>
+                            </div>
+                            <a class="learn-more bottom-line" href="#">Learn more</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row align-items-center p-64">
+                    <div class="col-sm-6 order-md-1">
+                        <div class="cab-img-box">
+                            <img class="img-fluid" src="{{asset('front-assets/images/rentals-iindia.jpg')}}" alt="">
+                        </div>
+                    </div>
+                    <div class="col-sm-6 order-md-0">
+                        <div class="pr-lg-5 mr-lg-5">
+                            <h2 class="title-52">Royo Intercity </h2>
+                            <div class="description-text">
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem nisi officiis numquam!</p>
+                            </div>
+                            <a class="learn-more" href="#">Learn more</a>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- Focused On Safety Start From Here -->
+        <section class="focused-on-safety p-0">
+            <div class="container p-64">
+                <div class="row mb-4 pb-2">
+                    <div class="col-12">
+                        <div class="title-36">Focused on safety, wherever you go</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="safety-box">
+                            <div class="safety-img">
+                                <img class="img-fluid" src="{{asset('front-assets/images/Safety_Home_Img2x.jpg')}}" alt="">
+                            </div>
+                            <div class="safety-content">
+                                <h3 class="mt-0">Our commitment to your safety</h3>
+                                <div class="safety-text">
+                                    <p>With every safety feature and every standard in our Community Guidelines, we're committed to helping to create a safe environment for our users.</p>
+                                </div>
+                                <div class="safety-links">
+                                    <a class="bottom-line" href="#">
+                                        <span>Read about our Community Guidelines</span>
+                                    </a>
+                                    <a class="bottom-line" href="#">
+                                        <span>See all safety features</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="safety-box">
+                            <div class="safety-img">
+                                <img class="img-fluid" src="{{asset('front-assets/images/Safety_Home_Img2x.jpg')}}" alt="">
+                            </div>
+                            <div class="safety-content">
+                                <h3 class="mt-0">Setting 10,000+ cities in motion</h3>
+                                <div class="safety-text">
+                                    <p>With every safety feature and every standard in our Community Guidelines, we're committed to helping to create a safe environment for our users.</p>
+                                </div>
+                                <div class="safety-links">
+                                    <a class="bottom-line" href="#">
+                                        <span>View all cities</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- end royo default demo -->
+
 
     <!-- Cab Booking Start From Here -->
     <section class="jet-taxi-banner">

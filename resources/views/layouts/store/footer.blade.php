@@ -30,6 +30,7 @@
     @endif
     var autocomplete_url = "{{ route('autocomplete') }}";
     let stripe_publishable_key = '{{ $stripe_publishable_key }}';
+    let yoco_public_key = '{{ $yoco_public_key }}';
     var login_url = "{{ route('customer.login') }}";
     if(currentRouteName == 'indexTemplateOne')
     var home_page_url = "{{ route('indexTemplateOne') }}";

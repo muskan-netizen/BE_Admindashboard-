@@ -620,7 +620,7 @@ class CartController extends BaseController
                     $prod->variant_options = $variant_options;
                     $payable_amount = $payable_amount;
                     $prod->product_addons = $vendorAddons;
-                    Log::info($prod);
+                //    Log::info($prod);
                     $product = Product::with([
                         'variant' => function ($sel) {
                             $sel->groupBy('product_id');

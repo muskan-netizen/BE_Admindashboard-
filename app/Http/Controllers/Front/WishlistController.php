@@ -33,9 +33,9 @@ class WishlistController extends FrontController
         ->where('user_id', Auth::user()->id)->get();
         if(!empty($wishList)){
             foreach($wishList as $key => $wish){
-                $wish->product->translation_title = (!empty($wish->product->translation)) ? $wish->product->translation->first()->title : 'NA';
-                $wish->product->variant_price = (!empty($wish->product->variant)) ? ($wish->product->variant->first()->price * $clientCurrency->doller_compare) : 0;
-                $wish->product->variant_quantity = (!empty($wish->product->variant)) ? $wish->product->variant->first()->quantity : 0;
+                $wish->product->translation_title = (!empty($wish->product->translation) && count($wish->product->translation) > 0) ? $wish->product->translation->first()->title : 'NA';
+                $wish->product->variant_price = (!empty($wish->product->variant) && count($wish->product->variant) > 0) ? ($wish->product->variant->first()->price * $clientCurrency->doller_compare) : 0;
+                $wish->product->variant_quantity = (!empty($wish->product->variant) && count($wish->product->variant) > 0) ? $wish->product->variant->first()->quantity : 0;
             }
             $wishList = $wishList->toArray();
         }

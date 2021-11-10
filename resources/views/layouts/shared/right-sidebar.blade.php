@@ -443,7 +443,7 @@
                                     </span>
                                     <div class="col-5 col-sm-3">
                                         <h5 class="m-0"><%= vendor.vendor_name %></h5>
-                                        <ul class="status_box mt-3 pl-0">
+                                        <ul class="status_box mt-1 pl-0">
                                             <li>
                                                 <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
                                                 <label class="m-0 in-progress"><%= vendor.order_status %></label>

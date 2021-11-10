@@ -41,7 +41,7 @@ class HomePageLabelSeederDefault extends Seeder
         $already = CabBookingLayout::where('slug', 'new_products')->count();
 
         if($already == 0){
-            Log::info($already);
+        //    Log::info($already);
             $home_page = CabBookingLayout::insertGetId([
                 'title' => 'New Products',
                 'slug' => 'new_products',

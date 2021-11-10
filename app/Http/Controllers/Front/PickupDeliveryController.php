@@ -491,7 +491,7 @@ class PickupDeliveryController extends FrontController{
                     $payable_amount = 0.00;
                   
                 }
-                Log::info($cash_to_be_collected);
+            //    Log::info($cash_to_be_collected);
                 $unique = Auth::user()->code;
                 $team_tag = $unique."_".$vendor;
                 $dynamic = uniqid($order->id.$vendor);

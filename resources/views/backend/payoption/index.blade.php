@@ -17,27 +17,27 @@
                 <h4 class="page-title">Payment Options</h4>
             </div>
         </div> -->
-      <div class="col-12">
-         <div class="text-sm-left">
-            @if (\Session::has('success'))
-            <div class="alert mt-2 mb-0 alert-success">
-               <span>{!! \Session::get('success') !!}</span>
-            </div>
-            @endif
-            @if ( ($errors) && (count($errors) > 0) )
+        <div class="col-12">
+            <div class="text-sm-left">
+                @if (\Session::has('success'))
+                <div class="alert mt-2 mb-0 alert-success">
+                    <span>{!! \Session::get('success') !!}</span>
+                </div>
+                @endif
+                @if ( ($errors) && (count($errors) > 0) )
                 <div class="alert mt-2 mb-0 alert-danger">
                     <ul class="m-0">
                         @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
+                        <li>{{ $error }}</li>
                         @endforeach
                     </ul>
                 </div>
-            @endif
-         </div>
-      </div>
-   </div>
-   
-    
+                @endif
+            </div>
+        </div>
+    </div>
+
+
     <form method="POST" id="payment_option_form" action="{{route('payoption.updateAll')}}">
         @csrf
         @method('POST')
@@ -56,11 +56,11 @@
         <div class="row">
             @foreach($payOption as $key => $opt)
             <div class="col-md-4 mb-3">
-            
+
                 <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
                 <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
-                
-                <?php 
+
+                <?php
                 $creds = json_decode($opt->credentials);
                 $username = (isset($creds->username)) ? $creds->username : '';
                 $password = (isset($creds->password)) ? $creds->password : '';
@@ -240,6 +240,25 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'razorpay') )
+                    <div id="razorpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="razorpay_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="password" name="razorpay_api_key" id="razorpay_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="razorpay_api_secret_key" class="mr-3">{{ __("Api Secret Key") }}</label>
+                                    <input type="password" name="razorpay_api_secret_key" id="razorpay_api_secret_key" class="form-control" value="{{$api_secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- <div class="d-flex align-items-center justify-content-between mb-2">
                         <button class="btn btn-info d-block" type="submit"> Save </button>
                     </div> -->
@@ -253,72 +272,71 @@
 @endsection
 
 @section('script')
-    <script type="text/javascript">
-        $('.applyVendor').click(function(){
-            $('#applyVendorModal').modal({
-                backdrop: 'static',
-                keyboard: false
-            });
+<script type="text/javascript">
+    $('.applyVendor').click(function() {
+        $('#applyVendorModal').modal({
+            backdrop: 'static',
+            keyboard: false
         });
+    });
 
-        $('.all_select').change(function(){
-            var id = $(this).data('id');
-            // console.log(id);
-            var title = $(this).data('title');
-            var code = title.toLowerCase();
-            if($(this).is(":checked")){
-                $("#"+code+"_fields_wrapper").show();
-                $("#"+code+"_fields_wrapper").find('input').attr('required', true);
-            }
-            else{
-                $("#"+code+"_fields_wrapper").hide();
-                $("#"+code+"_fields_wrapper").find('input').removeAttr('required');
-            }
-            
-            // if( title.toLowerCase() == 'stripe' ){
-            //     if($(this).is(":checked")){
-            //         $("#stripe_fields_wrapper").show();
-            //         $("#stripe_fields_wrapper").find('input').attr('required', true);
-            //     }
-            //     else{
-            //         $("#stripe_fields_wrapper").hide();
-            //         $("#stripe_fields_wrapper").find('input').removeAttr('required');
-            //     }
-            // }
-            // if( title.toLowerCase() == 'paypal' ){
-            //     if($(this).is(":checked")){
-            //         $("#paypal_fields_wrapper").show();
-            //         $("#paypal_fields_wrapper").find('input').attr('required', true);
-            //     }
-            //     else{
-            //         $("#paypal_fields_wrapper").hide();
-            //         $("#paypal_fields_wrapper").find('input').removeAttr('required');
-            //     }
-            // }
-            // if( title.toLowerCase() == 'paystack' ){
-            //     if($(this).is(":checked")){
-            //         $("#paystack_fields_wrapper").show();
-            //         $("#paystack_fields_wrapper").find('input').attr('required', true);
-            //     }
-            //     else{
-            //         $("#paystack_fields_wrapper").hide();
-            //         $("#paystack_fields_wrapper").find('input').removeAttr('required');
-            //     }
-            // }
-            // if( title.toLowerCase() == 'payfast' ){
-            //     if($(this).is(":checked")){
-            //         $("#payfast_fields_wrapper").show();
-            //         $("#payfast_fields_wrapper").find('input').attr('required', true);
-            //     }
-            //     else{
-            //         $("#payfast_fields_wrapper").hide();
-            //         $("#payfast_fields_wrapper").find('input').removeAttr('required');
-            //     }
-            // }
+    $('.all_select').change(function() {
+        var id = $(this).data('id');
+        // console.log(id);
+        var title = $(this).data('title');
+        var code = title.toLowerCase();
+        if ($(this).is(":checked")) {
+            $("#" + code + "_fields_wrapper").show();
+            $("#" + code + "_fields_wrapper").find('input').attr('required', true);
+        } else {
+            $("#" + code + "_fields_wrapper").hide();
+            $("#" + code + "_fields_wrapper").find('input').removeAttr('required');
+        }
 
-            // $('#form_'+id).submit();
+        // if( title.toLowerCase() == 'stripe' ){
+        //     if($(this).is(":checked")){
+        //         $("#stripe_fields_wrapper").show();
+        //         $("#stripe_fields_wrapper").find('input').attr('required', true);
+        //     }
+        //     else{
+        //         $("#stripe_fields_wrapper").hide();
+        //         $("#stripe_fields_wrapper").find('input').removeAttr('required');
+        //     }
+        // }
+        // if( title.toLowerCase() == 'paypal' ){
+        //     if($(this).is(":checked")){
+        //         $("#paypal_fields_wrapper").show();
+        //         $("#paypal_fields_wrapper").find('input').attr('required', true);
+        //     }
+        //     else{
+        //         $("#paypal_fields_wrapper").hide();
+        //         $("#paypal_fields_wrapper").find('input').removeAttr('required');
+        //     }
+        // }
+        // if( title.toLowerCase() == 'paystack' ){
+        //     if($(this).is(":checked")){
+        //         $("#paystack_fields_wrapper").show();
+        //         $("#paystack_fields_wrapper").find('input').attr('required', true);
+        //     }
+        //     else{
+        //         $("#paystack_fields_wrapper").hide();
+        //         $("#paystack_fields_wrapper").find('input').removeAttr('required');
+        //     }
+        // }
+        // if( title.toLowerCase() == 'payfast' ){
+        //     if($(this).is(":checked")){
+        //         $("#payfast_fields_wrapper").show();
+        //         $("#payfast_fields_wrapper").find('input').attr('required', true);
+        //     }
+        //     else{
+        //         $("#payfast_fields_wrapper").hide();
+        //         $("#payfast_fields_wrapper").find('input').removeAttr('required');
+        //     }
+        // }
 
-            //$('.vendorRow').toggle();
-        });
-    </script>
+        // $('#form_'+id).submit();
+
+        //$('.vendorRow').toggle();
+    });
+</script>
 @endsection

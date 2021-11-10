@@ -19,8 +19,8 @@ class PaymentOptionController extends BaseController
 
     public function __construct()
     {
-        $code = Client::orderBy('id','asc')->value('code');
-        $this->folderName = '/'.$code.'/payoption';
+        $code = Client::orderBy('id', 'asc')->value('code');
+        $this->folderName = '/' . $code . '/payoption';
     }
     /**
      * Display a listing of the resource.
@@ -29,7 +29,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-    $code = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex','yoco','paylink');
+        $code = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay');
         $payOption = PaymentOption::whereIn('code', $code)->get();
         return view('backend/payoption/index')->with(['payOption' => $payOption]);
     }
@@ -44,39 +44,36 @@ class PaymentOptionController extends BaseController
     public function update(Request $request, $domain = '', $id)
     {
         $status = 0;
-        $msg = $request->method_name .' deactivated successfully!';
+        $msg = $request->method_name . ' deactivated successfully!';
 
         $saved_creds = PaymentOption::select('credentials')->where('id', $id)->first();
-        
-        if( (isset($saved_creds)) && (!empty($saved_creds->credentials)) ){
+
+        if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
             $json_creds = $saved_creds->credentials;
-        }else{
+        } else {
             $json_creds = NULL;
         }
 
-        if($request->has('active') && $request->active == 'on'){
+        if ($request->has('active') && $request->active == 'on') {
             $status = 1;
-            $msg = $request->method_name .' activated successfully!';
-            
-            if(strtolower($request->method_name) == 'paypal'){
+            $msg = $request->method_name . ' activated successfully!';
+
+            if (strtolower($request->method_name) == 'paypal') {
                 $json_creds = json_encode(array(
                     'username' => $request->paypal_username,
                     'password' => $request->paypal_password,
                     'signature' => $request->paypal_signature,
                 ));
-            }
-            else if(strtolower($request->method_name) == 'stripe'){
+            } else if (strtolower($request->method_name) == 'stripe') {
                 $json_creds = json_encode(array(
                     'api_key' => $request->stripe_api_key
                 ));
             }
         }
-        
+
         PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds]);
 
         return redirect()->back()->with('success', $msg);
-
-        
     }
 
     public function updateAll(Request $request, $domain = '')
@@ -89,22 +86,22 @@ class PaymentOptionController extends BaseController
 
         foreach ($method_id_arr as $key => $id) {
             $saved_creds = PaymentOption::select('credentials')->where('id', $id)->first();
-            if( (isset($saved_creds)) && (!empty($saved_creds->credentials)) ){
+            if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
                 $json_creds = $saved_creds->credentials;
-            }else{
+            } else {
                 $json_creds = NULL;
             }
 
             $status = 0;
             $test_mode = 0;
-            if( (isset($active_arr[$id])) && ($active_arr[$id] == 'on') ){
+            if ((isset($active_arr[$id])) && ($active_arr[$id] == 'on')) {
                 $status = 1;
 
-                if( (isset($test_mode_arr[$id])) && ($test_mode_arr[$id] == 'on') ){
+                if ((isset($test_mode_arr[$id])) && ($test_mode_arr[$id] == 'on')) {
                     $test_mode = 1;
                 }
 
-                if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paypal') ){
+                if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paypal')) {
                     $validatedData = $request->validate([
                         'paypal_username'       => 'required',
                         'paypal_password'       => 'required',
@@ -115,66 +112,69 @@ class PaymentOptionController extends BaseController
                         'password' => $request->paypal_password,
                         'signature' => $request->paypal_signature,
                     ));
-                }
-                else if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'stripe') ){
+                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'stripe')) {
                     $validatedData = $request->validate([
                         'stripe_api_key'        => 'required',
-                        'stripe_publishable_key'=> 'required'
+                        'stripe_publishable_key' => 'required'
                     ], [
-                        'stripe_api_key.required'=> 'Stripe secret key field is required'
+                        'stripe_api_key.required' => 'Stripe secret key field is required'
                     ]);
                     $json_creds = json_encode(array(
                         'api_key' => $request->stripe_api_key,
                         'publishable_key' => $request->stripe_publishable_key
                     ));
-                }
-                else if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'yoco') ){
+                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'yoco')) {
                     $validatedData = $request->validate([
                         'yoco_secret_key'        => 'required',
-                        'yoco_public_key'=> 'required'
+                        'yoco_public_key' => 'required'
                     ], [
-                        'yoco_secret_key.required'=> 'Yoco secret key field is required'
+                        'yoco_secret_key.required' => 'Yoco secret key field is required'
                     ]);
                     $json_creds = json_encode(array(
                         'secret_key' => $request->yoco_secret_key,
                         'public_key' => $request->yoco_public_key
                     ));
-                }
-                else if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paystack') ){
+                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paystack')) {
                     $validatedData = $request->validate([
-                        'paystack_secret_key'=> 'required',
-                        'paystack_public_key'=> 'required'
+                        'paystack_secret_key' => 'required',
+                        'paystack_public_key' => 'required'
                     ]);
                     $json_creds = json_encode(array(
                         'secret_key' => $request->paystack_secret_key,
                         'public_key' => $request->paystack_public_key
                     ));
-                }
-                else if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paylink') ){
+                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'paylink')) {
                     $validatedData = $request->validate([
-                        'paylink_api_key'=> 'required',
-                        'paylink_api_secret_key'=> 'required'
+                        'paylink_api_key' => 'required',
+                        'paylink_api_secret_key' => 'required'
                     ]);
                     $json_creds = json_encode(array(
                         'api_key' => $request->paylink_api_key,
                         'api_secret_key' => $request->paylink_api_secret_key
                     ));
-                }
-                else if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'payfast') ){
+                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'razorpay')) {
                     $validatedData = $request->validate([
-                        'payfast_merchant_id'=> 'required',
-                        'payfast_merchant_key'=> 'required'
+                        'razorpay_api_key' => 'required',
+                        'razorpay_api_secret_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'api_key' => $request->razorpay_api_key,
+                        'api_secret_key' => $request->razorpay_api_secret_key
+                    ));
+                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'payfast')) {
+                    $validatedData = $request->validate([
+                        'payfast_merchant_id' => 'required',
+                        'payfast_merchant_key' => 'required'
                     ]);
                     $json_creds = json_encode(array(
                         'merchant_id' => $request->payfast_merchant_id,
                         'merchant_key' => $request->payfast_merchant_key,
                         'passphrase' => $request->payfast_passphrase
                     ));
-                }
-                else if( (isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'mobbex') ){
+                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'mobbex')) {
                     $validatedData = $request->validate([
-                        'mobbex_api_key'=> 'required',
-                        'mobbex_api_access_token'=> 'required'
+                        'mobbex_api_key' => 'required',
+                        'mobbex_api_access_token' => 'required'
                     ]);
                     $json_creds = json_encode(array(
                         'api_key' => $request->mobbex_api_key,
@@ -186,7 +186,6 @@ class PaymentOptionController extends BaseController
         }
         $toaster = $this->successToaster('Success', $msg);
         return redirect()->back()->with('toaster', $toaster);
-        
     }
 
     /**
@@ -215,7 +214,7 @@ class PaymentOptionController extends BaseController
         $arr = explode(',', $request->orderData);
         foreach ($arr as $key => $value) {
             $brand = Brand::where('id', $value)->first();
-            if($brand){
+            if ($brand) {
                 $brand->position = $key + 1;
                 $brand->save();
             }

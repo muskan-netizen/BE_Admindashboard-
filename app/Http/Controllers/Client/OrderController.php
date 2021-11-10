@@ -767,7 +767,7 @@ class OrderController extends BaseController{
     public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id)
     {
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-        Log::info($devices);
+    //    Log::info($devices);
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
@@ -814,7 +814,7 @@ class OrderController extends BaseController{
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
                 $result = curl_exec($ch);
-                Log::info($result);
+        //        Log::info($result);
                 curl_close($ch);
             }
         }

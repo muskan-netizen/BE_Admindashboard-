@@ -41,7 +41,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
             </div>
 
-            <div class="col-sm-6 mt-2 mt-sm-0 text-right">
+            <div class="col-sm-6 text-right">
                 <div class="d-inline d-sm-none">
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )

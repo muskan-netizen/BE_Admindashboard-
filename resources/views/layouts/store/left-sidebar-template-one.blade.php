@@ -97,7 +97,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         @if($client_preference_detail->business_type != 'taxi')
             <div class="main-menu">
                 <div class="container d-block">
-                    <div class="row align-items-center pt-2 position-initial">
+                    <div class="row align-items-center position-initial">
                         <div class="col-lg-12">
                             <div class="row mobile-header align-items-center">
                                 <div class="col-6 d-flex align-items-center justify-content-sm-between"> 
@@ -460,7 +460,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="row">
                     <div class="col-12">
                         
-                        <ul id="main-menu" class="sm pixelstrap sm-horizontal">
+                        <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
                             <li>
                                 <div class="mobile-back text-end">{{__('Back')}}<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
                             </li>

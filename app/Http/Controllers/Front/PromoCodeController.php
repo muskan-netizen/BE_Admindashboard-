@@ -40,14 +40,22 @@ class PromoCodeController extends Controller{
             $product_ids = Product::where('vendor_id', $request->vendor_id)->pluck("id");
             if($product_ids){
                 $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
-                if($promo_code_details->count() > 0){
-                    $result1 = Promocode::whereIn('id', $promo_code_details->toArray())->whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where('restriction_type', 0)->where('is_deleted', 0)->get();
+                    $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function($query) use($promo_code_details){
+                        $query->where(['restriction_type' => 1]);
+                        $query->orWhere(function($query1) use($promo_code_details){
+                            $query1->where('restriction_type' , 0);
+                            $query1->whereIn('id', $promo_code_details->toArray());
+                        });
+                    })->where('is_deleted', 0)->where(['promo_visibility' => 'public'])->get();
                     $promo_codes = $promo_codes->merge($result1);
-                }
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
-                $result2 = Promocode::whereIn('id', $vendor_promo_code_details->toArray())->where('restriction_on', 1)->whereHas('details', function($q) use($vendor_id){
-                    $q->where('refrence_id', $vendor_id);
-                })->where('restriction_on', 1)->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
+                $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details) {
+                    $query->where(['restriction_type' => 1]);
+                    $query->orWhere(function ($query1) use ($vendor_promo_code_details) {
+                        $query1->where('restriction_type', 0);
+                        $query1->whereIn('id', $vendor_promo_code_details->toArray());
+                    });
+                })->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->where(['promo_visibility' => 'public'])->get();
                 $promo_codes = $promo_codes->merge($result2);
             }
             foreach ($promo_codes as $key => $promo_code) {
@@ -154,12 +162,41 @@ class PromoCodeController extends Controller{
             }
             // $order_vendor_coupon_list = OrderVendor::whereNotNull('coupon_id')->where('user_id', $user->id)->get([DB::raw('coupon_id'),  DB::raw('sum(coupon_id) as total')]);
             $now = Carbon::now()->toDateTimeString();
-            $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id')->toArray();
-            $promo_result = Promocode::where(['name' => $request->promocode])->whereIn('id', $vendor_promo_code_details)->where('restriction_on', 1)->whereHas('details', function($q) use($vendor_id){
-                $q->where('refrence_id', $vendor_id);
-            })->where('restriction_on', 1)->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->first();
-            if(!empty($promo_result)){
-                return $this->successResponse($promo_result, '', 200);
+            $product_ids = Product::where('vendor_id', $request->vendor_id)->pluck("id");
+            if($product_ids){
+                $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
+                    $promo_detail = Promocode::where(['name' => $request->promocode])->whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function($query) use($promo_code_details){
+                        $query->where(['restriction_type' => 1]);
+                        $query->orWhere(function($query1) use($promo_code_details){
+                            $query1->where('restriction_type' , 0);
+                            $query1->whereIn('id', $promo_code_details->toArray());
+                        });
+                    })->where('is_deleted', 0)->first();
+                if (!$promo_detail) {
+                    $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $request->vendor_id)->pluck('promocode_id');
+                    $promo_detail = Promocode::where(['name' => $request->promocode])->where('restriction_on', 1)->where(function($query) use($vendor_promo_code_details){
+                        $query->where(['restriction_type' => 1]);
+                        $query->orWhere(function($query1) use($vendor_promo_code_details){
+                            $query1->where('restriction_type' , 0);
+                            $query1->whereIn('id', $vendor_promo_code_details->toArray());
+                        });
+                    })->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->first();
+                }
+            }
+            if(!$promo_detail){
+                return $this->errorResponse(__('Invalid Promocode'), 422);
+            }
+            if($total_minimum_spend < $promo_detail->minimum_spend){
+                return $this->errorResponse(__('Cart amount is less than required amount'), 422);
+            }
+            if($total_minimum_spend > $promo_detail->maximum_spend){
+                return $this->errorResponse(__('Cart amount is greater than required amount'), 422);
+            }
+
+            // $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id')->toArray();
+            // $promo_result = Promocode::where(['name' => $request->promocode])->whereIn('id', $vendor_promo_code_details)->where('restriction_on', 1)->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->first();
+            if(!empty($promo_detail)){
+                return $this->successResponse($promo_detail, '', 200);
             } else {
                 return $this->errorResponse("Invalid promocode", 422);
             }

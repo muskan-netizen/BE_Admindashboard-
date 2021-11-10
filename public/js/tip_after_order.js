@@ -1,4 +1,10 @@
-var tip_for_past_order = 1; 
+var tip_for_past_order = 1;
+// Replace the supplied `publicKey` with your own.
+// Ensure that in production you use a production public_key.
+var sdk = new window.YocoSDK({
+    publicKey: yoco_public_key
+});
+var inline='';
 
 $(document).on('change', '#wallet_payment_methods input[name="wallet_payment_method"]', function() {
     $('#wallet_payment_methods_error').html('');
@@ -7,5 +13,20 @@ $(document).on('change', '#wallet_payment_methods input[name="wallet_payment_met
         $("#wallet_payment_methods .stripe_element_wrapper").removeClass('d-none');
     }else{
         $("#wallet_payment_methods .stripe_element_wrapper").addClass('d-none');
+    }
+    if (method.replace('radio-', '') == 'yoco') {
+        $("#wallet_payment_methods .yoco_element_wrapper").removeClass('d-none');
+        // Create a new dropin form instance
+
+        var yoco_amount_payable = $("input[name='wallet_amount']").val();
+        inline = sdk.inline({
+            layout: 'field',
+            amountInCents:  yoco_amount_payable * 100,
+            currency: 'ZAR'
+        });
+        // this ID matches the id of the element we created earlier.
+        inline.mount('#yoco-card-frame');
+    } else {
+        $("#wallet_payment_methods .yoco_element_wrapper").addClass('d-none');
     }
 });

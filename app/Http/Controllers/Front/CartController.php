@@ -24,7 +24,7 @@ class CartController extends FrontController
     }
     public function showCart(Request $request, $domain = '')
     {
-        if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco')||($request->gateway == 'paypal'))){
+        if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
             if($request->has('order')){
                 $order = Order::where('order_number', $request->order)->first();
                 if($order){
@@ -98,6 +98,7 @@ class CartController extends FrontController
             $public_key_yoco= json_decode($public_key_yoco);
             $public_key_yoco= $public_key_yoco->public_key??'';
         }
+       
       
        
         return view('frontend.cartnew',compact('public_key_yoco'))->with($data,$client_preference_detail);
@@ -142,12 +143,12 @@ class CartController extends FrontController
                     $sel->groupBy('product_id');
                 }
             ])->find($request->product_id);
-
+              
             # if product type is not equal to on demand 
-            if($productDetail->category->categoryDetail->type_id != 8){
+            if($productDetail->category->categoryDetail->type_id != 8  && $productDetail->sell_when_out_of_stock == 0){
                 if(!empty($already_added_product_in_cart)){
                     if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
-                        return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart')]);
+                        return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart s')]);
                     }
                     if($productDetail->variant[0]->quantity <= ($already_added_product_in_cart->quantity + $request->quantity)){
                         $request->quantity = $productDetail->variant[0]->quantity - $already_added_product_in_cart->quantity;
@@ -842,7 +843,7 @@ class CartController extends FrontController
             }
         ])->find($cartProduct->product_id);
 
-        if($productDetail->category->categoryDetail->type_id != 8){
+        if($productDetail->category->categoryDetail->type_id != 8 && $productDetail->sell_when_out_of_stock == 0){
             if($productDetail->variant[0]->quantity < $request->quantity){
                 return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart')]);
             }

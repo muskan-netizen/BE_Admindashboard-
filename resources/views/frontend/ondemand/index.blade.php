@@ -13,10 +13,10 @@
  
 <section class="home-serivces">
     <div class="container">
-        <div class="row mb-5">
-            <div class="col-md-8 offset-md-2">
+        <div class="row mb-lg-5 mb-md-4 mb-3">
+            <div class="col-lg-8 offset-lg-2">
                 <div class="step-indicator">
-                    
+
                     <div class="step step1 @if(app('request')->input('step') >= '1' || empty(app('request')->input('step'))) active @endif">
                         <div class="step-icon">1</div>
                         <p>Service Details</p>
@@ -44,7 +44,7 @@
                         @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && app('request')->input('addons') != 1)
                                      
                          <!-- Start Main Nav -->
-                         <nav id='main-nav'>
+                        <nav id='main-nav'>
                             <ul id='main-nav-list'>
                                @if(!empty($category->childs) && count($category->childs) > 0)
                                     @foreach ($category->childs as $key => $childs)
@@ -169,7 +169,7 @@
                             @if(!empty($category->childs) && count($category->childs) == 0)
 
                                         @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
-                                        <div class="service-data-wrapper mb-5 @if(app('request')->input('addons') == 1) d-none @endif"  id="step-1-ondemand" >
+                                        <div class="service-data-wrapper @if(app('request')->input('addons') == 1) d-none @endif"  id="step-1-ondemand" >
                                             <div class="service-data mt-4">
                                                 <h4><b>{{ $category->translation_name }}</b></h4>
 
@@ -182,50 +182,12 @@
                                                 @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
                                                 {{-- new product design  --}}
-                                                <div class="row classes_wrapper no-gutters" href="#">                                       
+                                                <div class="row classes_wrapper no-gutters align-items-center" href="#">                                       
                                                     <div class="col-md-9 col-sm-8 pr-md-2">
                                                         <h5 class="mb-1"><b>{!! $data->translation_title !!}</b></h5>
                                                         <p class="mb-1">{!! $data->translation_description !!}</p>
-                                                        <div class="d-flex align-items-center justify-content-between">
-                                                            <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
-                                                                {{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}
-                                                            @endif</h5>
-
-                                                            @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
-                                                            @php
-                                                                $cartcount = 1;
-                                                            @endphp
-                                                            <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
-                                                            <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
-                                                                <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                </span>
-                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
-                                                                <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            @else
-                                                            <a class="btn btn-solid add_on_demand" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
-                                                            <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
-                                                                <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                    <i class="fa fa-minus" aria-hidden="true"></i>
-                                                                </span>
-                                                                <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
-                                                                <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
-                                                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            
-                                                            @endif
-
-                                                        </div>
-
-                                                     
-                                                       
-
                                                     </div>
-                                                    <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
+                                                    <div class="col-md-3 col-sm-4 mb-3">
                                                         <?php $imagePath = $imagePath2 = '';
                                                             $mediaCount = count($data->media);
                                                             for ($i = 0; $i < $mediaCount && $i < 2; $i++) { 
@@ -237,6 +199,42 @@
                                                         <div class="class_img">
                                                             <img src="{{$imagePath}}" alt="">
                                                         </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                                <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
+                                                                    {{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}
+                                                                @endif</h5>
+
+                                                                @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
+                                                                @php
+                                                                    $cartcount = 1;
+                                                                @endphp
+                                                                <a class="btn btn-solid add_on_demand" style="display:none;" id="add_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                <div class="number" id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}">
+                                                                    <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->variant[0]->checkIfInCart['0']['id']}}" data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                    </span>
+                                                                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" placeholder="1" type="text" value="{{$data->variant[0]->checkIfInCart['0']['quantity']}}" class="input-number" step="0.01" id="quantity_ondemand_{{$data->variant[0]->checkIfInCart['0']['id']}}" readonly>
+                                                                    <span class="plus qty-plus-ondemand"  data-id="{{$data->variant[0]->checkIfInCart['0']['id']}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                @else
+                                                                <a class="btn btn-solid add_on_demand" id="aadd_button_href{{$data->id}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">Add <i class="fa fa-plus"></i></a>
+                                                                <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
+                                                                    <span class="minus qty-minus-ondemand"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                                    </span>
+                                                                    <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d{{$data->id}}" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
+                                                                    <span class="plus qty-plus-ondemand"  data-id="" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">
+                                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                
+                                                                @endif
+
+                                                            </div>
                                                     </div>
                                                 </div>
                                                 <hr>
@@ -339,7 +337,7 @@
                                         <div  id="date_time_set_div{{$cart_data->id}}">
                                          
                                         <h4 class="mb-2"><b>When would you like your service?</b></h4>
-                                        <div class="date-items radio-btns">
+                                        <div class="date-items radio-btns hide">
                                             @foreach ($period as $key => $date)
                                                 <div>
                                                     <div class="radios">
@@ -417,36 +415,34 @@
                             @endif    
                            
                         </div> 
-                    
-                        <div class="footer-card">
+                        
+                         <div class="footer-card">
                             @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && empty(app('request')->input('addons')))
-                            <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">Next</span></a>
-                            @elseif(app('request')->input('step') == '1' && app('request')->input('addons') == '1')
-                            <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
-                            <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">Next</span></a>
-                            @elseif(app('request')->input('step') == '2' && empty(app('request')->input('addons')))
-                            <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
-                                @if(Auth::guest())
-                                <a href="{{route('customer.login')}}" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
-                                @else
-                                <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
-                                @endif
-                            @elseif(app('request')->input('step') == '2' && !empty(app('request')->input('dateset')))
-                                <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
+                                <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">Next</span></a>
+                                @elseif(app('request')->input('step') == '1' && app('request')->input('addons') == '1')
+                                    <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
+                                    <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">Next</span></a>
+                                @elseif(app('request')->input('step') == '2' && empty(app('request')->input('addons')))
+                                    <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
                                     @if(Auth::guest())
-                                    <a href="{{route('customer.login')}}" id="next-button-ondemand-3" ><span class="btn btn-solid float-right">Continue</span></a>
+                                        <a href="{{route('customer.login')}}" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
                                     @else
-                                    <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
-                                    @endif    
-                            @elseif(app('request')->input('step') == '3')
-                            <a href="?step=2"><span class="btn btn-solid"><</span></a>
-                            <a href="?step=3" id="next-button-ondemand-4"><span class="btn btn-solid float-right">Continue</span></a>
-                            @else
-                           
+                                        <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
+                                    @endif
+                                @elseif(app('request')->input('step') == '2' && !empty(app('request')->input('dateset')))
+                                        <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
+                                        @if(Auth::guest())
+                                            <a href="{{route('customer.login')}}" id="next-button-ondemand-3" ><span class="btn btn-solid float-right">Continue</span></a>
+                                        @else
+                                            <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
+                                        @endif    
+                                @elseif(app('request')->input('step') == '3')
+                                    <a href="?step=2"><span class="btn btn-solid"><</span></a>
+                                    <a href="?step=3" id="next-button-ondemand-4"><span class="btn btn-solid float-right">Continue</span></a>
+                                @else                           
                             @endif
-                          
-                            
                         </div>
+                       
 
                     </div>
                     

@@ -283,16 +283,16 @@ $timezone = Auth::user()->timezone;
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
+    var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
+    var payment_success_paylink_url = "{{route('payment.paylinkNotify')}}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
     var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
     var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
     var amount_required_error_msg = "{{__('Please enter amount.') }}";
     var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
 
-    var yoco_public_key="<?php echo $public_key_yoco; ?>";
-    console.log(yoco_public_key);
     var sdk = new window.YocoSDK({
         publicKey: yoco_public_key
     });

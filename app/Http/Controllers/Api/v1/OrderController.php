@@ -327,7 +327,8 @@ class OrderController extends BaseController {
                     }
                     $order->save();
                     $this->sendSuccessSMS($request, $order);
-                    if(($request->payment_option_id != 7) && ($request->payment_option_id != 6)){ // if not mobbex, payfast
+                    $ex_gateways = [6,7,8]; // if mobbex, payfast, yoco
+                    if(!in_array($request->payment_option_id, $ex_gateways)){
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
@@ -339,10 +340,11 @@ class OrderController extends BaseController {
                             'order_id' => $order->id,
                             'transaction_id' => $request->transaction_id,
                             'balance_transaction' => $order->payable_amount,
+                            'type' => 'cart'
                         ]);
                     }
                     $order = $order->with(['vendors:id,order_id,dispatch_traking_url,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
-                    if(($request->payment_option_id != 7) && ($request->payment_option_id != 6)){ // if not mobbex, payfast
+                    if(!in_array($request->payment_option_id, $ex_gateways)){
                         $code = $request->header('code');
                         if (!empty($order->vendors)) {
                             foreach ($order->vendors as $vendor_value) {
@@ -1236,7 +1238,17 @@ class OrderController extends BaseController {
         if($user){
             $order_number = $request->order_number;
             if ($order_number > 0) {
-                $tip = Order::where('order_number',$order_number)->update(['tip_amount' => $request->tip_amount]);
+                $order = Order::select('id', 'tip_amount')->where('order_number',$order_number)->first();
+                if(($order->tip_amount == 0) || empty($order->tip_amount)){
+                    $tip = Order::where('order_number',$order_number)->update(['tip_amount' => $request->tip_amount]);
+                    Payment::insert([
+                        'date' => date('Y-m-d'),
+                        'order_id' => $order->id,
+                        'transaction_id' => $request->transaction_id,
+                        'balance_transaction' => $request->tip_amount,
+                        'type' => 'tip'
+                    ]);
+                }
                 $message = 'Tip has been submitted successfully';
                 $response['tip_amount'] = $request->tip_amount;
                 return $this->successResponse($response, $message, 200);

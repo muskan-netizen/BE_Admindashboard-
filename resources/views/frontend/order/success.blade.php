@@ -35,7 +35,7 @@
                     <h3>{{__('Your Order Details')}}</h3>
                     @foreach($order->products as $product)
                         @php
-                            $image = $product->media ? $product->media->first()->image['path']['proxy_url'].'74/100'.$product->media->first()->image['path']['image_path']:$product->image['proxy_url'].'74/100'.$product->image['image_path'];
+                            $image = $product->media ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
                         @endphp
 	                    <div class="row product-order-detail">
 	                        <div class="col-3">
@@ -59,36 +59,36 @@
 	                        <div class="col-3 order_detail">
 	                            <div>
 	                                <h4>{{__('Price')}}</h4>
-	                                <h5>{{Session::get('currencySymbol')}}@money($product->price * $clientCurrency->doller_compare)</h5>
+	                                <h5>{{Session::get('currencySymbol')}}@money($product->price * @$clientCurrency->doller_compare)</h5>
 	                            </div>
 	                        </div>
 	                    </div>
                     @endforeach
                     <div class="total-sec">
                         <ul>
-                            <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}@money($order->total_amount * $clientCurrency->doller_compare)</span></li>
+                            <li>{{__('Subtotal')}}<span>{{Session::get('currencySymbol')}}@money($order->total_amount * @$clientCurrency->doller_compare)</span></li>
                             @if($order->taxable_amount > 0)
-                                <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * $clientCurrency->doller_compare)</span></li>
+                                <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * @$clientCurrency->doller_compare)</span></li>
                             @endif
                             @if($order->total_delivery_fee > 0)
-                                <li>{{__('Delivery Fee')}} <span>{{Session::get('currencySymbol')}}@money($order->total_delivery_fee * $clientCurrency->doller_compare)</span></li>
+                                <li>{{__('Delivery Fee')}} <span>{{Session::get('currencySymbol')}}@money($order->total_delivery_fee * @$clientCurrency->doller_compare)</span></li>
                             @endif
                             @if($order->tip_amount > 0)
-                                <li>{{__('Tip Amount')}} <span>{{Session::get('currencySymbol')}}@money($order->tip_amount * $clientCurrency->doller_compare)</span></li>
+                                <li>{{__('Tip Amount')}} <span>{{Session::get('currencySymbol')}}@money($order->tip_amount * @$clientCurrency->doller_compare)</span></li>
                             @endif
                             @if($order->subscription_discount > 0)
-                                <li>{{__('Subscription Discount')}} <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount * $clientCurrency->doller_compare)</span></li>
+                                <li>{{__('Subscription Discount')}} <span>{{Session::get('currencySymbol')}}@money($order->subscription_discount * @$clientCurrency->doller_compare)</span></li>
                             @endif
                             @if($order->loyalty_amount_saved > 0)
-                                <li>{{__('Loyalty Amount')}} <span>{{Session::get('currencySymbol')}}@money($order->loyalty_amount_saved * $clientCurrency->doller_compare)</span></li>
+                                <li>{{__('Loyalty Amount')}} <span>{{Session::get('currencySymbol')}}@money($order->loyalty_amount_saved * @$clientCurrency->doller_compare)</span></li>
                             @endif
                             @if($order->wallet_amount_used > 0)
-                                <li>{{__('Wallet Amount')}} <span>{{Session::get('currencySymbol')}}@money($order->wallet_amount_used * $clientCurrency->doller_compare)</span></li>
+                                <li>{{__('Wallet Amount')}} <span>{{Session::get('currencySymbol')}}@money($order->wallet_amount_used * @$clientCurrency->doller_compare)</span></li>
                             @endif
                         </ul>
                     </div>
                     <div class="final-total">
-                        <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}@money($order->payable_amount * $clientCurrency->doller_compare)</span></h3>
+                        <h3>{{__('Total')}} <span>{{Session::get('currencySymbol')}}@money($order->payable_amount * @$clientCurrency->doller_compare)</span></h3>
                     </div>
                 </div>
             </div>
@@ -99,7 +99,7 @@
                         <ul class="order-detail">
                             <li>{{__('Order ID')}}: {{$order->order_number}}</li>
                             <li>{{__('Order Date')}}: {{ date('F d, Y', strtotime($order->created_at)) }}</li>
-                            <li>{{__('Order Total')}}: {{Session::get('currencySymbol')}}@money($order->payable_amount * $clientCurrency->doller_compare)</li>
+                            <li>{{__('Order Total')}}: {{Session::get('currencySymbol')}}@money($order->payable_amount * @$clientCurrency->doller_compare)</li>
                         </ul>
                     </div>
                     <div class="col-sm-6">

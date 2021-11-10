@@ -42,7 +42,7 @@ class HomePageLabelSeeder extends Seeder
         $already = HomePageLabel::where('slug', 'new_products')->count();
 
         if($already == 0){
-            Log::info($already);
+        //    Log::info($already);
             $home_page = HomePageLabel::insertGetId([
                 'title' => 'New Products',
                 'slug' => 'new_products',

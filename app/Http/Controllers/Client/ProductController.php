@@ -809,7 +809,7 @@ class ProductController extends BaseController
                             if($response && $response['message'] == 'success'){
                                 return $response['tags'];
                             }
-                            Log::info($response);
+            //                Log::info($response);
                 }
             }    
             catch(\Exception $e){

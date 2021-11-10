@@ -287,7 +287,7 @@
                                                         }
                                                         $imagePath2 = $data->media[$i]->image->path['image_fit'] . '600/600' . $data->media[$i]->image->path['image_path'];
                                                     }*/ ?>
-                                                    <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-4 px-0">
+                                                    <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-4">
                                                         <a href="{{route('productDetail', $data->url_slug)}}" class="product-box d-block scale-effect mt-0">
                                                             <div class="product-image p-0">
                                                                 <img class="img-fluid blur-up lazyload" src="{{$data->image_url}}" alt="">

@@ -428,7 +428,7 @@
                 var extension = getExtension(input.files[0].name);
                 reader.onload = function(e) {
                     if (extension == 'pdf') {
-                        $(previewId).attr('src', 'https://image.flaticon.com/icons/svg/179/179483.svg');
+                        $(previewId).attr('src', "{{ asset('assets/images/pdf-icon-png-2072.png') }}");
                     } else if (extension == 'csv') {
                         $(previewId).attr('src', text_image);
                     } else if (extension == 'txt') {

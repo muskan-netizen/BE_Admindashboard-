@@ -95,7 +95,7 @@
          </div>
          @endif
 
-         @if($client_preference_detail->business_type != 'taxi')
+         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry')
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
@@ -162,7 +162,7 @@
          </div>
          @endif
 
-         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce')
+         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
          <div class="col-lg-3 col-md-6 mb-3">
             <div class="card-box h-100">
                <div class="d-flex align-items-center justify-content-between mb-2">
@@ -261,6 +261,86 @@
                         </span>
                         @endif
                      </div>
+
+                  </div>
+               </div>
+            </div>
+         </div>
+         @endif
+
+         @if($client_preference_detail->business_type == 'laundry')
+         <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card-box h-100">
+               <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h4 class="header-title mb-0">{{ __("Laundry") }}</h4>
+                  <button class="btn btn-info d-block" type="submit" name="laundry_submit_btn" value ="1"> {{ __("Save") }} </button>
+               </div>
+               <p class="sub-header">{{ __("Offer laundry with Dispatcher.") }}</p>
+               <div class="row">
+                  <div class="col-12">
+                     <div class="form-group mb-0">
+                        <div class="form-group mb-0 switchery-demo">
+                           <label for="need_laundry_service" class="mr-3">{{ __("Enable") }}</label>
+                           <input data-plugin="switchery" name="need_laundry_service" id="need_laundry_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_delivery_service == '1')) checked @endif >
+                        </div>
+                     </div>
+
+                     <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="laundry_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
+                        <input type="text" name="laundry_service_key_url" id="laundry_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('laundry_service_key_url', $preference->laundry_service_key_url ?? '')}}">
+                        @if($errors->has('laundry_service_key_url'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('laundry_service_key_url') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                     <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="laundry_service_key_code">{{ __("Dispatcher Short code") }}</label>
+                        <input type="text" name="laundry_service_key_code" id="laundry_service_key_code" placeholder="" class="form-control" value="{{ old('laundry_service_key_code', $preference->laundry_service_key_code ?? '')}}">
+                        @if($errors->has('laundry_service_key_code'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('laundry_service_key_code') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                     <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
+                        <label for="laundry_service_key">{{ __("Dispatcher API key") }}</label>
+                        <input type="text" name="laundry_service_key" id="laundry_service_key" placeholder="" class="form-control" value="{{ old('laundry_service_key', $preference->laundry_service_key ?? '')}}">
+                        @if($errors->has('laundry_service_key'))
+                        <span class="text-danger" role="alert">
+                           <strong>{{ $errors->first('laundry_service_key') }}</strong>
+                        </span>
+                        @endif
+                     </div>
+                     
+                     @if($laundry_teams != null && count($laundry_teams))
+                     <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{(isset($preference) && $preference->need_laundry_service == '1') ? '' : 'display: none;'}}" id="laundryPickupTeamListDiv">
+                        <div class="form-group">
+                            {!! Form::label('title', __('Team Tag For Laundry Pickup'),['class' => 'control-label']) !!}
+                            <select class="form-control" id="laundryPickupTeamList" name="laundry_pickup_team" data-toggle="select2" >
+                              <option value="0">{{__('Select Team Tag')}}</option>
+                              @foreach($last_mile_teams as $nm)
+                                 <option value="{{$nm['name']}}" @if($preference->laundry_pickup_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
+                              @endforeach
+                              
+                            </select>
+                        </div>
+                     </div>
+
+                     <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{(isset($preference) && $preference->need_laundry_service == '1') ? '' : 'display: none;'}}" id="laundryDropoffTeamListDiv">
+                        <div class="form-group">
+                            {!! Form::label('title', __('Team Tag For Laundry Dropoff'),['class' => 'control-label']) !!}
+                            <select class="form-control" id="laundryDropoffTeamList" name="laundry_dropoff_team" data-toggle="select2" >
+                              <option value="0">{{__('Select Team Tag')}}</option>
+                              @foreach($last_mile_teams as $nm)
+                                 <option value="{{$nm['name']}}" @if($preference->laundry_dropoff_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
+                              @endforeach
+                              
+                            </select>
+                        </div>
+                     </div>
+                     @endif
+
 
                   </div>
                </div>
@@ -1111,7 +1191,7 @@
    </div>
    
    <div class="row">
-      <div class="col-lg-6">
+      {{--<div class="col-lg-6">
          <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __("Driver") }}</h4>
          </div>
@@ -1164,7 +1244,7 @@
                </table>
             </div>
          </div>
-      </div>
+      </div> --}}
       <div class="col-xl-6">
          <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{__('Distance to Time Calculator')}}</h4>
@@ -1172,7 +1252,7 @@
          <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
             <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
             @csrf
-            <div class="card-box mb-0">
+            <div class="card-box mb-2">
                <div class="d-flex align-items-center justify-content-end">
                   <!-- <h4 class="header-title mb-0">Refer and Earn</h4> -->
                   <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
@@ -1768,6 +1848,7 @@
       var delivery_service = $('#need_delivery_service');
       var dispatcherDiv = $('#need_dispacher_ride');
       var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
+      var laundry_service = $('#need_laundry_service');
 
       if(delivery_service.length > 0){
          delivery_service[0].onchange = function() {
@@ -1776,6 +1857,17 @@
                $('.deliveryServiceFields').hide();
             } else {
                $('.deliveryServiceFields').show();
+            }
+         }
+      }
+
+      if(laundry_service.length > 0){
+         laundry_service[0].onchange = function() {
+
+            if ($('#need_laundry_service:checked').length != 1) {
+               $('.laundryServiceFields').hide();
+            } else {
+               $('.laundryServiceFields').show();
             }
          }
       }

@@ -2305,7 +2305,7 @@ button.btn.btn-outline:active {
     overflow: hidden;
 }
 
-.slick-slider.slick-slider {
+.home-banner-slider.slick-slider.slick-slider,.menu-slider {
     overflow: visible;
 }
 
@@ -13340,7 +13340,7 @@ header.stickycls {
 .pixelstrap a:hover,
 .pixelstrap a:active {
     color: #222222;
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 400;
     line-height: 23px;
     text-decoration: none;
@@ -13902,8 +13902,10 @@ header.stickycls {
 
     .pixelstrap a .sub-arrow::before {
         content: "\f107";
+        content: none;
         font-family: FontAwesome;
         position: absolute;
+        right: 0;
     }
 
     .pixelstrap ul {
@@ -14137,7 +14139,7 @@ header.stickycls {
         top: 0;
         height: 100vh;
         right: -300px;
-        z-index: 99;
+        z-index: 9999999;
         -webkit-transition: all 0.3s ease;
         transition: all 0.3s ease;
         overflow: scroll;

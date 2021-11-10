@@ -56,7 +56,7 @@ class PaylinkGatewayController extends FrontController
             }
             $uniqid = uniqid();
 
-            $notifyUrlParams = '?gateway=paylink&amount=' . $request->amount . '&cart_id=' . $request->cart_id . '&order=' . $request->order_number. '&payment_form=' . $request->payment_form;
+            $notifyUrlParams = '?gateway=paylink&amount=' . $request->amount . '&cart_id=' . $request->cart_id . '&order=' . $request->order_number . '&payment_form=' . $request->payment_form;
 
             $data = array(
                 'requestId' => 'CHK-' . $uniqid,
@@ -121,7 +121,7 @@ class PaylinkGatewayController extends FrontController
 
 
             if ($result->success == true) {
-                // $curl = curl_init();
+
 
                 return $this->successResponse($result->result->redirectUrl, ['status' => $result->result->status]);
             } else {
@@ -136,6 +136,7 @@ class PaylinkGatewayController extends FrontController
 
     public function paylinkNotify(Request $request, $domain = '')
     {
+
 
         $curl = curl_init();
 
@@ -154,17 +155,13 @@ class PaylinkGatewayController extends FrontController
                 'X-PointCheckout-Api-Secret:' . $this->API_SECRET_KEY,
             ),
         ));
-       
+
 
         $response = curl_exec($curl);
 
         curl_close($curl);
         $response = json_decode($response);
-        if ($request->payment_form == '') {
-            $returnUrl = route('user.wallet');
-            return Redirect::to(url($returnUrl));
-        }
-        
+
         //  dd($response);
         $transactionId = $request->checkout;
         $order_number = $request->order;
@@ -211,12 +208,17 @@ class PaylinkGatewayController extends FrontController
                     $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                     $returnUrlParams = '?gateway=paylink&order=' . $order->id;
                     $returnUrl = route('order.return.success');
-                    
+
                     return Redirect::to(url($returnUrl . $returnUrlParams));
                 }
 
+
                 // Send Email
                 //   $this->successMail();
+            } else {
+                $returnUrlParams = '?gateway=paylink&amount=' . $request->amount . '&checkout=' . $request->checkout ;
+                $returnUrl = route('user.wallet');
+                return Redirect::to(url($returnUrl . $returnUrlParams));
             }
         } else {
             $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
@@ -233,4 +235,3 @@ class PaylinkGatewayController extends FrontController
         }
     }
 }
-

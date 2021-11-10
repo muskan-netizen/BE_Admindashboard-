@@ -309,6 +309,16 @@
                         <span class="error text-danger" id="stripe_card_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'yoco') { %>
+                    <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper d-none">
+                        <div class="form-control">
+                            <div id="yoco-card-frame">
+                            <!-- Yoco Inline form will be added here -->
+                            </div>
+                        </div>
+                        <span class="error text-danger" id="yoco_card_error"></span>
+                    </div>
+                <% } %>
             <% } %>
         <% }); %>
     <% } %>
@@ -318,13 +328,18 @@
 
 @section('script')
 <script src="https://js.stripe.com/v3/"></script>
+<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <script type="text/javascript">
     var subscription_payment_options_url = "{{route('user.subscription.plan.select', ':id')}}";
     var user_subscription_purchase_url = "{{route('user.subscription.plan.purchase', ':id')}}";
     var user_subscription_cancel_url = "{{route('user.subscription.plan.cancel', ':id')}}";
     var payment_stripe_url = "{{route('user.subscription.payment.stripe')}}";
+    var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
-    console.log(payment_stripe_url);
+    var sdk = new window.YocoSDK({
+        publicKey: yoco_public_key
+    });
+    var inline='';
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).data("payment_option_id");
@@ -333,6 +348,21 @@
         }else{
             $("#subscription_payment_methods .stripe_element_wrapper").addClass('d-none');
         }
+        if (method == 8) {
+            $("#subscription_payment_methods .yoco_element_wrapper").removeClass('d-none');
+            // Create a new dropin form instance
+
+            var yoco_amount_payable = $("input[name='subscription_amount']").val();
+            inline = sdk.inline({
+                layout: 'field',
+                amountInCents:  yoco_amount_payable * 100,
+                currency: 'ZAR'
+            });
+            // this ID matches the id of the element we created earlier.
+            inline.mount('#yoco-card-frame');
+        } else {
+            $("#subscription_payment_methods .yoco_element_wrapper").addClass('d-none');
+        }
     });
 
     $(document).on('click', '.cancel-subscription-link', function(){
@@ -340,5 +370,6 @@
         $('#cancel-subscription-form').attr('action', user_subscription_cancel_url.replace(":id", id));
     });
 </script>
+<script src="{{asset('js/payment.js')}}"></script>
 
 @endsection

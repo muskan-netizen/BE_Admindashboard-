@@ -175,7 +175,21 @@
                                             
                                         </thead>
                                         <tbody> 
-                                           
+                                            {{-- <tr>
+                                                <td>
+                                                    <h5 class="m-0 font-weight-normal">{{__('Select All')}}</h5>
+                                                </td>
+        
+                                                <td>
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input all_vendor_check" id="vendor_permission_all"
+                                                        data-event-type="vendor_permission" 
+                                                        name="vendor_permission_all"  
+                                                       >
+                                                        <label class="custom-control-label" for="vendor_permission_all"></label>
+                                                    </div>
+                                                </td>
+                                            </tr>  --}}
                                             
                                             @foreach($vendors as $vendor)
                                             <tr>
@@ -225,6 +239,14 @@
 
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{{ asset('assets/css/jquery-ui.css') }}">
-  
+    <script>
+         $(".all_vendor_check").click(function() {
+            if ($(this).is(':checked')) {
+                $('.vendor_permission_check').prop('checked', true);
+            } else {
+                $('.vendor_permission_check').prop('checked', false);
+            }
+        });
+        </script>
 
 @endsection

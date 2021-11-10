@@ -108,7 +108,7 @@
                                             </span>
                                             <div class="col-5 col-sm-3">
                                                 <h5 class="m-0"><%= vendor.vendor_name %></h5>
-                                                <ul class="status_box mt-3 pl-0">
+                                                <ul class="status_box mt-1 pl-0">
                                                     <li>
                                                         <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
 
@@ -247,7 +247,7 @@
     </div>
 </div>
 <script type="text/template" id="no_order_template">
-    <div class="error-msg"><p>{{ __('You have not any order yet now.') }}</p></div>
+    <div class="error-msg"><p>{{ __("You don't have orders right now.") }}</p></div>
     </script>
 <div class="loader" id="order_list_order">
     <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>

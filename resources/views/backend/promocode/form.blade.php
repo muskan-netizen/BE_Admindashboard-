@@ -200,6 +200,15 @@
                     </select>
                 </div>
             </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('title', __('Promo Visibility'),['class' => 'control-label']) !!}
+                    <select class="selectize-select form-control" name="promo_visibility">
+                        <option value="public" @if(isset($promo->promo_visibility) && $promo->promo_visibility == 'public') selected @endif >{{ __('Public')}}</option>
+                        <option value="private" @if(isset($promo->promo_visibility) && $promo->promo_visibility == 'private') selected @endif >{{ __('Private')}}</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 </div>

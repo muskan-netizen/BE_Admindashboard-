@@ -192,6 +192,13 @@ class AuthController extends BaseController
             }
         }
 
+        if(!empty($signReq->email)){
+            $userEmailCheck = User::where(['email' => $signReq->email])->first();
+            if($userEmailCheck){
+                return response()->json(['error' => 'The email has already been taken.' ], 422);
+            }
+        }
+
         $user = new User();
 
         foreach ($signReq->only('name', 'country_id', 'phone_number', 'dial_code') as $key => $value) {
@@ -261,7 +268,7 @@ class AuthController extends BaseController
                 if ($refferal_amounts) {
                     if ($refferal_amounts->reffered_by_amount != null && $refferal_amounts->reffered_to_amount != null) {
                         $reffered_by = UserRefferal::where('refferal_code', $signReq->refferal_code)->first();
-                        $user_refferd_by = $reffered_by->user_id;
+                        $user_refferd_by = $reffered_by->user_id??0;
                         $user_refferd_by = User::where('id', $reffered_by->user_id)->first();
                         if ($user_refferd_by) {
                             //user reffered by amount

@@ -550,7 +550,7 @@
                  
                         <div class="card-box">
                             <form id="save_product_action_modal" method="post" enctype="multipart/form-data"
-                            action="{{ route('product.update.action') }}">
+                            action="#">
                             @csrf
 
                             <div class="row mb-2">
@@ -608,7 +608,7 @@
                             
                                 <div class="col-md-6 mb-2"  id="for_tax"  style="display: none;">
                                     {!! Form::label('title', __('Tax Category'), ['class' => 'control-label']) !!}
-                                    <select class="form-control " id="typeSelectBox" name="tax_category">
+                                    <select class="form-control " id="tax_category_for" name="tax_category">
                                         <option value="">Select</option>
                                         @foreach ($taxCate as $cate)
                                             <option value="{{ $cate->id }}">{{ $cate->title }}</option>
@@ -697,7 +697,7 @@
             var is_new = $('#is_new').prop('checked');
             var is_featured = $('#is_featured').prop('checked');
             var is_live = $('#is_live').val();
-            var tax_category = $('#tax_category').val();
+            var tax_category = $('#tax_category_for').val();
             var action_for = $('#action_for').val();
             var last_mile = $('#last_mile').prop('checked');
             var product_id = [];
@@ -713,7 +713,6 @@
                 return false;
             }
             
-            console.log(is_new);
             $.ajax({
                 type: "post",
                 url: '{{route("product.update.action")}}',

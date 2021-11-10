@@ -65,6 +65,16 @@
                           <span class="error text-danger" id="stripe_card_error"></span>
                       </div>
                   <% } %>
+                  <% if(payment_option.slug == 'yoco') { %>
+                    <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper d-none">
+                        <div class="form-control">
+                            <div id="yoco-card-frame">
+                            <!-- Yoco Inline form will be added here -->
+                            </div>
+                        </div>
+                        <span class="error text-danger" id="yoco_card_error"></span>
+                    </div>
+                <% } %>
               <% } %>
           <% }); %>
       <% } %>

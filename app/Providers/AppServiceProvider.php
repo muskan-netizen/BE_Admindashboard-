@@ -48,10 +48,14 @@ class AppServiceProvider extends ServiceProvider
             $favicon_url = $client_preference_detail->favicon['proxy_url'] . '600/400' . $client_preference_detail->favicon['image_path'];
         }
         $client_head = Client::where(['id' => 1])->first();
-        $creds_arr = array();
+        $stripe_creds_arr = $yoco_creds_arr = array();
         $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
         if($stripe_creds){
-            $creds_arr = json_decode($stripe_creds->credentials);
+            $stripe_creds_arr = json_decode($stripe_creds->credentials);
+        }
+        $yoco_creds = PaymentOption::select('credentials')->where('code', 'yoco')->where('status', 1)->first();
+        if($yoco_creds){
+            $yoco_creds_arr = json_decode($yoco_creds->credentials);
         }
 
         $count = 0;
@@ -60,8 +64,8 @@ class AppServiceProvider extends ServiceProvider
             if($client_preference_detail->takeaway_check == 1){$count++;}
             if($client_preference_detail->delivery_check == 1){$count++;}
         }
-        $stripe_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
-
+        $stripe_publishable_key = (isset($stripe_creds_arr->publishable_key) && (!empty($stripe_creds_arr->publishable_key))) ? $stripe_creds_arr->publishable_key : '';
+        $yoco_public_key = (isset($yoco_creds_arr->public_key) && (!empty($yoco_creds_arr->public_key))) ? $yoco_creds_arr->public_key : '';
         $last_mile_common_set = $this->checkIfLastMileDeliveryOn();
 
 
@@ -73,6 +77,7 @@ class AppServiceProvider extends ServiceProvider
         view()->share('mod_count', $count);
         view()->share('social_media_details', $social_media_details);
         view()->share('stripe_publishable_key', $stripe_publishable_key);
+        view()->share('yoco_public_key', $yoco_public_key);
         view()->share('client_preference_detail', $client_preference_detail);
        
        

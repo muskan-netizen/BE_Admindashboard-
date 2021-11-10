@@ -202,7 +202,7 @@ $timezone = Auth::user()->timezone;
                                                                 <div class="row">
                                                                     <div class="col-5 col-sm-3">
                                                                         <h5 class="m-0">{{__('Order Status')}}</h5>
-                                                                        <ul class="status_box mt-3 pl-0"> 
+                                                                        <ul class="status_box mt-1 pl-0"> 
                                                                         @if(!empty($vendor->order_status))
                                                                             <li>
                                                                                 @if($vendor->order_status == 'placed')
@@ -400,7 +400,7 @@ $timezone = Auth::user()->timezone;
                                                                 <div class="row">
                                                                     <div class="col-5 col-sm-3">
                                                                         <h5 class="m-0">{{__('Order Status')}}</h5>
-                                                                        <ul class="status_box mt-3 pl-0">
+                                                                        <ul class="status_box mt-1 pl-0">
                                                                         @if(!empty($vendor->order_status))
                                                                             <li>
                                                                                 <img src="{{ asset('assets/images/driver_icon.svg') }}" alt="">
@@ -651,7 +651,7 @@ $timezone = Auth::user()->timezone;
                                                             <div class="row">
                                                                 <div class="col-5 col-sm-3">
                                                                     <h5 class="m-0"></h5>
-                                                                    <ul class="status_box mt-3 pl-0">
+                                                                    <ul class="status_box mt-1 pl-0">
                                                                         @if($vendor->dineInTable)
                                                                             <li>
                                                                                 <h5 class="mb-1">{{ __('Dine-in') }}</h5>
@@ -840,7 +840,7 @@ $timezone = Auth::user()->timezone;
 @section('script')
 <script src="{{asset('js/tip_after_order.js')}}"></script>
 <script src="https://js.stripe.com/v3/"></script>
-
+<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <script src="{{asset('js/payment.js')}}"></script>
 <script type="text/javascript">
  $(document).delegate(".topup_wallet_btn_tip", "click", function () {
@@ -851,8 +851,6 @@ $timezone = Auth::user()->timezone;
      var custom_tip_amount = "custom_tip_amount"+order_number;
 
      var select_tip =  $('input[name="' + input_name + '"]:checked').val();
-     console.log(custom_tip_amount);
-     console.log(select_tip);
 
      if(select_tip != 'custom' && select_tip != undefined){
          $('.wallet_balance').html(select_tip);
@@ -873,6 +871,7 @@ $timezone = Auth::user()->timezone;
     var credit_tip_url = "{{route('user.tip_after_order')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
+    var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
