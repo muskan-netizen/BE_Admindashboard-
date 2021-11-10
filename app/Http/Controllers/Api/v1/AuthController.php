@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
 use App\Models\{User, Client, ClientPreference, BlockedToken, Otp, Country, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate};
+use Log;
 
 class AuthController extends BaseController
 {
@@ -501,7 +502,7 @@ class AuthController extends BaseController
                 }
             }
         } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode());
+            return $this->errorResponse($e->getMessage(), 422);
         }
     }
 
@@ -558,7 +559,7 @@ class AuthController extends BaseController
                 return $this->successResponse(getUserDetailViaApi($user), $message);
             }
         } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode());
+            return $this->errorResponse($e->getMessage(), 422);
         }
     }
 
@@ -594,7 +595,7 @@ class AuthController extends BaseController
                     return response()->json($errors, 422);
                 }
             }
-            $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+            $client = Client::select('id', 'name', 'email', 'phone_number', 'logo', 'sub_domain')->where('id', '>', 0)->first();
             $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
             if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
                 $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
@@ -606,7 +607,8 @@ class AuthController extends BaseController
                 $email_template = EmailTemplate::where('id', 3)->first();
                 if ($email_template) {
                     $email_template_content = $email_template->content;
-                    $email_template_content = str_ireplace("{reset_link}", url('/reset-password/' . $token), $email_template_content);
+                    // $email_template_content = str_ireplace("{reset_link}", url('/reset-password/' . $token), $email_template_content);
+                    $email_template_content = str_ireplace("{reset_link}", "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/reset-password/" . $token, $email_template_content);
                 }
                 $data = [
                     'token' => $token,
@@ -621,7 +623,7 @@ class AuthController extends BaseController
             }
             return response()->json(['success' => __('We have e-mailed your password reset link!')], 200);
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode());
+            return $this->errorResponse($e->getMessage(), 422);
         }
 
 
@@ -1099,17 +1101,17 @@ class AuthController extends BaseController
                 Cart::where('unique_identifier', $req->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
             }
             if ($user->id > 0) {
-                if ($signReq->refferal_code) {
+                if ($req->refferal_code) {
                     $refferal_amounts = ClientPreference::first();
                     if ($refferal_amounts) {
                         if ($refferal_amounts->reffered_by_amount != null && $refferal_amounts->reffered_to_amount != null) {
-                            $reffered_by = UserRefferal::where('refferal_code', $signReq->refferal_code)->first();
+                            $reffered_by = UserRefferal::where('refferal_code', $req->refferal_code)->first();
                             $user_refferd_by = $reffered_by->user_id;
                             $user_refferd_by = User::where('id', $reffered_by->user_id)->first();
                             if ($user_refferd_by) {
                                 //user reffered by amount
                                 $wallet_user_reffered_by = $user_refferd_by->wallet;
-                                $wallet_user_reffered_by->deposit($refferal_amounts->reffered_by_amount, ['Referral code used by <b>' . $signReq->name . '</b>']);
+                                $wallet_user_reffered_by->deposit($refferal_amounts->reffered_by_amount, ['Referral code used by <b>' . $req->name . '</b>']);
                                 $wallet_user_reffered_by->balance;
                                 //user reffered to amount
                                 $wallet->deposit($refferal_amounts->reffered_to_amount, ['You used referal code of <b>' . $user_refferd_by->name . '</b>']);
@@ -1124,7 +1126,9 @@ class AuthController extends BaseController
                 return $this->errorResponse('Something went wrong. Please try again.', 422);
             }
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode());
+            Log::info($e);
+            Log::info($e->getMessage());
+            return $this->errorResponse($e->getMessage(), 422);
         }
     }
 }

@@ -225,6 +225,7 @@ class YocoGatewayController extends FrontController
             if($request->payment_form == 'cart'){
                 $description = 'Order Checkout';
                 $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                $request->request->add(['cart_id' => $cart->id]);
                 $customer_data['cart_id'] = $cart->id;
                 if($request->has('order_number')){
                     $reference_number = $request->order_number;

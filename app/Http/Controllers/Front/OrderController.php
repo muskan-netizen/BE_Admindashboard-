@@ -813,7 +813,8 @@ class OrderController extends FrontController
             // $this->sendOrderNotification($user->id, $vendor_ids);
             $this->sendSuccessEmail($request, $order);
             $this->sendSuccessSMS($request, $order, $vendor_id);
-            if ($request->payment_option_id != 7 && $request->payment_option_id != 8 && $request->payment_option_id != 9 && $request->payment_option_id != 10) { // if not mobbex
+            $ex_gateways = [7,8,9,10]; // mobbex, yoco, pointcheckout, razorpay
+            if(!in_array($request->payment_option_id, $ex_gateways)){
                 Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                 CartAddon::where('cart_id', $cart->id)->delete();
                 CartCoupon::where('cart_id', $cart->id)->delete();
@@ -838,7 +839,7 @@ class OrderController extends FrontController
                 ]);
             }
             $order = $order->with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
-            if ($request->payment_option_id != 7 && $request->payment_option_id != 8 && $request->payment_option_id != 9 && $request->payment_option_id != 10) { // if not mobbex
+            if(!in_array($request->payment_option_id, $ex_gateways)){
                 if (!empty($order->vendors)) {
                     foreach ($order->vendors as $vendor_value) {
                         $vendorDetail = $vendor_value->vendor;

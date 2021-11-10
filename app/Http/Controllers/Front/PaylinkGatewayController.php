@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Front;
 
-
 use Log;
 use Auth;
 //use WebhookCall;
@@ -12,7 +11,6 @@ use Illuminate\Http\Request;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Redirect;
-
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\OrderController;
@@ -25,9 +23,6 @@ class PaylinkGatewayController extends FrontController
     public $API_KEY;
     public $API_SECRET_KEY;
     public $test_mode;
-
-
-
 
     public function __construct()
     {
@@ -68,7 +63,6 @@ class PaylinkGatewayController extends FrontController
                 'returnUrl' => url('payment/paylink/notify' . $notifyUrlParams),
                 'redirect' => false,
                 'test' => $this->test_mode, // True, testing, false, production
-
                 'customer' => array(
                     'firstName' => $user->name,
                     'lastName' => '-',
@@ -132,14 +126,9 @@ class PaylinkGatewayController extends FrontController
         }
     }
 
-
-
     public function paylinkNotify(Request $request, $domain = '')
     {
-
-
         $curl = curl_init();
-
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://api.test.pointcheckout.com/mer/v2.0/checkout/' . $request->checkout,
             CURLOPT_RETURNTRANSFER => true,
@@ -233,5 +222,14 @@ class PaylinkGatewayController extends FrontController
             Order::where('id', $order->id)->delete();
             return Redirect::to(url('viewcart'));
         }
+    }
+
+    private function getCheckoutUrl(){
+        if ($this->test_mode == true){
+            return 'https://api.test.pointcheckout.com/mer/v1.2/checkouts';
+        }elseif($this->test_mode == false){
+            return 'https://api.pointcheckout.com/mer/v1.2/checkouts';
+        }
+        return 'https://api.staging.pointcheckout.com/mer/v1.2/checkouts';
     }
 }

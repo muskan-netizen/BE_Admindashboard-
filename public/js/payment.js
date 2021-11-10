@@ -361,4 +361,77 @@ $(document).ready(function() {
     //         },
     //     });
     // }
+
+    window.paymentViaPaylink = function paymentViaPaylink(address_id, order) {
+        let total_amount = 0;
+        let tip = 0;
+        let tipElement = $("#cart_tip_amount");
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let cart_id = $("#cart_total_payable_amount").data("cart_id");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let walletElement = $("input[name='wallet_amount']");
+        let ajaxData = [];
+        
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            tip = tipElement.val();
+            ajaxData.push(
+                {name: 'tip', value: tip }, 
+                {name: 'address_id', value: address_id}, 
+                {name: 'payment_form', value: 'cart'},
+                {name: 'cart_id', value: cart_id},
+                {name: 'order_number', value: order.order_number}
+            );
+            // ajaxData.tip = tip;
+            // ajaxData.address_id = address_id;
+            // ajaxData.payment_form = 'cart';
+            // ajaxData.cart_id = cart_id;
+            // ajaxData.order_number = order.order_number;
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            ajaxData.payment_form = 'wallet';
+            ajaxData.push({name: 'payment_form', value: 'wallet'});
+        }
+        ajaxData.push(
+            {name: 'amount', value: total_amount}, 
+            {name: 'returnUrl', value: path},
+            {name: 'cancelUrl', value: path}
+        );
+        // ajaxData.amount = total_amount;
+        // ajaxData.returnUrl = path;
+        // ajaxData.cancelUrl = path;
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: payment_paylink_url,
+            data: ajaxData,
+            success: function(response) {
+                if (response.status == "Success") {
+                    if (path.indexOf("cart") !== -1) {
+                        window.location.href = response.data;
+                    } else if (path.indexOf("wallet") !== -1) {
+                        creditWallet(total_amount, 8, response.data.id);
+                    }
+                } else {
+                    if (path.indexOf("cart") !== -1) {
+                        success_error_alert('error', response.message, "#cart_payment_form .payment_response");
+                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                    } else if (path.indexOf("wallet") !== -1) {
+                        success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    }
+                }
+            },
+            error: function(error) {
+                var response = $.parseJSON(error.responseText);
+                if (path.indexOf("cart") !== -1) {
+                    success_error_alert('error', response.message, "#cart_payment_form .payment_response");
+                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                } else if (path.indexOf("wallet") !== -1) {
+                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                    $(".topup_wallet_confirm").removeAttr("disabled");
+                }
+            }
+        });
+    }
 });

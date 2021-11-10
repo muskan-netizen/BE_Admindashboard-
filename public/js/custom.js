@@ -98,7 +98,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider(){
         responsive: [
             { breakpoint: 1400, settings: { slidesToShow: 12, slidesToScroll: 2 } },
             { breakpoint: 1367, settings: { slidesToShow: 8, slidesToScroll: 2} },
-            { breakpoint: 1024, settings: { slidesToShow: 10, slidesToScroll: 4 } },
+            { breakpoint: 1200, settings: "unslick" },
         ],
     });
 }
@@ -107,18 +107,19 @@ loadMainMenuSlider();
 
 function resizeMenuSlider(){
     var windowWidth = $(window).width();
-    if(windowWidth < 1180){
-        // $('body').find('.menu-slider').removeClass().addClass('sm pixelstrap sm-horizontal');
-        $('.menu-slider').slick('unslick');
-        $('.menu-slider').removeClass('menu-slider');
+    if(windowWidth < 1183){
+        // $('#main-menu').slick('unslick');
+        // $('#main-menu').removeClass('menu-slider');
     }else{
-        $('#main-menu').addClass('menu-slider');
+        // $('#main-menu').addClass('menu-slider');
         setTimeout(function(){
             loadMainMenuSlider();
         },100);
-    }
-    if ( $('.menu-slider .slick-slide').length > 10 ) {
-        $('.menu-slider').addClass('items-center');
+        setTimeout(function(){
+           if ( $('.menu-slider .slick-slide').length > 10 ) {
+                $('.menu-slider').addClass('items-center');
+            }
+        },200);
     }
 }
 
@@ -309,6 +310,9 @@ window.initializeSlider = function initializeSlider() {
 
 $(document).ready(function() {
 
+    $(".toggle-nav").click(function() {
+        $("body").toggleClass("overflow-hidden");
+    });
     $(".mobile-search-btn").click(function() {
         $(".radius-bar").slideToggle();
     });
@@ -1280,8 +1284,6 @@ $(document).ready(function() {
                 return false;
             }
         } else if (payment_option_id == 9) {
-
-
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
                 paymentViaPaylink(address_id, order);
@@ -1290,62 +1292,6 @@ $(document).ready(function() {
             }
         }
     });
-
-
-    window.paymentViaPaylink = function paymentViaPaylink(address_id, order) {
-        let total_amount = 0;
-        let tip = 0;
-        let tipElement = $("#cart_tip_amount");
-        let cartElement = $("input[name='cart_total_payable_amount']");
-        let cart_id = $("#cart_total_payable_amount").data("cart_id");
-
-        let walletElement = $("input[name='wallet_amount']");
-        let ajaxData = {};
-        if (cartElement.length > 0) {
-            total_amount = cartElement.val();
-            tip = tipElement.val();
-            ajaxData.tip = tip;
-            ajaxData.address_id = address_id;
-            ajaxData.payment_form = 'cart';
-            ajaxData.cart_id = cart_id;
-            ajaxData.order_number = order.order_number;
-        } else if (walletElement.length > 0) {
-            total_amount = walletElement.val();
-            ajaxData.payment_form = 'wallet';
-        }
-        ajaxData.amount = total_amount;
-        ajaxData.returnUrl = path;
-        ajaxData.cancelUrl = path;
-        $.ajax({
-            type: "POST",
-            dataType: 'json',
-            url: payment_paylink_url,
-            data: ajaxData,
-            success: function(response) {
-                if (response.status == "Success") {
-                    window.location.href = response.data;
-                } else {
-                    if (cartElement.length > 0) {
-                        success_error_alert('error', response.message, "#cart_payment_form .payment_response");
-                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-                    } else if (walletElement.length > 0) {
-                        success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-                        $(".topup_wallet_confirm").removeAttr("disabled");
-                    }
-                }
-            },
-            error: function(error) {
-                var response = $.parseJSON(error.responseText);
-                if (cartElement.length > 0) {
-                    success_error_alert('error', response.message, "#cart_payment_form .payment_response");
-                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-                } else if (walletElement.length > 0) {
-                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-                    $(".topup_wallet_confirm").removeAttr("disabled");
-                }
-            }
-        });
-    }
 
     window.paymentViaRazorpay = function paymentViaRazorpay(address_id, order) {
         let total_amount = 0;

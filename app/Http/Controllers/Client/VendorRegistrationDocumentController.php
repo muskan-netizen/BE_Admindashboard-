@@ -20,6 +20,7 @@ class VendorRegistrationDocumentController extends BaseController{
             DB::beginTransaction();
             $vendor_registration_document = new VendorRegistrationDocument();
             $vendor_registration_document->file_type = $request->file_type;
+            $vendor_registration_document->is_required = $request->is_required;
             $vendor_registration_document->save();
             $language_id = $request->language_id;
             foreach ($request->name as $k => $name) {
@@ -73,6 +74,7 @@ class VendorRegistrationDocumentController extends BaseController{
             $vendor_registration_document_id = $request->vendor_registration_document_id;
             $vendor_registration_document = VendorRegistrationDocument::where('id', $vendor_registration_document_id)->first();
             $vendor_registration_document->file_type = $request->file_type;
+            $vendor_registration_document->is_required = $request->is_required;
             $vendor_registration_document->save();
             $language_id = $request->language_id;
             VendorRegistrationDocumentTranslation::where('vendor_registration_document_id', $vendor_registration_document_id)->delete();

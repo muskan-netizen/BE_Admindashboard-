@@ -73,7 +73,7 @@ class CategoryController extends BaseController
             $type =Type::whereNotIn('title',['Pickup/Delivery','On Demand Service','Pickup/Parent'])->orderBY('sequence', 'ASC')->get();
             break;
             case "laundry":
-            $type =Type::whereNotIn('title',['Pickup/Delivery','Pickup/Parent'])->orderBY('sequence', 'ASC')->get();
+            $type =Type::whereNotIn('title',['Pickup/Delivery','Pickup/Parent','On Demand Service'])->orderBY('sequence', 'ASC')->get();
             break;
             default:
             $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
@@ -164,7 +164,7 @@ class CategoryController extends BaseController
             $type =Type::whereNotIn('title',['Pickup/Delivery','On Demand Service','Pickup/Parent'])->orderBY('sequence', 'ASC')->get();
             break;
             case "laundry":
-            $type =Type::whereNotIn('title',['Pickup/Delivery','Pickup/Parent'])->orderBY('sequence', 'ASC')->get();
+            $type =Type::whereNotIn('title',['Pickup/Delivery','Pickup/Parent','On Demand Service'])->orderBY('sequence', 'ASC')->get();
             break;
             default:
             $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();

@@ -14131,7 +14131,7 @@ header.stickycls {
     }
 
     .sm-horizontal {
-        position: fixed;
+        position: fixed !important;
         background-color: #fff;
         width: 300px;
         border-radius: 0;

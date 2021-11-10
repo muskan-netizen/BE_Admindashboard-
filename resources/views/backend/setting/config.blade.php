@@ -948,7 +948,7 @@
                      </div>
                   </div>
                </div>
-               @if($client_preference_detail->business_type != 'taxi')
+               @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
                <div class="col-xl-12 mb-4">
                   <div class="page-title-box">
                      <h4 class="page-title text-uppercase">{{ __("Vendor") }}</h4>
@@ -993,13 +993,15 @@
                @csrf
                <div class="row align-items-center">
                   @if($client_preference_detail->business_type != 'taxi')
+
+                  @if($client_preference_detail->business_type != 'laundry')
                   <div class="col-md-4">
                      <div class="form-group mb-3">
                         <label for="celebrity_check" class="mr-2 mb-0"> {{ __("Celebrity Mod") }}</label>
                         <input type="checkbox" data-plugin="switchery" name="celebrity_check" id="celebrity_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->celebrity_check == '1')) checked='checked' @endif>
                      </div>
                   </div>
-                  <div class="col-md-4">
+                   <div class="col-md-4">
                      <div class="form-group mb-3">
                         <label for="pharmacy_check" class="mr-2 mb-0">{{ __('Pharmacy Mod') }}</label>
                         <input type="checkbox" data-plugin="switchery" name="pharmacy_check" id="pharmacy_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->pharmacy_check == '1')) checked='checked' @endif>
@@ -1011,6 +1013,7 @@
                         <input type="checkbox" data-plugin="switchery" name="enquire_mode" id="	enquire_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->enquire_mode == '1')) checked='checked' @endif>
                      </div>
                   </div>
+                  @endif
                  
                   <div class="col-md-4">
                      <div class="form-group mb-3">
@@ -1077,6 +1080,7 @@
                            <tr>
                               <th>{{ __("Name") }}</th>
                               <th>{{ __("Type") }}</th>
+                              <th>{{ __("Is Required?") }}</th>
                               <th>{{ __("Action") }}</th>
                            </tr>
                         </thead>
@@ -1089,6 +1093,7 @@
                                  </a>   
                               </td>
                               <td>{{$vendor_registration_document->file_type}}</td>
+                              <td>{{ ($vendor_registration_document->is_required == 1)?"Yes":"No" }}</td>
                               <td>
                                  <div>
                                     <div class="inner-div" style="float: left;">
@@ -1410,15 +1415,25 @@
                   <div id="save_social_media">
                      <input type="hidden" name="vendor_registration_document_id" value="">
                      <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                            <div class="form-group position-relative">
                               <label for="">Type</label>
                               <div class="input-group mb-2">
                                  <select class="form-control" name="file_type">
-                                    @forelse($file_types as $k => $file_type)
-                                    <option value="{{$file_type}}">{{$file_type}}</option>
-                                    @empty
-                                    @endforelse
+                                    <option value="Text">Text</option>
+                                    <option value="Image">Image</option>
+                                    <option value="Pdf">PDF</option>
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-6">
+                           <div class="form-group position-relative">
+                              <label for="">Is Required?</label>
+                              <div class="input-group mb-2">
+                                 <select class="form-control" name="is_required">
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
                                  </select>
                               </div>
                            </div>
@@ -1507,6 +1522,8 @@
    @section('script')
    <script type="text/javascript">
       $('#add_vendor_registration_document_modal_btn').click(function(e) {
+         document.getElementById("vendorRegistrationDocumentForm").reset();
+         $('#add_vendor_registration_document_modal input[name=vendor_registration_document_id]').val("");
          $('#add_vendor_registration_document_modal').modal('show');
          $('#add_vendor_registration_document_modal #standard-modalLabel').html('Add Vendor Registration Document');
       });
@@ -1573,10 +1590,11 @@
             url: "{{ route('vendor.registration.document.edit') }}",
             success: function(response) {
                if (response.status = 'Success') {
-                  $('#add_vendor_registration_document_modal').modal('show');
-                  $("#add_vendor_registration_document_modal input[name=file_type]").val(response.data.file_type).change();
+                  $(document).find("#add_vendor_registration_document_modal select[name=file_type]").val(response.data.file_type).change();
                   $("#add_vendor_registration_document_modal input[name=vendor_registration_document_id]").val(response.data.id);
+                  $(document).find("#add_vendor_registration_document_modal select[name=is_required]").val(response.data.is_required).change();
                   $('#add_vendor_registration_document_modal #standard-modalLabel').html('Update Vendor Registration Document');
+                  $('#add_vendor_registration_document_modal').modal('show');
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_vendor_registration_document_modal #vendor_registration_document_name_'+value.language_id).val(value.name);
                   });
