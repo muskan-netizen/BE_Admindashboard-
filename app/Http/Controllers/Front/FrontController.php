@@ -191,7 +191,7 @@ class FrontController extends Controller
                     $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
                 }
                 $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-                $value->category_name = isset($value->category->categoryDetail->translation) ? $value->category->categoryDetail->translation->first()->name :  $value->category->slug;
+                $value->category_name = ($value->category->categoryDetail->translation->first()) ? $value->category->categoryDetail->translation->first()->name :  $value->category->slug;
             }
         }
         return $products;

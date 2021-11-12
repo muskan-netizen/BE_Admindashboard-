@@ -168,6 +168,10 @@
                                 @foreach($vendor_registration_documents as $vendor_registration_document)
                                 <div class="col-md-6 mb-3" id="{{$vendor_registration_document->primary->slug}}Input">
                                     <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
+                                    @if(strtolower($vendor_registration_document->file_type) == 'text')
+                                    <input id="input_file_logo_{{$vendor_registration_document->id}}" type="text" name="{{$vendor_registration_document->primary->slug}}" class="form-control">
+                                    <div class="invalid-feedback" id="{{$vendor_registration_document->primary->slug}}_error"><strong></strong></div>
+                                    @else
                                     <div class="file file--upload">
                                         <label for="input_file_logo_{{$vendor_registration_document->id}}">
                                             <span class="update_pic pdf-icon">
@@ -179,13 +183,12 @@
                                         </label>
                                         @if(strtolower($vendor_registration_document->file_type) == 'image')
                                             <input id="input_file_logo_{{$vendor_registration_document->id}}" type="file" name="{{$vendor_registration_document->primary->slug}}" accept="image/*" data-rel="{{$vendor_registration_document->id}}">
-                                        @elseif(strtolower($vendor_registration_document->file_type) == 'text')
-                                            <input id="input_file_logo_{{$vendor_registration_document->id}}" type="file" name="{{$vendor_registration_document->primary->slug}}" accept=".xlsx, .xls, .csv, text/html, text/plain" data-rel="{{$vendor_registration_document->id}}">
                                         @else
                                             <input id="input_file_logo_{{$vendor_registration_document->id}}" type="file" name="{{$vendor_registration_document->primary->slug}}" accept=".pdf" data-rel="{{$vendor_registration_document->id}}">
                                         @endif
                                         <div class="invalid-feedback" id="{{$vendor_registration_document->primary->slug}}_error"><strong></strong></div>
                                     </div>
+                                    @endif
                                 </div>      
                                  @endforeach   
                             </div>
@@ -235,7 +238,7 @@
                 var extension = getExtension(input.files[0].name);
                 reader.onload = function(e) {
                     if(extension == 'pdf'){
-                        $(previewId).attr('src','https://image.flaticon.com/icons/svg/179/179483.svg');
+                        $(previewId).attr('src', "{{ asset('assets/images/pdf-icon-png-2072.png') }}");
                     }else if(extension == 'csv'){
                         $(previewId).attr('src',text_image);
                     }else if(extension == 'txt'){

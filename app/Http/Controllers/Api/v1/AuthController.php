@@ -206,7 +206,7 @@ class AuthController extends BaseController
             $user->{$key} = $value;
         }
         $country_detail = Country::where('code', $signReq->country_code)->first();
-        $email = (!empty($signReq->email)) ? $signReq->email : ('ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com');
+        $email = (!empty($signReq->email)) ? $signReq->email : ''; //('ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com');
         $phoneCode = mt_rand(100000, 999999);
         $emailCode = mt_rand(100000, 999999);
         $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
@@ -1053,7 +1053,7 @@ class AuthController extends BaseController
             $user = new User();
             $country = Country::where('code', strtoupper($req->countryData))->first();
             // $emailCode = mt_rand(100000, 999999);
-            $email = 'ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com';
+            $email = ''; //'ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com';
             $user->type = 1;
             $user->status = 1;
             $user->role_id = 1;

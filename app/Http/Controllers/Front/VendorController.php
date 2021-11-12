@@ -366,7 +366,7 @@ class VendorController extends FrontController
                             $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
                             $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
                             $z->where('vt.language_id', $langId);
-                            $z->where('product_variant_sets.product_id', $p_id)->orderBy('product_variant_sets.variant_type_id', 'asc');
+                            $z->where('product_variant_sets.product_id', $p_id)->where('vr.status', 1)->orderBy('product_variant_sets.variant_type_id', 'asc');
                         },'variantSet.option2'=> function ($zx) use ($langId, $p_id) {
                             $zx->where('vt.language_id', $langId)
                             ->where('product_variant_sets.product_id', $p_id);

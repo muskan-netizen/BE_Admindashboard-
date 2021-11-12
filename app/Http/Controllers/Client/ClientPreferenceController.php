@@ -10,7 +10,10 @@ use App\Http\Controllers\Client\BaseController;
 use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, DriverRegistrationDocument, VariantOptionTranslation};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
+use App\Http\Traits\ApiResponser;
 class ClientPreferenceController extends BaseController{
+
+    use ApiResponser;
     public function index(){
         $client = Auth::user();
         $mapTypes = MapProvider::where('status', '1')->get();
@@ -46,9 +49,10 @@ class ClientPreferenceController extends BaseController{
         }
         # if laundry on
         if(isset($preference) && $preference->need_laundry_service == '1') {
-            $laundry_teams = $this->getLastMileTeams(); 
+            $laundry_teams = $this->getLaundryTeams(); 
             
         }
+        
         return view('backend/setting/config')->with(['laundry_teams' => $laundry_teams,'last_mile_teams' => $last_mile_teams,'client' => $client, 'preference' => $preference, 'mapTypes'=> $mapTypes, 'smsTypes' => $smsTypes, 'client_languages' => $client_languages, 'file_types' => $file_types, 'vendor_registration_documents' => $vendor_registration_documents, 'driver_registration_documents' => $driver_registration_documents, 'reffer_by' => $reffer_by, 'reffer_to' => $reffer_to, 'file_types_driver' => $file_types_driver]);
     }
 
@@ -378,6 +382,31 @@ class ClientPreferenceController extends BaseController{
                                                         'content-type' => 'application/json']
                                                             ]);
                             $url = $dispatch_domain->delivery_service_key_url;                      
+                            $res = $client->get($url.'/api/get-all-teams');
+                            $response = json_decode($res->getBody(), true); 
+                            if($response && $response['message'] == 'success'){
+                                return $response['teams'];
+                            }
+                    
+                }
+            }    
+            catch(\Exception $e){
+               
+            }
+    }
+    # get laundry teams 
+    public function getLaundryTeams(){
+        try {   
+            $dispatch_domain = $this->checkIfLaundryOnCommon();
+                if ($dispatch_domain && $dispatch_domain != false) {
+
+                    $unique = Auth::user()->code;
+                   
+                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key,
+                                                        'shortcode' => $dispatch_domain->laundry_service_key_code,
+                                                        'content-type' => 'application/json']
+                                                            ]);
+                            $url = $dispatch_domain->laundry_service_key_url;                      
                             $res = $client->get($url.'/api/get-all-teams');
                             $response = json_decode($res->getBody(), true); 
                             if($response && $response['message'] == 'success'){

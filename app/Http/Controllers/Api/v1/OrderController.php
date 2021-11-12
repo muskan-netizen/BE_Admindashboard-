@@ -327,7 +327,7 @@ class OrderController extends BaseController {
                     }
                     $order->save();
                     $this->sendSuccessSMS($request, $order);
-                    $ex_gateways = [6,7,8]; // if mobbex, payfast, yoco
+                    $ex_gateways = [6,7,8,9]; // if mobbex, payfast, yoco
                     if(!in_array($request->payment_option_id, $ex_gateways)){
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();

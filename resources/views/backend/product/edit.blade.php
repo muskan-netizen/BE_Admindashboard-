@@ -218,7 +218,7 @@
                     </div>
                     @endif
                     <div class="row mb-2">
-                        @if($product->category->categoryDetail->type_id != 8)
+                        @if(!in_array($product->category->categoryDetail->type_id,[8,9]))
                         <div class="col-sm-4">
                             {!! Form::label('title', __('Track Inventory')) !!} <br>
                             <input type="checkbox" bid="" id="has_inventory" data-plugin="switchery" name="has_inventory" class="chk_box" data-color="#43bee1" {{$product->has_inventory == 1 ? 'checked' : ''}}>
@@ -381,7 +381,7 @@
                 <div class="card-box">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Other Information") }}</h5>
                     <div class="row mb-2">
-                        @if($client_preference_detail->business_type != 'taxi')
+                        @if(!in_array($client_preference_detail->business_type,['taxi','laundry']))
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('New'),['class' => 'control-label']) !!}
                             <input type="checkbox" id="is_new" data-plugin="switchery" name="is_new" class="chk_box" data-color="#43bee1" @if($product->is_new == 1) checked @endif>
@@ -391,7 +391,7 @@
                             <input type="checkbox" id="is_featured" data-plugin="switchery" name="is_featured" class="chk_box" data-color="#43bee1" @if($product->is_new == 1) checked @endif>
                         </div>
                         @endif
-                        @if($configData->need_delivery_service == 1 && $product->category->categoryDetail->type_id != 7)
+                        @if($configData->need_delivery_service == 1 && $product->category->categoryDetail->type_id != 7 && (!in_array($client_preference_detail->business_type,['taxi','laundry'])))
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Requires Last Mile Delivery'),['class' => 'control-label']) !!}
                             <input type="checkbox" id="last_mile" data-plugin="switchery" name="last_mile" class="chk_box" data-color="#43bee1" @if($product->Requires_last_mile == 1) checked @endif>

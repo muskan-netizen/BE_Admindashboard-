@@ -67,9 +67,7 @@ class YocoGatewayController extends FrontController
             }
             elseif($request->payment_form == 'wallet'){
                 $description = 'Wallet Checkout';
-                if($request->has('subscription_id')){
-                    $reference_number = $request->token;
-                }
+                $reference_number = $user->id;
             }
             if($request->payment_form == 'tip'){
                 $description = 'Tip Checkout';
@@ -91,7 +89,7 @@ class YocoGatewayController extends FrontController
             $checkout_data = array(
                 'token' => $token,
                 'amountInCents' => $amount,
-                'currency' => 'ZAR',
+                'currency' => 'ZAR', //$this->currency
                 'description' => $description,
                 'reference' => $reference_number,
                 'redirect' => false,
@@ -233,9 +231,7 @@ class YocoGatewayController extends FrontController
             }
             elseif($request->payment_form == 'wallet'){
                 $description = 'Wallet Checkout';
-                if($request->has('subscription_id')){
-                    $reference_number = $request->token;
-                }
+                $reference_number = $user->id;
             }
             if($request->payment_form == 'tip'){
                 $description = 'Tip Checkout';

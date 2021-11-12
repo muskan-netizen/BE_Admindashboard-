@@ -105,11 +105,14 @@ class CategoryController extends BaseController
                 unset($vendor->products);
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
                 $vendor->is_show_products_with_category = ($vendor->vendor_templete_id == 5) ? 1 : 0;
-                $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();
+                $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
+                    $q->where('category_translations.language_id', $langId);
+                }])->where('vendor_id', $vendor->id)->where('status', 1)->get();
                 $categoriesList = '';
                 foreach ($vendorCategories as $key => $category) {
                     if ($category->category) {
-                        $categoriesList = $categoriesList . $category->category->translation_one->name ?? '';
+                        $categoryName = $category->category->translation->first() ? $category->category->translation->first()->name : '';
+                        $categoriesList = $categoriesList . $categoryName;
                         if ($key !=  $vendorCategories->count() - 1) {
                             $categoriesList = $categoriesList . ', ';
                         }
@@ -158,15 +161,6 @@ class CategoryController extends BaseController
                 ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit);
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
-                    $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
-                    if ($product->variant->count() > 0) {
-                        foreach ($product->variant as $k => $v) {
-                            $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
-                        }
-                    } else {
-                        $product->variant =  $product;
-                    }
-
                     $product->vendor->is_vendor_closed = 0;
                     if ($product->vendor->show_slot == 0) {
                         if (($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty())) {
@@ -181,6 +175,22 @@ class CategoryController extends BaseController
                                 $product->vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
                             }
                         }
+                    }
+                    $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+                    $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+                    $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
+                    $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';
+                    $product->translation_description = !empty($product->translation_description) ? substr($product->translation_description, 0, 70) . '...' : '';
+                    $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                    $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+                    $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
+                    $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
+                    if ($product->variant->count() > 0) {
+                        foreach ($product->variant as $k => $v) {
+                            $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
+                        }
+                    } else {
+                        $product->variant =  $product;
                     }
                 }
             }
@@ -299,6 +309,14 @@ class CategoryController extends BaseController
                     }])->where('id', $p_id)->first();
                     $product->variantSet = $variantData->variantSet;
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+                    $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+                    $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
+                    $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';
+                    $product->translation_description = !empty($product->translation_description) ? substr($product->translation_description, 0, 70) . '...' : '';
+                    $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                    $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+                    $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
+                    $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
                     if ($product->variant->count() > 0) {
                         foreach ($product->variant as $k => $v) {
                             $product->variant[$k]->multiplier = $clientCurrency->doller_compare;

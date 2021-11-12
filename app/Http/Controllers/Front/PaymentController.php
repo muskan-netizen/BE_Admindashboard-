@@ -90,6 +90,11 @@ class PaymentController extends FrontController{
         return view('frontend.account.complete-checkout')->with(['auth_token' => $token, 'action' => $action, 'address_id' => $address_id]);
     }
 
+    public function paylinkCompleteCheckout(Request $request, $domain = '', $token = '', $action = '', $address_id ='')
+    {
+        return view('frontend.account.complete-checkout')->with(['auth_token' => $token, 'action' => $action, 'address_id' => $address_id]);
+    }
+
     public function getCheckoutSuccess(Request $request, $domain = '', $id = '')
     {
         return view('frontend.account.checkout-success');

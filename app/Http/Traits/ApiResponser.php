@@ -166,7 +166,15 @@ trait ApiResponser
 			return false;
 	}
 
-
+	# check if laundry on
+	public function checkIfLaundryOnCommon()
+	{
+		$preference = ClientPreference::select('id', 'need_laundry_service', 'laundry_service_key', 'laundry_service_key_code', 'laundry_service_key_url')->first();
+		if ($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
+			return $preference;
+		else
+			return false;
+	}
 
 	# check if on demand service  on 
 	public function checkIfOnDemandOnCommon()

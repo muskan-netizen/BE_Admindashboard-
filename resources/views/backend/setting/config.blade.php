@@ -319,7 +319,7 @@
                             {!! Form::label('title', __('Team Tag For Laundry Pickup'),['class' => 'control-label']) !!}
                             <select class="form-control" id="laundryPickupTeamList" name="laundry_pickup_team" data-toggle="select2" >
                               <option value="0">{{__('Select Team Tag')}}</option>
-                              @foreach($last_mile_teams as $nm)
+                              @foreach($laundry_teams as $nm)
                                  <option value="{{$nm['name']}}" @if($preference->laundry_pickup_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
                               @endforeach
                               
@@ -332,7 +332,7 @@
                             {!! Form::label('title', __('Team Tag For Laundry Dropoff'),['class' => 'control-label']) !!}
                             <select class="form-control" id="laundryDropoffTeamList" name="laundry_dropoff_team" data-toggle="select2" >
                               <option value="0">{{__('Select Team Tag')}}</option>
-                              @foreach($last_mile_teams as $nm)
+                              @foreach($laundry_teams as $nm)
                                  <option value="{{$nm['name']}}" @if($preference->laundry_dropoff_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
                               @endforeach
                               
@@ -1151,32 +1151,13 @@
       </div>
       <div class="col-xl-6">
          <div class="row">
+          
             <div class="col-xl-6">
-               <div class="page-title-box">
-                  <h4 class="page-title text-uppercase">{{ __("Data Management") }}</h4>
-               </div>
-               <div class="card-box">
-                  <div class="row align-items-center text-center">
-                     <div class="col-md-12">
-                        <button class="btn w-100 btn-danger cleanSoftDeleted">{{ __("Clean All Soft Deleted") }}</button>
-                     </div>
-                     <div class="col-md-12 my-3">
-                        <button class="btn w-100 btn-danger importDemoContent">{{ __("Import Demo Content") }}</button>
-                     </div>
-                     <div class="col-md-12">
-                        <button class="btn w-100 btn-danger hardDeleteEverything">{{ __("Hard Delete Everything") }}</button>
-                     </div>
-                  </div>
-               </div>
-            </div>
-            <div class="col-xl-6">
-            <div class="page-title-box">
-                  <h4 class="page-title text-uppercase">{{ __("Refer and Earn") }}</h4>
-               </div>
+           
                <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
                   @csrf
                   <div class="card-box mb-0 pb-1">
-                  <!-- <h4 class="header-title text-uppercase">Refer and Earn</h4> -->
+                  <h4 class="header-title text-uppercase">Refer and Earn</h4> 
                      <div class="d-flex align-items-center justify-content-end">
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                      </div>

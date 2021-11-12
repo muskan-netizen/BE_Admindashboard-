@@ -407,11 +407,7 @@ $(document).ready(function() {
             data: ajaxData,
             success: function(response) {
                 if (response.status == "Success") {
-                    if (path.indexOf("cart") !== -1) {
-                        window.location.href = response.data;
-                    } else if (path.indexOf("wallet") !== -1) {
-                        creditWallet(total_amount, 8, response.data.id);
-                    }
+                    window.location.href = response.data;
                 } else {
                     if (path.indexOf("cart") !== -1) {
                         success_error_alert('error', response.message, "#cart_payment_form .payment_response");
@@ -434,4 +430,23 @@ $(document).ready(function() {
             }
         });
     }
+
+    // function paymentViaPaylink_wallet(address_id, payment_option_id) {
+    //     let total_amount = 0;
+    //     let ajaxData = [];
+    //     total_amount = $("input[name='wallet_amount']").val();
+    //     ajaxData.push({ name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id });
+    //     $.ajax({
+    //         type: "POST",
+    //         dataType: 'json',
+    //         url: payment_paylink_url,
+    //         data: ajaxData,
+    //         success: function(response) {
+    //             if (response.status == "Success") {
+    //                 //  creditWallet(total_amount, payment_option_id, data.result.id);
+    //                 window.location.href = response.data;
+    //             }
+    //         }
+    //     });
+    // }
 });

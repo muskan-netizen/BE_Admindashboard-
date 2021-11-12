@@ -567,6 +567,7 @@
                                          @endif
                                          <option value="for_live">{{__('Draft/Published')}}</option>
                                          <option value="for_tax">{{__('Tax Category')}}</option>
+                                         <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock ')}}</option>
                                     </select>
                                 </div>
                                 
@@ -615,6 +616,11 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="col-md-6 justify-content-between mb-2"   id="for_sell_when_out_of_stock" style="display:none;">
+                                    {!! Form::label('title', __('Sell when out of stock'), ['class' => 'control-label']) !!}
+                                    <input type="checkbox" id="sell_when_out_of_stock" data-plugin="switchery" name="sell_when_out_of_stock"
+                                        class="chk_box" data-color="#43bee1">
+                                </div>
                             </div>
 
                             <div class="modal-footer">
@@ -651,7 +657,7 @@
             $("#for_last_mile").css("display", "none");
             $("#for_live").css("display", "none");
             $("#for_tax").css("display", "none");
-           
+            $("#for_sell_when_out_of_stock").css("display", "none");
             $("#"+ actionfor).css("display", "block");
         });
 
@@ -700,6 +706,7 @@
             var tax_category = $('#tax_category_for').val();
             var action_for = $('#action_for').val();
             var last_mile = $('#last_mile').prop('checked');
+            var sell_when_out_of_stock = $('#sell_when_out_of_stock').prop('checked');
             var product_id = [];
              $('.single_product_check:checked').each(function(i){
                 product_id[i] = $(this).val();
@@ -716,7 +723,7 @@
             $.ajax({
                 type: "post",
                 url: '{{route("product.update.action")}}',
-                data: {_token: CSRF_TOKEN,action_for:action_for,last_mile:last_mile, is_new: is_new, is_featured: is_featured, is_live: is_live, tax_category: tax_category, product_id: product_id},
+                data: {_token: CSRF_TOKEN,action_for:action_for,sell_when_out_of_stock:sell_when_out_of_stock,last_mile:last_mile, is_new: is_new, is_featured: is_featured, is_live: is_live, tax_category: tax_category, product_id: product_id},
                  success: function(resp) {
                     if (resp.status == 'success') {
                         $.NotificationApp.send("Success", resp.message, "top-right", "#5ba035",

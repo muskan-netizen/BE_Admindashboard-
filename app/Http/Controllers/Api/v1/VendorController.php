@@ -292,6 +292,14 @@ class VendorController extends BaseController{
                         }])->where('id', $p_id)->first();
                         $product->variantSet = $variantData->variantSet;
                         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+                        $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+                        $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
+                        $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';
+                        $product->translation_description = !empty($product->translation_description) ? substr($product->translation_description, 0, 70) . '...' : '';
+                        $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                        $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+                        $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
+                        $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
                         foreach ($product->variant as $k => $v) {
                             $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
                         }
@@ -435,6 +443,7 @@ class VendorController extends BaseController{
                                 $value->product_image = ($value->media->isNotEmpty()) ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : '';
                                 $value->translation_title = ($value->translation->isNotEmpty()) ? $value->translation->first()->title : $value->sku;
                                 $value->translation_description = ($value->translation->isNotEmpty()) ? html_entity_decode(strip_tags($value->translation->first()->body_html)) : '';
+                                $value->translation_description = !empty($value->translation_description) ? substr($value->translation_description, 0, 70) . '...' : '';
                                 $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                                 $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
                                 $value->variant_id = ($value->variant->isNotEmpty()) ? $value->variant->first()->id : 0;
@@ -529,9 +538,17 @@ class VendorController extends BaseController{
                             ->where('pvs.product_id', $p_id)
                             ->where('vt.language_id', $langId);
                             }])->where('id', $p_id)->first();
+                            
                             $product->variantSet = $variantData->variantSet;
-
                             $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+                            $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+                            $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
+                            $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';
+                            $product->translation_description = !empty($product->translation_description) ? substr($product->translation_description, 0, 70) . '...' : '';
+                            $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                            $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+                            $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
+                            $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
                             foreach ($product->variant as $k => $v) {
                                 $product->variant[$k]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                             }

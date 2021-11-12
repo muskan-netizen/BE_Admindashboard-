@@ -246,6 +246,9 @@ class ProductController extends BaseController
         foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id') as $k => $val) {
             $product->{$k} = $val;
         }
+
+        
+      
         $product->sku = $request->sku;
         $product->url_slug = $request->url_slug;
         $product->tags        = $request->tags??null;
@@ -266,7 +269,12 @@ class ProductController extends BaseController
             $product->publish_at = ($request->is_live == 1) ? date('Y-m-d H:i:s') : '';
         }
         $product->has_variant = ($request->has('variant_ids') && count($request->variant_ids) > 0) ? 1 : 0;
+        if($product){
+            if(isset($product->category) && in_array($product->category->categoryDetail->type_id,[8,9]))
+            $product->sell_when_out_of_stock = 1;
+        }
         $product->save();
+        
         if ($product->id > 0) {
             $trans = ProductTranslation::where('product_id', $product->id)->where('language_id', $request->language_id)->first();
             if (!$trans) {
@@ -844,6 +852,11 @@ class ProductController extends BaseController
         else
         $Requires_last_mile  = 0;
 
+        if(isset($request->sell_when_out_of_stock) && $request->sell_when_out_of_stock == 'true')
+        $sell_when_out_of_stock = 1;
+        else
+        $sell_when_out_of_stock = 0;
+
         if(isset($request->action_for) && !empty($request->action_for)){
             switch($request->action_for){
                 case "for_new":
@@ -860,6 +873,9 @@ class ProductController extends BaseController
                 break;
                 case "for_tax":
                     $update_product = Product::whereIn('id',$request->product_id)->update(['tax_category_id' => $request->tax_category]);
+                break;
+                case "for_sell_when_out_of_stock":
+                    $update_product = Product::whereIn('id',$request->product_id)->update(['sell_when_out_of_stock' => $sell_when_out_of_stock]);
                 break;
                 default:
                 '';

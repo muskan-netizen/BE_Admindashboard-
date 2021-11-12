@@ -451,9 +451,11 @@ class VendorController extends BaseController
             $product_categories_build = $this->buildTree($p_categories->toArray());
             $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build);
             foreach($product_categories_hierarchy as $k => $cat){
-                if ($cat['type_id'] != 1 && $cat['type_id'] != 3 && $cat['type_id'] != 7 && $cat['type_id'] != 8) {
+                $myArr = array(1,3,7,8,9);
+                if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
                     unset($product_categories_hierarchy[$k]);
                 }
+               
             }
         }
         $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
@@ -904,17 +906,18 @@ class VendorController extends BaseController
         $product_categories = VendorCategory::with(['category', 'category.translation' => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
             ->where('category_translations.language_id', $langId);
-        }])->where('status', 1)->where('vendor_id', $id)->get();
+        }])->where('status', 1)->where('vendor_id', $id)->get(); 
         $p_categories = collect();
         $product_categories_hierarchy = '';
         if ($product_categories) {
             foreach($product_categories as $pc){
                 $p_categories->push($pc->category);
             }
-            $product_categories_build = $this->buildTree($p_categories->toArray());
-            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build);
+            $product_categories_build = $this->buildTree($p_categories->toArray());  
+            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build); 
             foreach($product_categories_hierarchy as $k => $cat){
-                if ($cat['type_id'] != 1 && $cat['type_id'] != 3 && $cat['type_id'] != 7 && $cat['type_id'] != 8) {
+                $myArr = array(1,3,7,8,9);
+                if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
                     unset($product_categories_hierarchy[$k]);
                 }
             }
@@ -926,5 +929,89 @@ class VendorController extends BaseController
        
         return response()->json(['status' => 1, 'message' => 'Product Categories', 'product_categories' => $product_categories_hierarchy, 'options' => $options]);
     }
+
+
+        /**
+     *update Create Vendor In Dispatch On demand
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateCreateVendorInDispatchLaundry(Request $request)
+    {  
+        DB::beginTransaction();
+        try {
+                    $dispatch_domain = $this->checkIfLaundryOnCommon();
+                    if ($dispatch_domain && $dispatch_domain != false) {
+                        $dispatch_domain['vendor_id'] = $request->id;
+                        $token = $request->input('_token') ?: $request->header('X-CSRF-TOKEN');
+                        $dispatch_domain['token'] = $token;
+                        $data = [];
+                        $request_from_dispatch = $this->checkUpdateVendorToDispatchLaundry($dispatch_domain);
+                        if ($request_from_dispatch && isset($request_from_dispatch['status']) && $request_from_dispatch['status'] == 200) {
+                            DB::commit();
+                            $request_from_dispatch['url'] = $request_from_dispatch['url']."?set_unique_order_login=".$token;
+                            return $request_from_dispatch;
+                        } else {
+                            DB::rollback();
+                            return $request_from_dispatch;
+                        }
+                    } else {
+                        return response()->json([
+                        'status' => 'error',
+                        'message' => 'Laundry service in not available.'
+                    ]);
+                    }
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+            }
+    }
+
+    // check and update in dispatcher panel laundry
+    public function checkUpdateVendorToDispatchLaundry($dispatch_domain){
+        try {
+                 
+                $vendor = Vendor::find($dispatch_domain->vendor_id);
+                $unique = Auth::user()->code;
+                $postdata =  ['vendor_id' => $dispatch_domain->vendor_id ?? 0,
+                'name' => $vendor->name ?? "Manager".$dispatch_domain->vendor_id,
+                'phone_number' =>  $vendor->phone_no ?? rand('11111','458965'),
+                'email' => $unique.$vendor->id."_royodispatch@dispatch.com",
+                'team_tag' => $unique."_".$vendor->id,
+                'public_session' => $dispatch_domain->token];
+           
+                $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key,
+                                                    'shortcode' => $dispatch_domain->laundry_service_key_code,
+                                                    'content-type' => 'application/json']
+                                                        ]);
+                                     
+                $url = $dispatch_domain->laundry_service_key_url;
+                $res = $client->post(
+                    $url.'/api/update-create-vendor-order',
+                    ['form_params' => (
+                            $postdata
+                        )]
+                );
+                $response = json_decode($res->getBody(), true);
+                if ($response) {
+                   return $response;
+                }
+                return $response;
+                
+            }catch(\Exception $e)
+                    {   
+                        $data = [];
+                        $data['status'] = 400;
+                        $data['message'] =  $e->getMessage();
+                        return $data;
+                                
+                    }
+                
+        }
+    
 
 }

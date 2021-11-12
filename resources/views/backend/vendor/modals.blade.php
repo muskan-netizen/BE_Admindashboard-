@@ -117,7 +117,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                             @if($client_preferences->dinein_check == 1)
-                                                {!! Form::label('title', __('Dine In'),['class' => 'control-label']) !!} 
+                                                {!! Form::label('title', getNomenclatureName('Dine-In', true),['class' => 'control-label']) !!} 
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" name="dine_in" class="form-control validity" data-color="#43bee1" checked='checked'>
                                                 </div>
@@ -127,7 +127,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                             @if($client_preferences->takeaway_check == 1)
-                                                {!! Form::label('title', __('Takeaway'),['class' => 'control-label']) !!} 
+                                                {!! Form::label('title', getNomenclatureName('Takeaway', true),['class' => 'control-label']) !!} 
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" name="takeaway" class="form-control validity" data-color="#43bee1" checked='checked'>
                                                 </div>
@@ -137,7 +137,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                             @if($client_preferences->delivery_check == 1)
-                                                {!! Form::label('title', __('Delivery'),['class' => 'control-label']) !!} 
+                                                {!! Form::label('title', getNomenclatureName('Delivery', true) ,['class' => 'control-label']) !!} 
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" name="delivery" class="form-control validity" data-color="#43bee1" checked='checked'>
                                                 </div>

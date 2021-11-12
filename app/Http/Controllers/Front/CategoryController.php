@@ -51,7 +51,7 @@ class CategoryController extends FrontController{
             $child->translation_name = ($child->translation->first()) ? $child->translation->first()->name : $child->slug;
         }
        
-        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && (isset($category->type_id)) && ($category->type_id != 4) && ($category->type_id != 5) ){
+        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && (isset($category->type_id)) && !in_array($category->type_id,[4,5]) ){
             $latitude = Session::get('latitude');
             $longitude = Session::get('longitude');
             $vendorType = Session::get('vendorType');
@@ -111,7 +111,7 @@ class CategoryController extends FrontController{
                 // abort(404);
             }
         }
-
+       
         $navCategories = $this->categoryNav($langId);
         
         if(isset($vendors)){
@@ -193,9 +193,12 @@ class CategoryController extends FrontController{
             $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
             return view('frontend.ondemand.index')->with(['clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }else{
+            if($page == 'laundry')
+            $page = 'product';
+
             if(view()->exists('frontend/cate-'.$page.'s')){
                 return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets]);
-            }else{
+            }else{ 
                 abort(404);
             }
         }
