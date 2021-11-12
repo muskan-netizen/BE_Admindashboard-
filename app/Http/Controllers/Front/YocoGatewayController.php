@@ -139,6 +139,7 @@ class YocoGatewayController extends FrontController
                         'order_id' => $order->id,
                         'transaction_id' => $transactionId,
                         'balance_transaction' => $request->amount,
+                        'type' => 'cart'
                     ]);
 
                     // Auto accept order

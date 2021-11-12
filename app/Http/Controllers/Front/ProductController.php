@@ -73,6 +73,7 @@ class ProductController extends FrontController{
                 $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
                 $z->where('vt.language_id', $langId);
                 $z->where('product_variant_sets.product_id', $p_id);
+                $z->where('vr.status', 1);
             },
             'variantSet.option2' => function ($zx) use ($langId, $p_id) {
                 $zx->where('vt.language_id', $langId)

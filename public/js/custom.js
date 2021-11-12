@@ -643,8 +643,11 @@ $(document).ready(function() {
                     }
                 }).catch(function(error) {
                     // Re-enable button now that request is complete
+                    _this.attr("disabled", false);
                     alert("error occured: " + error);
                 });
+            } else if (payment_option_id == 9) {
+                paymentViaPaylink('', '');
             }
         } else {
             _this.attr("disabled", false);

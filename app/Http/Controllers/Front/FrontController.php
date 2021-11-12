@@ -228,7 +228,8 @@ class FrontController extends Controller
                             $q->groupBy('product_id');
                         },
                     ])->select('id', 'sku', 'averageRating', 'url_slug', 'is_new', 'is_featured', 'vendor_id', 'inquiry_only')
-                    ->whereIn('id', $productIds);
+                    ->whereIn('id', $productIds)
+                    ->whereNotNull('category_id');
         $products = $products->get();
         if(!empty($products)){
             foreach ($products as $key => $value) {
@@ -246,7 +247,7 @@ class FrontController extends Controller
                 $value->variant_multiplier = $multiplier ? $multiplier : 1;
                 $value->variant_price = (!empty($value->variant->first())) ? number_format(($value->variant->first()->price * $multiplier),2,'.','') : 0;
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
-                $value->category_name = $value->category->categoryDetail->translation->first()->name;
+                $value->category_name = $value->category->categoryDetail->translation->first() ? $value->category->categoryDetail->translation->first()->name : '';
                 $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '600/600' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 // foreach ($value->variant as $k => $v) {
                 //     $value->variant[$k]->multiplier = $multiplier;

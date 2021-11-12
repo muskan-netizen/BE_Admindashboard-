@@ -335,6 +335,7 @@
     var user_subscription_cancel_url = "{{route('user.subscription.plan.cancel', ':id')}}";
     var payment_stripe_url = "{{route('user.subscription.payment.stripe')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
+    var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
     var sdk = new window.YocoSDK({
         publicKey: yoco_public_key

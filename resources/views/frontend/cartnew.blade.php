@@ -221,18 +221,29 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
             @if($client_preference_detail->business_type == 'laundry')
             <div class="row">
                 <div class="col-6">{{__('Coment for pickup driver ')}}</div> 
-                <div class="col-6"><input type="text" id="comment_for_pickup_driver" value ="" name="comment_for_pickup_driver"></div> 
+                <div class="col-6"><input type="text" id="comment_for_pickup_driver" value ="{{$cart->comment_for_pickup_driver}}" name="comment_for_pickup_driver"></div> 
             </div>
 
             <div class="row">
                 <div class="col-6">{{__('Coment for dropoff driver ')}}</div> 
-                <div class="col-6"><input type="text" id="comment_for_dropoff_driver" value =""  name="comment_for_dropoff_driver"></div> 
+                <div class="col-6"><input type="text" id="comment_for_dropoff_driver" value ="{{$cart->comment_for_dropoff_driver}}"  name="comment_for_dropoff_driver"></div> 
             </div>
 
             <div class="row">
                 <div class="col-6">{{__('Coment for Vendor ')}}</div> 
-                <div class="col-6"><input type="text" id="comment_for_vendor" value =""  name="comment_for_vendor"></div> 
+                <div class="col-6"><input type="text" id="comment_for_vendor" value ="{{$cart->comment_for_vendor}}"  name="comment_for_vendor"></div> 
             </div>
+
+            <div class="row">
+                <div class="col-6">{{__('Schedule Pickup ')}}</div> 
+                <div class="col-6"> <input type="datetime-local" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="" min="{{ $now }}"></div> 
+            </div>
+
+            <div class="row">
+                <div class="col-6">{{__('Schedule Dropoff ')}}</div> 
+                <div class="col-6"> <input type="datetime-local" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="" min="{{ $now }}"></div> 
+            </div>
+
             @endif
            
             
@@ -325,6 +336,7 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
             </div>
             <hr class="my-2">
             <% if(client_preference_detail.off_scheduling_at_cart != 1) { %>
+                @if($client_preference_detail->business_type != 'laundry')
             <div class="row d-flex align-items-center arabic-lng no-gutters mt-2 mb-md-4 mb-2" id="dateredio">
                 <div class="col-md-5 pr-md-2 mb-2 mb-md-0">
                     <div class="login-form">
@@ -345,6 +357,7 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
                     <!-- <button type="button" class="btn btn-solid"><i class="fa fa-check" aria-hidden="true"></i></button> -->
                 </div>
             </div>
+            @endif
             <% } %>
             
         </div>

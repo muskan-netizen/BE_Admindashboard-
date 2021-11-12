@@ -55,11 +55,11 @@ class CartController extends FrontController
         $langId = Session::get('customerLanguage');
         $guest_user = true;
         if ($user) {
-            $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
             $addresses = UserAddress::where('user_id', $user->id)->get();
             $guest_user = false;
         } else {
-            $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             $addresses = collect();
         }
         if ($cart) {
@@ -101,7 +101,7 @@ class CartController extends FrontController
        
       
        
-        return view('frontend.cartnew',compact('public_key_yoco'))->with($data,$client_preference_detail);
+        return view('frontend.cartnew',compact('public_key_yoco','cart'))->with($data,$client_preference_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
 

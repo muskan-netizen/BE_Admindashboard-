@@ -391,6 +391,16 @@ $(document).ready(function() {
             total_amount = walletElement.val();
             ajaxData.payment_form = 'wallet';
             ajaxData.push({name: 'payment_form', value: 'wallet'});
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            ajaxData = $("#subscription_payment_form").serializeArray();
+            ajaxData.push({name: 'payment_form', value: 'subscription'});
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            ajaxData.push( 
+                {name: 'payment_form', value: 'tip'},
+                {name: 'order_number', value: $("#order_number").val()}
+            );
         }
         ajaxData.push(
             {name: 'amount', value: total_amount}, 

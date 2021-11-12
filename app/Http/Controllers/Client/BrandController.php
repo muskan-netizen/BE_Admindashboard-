@@ -33,7 +33,7 @@ class BrandController extends BaseController
         }])
         ->where('id', '>', '1')
         ->where('status', 1)
-        ->whereIn('type_id', ['1', '3', '6'])
+        ->whereIn('type_id', ['1', '3', '4', '6'])
         ->whereNull('vendor_id')
         ->orderBy('parent_id', 'asc')
         ->orderBy('position', 'asc')->get();

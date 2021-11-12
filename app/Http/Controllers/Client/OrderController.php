@@ -352,7 +352,7 @@ class OrderController extends BaseController{
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name,'order_vendor_id' => $currentOrderStatus->id])->delete();
                 } 
-                if ($request->status_option_id == 2) {Log::info('33');
+                if ($request->status_option_id == 2) {
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if($order_dispatch && $order_dispatch == 1)
                     $stats = $this->insertInVendorOrderDispatchStatus($request);
@@ -476,10 +476,10 @@ class OrderController extends BaseController{
 
         /////////////// **************** for laundry accept order *************** ////////////////
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain(); 
-        Log::info('1');
+      
         if ($dispatch_domain_laundry && $dispatch_domain_laundry != false) {
             $laundry = 0;
-            Log::info('2');
+         
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 if ($prod->product->category->categoryDetail->type_id == 9) {     ///////// if product from laundry
                     $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
@@ -498,7 +498,7 @@ class OrderController extends BaseController{
                             }
                            
 
-                            Log::info($team_tag);
+                         
                             $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry,$team_tag,$colm);
                         }
                           
@@ -712,7 +712,7 @@ class OrderController extends BaseController{
     // place Request To Dispatch for Laundry
     public function placeRequestToDispatchLaundry($order,$vendor,$dispatch_domain,$team_tag,$colm){
         try {       
-            Log::info($order);
+          
                     $order = Order::find($order);
                     $customer = User::find($order->user_id);
                     $cus_address = UserAddress::find($order->address_id);
@@ -725,7 +725,7 @@ class OrderController extends BaseController{
                         $payable_amount = 0.00;
                     }   
 
-                    Log::info($payable_amount);
+                   
                         $dynamic = uniqid($order->id.$vendor);
                         $call_back_url = route('dispatch-order-update',$dynamic);
                         $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'longitude', 'address')->first();
@@ -733,41 +733,52 @@ class OrderController extends BaseController{
                         $meta_data = '';
 
                         $unique = Auth::user()->code;
-                        if($colm == 1){     # 
+                        if($colm == 1){     # 1 for pickup from customer drop to vendor
                             $desc= $order->comment_for_pickup_driver??null;
-                            $type_first = 2;
-                            $type_second = 1;
-                            $startindex = 1; 
-                            $endindex = 0;
+                            $tasks[] = array('task_type_id' => 1,
+                            'latitude' => $cus_address->latitude??'',
+                            'longitude' => $cus_address->longitude??'',
+                            'short_name' => '',
+                            'address' => $cus_address->address??'',
+                            'post_code' => $cus_address->pincode??'',
+                            'barcode' => '',
+                            );
+                            $tasks[] = array('task_type_id' => 2,
+                            'latitude' => $vendor_details->latitude??'',
+                            'longitude' => $vendor_details->longitude??'',
+                            'short_name' => '',
+                            'address' => $vendor_details->address??'',
+                            'post_code' => '',
+                            'barcode' => '',
+                            );
+
+                           
                         }
                         
 
-                        if($colm == 2){
+                        if($colm == 2){ # 1 for pickup from vendor drop to customer
                             $desc= $order->comment_for_dropoff_driver??null;
-                            $type_first = 1;
-                            $type_second = 2;
-                            $startindex = 0; 
-                            $endindex = 1;
+                            $tasks[] = array('task_type_id' => 1,
+                            'latitude' => $vendor_details->latitude??'',
+                            'longitude' => $vendor_details->longitude??'',
+                            'short_name' => '',
+                            'address' => $vendor_details->address??'',
+                            'post_code' => '',
+                            'barcode' => '',
+                            );
+            
+                            $tasks[] = array('task_type_id' => 2,
+                            'latitude' => $cus_address->latitude??'',
+                            'longitude' => $cus_address->longitude??'',
+                            'short_name' => '',
+                            'address' => $cus_address->address??'',
+                            'post_code' => $cus_address->pincode??'',
+                            'barcode' => '',
+                            );
+                           
+            
                         }
-                       
-
-                        $tasks[$startindex] = array('task_type_id' => $type_first,
-                                                        'latitude' => $vendor_details->latitude??'',
-                                                        'longitude' => $vendor_details->longitude??'',
-                                                        'short_name' => '',
-                                                        'address' => $vendor_details->address??'',
-                                                        'post_code' => '',
-                                                        'barcode' => '',
-                                                        );
-                                        
-                        $tasks[$endindex] = array('task_type_id' => $type_second,
-                                                        'latitude' => $cus_address->latitude??'',
-                                                        'longitude' => $cus_address->longitude??'',
-                                                        'short_name' => '',
-                                                        'address' => $cus_address->address??'',
-                                                        'post_code' => $cus_address->pincode??'',
-                                                        'barcode' => '',
-                                                        );
+                      
                                    
                         $postdata =  ['customer_name' => $customer->name ?? 'Dummy Customer',
                                                         'customer_phone_number' => $customer->phone_number ?? rand(111111,11111),
@@ -784,7 +795,7 @@ class OrderController extends BaseController{
                                                         'task' => $tasks
                                                         ];
 
-                        Log::info($postdata);
+                      
                         $client = new Client(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key,
                                                         'shortcode' => $dispatch_domain->laundry_service_key_code,
                                                         'content-type' => 'application/json']
@@ -798,7 +809,7 @@ class OrderController extends BaseController{
                             )]
                         );
                         $response = json_decode($res->getBody(), true);
-                        Log::info($response);
+                      
                         if($response && $response['task_id'] > 0){
                             $dispatch_traking_url = $response['dispatch_traking_url']??'';
                             $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
@@ -811,7 +822,7 @@ class OrderController extends BaseController{
             }    
             catch(\Exception $e)
             {
-                Log::info($e->getMessage());
+               
                 return 2;
                 return response()->json([
                     'status' => 'error',
@@ -930,7 +941,7 @@ class OrderController extends BaseController{
     public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id)
     {
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-    //    Log::info($devices);
+    
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
@@ -977,7 +988,7 @@ class OrderController extends BaseController{
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
                 $result = curl_exec($ch);
-        //        Log::info($result);
+      
                 curl_close($ch);
             }
         }

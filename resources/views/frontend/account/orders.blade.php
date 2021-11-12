@@ -872,6 +872,7 @@ $timezone = Auth::user()->timezone;
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
+    var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
     var payment_paystack_url = "{{route('payment.paystackPurchase')}}";

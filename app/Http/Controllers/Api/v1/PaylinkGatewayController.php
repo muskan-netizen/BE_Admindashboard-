@@ -72,6 +72,7 @@ class PaylinkGatewayController extends BaseController
                 if($request->has('order_number')){
                     $reference_number = $request->order_number;
                 }
+                $returnUrlParams = $returnUrlParams . '&order=' . $request->order_number;
             }
             elseif($request->payment_form == 'subscription'){
                 $description = 'Subscription Checkout';
