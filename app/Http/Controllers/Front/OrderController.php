@@ -567,6 +567,9 @@ class OrderController extends FrontController
                 $order->address_id = $request->address_id;
             }
             $order->payment_option_id = $request->payment_option_id;
+            $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver??null;
+            $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver??null;
+            $order->comment_for_vendor = $cart->comment_for_vendor??null;
             $order->save();
             $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
             foreach ($cart_prescriptions as $cart_prescription) {

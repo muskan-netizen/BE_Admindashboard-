@@ -745,6 +745,9 @@ $(document).ready(function() {
             }
         }
         let cartAmount = $("input[name='cart_total_payable_amount']").val();
+        let comment_for_pickup_driver = $("input[name='comment_for_pickup_driver']").val(); //commnet for pickup
+        let comment_for_dropoff_driver = $("input[name='comment_for_dropoff_driver']").val(); //commnet for dropoff
+        let comment_for_vendor = $("input[name='comment_for_vendor']").val(); //commnet for vendor
         let tip = $("#cart_tip_amount").val();
         if (cartAmount == 0) {
             placeOrder(address, 1, '', tip);
@@ -754,7 +757,7 @@ $(document).ready(function() {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { task_type: task_type, schedule_dt: schedule_dt },
+                data: { task_type: task_type, schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor },
                 success: function(response) {
                     if (response.status == "Success") {
                         $.ajax({

@@ -327,7 +327,9 @@ class PaylinkGatewayController extends FrontController
                     //   $this->successMail();
                 }
             } elseif($request->payment_form == 'wallet'){
-                
+                $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $transactionId]);
+                $walletController = new WalletController();
+                $walletController->creditWallet($request);
             }
             $returnUrlParams = '?status=200&gateway=paylink&action=' .$request->payment_form. '&order=' . $order_number;
             return Redirect::to(url($returnUrl . $returnUrlParams));

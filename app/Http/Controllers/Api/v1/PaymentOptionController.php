@@ -24,7 +24,7 @@ class PaymentOptionController extends BaseController{
 
     public function getPaymentOptions(Request $request, $page = ''){
         if($page == 'wallet'){
-            $code = array('paypal', 'stripe', 'yoco');
+            $code = array('paypal', 'stripe', 'yoco', 'paylink');
         }else{
             $code = array('cod', 'paypal', 'payfast', 'stripe', 'mobbex','yoco','paylink','razorpay');
         }

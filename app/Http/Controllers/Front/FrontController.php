@@ -182,7 +182,7 @@ class FrontController extends Controller
             if (is_array($vendorIds)) {
                 $products = $products->whereIn('vendor_id', $vendorIds);
             }
-            $products = $products->where('is_live', 1)->take(6)->get();
+            $products = $products->where('is_live', 1)->whereNotNull('category_id')->take(6)->get();
         // pr($products->toArray());die;          
         if (!empty($products)) {
             foreach ($products as $key => $value) {

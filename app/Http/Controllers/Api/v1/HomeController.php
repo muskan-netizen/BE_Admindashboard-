@@ -31,7 +31,8 @@ class HomeController extends BaseController
     {
         try {
             $homeData = array();
-            $langId = ($request->hasHeader('language')) ? $request->header('language') : 1;
+            $client_language = ClientLanguage::select('language_id')->where(['is_primary'=>1, 'is_active'=>1])->first();
+            $langId = ($request->hasHeader('language') && !empty($request->header('language'))) ? $request->header('language') : (($client_language) ? $client_language->language_id : 1);
             $homeData['profile'] = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('country_id', 'company_name', 'code', 'sub_domain', 'logo', 'company_address', 'phone_number', 'email')->first();
             $app_styling_detail = AppStyling::getSelectedData();
             foreach ($app_styling_detail as $app_styling) {

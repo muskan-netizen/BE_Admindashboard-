@@ -281,7 +281,7 @@
                      <div class="form-group mb-0">
                         <div class="form-group mb-0 switchery-demo">
                            <label for="need_laundry_service" class="mr-3">{{ __("Enable") }}</label>
-                           <input data-plugin="switchery" name="need_laundry_service" id="need_laundry_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_delivery_service == '1')) checked @endif >
+                           <input data-plugin="switchery" name="need_laundry_service" id="need_laundry_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_laundry_service == '1')) checked @endif >
                         </div>
                      </div>
 
