@@ -961,7 +961,7 @@ class OrderController extends BaseController {
                     if($vendor->dineInTable){
                         $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
                         $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
-                        $vendor->dineInTableCategory = $vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
+                        $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
                     }
         		}
                 if(!empty($order->scheduled_date_time)){
