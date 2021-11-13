@@ -319,8 +319,36 @@ $timezone = Auth::user()->timezone;
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __('Transaction Id') }} :</span> {{ $order->payment  ? $order->payment->transaction_id : ''}}</p>
                         @endif
                     </div>
+
+                   
+                    <div class="card-body">
+                        <h4 class="header-title mb-3">{{ __('Comment/Schedule Information') }}</h4>
+                        @if($order->comment_for_pickup_driver)
+                          <p class="mb-2"><span class="fw-semibold me-2">{{ __('Comment for Pickup Driver') }} :</span> {{ $order->comment_for_pickup_driver ?? ''}}</p>
+                        @endif
+
+                        @if($order->comment_for_dropoff_driver)
+                          <p class="mb-2"><span class="fw-semibold me-2">{{ __('Comment for Dropoff Driver') }} :</span> {{ $order->comment_for_dropoff_driver ?? ''}}</p>
+                        @endif
+
+                        @if($order->comment_for_vendor)
+                          <p class="mb-2"><span class="fw-semibold me-2">{{ __('Comment for Vendor') }} :</span> {{ $order->comment_for_vendor ?? ''}}</p>
+                        @endif
+
+                        @if($order->schedule_pickup)
+                          <p class="mb-2"><span class="fw-semibold me-2">{{ __('Schedule Pickup') }} :</span> {{convertDateTimeInTimeZone($order->schedule_pickup, $timezone, 'l, F d, Y, H:i A')}} </p>
+                        @endif
+
+                        @if($order->schedule_dropoff)
+                          <p class="mb-2"><span class="fw-semibold me-2">{{ __('Schedule Dropoff') }} :</span> {{convertDateTimeInTimeZone($order->schedule_dropoff, $timezone, 'l, F d, Y, H:i A')}} </p>
+                        @endif
+                    </div>
+                   
+
                 </div>
             </div>
+
+            
         </div>
 
 

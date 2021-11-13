@@ -747,6 +747,9 @@ $(document).ready(function() {
                 return false;
             }
         }
+      
+       
+
         let cartAmount = $("input[name='cart_total_payable_amount']").val();
         let comment_for_pickup_driver = $("input[name='comment_for_pickup_driver']").val(); //commnet for pickup
         let comment_for_dropoff_driver = $("input[name='comment_for_dropoff_driver']").val(); //commnet for dropoff
@@ -754,7 +757,22 @@ $(document).ready(function() {
         var schedule_pickup = $("#schedule_datetime_pickup").val();
         var schedule_dropoff = $("#schedule_datetime_dropoff").val();
         let tip = $("#cart_tip_amount").val();
-        if (cartAmount == 0) {
+
+        if((schedule_pickup != undefined)) {
+            if(schedule_pickup == ''){
+                success_error_alert('error', 'Please select schedule pickup date & time', ".cart_response");
+                return false;
+            }
+        }
+
+        if((schedule_dropoff != undefined)) {
+            if(schedule_dropoff == ''){
+                success_error_alert('error', 'Please select schedule dropoff date & time', ".cart_response");
+                return false;
+            }
+        }
+       
+            if (cartAmount == 0) {
             placeOrder(address, 1, '', tip);
             return false;
         } else {

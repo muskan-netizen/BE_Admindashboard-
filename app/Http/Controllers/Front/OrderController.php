@@ -34,6 +34,7 @@ class OrderController extends FrontController
     {
         $user = Auth::user();
         $currency_id = Session::get('customerCurrency');
+        
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
         $pastOrders = Order::with([
@@ -153,6 +154,10 @@ class OrderController extends FrontController
             }
         }
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+
+        if(empty($clientCurrency))
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
 
         return view('frontend/account/orders')->with(['payments' => $payments, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency]);
@@ -820,7 +825,8 @@ class OrderController extends FrontController
             $this->sendSuccessSMS($request, $order, $vendor_id);
             $ex_gateways = [7,8,9,10]; // mobbex, yoco, pointcheckout, razorpay
             if(!in_array($request->payment_option_id, $ex_gateways)){
-                Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
+                Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL,
+                'comment_for_pickup_driver' => NULL, 'comment_for_dropoff_driver' => NULL,'comment_for_vendor' => NULL, 'schedule_pickup' => NULL, 'schedule_dropoff' => NULL]);
                 CartAddon::where('cart_id', $cart->id)->delete();
                 CartCoupon::where('cart_id', $cart->id)->delete();
                 CartProduct::where('cart_id', $cart->id)->delete();
@@ -1133,7 +1139,7 @@ class OrderController extends FrontController
         }
 
 
-        $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain(); 
         if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
             $ondemand = 0;
         //    Log::info($dispatch_domain_ondemand);
@@ -1150,6 +1156,43 @@ class OrderController extends FrontController
                 }
             }
         }
+
+         /////////////// **************** for laundry accept order *************** ////////////////
+         $dispatch_domain_laundry = $this->getDispatchLaundryDomain(); 
+      
+         if ($dispatch_domain_laundry && $dispatch_domain_laundry != false) {
+             $laundry = 0;
+          
+             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                 if ($prod->product->category->categoryDetail->type_id == 9) {     ///////// if product from laundry
+                     $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
+                     if ($dispatch_domain_laundry && $dispatch_domain_laundry != false && $laundry == 0) {
+                         
+                         for ($x = 1; $x <= 2; $x++) {
+                             
+                             if($x == 1){
+                                 $team_tag = $dispatch_domain_laundry->laundry_pickup_team ?? null;
+                                 $colm = $x;
+                             }
+ 
+                             if($x == 2){
+                                 $team_tag = $dispatch_domain_laundry->laundry_dropoff_team ?? null;
+                                 $colm = $x;
+                             }
+                            
+ 
+                          
+                             $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry,$team_tag,$colm);
+                         }
+                           
+                         if ($order_dispatchs && $order_dispatchs == 1) {
+                             $laundry = 1;
+                             return 1;
+                         }
+                     }
+                 }
+             }
+         }
 
         return 2;
     }
@@ -1348,6 +1391,151 @@ class OrderController extends FrontController
         }
     }
 
+     // place Request To Dispatch for Laundry
+     public function placeRequestToDispatchLaundry($order,$vendor,$dispatch_domain,$team_tag,$colm){
+        try {       
+          
+                    $order = Order::find($order);
+                    $customer = User::find($order->user_id);
+                    $cus_address = UserAddress::find($order->address_id);
+                    $tasks = array();
+                    if ($order->payment_method == 1) {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
+                    } else {
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }   
+
+                   
+                        $dynamic = uniqid($order->id.$vendor);
+                        $call_back_url = route('dispatch-order-update',$dynamic);
+                        $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'longitude', 'address')->first();
+                        $tasks = array();
+                        $meta_data = '';
+
+                        $unique = Auth::user()->code;
+                        if($colm == 1){     # 1 for pickup from customer drop to vendor
+                            $desc= $order->comment_for_pickup_driver??null;
+                            $tasks[] = array('task_type_id' => 1,
+                            'latitude' => $cus_address->latitude??'',
+                            'longitude' => $cus_address->longitude??'',
+                            'short_name' => '',
+                            'address' => $cus_address->address??'',
+                            'post_code' => $cus_address->pincode??'',
+                            'barcode' => '',
+                            );
+                            $tasks[] = array('task_type_id' => 2,
+                            'latitude' => $vendor_details->latitude??'',
+                            'longitude' => $vendor_details->longitude??'',
+                            'short_name' => '',
+                            'address' => $vendor_details->address??'',
+                            'post_code' => '',
+                            'barcode' => '',
+                            );
+
+                            if(isset($order->schedule_pickup) && !empty($order->schedule_pickup)){
+                                $task_type = 'schedule';
+                                $schedule_time = $order->schedule_pickup ?? null;
+                            }
+                            else{
+                                $task_type = 'now';
+                            }
+                            
+                           
+                        }
+                        
+
+                        if($colm == 2){ # 1 for pickup from vendor drop to customer
+                            $desc= $order->comment_for_dropoff_driver??null;
+                            $tasks[] = array('task_type_id' => 1,
+                            'latitude' => $vendor_details->latitude??'',
+                            'longitude' => $vendor_details->longitude??'',
+                            'short_name' => '',
+                            'address' => $vendor_details->address??'',
+                            'post_code' => '',
+                            'barcode' => '',
+                            );
+            
+                            $tasks[] = array('task_type_id' => 2,
+                            'latitude' => $cus_address->latitude??'',
+                            'longitude' => $cus_address->longitude??'',
+                            'short_name' => '',
+                            'address' => $cus_address->address??'',
+                            'post_code' => $cus_address->pincode??'',
+                            'barcode' => '',
+                            );
+                           
+
+                            if(isset($order->schedule_dropoff) && !empty($order->schedule_dropoff)){
+                                $task_type = 'schedule';
+                                $schedule_time = $order->schedule_dropoff ?? null;
+                            }
+                            else{
+                                $task_type = 'now';
+                            }
+                            
+            
+                        }
+                        
+
+                        
+                                   
+                        $postdata =  ['customer_name' => $customer->name ?? 'Dummy Customer',
+                                                        'customer_phone_number' => $customer->phone_number ?? rand(111111,11111),
+                                                        'customer_email' => $customer->email ?? null,
+                                                        'recipient_phone' => $customer->phone_number ?? rand(111111,11111),
+                                                        'recipient_email' => $customer->email ?? null,
+                                                        'task_description' => $desc??null,
+                                                        'allocation_type' => 'a',
+                                                        'task_type' => $task_type,
+                                                        'cash_to_be_collected' => $payable_amount??0.00,
+                                                        'schedule_time' => $schedule_time ?? null,
+                                                        'barcode' => '',
+                                                        'order_team_tag' => $team_tag,
+                                                        'call_back_url' => $call_back_url??null,
+                                                        'task' => $tasks
+                                                        ];
+
+                      
+                        $client = new Client(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key,
+                                                        'shortcode' => $dispatch_domain->laundry_service_key_code,
+                                                        'content-type' => 'application/json']
+                                                            ]);
+                                                
+                        $url = $dispatch_domain->laundry_service_key_url;
+                        $res = $client->post(
+                            $url.'/api/task/create',
+                            ['form_params' => (
+                                $postdata
+                            )]
+                        );
+                        $response = json_decode($res->getBody(), true);
+                      
+                        if($response && $response['task_id'] > 0){
+                            $dispatch_traking_url = $response['dispatch_traking_url']??'';
+                            $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
+                                ->update(['web_hook_code' => $dynamic,'dispatch_traking_url' => $dispatch_traking_url]);
+            
+                            return 1;
+                        }
+                        return 2;
+                        
+            }    
+            catch(\Exception $e)
+            {
+               
+                return 2;
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage()
+                ]);
+                        
+            }
+           
+           
+    }
+
 
     # get prefereance if last mile on or off and all details updated in config
     public function getDispatchDomain()
@@ -1369,6 +1557,17 @@ class OrderController extends FrontController
         else
             return false;
     }
+
+      # get prefereance if laundry in config
+      public function getDispatchLaundryDomain(){
+        $preference = ClientPreference::first();
+        if($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
+            return $preference;
+        else
+            return false;
+     }
+
+    
 
     public function sendSuccessNotification($id, $vendorId)
     {

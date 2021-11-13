@@ -230,7 +230,7 @@
                                                         
                                                         @if($vendor->is_vendor_closed == 0)
                                                             @if($productVariantInCart > 0)
-                                                                <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>
+                                                                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                                                 <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href{{$cartProductId}}" data-variant_id="{{$productVariantIdInCart}}" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="{{$vendor_id}}" data-product_id="{{$product_id}}" data-addon="{{$isAddonExist}}" href="javascript:void(0)">Add</a>
                                                                 <div class="number" id="show_plus_minus{{$cartProductId}}">
                                                                     <span class="minus qty-minus-product" data-parent_div_id="show_plus_minus{{$cartProductId}}" data-id="{{$cartProductId}}" data-base_price="{{$variant_price}}" data-vendor_id="{{$vendor_id}}">
@@ -244,7 +244,7 @@
                                                             @else
                                                           
                                                                 @if($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)
-                                                                <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>
+                                                                {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                                                 <a class="add-cart-btn add_vendor_product" id="aadd_button_href{{$data->id}}" data-variant_id="{{$data->variant[0]->id}}" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" data-addon="{{$isAddonExist}}" href="javascript:void(0)">Add</a>
                                                                 <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
                                                                     <span class="minus qty-minus-product"  data-parent_div_id="show_plus_minus{{$data->id}}" readonly data-id="{{$data->id}}" data-base_price="{{$data->variant_price * $data->variant_multiplier}}" data-vendor_id="{{$data->vendor_id}}">

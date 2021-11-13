@@ -196,6 +196,7 @@ class CategoryController extends FrontController{
             if($page == 'laundry')
             $page = 'product';
 
+         
             if(view()->exists('frontend/cate-'.$page.'s')){
                 return view('frontend/cate-'.$page.'s')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets]);
             }else{ 
@@ -234,10 +235,22 @@ class CategoryController extends FrontController{
                 $value = $this->getLineOfSightDistanceAndTime($value, $preferences);
                 $value->vendorRating = $this->vendorRating($value->products);
                 $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
+                // $categoriesList = '';
+                // foreach ($vendorCategories as $key => $category) {
+                //     if ($category->category) {
+                //         $categoriesList = $categoriesList . $category->category->translation ? $category->category->translation->first()->name : $category->category->slug;
+                //         if ($key !=  $vendorCategories->count() - 1) {
+                //             $categoriesList = $categoriesList . ', ';
+                //         }
+                //     }
+                // }
+                // $value->categoriesList = $categoriesList;
+
                 $categoriesList = '';
                 foreach ($vendorCategories as $key => $category) {
                     if ($category->category) {
-                        $categoriesList = $categoriesList . $category->category->translation ? $category->category->translation->first()->name : $category->category->slug;
+                        $cat_name = isset($category->category->translation_one) ? $category->category->translation_one->name : $category->category->slug;
+                        $categoriesList = $categoriesList . $cat_name ?? '';
                         if ($key !=  $vendorCategories->count() - 1) {
                             $categoriesList = $categoriesList . ', ';
                         }
