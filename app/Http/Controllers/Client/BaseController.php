@@ -133,6 +133,19 @@ class BaseController extends Controller
                     if($node['parent_id'] != 1){
                         $parentCategory[] = $node['translation'][0]['name'];
                     }
+                    
+                    // start including parent category
+                    $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+                    $hierarchyName = $category; // assume first category is parent
+                    if(count($parentCategory) > 0){
+                        if($node['parent_id'] != 1){ // if category is not parent then make heirarchy
+                            $hierarchyName = implode(' > ', $parentCategory);
+                            $hierarchyName = $hierarchyName.' > '.$category;
+                        }
+                    }
+                    $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                    // end including parent category
+
                     $this->printCategoryOptionsHeirarchy($node['children'], $parentCategory);
                 }
                 else{

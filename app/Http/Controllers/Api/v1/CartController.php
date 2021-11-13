@@ -847,7 +847,21 @@ class CartController extends BaseController
                 } else {
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-                Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions ?? null, 'schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt]);
+
+                if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
+                $request->schedule_pickup = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+
+                if(isset($request->schedule_dropoff) && !empty($request->schedule_dropoff))  # for pickup laundry
+                $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+
+                Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions ?? null, 
+                'schedule_type' => $request->task_type??null, 
+                'scheduled_date_time' => $request->schedule_dt??null,
+                'comment_for_pickup_driver' => $request->comment_for_pickup_driver??null,
+                'comment_for_dropoff_driver' => $request->comment_for_dropoff_driver??null,
+                'comment_for_vendor' => $request->comment_for_vendor??null,
+                'schedule_pickup' => $request->schedule_pickup??null,
+                'schedule_dropoff' => $request->schedule_dropoff??null]);
                 DB::commit();
                 return response()->json(['status' => 'Success', 'message' => 'Cart has been scheduled']);
             } else {

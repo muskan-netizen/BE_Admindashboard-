@@ -14130,7 +14130,15 @@ header.stickycls {
         right: -60px;
     }
 
-    .sm-horizontal {
+    .menu-slider .slick-slide {
+        width: max-content !important;
+    }
+
+    .menu-slider .slick-slide:first-child{
+        display: none !important;
+    }
+
+    /* .sm-horizontal {
         position: fixed !important;
         background-color: #fff;
         width: 300px;
@@ -14143,7 +14151,7 @@ header.stickycls {
         -webkit-transition: all 0.3s ease;
         transition: all 0.3s ease;
         overflow: scroll;
-    }
+    } */
 
     .sm-horizontal .mobile-back {
         padding: 20px;
@@ -14368,6 +14376,11 @@ header.stickycls {
 @media (max-width: 991px) {
     .top-header .header-contact {
         display: none;
+    }
+    .pixelstrap li > a {
+        padding: 10px 10px;
+        width: max-content;
+        text-align: center;
     }
 }
 

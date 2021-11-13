@@ -5605,16 +5605,11 @@ ul#main-nav-list {
     width: calc(100% - 150px);
 }
 
-.fixed-bar .scrollspy-menu {
+.scrollspy-menu {
     position: sticky;
-    top: 150px;
+    top: 104px;
     width: 300px;
     padding: 10px 0;
-}
-
-.scrollspy-menu {
-    top: 0;
-    width: 100%;
     height: auto;
 }
 
@@ -5658,7 +5653,7 @@ ul#main-nav-list {
     width: 325px;
     max-width: 100%;
     position: sticky;
-    top: 150px;
+    top: 104px;
 }
 
 .cart-main-box-inside {
@@ -5711,9 +5706,23 @@ ul#main-nav-list {
     border-color: #ebebeb !important;
 }
 
+.add_vendor-fav{
+    vertical-align: top;
+    margin: 5px 10px 0 0;
+    display: inline-block;
+    opacity: 0;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+.cart-box-outer.product_row:hover .add_vendor-fav,.cart-box-outer.product_row:focus .add_vendor-fav,.cart-box-outer.product_row:active .add_vendor-fav{
+    opacity: 1;
+}
+
 .productAddonSetOptions .checkbox {
-    width: 33%;
-    margin-right: 0;
+    width: 50%;
+    margin-right: -4px;
 }
 
 .productAddonSetOptions .checkbox label {
@@ -6397,6 +6406,7 @@ body .footer-theme .sub-title h4 {
 
 
 
+
 /* Arabic Mood Css */
 
 body[dir="rtl"] {
@@ -6884,9 +6894,10 @@ body[dir="rtl"] .inner_spacing h3 {
     .pixelstrap a:active,
     .pixelstrap li a:hover {
         padding-left: 10px;
-        text-align: left;
+        text-align: center;
         font-weight: 400 !important;
         font-size: 13px !important;
+        width: max-content;
     }
 
     .pixelstrap li a,
@@ -6911,8 +6922,13 @@ body[dir="rtl"] .inner_spacing h3 {
     }
 
     .nav-cate-img {
-        display: none !important;
+        display: flex !important;
     }
+    .menu-navigation {
+        width: calc(100% - 30px);
+        margin: auto;
+    }
+
 }
 
 @media(min-width: 992px) {
@@ -7014,9 +7030,9 @@ body[dir="rtl"] .inner_spacing h3 {
         width: 61%;
     }
 
-    .pixelstrap li a img {
+    /* .pixelstrap li a img {
         display: none;
-    }
+    } */
 
     .pixelstrap>li>a>.sub-arrow {
         display: block;

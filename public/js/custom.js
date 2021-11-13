@@ -90,7 +90,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider(){
         arrows: true,
         dots: false,
         infinite: false,
-        variableWidth: false,
+        variableWidth: true,
         autoplay:false,
         speed: 300,
         slidesToShow: 15,
@@ -98,7 +98,8 @@ window.loadMainMenuSlider = function loadMainMenuSlider(){
         responsive: [
             { breakpoint: 1400, settings: { slidesToShow: 12, slidesToScroll: 2 } },
             { breakpoint: 1367, settings: { slidesToShow: 8, slidesToScroll: 2} },
-            { breakpoint: 1200, settings: "unslick" },
+            { breakpoint: 767, settings: { slidesToShow: 4, slidesToScroll: 2} },
+            // { breakpoint: 1200, settings: "unslick" },
         ],
     });
 }
@@ -107,11 +108,10 @@ window.loadMainMenuSlider = function loadMainMenuSlider(){
 
 function resizeMenuSlider(){
     var windowWidth = $(window).width();
-    if(windowWidth < 1183){
-        // $('#main-menu').slick('unslick');
-        // $('#main-menu').removeClass('menu-slider');
-        $('.menu-slider').removeClass('items-center');
-        $(".sm-horizontal").css("right", "-410px");
+    // if(windowWidth < 1183){
+    if(windowWidth < 320){
+        // $('.menu-slider').removeClass('items-center');
+        // $(".sm-horizontal").css("right", "-410px");
     }else{
         // $('#main-menu').addClass('menu-slider');
         if(!$('.menu-slider').hasClass('slick-initialized')){
@@ -751,6 +751,8 @@ $(document).ready(function() {
         let comment_for_pickup_driver = $("input[name='comment_for_pickup_driver']").val(); //commnet for pickup
         let comment_for_dropoff_driver = $("input[name='comment_for_dropoff_driver']").val(); //commnet for dropoff
         let comment_for_vendor = $("input[name='comment_for_vendor']").val(); //commnet for vendor
+        var schedule_pickup = $("#schedule_datetime_pickup").val();
+        var schedule_dropoff = $("#schedule_datetime_dropoff").val();
         let tip = $("#cart_tip_amount").val();
         if (cartAmount == 0) {
             placeOrder(address, 1, '', tip);
@@ -760,7 +762,7 @@ $(document).ready(function() {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { task_type: task_type, schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor },
+                data: { task_type: task_type,schedule_dropoff:schedule_dropoff, schedule_pickup:schedule_pickup,schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor },
                 success: function(response) {
                     if (response.status == "Success") {
                         $.ajax({

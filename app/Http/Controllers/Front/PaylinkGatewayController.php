@@ -308,7 +308,7 @@ class PaylinkGatewayController extends FrontController
         $returnUrl = url('payment/gateway/returnResponse');
 
         if ($response->result->status == 'PAID') {
-            $returnUrlParams = '?status=200&gateway=paylink&action=' .$request->payment_form;
+            $returnUrlParams = '?status=200&gateway=paylink&action=' . $request->payment_form . '&transaction_id=' . $transactionId;
             if($request->payment_form == 'cart'){
                 $order_number = $request->order;
                 $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
@@ -358,6 +358,7 @@ class PaylinkGatewayController extends FrontController
                 $walletController = new WalletController();
                 $walletController->creditWallet($request);
             }
+            
             return Redirect::to(url($returnUrl . $returnUrlParams));
         } 
         else {

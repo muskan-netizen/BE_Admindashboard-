@@ -752,6 +752,14 @@ class OrderController extends BaseController{
                             'barcode' => '',
                             );
 
+                            if(isset($order->schedule_pickup) && !empty($order->schedule_pickup)){
+                                $task_type = 'schedule';
+                                $schedule_time = $order->schedule_pickup ?? null;
+                            }
+                            else{
+                                $task_type = 'now';
+                            }
+                            
                            
                         }
                         
@@ -776,9 +784,20 @@ class OrderController extends BaseController{
                             'barcode' => '',
                             );
                            
+
+                            if(isset($order->schedule_dropoff) && !empty($order->schedule_dropoff)){
+                                $task_type = 'schedule';
+                                $schedule_time = $order->schedule_dropoff ?? null;
+                            }
+                            else{
+                                $task_type = 'now';
+                            }
+                            
             
                         }
-                      
+                        
+
+                        
                                    
                         $postdata =  ['customer_name' => $customer->name ?? 'Dummy Customer',
                                                         'customer_phone_number' => $customer->phone_number ?? rand(111111,11111),
@@ -786,9 +805,10 @@ class OrderController extends BaseController{
                                                         'recipient_phone' => $customer->phone_number ?? rand(111111,11111),
                                                         'recipient_email' => $customer->email ?? null,
                                                         'task_description' => $desc??null,
-                                                        'allocation_type' => 'm',
-                                                        'task_type' => 'now',
+                                                        'allocation_type' => 'a',
+                                                        'task_type' => $task_type,
                                                         'cash_to_be_collected' => $payable_amount??0.00,
+                                                        'schedule_time' => $schedule_time ?? null,
                                                         'barcode' => '',
                                                         'order_team_tag' => $team_tag,
                                                         'call_back_url' => $call_back_url??null,

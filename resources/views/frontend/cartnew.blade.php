@@ -217,38 +217,38 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
         <hr>
     <% }); %>
     <div class="row">
-        <div class="col-lg-5 col-xl-6">
-            @if($client_preference_detail->business_type == 'laundry')
+        <div class="col-12">
+            @if($client_preference_detail->business_type == 'laundry' || 1 ==1 )
             <div class="row">
-                <div class="col-6">{{__('Coment for pickup driver ')}}</div> 
-                <div class="col-6"><input type="text" id="comment_for_pickup_driver" value ="{{$cart->comment_for_pickup_driver}}" name="comment_for_pickup_driver"></div> 
+                <div class="col-4">{{__('Coment for pickup driver ')}}</div> 
+                <div class="col-8"><input class="form-control" type="text" id="comment_for_pickup_driver" value ="{{$cart->comment_for_pickup_driver}}" name="comment_for_pickup_driver"></div> 
             </div>
-
+            <hr class="my-2">
             <div class="row">
-                <div class="col-6">{{__('Coment for dropoff driver ')}}</div> 
-                <div class="col-6"><input type="text" id="comment_for_dropoff_driver" value ="{{$cart->comment_for_dropoff_driver}}"  name="comment_for_dropoff_driver"></div> 
+                <div class="col-4">{{__('Coment for dropoff driver ')}}</div> 
+                <div class="col-8"><input class="form-control" type="text" id="comment_for_dropoff_driver" value ="{{$cart->comment_for_dropoff_driver}}"  name="comment_for_dropoff_driver"></div> 
             </div>
-
+            <hr class="my-2">
             <div class="row">
-                <div class="col-6">{{__('Coment for Vendor ')}}</div> 
-                <div class="col-6"><input type="text" id="comment_for_vendor" value ="{{$cart->comment_for_vendor}}"  name="comment_for_vendor"></div> 
+                <div class="col-4">{{__('Coment for Vendor ')}}</div> 
+                <div class="col-8"><input class="form-control" type="text" id="comment_for_vendor" value ="{{$cart->comment_for_vendor}}"  name="comment_for_vendor"></div> 
             </div>
-
+            <hr class="my-2">
             <div class="row">
-                <div class="col-6">{{__('Schedule Pickup ')}}</div> 
-                <div class="col-6"> <input type="datetime-local" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="" min="{{ $now }}"></div> 
+                <div class="col-md-6">
+                    <label for="">{{__('Schedule Pickup ')}}</label> 
+                    <input type="datetime-local" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_pickup }}" min="{{ $now }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="">{{__('Schedule Dropoff ')}} </label>
+                    <input type="datetime-local" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_dropoff }}" min="{{ $now }}">
+                </div>
             </div>
-
-            <div class="row">
-                <div class="col-6">{{__('Schedule Dropoff ')}}</div> 
-                <div class="col-6"> <input type="datetime-local" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="" min="{{ $now }}"></div> 
-            </div>
-
             @endif
            
             
         </div>
-        <div class="col-lg-7 col-xl-6">
+        <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">
             <div class="row">
                 <div class="col-6">{{__('Sub Total')}}</div>
                 <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= cart_details.gross_amount %></div>

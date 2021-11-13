@@ -180,7 +180,7 @@ class CategoryController extends BaseController
                     $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
                     $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
                     $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';
-                    $product->translation_description = !empty($product->translation_description) ? substr($product->translation_description, 0, 70) . '...' : '';
+                    $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
                     $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
                     $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
@@ -235,7 +235,7 @@ class CategoryController extends BaseController
                 );
             }
             return $category_details;
-        } elseif ($type == 'product' || $type == 'Product' || $type == 'on demand service') {
+        } elseif ($type == 'product' || $type == 'Product' || $type == 'on demand service' || $type == 'laundry' || $type == 'Laundry') {
             $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
@@ -312,7 +312,7 @@ class CategoryController extends BaseController
                     $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
                     $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
                     $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';
-                    $product->translation_description = !empty($product->translation_description) ? substr($product->translation_description, 0, 70) . '...' : '';
+                    $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
                     $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
                     $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
@@ -328,7 +328,23 @@ class CategoryController extends BaseController
             }
             $listData = $products;
             return $listData;
-        } else {
+        }
+        elseif($type == 'brand'){
+            $brands = Brand::with(['bc.categoryDetail', 'bc.categoryDetail.translation' =>  function ($q) use ($langId) {
+                $q->select('category_translations.name', 'category_translations.category_id', 'category_translations.language_id')->where('category_translations.language_id', $langId);
+            }, 'translation' => function ($q) use ($langId) {
+                $q->select('title', 'brand_id', 'language_id')->where('language_id', $langId);
+            }])
+            ->whereHas('bc.categoryDetail', function ($q){
+                $q->where('categories.status', 1);
+            })
+            ->wherehas('bc', function($q) use($category_id){
+                $q->where('category_id', $category_id);
+            })
+            ->select('id', 'title', 'image', 'image_banner')->where('status', 1)->orderBy('position', 'asc')->paginate($limit);
+            return $brands;
+        }
+        else {
             $arr = array();
             return $arr;
         }

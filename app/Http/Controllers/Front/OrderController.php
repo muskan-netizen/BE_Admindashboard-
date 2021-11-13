@@ -570,6 +570,8 @@ class OrderController extends FrontController
             $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver??null;
             $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver??null;
             $order->comment_for_vendor = $cart->comment_for_vendor??null;
+            $order->schedule_pickup = $cart->schedule_pickup??null;
+            $order->schedule_dropoff = $cart->schedule_dropoff??null;
             $order->save();
             $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
             foreach ($cart_prescriptions as $cart_prescription) {

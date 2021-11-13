@@ -666,7 +666,7 @@ body_event.on("click", ".theme-layout-version", function () {
     // );
 }),
     $(function () {
-        $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
+        // $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
     }),
     jQuery(".setting-title h4").append('<span class="according-menu"></span>'),
     jQuery(".setting-title").on("click", function () {
