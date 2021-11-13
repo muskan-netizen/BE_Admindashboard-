@@ -286,9 +286,9 @@ class OrderController extends BaseController{
                 $product->total_amount = $total_amount;
             }
             if($vendor->dineInTable){
-                $vendor->dineInTableName = $vendor->dine_in_table->translations->first() ? $vendor->dine_in_table->translations->first()->name : '';
-                $vendor->dineInTableCapacity = $vendor->dine_in_table->seating_number;
-                $vendor->dineInTableCategory = $vendor->dine_in_table->category->first() ? $vendor->dine_in_table->category->first()->title : '';
+                $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                $vendor->dineInTableCategory = $vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
             }
         }
         // dd($order->toArray());
