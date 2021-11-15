@@ -10550,6 +10550,7 @@ header.header-style .onhover-dropdown:before {
     display: flex;
     font-size: 15px;
     padding: 0;
+    font-family: Lato, sans-serif !important;
 }
 
 .top-header .header-dropdown .onhover-dropdown .onhover-show-div li a,

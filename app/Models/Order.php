@@ -14,7 +14,7 @@ class Order extends Model{
 	    return $this->hasMany('App\Models\OrderProduct' , 'order_id', 'id'); 
 	}
 	public function vendors(){
-	    return $this->hasMany('App\Models\OrderVendor' , 'order_id', 'id'); 
+	    return $this->hasMany('App\Models\OrderVendor' , 'order_id', 'id')->select('*','dispatcher_status_option_id as dispatcher_status');
 	}
 	public function user(){
 	    return $this->hasOne('App\Models\User' , 'id', 'user_id'); 

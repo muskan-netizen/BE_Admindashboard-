@@ -981,6 +981,21 @@ class OrderController extends BaseController {
                 $order->luxury_option_name = $luxury_option_name;
     		    $order->order_item_count = $order_item_count;
             }
+           // 12345
+           if(isset($request->new_dispatch_traking_url) && !empty($request->new_dispatch_traking_url)){
+               try{
+                $response = Http::get($request->new_dispatch_traking_url);
+               }catch(\Exception $ex){
+                }
+           
+
+            if(isset($response) && $response->status() == 200){
+            $response = $response->json();
+            $order['order_data'] = $response;
+            }
+           }
+           
+
             return $this->successResponse($order, null, 201);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

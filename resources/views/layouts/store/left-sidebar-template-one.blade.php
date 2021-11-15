@@ -85,8 +85,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     </li>
                                 </ul>
                             </li>
-
-                           
                             @endif
                         </ul>
                     </div>
@@ -100,7 +98,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <div class="row align-items-center position-initial">
                         <div class="col-lg-12">
                             <div class="row mobile-header align-items-center">
-                                <div class="col-6 d-flex align-items-center justify-content-sm-between"> 
+                                <div class="col-4 d-flex align-items-center justify-content-sm-between"> 
                                     <a class="navbar-brand mr-3 d-none d-sm-inline-block" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                                     @if($mod_count > 1)
                                         <ul class="nav nav-tabs navigation-tab nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
@@ -140,7 +138,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                         </ul>
                                     @endif 
                                 </div>
-                                <div class="col-6 mt-sm-2 ipad-view">                       
+                                <div class="col-8 my-sm-2 ipad-view">                       
                                     <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100 ">
                                         @if( (Session::get('preferences')))
                                             @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )

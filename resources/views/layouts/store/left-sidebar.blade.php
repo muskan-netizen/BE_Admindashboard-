@@ -51,10 +51,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                             <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
                                         </li>
                                     @endforeach
-
-
-
-
                                 </ul>
                             </li>
                             <li class="onhover-dropdown change-currency">
@@ -373,10 +369,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
         </div>
     {{--@endif--}}
-
-   
-
-
 </header>
 <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div>
 <script type="text/template" id="nav_categories_template">

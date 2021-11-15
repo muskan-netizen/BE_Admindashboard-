@@ -79,8 +79,8 @@
                     <div class="col-md-8 col-lg-5 order-0">
                         <div class="card-box vendor-details-left px-2 py-3">
                             <div class="d-sm-flex">
-                                <div class="mr-sm-1 text-center text-sm-left mb-2 mb-sm-0">
-                                    <img src="{{$vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path']}}" class="rounded-circle avatar-lg" alt="profile-image" style="mini-width:120px">
+                                <div class="vender-icon mr-sm-1 text-center text-sm-left mb-2 mb-sm-0">
+                                    <img src="{{$vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path']}}" class="rounded-circle avatar-lg" alt="profile-image">
                                 </div>
                                 <div class="ml-sm-1">
                                     <h3>{{$vendor->name}}</h3>

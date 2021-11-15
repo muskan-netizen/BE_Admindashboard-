@@ -820,7 +820,7 @@ class OrderController extends BaseController{
                                                         'shortcode' => $dispatch_domain->laundry_service_key_code,
                                                         'content-type' => 'application/json']
                                                             ]);
-                                                
+                         Log::info($postdata);                                   
                         $url = $dispatch_domain->laundry_service_key_url;
                         $res = $client->post(
                             $url.'/api/task/create',

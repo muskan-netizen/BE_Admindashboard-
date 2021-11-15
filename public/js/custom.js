@@ -133,6 +133,11 @@ $(window).resize(function() {
     resizeMenuSlider();
 });
 
+if ($(window).width() < 767) {
+    $('.footer-contant').addClass('footer-mobile-contant');
+    $('.footer-contant').removeClass('footer-contant');
+}
+
 window.initializeSlider = function initializeSlider() {
     $(".slide-6").slick({
         dots: !1,
@@ -256,7 +261,7 @@ window.initializeSlider = function initializeSlider() {
         arrows: !0,
         dots: !1,
         infinite: !1,
-        speed: 300,
+        speed: 300,        
         slidesToShow: 6,
         slidesToScroll: 3,
         responsive: [
@@ -274,6 +279,8 @@ window.initializeSlider = function initializeSlider() {
         slidesToScroll: 3,
         autoplay: true,
         autoplaySpeed: 5000,
+        centerMode: true,
+        centerPadding: '40px',
         rtl: false,
         responsive: [{
                 breakpoint: 1200,
