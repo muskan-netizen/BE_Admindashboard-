@@ -229,7 +229,7 @@ class CategoryController extends BaseController
             foreach ($category_list as $category) {
                 $category_details[] = array(
                     'id' => $category->id,
-                    'name' => $category->translation ? $category->translation->first()->name : $category->slug,
+                    'name' => $category->translation->first() ? $category->translation->first()->name : $category->slug,
                     'icon' => $category->icon,
                     'image' => $category->image
                 );

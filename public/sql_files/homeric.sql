@@ -14,6 +14,7 @@
 -- Dumping data for table `vendors`
 --
 
+
 INSERT INTO `vendors` (`id`, `name`, `slug`, `desc`, `logo`, `banner`, `address`, `email`, `website`, `phone_no`, `latitude`, `longitude`, `order_min_amount`, `order_pre_time`, `auto_reject_time`, `commission_percent`, `commission_fixed_per_order`, `commission_monthly`, `dine_in`, `takeaway`, `delivery`, `status`, `add_category`, `setting`, `is_show_vendor_details`, `created_at`, `updated_at`, `show_slot`, `vendor_templete_id`, `auto_accept_order`) VALUES
 (1, 'Homeric', 'homeric', NULL, 'vendor/JcyIWwmMOoe4cJYERZdSPiQGgXlPA37EUgnxwLP7.jpg', 'vendor/RWL4Tw3GR6Lxx71dpatzUIbb3HwIABAsjfRIVXdj.png', 'Chandigarh, India', 'homeric@support.com', NULL, '8525459636', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 1, 1, 1, 1, 0, 0, NULL, '2021-09-29 18:31:49', 1, NULL, 0);
 
@@ -556,9 +557,9 @@ INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sor
 
 
 INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
-(2, 'Home services 1', NULL, 'banner/6VYX3rkzeAHONCxo9uXovfeTPpPdodXC3einIkn1.jpg', 1, 3, 1, '2021-09-29 17:56:00', '2024-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-10-11 10:29:39'),
-(3, 'home services2', NULL, 'banner/WXu2FODrtjOgbn1UWIg844On4BBgL7nRIecNl1Dc.jpg', 1, 1, 1, '2021-09-29 17:57:00', '2023-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-10-11 10:29:19'),
-(4, 'home services 3', NULL, 'banner/pJA6aYGXt27Q6lXuirz0rH3fjPC9FhDzfqHzW2wW.jpg', 1, 2, 1, '2021-09-29 17:58:00', '2025-09-30 12:00:00', NULL, NULL, 'category', '2021-09-29 12:29:12', '2021-10-11 10:29:29');
+(2, 'Home services 3', NULL, 'banner/qHZ3kQw5GIaNqFnB91ZH5vJwrQXTLGVAtJDEHTyK.png', 1, 3, 1, '2021-09-29 17:56:00', '2024-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-11-15 10:19:27'),
+(3, 'home services1', NULL, 'banner/0yVUHoUJwREZTc2BHqKmCT7LY6p7HcnkuhjszN3i.png', 1, 1, 1, '2021-09-29 17:57:00', '2023-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-11-15 10:19:36'),
+(4, 'home services 2', NULL, 'banner/gqBRrZnjIlStdY4RSys9W3DrKVTOa9t6y8oxY2kJ.png', 1, 2, 1, '2021-09-29 17:58:00', '2025-09-30 12:00:00', NULL, NULL, 'category', '2021-09-29 12:29:12', '2021-11-15 10:19:07');
 
 
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
@@ -580,4 +581,45 @@ INSERT INTO `cab_booking_layout_transaltions` (`id`, `title`, `cab_booking_layou
 (6, NULL, 6, 1, '2021-10-04 12:36:47', '2021-10-04 12:36:47', NULL);
 
 
-UPDATE `client_preferences` SET `business_type` = 'home_service' WHERE `client_preferences`.`id` = 1;
+INSERT INTO `app_stylings` (`id`, `name`, `type`, `created_at`, `updated_at`) VALUES
+(1, 'Regular Font', 2, NULL, NULL),
+(2, 'Medium Font', 2, NULL, NULL),
+(3, 'Bold Font', 2, NULL, NULL),
+(4, 'Primary Color', 4, NULL, NULL),
+(5, 'Secondary Color', 4, NULL, NULL),
+(6, 'Tertiary Color', 4, NULL, NULL),
+(7, 'Tab Bar Style', 3, NULL, NULL),
+(8, 'Home Page Style', 3, NULL, NULL),
+(9, 'Home Tag Line', 1, NULL, NULL);
+
+
+
+
+INSERT INTO `app_styling_options` (`id`, `app_styling_id`, `name`, `image`, `is_selected`, `created_at`, `updated_at`, `template_id`) VALUES
+(1, 1, 'CircularStd-Book', NULL, 1, NULL, NULL, NULL),
+(2, 1, 'SFProText-Regular', NULL, 0, NULL, NULL, NULL),
+(3, 1, 'Futura-Normal', NULL, 0, NULL, NULL, NULL),
+(4, 1, 'Eina02-Regular', NULL, 0, NULL, NULL, NULL),
+(5, 2, 'CircularStd-Medium', NULL, 1, NULL, NULL, NULL),
+(6, 2, 'SFProText-Medium', NULL, 0, NULL, NULL, NULL),
+(7, 2, 'Futura-Medium', NULL, 0, NULL, NULL, NULL),
+(8, 2, 'Eina02-SemiBold', NULL, 0, NULL, NULL, NULL),
+(9, 3, 'CircularStd-Bold', NULL, 1, NULL, NULL, NULL),
+(10, 3, 'SFProText-Bold', NULL, 0, NULL, NULL, NULL),
+(11, 3, 'FuturaBT-Heavy', NULL, 0, NULL, NULL, NULL),
+(12, 3, 'Eina02-Bold', NULL, 0, NULL, NULL, NULL),
+(13, 4, '#67B9B4', NULL, 1, NULL, '2021-10-04 07:36:12', NULL),
+(14, 5, '#fff', NULL, 1, NULL, NULL, NULL),
+(15, 6, '#fff', NULL, 1, NULL, NULL, NULL),
+(16, 7, 'Tab 1', 'bar.png', 0, NULL, '2021-10-04 09:23:13', 1),
+(17, 7, 'Tab 2', 'bar_two.png', 0, NULL, '2021-10-04 09:23:13', 2),
+(18, 7, 'Tab 3', 'bar_three.png', 0, NULL, '2021-10-04 09:23:13', 3),
+(19, 7, 'Tab 4', 'bar_four.png', 1, NULL, '2021-10-04 09:23:13', 4),
+(20, 7, 'Tab 5', 'bar_five.png', 0, NULL, '2021-10-04 09:23:13', 5),
+(21, 8, 'Home Page 1', 'home.png', 0, NULL, '2021-11-15 07:53:05', 1),
+(22, 8, 'Home Page 4', 'home_four.png', 0, NULL, '2021-11-15 07:53:05', 2),
+(23, 8, 'Home Page 5', 'home_five.png', 1, NULL, '2021-11-15 07:53:05', 3),
+(24, 9, 'Create a free account and join us!', NULL, 1, NULL, NULL, NULL),
+(25, 8, 'Home Page 6', 'home_six.png', 0, '2021-10-12 14:10:13', '2021-11-15 07:53:05', 4);
+
+UPDATE `client_preferences` SET `business_type` = 'home_service'  , `is_hyperlocal` = 0 WHERE `client_preferences`.`id` = 1;

@@ -39,9 +39,13 @@ class HomeController extends BaseController
                 $key = $app_styling['key'];
                 $homeData['profile']->preferences->$key = __($app_styling['value']);
             }
+            $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
+            $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
             $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
+            $homeData['profile']->preferences->delivery_nomenclature = $delivery_nomenclature;
+            $homeData['profile']->preferences->dinein_nomenclature = $dinein_nomenclature;
             $homeData['profile']->preferences->takeaway_nomenclature = $takeaway_nomenclature;
             $homeData['profile']->preferences->search_nomenclature = $search_nomenclature;
             $homeData['profile']->preferences->vendors_nomenclature = $vendors_nomenclature;

@@ -152,7 +152,7 @@ h6 {
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px;
-    width: 80%;
+    width: 60%;
 }
 
 .fav-button {
@@ -177,7 +177,7 @@ h6 {
 .navigation-tab-item .nav-link {
     color: rgba(0, 0, 0, 0.39);
     font-weight: 600;
-    padding: 2px 0;
+    padding: 5px 0;
     text-align: center;
     line-height: 18px;
 }

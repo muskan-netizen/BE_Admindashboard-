@@ -26,6 +26,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         // Route::get('vendor/category/productsFilter/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProductsFilter');
         Route::post('productByVariant/{id}','Api\v1\ProductController@getVariantData')->name('productVariant');
         Route::post('contact-us', 'Api\v1\HomeController@contactUs');
+
+        Route::post('upload-image-pickup', 'Api\v1\PickupDeliveryController@uploadImagePickup');  ////// upload image while pickup delivery
     });
     Route::group(['middleware' => ['dbCheck','systemAuth', 'apilogger']], function() {
         Route::get('cart/empty', 'Api\v1\CartController@emptyCart');

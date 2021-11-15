@@ -15,11 +15,11 @@
 --
 INSERT INTO `vendors` (`id`, `name`, `slug`, `desc`, `logo`, `banner`, `address`, `email`, `website`, `phone_no`, `latitude`, `longitude`, `order_min_amount`, `order_pre_time`, `auto_reject_time`, `commission_percent`, `commission_fixed_per_order`, `commission_monthly`, `dine_in`, `takeaway`, `delivery`, `status`, `add_category`, `setting`, `is_show_vendor_details`, `created_at`, `updated_at`, `show_slot`, `vendor_templete_id`, `auto_accept_order`) VALUES
 (1, 'DeliveryZone', NULL, NULL, 'default/default_logo.png', 'default/default_image.png', 'Sheikh Zayed Road - Dubai - United Arab Emirates', NULL, NULL, NULL, '25.060924600000', '55.128979500000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 1, 1, 2, 1, 0, 0, NULL, '2021-09-30 10:13:17', 1, NULL, 0),
-(2, 'Mini Mart', 'mini-mart', NULL, 'vendor/AaXdXudoRLJUzoWUbCh1xOerT3CmTPrCbgz2nBIE.jpg', 'vendor/NFEsYj6mGpCVcEctoCG3vHnpFg382s3ueODSBEVH.jpg', 'Chandigarh, India', 'minimart@support.com', NULL, '9859856363', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 1, 1, 1, 1, 1, 0, 0, '2021-09-30 10:12:17', '2021-10-08 10:32:47', 1, 1, 0),
-(3, 'Wall Street', 'wall-street', NULL, 'vendor/Rjc22mFhVAsYf34VYcUR4htxHeWn7qRcCqE6fu2K.jpg', 'vendor/W7a4kYQAZcdcUsE6g9zMhWGA6XQaAQhj9Ugnbrdd.jpg', 'Chandigarh, India', 'wallstreet@support.com', NULL, '9857496201', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 1, 1, 1, 1, 1, 0, 0, '2021-09-30 10:13:13', '2021-10-08 10:33:45', 1, 1, 0),
-(4, 'Fresh Harvest', 'fresh-harvest', NULL, 'vendor/BjM1bRwdAOwBfE1CC1icQi4y5CaVawxHkvJzL1Sx.png', 'vendor/GYOwjsGD30N3cuNT1PfKhNhnR9nKhdEf41HX9Xw7.jpg', 'Chandigarh, India', 'freshharvest@support.com', NULL, '9685234178', '30.538994400000', '75.955032900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 1, 1, 1, 1, 1, 0, 0, '2021-09-30 10:13:42', '2021-10-08 10:33:27', 1, 1, 0),
-(5, 'Fresh Grocer', 'fresh-grocer', NULL, 'vendor/p29nxG7NNEWrhmXo6LiRncKZ0SywtnKDiGW2dPyE.jpg', 'vendor/aDkLjMFFXbNZICqPzy32yxsuYWFzHuKiwFBbwLBG.jpg', 'Chandigarh, India', 'freshgrocer@support.com', NULL, '9805203698', '30.538994400000', '75.955032900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 1, 1, 1, 1, 1, 0, 0, '2021-09-30 10:14:22', '2021-10-08 10:33:16', 1, 1, 0),
-(6, 'Omega', 'omega', NULL, 'vendor/eDwvcqPjJvEg6tqTEBqVY3i66f0jZ9qFMCYZZIYa.jpg', 'vendor/hrIfJ3ImNhe7Dg4aQelCibiF5XqrzwG9fJMvspbv.jpg', 'Chandigarh, India', 'Omega Grocery', NULL, '8505201346', '30.733314800000', '76.779417900000', '0.00', '0', NULL, 1, '0.00', '0.00', 1, 1, 1, 1, 1, 0, 0, '2021-09-30 10:15:07', '2021-10-08 10:33:06', 1, 1, 0);
+(2, 'Mini Mart', 'mini-mart', NULL, 'vendor/AaXdXudoRLJUzoWUbCh1xOerT3CmTPrCbgz2nBIE.jpg', 'vendor/NFEsYj6mGpCVcEctoCG3vHnpFg382s3ueODSBEVH.jpg', 'Chandigarh, India', 'minimart@support.com', NULL, '9859856363', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 1, 1, 1, 1, 1, 0, 0, '2021-09-30 10:12:17', '2021-11-15 08:37:00', 1, 5, 0),
+(3, 'Wall Street', 'wall-street', NULL, 'vendor/Rjc22mFhVAsYf34VYcUR4htxHeWn7qRcCqE6fu2K.jpg', 'vendor/W7a4kYQAZcdcUsE6g9zMhWGA6XQaAQhj9Ugnbrdd.jpg', 'Chandigarh, India', 'wallstreet@support.com', NULL, '9857496201', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 1, 1, 1, 1, 1, 0, 0, '2021-09-30 10:13:13', '2021-11-15 08:36:45', 1, 5, 0),
+(4, 'Fresh Harvest', 'fresh-harvest', NULL, 'vendor/BjM1bRwdAOwBfE1CC1icQi4y5CaVawxHkvJzL1Sx.png', 'vendor/GYOwjsGD30N3cuNT1PfKhNhnR9nKhdEf41HX9Xw7.jpg', 'Chandigarh, India', 'freshharvest@support.com', NULL, '9685234178', '30.538994400000', '75.955032900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 1, 1, 1, 1, 1, 0, 0, '2021-09-30 10:13:42', '2021-11-15 08:34:03', 1, 5, 0),
+(5, 'Fresh Grocer', 'fresh-grocer', NULL, 'vendor/p29nxG7NNEWrhmXo6LiRncKZ0SywtnKDiGW2dPyE.jpg', 'vendor/aDkLjMFFXbNZICqPzy32yxsuYWFzHuKiwFBbwLBG.jpg', 'Chandigarh, India', 'freshgrocer@support.com', NULL, '9805203698', '30.538994400000', '75.955032900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 1, 1, 1, 1, 1, 0, 0, '2021-09-30 10:14:22', '2021-11-15 08:33:48', 1, 5, 0),
+(6, 'Omega', 'omega', NULL, 'vendor/eDwvcqPjJvEg6tqTEBqVY3i66f0jZ9qFMCYZZIYa.jpg', 'vendor/hrIfJ3ImNhe7Dg4aQelCibiF5XqrzwG9fJMvspbv.jpg', 'Chandigarh, India', 'Omega Grocery', NULL, '8505201346', '30.733314800000', '76.779417900000', '0.00', '0', NULL, 1, '0.00', '0.00', 1, 1, 1, 1, 1, 0, 0, '2021-09-30 10:15:07', '2021-11-15 08:33:31', 1, 5, 0);
 
 --
 -- Dumping data for table `addon_sets`
@@ -74,14 +74,14 @@ INSERT INTO `categories` (`id`, `icon`, `slug`, `type_id`, `image`, `is_visible`
 (5, NULL, 'Pharmacy', 1, NULL, 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:40:53', '2021-10-01 14:40:53', 1),
 (6, NULL, 'Send something', 1, NULL, 1, 1, 1, 1, 1, 2, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-10-01 14:40:41', '2021-10-01 14:40:41', 1),
 (7, NULL, 'Buy something', 1, NULL, 1, 1, 1, 1, 1, 2, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-10-01 14:40:41', '2021-10-01 14:40:41', 1),
-(8, 'category/icon/IBfpmY0WxtfyZt3aDa1oK1Ylbcl5WNjiJEJYsLSQ.svg', 'Vegetables& Fruits', 1, 'category/image/CYXcpdrgSKKbw8XMHPhQfUd3aLuXWQCekKqCRwm4.png', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 11:48:39', NULL, 1),
-(9, 'category/icon/2vo8hi9LutW7v367hFhHidOZd9hcRyuRWRB0s4a2.svg', 'Fruits', 1, 'category/image/K2vLZvOuuYI5HSwSH43kBucl5xQZmyJho4r4BL2O.jpg', 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 12:48:57', NULL, 1),
-(10, 'category/icon/eYR1U30UrQVFGZpewB5RpCSbz3cbXZx698FyV0r0.svg', 'Dairy and Eggs', 1, 'category/image/cTGFdgTVUa1Llbdwi9EO3vLRQ8jhFEpQsnsI6m4X.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-07 08:53:14', NULL, 1),
+(8, 'category/icon/IBfpmY0WxtfyZt3aDa1oK1Ylbcl5WNjiJEJYsLSQ.svg', 'Vegetables& Fruits', 3, 'category/image/CYXcpdrgSKKbw8XMHPhQfUd3aLuXWQCekKqCRwm4.png', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 08:32:18', NULL, 1),
+(9, 'category/icon/2vo8hi9LutW7v367hFhHidOZd9hcRyuRWRB0s4a2.svg', 'Fruits', 3, 'category/image/K2vLZvOuuYI5HSwSH43kBucl5xQZmyJho4r4BL2O.jpg', 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 08:32:24', NULL, 1),
+(10, 'category/icon/eYR1U30UrQVFGZpewB5RpCSbz3cbXZx698FyV0r0.svg', 'Dairy and Eggs', 3, 'category/image/cTGFdgTVUa1Llbdwi9EO3vLRQ8jhFEpQsnsI6m4X.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 08:32:41', NULL, 1),
 (11, NULL, 'E-Commerce', 1, NULL, 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:40:56', '2021-10-01 14:40:56', 1),
 (12, NULL, 'Cloth', 1, NULL, 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:41:00', '2021-10-01 14:41:00', 1),
 (13, NULL, 'Dispatcher', 6, NULL, 0, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:41:05', '2021-10-01 14:41:05', 1),
-(14, 'category/icon/AhnoUOVKYf1NvjZ3lCvfiNylOwkU2Al5G0xtAIzI.svg', 'bakeryproducts', 1, 'category/image/W60KOGsUuhkkOKn0CJQzmdKHpSD85Yuf1buocCP4.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 10:00:46', '2021-10-07 08:53:19', NULL, 1),
-(15, 'category/icon/l13a7knkwjhzcciMJOl2n5uw6xEVY9wkIKWzOdvb.svg', 'beverages', 1, 'category/image/v9Lgft35v6S9W78Sp6PqzStbFv3wQ2pqMkUADpM9.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 10:10:54', '2021-10-07 08:53:24', NULL, 1);
+(14, 'category/icon/AhnoUOVKYf1NvjZ3lCvfiNylOwkU2Al5G0xtAIzI.svg', 'bakeryproducts', 3, 'category/image/W60KOGsUuhkkOKn0CJQzmdKHpSD85Yuf1buocCP4.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 10:00:46', '2021-11-15 08:32:35', NULL, 1),
+(15, 'category/icon/l13a7knkwjhzcciMJOl2n5uw6xEVY9wkIKWzOdvb.svg', 'beverages', 3, 'category/image/v9Lgft35v6S9W78Sp6PqzStbFv3wQ2pqMkUADpM9.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 10:10:54', '2021-11-15 08:32:47', NULL, 1);
 
 --
 -- Dumping data for table `addon_options`
@@ -455,7 +455,6 @@ INSERT INTO `brand_categories` (`id`, `brand_id`, `category_id`, `created_at`, `
 --
 -- Dumping data for table `category_translations`
 --
-
 INSERT INTO `category_translations` (`id`, `name`, `trans-slug`, `meta_title`, `meta_description`, `meta_keywords`, `category_id`, `language_id`, `created_at`, `updated_at`) VALUES
 (1, 'root', '', 'root', '', '', 1, 1, NULL, '2021-09-30 12:04:20'),
 (2, 'Delivery', '', 'Delivery', NULL, NULL, 2, 1, NULL, '2021-09-30 12:04:20'),
@@ -1053,9 +1052,9 @@ INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sor
 
 
 INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
-(1, 'Vegetables', NULL, 'banner/jNz3XAQzyOnDAO28EyQyIZgjAHo3Z6tbSXW4gCtM.png', 1, 1, 1, '2021-09-30 16:32:00', '2022-02-24 12:00:00', 8, NULL, 'category', NULL, '2021-10-11 10:13:22'),
-(2, 'Beverages', NULL, 'banner/ANHtxqX9efpQyI569o3zfUv8wksov9b1uN8MfUiy.jpg', 1, 2, 1, '2021-09-30 16:38:00', '2021-12-30 12:00:00', 15, NULL, 'category', NULL, '2021-10-11 10:13:40'),
-(3, 'Fruits', NULL, 'banner/jFO3l6weFavP3irAM9jTu9k92mf0m8Wp9icfzxCY.jpg', 1, 3, 1, '2021-09-30 17:37:00', '2022-02-23 12:00:00', 9, NULL, 'category', NULL, '2021-10-11 10:14:50');
+(1, 'Vegetables', NULL, 'banner/ETnFf4CIEdESfMqkNyOY2PPWnQNTOb201a6bv6h6.png', 1, 1, 1, '2021-09-30 16:32:00', '2022-02-24 12:00:00', 8, NULL, 'category', NULL, '2021-11-15 08:30:45'),
+(2, 'Beverages', NULL, 'banner/XgkKGRgtXe2h3ls3FUD1uGfgYUDN9X9s7jS0i3Ea.png', 1, 2, 1, '2021-09-30 16:38:00', '2021-12-30 12:00:00', 15, NULL, 'category', NULL, '2021-11-15 08:31:13'),
+(3, 'Fruits', NULL, 'banner/GmAuMUxcvDRW5fFNpxQ6TP2LNtxVQ4C9bwJcmVTb.png', 1, 3, 1, '2021-09-30 17:37:00', '2022-02-23 12:00:00', 9, NULL, 'category', NULL, '2021-11-15 08:31:43');
 
 
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
@@ -1066,3 +1065,46 @@ INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active
 (5, 'Best Sellers', 'best_sellers', 5, 1, NULL, NULL),
 (6, 'Brands', 'brands', 6, 1, NULL, NULL);
 
+
+INSERT INTO `app_stylings` (`id`, `name`, `type`, `created_at`, `updated_at`) VALUES
+(1, 'Regular Font', 2, NULL, NULL),
+(2, 'Medium Font', 2, NULL, NULL),
+(3, 'Bold Font', 2, NULL, NULL),
+(4, 'Primary Color', 4, NULL, NULL),
+(5, 'Secondary Color', 4, NULL, NULL),
+(6, 'Tertiary Color', 4, NULL, NULL),
+(7, 'Tab Bar Style', 3, NULL, NULL),
+(8, 'Home Page Style', 3, NULL, NULL),
+(9, 'Home Tag Line', 1, NULL, NULL);
+
+
+INSERT INTO `app_styling_options` (`id`, `app_styling_id`, `name`, `image`, `is_selected`, `created_at`, `updated_at`, `template_id`) VALUES
+(1, 1, 'CircularStd-Book', NULL, 1, NULL, NULL, NULL),
+(2, 1, 'SFProText-Regular', NULL, 0, NULL, NULL, NULL),
+(3, 1, 'Futura-Normal', NULL, 0, NULL, NULL, NULL),
+(4, 1, 'Eina02-Regular', NULL, 0, NULL, NULL, NULL),
+(5, 2, 'CircularStd-Medium', NULL, 1, NULL, NULL, NULL),
+(6, 2, 'SFProText-Medium', NULL, 0, NULL, NULL, NULL),
+(7, 2, 'Futura-Medium', NULL, 0, NULL, NULL, NULL),
+(8, 2, 'Eina02-SemiBold', NULL, 0, NULL, NULL, NULL),
+(9, 3, 'CircularStd-Bold', NULL, 1, NULL, NULL, NULL),
+(10, 3, 'SFProText-Bold', NULL, 0, NULL, NULL, NULL),
+(11, 3, 'FuturaBT-Heavy', NULL, 0, NULL, NULL, NULL),
+(12, 3, 'Eina02-Bold', NULL, 0, NULL, NULL, NULL),
+(13, 4, '#77C93C', NULL, 1, NULL, '2021-10-04 07:11:45', NULL),
+(14, 5, '#fff', NULL, 1, NULL, NULL, NULL),
+(15, 6, '#fff', NULL, 1, NULL, NULL, NULL),
+(16, 7, 'Tab 1', 'bar.png', 0, NULL, '2021-11-09 07:16:59', 1),
+(17, 7, 'Tab 2', 'bar_two.png', 0, NULL, '2021-11-09 07:16:59', 2),
+(18, 7, 'Tab 3', 'bar_three.png', 0, NULL, '2021-11-09 07:16:59', 3),
+(19, 7, 'Tab 4', 'bar_four.png', 1, NULL, '2021-11-09 07:16:59', 4),
+(20, 7, 'Tab 5', 'bar_five.png', 0, NULL, '2021-11-09 07:16:59', 5),
+(21, 8, 'Home Page 1', 'home.png', 0, NULL, '2021-11-15 07:40:05', 1),
+(22, 8, 'Home Page 4', 'home_four.png', 0, NULL, '2021-11-15 07:40:05', 2),
+(23, 8, 'Home Page 5', 'home_five.png', 1, NULL, '2021-11-15 07:40:05', 3),
+(24, 9, 'Create a free account and join us!', NULL, 1, NULL, NULL, NULL),
+(25, 8, 'Home Page 6', 'home_six.png', 0, '2021-10-12 14:10:13', '2021-11-15 07:40:05', 4);
+
+
+
+UPDATE `client_preferences` SET `business_type` = 'food_grocery_ecommerce' , `is_hyperlocal` = 0 WHERE `client_preferences`.`id` = 1;

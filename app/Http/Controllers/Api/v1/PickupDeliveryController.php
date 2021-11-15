@@ -292,11 +292,17 @@ class PickupDeliveryController extends BaseController{
                         $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
                     }
                 }
+
+                if($request->payment_option_id == 2)
+                $payment_option = 1;
+                else
+                $payment_option = 1;
+
                 $order = new Order;
                 $order->user_id = $user->id;
                 $order->order_number = generateOrderNo();
                 $order->address_id = $request->address_id;
-                $order->payment_option_id = $request->payment_option_id;
+                $order->payment_option_id = $payment_option;
                 $order->save();
                 $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
@@ -465,7 +471,8 @@ class PickupDeliveryController extends BaseController{
                                                     'order_team_tag' => $team_tag, 
                                                     'order_agent_tag' => $order_agent_tag,
                                                     'task' => $request->tasks,
-                                                    'order_time_zone' => $request->order_time_zone??null
+                                                    'order_time_zone' => $request->order_time_zone??null,
+                                                    'images_array' => $request->images_array??null
                                                     ];
 
                   
@@ -648,6 +655,63 @@ class PickupDeliveryController extends BaseController{
            $response['order_details'] = $order;
            return $this->successResponse($response); 
         }
+    }
+
+
+
+    # upload image in pickup & delivery 
+    public function uploadImagePickup(Request $request)
+    {
+       
+            $validator = Validator::make($request->all(), [
+                'upload_photo' => 'required|image'
+            ]);
+           // dd('1');
+           try {
+             $dispatch_domain = $this->checkIfPickupDeliveryOnCommon();
+            if ($dispatch_domain && $dispatch_domain != false) {
+                $files = [];
+                // $dispatch_domain->pickup_delivery_service_key_code ='745e3f';
+                // $dispatch_domain->pickup_delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
+                // $dispatch_domain->pickup_delivery_service_key_url ='http://192.168.96.20:8010';
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+               
+                $profile_photo = [];
+                if ($request->hasFile('upload_photo')) {
+                    $profile_photo =
+                        [
+                            'Content-type' => 'multipart/form-data',
+                            'name' => 'upload_photo',
+                            'filename' => $request->upload_photo->getClientOriginalName(),
+                            'Mime-Type' => $request->upload_photo->getMimeType('image'),
+                            'contents' =>  fopen($request->upload_photo, 'r'),
+                        ];
+                }
+                if ($profile_photo == null) {
+                    $profile_photo = ['name' => 'profile_photo[]', 'contents' => 'abc'];
+                }
+                $res = $client->post($url . '/api/upload-image-for-task', [
+                    'multipart' => [
+                        $profile_photo
+                    ]
+                ]);
+               
+                $response = json_decode($res->getBody(), true);
+                return $response;
+            }else{
+                $data = [];
+               $data['status'] = 400;
+               $data['message'] =  __('Error in pickup & delivery configuration');
+               return $data;
+            }
+        } catch (\Exception $e) {
+            $data = [];
+            $data['status'] = 400;
+            $data['message'] =  $e->getMessage();
+            return $data;
+        }
+       
     }
 
 }

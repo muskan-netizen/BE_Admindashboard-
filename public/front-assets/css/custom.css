@@ -19,6 +19,10 @@ a {
     display: block;
 }
 
+.navbar-brand .img-fluid {
+    max-width: max-content;
+}
+
 .site-header {
     width: 100%;
     top: 0;
@@ -6846,6 +6850,14 @@ body[dir="rtl"] .inner_spacing h3 {
     
 }
 
+
+
+@media (max-width: 1400px) and (min-width: 1100px) {
+    .radius-bar {
+        width: 60% !important;
+    }
+}
+
 @media (max-width: 1199px) and (min-width: 576px) {
     .radius-bar.d-xl-inline {
         position: absolute;
@@ -6994,7 +7006,7 @@ body[dir="rtl"] .inner_spacing h3 {
 }
 
 @media(min-width:1200px) {
-
+    
     li.mobile-menu-btn.d-sm-inline-block.d-none,
     .main-menu .menu-right .icon-nav li.d-ipad {
         display: none !important;

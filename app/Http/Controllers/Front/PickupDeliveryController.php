@@ -340,11 +340,17 @@ class PickupDeliveryController extends FrontController{
                         $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
                     }
                 }
+
+                if($request->payment_option_id == 2)
+                $payment_option = 1;
+                else
+                $payment_option = 1;
+
                 $order = new Order;
                 $order->user_id = $user->id;
                 $order->order_number = generateOrderNo();
                 $order->address_id = $request->address_id;
-                $order->payment_option_id = $request->payment_option_id;
+                $order->payment_option_id = $payment_option;
                 $order->save();
                 $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {

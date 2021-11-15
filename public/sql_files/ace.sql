@@ -16,13 +16,13 @@
 
 INSERT INTO `vendors` (`id`, `name`, `slug`, `desc`, `logo`, `banner`, `address`, `email`, `website`, `phone_no`, `latitude`, `longitude`, `order_min_amount`, `order_pre_time`, `auto_reject_time`, `commission_percent`, `commission_fixed_per_order`, `commission_monthly`, `dine_in`, `takeaway`, `delivery`, `status`, `add_category`, `setting`, `is_show_vendor_details`, `created_at`, `updated_at`, `show_slot`, `vendor_templete_id`, `auto_accept_order`) VALUES
 (1, 'Flywheel', 'flywheel', NULL, 'vendor/kMTjc9TATs2qflKon3GZss5j4wANzfBKeSjqH7Nm.jpg', 'vendor/8c2XFWji25iTF4x8usv1NDqNt28FOBv6daYTWe4F.png', 'Sector 40, Chandigarh, India', 'flywheel@support.com', NULL, '9874563456', '30.739443900000', '76.737980800000', '0.00', '0', NULL, 10, '10.00', NULL, 0, 0, 1, 1, 1, 0, 0, NULL, '2021-10-11 10:54:51', 1, 2, 0),
-(2, 'Spread Love', 'spread-love', NULL, 'vendor/d95ukJzHoOIQFtVnqs2uQGrcsfEClBHxeMvcw6WD.png', 'vendor/eJ9Uo3Yio8qt3ZD2HTikne5Rq442NDHr3eddYC0J.jpg', 'Sector 26, Chandigarh, India', 'spreadlove@support.com', NULL, '9867845635', '30.729958600000', '76.810103800000', '0.00', '0', NULL, 13, '13.00', NULL, 1, 1, 1, 1, 1, 0, 0, '2021-10-04 19:03:12', '2021-10-11 10:54:27', 1, 2, 0),
-(3, 'The Red Cafe', 'the-red-cafe', NULL, 'vendor/9s02B4OdWyXTm2Hb9rXlUOTHJtfiUzVYfNiHXrXd.png', 'vendor/mhEgIxPquCrdqy2fBP0QvF4g1YlQRD0T63o60j9a.jpg', 'Sector 43, Chandigarh, India', 'theredcafe@support.com', NULL, '9865478467', '30.719058600000', '76.748704400000', '0.00', '0', NULL, 10, '10.00', NULL, 1, 1, 1, 1, 1, 0, 0, '2021-10-04 19:05:24', '2021-10-11 10:54:11', 1, 2, 0),
+(2, 'Spread Love', 'spread-love', NULL, 'vendor/d95ukJzHoOIQFtVnqs2uQGrcsfEClBHxeMvcw6WD.png', 'vendor/eJ9Uo3Yio8qt3ZD2HTikne5Rq442NDHr3eddYC0J.jpg', 'Sector 26, Chandigarh, India', 'spreadlove@support.com', NULL, '9867845635', '30.729958600000', '76.810103800000', '0.00', '0', NULL, 13, '13.00', NULL, 1, 1, 1, 1, 1, 0, 0, '2021-10-04 19:03:12', '2021-11-15 10:45:31', 1, 5, 0),
+(3, 'The Red Cafe', 'the-red-cafe', NULL, 'vendor/9s02B4OdWyXTm2Hb9rXlUOTHJtfiUzVYfNiHXrXd.png', 'vendor/mhEgIxPquCrdqy2fBP0QvF4g1YlQRD0T63o60j9a.jpg', 'Sector 43, Chandigarh, India', 'theredcafe@support.com', NULL, '9865478467', '30.719058600000', '76.748704400000', '0.00', '0', NULL, 10, '10.00', NULL, 1, 1, 1, 1, 1, 0, 0, '2021-10-04 19:05:24', '2021-11-15 10:45:17', 1, 5, 0),
 (4, 'Shipmate', 'shipmate', NULL, 'vendor/K8P4SSyKwo33pBlHnqDgrFTRHRDFyJOOKDHxNlbJ.png', 'vendor/hZHrXAPaJbL1APnGfdNvxXsrqfcKPejaML6vrAjr.jpg', 'Chandigarh, India', 'shipmate@support.com', NULL, '9823451123', '30.733314800000', '76.779417900000', '0.00', '0', NULL, 12, '12.00', NULL, 0, 0, 1, 1, 1, 0, 0, '2021-10-04 19:07:18', '2021-10-07 05:48:24', 1, 2, 0),
-(5, 'West Zone', 'west-zone', NULL, 'vendor/FhiQAQ7avgPCv1osVsUIztld64HFclWgjAiIsODw.jpg', 'vendor/khKzjIp9ZByYYTEquG9SyLPOY29cli3yYQoXLZZu.jpg', 'Sector 22, Chandigarh, India', 'westzone@support.com', NULL, '9867543123', '30.732038500000', '76.772633400000', '0.00', '0', NULL, 12, '12.00', NULL, 0, 0, 1, 1, 1, 0, 0, '2021-10-04 19:09:13', '2021-10-11 10:53:54', 1, 2, 0),
+(5, 'West Zone', 'west-zone', NULL, 'vendor/FhiQAQ7avgPCv1osVsUIztld64HFclWgjAiIsODw.jpg', 'vendor/khKzjIp9ZByYYTEquG9SyLPOY29cli3yYQoXLZZu.jpg', 'Sector 22, Chandigarh, India', 'westzone@support.com', NULL, '9867543123', '30.732038500000', '76.772633400000', '0.00', '0', NULL, 12, '12.00', NULL, 0, 0, 1, 1, 1, 0, 0, '2021-10-04 19:09:13', '2021-11-15 10:45:05', 1, 5, 0),
 (6, 'HealthMart', 'healthmart', NULL, 'vendor/4y22qOyXWIwSG2gKhWnpMSLzxFgN65cRbDmOl1a7.png', 'vendor/yGCLI2hGlbNql1R7zBsYmJXmqRnaZXAp2ocrpWNa.jpg', 'Sector 27, Chandigarh, India', 'healthmart@support.com', NULL, '8936453362', '30.723634600000', '76.797631700000', '0.00', '0', NULL, 15, '15.00', NULL, 0, 0, 1, 1, 1, 0, 0, '2021-10-04 19:14:22', '2021-10-11 11:55:30', 1, 5, 0),
-(7, 'Plog Electronics', 'plog-electronics', NULL, 'vendor/kJ2PVrwXdJjHVuVN4dw9GADtw3sy4sBDHwmShRRM.jpg', 'vendor/KeMcZT3kUMlduxSrQXCS6jJzQUzy3bUbo19Lf76p.jpg', 'Sector 17, Chandigarh, India', 'plogelectronics@support.com', NULL, '9809545246', '30.741051700000', '76.779015000000', '0.00', '0', NULL, 14, '14.00', NULL, 0, 0, 1, 1, 1, 0, 0, '2021-10-04 19:17:32', '2021-10-11 10:53:15', 1, 2, 0),
-(8, 'Dressify', 'dressify', NULL, 'vendor/w3evi2alGLaDHp1MvZ7Caiv7JAAFgZn7zKaVtxB6.jpg', 'vendor/eduHNF09phhpAIUoLnNCyQM5Ltw8gBL0yw8D8VZR.jpg', 'Sector 19, Chandigarh, India', 'retric@support.com', NULL, '9875936245', '30.729363100000', '76.791972800000', '0.00', '0', NULL, 12, '12.00', NULL, 0, 0, 1, 1, 1, 0, 0, '2021-10-04 19:21:24', '2021-10-11 10:53:00', 1, 2, 0),
+(7, 'Plog Electronics', 'plog-electronics', NULL, 'vendor/kJ2PVrwXdJjHVuVN4dw9GADtw3sy4sBDHwmShRRM.jpg', 'vendor/KeMcZT3kUMlduxSrQXCS6jJzQUzy3bUbo19Lf76p.jpg', 'Sector 17, Chandigarh, India', 'plogelectronics@support.com', NULL, '9809545246', '30.741051700000', '76.779015000000', '0.00', '0', NULL, 14, '14.00', NULL, 0, 0, 1, 1, 1, 0, 0, '2021-10-04 19:17:32', '2021-11-15 10:44:42', 1, 5, 0),
+(8, 'Dressify', 'dressify', NULL, 'vendor/w3evi2alGLaDHp1MvZ7Caiv7JAAFgZn7zKaVtxB6.jpg', 'vendor/eduHNF09phhpAIUoLnNCyQM5Ltw8gBL0yw8D8VZR.jpg', 'Sector 19, Chandigarh, India', 'retric@support.com', NULL, '9875936245', '30.729363100000', '76.791972800000', '0.00', '0', NULL, 12, '12.00', NULL, 0, 0, 1, 1, 1, 0, 0, '2021-10-04 19:21:24', '2021-11-15 10:44:29', 1, 5, 0),
 (9, 'Cinch', 'cinch', NULL, 'vendor/yhA5rN6E0vdXYNwpCNiAZNXMxiQUROGUeJGUDHss.jpg', 'vendor/a1LFdIUqtGOTD6IeFVTw0OJ9phrTgRBFtbufMTUP.png', 'Sector 22, Chandigarh, India', 'cinch@support.com', NULL, '9468393425', '30.732038500000', '76.772633400000', '0.00', '0', NULL, 14, '14.00', NULL, 0, 0, 1, 1, 1, 0, 0, '2021-10-04 20:48:03', '2021-10-11 10:52:45', 1, 2, 0);
 
 --
@@ -114,9 +114,9 @@ INSERT INTO `addon_sets` (`id`, `title`, `min_select`, `max_select`, `position`,
 INSERT INTO `categories` (`id`, `icon`, `slug`, `type_id`, `image`, `is_visible`, `status`, `position`, `is_core`, `can_add_products`, `parent_id`, `vendor_id`, `client_code`, `display_mode`, `warning_page_id`, `template_type_id`, `warning_page_design`, `created_at`, `updated_at`, `deleted_at`, `show_wishlist`) VALUES
 (1, NULL, 'Root', 3, NULL, 0, 1, 1, 1, 0, NULL, NULL, NULL, '1', NULL, NULL, NULL, NULL, NULL, NULL, 1),
 (2, 'category/icon/RWMrSUmootTCFHz8npUZ8226QNwIPElNjpi6yRxn.svg', 'Delivery', 7, 'category/image/YCKm5Wg6gOzGLcJzvBWrqFUFAedTO2UyxjpXW2Ji.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-04 18:16:21', NULL, 1),
-(3, 'category/icon/dV6s6hp3N5wjaBecDTh0rsX215mAmJlZxsTqxOUX.svg', 'Restaurant', 3, 'category/image/so6wbch80ReRj6v98nDoAsdQmvWexcr5TBNMKrVh.jpg', 1, 1, 5, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-06 06:06:25', NULL, 1),
-(4, 'category/icon/aEYyg9aS0dudM8MSsNM9fxSdAx4rr5fG3D4wQVGX.svg', 'Supermarket', 3, 'category/image/MHOXYu4zK3nftnwI4R3wThKEhhg9vYgEau903Y2K.jpg', 1, 1, 6, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-04 18:24:11', NULL, 1),
-(5, 'category/icon/MWCp0xZXXgbQaQvVC3Kg2XTedLWI8bqc8bYJnegS.svg', 'Pharmacy', 3, 'category/image/YQo8N8MSqBxp8Btv5c5MnGIPCNK8IZGUsMo7kAbL.jpg', 1, 1, 7, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-06 06:10:21', NULL, 1),
+(3, 'category/icon/dV6s6hp3N5wjaBecDTh0rsX215mAmJlZxsTqxOUX.svg', 'Restaurant', 6, 'category/image/so6wbch80ReRj6v98nDoAsdQmvWexcr5TBNMKrVh.jpg', 1, 1, 5, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 10:43:09', NULL, 1),
+(4, 'category/icon/aEYyg9aS0dudM8MSsNM9fxSdAx4rr5fG3D4wQVGX.svg', 'Supermarket', 6, 'category/image/MHOXYu4zK3nftnwI4R3wThKEhhg9vYgEau903Y2K.jpg', 1, 1, 6, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 10:43:22', NULL, 1),
+(5, 'category/icon/MWCp0xZXXgbQaQvVC3Kg2XTedLWI8bqc8bYJnegS.svg', 'Pharmacy', 6, 'category/image/YQo8N8MSqBxp8Btv5c5MnGIPCNK8IZGUsMo7kAbL.jpg', 1, 1, 7, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 10:43:35', NULL, 1),
 (6, NULL, 'Send something', 1, NULL, 1, 1, 1, 1, 1, 2, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-10-04 17:43:24', '2021-10-04 17:43:24', 1),
 (7, NULL, 'Buy something', 1, NULL, 1, 1, 1, 1, 1, 2, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-10-04 17:43:29', '2021-10-04 17:43:29', 1),
 (8, 'category/icon/t1CwbeuA1FoGnW4vmpfWAO4zrVPB6KiOITEXLoxU.png', 'Vegetables', 1, 'category/image/uP3FdUkice6kKhFiNDY8hn9ZxGbyIgKGCIyT5mkn.jpg', 1, 1, 2, 1, 1, 4, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-04 18:26:40', NULL, 1),
@@ -130,14 +130,14 @@ INSERT INTO `categories` (`id`, `icon`, `slug`, `type_id`, `image`, `is_visible`
 (16, 'category/icon/yaYZA4gFCVPg1VXh72PUPwhxPxXf7hfht2Ro1E53.png', 'chinese', 1, 'category/image/K4zuQnKlpl9h5C9m29hX9v4PYolArpTugTPFKSNY.jpg', 1, 1, 2, 1, 1, 3, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 17:59:17', '2021-10-04 18:21:57', NULL, 1),
 (17, 'category/icon/dGTJPXadYhQ7pUKIFhequRdwZVBKE8ybxmfg9P0M.png', 'fitness', 1, 'category/image/QrxrOTqtIsX3PbWP1Lo4Sa7ee5J4XxbFOMX9bYW5.jpg', 1, 1, 1, 1, 1, 5, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:01:29', '2021-10-04 18:30:06', NULL, 1),
 (18, 'category/icon/QbOZTj6r3WWqMWAat2oUlc4xujhUa2lYe9S7SSbL.png', 'healthcare', 1, 'category/image/P83sey2SwBY3t1KjeDTHTy69y7MwlErlRSwKgw8K.png', 1, 1, 2, 1, 1, 5, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:01:57', '2021-10-04 18:31:38', NULL, 1),
-(19, 'category/icon/mIzK7P6TBemvw9JAiI7JdfXQQG65z8bDLDvCFToV.png', 'electronics', 3, 'category/image/YMb6SgE7KzRMBtT1ZIZU0YWQsraaWg3pyb000Rb7.jpg', 1, 1, 8, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:04:26', '2021-10-04 18:31:57', NULL, 1),
+(19, 'category/icon/mIzK7P6TBemvw9JAiI7JdfXQQG65z8bDLDvCFToV.png', 'electronics', 6, 'category/image/YMb6SgE7KzRMBtT1ZIZU0YWQsraaWg3pyb000Rb7.jpg', 1, 1, 8, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:04:26', '2021-11-15 10:44:05', NULL, 1),
 (20, 'category/icon/LWbscqM2Jn4oHtflsO7LuqMm1zaMrB2Y5HwtzCwf.png', 'mobiles', 1, 'category/image/jbZ84GfGMvMwA4m3Ps3yBwzNverV38W1L2yvVKaH.png', 1, 1, 1, 1, 1, 19, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:05:16', '2021-10-04 18:33:07', NULL, 1),
 (21, 'category/icon/DNJafCwN6Lz4oUyiVtakniTuKUMCCsZ3Ty6b0fpC.png', 'laptops', 1, 'category/image/7VgnbZoJ4kBPK9Rub3Y57GYk44UyQcmqY3IHdfJn.jpg', 1, 1, 2, 1, 1, 19, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:09:04', '2021-10-11 11:06:10', NULL, 1),
 (22, 'category/icon/G33Uu0pDIE8w2IGPI27JrjRtMV5EPswjWpq0Ks08.svg', 'homecare', 8, 'category/image/u4wvFNI6Gb9S2FsVNwxE7I9dgg0JOSTrJOAboyxa.jpg', 1, 1, 10, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:09:38', '2021-10-04 18:38:08', NULL, 1),
 (23, 'category/icon/iA09rFDNXHtDTbvUoamASX4SsKAWWWwpnkL5hKx9.png', 'acservices', 8, 'category/image/DXOqWWe00Rj7CElolyRe5H59srn0R4CA2b9dgx63.jpg', 1, 1, 1, 1, 0, 22, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:10:06', '2021-10-04 18:39:18', NULL, 1),
 (24, 'category/icon/XI6Nh00c9xkt3tWoE7fT9JWKPt42Cl8Fyrv40XR4.png', 'cleaningservice', 8, 'category/image/KT2lsCWZBccTkod06SohnYa3maydEJS6f7ADwlkH.png', 1, 1, 2, 1, 0, 22, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:10:50', '2021-10-04 18:40:17', NULL, 1),
 (25, 'category/icon/dSPNHq7gC58jsXBLrOXoNGM58W7A5SlkgFH5oOSn.png', 'pest-control', 8, 'category/image/6yUdxG582TyzcAL75ib36jd0x0yvzXj7wLlgj5WB.jpg', 1, 1, 3, 1, 0, 22, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:11:13', '2021-10-04 18:41:12', NULL, 1),
-(26, 'category/icon/Rpp2mHmWkHdsDTSEnXyb31bFXdiK53XgymVj8swI.svg', 'fashion', 3, 'category/image/e0K99aCMDkWAzkOKCMusDQYsfNjtBhTWQ55Kk8as.jpg', 1, 1, 9, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:11:50', '2021-10-06 13:54:35', NULL, 1),
+(26, 'category/icon/Rpp2mHmWkHdsDTSEnXyb31bFXdiK53XgymVj8swI.svg', 'fashion', 6, 'category/image/e0K99aCMDkWAzkOKCMusDQYsfNjtBhTWQ55Kk8as.jpg', 1, 1, 9, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:11:50', '2021-11-15 10:44:13', NULL, 1),
 (27, 'category/icon/pXlcKR5tO4Viq4KOfL29L4Qs3O7moy0567pTPyL8.png', 'men', 1, 'category/image/caikV2y1rYWD0OIg9djkgL3xG00R2l4CIcm2kobx.png', 1, 1, 1, 1, 1, 26, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:13:09', '2021-10-04 18:36:03', NULL, 1),
 (28, 'category/icon/l48XdoJCbOJ46jJcoXGr0cOIfDqdX3MHzPrCf0x9.png', 'women', 1, 'category/image/A3SPk9e1NfMdgcKIhVtP5z3M2aAVAxCqWdjNaOk5.jpg', 1, 1, 2, 1, 1, 26, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:13:32', '2021-10-04 18:37:46', NULL, 1),
 (29, 'category/icon/ZHuoAWmRWMpISGLoggN50fCgm4WoMOr6oXpY56PD.svg', 'cabservice', 7, 'category/image/dYZ1Ddb7ctgBsvGkAW04yKltqDAw4lrnvEY8tmZ1.jpg', 1, 1, 2, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-04 18:13:53', '2021-10-04 18:18:23', NULL, 1),
@@ -1771,26 +1771,76 @@ INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sor
 
 
 INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
-(1, 'Electronics', NULL, 'banner/WuzCZXWQqt4dkrtGox6rQ7zIZPWiZnq4cJJ3pLEO.png', 1, 1, 1, '2021-10-05 01:06:00', '2021-12-31 12:00:00', 19, NULL, 'category', NULL, '2021-10-11 10:22:17'),
-(2, 'Vegetables', NULL, 'banner/hg4qAjmf6SzObNE6lSgGRjIjMbKYW1QA8GtaIDmX.png', 1, 2, 1, '2021-10-05 01:07:00', '2021-12-31 12:00:00', 8, NULL, 'category', NULL, '2021-10-11 10:22:06'),
-(3, 'Pharmacy', NULL, 'banner/EfrnNn6R6QxonjB9tdVDhLZCBuje1XxUw1gjXvFR.jpg', 0, 3, 1, '2021-10-05 01:07:00', '2021-12-31 12:00:00', 5, NULL, 'category', NULL, '2021-10-08 06:23:46'),
-(4, 'Fashion', NULL, 'banner/r1e1x91RGF3M2xG8iXxxYSOyOqSs6qtHHG0EGx3n.png', 1, 4, 1, '2021-10-05 01:07:00', '2021-12-31 12:00:00', 26, NULL, 'category', '2021-10-04 18:49:39', '2021-10-11 10:21:53'
-);
+(1, 'Electronics', NULL, 'banner/WPe41MP5sseOwa0sUIjnepxXuBfuHVctMXnyGJCY.png', 1, 1, 1, '2021-10-05 01:06:00', '2021-12-31 12:00:00', 19, NULL, 'category', NULL, '2021-11-15 10:40:54'),
+(2, 'Vegetables', NULL, 'banner/U9MskRtiahL1nm6OB9ZqH5E3Lu0eMTOf8z6juMXC.png', 1, 2, 1, '2021-10-05 01:07:00', '2021-12-31 12:00:00', 8, NULL, 'category', NULL, '2021-11-15 10:41:05'),
+(3, 'Pharmacy', NULL, 'banner/JCFtxnEOAU0KfhwDjpUVbmyLYhbDdX3CQ7j4keAN.jpg', 1, 3, 1, '2021-10-05 01:07:00', '2021-12-31 12:00:00', 5, NULL, 'category', NULL, '2021-11-15 10:41:32'),
+(4, 'Fashion', NULL, 'banner/pRSAJJoztTKAMbm8QPTaRiWtSnSme8xkNPHw3pK5.png', 1, 4, 1, '2021-10-05 01:07:00', '2021-12-31 12:00:00', 26, NULL, 'category', '2021-10-04 18:49:39', '2021-11-15 10:41:49');
 
 
-INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'Vendors', 'vendors', 1, 1, NULL, NULL),
-(2, 'Featured Products', 'featured_products', 2, 1, NULL, NULL),
-(3, 'New Products', 'new_products', 3, 1, NULL, NULL),
-(4, 'On Sale', 'on_sale', 4, 1, NULL, NULL),
-(5, 'Best Sellers', 'best_sellers', 5, 1, NULL, NULL),
-(6, 'Brands', 'brands', 6, 1, NULL, NULL),
-(7, 'Pickup Delivery', 'pickup_delivery', 7, 1, '2021-10-04 18:42:14', '2021-10-04 18:42:14');
 
-
+INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `image`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'Vendors', 'vendors', 1, NULL, 1, NULL, NULL),
+(2, 'Featured Products', 'featured_products', 2, NULL, 1, NULL, NULL),
+(3, 'New Products', 'new_products', 3, NULL, 1, NULL, NULL),
+(4, 'On Sale', 'on_sale', 4, NULL, 1, NULL, NULL),
+(5, 'Best Sellers', 'best_sellers', 5, NULL, 1, NULL, NULL),
+(6, 'Brands', 'brands', 6, NULL, 1, NULL, NULL),
+(7, 'Pickup Delivery', 'pickup_delivery', 7, NULL, 1, '2021-10-04 18:42:14', '2021-10-04 18:42:14');
 
 INSERT INTO `cab_booking_layout_categories` (`id`, `cab_booking_layout_id`, `category_id`, `created_at`, `updated_at`) VALUES
-(1, 7, 2, '2021-10-04 18:42:14', '2021-10-04 18:42:14');
+(3, 7, 29, '2021-11-15 10:42:34', '2021-11-15 10:42:34');
 
 
-UPDATE `client_preferences` SET `business_type` = 'super_app' WHERE `client_preferences`.`id` = 1;
+
+INSERT INTO `cab_booking_layout_transaltions` (`id`, `title`, `cab_booking_layout_id`, `language_id`, `created_at`, `updated_at`, `body_html`) VALUES
+(1, NULL, 1, 1, '2021-11-15 10:42:25', '2021-11-15 10:42:25', NULL),
+(2, NULL, 2, 1, '2021-11-15 10:42:25', '2021-11-15 10:42:25', NULL),
+(3, NULL, 3, 1, '2021-11-15 10:42:25', '2021-11-15 10:42:25', NULL),
+(4, NULL, 4, 1, '2021-11-15 10:42:25', '2021-11-15 10:42:25', NULL),
+(5, NULL, 5, 1, '2021-11-15 10:42:25', '2021-11-15 10:42:25', NULL),
+(6, NULL, 6, 1, '2021-11-15 10:42:25', '2021-11-15 10:42:25', NULL),
+(7, 'Pickup and Delivery', 7, 1, '2021-11-15 10:42:25', '2021-11-15 10:42:25', NULL);
+
+
+
+INSERT INTO `app_stylings` (`id`, `name`, `type`, `created_at`, `updated_at`) VALUES
+(1, 'Regular Font', 2, NULL, NULL),
+(2, 'Medium Font', 2, NULL, NULL),
+(3, 'Bold Font', 2, NULL, NULL),
+(4, 'Primary Color', 4, NULL, NULL),
+(5, 'Secondary Color', 4, NULL, NULL),
+(6, 'Tertiary Color', 4, NULL, NULL),
+(7, 'Tab Bar Style', 3, NULL, NULL),
+(8, 'Home Page Style', 3, NULL, NULL),
+(9, 'Home Tag Line', 1, NULL, NULL);
+
+
+INSERT INTO `app_styling_options` (`id`, `app_styling_id`, `name`, `image`, `is_selected`, `created_at`, `updated_at`, `template_id`) VALUES
+(1, 1, 'CircularStd-Book', NULL, 1, NULL, NULL, NULL),
+(2, 1, 'SFProText-Regular', NULL, 0, NULL, NULL, NULL),
+(3, 1, 'Futura-Normal', NULL, 0, NULL, NULL, NULL),
+(4, 1, 'Eina02-Regular', NULL, 0, NULL, NULL, NULL),
+(5, 2, 'CircularStd-Medium', NULL, 1, NULL, NULL, NULL),
+(6, 2, 'SFProText-Medium', NULL, 0, NULL, NULL, NULL),
+(7, 2, 'Futura-Medium', NULL, 0, NULL, NULL, NULL),
+(8, 2, 'Eina02-SemiBold', NULL, 0, NULL, NULL, NULL),
+(9, 3, 'CircularStd-Bold', NULL, 1, NULL, NULL, NULL),
+(10, 3, 'SFProText-Bold', NULL, 0, NULL, NULL, NULL),
+(11, 3, 'FuturaBT-Heavy', NULL, 0, NULL, NULL, NULL),
+(12, 3, 'Eina02-Bold', NULL, 0, NULL, NULL, NULL),
+(13, 4, '#41A2E6', NULL, 1, NULL, NULL, NULL),
+(14, 5, '#fff', NULL, 1, NULL, NULL, NULL),
+(15, 6, '#fff', NULL, 1, NULL, NULL, NULL),
+(16, 7, 'Tab 1', 'bar.png', 0, NULL, '2021-10-06 09:37:01', 1),
+(17, 7, 'Tab 2', 'bar_two.png', 0, NULL, '2021-10-06 09:37:01', 2),
+(18, 7, 'Tab 3', 'bar_three.png', 0, NULL, '2021-10-06 09:37:01', 3),
+(19, 7, 'Tab 4', 'bar_four.png', 1, NULL, '2021-10-06 09:37:01', 4),
+(20, 7, 'Tab 5', 'bar_five.png', 0, NULL, '2021-10-06 09:37:01', 5),
+(21, 8, 'Home Page 1', 'home.png', 0, NULL, '2021-11-07 06:08:03', 1),
+(22, 8, 'Home Page 4', 'home_four.png', 0, NULL, '2021-11-07 06:08:03', 2),
+(23, 8, 'Home Page 5', 'home_five.png', 1, NULL, '2021-11-07 06:08:03', 3),
+(24, 9, 'Create a free account and join us!', NULL, 1, NULL, NULL, NULL),
+(25, 8, 'Home Page 6', 'home_six.png', 0, '2021-10-12 14:10:14', '2021-11-07 06:08:03', 4);
+
+
+UPDATE `client_preferences` SET `business_type` = 'super_app' , `is_hyperlocal` = 0  WHERE `client_preferences`.`id` = 1;

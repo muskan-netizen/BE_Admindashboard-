@@ -16,11 +16,11 @@
 
 INSERT INTO `vendors` (`id`, `name`, `slug`, `desc`, `logo`, `banner`, `address`, `email`, `website`, `phone_no`, `latitude`, `longitude`, `order_min_amount`, `order_pre_time`, `auto_reject_time`, `commission_percent`, `commission_fixed_per_order`, `commission_monthly`, `dine_in`, `takeaway`, `delivery`, `status`, `add_category`, `setting`, `is_show_vendor_details`, `created_at`, `updated_at`, `show_slot`, `vendor_templete_id`, `auto_accept_order`) VALUES
 (1, 'DeliveryZone', NULL, NULL, 'default/default_logo.png', 'default/default_image.png', 'Sheikh Zayed Road - Dubai - United Arab Emirates', NULL, NULL, NULL, '25.060924600000', '55.128979500000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 1, 1, 2, 1, 0, 0, NULL, '2021-09-30 05:22:52', 1, NULL, 0),
-(2, 'Caremark', 'caremark', NULL, 'vendor/Q8jQWAuLpIfWBcPsS7amuEYdS564cCmXtHOtcAbI.png', 'vendor/0rQ3NiccEuGz48FIr9rh6mUUNKP8BPkzCtA0YXC5.jpg', 'Chandigarh, India', 'caremark@gmail.com', NULL, '9856589123', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 1, 1, 1, 1, 0, 0, '2021-09-30 05:23:51', '2021-10-08 10:18:24', 1, 1, 0),
-(3, 'Wellwise', 'wellwise', NULL, 'vendor/EMo9oR2YCwvEWI7RjICc1rOuZUN1EnkTaP1iJM9b.jpg', 'vendor/oG44lnlAuSJkxK9cx1XVGgYQEdFCakl7dDPhTLmX.jpg', 'Chandigarh, India', 'wellwise@support.com', NULL, '9805621236', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 1, 1, 1, 1, 0, 0, '2021-09-30 05:25:24', '2021-10-08 10:18:07', 1, 1, 0),
-(4, 'SpotRx', 'spotrx', NULL, 'vendor/4wOufRbq28B8f4KXnvuqqeGXia95LxFqdaF3ozT0.png', 'vendor/T458dWJVj9ERneEYA3B293hgLcS4W7wTZH9zltNK.jpg', 'Chandigarh, India', 'spotrx@support.com', NULL, '9805252630', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 1, 1, 1, 1, 0, 0, '2021-09-30 05:26:57', '2021-10-08 10:17:54', 1, 1, 0),
-(5, 'Medlife', 'medlife', NULL, 'vendor/9drq5s1vMbOAXYYHSiPlLBeS6ALCBOV2PANbsBqf.jpg', 'vendor/ccvsDttUI8f8tvbAvRnHkru1RnSpUz31NfqxQU5N.jpg', 'Chandigarh, India', 'medlife@support.com', NULL, 'Medlife', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 1, 1, 1, 1, 0, 0, '2021-09-30 05:27:36', '2021-10-08 10:17:37', 1, 1, 0),
-(6, 'HealthMart', 'healthmart', NULL, 'vendor/BH1Duj8zBohZBGmt1sxZKQ5L1MG6vqaHYpnkPkOO.png', 'vendor/6eoQ3Bj3wFYxoy4vTcFKOqiQujDv8NE8DzW3sMpI.jpg', 'Chandigarh, India', 'healthmart@support.com', NULL, '9857496321', '30.733314800000', '76.779417900000', '0.00', '0', NULL, 1, '0.00', '0.00', 0, 1, 1, 1, 1, 0, 0, '2021-09-30 05:28:35', '2021-10-08 10:17:25', 1, 1, 0);
+(2, 'Caremark', 'caremark', NULL, 'vendor/Q8jQWAuLpIfWBcPsS7amuEYdS564cCmXtHOtcAbI.png', 'vendor/0rQ3NiccEuGz48FIr9rh6mUUNKP8BPkzCtA0YXC5.jpg', 'Chandigarh, India', 'caremark@gmail.com', NULL, '9856589123', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 1, 1, 1, 1, 0, 0, '2021-09-30 05:23:51', '2021-11-15 10:14:05', 1, 5, 0),
+(3, 'Wellwise', 'wellwise', NULL, 'vendor/EMo9oR2YCwvEWI7RjICc1rOuZUN1EnkTaP1iJM9b.jpg', 'vendor/oG44lnlAuSJkxK9cx1XVGgYQEdFCakl7dDPhTLmX.jpg', 'Chandigarh, India', 'wellwise@support.com', NULL, '9805621236', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 1, 1, 1, 1, 0, 0, '2021-09-30 05:25:24', '2021-11-15 10:13:27', 1, 5, 0),
+(4, 'SpotRx', 'spotrx', NULL, 'vendor/4wOufRbq28B8f4KXnvuqqeGXia95LxFqdaF3ozT0.png', 'vendor/T458dWJVj9ERneEYA3B293hgLcS4W7wTZH9zltNK.jpg', 'Chandigarh, India', 'spotrx@support.com', NULL, '9805252630', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 1, 1, 1, 1, 0, 0, '2021-09-30 05:26:57', '2021-11-15 10:13:01', 1, 5, 0),
+(5, 'Medlife', 'medlife', NULL, 'vendor/9drq5s1vMbOAXYYHSiPlLBeS6ALCBOV2PANbsBqf.jpg', 'vendor/ccvsDttUI8f8tvbAvRnHkru1RnSpUz31NfqxQU5N.jpg', 'Chandigarh, India', 'medlife@support.com', NULL, 'Medlife', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 1, 1, 1, 1, 0, 0, '2021-09-30 05:27:36', '2021-11-15 10:12:35', 1, 5, 0),
+(6, 'HealthMart', 'healthmart', NULL, 'vendor/BH1Duj8zBohZBGmt1sxZKQ5L1MG6vqaHYpnkPkOO.png', 'vendor/6eoQ3Bj3wFYxoy4vTcFKOqiQujDv8NE8DzW3sMpI.jpg', 'Chandigarh, India', 'healthmart@support.com', NULL, '9857496321', '30.733314800000', '76.779417900000', '0.00', '0', NULL, 1, '0.00', '0.00', 0, 1, 1, 1, 1, 0, 0, '2021-09-30 05:28:35', '2021-11-15 10:11:32', 1, 5, 0);
 
 --
 -- Dumping data for table `addon_sets`
@@ -46,11 +46,11 @@ INSERT INTO `categories` (`id`, `icon`, `slug`, `type_id`, `image`, `is_visible`
 (11, NULL, 'E-Commerce', 6, NULL, 0, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:41:40', '2021-10-01 14:41:40', 1),
 (12, NULL, 'Cloth', 6, NULL, 0, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:41:43', '2021-10-01 14:41:43', 1),
 (13, NULL, 'Dispatcher', 6, NULL, 0, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-01 14:41:46', '2021-10-01 14:41:46', 1),
-(14, 'category/icon/hCLxaMYkLCK1OhEiexeMk6Go7mDbeApw70VvmAI0.svg', 'healthdevices', 1, 'category/image/fItgcnhPFdMNpvoSSRKeRtOzD8ER8va0QkrSSJLX.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:40:46', '2021-10-07 12:51:05', NULL, 1),
-(15, 'category/icon/asqEcTkFTcA8XwV4if0ZK7slLeY9QXjizvhxjUvf.svg', 'babycare', 1, 'category/image/Lf37xg86du2bb4d3tLssADY1mkeOY8I3zkqIhbBp.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:41:19', '2021-10-07 12:51:15', NULL, 1),
-(16, 'category/icon/pJE0ctrdAuBnZSKtGFjWLYqSdSxIUZGEXfgg6bFr.svg', 'personalcare', 1, 'category/image/C7EAtBG6t7coDlsw2934zLYEM26HTKIAjq2WJQvn.jpg', 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:42:05', '2021-10-08 09:26:07', NULL, 1),
-(17, 'category/icon/xoFc29gap9RqdkPQCEAfqWPhzldR2KOWMUxexhMM.svg', 'health&nutrition', 1, 'category/image/33P5YDpYZoWngPLQAHoDQYz2RszfDXUSCUc9Ahzt.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:42:42', '2021-10-07 12:56:02', NULL, 1),
-(18, 'category/icon/BNHn0ujNBMR5vGCFuRNwqdU4J0XEloe8xeRdgyiP.svg', 'ayurveda', 1, 'category/image/0RoiOdoSuuChtXxfcdzeejM4X1rqJA9gTUvvFcPl.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:43:48', '2021-10-07 12:56:20', NULL, 1);
+(14, 'category/icon/hCLxaMYkLCK1OhEiexeMk6Go7mDbeApw70VvmAI0.svg', 'healthdevices', 3, 'category/image/fItgcnhPFdMNpvoSSRKeRtOzD8ER8va0QkrSSJLX.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:40:46', '2021-11-15 10:09:57', NULL, 1),
+(15, 'category/icon/asqEcTkFTcA8XwV4if0ZK7slLeY9QXjizvhxjUvf.svg', 'babycare', 3, 'category/image/Lf37xg86du2bb4d3tLssADY1mkeOY8I3zkqIhbBp.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:41:19', '2021-11-15 10:10:03', NULL, 1),
+(16, 'category/icon/pJE0ctrdAuBnZSKtGFjWLYqSdSxIUZGEXfgg6bFr.svg', 'personalcare', 3, 'category/image/C7EAtBG6t7coDlsw2934zLYEM26HTKIAjq2WJQvn.jpg', 0, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:42:05', '2021-11-15 10:10:11', NULL, 1),
+(17, 'category/icon/xoFc29gap9RqdkPQCEAfqWPhzldR2KOWMUxexhMM.svg', 'health&nutrition', 3, 'category/image/33P5YDpYZoWngPLQAHoDQYz2RszfDXUSCUc9Ahzt.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:42:42', '2021-11-15 10:10:17', NULL, 1),
+(18, 'category/icon/BNHn0ujNBMR5vGCFuRNwqdU4J0XEloe8xeRdgyiP.svg', 'ayurveda', 3, 'category/image/0RoiOdoSuuChtXxfcdzeejM4X1rqJA9gTUvvFcPl.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 05:43:48', '2021-11-15 10:10:24', NULL, 1);
 
 --
 -- Dumping data for table `addon_options`
@@ -132,6 +132,7 @@ INSERT INTO `brand_categories` (`id`, `brand_id`, `category_id`, `created_at`, `
 --
 -- Dumping data for table `category_translations`
 --
+
 INSERT INTO `category_translations` (`id`, `name`, `trans-slug`, `meta_title`, `meta_description`, `meta_keywords`, `category_id`, `language_id`, `created_at`, `updated_at`) VALUES
 (1, 'root', '', 'root', '', '', 1, 1, NULL, '2021-10-01 09:03:26'),
 (2, 'Delivery', '', 'Delivery', NULL, NULL, 2, 1, NULL, '2021-10-01 09:03:26'),
@@ -151,7 +152,6 @@ INSERT INTO `category_translations` (`id`, `name`, `trans-slug`, `meta_title`, `
 (16, 'Personal Care', NULL, 'Personal Care', NULL, NULL, 16, 1, '2021-09-30 05:42:05', '2021-10-01 09:03:26'),
 (17, 'Health & Nutrition', NULL, 'Health & Nutrition', NULL, NULL, 17, 1, '2021-09-30 05:42:42', '2021-10-01 09:03:26'),
 (18, 'Ayurveda', NULL, 'Ayurveda', NULL, NULL, 18, 1, '2021-09-30 05:43:48', '2021-10-01 09:03:26');
-
 -- --------------------------------------------------------
 
 --
@@ -570,11 +570,10 @@ INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sor
 (3, 'Babycare', NULL, 'banner/olrG03gWOpVbsRcnh5mtuD6U2MF9VxwDVAWqHGWb.jpg', 1, 3, 1, '2021-09-30 12:49:00', '2022-02-24 12:00:00', 15, NULL, 'category', NULL, '2021-10-11 10:25:01', 'banner/B7RkdOJ5rloiq1BdFG94dzcYE0pMStMgp2FuI1o1.png'),
 (4, 'Banner 3', NULL, 'banner/xG7FYedBqi6raha6Fb0zMqyHSmHz9XuJwRR94ZWd.jpg', 1, 4, 1, '2021-10-08 11:10:00', '2025-10-30 12:00:00', 16, NULL, 'category', '2021-10-08 05:40:36', '2021-10-11 10:24:51', 'banner/x9HoHCUxGABYH2TouUmftxczV3BLVnsHRDgJWBMV.png');
 
-
 INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
-(2, 'Personal Care', NULL, 'banner/xkKDss1CFsTeMztZGK1VpkTrwN1nsT1RfOBg6peR.jpg', 1, 2, 1, '2021-09-30 12:45:00', '2022-02-25 12:00:00', 16, NULL, 'category', NULL, '2021-10-11 10:25:11'),
-(3, 'Babycare', NULL, 'banner/olrG03gWOpVbsRcnh5mtuD6U2MF9VxwDVAWqHGWb.jpg', 1, 3, 1, '2021-09-30 12:49:00', '2022-02-24 12:00:00', 15, NULL, 'category', NULL, '2021-10-11 10:25:01'),
-(4, 'Banner 3', NULL, 'banner/xG7FYedBqi6raha6Fb0zMqyHSmHz9XuJwRR94ZWd.jpg', 1, 4, 1, '2021-10-08 11:10:00', '2025-10-30 12:00:00', 16, NULL, 'category', '2021-10-08 05:40:36', '2021-10-11 10:24:51');
+(2, 'Personal Care', NULL, 'banner/lGOD8caxpv8l8JJeL9FRyV2ArQPwVYYPTP6KBLj7.png', 1, 2, 1, '2021-09-30 12:45:00', '2022-02-25 12:00:00', 16, NULL, 'category', NULL, '2021-11-15 10:08:00'),
+(3, 'Babycare', NULL, 'banner/YDOoSmr13TacEFBpAgNAYVzSNaPxn0rI62flPAkJ.png', 1, 3, 1, '2021-09-30 12:49:00', '2022-02-24 12:00:00', 15, NULL, 'category', NULL, '2021-11-15 10:08:12'),
+(4, 'Banner 3', NULL, 'banner/N491u1qBnPrq4p6IYezkXskzD8zNkL8vvuit2Typ.png', 1, 4, 1, '2021-10-08 11:10:00', '2025-10-30 12:00:00', 16, NULL, 'category', '2021-10-08 05:40:36', '2021-11-15 10:08:26');
 
 
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
@@ -594,3 +593,47 @@ INSERT INTO `cab_booking_layout_transaltions` (`id`, `title`, `cab_booking_layou
 (4, NULL, 4, 1, '2021-10-05 07:41:40', '2021-10-05 07:41:40', NULL),
 (5, NULL, 5, 1, '2021-10-05 07:41:40', '2021-10-05 07:41:40', NULL),
 (6, NULL, 6, 1, '2021-10-05 07:41:40', '2021-10-05 07:41:40', NULL);
+
+
+INSERT INTO `app_stylings` (`id`, `name`, `type`, `created_at`, `updated_at`) VALUES
+(1, 'Regular Font', 2, NULL, NULL),
+(2, 'Medium Font', 2, NULL, NULL),
+(3, 'Bold Font', 2, NULL, NULL),
+(4, 'Primary Color', 4, NULL, NULL),
+(5, 'Secondary Color', 4, NULL, NULL),
+(6, 'Tertiary Color', 4, NULL, NULL),
+(7, 'Tab Bar Style', 3, NULL, NULL),
+(8, 'Home Page Style', 3, NULL, NULL),
+(9, 'Home Tag Line', 1, NULL, NULL);
+
+
+
+INSERT INTO `app_styling_options` (`id`, `app_styling_id`, `name`, `image`, `is_selected`, `created_at`, `updated_at`, `template_id`) VALUES
+(1, 1, 'CircularStd-Book', NULL, 1, NULL, NULL, NULL),
+(2, 1, 'SFProText-Regular', NULL, 0, NULL, NULL, NULL),
+(3, 1, 'Futura-Normal', NULL, 0, NULL, NULL, NULL),
+(4, 1, 'Eina02-Regular', NULL, 0, NULL, NULL, NULL),
+(5, 2, 'CircularStd-Medium', NULL, 1, NULL, NULL, NULL),
+(6, 2, 'SFProText-Medium', NULL, 0, NULL, NULL, NULL),
+(7, 2, 'Futura-Medium', NULL, 0, NULL, NULL, NULL),
+(8, 2, 'Eina02-SemiBold', NULL, 0, NULL, NULL, NULL),
+(9, 3, 'CircularStd-Bold', NULL, 1, NULL, NULL, NULL),
+(10, 3, 'SFProText-Bold', NULL, 0, NULL, NULL, NULL),
+(11, 3, 'FuturaBT-Heavy', NULL, 0, NULL, NULL, NULL),
+(12, 3, 'Eina02-Bold', NULL, 0, NULL, NULL, NULL),
+(13, 4, '#7AE4E6', NULL, 1, NULL, '2021-10-04 07:10:28', NULL),
+(14, 5, '#fff', NULL, 1, NULL, NULL, NULL),
+(15, 6, '#fff', NULL, 1, NULL, NULL, NULL),
+(16, 7, 'Tab 1', 'bar.png', 0, NULL, '2021-11-15 10:08:59', 1),
+(17, 7, 'Tab 2', 'bar_two.png', 0, NULL, '2021-11-15 10:08:59', 2),
+(18, 7, 'Tab 3', 'bar_three.png', 0, NULL, '2021-11-15 10:08:59', 3),
+(19, 7, 'Tab 4', 'bar_four.png', 1, NULL, '2021-11-15 10:08:59', 4),
+(20, 7, 'Tab 5', 'bar_five.png', 0, NULL, '2021-11-15 10:08:59', 5),
+(21, 8, 'Home Page 1', 'home.png', 0, NULL, '2021-10-06 13:28:34', 1),
+(22, 8, 'Home Page 4', 'home_four.png', 0, NULL, '2021-10-06 13:28:34', 2),
+(23, 8, 'Home Page 5', 'home_five.png', 1, NULL, '2021-10-06 13:28:34', 3),
+(24, 9, 'Create a free account and join us!', NULL, 1, NULL, NULL, NULL),
+(25, 8, 'Home Page 6', 'home_six.png', 0, '2021-10-12 14:10:13', '2021-10-12 14:10:13', 4);
+
+
+UPDATE `client_preferences` SET `business_type` = 'food_grocery_ecommerce' , `is_hyperlocal` = 0 WHERE `client_preferences`.`id` = 1;

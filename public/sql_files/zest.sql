@@ -13,6 +13,7 @@
 --
 -- Dumping data for table `vendors`
 --
+
 INSERT INTO `vendors` (`id`, `name`, `slug`, `desc`, `logo`, `banner`, `address`, `email`, `website`, `phone_no`, `latitude`, `longitude`, `order_min_amount`, `order_pre_time`, `auto_reject_time`, `commission_percent`, `commission_fixed_per_order`, `commission_monthly`, `dine_in`, `takeaway`, `delivery`, `status`, `add_category`, `setting`, `is_show_vendor_details`, `created_at`, `updated_at`, `show_slot`, `vendor_templete_id`, `auto_accept_order`) VALUES
 (1, 'Aramex', 'aramex', NULL, 'vendor/jUKjbs8NML5OiZ7lMJGJtJt2Gp8qDSuxy5ISumw4.png', 'vendor/LScwOAff8dQYbXUFUj3i2L8UYJsmAXGqg4OX5auH.png', 'Chandigarh, India', 'aramex123@support.com', NULL, '8596365478', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 1, 1, 1, 1, 0, 0, NULL, '2021-09-29 06:52:30', 1, NULL, 0),
 (2, 'Green Cab', 'green-cab', NULL, 'vendor/WcPwyD9QS3traKxqhCcKUDxOCWV4vGFovcnRaSoX.jpg', 'vendor/uVJNBtJSqmXdnEa8I9FYnw9fNTQlgRN7todvIDcY.jpg', 'Chandigarh, India', 'green@support.com', NULL, '7485587489', '30.733314800000', '76.779417900000', '0.00', NULL, NULL, 1, '0.00', '0.00', 0, 0, 1, 2, 1, 0, 0, '2021-09-29 06:53:39', '2021-09-29 07:16:52', 1, NULL, 0);
@@ -141,7 +142,6 @@ INSERT INTO `category_translations` (`id`, `name`, `trans-slug`, `meta_title`, `
 (14, 'Cab Service', NULL, 'Cab Service', NULL, NULL, 14, 1, '2021-09-29 06:47:56', '2021-09-29 07:09:51'),
 (15, 'Moto Service', NULL, 'Moto Service', NULL, NULL, 15, 1, '2021-09-29 06:48:47', '2021-09-29 07:09:51'),
 (16, 'Auto Service', NULL, 'Auto Service', NULL, NULL, 16, 1, '2021-09-29 06:49:21', '2021-09-29 07:09:51');
-
 
 -- --------------------------------------------------------
 

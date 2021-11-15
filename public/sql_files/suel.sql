@@ -15,7 +15,7 @@
 --
 
 INSERT INTO `vendors` (`id`, `name`, `slug`, `desc`, `logo`, `banner`, `address`, `email`, `website`, `phone_no`, `latitude`, `longitude`, `order_min_amount`, `order_pre_time`, `auto_reject_time`, `commission_percent`, `commission_fixed_per_order`, `commission_monthly`, `dine_in`, `takeaway`, `delivery`, `status`, `add_category`, `setting`, `is_show_vendor_details`, `created_at`, `updated_at`, `show_slot`, `vendor_templete_id`, `auto_accept_order`) VALUES
-(1, 'Suel Ecomm.', 'suel-ecomm', NULL, 'vendor/Ei0p6khSDs9dAXjOay5H4GJXNc5RbSjOSRJ2RHDY.png', 'vendor/NusNnyhuu0lQYG7uWu953vVZSdcPs0lgyzdvNkex.jpg', 'Sector 22, Chandigarh, India', 'suel321@yopmail.com', NULL, '8525741596', '30.732038500000', '76.772633400000', '0.00', NULL, NULL, 1, '0.00', '0.00', 1, 1, 1, 1, 1, 0, 0, NULL, '2021-10-11 07:44:59', 1, NULL, 0);
+(1, 'Suel Ecomm.', 'suel-ecomm', NULL, 'vendor/Ei0p6khSDs9dAXjOay5H4GJXNc5RbSjOSRJ2RHDY.png', 'vendor/NusNnyhuu0lQYG7uWu953vVZSdcPs0lgyzdvNkex.jpg', 'Sector 22, Chandigarh, India', 'suel321@yopmail.com', NULL, '8525741596', '30.732038500000', '76.772633400000', '0.00', NULL, NULL, 1, '0.00', '0.00', 1, 1, 1, 1, 1, 0, 0, NULL, '2021-11-15 09:57:16', 1, 5, 0);
 
 --
 -- Dumping data for table `addon_sets`
@@ -101,16 +101,16 @@ INSERT INTO `addon_sets` (`id`, `title`, `min_select`, `max_select`, `position`,
 INSERT INTO `categories` (`id`, `icon`, `slug`, `type_id`, `image`, `is_visible`, `status`, `position`, `is_core`, `can_add_products`, `parent_id`, `vendor_id`, `client_code`, `display_mode`, `warning_page_id`, `template_type_id`, `warning_page_design`, `created_at`, `updated_at`, `deleted_at`, `show_wishlist`) VALUES
 (1, NULL, 'Root', 3, NULL, 0, 1, 1, 1, 0, NULL, NULL, NULL, '1', NULL, NULL, NULL, NULL, NULL, NULL, 1),
 (2, NULL, 'Delivery', 1, NULL, 1, 1, 1, 1, 1, 1, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-30 12:14:04', '2021-09-30 12:14:04', 1),
-(3, 'category/icon/Hf3O4SaVYbV0EtopgsB2vywfwdLwRLpYn2K2XXNt.png', 'Restaurant', 3, 'category/image/v2gIaEOcbflanQYRbD2du29HYe50kpXqCQpnNaKJ.jpg', 0, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 14:41:36', NULL, 1),
-(4, 'category/icon/6ZXVDU6BgnTGyxxpK150UDwjqUK0DpPUYQ4Bzv1L.png', 'Supermarket', 3, 'category/image/1kryfhJ2ojvxlRQsd5jxPZpMRKnaGGawdOpwt6La.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 14:42:41', NULL, 1),
-(5, 'category/icon/SySifmcJWFTQK5E6lJDtdEyxhCSulqOlIfm3fhtb.png', 'Pharmacy', 3, 'category/image/qM1Y5agY3uvN6S9AQJqcDGKb4yPTzu5qbgl8U3w4.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 14:41:25', NULL, 1),
+(3, 'category/icon/Hf3O4SaVYbV0EtopgsB2vywfwdLwRLpYn2K2XXNt.png', 'Restaurant', 6, 'category/image/v2gIaEOcbflanQYRbD2du29HYe50kpXqCQpnNaKJ.jpg', 0, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 09:55:41', NULL, 1),
+(4, 'category/icon/6ZXVDU6BgnTGyxxpK150UDwjqUK0DpPUYQ4Bzv1L.png', 'Supermarket', 6, 'category/image/1kryfhJ2ojvxlRQsd5jxPZpMRKnaGGawdOpwt6La.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 09:54:28', NULL, 1),
+(5, 'category/icon/SySifmcJWFTQK5E6lJDtdEyxhCSulqOlIfm3fhtb.png', 'Pharmacy', 6, 'category/image/qM1Y5agY3uvN6S9AQJqcDGKb4yPTzu5qbgl8U3w4.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 09:55:28', NULL, 1),
 (6, NULL, 'Send something', 1, NULL, 1, 1, 1, 1, 1, 2, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-30 12:14:04', '2021-09-30 12:14:04', 1),
 (7, NULL, 'Buy something', 1, NULL, 1, 1, 1, 1, 1, 2, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-30 12:14:04', '2021-09-30 12:14:04', 1),
 (8, 'category/icon/HUG4maccdDrSiVE7wuxlw2jd7uiEVDU3c9golI2T.png', 'Vegetables', 1, 'category/image/6CndOJpmHqmjVlM7ZXMCzjg07AVV4JGEDXqBcuAt.jpg', 1, 1, 1, 1, 1, 4, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-02 17:23:50', NULL, 1),
 (9, 'category/icon/1fImk308EekCMR25UwnJcGprg4pQIZn3SKRSw86I.png', 'Fruits', 1, 'category/image/JiG5ACCfMaW6LhF8DaDxNqmzPEfeI9ymoo1zGkgI.jpg', 1, 1, 1, 1, 1, 4, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-02 17:20:23', NULL, 1),
 (10, 'category/icon/rdQv6YKgkYDQff1K3QbqWbFVd2ULBzSTtNRnVnSh.png', 'Dairy and Eggs', 1, 'category/image/9iNXuLvUJWPI9truNs4SApqKkSJSymmKgfIMNqYG.jpg', 1, 1, 1, 1, 1, 4, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-04 07:02:47', NULL, 1),
 (11, NULL, 'E-Commerce', 1, NULL, 1, 1, 1, 1, 1, 1, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-30 12:14:15', '2021-09-30 12:14:15', 1),
-(12, 'category/icon/RCA0MqWsuoxjqKjVYo0uQg9ehzHhKOaAXHTuMSnJ.png', 'fashion', 3, 'category/image/ytahP3qu7SaHFXUemYa5p7cKQ2kTN8v5bKLLtgYw.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-10-08 14:41:41', NULL, 1),
+(12, 'category/icon/RCA0MqWsuoxjqKjVYo0uQg9ehzHhKOaAXHTuMSnJ.png', 'fashion', 6, 'category/image/ytahP3qu7SaHFXUemYa5p7cKQ2kTN8v5bKLLtgYw.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', NULL, '2021-11-15 09:55:51', NULL, 1),
 (13, NULL, 'Dispatcher', 1, NULL, 1, 1, 1, 1, 1, 1, NULL, NULL, '1', NULL, NULL, NULL, NULL, '2021-09-30 12:15:17', '2021-09-30 12:15:17', 1),
 (14, 'category/icon/Kpw6YyhDvPBbLbVp1o2PGzGjy4gEfVHjm14sNa7Q.png', 'beverages', 1, 'category/image/xy6cRM9XY9x0DaePseEPLWdTuw2ckY2hggPwgrJp.jpg', 1, 1, 1, 1, 1, 4, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 12:19:38', '2021-10-02 17:28:22', NULL, 1),
 (15, 'category/icon/UJfo1ng82sCioFky8NG6ZrmzfwPaFxQSWnWWQ2ze.png', 'Baby Products', 1, 'category/image/Vms0Ztnux9a7sEqjUgcapEPFJvTWzzyG1ysKLNcf.jpg', 1, 1, 1, 1, 1, 4, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 12:20:26', '2021-10-02 17:17:31', NULL, 1),
@@ -120,7 +120,7 @@ INSERT INTO `categories` (`id`, `icon`, `slug`, `type_id`, `image`, `is_visible`
 (19, 'category/icon/bZR4V4EJOsLiVdo6ZR1TyWPySbedynESq7PTHhrj.png', 'Healthcare Device', 1, 'category/image/4iJKeZ85dX0WPJOniWGqJ1AI9yRfkdrN2MpLoOZ7.jpg', 1, 1, 1, 1, 1, 5, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 12:27:06', '2021-10-02 17:41:00', NULL, 1),
 (20, 'category/icon/2fa7eig2iF8lJEai9t6shN0Fvun4ah9GookVDT7s.png', 'men', 1, 'category/image/nQ7uCCExBb1fIawiZFpKAk9jJGV4zestp9TI7qlo.jpg', 1, 1, 1, 1, 1, 12, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 12:31:04', '2021-10-02 18:01:21', NULL, 1),
 (21, 'category/icon/5wndfnAAvs5mma8FNRpX3qKqRx2Gkwf7NQultbyS.png', 'women', 1, 'category/image/o27cL6LOstOhFGOQXcMxgYq7FHFUP6XiFU6UAYl0.jpg', 1, 1, 1, 1, 1, 12, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 12:34:11', '2021-10-02 17:59:43', NULL, 1),
-(22, 'category/icon/An7D98S56rjTMSSHb4bRWhVQVwfnBgJjXQi0Owos.png', 'electronics', 3, 'category/image/I8XjJEuEMvJYxj4PMBIAmp86B5uoTIJ7C4v5kuIU.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 12:34:55', '2021-10-08 14:41:31', NULL, 1),
+(22, 'category/icon/An7D98S56rjTMSSHb4bRWhVQVwfnBgJjXQi0Owos.png', 'electronics', 6, 'category/image/I8XjJEuEMvJYxj4PMBIAmp86B5uoTIJ7C4v5kuIU.jpg', 1, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 12:34:55', '2021-11-15 09:55:35', NULL, 1),
 (23, 'category/icon/XnSoZB38rtINGK8kG9ent2L9P3iE2iRjtSxloZky.png', 'mobiles', 1, 'category/image/D579rhU6q7svIGwPJIKtkx6X06bP8nF4z2Wk7iZA.jpg', 1, 1, 1, 1, 1, 22, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 12:35:55', '2021-10-05 08:43:32', NULL, 1),
 (24, 'category/icon/5PXeTq7fkbjxfSCahETpUJzh1ds9p8IFgXiHuNt4.png', 'laptops', 1, 'category/image/fvsoecQw8G7BpE9lCW4Pq5xS6k5lUBDiaHUIrKBa.jpg', 1, 1, 1, 1, 1, 22, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-30 12:36:16', '2021-10-02 17:44:11', NULL, 1);
 
@@ -782,30 +782,30 @@ INSERT INTO `brand_categories` (`id`, `brand_id`, `category_id`, `created_at`, `
 --
 
 INSERT INTO `category_translations` (`id`, `name`, `trans-slug`, `meta_title`, `meta_description`, `meta_keywords`, `category_id`, `language_id`, `created_at`, `updated_at`) VALUES
-(1, 'root', '', 'root', '', '', 1, 1, NULL, '2021-10-01 05:53:18'),
-(2, 'Delivery', '', 'Delivery', '', '', 2, 1, NULL, '2021-10-01 05:53:18'),
-(3, 'Restaurant', '', 'Restaurant', NULL, NULL, 3, 1, NULL, '2021-10-01 05:53:18'),
-(4, 'Supermarket', '', 'Supermarket', NULL, NULL, 4, 1, NULL, '2021-10-01 05:53:18'),
-(5, 'Pharmacy', '', 'Pharmacy', NULL, NULL, 5, 1, NULL, '2021-10-01 05:53:18'),
-(6, 'Send something', '', 'Send something', '', '', 6, 1, NULL, '2021-10-01 05:53:18'),
-(7, 'Buy something', '', 'Buy something', '', '', 7, 1, NULL, '2021-10-01 05:53:18'),
-(8, 'Vegetables', '', 'Vegetables', NULL, NULL, 8, 1, NULL, '2021-10-01 05:53:18'),
-(9, 'Fruits', '', 'Fruits', NULL, NULL, 9, 1, NULL, '2021-10-01 05:53:18'),
-(10, 'Dairy and Eggs', '', 'Dairy and Eggs', NULL, NULL, 10, 1, NULL, '2021-10-01 05:53:18'),
-(11, 'E-Commerce', '', 'E-Commerce', '', '', 11, 1, NULL, '2021-10-01 05:53:18'),
-(12, 'Fashion', '', 'Fashion', NULL, NULL, 12, 1, NULL, '2021-10-06 05:14:09'),
-(13, 'Dispatcher', '', 'Dispatcher', '', '', 13, 1, NULL, '2021-10-01 05:53:18'),
-(14, 'Beverages', NULL, 'Beverages', NULL, NULL, 14, 1, '2021-09-30 12:19:38', '2021-10-01 05:53:18'),
-(15, 'Baby Products', NULL, 'Baby Products', NULL, NULL, 15, 1, '2021-09-30 12:20:26', '2021-10-01 05:53:18'),
-(16, 'Italian', NULL, 'Italian', NULL, NULL, 16, 1, '2021-09-30 12:22:04', '2021-10-01 05:53:18'),
-(17, 'Chinese', NULL, 'chinese', NULL, NULL, 17, 1, '2021-09-30 12:22:36', '2021-10-01 05:53:18'),
-(18, 'Fitness & Supplement', NULL, 'Fitness & Supplement', NULL, NULL, 18, 1, '2021-09-30 12:26:40', '2021-10-01 05:53:18'),
-(19, 'Healthcare Device', NULL, 'Healthcare Device', NULL, NULL, 19, 1, '2021-09-30 12:27:06', '2021-10-01 05:53:18'),
-(20, 'Men', NULL, 'Men', NULL, NULL, 20, 1, '2021-09-30 12:31:04', '2021-10-01 05:53:18'),
-(21, 'Women', NULL, 'Women', NULL, NULL, 21, 1, '2021-09-30 12:34:11', '2021-10-01 05:53:18'),
-(22, 'Electronics', NULL, 'Electronics', NULL, NULL, 22, 1, '2021-09-30 12:34:55', '2021-10-08 14:07:32'),
-(23, 'Mobiles', NULL, NULL, NULL, NULL, 23, 1, '2021-09-30 12:35:55', '2021-10-01 05:53:18'),
-(24, 'Laptops', NULL, 'Laptops', NULL, NULL, 24, 1, '2021-09-30 12:36:16', '2021-10-08 14:05:13');
+(1, 'root', '', 'root', '', '', 1, 1, NULL, '2021-11-15 11:03:37'),
+(2, 'Delivery', '', 'Delivery', '', '', 2, 1, NULL, '2021-11-15 11:03:37'),
+(3, 'Restaurant', '', 'Restaurant', NULL, NULL, 3, 1, NULL, '2021-11-15 11:03:37'),
+(4, 'Supermarket', '', 'Supermarket', NULL, NULL, 4, 1, NULL, '2021-11-15 11:03:37'),
+(5, 'Pharmacy', '', 'Pharmacy', NULL, NULL, 5, 1, NULL, '2021-11-15 11:03:37'),
+(6, 'Send something', '', 'Send something', '', '', 6, 1, NULL, '2021-11-15 11:03:37'),
+(7, 'Buy something', '', 'Buy something', '', '', 7, 1, NULL, '2021-11-15 11:03:37'),
+(8, 'Vegetables', '', 'Vegetables', NULL, NULL, 8, 1, NULL, '2021-11-15 11:03:37'),
+(9, 'Fruits', '', 'Fruits', NULL, NULL, 9, 1, NULL, '2021-11-15 11:03:37'),
+(10, 'Dairy and Eggs', '', 'Dairy and Eggs', NULL, NULL, 10, 1, NULL, '2021-11-15 11:03:37'),
+(11, 'E-Commerce', '', 'E-Commerce', '', '', 11, 1, NULL, '2021-11-15 11:03:37'),
+(12, 'Fashion', '', 'Fashion', NULL, NULL, 12, 1, NULL, '2021-11-15 11:03:37'),
+(13, 'Dispatcher', '', 'Dispatcher', '', '', 13, 1, NULL, '2021-11-15 11:03:37'),
+(14, 'Beverages', NULL, 'Beverages', NULL, NULL, 14, 1, '2021-09-30 12:19:38', '2021-11-15 11:03:37'),
+(15, 'Baby Products', NULL, 'Baby Products', NULL, NULL, 15, 1, '2021-09-30 12:20:26', '2021-11-15 11:03:37'),
+(16, 'Italian', NULL, 'Italian', NULL, NULL, 16, 1, '2021-09-30 12:22:04', '2021-11-15 11:03:37'),
+(17, 'Chinese', NULL, 'chinese', NULL, NULL, 17, 1, '2021-09-30 12:22:36', '2021-11-15 11:03:37'),
+(18, 'Fitness & Supplement', NULL, 'Fitness & Supplement', NULL, NULL, 18, 1, '2021-09-30 12:26:40', '2021-11-15 11:03:37'),
+(19, 'Healthcare Device', NULL, 'Healthcare Device', NULL, NULL, 19, 1, '2021-09-30 12:27:06', '2021-11-15 11:03:37'),
+(20, 'Men', NULL, 'Men', NULL, NULL, 20, 1, '2021-09-30 12:31:04', '2021-11-15 11:03:37'),
+(21, 'Women', NULL, 'Women', NULL, NULL, 21, 1, '2021-09-30 12:34:11', '2021-11-15 11:03:37'),
+(22, 'Electronics', NULL, 'Electronics', NULL, NULL, 22, 1, '2021-09-30 12:34:55', '2021-11-15 11:03:37'),
+(23, 'Mobiles', NULL, NULL, NULL, NULL, 23, 1, '2021-09-30 12:35:55', '2021-11-15 11:03:37'),
+(24, 'Laptops', NULL, 'Laptops', NULL, NULL, 24, 1, '2021-09-30 12:36:16', '2021-11-15 11:03:37');
 
 
 -- --------------------------------------------------------
@@ -1896,10 +1896,10 @@ INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sor
 
 
 INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
-(1, 'Supermarket', NULL, 'banner/6tKRaCYpA05ZPZjlkPtk3twBOyDhMIlJ3lAp3rFo.png', 1, 3, 1, '2021-10-06 13:11:00', '2025-10-29 12:00:00', 8, NULL, 'category', NULL, '2021-10-11 10:18:48'),
-(2, 'Electronics', NULL, 'banner/VYTHD1Jd3ZXclEcfp95RWJjyJgBrJmU6jOs4HHCU.png', 1, 2, 1, '2021-10-01 11:24:00', '2024-10-30 12:00:00', 24, NULL, 'category', NULL, '2021-10-11 10:18:32'),
-(4, 'Fashion', NULL, 'banner/sR4RvrIUoz3RezV8lGVBsQbNjbrrovXR2qL9S2ph.png', 1, 1, 1, '2021-10-03 20:54:00', '2024-10-31 12:00:00', 21, NULL, 'category', '2021-10-01 05:59:21', '2021-10-11 10:18:19'),
-(5, 'Pharmacy', NULL, 'banner/HdNkAXsIgB6rSEBQQSFScoPj4An01ZTftiTRE551.jpg', 0, 4, 1, '2021-10-03 20:56:00', '2024-10-31 12:00:00', NULL, NULL, NULL, '2021-10-03 15:27:40', '2021-10-11 07:40:53');
+(1, 'Supermarket', NULL, 'banner/hmVvbAoBOfeB7LjRizJEoBlH7h1aymShYvWkvlrC.png', 1, 3, 1, '2021-10-06 13:11:00', '2025-10-29 12:00:00', 8, NULL, 'category', NULL, '2021-11-15 09:52:51'),
+(2, 'Fashion', NULL, 'banner/6UcB2Aicy6hFPBJ9rD1oNyeZbMhwlauHOjcRGK1v.png', 1, 2, 1, '2021-10-01 11:24:00', '2024-10-30 12:00:00', 24, NULL, 'category', NULL, '2021-11-15 09:52:17'),
+(4, 'Electronics', NULL, 'banner/1fRMwEtQ4IQ1cgeiFDWWTWM7KnR57l7fzFwywefu.png', 1, 1, 1, '2021-10-03 20:54:00', '2024-10-31 12:00:00', 21, NULL, 'category', '2021-10-01 05:59:21', '2021-11-15 09:48:25'),
+(5, 'Pharmacy', NULL, 'banner/BRbzRPGGSz6oywBiVPLGGT3P5oDjI4a1HhnKoDBX.jpg', 1, 4, 1, '2021-10-03 20:56:00', '2024-10-31 12:00:00', NULL, NULL, NULL, '2021-10-03 15:27:40', '2021-11-15 09:53:26');
 
 
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
@@ -1919,6 +1919,49 @@ INSERT INTO `cab_booking_layout_transaltions` (`id`, `title`, `cab_booking_layou
 (5, NULL, 5, 1, '2021-10-04 11:33:02', '2021-10-04 11:33:02', NULL),
 (6, NULL, 6, 1, '2021-10-04 11:33:02', '2021-10-04 11:33:02', NULL);
 
+
+INSERT INTO `app_stylings` (`id`, `name`, `type`, `created_at`, `updated_at`) VALUES
+(1, 'Regular Font', 2, NULL, NULL),
+(2, 'Medium Font', 2, NULL, NULL),
+(3, 'Bold Font', 2, NULL, NULL),
+(4, 'Primary Color', 4, NULL, NULL),
+(5, 'Secondary Color', 4, NULL, NULL),
+(6, 'Tertiary Color', 4, NULL, NULL),
+(7, 'Tab Bar Style', 3, NULL, NULL),
+(8, 'Home Page Style', 3, NULL, NULL),
+(9, 'Home Tag Line', 1, NULL, NULL);
+
+
+INSERT INTO `app_styling_options` (`id`, `app_styling_id`, `name`, `image`, `is_selected`, `created_at`, `updated_at`, `template_id`) VALUES
+(1, 1, 'CircularStd-Book', NULL, 1, NULL, NULL, NULL),
+(2, 1, 'SFProText-Regular', NULL, 0, NULL, NULL, NULL),
+(3, 1, 'Futura-Normal', NULL, 0, NULL, NULL, NULL),
+(4, 1, 'Eina02-Regular', NULL, 0, NULL, NULL, NULL),
+(5, 2, 'CircularStd-Medium', NULL, 1, NULL, NULL, NULL),
+(6, 2, 'SFProText-Medium', NULL, 0, NULL, NULL, NULL),
+(7, 2, 'Futura-Medium', NULL, 0, NULL, NULL, NULL),
+(8, 2, 'Eina02-SemiBold', NULL, 0, NULL, NULL, NULL),
+(9, 3, 'CircularStd-Bold', NULL, 1, NULL, NULL, NULL),
+(10, 3, 'SFProText-Bold', NULL, 0, NULL, NULL, NULL),
+(11, 3, 'FuturaBT-Heavy', NULL, 0, NULL, NULL, NULL),
+(12, 3, 'Eina02-Bold', NULL, 0, NULL, NULL, NULL),
+(13, 4, '#40B1E2', NULL, 1, NULL, '2021-10-04 07:35:47', NULL),
+(14, 5, '#fff', NULL, 1, NULL, NULL, NULL),
+(15, 6, '#fff', NULL, 1, NULL, NULL, NULL),
+(16, 7, 'Tab 1', 'bar.png', 0, NULL, '2021-10-04 09:24:58', 1),
+(17, 7, 'Tab 2', 'bar_two.png', 0, NULL, '2021-10-04 09:24:58', 2),
+(18, 7, 'Tab 3', 'bar_three.png', 0, NULL, '2021-10-04 09:24:58', 3),
+(19, 7, 'Tab 4', 'bar_four.png', 1, NULL, '2021-10-04 09:24:58', 4),
+(20, 7, 'Tab 5', 'bar_five.png', 0, NULL, '2021-10-04 09:24:58', 5),
+(21, 8, 'Home Page 1', 'home.png', 0, NULL, '2021-10-04 09:25:00', 1),
+(22, 8, 'Home Page 4', 'home_four.png', 0, NULL, '2021-10-04 09:25:00', 2),
+(23, 8, 'Home Page 5', 'home_five.png', 1, NULL, '2021-10-04 09:25:00', 3),
+(24, 9, 'Create a free account and join us!', NULL, 1, NULL, NULL, NULL),
+(25, 8, 'Home Page 6', 'home_six.png', 0, '2021-10-12 14:10:13', '2021-10-12 14:10:13', 4);
+
 UPDATE `client_preferences` SET `dinein_check` = 0 WHERE `client_preferences`.`id` = 1;
 UPDATE `client_preferences` SET `takeaway_check` = 0 WHERE `client_preferences`.`id` = 1;
 UPDATE `client_preferences` SET `delivery_check` = 1 WHERE `client_preferences`.`id` = 1;
+
+
+UPDATE `client_preferences` SET `business_type` = 'food_grocery_ecommerce' , `is_hyperlocal` = 0 WHERE `client_preferences`.`id` = 1;
