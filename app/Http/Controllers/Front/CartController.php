@@ -584,6 +584,7 @@ class CartController extends FrontController
             $vendor_details = [];
             $delivery_status = 1;
             $is_vendor_closed = 0;
+            $deliver_charge = 0;
             foreach ($cartData as $ven_key => $vendorData) {
                 $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
@@ -680,7 +681,7 @@ class CartController extends FrontController
                             if (!empty($deliver_charge) && $delivery_count == 0) {
                                 $delivery_count = 1;
                                 $prod->deliver_charge = number_format($deliver_charge, 2, '.', '');
-                                $payable_amount = $payable_amount + $deliver_charge;
+                                // $payable_amount = $payable_amount + $deliver_charge;
                                 $delivery_fee_charges = $deliver_charge;
                             }
                         }
@@ -721,6 +722,7 @@ class CartController extends FrontController
                 if (in_array(1, $subscription_features)) {
                     $subscription_discount = $subscription_discount + $delivery_fee_charges;
                 }
+                $payable_amount = $payable_amount + $deliver_charge;
                 $vendorData->delivery_fee_charges = number_format($delivery_fee_charges, 2, '.', '');
                 $vendorData->payable_amount = number_format($payable_amount, 2, '.', '');
                 $vendorData->discount_amount = number_format($discount_amount, 2, '.', '');
