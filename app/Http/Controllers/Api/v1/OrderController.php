@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
+use Illuminate\Support\Facades\Validator;
 use Log;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption};
 use App\Models\AutoRejectOrderCron;
@@ -71,9 +72,24 @@ class OrderController extends BaseController {
         else
             return false;
     }
-    public function postPlaceOrder(OrderStoreRequest $request)
+    public function postPlaceOrder(Request $request)
     {
         try {
+            $rules = [
+                'address_id'        => 'required:exists:user_addresses,id',
+                'payment_option_id' => 'required'
+            ];
+            $validator = Validator::make($request->all(), $rules, [
+                'address_id.required' => __('Address is required'),
+                'payment_option_id.required' => __('Payment Option is required')
+            ]);
+            if ($validator->fails()) {
+                foreach ($validator->errors()->toArray() as $error_key => $error_value) {
+                    $errors['error'] = __($error_value[0]);
+                    return response()->json($errors, 422);
+                }
+            }
+
             $total_amount = 0;
             $total_discount = 0;
             $taxable_amount = 0;

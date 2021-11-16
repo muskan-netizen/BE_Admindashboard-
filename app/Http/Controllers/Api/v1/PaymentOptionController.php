@@ -11,6 +11,7 @@ use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Api\v1\BaseController;
+use App\Http\Controllers\Api\v1\StripeGatewayController;
 use App\Http\Controllers\Api\v1\MobbexGatewayController;
 use App\Http\Controllers\Api\v1\YocoGatewayController;
 use App\Http\Controllers\Api\v1\RazorpayGatewayController;
@@ -43,20 +44,20 @@ class PaymentOptionController extends BaseController{
             if(method_exists($this, $function)) {
                 if(!empty($request->action)){
                     $response = $this->$function($request); // call related gateway for payment processing
-                    $responseData = $response->getData(); //getOriginalContent();
-                    if($responseData->status == 'Success'){
-                        // if( ($gateway != 'paypal') && ($gateway != 'mobbex') ){
-                        if( $gateway == 'stripe' ){
-                            $request->transaction_id = $responseData->data;
-                            if($request->action == 'cart'){
-                                $orderResponse = $this->postPlaceOrder($request);
-                                return $orderResponse;
-                            }
-                            else if($request->action == 'wallet'){
-                                $walletResponse = $this->creditMyWallet($request);
-                            }
-                        }
-                    }
+                    // $responseData = $response->getData(); //getOriginalContent();
+                    // if($responseData->status == 'Success'){
+                    //     // if( ($gateway != 'paypal') && ($gateway != 'mobbex') ){
+                    //     if( $gateway == 'stripe' ){
+                    //         $request->request->add(['transaction_id' => $responseData->data]);
+                    //         if($request->action == 'cart'){
+                    //             $orderResponse = $this->postPlaceOrder($request);
+                    //             return $orderResponse;
+                    //         }
+                    //         else if($request->action == 'wallet'){
+                    //             $walletResponse = $this->creditMyWallet($request);
+                    //         }
+                    //     }
+                    // }
                     return $response;
                 }
             }
@@ -66,6 +67,11 @@ class PaymentOptionController extends BaseController{
         }else{
             return $this->errorResponse("Invalid Gateway Request", 400);
         }
+    }
+
+    public function postPaymentVia_stripe(Request $request){
+        $gateway = new StripeGatewayController();
+        return $gateway->stripePurchase($request);
     }
 
     public function postPaymentVia_payfast(Request $request){
@@ -124,32 +130,32 @@ class PaymentOptionController extends BaseController{
         }
     }
 
-    public function postPaymentVia_stripe(Request $request){
-        try{
-            $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
-            $creds_arr = json_decode($stripe_creds->credentials);
-            $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
-            $this->gateway = Omnipay::create('Stripe');
-            $this->gateway->setApiKey($api_key);
-            $this->gateway->setTestMode(true); //set it to 'false' when go live
-            $token = $request->stripe_token;
-            $response = $this->gateway->purchase([
-                'currency' => 'INR',
-                'token' => $token,
-                'amount' => $request->amount,
-                'metadata' => ['order_id'=>'11'],
-                'description' => 'Transaction type purchase',
-            ])->send();
-            if ($response->isSuccessful()) {
-                return $this->successResponse($response->getTransactionReference());
-            }
-            else {
-                return $this->errorResponse($response->getMessage(), 400);
-            }
-        }catch(\Exception $ex){
-            return $this->errorResponse($ex->getMessage(), 400);
-        }
-    }
+    // public function postPaymentVia_stripe(Request $request){
+    //     try{
+    //         $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
+    //         $creds_arr = json_decode($stripe_creds->credentials);
+    //         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+    //         $this->gateway = Omnipay::create('Stripe');
+    //         $this->gateway->setApiKey($api_key);
+    //         $this->gateway->setTestMode(true); //set it to 'false' when go live
+    //         $token = $request->stripe_token;
+    //         $response = $this->gateway->purchase([
+    //             'currency' => 'INR',
+    //             'token' => $token,
+    //             'amount' => $request->amount,
+    //             'metadata' => ['order_id'=>'11'],
+    //             'description' => 'Transaction type purchase',
+    //         ])->send();
+    //         if ($response->isSuccessful()) {
+    //             return $this->successResponse($response->getTransactionReference());
+    //         }
+    //         else {
+    //             return $this->errorResponse($response->getMessage(), 400);
+    //         }
+    //     }catch(\Exception $ex){
+    //         return $this->errorResponse($ex->getMessage(), 400);
+    //     }
+    // }
 
     public function creditMyWallet(Request $request)
     {

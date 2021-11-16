@@ -30,10 +30,14 @@ class WalletController extends Controller{
     # credit wallet set 
     public function creditMyWallet(Request $request)
     {   
-        $user = User::whereHas('device',function  ($qu) use ($request){
-            $qu->where('access_token', $request->auth_token);
-        })->first();
-
+        if($request->has('auth_token')){
+            $user = User::whereHas('device',function  ($qu) use ($request){
+                $qu->where('access_token', $request->auth_token);
+            })->first();
+        }
+        else{
+            $user = Auth::user();
+        }
        
         if($user){
             $credit_amount = $request->amount;
