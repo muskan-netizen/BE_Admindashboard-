@@ -20,7 +20,7 @@ class ProductController extends FrontController{
             $customerCurrency = Session::get('customerCurrency');
         }
         else{
-            $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+            $primaryCurrency = ClientCurrency::where('is_primary','=', 1)->first();
             Session::put('customerCurrency',$primaryCurrency->doller_compare);
         }
        
@@ -114,6 +114,9 @@ class ProductController extends FrontController{
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         if($clientCurrency){
             $doller_compare = $clientCurrency->doller_compare;
+        }else{
+            $clientCurrency = ClientCurrency::where('is_primary','=', 1)->first();
+            $doller_compare = $clientCurrency->doller_compare ?? 1;
         }
         $product->related_products = $this->metaProduct($langId, $doller_compare, 'related', $product->related);
         foreach ($product->variant as $key => $value) {

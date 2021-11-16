@@ -41,6 +41,27 @@ class OrderVendor extends Model{
 	public function getDispatcherStatusAttribute($value)
     {
 		$title = DispatcherStatusOption::where('id',$value)->value('title');
+
+		switch ($title) {
+			case "Created":
+			  $title = "Hold on! We are looking for drivers nearby!";
+			  break;
+			case "Assigned":
+			  $title = "Your driver has been assigned!";
+			  break;
+			case "Started":
+			  $title = "Your driver is moving to you!";
+			  break;
+			case "Arrived":
+			  $title = "Your driver has reached to your pickup location!";
+			  break;
+			case "Completed":
+			  $title = "You have arrived at your destination!";
+			 break;  
+			default:
+			$title = $title;
+		  }
+
         return ucfirst($title);
     }
 

@@ -1849,4 +1849,6 @@ INSERT INTO `loyalty_cards` (`id`, `name`, `description`, `image`, `minimum_poin
 (3, 'Platinum Plan', 'Platinum Loyalty Card', '2f3120/loyalty/image/rHwJcu9Q1NWp7TXnANRWoBOhdlWBPVbrBZgS2w1g.png', 800, NULL, 10, NULL, 20, 10, '0', '2021-11-16 05:07:24', '2021-11-16 05:15:49', '0');
 
 
-UPDATE `client_preferences` SET `business_type` = 'super_app' , `is_hyperlocal` = 0  WHERE `client_preferences`.`id` = 1;
+UPDATE `client_preferences` SET `business_type` = 'super_app' , `is_hyperlocal` = 0 WHERE `client_preferences`.`id` = 1;
+
+
