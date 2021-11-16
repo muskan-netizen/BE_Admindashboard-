@@ -109,7 +109,7 @@ INSERT INTO `categories` (`id`, `icon`, `slug`, `type_id`, `image`, `is_visible`
 (18, 'category/icon/7QEbBAoVbX3hhMMalPGnxFpQOcxDyU4r8aJ0OIQw.svg', 'chinese', 3, 'category/image/gMm76w5BybxW7bq61v5t6GiAHUhTRd1cYu5Oz7NP.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-09-29 06:36:28', '2021-11-15 07:46:46', NULL, 1),
 (19, 'category/icon/pT8MzZor1BMQSuUrTiYx7Ypl219bZMZPChL8fcYm.svg', 'japanese', 3, 'category/image/Yjean6ZH57E4210jk2efISa4tssmiTfRKw9qTOJg.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-08 04:50:56', '2021-11-15 07:46:51', NULL, 1),
 (20, 'category/icon/hMxZjmOLpV5WUz0E0DrjWcqV5bMrspsKLMZ1rf12.svg', 'american', 3, 'category/image/UEZXOzUhb7vLDu9IurtPOzmZaY0p9iHCSA2CEtYk.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-08 04:52:43', '2021-11-15 07:46:55', NULL, 1),
-(21, 'category/icon/npXGKqbsaw17dWDIpvXcB4vkc2gYTzMieuCjRR19.svg', 'french', 3, 'category/image/7YF9lTm54IonJQsq4ueQk5jkBKpGAvn4eMv9PYQh.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-08 04:53:22', '2021-11-15 09:24:07', '2021-11-15 09:24:07', 1);
+(21, 'category/icon/npXGKqbsaw17dWDIpvXcB4vkc2gYTzMieuCjRR19.svg', 'french', 3, 'category/image/7YF9lTm54IonJQsq4ueQk5jkBKpGAvn4eMv9PYQh.jpg', 1, 1, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, '0', '2021-10-08 04:53:22', '2021-11-15 09:24:07', NULL, 1);
 
 
 --
