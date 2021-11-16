@@ -292,7 +292,7 @@ class VendorController extends BaseController{
                             ->where('vt.language_id', $langId);
                         }])->where('id', $p_id)->first();
                         $product->variantSet = $variantData->variantSet;
-                        $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+                        // $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                         $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
                         $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
                         $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';

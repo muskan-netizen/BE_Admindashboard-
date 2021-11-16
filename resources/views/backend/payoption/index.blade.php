@@ -267,6 +267,87 @@
             @endforeach
         </div>
     </form>
+
+    <form method="POST" id="payout_option_form" action="{{route('payoutOption.payoutUpdateAll')}}">
+        @csrf
+        @method('POST')
+        <div class="row align-items-center">
+            <div class="col-sm-8">
+                <div class="text-sm-left">
+                    <div class="page-title-box">
+                        <h4 class="page-title">{{ __("Payout Options") }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 text-right">
+                <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+            </div>
+        </div>
+        <div class="row">
+            @foreach($payoutOption as $key => $opt)
+            <div class="col-md-4 mb-3">
+
+                <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
+                <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
+
+                <?php
+                $creds = json_decode($opt->credentials);
+                $payout_secret_key = (isset($creds->secret_key)) ? $creds->secret_key : '';
+                $payout_publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
+                $payout_client_id = (isset($creds->client_id)) ? $creds->client_id : '';
+                ?>
+
+                <div class="card-box h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title mb-0">{{$opt->title}}</h4>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-3">{{ __("Enable") }}</label>
+                                <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box payout_all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
+                            </div>
+                        </div>
+                        @if ( (strtolower($opt->code) != 'cod') )
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-3">{{ __('Sandbox') }}</label>
+                                <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="sandbox[{{$opt->id}}]" class="chk_box" data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
+                    @if ( (strtolower($opt->code) == 'stripe') )
+                    <div id="stripe_payout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="stripe_payout_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="stripe_payout_secret_key" id="stripe_payout_secret_key" class="form-control" value="{{$payout_secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="stripe_payout_publishable_key" class="mr-3">{{ __("Publishable Key") }}</label>
+                                    <input type="password" name="stripe_payout_publishable_key" id="stripe_payout_publishable_key" class="form-control" value="{{$payout_publishable_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="stripe_payout_client_id" class="mr-3">{{ __("Client ID") }}</label>
+                                    <input type="password" name="stripe_payout_client_id" id="stripe_payout_client_id" class="form-control" value="{{$payout_client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </form>
+
 </div>
 
 @endsection
@@ -337,6 +418,20 @@
         // $('#form_'+id).submit();
 
         //$('.vendorRow').toggle();
+    });
+
+    $('.payout_all_select').change(function() {
+        var id = $(this).data('id');
+        // console.log(id);
+        var title = $(this).data('title');
+        var code = title.toLowerCase();
+        if ($(this).is(":checked")) {
+            $("#" + code + "_payout_fields_wrapper").show();
+            $("#" + code + "_payout_fields_wrapper").find('input').attr('required', true);
+        } else {
+            $("#" + code + "_payout_fields_wrapper").hide();
+            $("#" + code + "_payout_fields_wrapper").find('input').removeAttr('required');
+        }
     });
 </script>
 @endsection

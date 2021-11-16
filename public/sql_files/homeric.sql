@@ -622,4 +622,13 @@ INSERT INTO `app_styling_options` (`id`, `app_styling_id`, `name`, `image`, `is_
 (24, 9, 'Create a free account and join us!', NULL, 1, NULL, NULL, NULL),
 (25, 8, 'Home Page 6', 'home_six.png', 0, '2021-10-12 14:10:13', '2021-11-15 07:53:05', 4);
 
+
+
+
+INSERT INTO `loyalty_cards` (`id`, `name`, `description`, `image`, `minimum_points`, `per_order_minimum_amount`, `per_order_points`, `per_purchase_minimum_amount`, `amount_per_loyalty_point`, `redeem_points_per_primary_currency`, `status`, `created_at`, `updated_at`, `loyalty_check`) VALUES
+(1, 'Gold Plan', 'Gold Loyalty Card', '2f3120/loyalty/image/im5953PjFoo5xub5X4JKes2yV2CwnoAaBiy8ACh1.png', 400, NULL, 5, NULL, 10, 10, '0', '2021-11-16 05:03:53', '2021-11-16 05:15:49', '0'),
+(2, 'Silver Plan', 'Silver Loyalty Card', '2f3120/loyalty/image/EAJdZtUl3sjzDLyvZfAjadapVc1S3eAQBSAqvjbr.png', 600, NULL, 8, NULL, 14, 10, '0', '2021-11-16 05:04:29', '2021-11-16 05:15:49', '0'),
+(3, 'Platinum Plan', 'Platinum Loyalty Card', '2f3120/loyalty/image/rHwJcu9Q1NWp7TXnANRWoBOhdlWBPVbrBZgS2w1g.png', 800, NULL, 10, NULL, 20, 10, '0', '2021-11-16 05:07:24', '2021-11-16 05:15:49', '0');
+
+
 UPDATE `client_preferences` SET `business_type` = 'home_service'  , `is_hyperlocal` = 0 WHERE `client_preferences`.`id` = 1;

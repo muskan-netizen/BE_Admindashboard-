@@ -20,13 +20,24 @@ use App\Http\Traits\ToasterResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory};
+use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 class VendorController extends BaseController
 {
     use ToasterResponser;
     use ApiResponser;
+    public $is_payout_enabled;
+
+    public function __construct(){
+        $payoutOption = PayoutOption::where('status', 1)->get();
+        if($payoutOption->isNotEmpty()){
+            $this->is_payout_enabled = 1;
+        }else{
+            $this->is_payout_enabled = 0;
+        }
+    }
+    
     /**
      * Display a listing of the resource.
      *
@@ -325,6 +336,7 @@ class VendorController extends BaseController
         $returnData['VendorCategory'] = $VendorCategory;
         $returnData['templetes'] = $templetes;
         $returnData['builds'] = $build;
+        $returnData['is_payout_enabled'] = $this->is_payout_enabled;
         if((isset($preferences['subscription_mode'])) && ($preferences['subscription_mode'] == 1)){
             $subscriptions_data = $this->getSubscriptionPlans($id);
             $returnData['subscription_plans'] = $subscriptions_data['sub_plans'];
@@ -369,7 +381,7 @@ class VendorController extends BaseController
             ->orderBy('is_primary', 'desc')->get();
         $client_preferences = ClientPreference::first();
         $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
-        return view('backend.vendor.vendorCategory')->with(['client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors]);
+        return view('backend.vendor.vendorCategory')->with(['client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors, 'is_payout_enabled'=>$this->is_payout_enabled]);
     }
 
     /**   show vendor page - catalog tab      */
@@ -475,10 +487,232 @@ class VendorController extends BaseController
         if(isset($vendor_name) && !empty($vendor_name))
         $sku_url = $sku_url.".".$vendor_name;
         
+        $taxCate = TaxCategory::all();
         
+        return view('backend.vendor.vendorCatalog')->with(['taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled]);
+    }
+
+    /**   show vendor page - payout tab      */
+    public function vendorPayout($domain = '', $id){
+        $product_categories = [];
+        $active = array();
+        $type = Type::all();
+        $categoryToggle = array();
+        $vendor = Vendor::where('id',$id);
+        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
+        if (Auth::user()->is_superadmin == 0) {
+            $vendor = $vendor->whereHas('permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $vendor  =  $vendor->first();
+        if(empty($vendor)){
+            abort(404);
+        }
+        
+        $VendorCategory = VendorCategory::where('vendor_id', $id)->where('status', 1)->pluck('category_id')->toArray();
+        $categories = Category::with('primary')->select('id', 'slug')
+                        ->where('id', '>', '1')->where('status', '!=', '2')->where('type_id', '1')
+                        ->where('can_add_products', 1)->orderBy('parent_id', 'asc')->where('status', 1)->orderBy('position', 'asc')->get();
+        $products = Product::with(['media.image', 'primary', 'category.cat', 'brand','variant' => function($v){
+                            $v->select('id','product_id', 'quantity', 'price')->groupBy('product_id');
+                    }])->select('id', 'sku','vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id')
+                    ->where('vendor_id', $id)->get();
+        $product_count = $products->count();
+        $published_products = $products->where('is_live', 1)->count();
+        $last_mile_delivery = $products->where('Requires_last_mile', 1)->count();
+        $new_products = $products->where('is_new', 1)->count();
+        $featured_products = $products->where('is_featured', 1)->count();
+        $categories = Category::select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+                        ->where('id', '>', '1')
+                        ->where(function($q) use($id){
+                              $q->whereNull('vendor_id')->orWhere('vendor_id', $id);
+                        })->where('status', 1)->orderBy('position', 'asc')
+                        ->orderBy('id', 'asc')
+                        ->orderBy('parent_id', 'asc')->get();
+        $products = Product::with(['media.image', 'primary', 'category.cat', 'brand', 'variant' => function ($v) {
+            $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
+        }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id')
+            ->where('vendor_id', $id)->get();
+        $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+            ->where('id', '>', '1')
+            ->where('is_core', 1)
+            ->whereNotIn('type_id', [4, 5])
+            ->where(function ($q) use ($id) {
+                $q->whereNull('vendor_id')->orWhere('vendor_id', $id);
+            })->orderBy('position', 'asc')
+            ->orderBy('id', 'asc')
+            ->where('status', 1)
+            ->orderBy('parent_id', 'asc')->get();
+        $csvProducts = CsvProductImport::where('vendor_id', $id)->orderBy('id','DESC')->get();
+        $csvVendors = CsvVendorImport::all();
+        /*    get active category list also with parent     */
+        foreach ($categories as $category) {
+            if (in_array($category->id, $VendorCategory) && $category->parent_id == 1) {
+                $active[] = $category->id;
+            }
+            if (in_array($category->id, $VendorCategory) && in_array($category->parent_id, $VendorCategory)) {
+                $active[] = $category->id;
+            }
+        }
+        if ($categories) {
+            $build = $this->buildTree($categories->toArray());
+            $categoryToggle = $this->printTreeToggle($build, $active);
+        }
+        $product_categories = VendorCategory::with(['category', 'category.translation' => function($q) use($langId){
+            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+            ->where('category_translations.language_id', $langId);
+        }])->where('status', 1)->where('vendor_id', $id)->get();
+        $p_categories = collect();
+        $product_categories_hierarchy = '';
+        if ($product_categories) {
+            foreach($product_categories as $pc){
+                $p_categories->push($pc->category);
+            }
+            $product_categories_build = $this->buildTree($p_categories->toArray());
+            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build);
+            foreach($product_categories_hierarchy as $k => $cat){
+                $myArr = array(1,3,7,8,9);
+                if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
+                    unset($product_categories_hierarchy[$k]);
+                }
+               
+            }
+        }
+        $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
+        $client_preferences = ClientPreference::first();
+        $woocommerce_detail = Woocommerce::first();
+
+        $client = Client::orderBy('id','asc')->first();
+        if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
+        $sku_url =  ($client->custom_domain);
+        else
+        $sku_url =  ($client->sub_domain.env('SUBMAINDOMAIN'));
+
+        $sku_url = array_reverse(explode('.',$sku_url));
+        $sku_url = implode(".",$sku_url);
+        $vendor_name = $vendor->name;
+        $vendor_name = preg_replace('/\s+/', '', $vendor_name);
+        if(isset($vendor_name) && !empty($vendor_name)){
+            $sku_url = $sku_url.".".$vendor_name;
+        }
+
+        $total_delivery_fees = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        if (Auth::user()->is_superadmin == 0) {
+            $total_delivery_fees = $total_delivery_fees->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $total_delivery_fees = $total_delivery_fees->sum('delivery_fee');
+
+        $total_promo_amount = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        if (Auth::user()->is_superadmin == 0) {
+            $total_promo_amount = $total_promo_amount->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $total_promo_amount = $total_promo_amount->where('coupon_paid_by', 0)->sum('discount_amount');
+
+        $total_admin_commissions = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        if (Auth::user()->is_superadmin == 0) {
+            $total_admin_commissions = $total_admin_commissions->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $total_admin_commissions = $total_admin_commissions->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount'));
+
+        $total_order_value = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        if (Auth::user()->is_superadmin == 0) {
+            $total_order_value = $total_order_value->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+        $total_order_value = $total_order_value->sum('payable_amount') - $total_delivery_fees;
+
+        $past_payout_value = 0.00;
+
+        $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value;
+        
+        //stripe connected account details
+        $stripe_connect_url = '';
+        $codes = ['stripe'];
+        $payout_creds = PayoutOption::whereIn('code', $codes)->where('status', 1)->first();
+        $creds_arr = json_decode($payout_creds->credentials);
+        $client_id = (isset($creds_arr->client_id)) ? $creds_arr->client_id : '';
+        $test_mode = (isset($paylink_creds->test_mode) && ($paylink_creds->test_mode == '1')) ? true : false;
+        $client = Session::has('client_config') ? Session::get('client_config')->code : '';
+
+        $is_stripe_connected = 0;
+        $checkIfStripeAccountExists = VendorConnectedAccount::where('vendor_id', $id)->first();
+        if($checkIfStripeAccountExists && (!empty($checkIfStripeAccountExists->account_id))){
+            $is_stripe_connected = 1;
+        }
+        $server_url = "http://local.myorder.com/client/verify/oauth/token/stripe";
+
+        if($client_id != ''){
+            $stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$id.'&client_id='.$client_id.'&scope=read_write&redirect_uri='.$server_url;
+        }
         
         $taxCate = TaxCategory::all();
-        return view('backend.vendor.vendorCatalog')->with(['taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail]);
+        return view('backend.vendor.vendorPayout')->with(['taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'payout', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'stripe_connect_url'=> $stripe_connect_url, 'is_payout_enabled'=>$this->is_payout_enabled, 'is_stripe_connected'=>$is_stripe_connected, 'total_order_value' => number_format($total_order_value, 2), 'total_admin_commissions' => number_format($total_admin_commissions, 2), 'total_promo_amount'=>$total_promo_amount, 'past_payout_value'=>$past_payout_value, 'available_funds'=>$available_funds]);
+    }
+
+    public function payoutFilter(Request $request, $id){
+        $from_date = "";
+        $to_date = "";
+        if (!empty($request->get('date_filter'))) {
+            $date_date_filter = explode(' to ', $request->get('date_filter'));
+            $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
+            $from_date = $date_date_filter[0];
+        }
+        $vendors = Vendor::with(['orders' => function($query) use($from_date,$to_date) {
+            if((!empty($from_date)) && (!empty($to_date))){
+                $query->between($from_date." 00:00:00", $to_date." 23:59:59");
+            }
+        }])->where('status', 1)->where('id', $id)->orderBy('id', 'desc');
+        
+        if (Auth::user()->is_superadmin == 0) {
+            $vendors = $vendors->whereHas('permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
+
+        $vendors = $vendors->get();
+        foreach ($vendors as $vendor) {
+            $vendor->total_paid = 0.00;
+            // $vendor->url = route('vendor.show', $vendor->id);
+            $vendor->view_url = route('vendor.show', $vendor->id);
+            $vendor->delivery_fee = number_format($vendor->orders->sum('delivery_fee'), 2, ".","");
+            $vendor->payable_amount = number_format($vendor->orders->sum('payable_amount'),2, ".","");
+            $vendor->order_value = number_format(($vendor->payable_amount - $vendor->delivery_fee), 2, ".","");
+            // $vendor->payment_method = number_format($vendor->orders->whereIn('payment_option_id', [2,3, 4])->sum('payable_amount'), 2, ".","");
+            // $vendor->promo_admin_amount = number_format($vendor->orders->where('coupon_paid_by', 1)->sum('discount_amount'), 2, ".","");
+            // $vendor->promo_vendor_amount = number_format($vendor->orders->where('coupon_paid_by', 0)->sum('discount_amount'), 2, ".","");
+            // $vendor->cash_collected_amount = number_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount'), 2, ".","");
+            $vendor->admin_commission_amount = number_format($vendor->orders->sum('admin_commission_percentage_amount') + $vendor->orders->sum('admin_commission_fixed_amount'), 2, ".","");
+            // $vendor->vendor_earning = number_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $admin_commission_amount), 2, ".","");
+
+            $is_stripe_connected = 0;
+            $checkIfStripeAccountExists = VendorConnectedAccount::where('vendor_id', $vendor->id)->first();
+            if($checkIfStripeAccountExists && (!empty($checkIfStripeAccountExists->account_id))){
+                $is_stripe_connected = 1;
+            }
+            $vendor->is_stripe_connected = $is_stripe_connected;
+
+            $vendor->vendor_earning = number_format(($vendor->order_value - $vendor->admin_commission_amount), 2, ".","");
+        }
+        return Datatables::of($vendors)
+            ->addIndexColumn()
+            ->filter(function ($instance) use ($request) {
+                if (!empty($request->get('search'))) {
+                    $instance->collection = $instance->collection->filter(function ($row) use ($request){
+                        if (Str::contains(Str::lower($row['name']), Str::lower($request->get('search')))){
+                            return true;
+                        }
+                        return false;
+                    });
+                }
+            })->make(true);
     }
 
     /**       delete vendor       */

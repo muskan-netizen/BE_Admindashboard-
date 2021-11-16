@@ -158,56 +158,50 @@
                                         <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
                                             <div class="text-center">
                                                 <h3>
-                                                    <i class="mdi mdi-package-variant-closed text-primary mdi-24px"></i>
-                                                    <span data-plugin="counterup"
-                                                        id="total_earnings_by_vendors">{{ $product_count }}</span>
+                                                    <i class="fas fa-money-check-alt text-info"></i>
+                                                    <span data-plugin="counterup" >{{ $total_order_value }}</span>
                                                 </h3>
-                                                <p class="text-muted font-15 mb-0">{{ __('Total Products') }}</p>
+                                                <p class="text-muted font-15 mb-0">{{ __('Lifetime Order Value') }}</p>
                                             </div>
                                         </div>
                                         <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
                                             <div class="text-center">
                                                 <h3>
-                                                    <i class="mdi mdi-package-variant text-primary mdi-24px"></i>
-                                                    <span data-plugin="counterup"
-                                                        id="total_order_count">{{ $published_products }}</span>
+                                                    <i class="fas fa-money-check-alt text-info"></i>
+                                                    <span data-plugin="counterup" >{{ $total_admin_commissions }}</span>
                                                 </h3>
-                                                <p class="text-muted font-15 mb-0">{{ __('Published Products') }}</p>
+                                                <p class="text-muted font-15 mb-0">{{ __('Admin Charges') }}</p>
                                             </div>
                                         </div>
-                                        @if ($client_preference_detail->business_type != 'taxi')
-                                            <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
-                                                <div class="text-center">
-                                                    <h3>
-                                                        <i class="mdi mdi-store-24-hour text-primary mdi-24px"></i>
-                                                        <span data-plugin="counterup"
-                                                            id="total_cash_to_collected">{{ $last_mile_delivery }}</span>
-                                                    </h3>
-                                                    <p class="text-muted font-15 mb-0">{{ __('Last Mile Deliverables') }}
-                                                    </p>
-                                                </div>
+                                        <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
+                                            <div class="text-center">
+                                                <h3>
+                                                    <i class="fas fa-money-check-alt text-info"></i>
+                                                    <span data-plugin="counterup" >{{ $total_promo_amount }}</span>
+                                                </h3>
+                                                <p class="text-muted font-15 mb-0">{{ __('Promo Discount') }}
+                                                </p>
                                             </div>
-                                            <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
-                                                <div class="text-center">
-                                                    <h3>
-                                                        <i class="mdi mdi-new-box text-primary mdi-24px"></i>
-                                                        <span data-plugin="counterup"
-                                                            id="total_delivery_fees">{{ $new_products }}</span>
-                                                    </h3>
-                                                    <p class="text-muted font-15 mb-0">{{ __('New Products') }}</p>
-                                                </div>
+                                        </div>
+                                        <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
+                                            <div class="text-center">
+                                                <h3>
+                                                    <i class="fas fa-money-check-alt text-info"></i>
+                                                    <span data-plugin="counterup" >{{ $past_payout_value }}</span>
+                                                </h3>
+                                                <p class="text-muted font-15 mb-0">{{ __('Past Payouts') }}</p>
                                             </div>
-                                            <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
-                                                <div class="text-center">
-                                                    <h3>
-                                                        <i class="mdi mdi-diamond text-primary mdi-24px"></i>
-                                                        <span data-plugin="counterup"
-                                                            id="total_delivery_fees">{{ $featured_products }}</span>
-                                                    </h3>
-                                                    <p class="text-muted font-15 mb-0">{{ __('Featured Products') }}</p>
-                                                </div>
+                                        </div>
+                                        <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
+                                            <div class="text-center">
+                                                <h3>
+                                                    <i class="fas fa-money-check-alt text-info"></i>
+                                                    <span data-plugin="counterup" >{{ $available_funds }}</span>
+                                                </h3>
+                                                <p class="text-muted font-15 mb-0">{{ __('Available Funds') }}</p>
                                             </div>
-                                        @endif
+                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -217,119 +211,48 @@
                         <div class="tab-pane {{ $tab == 'configuration' ? 'active show' : '' }} card-body"
                             id="configuration"></div>
                         <div class="tab-pane {{ $tab == 'category' ? 'active show' : '' }}" id="category"></div>
-                        <div class="tab-pane {{ $tab == 'catalog' ? 'active show' : '' }}" id="catalog">
+                        <div class="tab-pane {{ $tab == 'catalog' ? 'active show' : '' }}" id="catalog"></div>
+                        <div class="tab-pane {{ $tab == 'payout' ? 'active show' : '' }}" id="payout">
                             <div class="card-box">
                                 <div class="row">
                                     <div class="col-6">
-                                        <h4 class="mb-0"> {{ __('Catalog') }}</h4>
+                                        <h4 class="mb-0"> {{ __('Payout') }}</h4>
                                     </div>
                                     <div class="col-6 d-flex align-items-center justify-content-end mb-3">
-
-                                            <a class="btn btn-info  waves-effect waves-light text-sm-right action_product_button" dataid="0"
-                                                id="action_product_button" href="javascript:void(0);"
-                                                style="display: none;"><i class="mdi mdi-plus-circle mr-1"></i>
-                                                {{ __('Action') }}
-                                            </a>
-
-                                            <a class="btn btn-info waves-effect waves-light text-sm-right importProductBtn mx-2 {{ $vendor->status == 1 ? '' : 'disabled' }}"
-                                                dataid="0" href="javascript:void(0);"
-                                                {{ $vendor->status == 1 ? '' : 'disabled' }}><i
-                                                    class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
-                                            </a>
-                                            <a class="btn btn-info waves-effect waves-light text-sm-right addProductBtn {{ $vendor->status == 1 ? '' : 'disabled' }}"
-                                                dataid="0" href="javascript:void(0);"><i
-                                                    class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Product') }}
-                                            </a>
-
+                                        {{-- <a class="btn btn-info  waves-effect waves-light text-sm-right action_product_button" dataid="0"
+                                            id="action_product_button" href="javascript:void(0);"
+                                            style="display: none;"><i class="mdi mdi-plus-circle mr-1"></i>
+                                            {{ __('Action') }}
+                                        </a>
+                                        <a class="btn btn-info waves-effect waves-light text-sm-right importProductBtn mx-2 {{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                            dataid="0" href="javascript:void(0);"
+                                            {{ $vendor->status == 1 ? '' : 'disabled' }}><i
+                                                class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
+                                        </a> --}}
+                                        {{-- <a class="btn btn-info waves-effect waves-light text-sm-right addProductBtn {{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                            dataid="0" href="javascript:void(0);"><i
+                                                class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Product') }}
+                                        </a> --}}
+                                        @if($is_stripe_connected == 1)
+                                            <h5><i class="fa fa-check text-success mr-2"></i><b>Connected to Stripe</b></h5>
+                                        @else
+                                            <button type="button" class="btn btn-info waves-effect text-sm-right" onclick="location.href='{{$stripe_connect_url}}'">{{ __("Connect to Stripe") }}</button>
+                                        @endif
                                     </div>
                                     <div class="col-md-12">
                                         <div class="table-responsive">
-                                            <table class="table table-centered table-nowrap table-striped" id="">
+                                            <table class="table table-centered table-nowrap table-striped" id="vendor_payout_history_datatable" width="100%">
                                                 <thead>
                                                     <tr>
-                                                        <th><input type="checkbox" class="all-product_check"
-                                                                name="all_product_id" id="all-product_check"></th>
-                                                        <th>#</th>
-                                                        <th>{{ __('Name') }}</th>
-                                                        <th>{{ __('Category') }}</th>
-                                                        @if ($client_preference_detail->business_type != 'taxi')
-                                                            <th>{{ __('Brand') }}</th>
-                                                            <th>{{ __('Quantity') }}</th>
-                                                            <th>{{ __('Price') }}</th>
-                                                        @endif
-                                                        <th>{{ __('Status') }}</th>
-                                                        @if ($client_preference_detail->business_type != 'taxi')
-                                                            <th>{{ __('New') }}</th>
-                                                            <th>{{ __('Featured') }}</th>
-                                                            <th>{{ __('Requires Last') }}<br>{{ __('Mile Delivery') }}
-                                                            </th>
-                                                        @endif
-
-                                                        <th>{{ __('Action') }}</th>
+                                                        <th>{{ __("Date") }}</th>
+                                                        <th >{{ __("Amount") }}</th>
+                                                        <th>{{ __("Type") }}</th>
+                                                        <th>{{ __("Action") }}</th>
+                                                        <th>{{ __("Status") }}</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="post_list">
-                                                    @foreach ($products as $product)
-                                                        <tr data-row-id="{{ $product->id }}">
-
-                                                            <td><input type="checkbox" class="single_product_check"
-                                                                    name="product_id[]" id="single_product"
-                                                                    value="{{ $product->id }}"></td>
-                                                            <td>
-                                                                @if (isset($product->media[0]))
-                                                                    <img alt="{{ $product->id }}" class="rounded-circle"
-                                                                        src="{{ $product->media[0]->image->path['proxy_url'] . '30/30' . $product->media[0]->image->path['image_path'] }}">
-                                                                @else
-                                                                    {{ $product->sku }}
-                                                                @endif
-                                                            </td>
-                                                            <td> <a href="{{ route('product.edit', $product->id) }}"
-                                                                    target="_blank">{{ Str::limit(isset($product->primary->title) && !empty($product->primary->title) ? $product->primary->title : '', 30) }}</a>
-                                                            </td>
-                                                            <td> {{ $product->category ? $product->category->cat->name : 'N/A' }}
-                                                            </td>
-                                                            @if ($client_preference_detail->business_type != 'taxi')
-                                                                <td> {{ !empty($product->brand) ? $product->brand->title : 'N/A' }}
-                                                                </td>
-                                                                <td> {{ $product->variant->first() ? $product->variant->first()->quantity : 0 }}
-                                                                </td>
-                                                                <td> {{ $product->variant->first() ? $product->variant->first()->price : 0 }}
-                                                                </td>
-                                                            @endif
-                                                            <td> {{ $product->is_live == 1 ? 'Published' : 'Draft' }}
-                                                            </td>
-                                                            @if ($client_preference_detail->business_type != 'taxi')
-                                                                <td> {{ $product->is_new == 0 ? 'No' : 'Yes' }}</td>
-                                                                <td> {{ $product->is_featured == 0 ? 'No' : 'Yes' }}
-                                                                </td>
-                                                                <td> {{ $product->Requires_last_mile == 0 ? 'No' : 'Yes' }}
-                                                                </td>
-                                                            @endif
-                                                            <td>
-                                                                <div class="form-ul" style="width: 60px;">
-                                                                    <div class="inner-div" style="float: left;">
-                                                                        <a class="action-icon"
-                                                                            href="{{ route('product.edit', $product->id) }}"
-                                                                            userId="{{ $product->id }}"><i
-                                                                                class="mdi mdi-square-edit-outline"></i></a>
-                                                                    </div>
-                                                                    <div class="inner-div">
-                                                                        <form method="POST"
-                                                                            action="{{ route('product.destroy', $product->id) }}">
-                                                                            @csrf
-                                                                            @method('DELETE')
-                                                                            <div class="form-group">
-                                                                                <button type="submit"
-                                                                                    onclick="return confirm('Are you sure? You want to delete the product.')"
-                                                                                    class="btn btn-primary-outline action-icon"><i
-                                                                                        class="mdi mdi-delete"></i></button>
-                                                                            </div>
-                                                                        </form>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
+                                                <tbody id="vendor_payout_history_tbody_list">
+                                                    
                                                 </tbody>
                                             </table>
                                         </div>
@@ -646,6 +569,23 @@
             </div>
         </div>
     </div>
+
+    {{-- <div id="stripe_account_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="stripeAccountLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 text-center"><h3>Do you want to connect to stripe for payouts?</h3></div>
+                    </div>
+                </div>
+                <div class="modal-footer flex-nowrap justify-content-center align-items-center">
+                    <button type="button" class="btn btn-info waves-effect waves-light" onclick="location.href='{{$stripe_connect_url}}'">{{ __("Connect to Stripe") }}</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light" data-dismiss="modal">{{ __("Later") }}</button>
+                </div>
+            </div>
+        </div>
+    </div> --}}
+
     <!-- end product popup -->
     <script type="text/javascript">
         $(".all-product_check").click(function() {

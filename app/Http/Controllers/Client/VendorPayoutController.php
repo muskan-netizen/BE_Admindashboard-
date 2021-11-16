@@ -11,7 +11,7 @@ use App\Http\Traits\ApiResponser;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderVendorListExport;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{User, Vendor, OrderVendor, PaymentOption};
+use App\Models\{User, Vendor, OrderVendor, PaymentOption, VendorConnectedAccount};
 
 class VendorPayoutController extends BaseController{
     use ApiResponser;
@@ -90,6 +90,14 @@ class VendorPayoutController extends BaseController{
             // $vendor->cash_collected_amount = number_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount'), 2, ".","");
             $vendor->admin_commission_amount = number_format($vendor->orders->sum('admin_commission_percentage_amount') + $vendor->orders->sum('admin_commission_fixed_amount'), 2, ".","");
             // $vendor->vendor_earning = number_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $admin_commission_amount), 2, ".","");
+
+            $is_stripe_connected = 0;
+            $checkIfStripeAccountExists = VendorConnectedAccount::where('vendor_id', $vendor->id)->first();
+            if($checkIfStripeAccountExists && (!empty($checkIfStripeAccountExists->account_id))){
+                $is_stripe_connected = 1;
+            }
+            $vendor->is_stripe_connected = $is_stripe_connected;
+
             $vendor->vendor_earning = number_format(($vendor->order_value - $vendor->admin_commission_amount), 2, ".","");
         }
         return Datatables::of($vendors)

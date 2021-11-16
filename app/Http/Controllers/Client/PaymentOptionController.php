@@ -10,7 +10,7 @@ use App\Http\Traits\ToasterResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, PaymentOption};
+use App\Models\{Client, ClientPreference, PaymentOption, PayoutOption};
 
 class PaymentOptionController extends BaseController
 {
@@ -29,9 +29,11 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $code = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay');
-        $payOption = PaymentOption::whereIn('code', $code)->get();
-        return view('backend/payoption/index')->with(['payOption' => $payOption]);
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay');
+        $payout_codes = array('stripe');
+        $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
+        $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
+        return view('backend/payoption/index')->with(['payOption' => $payOption, 'payoutOption' => $payoutOption]);
     }
 
     /**
@@ -119,10 +121,14 @@ class PaymentOptionController extends BaseController
                     ], [
                         'stripe_api_key.required' => 'Stripe secret key field is required'
                     ]);
-                    $json_creds = json_encode(array(
+                    $stripe_arr = array(
                         'api_key' => $request->stripe_api_key,
                         'publishable_key' => $request->stripe_publishable_key
-                    ));
+                    );
+                    if(isset($request->stripe_client_id)){
+                        $stripe_arr['client_id'] = $request->stripe_client_id;
+                    }
+                    $json_creds = json_encode($stripe_arr);
                 } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'yoco')) {
                     $validatedData = $request->validate([
                         'yoco_secret_key'        => 'required',
@@ -183,6 +189,51 @@ class PaymentOptionController extends BaseController
                 }
             }
             PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
+        }
+        $toaster = $this->successToaster('Success', $msg);
+        return redirect()->back()->with('toaster', $toaster);
+    }
+
+
+    public function payoutUpdateAll(Request $request, $domain = '')
+    {
+        $msg = 'Payout options have been saved successfully!';
+        $method_id_arr = $request->input('method_id');
+        $method_name_arr = $request->input('method_name');
+        $active_arr = $request->input('active');
+        $test_mode_arr = $request->input('sandbox');
+
+        foreach ($method_id_arr as $key => $id) {
+            $saved_creds = PayoutOption::select('credentials')->where('id', $id)->first();
+            if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
+                $json_creds = $saved_creds->credentials;
+            } else {
+                $json_creds = NULL;
+            }
+
+            $status = 0;
+            $test_mode = 0;
+            if ((isset($active_arr[$id])) && ($active_arr[$id] == 'on')) {
+                $status = 1;
+
+                if ((isset($test_mode_arr[$id])) && ($test_mode_arr[$id] == 'on')) {
+                    $test_mode = 1;
+                }
+
+                if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'stripe')) {
+                    $validatedData = $request->validate([
+                        'stripe_payout_secret_key'      => 'required',
+                        'stripe_payout_publishable_key' => 'required',
+                        'stripe_payout_client_id'       => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'secret_key' => $request->stripe_payout_secret_key,
+                        'publishable_key' =>  $request->stripe_payout_publishable_key,
+                        'client_id' => $request->stripe_payout_client_id
+                    ));
+                }
+            }
+            PayoutOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
         }
         $toaster = $this->successToaster('Success', $msg);
         return redirect()->back()->with('toaster', $toaster);

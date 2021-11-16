@@ -3,16 +3,20 @@
 namespace App\Http\Controllers\Client;
 
 use Auth;
+use Session;
+use Redirect;
 use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use Omnipay\Common\CreditCard;
-use App\Models\{PaymentOption, Client, ClientCurrency, SubscriptionPlansVendor};
+use App\Models\{PaymentOption, Client, ClientCurrency, SubscriptionPlansVendor, PayoutOption, UserVendor, VendorConnectedAccount};
 use App\Http\Traits\ApiResponser;
+use App\Http\Traits\ToasterResponser;
 use App\Http\Controllers\Client\BaseController;
 use Illuminate\Support\Facades\Validator;
 class StripeGatewayController extends BaseController{
 
     use ApiResponser;
+    use ToasterResponser;
     public $gateway;
 
     public function __construct()
@@ -82,4 +86,53 @@ class StripeGatewayController extends BaseController{
         }
     }
 
+    public function verifyOAuthToken(request $request)
+    {
+        $user = Auth::user();
+        $vendor = $request->state;
+        if($request->has('code')){
+            $code = $request->code;    
+            $checkIfExists = VendorConnectedAccount::where('user_id', $user->id)->where('vendor_id', $vendor)->first();        
+            if($vendor > 0){
+                if($checkIfExists){
+                    $msg = __('You are already connected to stripe');
+                    $toaster = $this->errorToaster('Error', $msg);
+                }else{
+                    $stripe_creds = PayoutOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
+                    $creds_arr = json_decode($stripe_creds->credentials);
+                    $secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+
+                    // Complete the connection and get the account ID
+                    \Stripe\Stripe::setApiKey($secret_key);
+                    $response = \Stripe\OAuth::token([
+                        'grant_type' => 'authorization_code',
+                        'code' => $code,
+                    ]);
+                    // dd($response);
+
+                    // Access the connected account id in the response
+                    $connected_account_id = $response->stripe_user_id;
+
+                    VendorConnectedAccount::insert([
+                        'user_id' => $user->id,
+                        'vendor_id' => $vendor,
+                        'account_id' => $connected_account_id,
+                        'payment_option_id' => 4,
+                        'status' => 1
+                    ]);
+                    $msg = __('Stripe connect has been enabled successfully');
+                    $toaster = $this->successToaster('Success', $msg);
+                }
+            }else{
+                $msg = __('Invalid Data');
+                $toaster = $this->errorToaster('Error', $msg);
+            }
+        }
+        else{
+            $msg = __('Stripe connect has been declined');
+            $toaster = $this->errorToaster('Error', $msg);
+        }
+        
+        return Redirect::To(route('vendor.payout', $vendor))->with('toaster', $toaster);
+    }
 }
