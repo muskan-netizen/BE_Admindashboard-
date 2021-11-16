@@ -447,6 +447,14 @@ class PickupDeliveryController extends BaseController{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
                 }
+
+                if(isset($request->task_type) && !empty($request->task_type))
+                $request->task_type = $request->task_type;
+                else{
+                    $request->task_type = 'now';
+                    $request->schedule_time = null;
+                }
+
                 $dynamic = uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
