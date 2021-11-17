@@ -259,12 +259,8 @@
                              </select>
                          </div>
                          @endif  
-                        <div class="mb-0 ml-3">
-                            <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="pickup_labels[]">
-                                 
-                            <input type="checkbox" {{$home_page_label->is_active == 1 ? 'checked' : ''}} id="{{$home_page_label->slug}}" data-plugin="switchery" name="is_active[{{$key}}][check]" class="chk_box2" data-color="#43bee1">
-                        </div>
-                        @if($home_page_label->slug == 'pickup_delivery')
+
+                         @if($home_page_label->slug == 'pickup_delivery')
                         <a class="action-icon openBannerModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
                             <i class="mdi mdi-pencil"></i>
                         </a>
@@ -274,6 +270,13 @@
                             <i class="mdi mdi-pencil"></i>
                         </a>
                         @endif
+
+                        <div class="mb-0 ml-1">
+                            <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="pickup_labels[]">
+                                 
+                            <input type="checkbox" {{$home_page_label->is_active == 1 ? 'checked' : ''}} id="{{$home_page_label->slug}}" data-plugin="switchery" name="is_active[{{$key}}][check]" class="chk_box2" data-color="#43bee1">
+                        </div>
+                        
                         <a class="action-icon deletePickupSectionx" href="{{route('pickup.delete.section', $home_page_label->id)}}" onclick="return confirm('Are you sure you want to delete this section?');"  dataid="{{$home_page_label->id}}" href="javascript:void(0);">
                             <i class="mdi mdi-delete"></i>
                         </a>

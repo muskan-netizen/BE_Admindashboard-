@@ -299,17 +299,20 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.status == "Success") {
-                    if($('.menu-slider').hasClass('slick-initialized')){
-                        $('.menu-slider').slick('destroy');
-                    }
+                    // if($('.menu-slider').hasClass('slick-initialized')){
+                    //     $('.menu-slider').slick('destroy');
+                    // }
                     // $('#main-menu').smartmenus('destroy');
-                    $("#main-menu").html('');
+                     $("#main-menu").html('');
                     let nav_categories_template = _.template($('#nav_categories_template').html());
-                    $("#main-menu").append(nav_categories_template({ nav_categories: response.data.navCategories }));
+                     $("#main-menu").append(nav_categories_template({ nav_categories: response.data.navCategories }));
                     // $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
-                    if($(window).width() >= 320){
-                        loadMainMenuSlider();
-                   }
+                //     if($(window).width() >= 320){
+                //         if(!$('.menu-slider').hasClass('slick-initialized')){
+                //             loadMainMenuSlider();
+                //         }
+                //    }
+                    resizeMenuSlider();
                   
                     var path = window.location.pathname;
                     if (path == '/') {

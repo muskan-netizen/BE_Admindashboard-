@@ -41,8 +41,12 @@ a {
     border-bottom: 1px solid rgb(221 221 221 / 50%);
 }
 
+.menu-slider{
+    display: none;
+}
+
 .offset-top {
-    margin-top: 226px;
+    margin-top: 213px;
 }
 
 .inner-pages-offset {
@@ -114,12 +118,20 @@ header.site-header.fixed-bar {
     color: #fff !important;
 }
 
+.site-topbar .location-bar span {
+    color: #fff !important;
+}
+
 .footer-theme .sub-title .payment-card-bottom li {
     display: inline-block;
 }
 
-.vendors .container {
-    margin: 0 auto 30px;
+.home-content-area .cab-banner-area {
+    margin-bottom: 0;
+}
+
+.home-content-area #our_vendor_main_div{
+    padding-bottom: 0;
 }
 
 .productVariants .firstChild {
@@ -3554,11 +3566,11 @@ header .homepage-address h2 {
 .nav-tabs .nav-link,
 .nav-tabs.navigation-tab .nav-item .nav-link,
 .nav-tabs.navigation-tab .nav-item.show .nav-link,
-.nav-tabs.navigation-tab .nav-link.active,
-.nav-tabs.navigation-tab .nav-link:focus,
-.nav-tabs.navigation-tab .nav-link:hover {
+.nav-tabs.navigation-tab .active .nav-link,
+.nav-tabs.navigation-tab .nav-link:focus{
     border: 0;
     background-color: transparent;
+    color: #fff;
 }
 
 .nav-pills>li>a,
@@ -5874,6 +5886,7 @@ ul#main-nav-list {
 .cab-banner-area {
     background: url(https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_1903,h_644/v1613521692/assets/d9/ce6c00-32b0-4b93-9f0d-6f927d93da08/original/Rider_Home_bg_desktop2x.png) no-repeat center center;
     background-size: cover;
+    margin: 30px 0;
 }
 
 .p-64 {
@@ -6963,9 +6976,12 @@ body[dir="rtl"] .inner_spacing h3 {
     .footer-title .according-menu {
         display: none !important;
     }
-    .menu-slider .slick-track{
+    .menu-slider{
         white-space: nowrap;
+    }
+    .menu-slider .slick-track{
         width: 100% !important;
+        display: flex;
     }
 }
 
@@ -7025,6 +7041,9 @@ body[dir="rtl"] .inner_spacing h3 {
 }
 
 @media(max-width:991px) {
+    .menu-slider .slick-track{
+        justify-content: space-between;
+    }
     .home-banner-slider img {
         border-radius: 5px !important;
     }
@@ -7227,6 +7246,11 @@ body[dir="rtl"] .inner_spacing h3 {
         flex: 0 0 100%;
         max-width: 100%;
     } */
+    
+
+    .site-topbar .location-bar i, .site-topbar .location-bar span {
+        font-size: 16px;
+    }
 
     .navigation-tab {
         margin: auto;
@@ -7409,6 +7433,9 @@ body[dir="rtl"] .inner_spacing h3 {
 @media(max-width: 576px) {
     .main-menu{
         display: none;
+    }
+    .site-topbar .location-bar i, .site-topbar .location-bar span {
+        color: #000 !important;
     }
     header.site-header.fixed-bar {
         top: 0;

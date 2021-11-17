@@ -186,7 +186,7 @@
                                                 $product->media[] = $coll;
                                             }
                                         @endphp
-                                        <!-- SwiperJs and EasyZoom plugins start -->
+
                                         <div class="swiper-container gallery-top">
                                             <div class="swiper-wrapper">
                                             @if(!empty($product->media))
@@ -206,7 +206,7 @@
                                                 @endforeach
                                             @endif
                                             </div>
-                                            <!-- Add Arrows -->
+
                                             <div class="swiper-button-next swiper-button-white"></div>
                                             <div class="swiper-button-prev swiper-button-white"></div>
                                         </div>
@@ -228,7 +228,6 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <!-- SwiperJs and EasyZoom plugins end -->
                                     </div>
                                 </div>
                             </div>

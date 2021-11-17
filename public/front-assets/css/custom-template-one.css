@@ -185,6 +185,7 @@ h6 {
 .navigation-tab-item .nav-link.active {
     color: #fff;
     font-weight: 600;
+    background-color: transparent;
 }
 
 .search_form input.form-control {
@@ -419,7 +420,7 @@ h6 {
 .royo-recommends {
     padding: 55px 0;
     z-index: 1;
-    margin: 30px 0 20px;
+    margin: 30px 0;
 }
 
 .popular-brands .brand-slider {
@@ -571,7 +572,6 @@ h6 {
 .nav-cate-img img {
     margin: 0 !important;
 }
-
 
 /* .pixelstrap a, .pixelstrap a:hover, .pixelstrap a:active{
     padding-top: 0;
@@ -1254,7 +1254,7 @@ body[dir="rtl"] #social-links li:last-child {
 }
 
 @media (max-width: 767px) {
-
+    
     .home-banner-slider .slick-prev,
     .home-banner-slider .slick-next {
         height: 30px;

@@ -86,6 +86,7 @@ window.easyZoomInitialize = function easyZoomInitialize() {
 }
 
 window.loadMainMenuSlider = function loadMainMenuSlider(){
+    $('.menu-slider').show();
     $(".menu-slider").slick({
         arrows: true,
         dots: false,
@@ -106,7 +107,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider(){
 
 // loadMainMenuSlider();
 
-function resizeMenuSlider(){
+window.resizeMenuSlider = function resizeMenuSlider(){
     var windowWidth = $(window).width();
     // if(windowWidth < 1183){
     if(windowWidth < 320){
@@ -128,7 +129,10 @@ function resizeMenuSlider(){
     }
 }
 
-resizeMenuSlider();
+let path = window.location.pathname;
+if(path != '/'){
+    resizeMenuSlider();
+}
 $(window).resize(function() {
     resizeMenuSlider();
 });
@@ -228,6 +232,8 @@ window.initializeSlider = function initializeSlider() {
         speed: 300,
         slidesToShow: 5,
         slidesToScroll: 4,
+        centerMode: true,
+        centerPadding: '60px',
         arrows: false,
         dots: false,
         responsive: [{

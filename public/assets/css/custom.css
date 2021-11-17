@@ -2298,6 +2298,10 @@
       height: auto !important;
   }
 
+  #pickup_datatable .dd-list .dd-item .dd-handle {
+      min-width: 240px;
+  }
+
   .home-options-list li.dd-item.dd3-item::marker {
       content: none;
   }
