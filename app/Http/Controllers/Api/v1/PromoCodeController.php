@@ -53,19 +53,37 @@ class PromoCodeController extends Controller{
             if ($product_ids) {
                 $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
                 $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details) {
-                    $query->where(['restriction_type' => 1]);
+                    $query->where(function ($query2) use ($promo_code_details) {
+                        $query2->where('restriction_type', 1);
+                        if (!empty($promo_code_details->toArray())) {
+                            $query2->whereNotIn('id', $promo_code_details->toArray());
+                        }
+                    });
                     $query->orWhere(function ($query1) use ($promo_code_details) {
                         $query1->where('restriction_type', 0);
-                        $query1->whereIn('id', $promo_code_details->toArray());
+                        if (!empty($promo_code_details->toArray())) {
+                            $query1->whereIn('id', $promo_code_details->toArray());
+                        } else {
+                            $query1->where('id', 0);
+                        }
                     });
                 })->where('is_deleted', 0)->where('minimum_spend', '<=', $total_minimum_spend)->where('maximum_spend', '>=', $total_minimum_spend)->where(['promo_visibility' => 'public'])->get();
                 $promo_codes = $promo_codes->merge($result1);
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
                 $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details) {
-                    $query->where(['restriction_type' => 1]);
+                    $query->where(function ($query2) use ($vendor_promo_code_details) {
+                        $query2->where('restriction_type', 1);
+                        if (!empty($vendor_promo_code_details->toArray())) {
+                            $query2->whereNotIn('id', $vendor_promo_code_details->toArray());
+                        }
+                    });
                     $query->orWhere(function ($query1) use ($vendor_promo_code_details) {
                         $query1->where('restriction_type', 0);
-                        $query1->whereIn('id', $vendor_promo_code_details->toArray());
+                        if (!empty($vendor_promo_code_details->toArray())) {
+                            $query1->whereIn('id', $vendor_promo_code_details->toArray());
+                        } else {
+                            $query1->where('id');
+                        }
                     });
                 })->where('minimum_spend', '<=', $total_minimum_spend)->where('maximum_spend', '>=', $total_minimum_spend)->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->where(['promo_visibility' => 'public'])->get();
                 $promo_codes = $promo_codes->merge($result2);
@@ -167,19 +185,37 @@ class PromoCodeController extends Controller{
             if($product_ids){
                 $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
                     $promo_detail = Promocode::where(['name' => $request->promocode])->whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function($query) use($promo_code_details){
-                        $query->where(['restriction_type' => 1]);
+                        $query->where(function ($query2) use ($promo_code_details) {
+                            $query2->where('restriction_type', 1);
+                            if (!empty($promo_code_details->toArray())) {
+                                $query2->whereNotIn('id', $promo_code_details->toArray());
+                            }
+                        });
                         $query->orWhere(function($query1) use($promo_code_details){
                             $query1->where('restriction_type' , 0);
-                            $query1->whereIn('id', $promo_code_details->toArray());
+                            if (!empty($promo_code_details->toArray())) {
+                                $query1->whereIn('id', $promo_code_details->toArray());
+                            } else {
+                                $query1->where('id', 0);
+                            }
                         });
                     })->where('is_deleted', 0)->first();
                 if (!$promo_detail) {
                     $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $request->vendor_id)->pluck('promocode_id');
                     $promo_detail = Promocode::where(['name' => $request->promocode])->where('restriction_on', 1)->where(function($query) use($vendor_promo_code_details){
-                        $query->where(['restriction_type' => 1]);
+                        $query->where(function ($query2) use ($vendor_promo_code_details) {
+                            $query2->where('restriction_type', 1);
+                            if (!empty($vendor_promo_code_details->toArray())) {
+                                $query2->whereNotIn('id', $vendor_promo_code_details->toArray());
+                            }
+                        });
                         $query->orWhere(function($query1) use($vendor_promo_code_details){
                             $query1->where('restriction_type' , 0);
-                            $query1->whereIn('id', $vendor_promo_code_details->toArray());
+                            if (!empty($vendor_promo_code_details->toArray())) {
+                                $query1->whereIn('id', $vendor_promo_code_details->toArray());
+                            } else {
+                                $query1->where('id', 0);
+                            }
                         });
                     })->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->first();
                 }

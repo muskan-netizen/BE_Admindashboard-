@@ -1064,9 +1064,6 @@
       <div class="col-xl-6">
          <div class="row">
             <div class="col-lg-12">
-               <!-- <div class="page-title-box">
-                  <h4 class="page-title text-uppercase">Vendor Registration Documents</h4>
-               </div> -->
                <div class="card-box pb-2">
                   <h4 class="header-title text-uppercase">{{ __("Vendor Registration Documents") }}</h4>
                   <div class="d-flex align-items-center justify-content-end mt-2">
@@ -1149,6 +1146,7 @@
             </div>
          </div>
       </div>
+
       <div class="col-xl-6">
          <div class="row">
           
@@ -1172,9 +1170,73 @@
                   </div>
                </form>
             </div>
+
+
+            <div class="col-xl-6">
+           
+               <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
+                  @csrf
+                  <div class="card-box mb-0 pb-1">
+                  <h4 class="header-title text-uppercase">{{ __('Tags for Product')}}</h4> 
+                     <div class="d-flex align-items-center justify-content-end mt-2">
+                        <a class="btn btn-info d-block" id="add_product_tag_modal_btn">
+                           <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+                        </a>
+                     </div>
+                     <div class="table-responsive mt-3 mb-1">
+                        <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                           <thead>
+                              <tr>
+                                 <th>{{ __("Name") }}</th>
+                                 <th>{{ __("Action") }}</th>
+                              </tr>
+                           </thead>
+                           <tbody id="post_list">
+                              @forelse($tags as $tag)
+                              <tr>
+                                 <td>
+                                    <a class="edit_product_tag_btn" data-tag_id="{{$tag->id}}" href="javascript:void(0)">   
+                                       {{$tag->primary ? $tag->primary->name : ''}}
+                                    </a>   
+                                 </td>
+                                  <td>
+                                    <div>
+                                       <div class="inner-div" style="float: left;">
+                                          <a class="action-icon edit_product_tag_btn" data-tag_id="{{$tag->id}}" href="javascript:void(0)">
+                                             <i class="mdi mdi-square-edit-outline"></i>
+                                          </a>
+                                       </div>
+                                       <div class="inner-div">
+                                          <button type="button" class="btn btn-primary-outline action-icon delete_product_tag_btn" data-tag_id="{{$tag->id}}">
+                                             <i class="mdi mdi-delete"></i>
+                                          </button>
+                                       </div>
+                                    </div>
+                                 </td>
+                              </tr>
+                              @empty
+                              <tr align="center">
+                                 <td colspan="4" style="padding: 20px 0">{{ __("Tags not found.") }}</td>
+                              </tr>
+                              @endforelse
+                           </tbody>
+                        </table>
+                     </div>
+
+                  </div>
+               </form>
+            </div>
+
+
+
          </div>
       </div>
+
+      
+
    </div>
+
+   
    
    <div class="row">
       {{--<div class="col-lg-6">
@@ -1446,6 +1508,8 @@
          </div>
       </div>
    </div>
+
+
    <div id="add_driver_registration_document_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
          <div class="modal-content">
@@ -1499,6 +1563,50 @@
          </div>
       </div>
    </div>
+
+   <!-- modal for product tags -->
+   <div id="add_product_tag_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+         <div class="modal-content">
+            <div class="modal-header border-bottom">
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Product Tag") }}</h4>
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+               <form id="productTagForm" method="POST" action="javascript:void(0)">
+                  @csrf
+                  <div id="save_product_tag">
+                     <input type="hidden" name="tag_id" value="">
+                     <div class="row">
+                       
+                        @forelse($client_languages as $k => $client_language)
+                        <div class="col-md-6 mb-2">
+                           <div class="row">
+                              <div class="col-12">
+                                 <div class="form-group position-relative">
+                                    <label for="">{{ __("Name") }} ({{$client_language->langName}})</label>
+                                    <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
+                                    <input class="form-control" name="name[{{$k}}]" type="text" id="product_tag_name_{{$client_language->langId}}">
+                                 </div>
+                                 @if($k == 0)
+                                    <span class="text-danger error-text product_tag_err"></span>
+                                 @endif
+                              </div>
+                           </div>
+                        </div>
+                        @empty
+                        @endforelse
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary submitSaveProductTag">{{ __("Save") }}</button>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- end product tags -->
    @endsection
    @section('script')
    <script type="text/javascript">
@@ -1508,6 +1616,14 @@
          $('#add_vendor_registration_document_modal').modal('show');
          $('#add_vendor_registration_document_modal #standard-modalLabel').html('Add Vendor Registration Document');
       });
+
+      $('#add_product_tag_modal_btn').click(function(e) {
+         document.getElementById("productTagForm").reset();
+         $('#add_product_tag_modal input[name=tag_id]').val("");
+         $('#add_product_tag_modal').modal('show');
+         $('#add_product_tag__modal #standard-modalLabel').html('Add Tag');
+      });
+
       $(document).on("click", ".delete_vendor_registration_document_btn", function() {
          var vendor_registration_document_id = $(this).data('vendor_registration_document_id');
          if (confirm('Are you sure?')) {
@@ -1587,6 +1703,86 @@
          });
       });
 
+
+
+      ///   product tag ////
+      $(document).on("click", ".delete_product_tag_btn", function() {
+         var tag_id = $(this).data('tag_id');
+         if (confirm('Are you sure?')) {
+            $.ajax({
+               type: "POST",
+               dataType: 'json',
+               url: "{{ route('tag.delete') }}",
+               data: {
+                  _token: "{{ csrf_token() }}",
+                  tag_id: tag_id
+               },
+               success: function(response) {
+                  if (response.status == "Success") {
+                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                     setTimeout(function() {
+                        location.reload()
+                     }, 2000);
+                  }
+               }
+            });
+         }
+      });
+      $(document).on('click', '.submitSaveProductTag', function(e) {
+         var tag_id = $("#add_product_tag_modal input[name=tag_id]").val();
+         if (tag_id) {
+            var post_url = "{{ route('tag.update') }}";
+         } else {
+            var post_url = "{{ route('tag.create') }}";
+         }
+         var form_data = new FormData(document.getElementById("productTagForm"));
+         $.ajax({
+            url: post_url,
+            method: 'POST',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+               if (response.status == 'Success') {
+                  $('#add_or_edit_social_media_modal').modal('hide');
+                  $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+               }
+            },
+            error: function(response) {
+               $('#add_product_tag_modal .product_tag_err').html('The default language name field is required.');
+            }
+         });
+      });
+      $(document).on("click", ".edit_product_tag_btn", function() {
+         let tag_id = $(this).data('tag_id');
+         $('#add_product_tag_modal input[name=tag_id]').val(tag_id);
+         $.ajax({
+            method: 'GET',
+            data: {
+               tag_id: tag_id
+            },
+            url: "{{ route('tag.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                  $("#add_product_tag_modal input[name=tag_id]").val(response.data.id);
+                  $('#add_product_tag_modal #standard-modalLabel').html('Update Vendor Registration Document');
+                  $('#add_product_tag_modal').modal('show');
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_product_tag_modal #product_tag_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {
+
+            }
+         });
+      });
+      // end product tag ////
       $('#add_driver_registration_document_modal_btn').click(function(e) {
          $('#add_driver_registration_document_modal').modal('show');
          $('#add_driver_registration_document_modal #standard-modalLabel').html('Add Driver Registration Document');

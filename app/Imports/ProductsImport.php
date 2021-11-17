@@ -411,8 +411,10 @@ class ProductsImport implements ToCollection{
                         ]);
 
                         if ($da[5] != "") {
-                            $variant = Variant::where(['title' => $da[5], 'variants.status' => 1])->first();
-                            $variant_optionn = VariantOption::where('title', $da[6])->first();
+                            $variant = Variant::whereHas('category.translation_one' , function($query) use ($da){
+                                $query->where('name' , $da[4]);
+                            })->where(['title' => $da[5], 'variants.status' => 1])->first();
+                            $variant_optionn = VariantOption::where(['title'=> $da[6], 'variant_id' => $variant->id])->first();
                             //inserting product variant sets
                             $proVariantSet = new ProductVariantSet();
                             $proVariantSet->product_id = $product_id->id;
@@ -423,8 +425,10 @@ class ProductsImport implements ToCollection{
                         }
 
                         if ($da[7] != "") {
-                            $variant = Variant::where(['title' => $da[7], 'variants.status' => 1])->first();
-                            $variant_optionn = VariantOption::where('title', $da[8])->first();
+                            $variant = Variant::whereHas('category.translation_one' , function($query)use ($da){
+                                $query->where('name' , $da[4]);
+                            })->where(['title' => $da[7], 'variants.status' => 1])->first();
+                            $variant_optionn = VariantOption::where(['title' => $da[8], 'variant_id' => $variant->id])->first();
                             //inserting product variant sets
                             $proVariantSet = new ProductVariantSet();
                             $proVariantSet->product_id = $product_id->id;
@@ -435,8 +439,10 @@ class ProductsImport implements ToCollection{
                         }
 
                         if ($da[9] != "") {
-                            $variant = Variant::where(['title' => $da[9], 'variants.status' => 1])->first();
-                            $variant_optionn = VariantOption::where('title', $da[10])->first();
+                            $variant = Variant::whereHas('category.translation_one' , function($query)use ($da){
+                                $query->where('name' , $da[4]);
+                            })->where(['title' => $da[9], 'variants.status' => 1])->first();
+                            $variant_optionn = VariantOption::where(['title' => $da[10], 'variant_id' => $variant->id])->first();
                             //inserting product variant sets
                             $proVariantSet = new ProductVariantSet();
                             $proVariantSet->product_id = $product_id->id;
