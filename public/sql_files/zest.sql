@@ -390,7 +390,44 @@ INSERT INTO `loyalty_cards` (`id`, `name`, `description`, `image`, `minimum_poin
 (2, 'Silver Plan', 'Silver Loyalty Card', '2f3120/loyalty/image/EAJdZtUl3sjzDLyvZfAjadapVc1S3eAQBSAqvjbr.png', 600, NULL, 8, NULL, 14, 10, '0', '2021-11-16 05:04:29', '2021-11-16 05:15:49', '0'),
 (3, 'Platinum Plan', 'Platinum Loyalty Card', '2f3120/loyalty/image/rHwJcu9Q1NWp7TXnANRWoBOhdlWBPVbrBZgS2w1g.png', 800, NULL, 10, NULL, 20, 10, '0', '2021-11-16 05:07:24', '2021-11-16 05:15:49', '0');
 
+INSERT INTO `app_stylings` (`id`, `name`, `type`, `created_at`, `updated_at`) VALUES
+(1, 'Regular Font', 2, NULL, NULL),
+(2, 'Medium Font', 2, NULL, NULL),
+(3, 'Bold Font', 2, NULL, NULL),
+(4, 'Primary Color', 4, NULL, NULL),
+(5, 'Secondary Color', 4, NULL, NULL),
+(6, 'Tertiary Color', 4, NULL, NULL),
+(7, 'Tab Bar Style', 3, NULL, NULL),
+(8, 'Home Page Style', 3, NULL, NULL),
+(9, 'Home Tag Line', 1, NULL, NULL);
 
+
+INSERT INTO `app_styling_options` (`id`, `app_styling_id`, `name`, `image`, `is_selected`, `created_at`, `updated_at`, `template_id`) VALUES
+(1, 1, 'CircularStd-Book', NULL, 1, NULL, NULL, NULL),
+(2, 1, 'SFProText-Regular', NULL, 0, NULL, NULL, NULL),
+(3, 1, 'Futura-Normal', NULL, 0, NULL, NULL, NULL),
+(4, 1, 'Eina02-Regular', NULL, 0, NULL, NULL, NULL),
+(5, 2, 'CircularStd-Medium', NULL, 1, NULL, NULL, NULL),
+(6, 2, 'SFProText-Medium', NULL, 0, NULL, NULL, NULL),
+(7, 2, 'Futura-Medium', NULL, 0, NULL, NULL, NULL),
+(8, 2, 'Eina02-SemiBold', NULL, 0, NULL, NULL, NULL),
+(9, 3, 'CircularStd-Bold', NULL, 1, NULL, NULL, NULL),
+(10, 3, 'SFProText-Bold', NULL, 0, NULL, NULL, NULL),
+(11, 3, 'FuturaBT-Heavy', NULL, 0, NULL, NULL, NULL),
+(12, 3, 'Eina02-Bold', NULL, 0, NULL, NULL, NULL),
+(13, 4, '#406FCE', NULL, 1, NULL, '2021-10-04 07:36:23', NULL),
+(14, 5, '#fff', NULL, 1, NULL, NULL, NULL),
+(15, 6, '#fff', NULL, 1, NULL, NULL, NULL),
+(16, 7, 'Tab 1', 'bar.png', 0, NULL, '2021-10-06 11:33:15', 1),
+(17, 7, 'Tab 2', 'bar_two.png', 0, NULL, '2021-10-06 11:33:15', 2),
+(18, 7, 'Tab 3', 'bar_three.png', 0, NULL, '2021-10-06 11:33:15', 3),
+(19, 7, 'Tab 4', 'bar_four.png', 1, NULL, '2021-10-06 11:33:15', 4),
+(20, 7, 'Tab 5', 'bar_five.png', 0, NULL, '2021-10-06 11:33:15', 5),
+(21, 8, 'Home Page 1', 'home.png', 0, NULL, '2021-10-06 11:33:16', 1),
+(22, 8, 'Home Page 4', 'home_four.png', 0, NULL, '2021-10-06 11:33:16', 2),
+(23, 8, 'Home Page 5', 'home_five.png', 0, NULL, '2021-10-06 11:33:16', 3),
+(24, 9, 'Create a free account and join us!', NULL, 1, NULL, NULL, NULL),
+(25, 8, 'Home Page 6', 'home_six.png', 1, '2021-10-12 14:10:13', '2021-10-12 14:10:13', 4);
 
 
 

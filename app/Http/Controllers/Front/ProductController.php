@@ -21,7 +21,7 @@ class ProductController extends FrontController{
         }
         else{
             $primaryCurrency = ClientCurrency::where('is_primary','=', 1)->first();
-            Session::put('customerCurrency',$primaryCurrency->doller_compare);
+            Session::put('customerCurrency', $primaryCurrency->currency_id);
         }
        
     }
