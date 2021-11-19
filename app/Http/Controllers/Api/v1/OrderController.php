@@ -147,6 +147,12 @@ class OrderController extends BaseController {
                     $order->order_number = generateOrderNo();
                     $order->address_id = $request->address_id;
                     $order->payment_option_id = $request->payment_option_id;
+                    $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver??null;
+                    $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver??null;
+                    $order->comment_for_vendor = $cart->comment_for_vendor??null;
+                    $order->schedule_pickup = $cart->schedule_pickup??null;
+                    $order->schedule_dropoff = $cart->schedule_dropoff??null;
+                    $order->specific_instructions = $cart->specific_instructions??null;
                     $order->save();
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();

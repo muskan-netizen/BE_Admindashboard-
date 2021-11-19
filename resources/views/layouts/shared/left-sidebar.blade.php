@@ -104,14 +104,6 @@
                                     </a>
                                 </li>
                             @endif
-                            {{-- @if(in_array('vendors',$allowed) || Auth::user()->is_superadmin == 1)
-                                <li>
-                                    <a href="{{route('account.vendor.payout')}}">
-                                    <span class="icon-dollar"></span>
-                                    <span>{{ __('Payout') }}</span>
-                                    </a>
-                                </li>
-                            @endif --}}
                             @if(count(array_intersect($accounting_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="#sidebaraccounting" data-toggle="collapse">
@@ -152,6 +144,11 @@
                                                     $VendorsTrans = ($Vendors=="Vendors")?__('Vendors'):$Vendors;
                                                 @endphp
                                                     <a href="{{route('account.vendor')}}">{{ $VendorsTrans }}</a>
+                                                </li>
+                                            @endif
+                                            @if(Auth::user()->is_superadmin == 1)
+                                                <li>
+                                                    <a href="{{route('account.vendor.payout.requests')}}">{{ __('Payout Requests') }}</a>
                                                 </li>
                                             @endif
                                         </ul>

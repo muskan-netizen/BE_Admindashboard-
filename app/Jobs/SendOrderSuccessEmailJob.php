@@ -14,6 +14,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Log;
 
 class SendOrderSuccessEmailJob implements ShouldQueue
 {
@@ -43,7 +44,11 @@ class SendOrderSuccessEmailJob implements ShouldQueue
      */
     public function handle(){
         $email = new OrderSuccessEmail($this->details);
-        Mail::to($this->details['email'])->send($email);
+        if(!empty($this->details['admin_email'])){
+            Mail::to($this->details['email'])->cc($this->details['admin_email'])->send($email);
+        } else {
+            Mail::to($this->details['email'])->send($email);
+        }
     }
     public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){
         $config = array(

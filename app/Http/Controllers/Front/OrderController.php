@@ -202,7 +202,7 @@ class OrderController extends FrontController
             $user = Auth::user();
         }
         $client = CP::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
-        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
         $message = __('An otp has been sent to your email. Please check.');
         $otp = mt_rand(100000, 999999);
         if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
@@ -242,7 +242,7 @@ class OrderController extends FrontController
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
                     $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
                 }
-                $data = [
+                $email_data = [
                     'code' => $otp,
                     'link' => "link",
                     'email' => $sendto,
@@ -255,7 +255,10 @@ class OrderController extends FrontController
                     'cartData' => $cartDetails,
                     'user_address' => $address,
                 ];
-                dispatch(new \App\Jobs\SendOrderSuccessEmailJob($data))->onQueue('verify_email');
+                if(!empty($data['admin_email'])){
+                    $email_data['admin_email'] = $data['admin_email'];
+                }
+                dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
             }
@@ -577,6 +580,7 @@ class OrderController extends FrontController
             $order->comment_for_vendor = $cart->comment_for_vendor??null;
             $order->schedule_pickup = $cart->schedule_pickup??null;
             $order->schedule_dropoff = $cart->schedule_dropoff??null;
+            $order->specific_instructions = $cart->specific_instructions??null;
             $order->save();
             $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
             foreach ($cart_prescriptions as $cart_prescription) {
@@ -826,7 +830,7 @@ class OrderController extends FrontController
             $ex_gateways = [7,8,9,10]; // mobbex, yoco, pointcheckout, razorpay
             if(!in_array($request->payment_option_id, $ex_gateways)){
                 Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL,
-                'comment_for_pickup_driver' => NULL, 'comment_for_dropoff_driver' => NULL,'comment_for_vendor' => NULL, 'schedule_pickup' => NULL, 'schedule_dropoff' => NULL]);
+                'comment_for_pickup_driver' => NULL, 'comment_for_dropoff_driver' => NULL,'comment_for_vendor' => NULL, 'schedule_pickup' => NULL, 'schedule_dropoff' => NULL,'specific_instructions' => NULL]);
                 CartAddon::where('cart_id', $cart->id)->delete();
                 CartCoupon::where('cart_id', $cart->id)->delete();
                 CartProduct::where('cart_id', $cart->id)->delete();

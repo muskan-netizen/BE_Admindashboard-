@@ -67,6 +67,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/vendor', [VendorController::class, 'index'])->name('account.vendor');
         // Route::get('account/vendor/payout', [VendorPayoutController::class, 'index'])->name('account.vendor.payout');
         // Route::get('account/vendor/payout/filter', [VendorPayoutController::class, 'filter'])->name('account.vendor.payout.filter');
+        Route::get('account/vendor/payout/requests', [VendorPayoutController::class, 'vendorPayoutRequests'])->name('account.vendor.payout.requests');
+        Route::get('account/vendor/payout/requests/filter', [VendorPayoutController::class, 'vendorPayoutRequestsFilter'])->name('account.vendor.payout.requests.filter');
+        Route::post('account/vendor/payout/request/complete/{id}', [VendorPayoutController::class, 'vendorPayoutRequestComplete'])->name('account.vendor.payout.request.complete');
         Route::get('account/tax/filter', [TaxController::class, 'filter'])->name('account.tax.filter');
         Route::get('account/tax/export', [TaxController::class, 'export'])->name('account.tax.export');
         Route::get('account/vendor/filter', [VendorController::class, 'filter'])->name('account.vendor.filter');
@@ -156,6 +159,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::DELETE('vendor/vendor-permission-del/{id}', 'Client\VendorController@userVendorPermissionDestroy')->name('user.vendor.permission.destroy');
         Route::get('vendor/catalogs/{id}', 'Client\VendorController@vendorCatalog')->name('vendor.catalogs');
         Route::get('vendor/payout/{id}', 'Client\VendorController@vendorPayout')->name('vendor.payout');
+        Route::get('vendor/payout/filter/{id}', 'Client\VendorController@payoutFilter')->name('vendor.payout.filter');
         Route::post('vendor/payout/create/{id}', 'Client\VendorController@vendorPayoutCreate')->name('vendor.payout.create');
         Route::post('vendor/saveConfig/{id}', 'Client\VendorController@updateConfig')->name('vendor.config.update');
         Route::post('vendor/activeCategory/{id}', 'Client\VendorController@activeCategory')->name('vendor.category.update');
@@ -198,6 +202,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('product/updateActions', 'Client\ProductController@updateActions')->name('product.update.action');   # update all product actions
         Route::post('product/importCSV', 'Client\ProductController@importCsv')->name('product.import');
         Route::post('product/validate', 'Client\ProductController@validateData')->name('product.validate');
+        Route::post('product/sku/validate', 'Client\ProductController@validateSku')->name('product.sku.validate');
         Route::get('product/add/{vendor_id}', 'Client\ProductController@create')->name('product.add');
         Route::post('product/getImages', 'Client\ProductController@getImages')->name('productImage.get');
         Route::post('product/deleteVariant', 'Client\ProductController@deleteVariant')->name('product.deleteVariant');
@@ -245,6 +250,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::post('subscription/payment/stripe', 'Client\StripeGatewayController@subscriptionPaymentViaStripe')->name('subscription.payment.stripe');
         Route::get('verify/oauth/token/stripe', 'Client\StripeGatewayController@verifyOAuthToken')->name('verify.oauth.token.stripe');
+        Route::post('vendor/payout/stripe/{id}', 'Client\StripeGatewayController@vendorPayoutViaStripe')->name('vendor.payout.stripe');
 
         Route::get('/admin/signup', 'Client\AdminSignUpController@index')->name('admin.signup');
         Route::post('save_fcm_token', 'Client\UserController@save_fcm')->name('client.save_fcm');

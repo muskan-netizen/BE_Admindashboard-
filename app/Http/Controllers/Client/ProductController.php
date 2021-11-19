@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client,Tag,ProductTag};
 use Illuminate\Support\Facades\Storage;
+use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductsImport;
 use GuzzleHttp\Client as GCLIENT;
 class ProductController extends BaseController
 {
+    use ApiResponser;
     private $folderName = 'prods';
     public function __construct()
     {
@@ -76,6 +78,22 @@ class ProductController extends BaseController
             return response()->json([
                 'status' => 'error',
             ]);
+        }
+    }
+
+    /**
+     * Validate product sku
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function validateSku(Request $request){
+        $sku = $request->sku;
+        $product = Product::where('sku', $sku)->first();
+        if($product){
+            return $this->errorResponse(__('Sku is not available'), 422);
+        }else{
+            return $this->successResponse('', __('Sku is available'));
         }
     }
 

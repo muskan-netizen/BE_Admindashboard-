@@ -147,6 +147,27 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                @foreach($vendor_registration_documents as $vendor_registration_document)
+                                <div class="col-md-6" >
+                                    <div class="form-group" id="{{$vendor_registration_document->primary->slug}}Input">
+                                        <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
+                                        @if(strtolower($vendor_registration_document->file_type) == 'text')
+                                            <input id="input_file_logo_{{$vendor_registration_document->id}}" type="text" name="{{$vendor_registration_document->primary->slug}}" class="form-control">
+                                        @else
+                                            @if(strtolower($vendor_registration_document->file_type) == 'image')
+                                            <input type="file" accept="image/*" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug}}" class="dropify" data-default-file="" />
+                                            @else
+                                            <input type="file" accept=".pdf" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug}}" class="dropify" data-default-file="" />
+                                            @endif
+                                        @endif
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                    </div>
+                                </div>
+                                 @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>

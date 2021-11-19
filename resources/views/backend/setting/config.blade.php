@@ -1150,7 +1150,7 @@
       <div class="col-xl-6">
          <div class="row">
           
-            <div class="col-xl-6">
+            <div class="col-xl-6 mb-3">
            
                <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
                   @csrf
@@ -1171,8 +1171,23 @@
                </form>
             </div>
 
+            <div class="col-xl-6 mb-3">
+               <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                  @csrf
+                  <div class="card-box mb-0 pb-1">
+                  <h4 class="header-title text-uppercase">{{ __('Admin Email') }}</h4> 
+                     <div class="d-flex align-items-center justify-content-end">
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                     </div>
+                     <div class="col-xl-12 my-2" id="addCur-160">
+                        <label class="primaryCurText">{{ __('Admin Email') }}</label>
+                        <input class="form-control" type="email" id="admin_email" name="admin_email" value="{{ old('admin_email', $preference->admin_email)}}">
+                     </div>
+                  </div>
+               </form>
+            </div>
 
-            <div class="col-xl-6">
+            <div class="col-xl-6 mb-3">
            
                <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
                   @csrf

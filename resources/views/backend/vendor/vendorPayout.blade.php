@@ -17,6 +17,10 @@
             position: relative;
         }
 
+        .form-control:disabled, .form-control[readonly] {
+            background-color: #f2f2f2;
+        }
+
         span.inner-div {
             top: 50%;
             -webkit-transform: translateY(-50%);
@@ -242,17 +246,17 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="table-responsive">
-                                            <table class="table table-centered table-nowrap table-striped" id="vendor_payout_history_datatable" width="100%">
+                                            <table class="table table-centered table-nowrap table-striped" id="vendor_payouts_datatable" width="100%">
                                                 <thead>
                                                     <tr>
                                                         <th>{{ __("Date") }}</th>
                                                         <th >{{ __("Amount") }}</th>
                                                         <th>{{ __("Type") }}</th>
-                                                        <th>{{ __("Action") }}</th>
+                                                        {{-- <th>{{ __("Action") }}</th> --}}
                                                         <th>{{ __("Status") }}</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="vendor_payout_history_tbody_list">
+                                                <tbody id="vendor_payouts_tbody_list">
                                                     
                                                 </tbody>
                                             </table>
@@ -294,22 +298,30 @@
                                     </div>
                                 </div>
                             </div> --}}
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="field-2" class="control-label">Amount</label>
+                                    <label for="field-1" class="control-label">Amount</label>
                                     <input name="payout_amount" id="payout_amount" type="text" class="form-control" placeholder="3000" required onkeypress="return isNumberKey(event)">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="field-2" class="control-label">Available Funds</label>
+                                    <input type="text" id="available_funds" class="form-control" value="{{ $available_funds }}" disabled>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="row mt-2">
                             @foreach($payout_options as $opt)
-                                <div class="col-md-12 mb-2">
-                                    <div class="radio radio-blue form-check-inline">
-                                        <input type="radio" id="{{$opt->code}}" value="{{$opt->id}}" name="payout_option">
-                                        <label for="{{$opt->code}}"> {{ $opt->title }} </label>
+                                @if( ($is_stripe_connected && ($opt->code == 'stripe')) || ($opt->code == 'cash') )
+                                    <div class="col-md-12 mb-2">
+                                        <div class="radio radio-blue form-check-inline">
+                                            <input type="radio" id="{{$opt->code}}" value="{{$opt->id}}" name="payout_option">
+                                            <label for="{{$opt->code}}"> {{ $opt->title }} </label>
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                             @endforeach
                         </div>
 
@@ -340,7 +352,7 @@
             </form>
         </div>
     </div>
-
+    <script src="{{asset('assets/libs/datatables/datatables.min.js')}}"></script>
     <!-- end product popup -->
     <script type="text/javascript">
         $(".all-product_check").click(function() {
@@ -657,32 +669,37 @@
         $(document).delegate("#payout_form", "submit", function(e){
             e.preventDefault();
             var valid = true, message = '';
-            var payout_opt_el = $('input[name="payout_option"]');
-            if ($('#payout_amount').val() == '') {
+            var amount = parseFloat($('#payout_amount').val());
+            var avl_funds = parseFloat($("#available_funds").val());
+            if (amount == '') {
                 message = "Please enter payout amount";
                 valid = false;
             }
-            if (!payout_opt_el.is(":checked")) {
+            else if (!$('input[name="payout_option"]').is(":checked")) {
                 message = "Please select a valid payout option";
+                valid = false;
+            }
+            else if(amount > avl_funds){
+                message = "Payout amount is greater than available funds";
                 valid = false;
             }
             if(!valid) {
                 $("#payout_response .alert").html(message).show();
                 setTimeout(function(){
                     $("#payout_response .alert").hide();
-                },5000);
+                },8000);
                 return false;
             }
-
-            if(payout_opt_el.val() == 1){
-                var amount = $('#payout_amount').val();
-                var payout_opt = payout_opt_el.val();
-                $("#payout_option_id").val(payout_opt);
-                $("#transaction_id").val('');
-                $("#amount").val(amount);
-                $("#status").val(1);
+            var payout_opt = $('input[name="payout_option"]:checked').val();
+            // if(payout_opt == 1){
+                $("#new_vendor_payout_form #payout_option_id").val(payout_opt);
+                $("#new_vendor_payout_form #transaction_id").val('');
+                $("#new_vendor_payout_form #amount").val(amount);
+                $("#new_vendor_payout_form #status").val(0);
                 $("#new_vendor_payout_form").submit();
-            }
+            // }else if(payout_opt == 2){
+                // payoutViaStripe(amount, payout_opt)
+            // }
         });
 
         function isNumberKey(evt) {
@@ -693,52 +710,91 @@
             return true;
         }
 
-        // function payoutViaStripe(amount, payment_option_id) {
-        //     let total_amount = 0;
-        //     let tip = 0;
-        //     let cartElement = $("input[name='cart_total_payable_amount']");
-        //     let walletElement = $("input[name='wallet_amount']");
-        //     let subscriptionElement = $("input[name='subscription_amount']");
-        //     let tipElement = $("#cart_tip_amount");
-
-        //     let ajaxData = [];
-        //     if (cartElement.length > 0) {
-        //         total_amount = cartElement.val();
-        //         tip = tipElement.val();
-        //         ajaxData.push({ name: 'tip', value: tip });
-        //     } else if (walletElement.length > 0) {
-        //         total_amount = walletElement.val();
-        //     } else if (subscriptionElement.length > 0) {
-        //         total_amount = subscriptionElement.val();
-        //         ajaxData = $("#subscription_payment_form").serializeArray();
-        //     }
-        //     ajaxData.push({ name: 'stripe_token', value: stripe_token }, { name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id });
-        //     $.ajax({
-        //         type: "POST",
-        //         dataType: 'json',
-        //         url: payout_stripe_url,
-        //         data: ajaxData,
-        //         success: function(resp) {
-        //             if (resp.status == 'Success') {
+        function payoutViaStripe(amount, payment_option_id) {
+            let ajaxData = {};
+            ajaxData.amount = amount;
+            ajaxData.payment_option_id = payment_option_id;
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: "{{route('vendor.payout.stripe', $vendor->id)}}",
+                data: ajaxData,
+                success: function(resp) {
+                    if (resp.status == 'Success') {
                         
-        //             } else {
-        //                 $("#payout_response .alert").html(resp.message).show();
-        //                 setTimeout(function(){
-        //                     $("#payout_response .alert").hide();
-        //                 },5000);
-        //                 return false;
-        //             }
-        //         },
-        //         error: function(error) {
-        //             var response = $.parseJSON(error.responseText);
-        //             $("#payout_response .alert").html(response.message).show();
-        //             setTimeout(function(){
-        //                 $("#payout_response .alert").hide();
-        //             },5000);
-        //             return false;
-        //         }
-        //     });
-        // }
+                    } else {
+                        $("#payout_response .alert").html(resp.message).show();
+                        setTimeout(function(){
+                            $("#payout_response .alert").hide();
+                        },5000);
+                        return false;
+                    }
+                },
+                error: function(error) {
+                    var response = $.parseJSON(error.responseText);
+                    $("#payout_response .alert").html(response.message).show();
+                    setTimeout(function(){
+                        $("#payout_response .alert").hide();
+                    },5000);
+                    return false;
+                }
+            });
+        }
+
+
+        
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+        initDataTable();
+
+        // $("#range-datepicker").flatpickr({ 
+        //     mode: "range",
+        //     onClose: function(selectedDates, dateStr, instance) {
+        //         initDataTable();
+        //     }
+        // });
+
+        function initDataTable() {
+            $('#vendor_payouts_datatable').DataTable({
+                "dom": '<"toolbar">rtip', //'<"toolbar">Bfrtip',
+                "destroy": true,
+                "processing": true,
+                "serverSide": true,
+                "iDisplayLength": 50,
+                // language: {
+                //     search: "",
+                //     paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
+                //     searchPlaceholder: "Search By Vendor Name"
+                // },
+                drawCallback: function () {
+                    $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+                },
+                // buttons:[{   
+                //         className:'btn btn-success waves-effect waves-light',
+                //         text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>Export CSV',
+                //         action: function ( e, dt, node, config ) {
+                //             window.location.href = "{{ route('account.vendor.export') }}";
+                //         }
+                // }],
+                ajax: {
+                  url: "{{route('vendor.payout.filter', $vendor->id)}}",
+                //   data: function (d) {
+                //     d.search = $('input[type="search"]').val();
+                //     d.date_filter = $('#range-datepicker').val();
+                //   }
+                },
+                columns: [
+                    {data: 'date', name: 'date', orderable: true, searchable: false},
+                    {data: 'amount', name: 'amount', orderable: false, searchable: false},
+                    {data: 'type', name: 'type', orderable: false, searchable: false},
+                    {data: 'status', name: 'status', orderable: false, searchable: false},
+                ]
+            });            
+
+        }
 
     </script>
     {{-- @include('backend.vendor.modals') --}}

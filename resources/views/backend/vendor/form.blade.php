@@ -11,21 +11,21 @@
                 <input type="file" accept="image/*" data-plugins="dropify" data-default-file="{{$vendor->banner['proxy_url'] . '700/200' . $vendor->banner['image_path']}}" name="banner" class="dropify" />
                 <label class="logo-size text-right w-100">{{ __('Image Size') }} 830x200</label>
             </div>
-             @if(isset($vendor_docs))
+             {{--@if(isset($vendor_docs))
                 @if($vendor_docs->count() > 0)
                     <div class="col-md-3">
                         <label>{{ __('Upload Document') }}</label>
                         @foreach($vendor_docs as $k => $vendor_doc)
                         <div class="d-flex align-items-center justify-content-between">
                             <label>{{$vendor_doc->vendor_registration_document->primary->name}}</label>
-                            <a class="d-block mb-1 document-btn" target="_blank" href="{{$vendor_doc->file_name['storage_url']}}">
+                            <a class="d-block mb-1 document-btn" target="_blank" href="{{$vendor_doc->image_file['storage_url']}}">
                                 <i class="fa fa-eye float-right"></i>
                             </a>
                         </div>
                         @endforeach
                     </div>
                 @endif
-            @endif
+            @endif--}}
         </div>
         {!! Form::hidden('vendor_id', $vendor->id, ['class'=>'form-control']) !!}
         <div class="row">
@@ -138,6 +138,45 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
+            @if(!empty($vendor_registration_documents) && count($vendor_registration_documents) > 0)
+            @foreach($vendor_registration_documents as $vendor_registration_document)
+            @php
+                $field_value = "";
+                if(!empty($vendor_docs) && count($vendor_docs) > 0){
+                    foreach($vendor_docs as $key => $vendor_doc){
+                        if($vendor_registration_document->id == $vendor_doc->vendor_registration_document_id){
+                            if($vendor_registration_document->file_type == 'Text'){
+                                $field_value = $vendor_doc->file_name;
+                            } else {
+                                $field_value = $vendor_doc->image_file['storage_url'];
+                            }
+                        }
+                    }
+                }
+            @endphp
+            <div class="col-md-6" >
+                <div class="form-group" id="{{$vendor_registration_document->primary->slug}}Input">
+                    @if(strtolower($vendor_registration_document->file_type) == 'text')
+                        <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
+                        <input id="input_file_logo_{{$vendor_registration_document->id}}" type="text" name="{{$vendor_registration_document->primary->slug}}" class="form-control" value="{{ $field_value }}">
+                    @else
+                        @if(strtolower($vendor_registration_document->file_type) == 'image')
+                        <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
+                        <input type="file" accept="image/*" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug}}" class="dropify" data-default-file="{{ $field_value }}" />
+                        @else
+                        <label class="d-flex align-items-center justify-content-between" for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}<a href="{{ $field_value }}" target="__blank"><i class="fa fa-eye" aria-hidden="true"></i></a></label>
+                        <input type="file" accept=".pdf" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug}}" class="dropify" data-default-file="" />
+                        @endif
+                    @endif
+                    <span class="invalid-feedback" role="alert">
+                        <strong></strong>
+                    </span>
+                </div>
+            </div>
+            @endforeach
+            @endif
         </div>
     </div>
 </div>

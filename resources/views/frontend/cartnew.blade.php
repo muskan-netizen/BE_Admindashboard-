@@ -244,8 +244,12 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
                     <input type="datetime-local" id="schedule_datetime_dropoff" name="schedule_dropoff" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_dropoff??'' }}" min="{{ $now }}">
                 </div>
             </div>
-            @endif
-           
+            @else
+            <div class="row">
+                <div class="col-4">{{__('Specific instructions')}}</div> 
+                <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions ?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions"></div> 
+            </div>
+           @endif
             
         </div>
         <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">

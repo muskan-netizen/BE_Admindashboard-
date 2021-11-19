@@ -55,11 +55,11 @@ class CartController extends FrontController
         $langId = Session::get('customerLanguage');
         $guest_user = true;
         if ($user) {
-            $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
             $addresses = UserAddress::where('user_id', $user->id)->get();
             $guest_user = false;
         } else {
-            $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count','comment_for_pickup_driver','comment_for_dropoff_driver','comment_for_vendor','specific_instructions')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
             $addresses = collect();
         }
         if ($cart) {

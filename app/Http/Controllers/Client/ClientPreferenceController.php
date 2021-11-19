@@ -253,7 +253,9 @@ class ClientPreferenceController extends BaseController{
                             ->whereNotIn('currency_id',$exist_cid)->delete();
         }
 
-       
+        if($request->has('admin_email')){
+            $preference->admin_email = $request->admin_email ;
+        }
        
         $preference->save();
 
