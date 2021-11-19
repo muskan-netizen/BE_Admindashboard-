@@ -772,9 +772,9 @@
                 url: "{{route('vendor.specific_categories',$vendor->id)}}",
                 success: function(response) {
                     if(response.status == 1){
+                        $('#category_list').selectize()[0].selectize.destroy();
                         $("#category_list").find('option').remove();
                         $("#category_list").append(response.options);
-                        $('#category_list').selectize()[0].selectize.destroy();
                     }
                 },
                 error:function(error){

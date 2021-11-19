@@ -190,8 +190,8 @@ trait ApiResponser
 	{
 		$cart_id = $cart->id;
 		$user = Auth::user();
-		$langId = Session::get('customerLanguage');
-		$curId = Session::get('customerCurrency');
+		$langId = Auth::user()->language;
+        $curId = Auth::user()->language;
 		$pharmacy = ClientPreference::first();
 		$cart->pharmacy_check = $pharmacy->pharmacy_check;
 		$customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
