@@ -594,12 +594,12 @@
                         </div>
                         @endif
 
-                        @if(count($tags))
+                        @if(count($pro_tags))
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Select Tag Set'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="tag_sets[]" data-toggle="select2" multiple="multiple" placeholder="Select tag...">
-                                @foreach($tags as $set)
-                                  <option value="{{$set->id??0}}" @if(isset($set_product_tags) && in_array($set->id, $set_product_tags)) selected @endif>{{$set->primary->name??null}}</option>
+                                @foreach($pro_tags as $sets)
+                                  <option value="{{$sets->id??0}}" @if(isset($set_product_tags) && in_array($sets->id, $set_product_tags)) selected @endif>{{$sets->primary->name??null}}</option>
                                 @endforeach
                             </select>
                         </div>

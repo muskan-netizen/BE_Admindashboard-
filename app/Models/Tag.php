@@ -10,7 +10,7 @@ class Tag extends Model
     use HasFactory;
     
     public function primary(){
-      $langData = $this->hasOne('App\Models\TagTranslation')->join('client_languages as cl', 'cl.language_id', 'tag_translations.language_id')->where('cl.is_primary', 1);
+      $langData = $this->hasOne('App\Models\TagTranslation')->whereHas('primary');
       return $langData;
     }
 
@@ -19,4 +19,6 @@ class Tag extends Model
       $langData = $this->hasMany('App\Models\TagTranslation');
       return $langData;
     }
+
+
 }

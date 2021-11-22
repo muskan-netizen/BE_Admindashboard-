@@ -215,7 +215,7 @@ class ProductController extends BaseController
         
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
-        $tags = [];
+        $pro_tags = [];
 
          if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 7) # if type is pickup delivery then get dispatcher tags
         {   
@@ -229,10 +229,12 @@ class ProductController extends BaseController
            
         }
         
-        $tags = Tag::with('primary')->whereHas('primary')->get();
+        $pro_tags = Tag::with('primary')->whereHas('primary')->get();
+
+        
         $set_product_tags = ProductTag::where('product_id',$product->id)->pluck('tag_id')->toArray();
 
-        return view('backend/product/edit', ['set_product_tags' => $set_product_tags,'tags' => $tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids]);
+        return view('backend/product/edit', ['set_product_tags' => $set_product_tags,'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids]);
     }
 
     /**
