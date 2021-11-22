@@ -286,7 +286,7 @@ $timezone = Auth::user()->timezone;
                         @endif
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('City')}}:</span> {{ $order->address ? $order->address->city : ''}}</p>
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("State") }}:</span> {{ $order->address ? $order->address->state : ''}}</p>
-                        <p class="mb-0"><span class="fw-semibold me-2">{{ __("Pincode") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
+                        <p class="mb-0"><span class="fw-semibold me-2">{{ __("Zip Code") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
                     </div>
                 </div>
             </div>
@@ -303,7 +303,7 @@ $timezone = Auth::user()->timezone;
                         @endif
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('City')}}:</span> {{ $order->address ? $order->address->city : ''}}</p>
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("State") }}:</span> {{ $order->address ? $order->address->state : ''}}</p>
-                        <p class="mb-0"><span class="fw-semibold me-2">{{ __("Pincode") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
+                        <p class="mb-0"><span class="fw-semibold me-2">{{ __("Zip Code") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
                    
                     </div>
                 </div>

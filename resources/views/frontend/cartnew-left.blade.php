@@ -158,8 +158,8 @@
                         <span class="text-danger" id="country_error"></span>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="pincode">{{__('Pincode')}}</label>
-                        <input type="text" class="form-control" id="pincode" placeholder="{{__('Pincode')}}" value="">
+                        <label for="pincode">{{__('Zip Code')}}</label>
+                        <input type="text" class="form-control" id="pincode" placeholder="{{__('Zip Code')}}" value="">
                         <span class="text-danger" id="pincode_error"></span>
                     </div>
                     <div class="col-md-12 mt-3">

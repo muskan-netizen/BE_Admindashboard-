@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Front;
 
 use Log;
 use Auth;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Razorpay\Api\Api;
@@ -23,6 +22,7 @@ class RazorpayGatewayController extends FrontController
     public $API_SECRET_KEY;
     public $test_mode;
     public $api;
+    public $currency;
 
     public function __construct()
     {
@@ -35,6 +35,8 @@ class RazorpayGatewayController extends FrontController
         $this->API_KEY = $api_key;
         $this->API_SECRET_KEY = $api_secret_key;
         $this->api = new Api($api_key, $api_secret_key);
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
     }
 
     public function razorpayPurchase(Request $request)
@@ -73,9 +75,7 @@ class RazorpayGatewayController extends FrontController
             //$notifyUrlParams = '?gateway=paylink&amount=' . $amount . '&order=' . $order_number;
 
             $orderData = [
-
                 'amount'          => $amount / 100,
-
                 'currency'        => 'INR'
             ];
 

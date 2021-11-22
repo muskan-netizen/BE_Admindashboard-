@@ -82,7 +82,7 @@ class PromoCodeController extends Controller{
                         if (!empty($vendor_promo_code_details->toArray())) {
                             $query1->whereIn('id', $vendor_promo_code_details->toArray());
                         } else {
-                            $query1->where('id');
+                            $query1->where('id', 0);
                         }
                     });
                 })->where('minimum_spend', '<=', $total_minimum_spend)->where('maximum_spend', '>=', $total_minimum_spend)->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->where(['promo_visibility' => 'public'])->get();
@@ -260,4 +260,42 @@ class PromoCodeController extends Controller{
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
+
+    public function vendorPromoCodeList(Request $request){
+        try {
+            $vendor_id = $request->vendor_id;
+            $validator = $this->validatePromoCodeList();
+            if($validator->fails()){
+                return $this->errorResponse($validator->messages(), 422);
+            }
+            $vendor = Vendor::where('id', $request->vendor_id)->first();
+            if(!$vendor){
+                return response()->json(['error' => __('Invalid vendor id.')], 404);
+            }
+            $now = Carbon::now()->toDateTimeString();
+
+            $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
+            $promo_codes = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details) {
+                $query->where(function ($query2) use ($vendor_promo_code_details) {
+                    $query2->where('restriction_type', 1);
+                    if (!empty($vendor_promo_code_details->toArray())) {
+                        $query2->whereNotIn('id', $vendor_promo_code_details->toArray());
+                    }
+                });
+                $query->orWhere(function ($query1) use ($vendor_promo_code_details) {
+                    $query1->where('restriction_type', 0);
+                    if (!empty($vendor_promo_code_details->toArray())) {
+                        $query1->whereIn('id', $vendor_promo_code_details->toArray());
+                    } else {
+                        $query1->where('id', 0);
+                    }
+                });
+            })->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->where(['promo_visibility' => 'public'])->get();
+
+            return $this->successResponse($promo_codes, '', 200);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
 }

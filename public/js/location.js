@@ -279,6 +279,9 @@ $(document).ready(function () {
             vendor_type = vtype;
         }
         let selected_address = $("#address-input").val();
+        // console.log(latitude);
+        // console.log(selected_address);
+        // return 0;
         let selected_place_id = $("#address-place-id").val();
         $(".homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
         $("#edit-address").modal('hide');
@@ -394,26 +397,39 @@ $(document).ready(function () {
 
     function getLocation() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, null);
+            navigator.geolocation.getCurrentPosition(showPosition, defaultPosition);
         } else {
             alert("Geolocation is not supported by this browser.");
         }
     }
 
     function showPosition(position) {
-        let lat = position.coords.latitude;
-        let long = position.coords.longitude;
-        displayLocation(lat, long);
+        let lat = $("#address-latitude").val();
+        let long = $("#address-longitude").val();
+        let selectedPlaceId = $("#address-place-id").val();
+        let selectedAddress = $("#address-input").val();
+        if((lat != '') && (long != '')){
+            // console.log('location exists');
+            displayLocation(lat, long, selectedPlaceId, selectedAddress);
+        }else{
+            let lat = position.coords.latitude;
+            let long = position.coords.longitude;
+            displayLocation(lat, long);
+        }
+    }
+
+    function defaultPosition(){
+        displayLocation(defaultLatitude, defaultLongitude, '', defaultLocationName);
     }
 
     if (is_hyperlocal) {
-        if (!selected_address) {
+        // if (!selected_address) {
             getLocation();
-        }
-        let lat = $("#address-latitude").val();
-        let long = $("#address-longitude").val();
-        let placeId = $("#address-place-id").val();
-        displayLocation(lat, long, placeId);
+        // }
+        // let lat = $("#address-latitude").val();
+        // let long = $("#address-longitude").val();
+        // let placeId = $("#address-place-id").val();
+        // displayLocation(lat, long, placeId);
     }
 
     $(document).delegate(".confirm_address_btn", "click", function () {
@@ -468,7 +484,11 @@ $(document).ready(function () {
         });
     }
 
-    function displayLocation(latitude, longitude, placeId='') {
+    function displayLocation(latitude, longitude, placeId='', location='') {
+        // console.log(latitude);
+        // console.log(longitude);
+        // console.log(placeId);
+        // console.log(location);
         var geocoder;
         geocoder = new google.maps.Geocoder();
         var latlng = new google.maps.LatLng(latitude, longitude);
@@ -485,7 +505,8 @@ $(document).ready(function () {
 
         var geodata = { 'latLng': latlng };
         if(placeId != ''){
-            geodata.placeId = placeId;
+            geodata = { 'placeId': placeId };
+            // geodata.placeId = placeId;
         }
 
         geocoder.geocode(geodata,
@@ -494,13 +515,22 @@ $(document).ready(function () {
                     if (results[0]) {
                         var add = results[0].formatted_address;
                         var value = add.split(",");
+                        if(placeId == ''){
+                            placeId = results[0].place_id;
+                        }
+                        if(location != ''){
+                            add = location;
+                        }
 
                         count = value.length;
                         country = value[count - 1];
                         state = value[count - 2];
                         city = value[count - 3];
                         if (!selected_address) {
+                            $("#address-place-id").val(placeId);
                             $("#address-input").val(add);
+                            $("#address-latitude").val(latitude);
+                            $("#address-longitude").val(longitude);
                             $(".homepage-address span").text(value).attr({ "title": value, "data-original-title": value });
                             getHomePage(latitude, longitude);
                         }

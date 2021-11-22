@@ -382,4 +382,20 @@ class ProductController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
+
+    # get all product tags 
+
+    public function getAllProductTags(Request $request)
+    {
+        try{
+            $langId = Auth::user()->language;
+            $userid = Auth::user()->id;
+           
+           // $get_all_tags = TagTranslation::where('')
+
+            return $this->successResponse($variantData);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
 }

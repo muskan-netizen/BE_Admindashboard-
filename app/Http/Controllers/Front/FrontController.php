@@ -158,6 +158,8 @@ class FrontController extends Controller
 
     public function productList($vendorIds, $langId, $currency = 'USD', $where = '')
     {
+        $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
+        $multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
         $products = Product::with([
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
@@ -183,13 +185,18 @@ class FrontController extends Controller
                 $products = $products->whereIn('vendor_id', $vendorIds);
             }
             $products = $products->where('is_live', 1)->whereNotNull('category_id')->take(6)->get();
-        // pr($products->toArray());die;          
+        // pr($products->toArray());die;
         if (!empty($products)) {
             foreach ($products as $key => $value) {
-                $value->averageRating = number_format($value->averageRating, 1, '.', '');
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
                 }
+                $value->vendor_name = $value->vendor ? $value->vendor->name : '';
+                $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
+                $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
+                $value->variant_multiplier = $multiplier;
+                $value->variant_price = (!empty($value->variant->first())) ? number_format(($value->variant->first()->price * $multiplier),2,'.',',') : 0;
+                $value->averageRating = number_format($value->averageRating, 1, '.', '');
                 $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                 $value->category_name = ($value->category->categoryDetail->translation->first()) ? $value->category->categoryDetail->translation->first()->name :  $value->category->slug;
             }
@@ -245,7 +252,7 @@ class FrontController extends Controller
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
                 $value->variant_multiplier = $multiplier ? $multiplier : 1;
-                $value->variant_price = (!empty($value->variant->first())) ? number_format(($value->variant->first()->price * $multiplier),2,'.','') : 0;
+                $value->variant_price = (!empty($value->variant->first())) ? number_format(($value->variant->first()->price * $multiplier),2,'.',',') : 0;
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
                 $value->category_name = $value->category->categoryDetail->translation->first() ? $value->category->categoryDetail->translation->first()->name : '';
                 $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '600/600' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();

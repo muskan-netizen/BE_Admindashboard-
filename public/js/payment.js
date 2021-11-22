@@ -459,4 +459,69 @@ $(document).ready(function() {
     //         }
     //     });
     // }
+
+    window.paymentViaRazorpay = function paymentViaRazorpay(address_id, order) {
+        let total_amount = 0;
+        let tip = 0;
+        let tipElement = $("#cart_tip_amount");
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let cart_id = $("#cart_total_payable_amount").data("cart_id");
+
+        let walletElement = $("input[name='wallet_amount']");
+        let ajaxData = {};
+        if (cartElement.length > 0) {
+            total_amount = cartElement.val();
+            tip = tipElement.val();
+            ajaxData.tip = tip;
+            ajaxData.address_id = address_id;
+            ajaxData.payment_form = 'cart';
+            ajaxData.cart_id = cart_id;
+            ajaxData.order_number = order.order_number;
+        } else if (walletElement.length > 0) {
+            total_amount = walletElement.val();
+            ajaxData.payment_form = 'wallet';
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            // ajaxData = $("#subscription_payment_form").serializeArray();
+            // ajaxData.push({name: 'payment_form', value: 'subscription'});
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            // ajaxData.push( 
+            //     {name: 'payment_form', value: 'tip'},
+            //     {name: 'order_number', value: $("#order_number").val()}
+            // );
+        }
+        ajaxData.amount = total_amount;
+        ajaxData.returnUrl = path;
+        ajaxData.cancelUrl = path;
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: payment_razorpay_url,
+            data: ajaxData,
+            success: function(response) {
+                if (response.status == "Success") {
+                    window.location.href = response.data;
+                } else {
+                    if (cartElement.length > 0) {
+                        success_error_alert('error', response.message, "#cart_payment_form .payment_response");
+                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                    } else if (walletElement.length > 0) {
+                        success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    }
+                }
+            },
+            error: function(error) {
+                var response = $.parseJSON(error.responseText);
+                if (cartElement.length > 0) {
+                    success_error_alert('error', response.message, "#cart_payment_form .payment_response");
+                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                } else if (walletElement.length > 0) {
+                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                    $(".topup_wallet_confirm").removeAttr("disabled");
+                }
+            }
+        });
+    }
 });

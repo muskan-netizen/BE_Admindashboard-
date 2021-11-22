@@ -222,16 +222,16 @@ class UserhomeController extends FrontController
                     $count++;
                 }
             }
-            if ($preferences) {
-                if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
-                    $selectedAddress = $preferences->Default_location_name;
-                    $latitude = $preferences->Default_latitude;
-                    $longitude = $preferences->Default_longitude;
-                    Session::put('latitude', $latitude);
-                    Session::put('longitude', $longitude);
-                    Session::put('selectedAddress', $selectedAddress);
-                }
-            }
+            // if ($preferences) {
+            //     if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
+            //         $selectedAddress = $preferences->Default_location_name;
+            //         $latitude = $preferences->Default_latitude;
+            //         $longitude = $preferences->Default_longitude;
+            //         Session::put('latitude', $latitude);
+            //         Session::put('longitude', $longitude);
+            //         Session::put('selectedAddress', $selectedAddress);
+            //     }
+            // }
             $banners = Banner::where('status', 1)->where('validity_on', 1)
                 ->where(function ($q) {
                     $q->whereNull('start_date_time')->orWhere(function ($q2) {
@@ -654,16 +654,16 @@ class UserhomeController extends FrontController
                     $count++;
                 }
             }
-            if ($preferences) {
-                if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
-                    $selectedAddress = $preferences->Default_location_name;
-                    $latitude = $preferences->Default_latitude;
-                    $longitude = $preferences->Default_longitude;
-                    Session::put('latitude', $latitude);
-                    Session::put('longitude', $longitude);
-                    Session::put('selectedAddress', $selectedAddress);
-                }
-            }
+            // if ($preferences) {
+            //     if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
+            //         $selectedAddress = $preferences->Default_location_name;
+            //         $latitude = $preferences->Default_latitude;
+            //         $longitude = $preferences->Default_longitude;
+            //         Session::put('latitude', $latitude);
+            //         Session::put('longitude', $longitude);
+            //         Session::put('selectedAddress', $selectedAddress);
+            //     }
+            // }
             $banners = Banner::where('status', 1)->where('validity_on', 1)
                 ->where(function ($q) {
                     $q->whereNull('start_date_time')->orWhere(function ($q2) {

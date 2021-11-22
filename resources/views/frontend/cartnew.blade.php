@@ -914,6 +914,21 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
 
 </div>
 <?php ?>
+
+{{-- <form action="{{ route('payment.razorpayCompletePurchase',[app('request')->input('amount'),app('request')->input('order')]) }}" method="POST" id="razorpay_gateway">
+    @csrf
+    <script src="https://checkout.razorpay.com/v1/checkout.js" 
+        data-key="<?php echo app('request')->input('api_key'); ?>" 
+        data-amount="<?php echo app('request')->input('amount'); ?>" 
+        data-buttontext="Pay" 
+        data-name="Razorpay Payment gateway" 
+        data-description="Rozerpay" 
+        data-prefill.name="name" 
+        data-prefill.email="email" 
+        data-theme.color="#ff7529">
+    </script>
+</form> --}}
+
 @endsection
 
 @section('script')

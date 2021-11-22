@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use App\Models\ClientPreference;
 class SignupRequest extends FormRequest{
     /**
      * Determine if the user is authorized to make this request.
@@ -20,6 +20,9 @@ class SignupRequest extends FormRequest{
      * @return array
      */
     public function rules(){
+
+        $preferences = ClientPreference::first();
+
         $rules = [
             'name' => 'required|min:3|max:50',
             'password' => 'required|string|min:6|max:50',
@@ -28,10 +31,10 @@ class SignupRequest extends FormRequest{
             'term_and_condition' => 'accepted',
             'refferal_code' => 'nullable|exists:user_refferals,refferal_code',
         ];
-        if(session('preferences')->verify_email == 1){
+        if($preferences->verify_email == 1){
             $rules['email'] = 'required|email|unique:users';
         }
-        if(session('preferences')->verify_phone == 1){
+        if($preferences->verify_phone == 1){
             $rules['phone_number'] = 'required|string|min:8|max:15|unique:users';
         }
         return $rules;

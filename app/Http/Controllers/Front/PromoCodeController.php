@@ -70,7 +70,7 @@ class PromoCodeController extends Controller{
                         if (!empty($vendor_promo_code_details->toArray())) {
                             $query1->whereIn('id', $vendor_promo_code_details->toArray());
                         } else {
-                            $query1->where('id');
+                            $query1->where('id', 0);
                         }
                     });
                 })->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->where(['promo_visibility' => 'public'])->get();

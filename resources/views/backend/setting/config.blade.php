@@ -1588,12 +1588,17 @@
                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
-               <form id="productTagForm" method="POST" action="javascript:void(0)">
+               <form id="productTagForm" method="POST" action="javascript:void(0)" enctype="multipart/form-data">
                   @csrf
                   <div id="save_product_tag">
                      <input type="hidden" name="tag_id" value="">
                      <div class="row">
-                       
+                        <div class="col-md-3">
+                           <label>{{ __('Upload Icon') }}</label>
+                           <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify" />
+                           <label class="logo-size text-right w-100">{{ __("Icon Size") }} 100X100</label>
+                       </div> 
+
                         @forelse($client_languages as $k => $client_language)
                         <div class="col-md-6 mb-2">
                            <div class="row">
@@ -1785,7 +1790,7 @@
             success: function(response) {
                if (response.status = 'Success') {
                   $("#add_product_tag_modal input[name=tag_id]").val(response.data.id);
-                  $('#add_product_tag_modal #standard-modalLabel').html('Update Vendor Registration Document');
+                  $('#add_product_tag_modal #standard-modalLabel').html('Update Product Tag');
                   $('#add_product_tag_modal').modal('show');
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_product_tag_modal #product_tag_name_'+value.language_id).val(value.name);

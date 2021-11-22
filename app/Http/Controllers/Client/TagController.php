@@ -8,16 +8,33 @@ use App\Http\Traits\ApiResponser;
 use App\Models\Tag;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\TagTranslation;
+use App\Models\Client;
+use Illuminate\Support\Facades\Storage;
 
 class TagController extends BaseController{
     use ApiResponser;
+
+    public function __construct()
+    {
+        $code = Client::orderBy('id','asc')->value('code');
+        $this->folderName = '/'.$code.'/tags';
+    }
+
     public function store(Request $request){
         try {
             $this->validate($request, [
-              'name.0' => 'required|string|max:255'
+              'name.0' => 'required|string|max:255',
+              'icon' => 'image'
              ],['name.0' => 'The default language name field is required.']);
             DB::beginTransaction();
+
             $tag = new Tag();
+
+            if ($request->hasFile('icon')) {    /* upload icon file */
+                $file = $request->file('icon');
+                $tag->icon = Storage::disk('s3')->put($this->folderName, $file, 'public');
+            }
+
             $tag->save();
             $language_id = $request->language_id;
             foreach ($request->name as $k => $name) {
@@ -64,11 +81,18 @@ class TagController extends BaseController{
     public function update(Request $request, Tag $tag){
          try {
             $this->validate($request, [
-              'name.0' => 'required|string|max:255'
+              'name.0' => 'required|string|max:255',
+              'icon' => 'image'
             ],['name.0' => 'The default language name field is required.']);
             DB::beginTransaction();
             $tag_id = $request->tag_id;
             $tag = Tag::where('id', $tag_id)->first();
+
+            if ($request->hasFile('icon')) {    /* upload icon file */
+                $file = $request->file('icon');
+                $tag->icon = Storage::disk('s3')->put($this->folderName, $file, 'public');
+            }
+
             $tag->save();
             $language_id = $request->language_id;
             TagTranslation::where('tag_id', $tag_id)->delete();

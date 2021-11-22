@@ -157,7 +157,7 @@ class VendorController extends BaseController
     public function store(Request $request){
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         $rules = array(
-            'name' => 'required|string|max:150|unique:vendors',
+            // 'name' => 'required|string|max:150|unique:vendors',
             'address' => 'required',
         );
         foreach ($vendor_registration_documents as $vendor_registration_document) {

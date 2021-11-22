@@ -16,19 +16,7 @@ class VendorController extends FrontController
 {
     private $field_status = 2;
 
-    public function __construct()
-    {
-        $customerCurrency = Session::get('customerCurrency');
-        if(isset($customerCurrency) && !empty($customerCurrency)){
-            $customerCurrency = Session::get('customerCurrency');
-        }
-        else{
-            $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-            Session::put('customerCurrency',$primaryCurrency->doller_compare);
-        }
-       
-    }
-
+  
     public function viewAll(){
         $langId = Session::get('customerLanguage');
         $preferences = Session::get('preferences');
@@ -313,8 +301,16 @@ class VendorController extends FrontController
                 $column = 'unique_identifier';
                 $value = session()->get('_token');
             }
+            $cur_ids = Session::get('customerCurrency');
+            if(isset($cur_ids) && !empty( $cur_ids))
+            $clientCurrency = ClientCurrency::where('currency_id', $cur_ids)->first();
+            else
+            {
+                $primaryCurrency = ClientCurrency::where('is_primary','=', 1)->first();
+                $cur_ids = $primaryCurrency->currency_id;
+                $clientCurrency = ClientCurrency::where('currency_id', $cur_ids)->first();
+            }
 
-            $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
             $vendor_categories = VendorCategory::with(['category.translation' => function($q) use($langId){
                 $q->where('category_translations.language_id', $langId);
             }])->where('vendor_id', $vid);
