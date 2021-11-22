@@ -215,6 +215,7 @@ class ProductController extends BaseController
         
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
+        $tags = [];
 
          if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 7) # if type is pickup delivery then get dispatcher tags
         {   

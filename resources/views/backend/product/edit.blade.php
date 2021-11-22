@@ -599,7 +599,7 @@
                             {!! Form::label('title', __('Select Tag Set'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="tag_sets[]" data-toggle="select2" multiple="multiple" placeholder="Select tag...">
                                 @foreach($tags as $set)
-                                 <option value="{{$set->id}}" @if(isset($set_product_tags) && in_array($set->id, $set_product_tags)) selected @endif>{{$set->primary->name??null}}</option>
+                                  <option value="{{$set->id??0}}" @if(isset($set_product_tags) && in_array($set->id, $set_product_tags)) selected @endif>{{$set->primary->name??null}}</option>
                                 @endforeach
                             </select>
                         </div>
