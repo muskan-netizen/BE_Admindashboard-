@@ -130,7 +130,7 @@ class BaseController extends Controller
                 }
                 // type_id 1 means product in type table
                 if (isset($node['children']) && count($node['children']) > 0) {
-                    if($node['parent_id'] != 1){
+                    if($node['parent_id'] != 1 && !empty($node['translation'][0]['name'])){
                         $parentCategory[] = $node['translation'][0]['name'];
                     }
                     

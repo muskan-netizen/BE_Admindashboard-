@@ -15,14 +15,7 @@ class ProductController extends FrontController{
 
     public function __construct()
     {
-        $customerCurrency = Session::get('customerCurrency');
-        if(isset($customerCurrency) && !empty($customerCurrency)){
-            $customerCurrency = Session::get('customerCurrency');
-        }
-        else{
-            $primaryCurrency = ClientCurrency::where('is_primary','=', 1)->first();
-            Session::put('customerCurrency', $primaryCurrency->currency_id);
-        }
+        
        
     }
 
@@ -36,7 +29,15 @@ class ProductController extends FrontController{
         $user = Auth::user();
         $preferences = Session::get('preferences');
         $langId = Session::get('customerLanguage');
+        $customerCurrency = Session::get('customerCurrency');
+        if(isset($customerCurrency) && !empty($customerCurrency)){
+        }
+        else{
+            $primaryCurrency = ClientCurrency::where('is_primary','=', 1)->first();
+            Session::put('customerCurrency', $primaryCurrency->currency_id);
+        }
         $curId = Session::get('customerCurrency');
+
         $navCategories = $this->categoryNav($langId);
         $product = Product::select('id', 'vendor_id')->where('url_slug', $url_slug)->firstOrFail();
         $product_in_cart = CartProduct::where(["product_id" => $product->id]);
@@ -256,6 +257,13 @@ class ProductController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function getVariantData(Request $request, $domain = '', $sku){
+        $customerCurrency = Session::get('customerCurrency');
+        if(isset($customerCurrency) && !empty($customerCurrency)){
+        }
+        else{
+            $primaryCurrency = ClientCurrency::where('is_primary','=', 1)->first();
+            Session::put('customerCurrency', $primaryCurrency->currency_id);
+        }
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $product = Product::select('id')->where('sku', $sku)->firstOrFail();
         $pv_ids = array();
