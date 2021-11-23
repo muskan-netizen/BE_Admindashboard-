@@ -24,12 +24,15 @@ class VendorPayoutController extends BaseController{
 
     public function __construct(){
         $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'stripe')->where('status', 1)->first();
-        $creds_arr = json_decode($stripe_creds->credentials);
-        $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
-        $testmode = (isset($stripe_creds->test_mode) && ($stripe_creds->test_mode == '1')) ? true : false;
-        $this->gateway = Omnipay::create('Stripe');
-        $this->gateway->setApiKey($api_key);
-        $this->gateway->setTestMode($testmode); //set it to 'false' when go live
+        if($stripe_creds){
+            $creds_arr = json_decode($stripe_creds->credentials);
+            $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+            $testmode = (isset($stripe_creds->test_mode) && ($stripe_creds->test_mode == '1')) ? true : false;
+            $this->gateway = Omnipay::create('Stripe');
+            $this->gateway->setApiKey($api_key);
+            $this->gateway->setTestMode($testmode); //set it to 'false' when go live
+        }
+       
     }
 
     public function index(Request $request){
