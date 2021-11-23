@@ -303,12 +303,12 @@ class VendorController extends FrontController
             }
             $cur_ids = Session::get('customerCurrency');
             if(isset($cur_ids) && !empty( $cur_ids))
-            $clientCurrency = ClientCurrency::where('currency_id', $cur_ids)->first();
+            $clientCurrency = ClientCurrency::where('currency_id','=', $cur_ids)->first();
             else
             {
                 $primaryCurrency = ClientCurrency::where('is_primary','=', 1)->first();
                 $cur_ids = $primaryCurrency->currency_id;
-                $clientCurrency = ClientCurrency::where('currency_id', $cur_ids)->first();
+                $clientCurrency = ClientCurrency::where('currency_id','=', $cur_ids)->first();
             }
 
             $vendor_categories = VendorCategory::with(['category.translation' => function($q) use($langId){
@@ -365,7 +365,7 @@ class VendorController extends FrontController
                                 }else{
                                     $v->is_free = false;
                                 }
-                                $v->multiplier = $clientCurrency->doller_compare;
+                                $v->multiplier = $clientCurrency->doller_compare??1;
                             }
                         }
 

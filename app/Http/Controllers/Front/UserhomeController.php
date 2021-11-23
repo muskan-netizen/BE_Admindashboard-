@@ -24,18 +24,6 @@ class UserhomeController extends FrontController
     use ApiResponser;
     private $field_status = 2;
 
-    public function __construct()
-    {
-        $customerCurrency = Session::get('customerCurrency');
-        if(isset($customerCurrency) && !empty($customerCurrency)){
-            $customerCurrency = Session::get('customerCurrency');
-        }
-        else{
-            $primaryCurrency = ClientCurrency::where('is_primary','=', 1)->first();
-            Session::put('customerCurrency',$primaryCurrency->doller_compare);
-        }
-       
-    }
     
     public function setTheme(Request $request)
     {
@@ -298,6 +286,11 @@ class UserhomeController extends FrontController
         $preferences = Session::get('preferences');
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
+
+       
+        $currency_id = $this->setCurrencyInSesion();
+
+        
         $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
             $q->where('language_id', $language_id);
         }])->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->get();
@@ -680,7 +673,7 @@ class UserhomeController extends FrontController
                 $q->where('language_id', $langId);
             }])->where('is_active', 1)->orderBy('order_by')->get();
 
-            dd($home_page_labels);
+           
             return view('frontend.home-template-one')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
         } catch (Exception $e) {
             pr($e->getCode());

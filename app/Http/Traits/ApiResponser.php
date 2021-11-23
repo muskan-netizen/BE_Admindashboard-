@@ -186,6 +186,32 @@ trait ApiResponser
 			return false;
 	}
 
+
+	# set currency in session 
+	public function setCurrencyInSesion(){
+		$currency_id = Session::get('customerCurrency');
+		if(isset($currency_id) && !empty($currency_id)){
+            $all = ClientCurrency::orderBy('is_primary','desc')->where('currency_id',$currency_id)->first();
+            if(empty($all)){
+                $primaryCurrency = ClientCurrency::where('is_primary','=', 1)->first();
+                Session::put('customerCurrency',$primaryCurrency->currency_id);
+				Session::put('currencySymbol',$primaryCurrency->currency->symbol);
+                $currency_id = $primaryCurrency->currency_id ;
+            }else{
+                $currency_id = (int)$currency_id;
+                Session::put('customerCurrency',$currency_id);
+            }
+        }
+        else{
+            $primaryCurrency = ClientCurrency::where('is_primary','=', 1)->first();
+            Session::put('customerCurrency',$primaryCurrency->currency_id);
+			Session::put('currencySymbol',$primaryCurrency->currency->symbol);
+            $currency_id = $primaryCurrency->currency_id ;
+        }
+
+		return  $currency_id;
+	}
+
 	public function getCart($cart, $address_id = 0)
 	{
 		$cart_id = $cart->id;

@@ -15,6 +15,10 @@ class TagTranslation extends Model
       return $this->belongsTo('App\Models\Language','language_id','id')->select('id', 'name', 'sort_code','nativeName');
     }
 
+    public function tag()
+    {
+      return $this->belongsTo('App\Models\Tag','tag_id','id');
+    }
 
 
     public function primary(){
