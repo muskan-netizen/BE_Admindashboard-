@@ -9,7 +9,7 @@ class ProductTag extends Model
    protected $fillable = ['product_id','tag_id'];
 
     public function tag(){
-       return $this->belongsTo('App\Models\Tag', 'id', 'tag_id'); 
+       return $this->belongsTo('App\Models\Tag', 'tag_id', 'id'); 
     }
 
   

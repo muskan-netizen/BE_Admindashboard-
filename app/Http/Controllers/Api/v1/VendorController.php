@@ -169,7 +169,7 @@ class VendorController extends BaseController{
                                 $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
                                 // $q->groupBy('product_id');
                             },'variant.checkIfInCartApp',
-                            'tags.tag.translations' => function ($q) use ($langId) {
+                             'tags.tag.translations' => function ($q) use ($langId) {
                                 $q->where('language_id', $langId);
                             }
                         ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');

@@ -121,7 +121,7 @@ class Product extends Model{
     }
 
     public function tags(){
-      return $this->hasMany('App\Models\ProductTag', 'product_id', 'tag_id'); 
+      return $this->hasMany('App\Models\ProductTag', 'product_id', 'id'); 
     }
 
 
