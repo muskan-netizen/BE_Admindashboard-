@@ -823,7 +823,7 @@ class CartController extends FrontController
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
-            $cart->delay_date =  $delay_date;
+            $cart->delay_date =  $delay_date??0;
             // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
