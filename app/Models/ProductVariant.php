@@ -80,7 +80,9 @@ class ProductVariant extends Model
             $value = session()->get('_token');
         }
 
-        return $this->hasMany('App\Models\CartProduct', 'variant_id', 'id')->whereHas('cart',function($qset)use($column,$value){$qset->where($column,$value);});;
+        return $this->hasMany('App\Models\CartProduct', 'variant_id', 'id')->whereHas('cart',function($qset)use($column,$value){
+            $qset->where($column,$value);
+        });
     }
 
     public function checkIfInCartApp()

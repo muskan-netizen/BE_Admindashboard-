@@ -93,7 +93,7 @@ class PromoCodeController extends Controller{
             $vendor_orders = $vendor_orders_query->orderBy('id', 'desc')->get();
             foreach ($vendor_orders as $vendor_order) {
                 $order_status = '';
-                $vendor_order->created_date = convertDateTimeInTimeZone($vendor_order->created_at, $timezone, 'Y-m-d h:i:s A');
+                $vendor_order->created_date = dateTimeInUserTimeZone($vendor_order->created_at, $timezone);
                 $vendor_order->user_name = $vendor_order->user ? $vendor_order->user->name : '';
                 $vendor_order->view_url = route('order.show.detail', [$vendor_order->order_id, $vendor_order->vendor_id]);
                 if($vendor_order->coupon_paid_by == 0){

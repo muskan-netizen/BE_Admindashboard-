@@ -80,7 +80,7 @@ $timezone = Auth::user()->timezone;
                                             @endif
                                             <p class="text-muted" id="text_muted_{{$vendor_order_status->order_status_option_id}}">
                                                 @if($date)
-                                                    <small class="text-muted">{{convertDateTimeInTimeZone($date, $timezone, 'l, F d, Y, H:i A')}}</small>
+                                                    <small class="text-muted">{{dateTimeInUserTimeZone($date, $timezone)}}</small>
                                                 @endif
                                             </p>
                                         </li>
@@ -113,7 +113,7 @@ $timezone = Auth::user()->timezone;
                                                     @endif
                                                     <p class="text-muted" id="text_muted_{{$order_status_option->id}}">
                                                         @if($date)
-                                                            <small class="text-muted">{{convertDateTimeInTimeZone($date, $timezone, 'l, F d, Y, H:i A')}}</small>
+                                                            <small class="text-muted">{{dateTimeInUserTimeZone($date, $timezone)}}</small>
                                                         @endif
                                                     </p>
                                                 </li>
@@ -145,7 +145,7 @@ $timezone = Auth::user()->timezone;
                                         <h5 class="mt-0 mb-1">{{$dispatcher_status_option->title}}</h5>
                                         <p class="text-muted" id="dispatch_text_muted_{{$dispatcher_status_option->id}}">
                                             @if($date)
-                                            <small class="text-muted">{{convertDateTimeInTimeZone($date, $timezone, 'l, F d, Y, H:i A')}}</small>
+                                            <small class="text-muted">{{dateTimeInUserTimeZone($date, $timezone)}}</small>
                                             @endif
                                         </p>
                                     </li>
@@ -201,7 +201,7 @@ $timezone = Auth::user()->timezone;
                                     <tr>
                                         <th scope="row">{{$product->product_name}}
                                             <p class="p-0 m-0">
-                                                @if(isset($product->scheduled_date_time)) {{convertDateTimeInTimeZone($product->scheduled_date_time, $timezone, 'l, F d, Y, H:i A')}} @endif
+                                                @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
                                             </p>
                                                 @foreach($product->prescription as $pres)
                                                 <br><a target="_blank" href="{{ ($pres) ? @$pres->prescription['proxy_url'].'74/100'.@$pres->prescription['image_path'] : ''}}">{{($product->prescription) ? 'Prescription' : ''}}</a>
@@ -336,11 +336,11 @@ $timezone = Auth::user()->timezone;
                         @endif
 
                         @if($order->schedule_pickup)
-                          <p class="mb-2"><span class="fw-semibold me-2">{{ __('Schedule Pickup') }} :</span> {{convertDateTimeInTimeZone($order->schedule_pickup, $timezone, 'l, F d, Y, H:i A')}} </p>
+                          <p class="mb-2"><span class="fw-semibold me-2">{{ __('Schedule Pickup') }} :</span> {{dateTimeInUserTimeZone($order->schedule_pickup, $timezone)}} </p>
                         @endif
 
                         @if($order->schedule_dropoff)
-                          <p class="mb-2"><span class="fw-semibold me-2">{{ __('Schedule Dropoff') }} :</span> {{convertDateTimeInTimeZone($order->schedule_dropoff, $timezone, 'l, F d, Y, H:i A')}} </p>
+                          <p class="mb-2"><span class="fw-semibold me-2">{{ __('Schedule Dropoff') }} :</span> {{dateTimeInUserTimeZone($order->schedule_dropoff, $timezone)}} </p>
                         @endif
 
                         @if($order->specific_instructions)

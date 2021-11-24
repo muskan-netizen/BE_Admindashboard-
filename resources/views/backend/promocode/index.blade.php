@@ -77,7 +77,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                     <td style="width:100px"><p class="ellips">{{$promo->short_desc}}</p></td>
                                     <td>{{$promo->type ? $promo->type->title : ''}}</td>
                                     <td>{{$promo->amount}}</td>
-                                    <td>{{convertDateTimeInTimeZone($promo->expiry_date, $timezone, 'M d Y, H:i A')}}</td>
+                                    <td>{{dateTimeInUserTimeZone($promo->expiry_date, $timezone)}}</td>
                                     <td>
                                         @if($promo->added_by == Auth::id() || Auth::user()->is_superadmin == 1)
                                         <div class="form-ul" style="width: 60px;">

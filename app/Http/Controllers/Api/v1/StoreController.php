@@ -100,7 +100,7 @@ class StoreController extends BaseController{
 				$order_item_count = 0;
 				$order->user_name = $order->user->name;
 				$order->user_image = $order->user->image;
-				$order->date_time = convertDateTimeInTimeZone($order->created_at, $user->timezone);
+				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
 				$order->payment_option_title = $order->paymentOption->title;
 				foreach ($order->vendors as $vendor) {
 					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $is_selected_vendor_id)->orderBy('id', 'DESC')->first();
@@ -133,7 +133,7 @@ class StoreController extends BaseController{
     				}
 				}
 				if(!empty($order->scheduled_date_time)){
-					$order->scheduled_date_time = convertDateTimeInTimeZone($order->scheduled_date_time, $user->timezone, 'M d, Y h:i A');
+					$order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
 				}
 				$luxury_option_name = '';
 				if($order->luxury_option_id > 0){
@@ -223,7 +223,7 @@ class StoreController extends BaseController{
 				$order_item_count = 0;
 				$order->user_name = $order->user->name;
 				$order->user_image = $order->user->image;
-				$order->date_time = convertDateTimeInTimeZone($order->created_at, $user->timezone);
+				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
 				$order->payment_option_title = $order->paymentOption->title;
 				foreach ($order->vendors as $vendor) {
 					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();

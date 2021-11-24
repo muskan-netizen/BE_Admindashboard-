@@ -379,6 +379,7 @@ class VendorController extends BaseController
         $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
         $returnData = array();
         $returnData['client_preferences'] = $client_preferences;
+        $returnData['hour12'] = ($client_preferences->time_format == '12') ? true : false;
         $returnData['vendor'] = $vendor;
         $returnData['center'] = $center;
         $returnData['tab'] = 'configuration';

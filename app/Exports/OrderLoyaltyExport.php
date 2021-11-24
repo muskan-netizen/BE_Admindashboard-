@@ -27,7 +27,7 @@ class OrderLoyaltyExport implements FromCollection,WithHeadings,WithMapping
         foreach ($orders as $order) {
             $order->loyalty_membership = $order->loyaltyCard ? $order->loyaltyCard->name : '';
             $order->loyalty_points_used = $order->loyalty_points_used ? $order->loyalty_points_used : '0.00';
-            $order->created_date = convertDateTimeInTimeZone($order->created_at, $timezone, 'Y-m-d h:i:s A');
+            $order->created_date = dateTimeInUserTimeZone($order->created_at, $timezone);
             $order->loyalty_points_earned = $order->loyalty_points_earned ? $order->loyalty_points_earned : '0.00';
         }
         return $orders;

@@ -71,7 +71,7 @@ class TaxController extends Controller{
         foreach ($orders as $order) {
             $order->payment_method = $order->paymentOption ? $order->paymentOption->title : '';
             $order->customer_name = $order->user ? $order->user->name : '-';
-            $order->created_date = convertDateTimeInTimeZone($order->created_at, $timezone, 'Y-m-d h:i:s A');
+            $order->created_date = dateTimeInUserTimeZone($order->created_at, $timezone);
             $tax_types = [];
             foreach ($order->taxes as $tax) {
                 if($tax){

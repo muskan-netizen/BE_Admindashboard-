@@ -222,6 +222,14 @@ class OrderController extends BaseController {
                             $order_product->product_id = $vendor_cart_product->product_id;
                             $order_product->created_by = $vendor_cart_product->created_by;
                             $order_product->variant_id = $vendor_cart_product->variant_id;
+                            
+                            if(!empty($vendor_cart_product->product->title))
+                            $vendor_cart_product->product->title = $vendor_cart_product->product->title;
+                            elseif(empty($vendor_cart_product->product->title)  && !empty($vendor_cart_product->product->translation))
+                            $vendor_cart_product->product->title = $vendor_cart_product->product->translation[0]->title;
+                            else
+                            $vendor_cart_product->product->title = $vendor_cart_product->product->sku;
+
                             $order_product->product_name = $vendor_cart_product->product->title ?? $vendor_cart_product->product->sku;
                             $order_product->product_dispatcher_tag = $vendor_cart_product->product->tags;
                             if ($vendor_cart_product->product->pimage) {
@@ -890,7 +898,7 @@ class OrderController extends BaseController {
             $order_item_count = 0;
             $order->user_name = $user->name;
             $order->user_image = $user->image;
-            $order->date_time = convertDateTimeInTimeZone($order->orderDetail->created_at, $user->timezone);
+            $order->date_time = dateTimeInUserTimeZone($order->orderDetail->created_at, $user->timezone);
             $order->payment_option_title = __($order->orderDetail->paymentOption->title??'');
             $order->order_number = $order->orderDetail->order_number;
             $product_details = [];
@@ -915,10 +923,10 @@ class OrderController extends BaseController {
                 $order_pre_time = ($order->order_pre_time > 0) ? $order->order_pre_time : 0;
                 $user_to_vendor_time = ($order->user_to_vendor_time > 0) ? $order->user_to_vendor_time : 0;
                 $ETA = $order_pre_time + $user_to_vendor_time;
-                $order->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $order->created_at, $order->orderDetail->scheduled_date_time) : convertDateTimeInTimeZone($order->created_at, $user->timezone, 'h:i A');
+                $order->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $order->created_at, $order->orderDetail->scheduled_date_time) : dateTimeInUserTimeZone($order->created_at, $user->timezone);
             }
             if(!empty($order->orderDetail->scheduled_date_time)){
-                $order->scheduled_date_time = convertDateTimeInTimeZone($order->orderDetail->scheduled_date_time, $user->timezone, 'M d, Y h:i A');
+                $order->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
             }
             $luxury_option_name = '';
             if($order->orderDetail->luxury_option_id > 0){
@@ -1001,7 +1009,7 @@ class OrderController extends BaseController {
                 $order->user_name = $order->user->name;
                 $order->user_image = $order->user->image;
                 $order->payment_option_title = __($order->paymentOption->title);
-                $order->created_date = Carbon::parse($order->created_at)->setTimezone($user->timezone)->format('M d, Y h:i A');
+                $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
                 $order->tip_amount = $order->tip_amount;
                 $order->tip = array(
                     ['label' => '5%', 'value' => number_format((0.05 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')],
@@ -1049,7 +1057,7 @@ class OrderController extends BaseController {
                         $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
                         $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
                         $ETA = $order_pre_time + $user_to_vendor_time;
-                        $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : convertDateTimeInTimeZone($vendor->created_at, $user->timezone, 'h:i A');
+                        $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : dateTimeInUserTimeZone($vendor->created_at, $user->timezone);
                     }
                     if($vendor->dineInTable){
                         $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -1058,7 +1066,7 @@ class OrderController extends BaseController {
                     }
         		}
                 if(!empty($order->scheduled_date_time)){
-                    $order->scheduled_date_time = convertDateTimeInTimeZone($order->scheduled_date_time, $user->timezone, 'M d, Y h:i A');
+                    $order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
                 }
                 $luxury_option_name = '';
                 if($order->luxury_option_id > 0){

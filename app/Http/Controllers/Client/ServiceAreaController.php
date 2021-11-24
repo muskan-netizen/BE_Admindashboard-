@@ -113,4 +113,52 @@ class ServiceAreaController extends BaseController{
         $area = ServiceArea::where('id', $request->area_id)->delete();
         return redirect()->back()->with('success', 'Service area deleted successfully!');
     }
+
+
+    # draw a circle with radius in vendor service area 
+    public function drawCircleWithRadius(Request $request, $domain = '', $vendor_id){
+
+        $vendor = Vendor::where('id',$vendor_id)->first();
+
+        if(isset($vendor) && !empty($vendor)){
+
+            if(isset($vendor->latitude) && !empty($vendor->latitude) && isset($vendor->longitude) && !empty($vendor->longitude)) {
+                $xCoords = [];
+                $yCoords = [];
+                $points = [];
+                $centerX = $vendor->latitude;
+                $centerY = $vendor->longitude;
+                $steps = 20;
+                $distance = $request->radius;
+                $for_lat_deg = (1/69)*$distance;
+                $for_lng_deg = (1/54)*$distance;
+                  for ($i = 0; $i < $steps; $i++) {
+            
+                     $x = ($centerX + $for_lat_deg * cos(2 * pi() * ($i / $steps)));
+                     $y = ($centerY + $for_lng_deg * sin(2 * pi() * ($i / $steps)));
+                     $point = "(".$x.", ".$y.")";
+                     array_push($points,$point);
+                    
+                  }
+                $pointse = implode(',',$points);
+
+
+                $area = new ServiceArea();
+                $area->vendor_id        = $vendor->id;
+                $area->name             = "Area - ".$request->radius." Mile Radius";
+                $area->geo_array        = $pointse;
+                $area->zoom_level       = $request->zoom_level??3;
+                $area->description      = $request->description??null;
+                $area->polygon          = \DB::raw("ST_GEOMFROMTEXT('POLYGON((".$pointse."))')");
+                $area->save();
+                return redirect()->back()->with('success', 'Service area updated successfully!');
+            }
+
+            return redirect()->back()->with('error', 'Error in create Service area!');
+
+
+        }
+        return redirect()->back()->with('error', 'Error in create Service area!');
+       
+    }
 }

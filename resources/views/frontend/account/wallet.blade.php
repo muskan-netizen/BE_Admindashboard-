@@ -136,7 +136,7 @@ $timezone = Auth::user()->timezone;
                                         $amount = ($ut->amount / 100) * $clientCurrency->doller_compare;
                                         @endphp
                                           <tr>
-                                              <td>{{dateTimeInUserTimeZone($ut->created_at, $timezone, true, false)}}</td>
+                                              <td>{{dateTimeInUserTimeZone($ut->created_at, $timezone)}}</td>
                                               <td  class="name_">{!!$reason[0]!!}</td>
                                               <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}@money(sprintf("%.2f",$amount))</b></td>
                                           </tr>

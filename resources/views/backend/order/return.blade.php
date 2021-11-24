@@ -81,8 +81,8 @@ $timezone = Auth::user()->timezone;
                                             <td class="">
                                                 <b class="text-black">${{$order->product->price??''}}</b>
                                             </td>
-                                            <td>{{ convertDateTimeInTimeZone($order->order->created_at, $timezone, 'd-m-Y, H:i A')}}</td>
-                                            <td>{{ convertDateTimeInTimeZone($order->created_at, $timezone, 'd-m-Y, H:i A')}}</td>
+                                            <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
+                                            <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
                                         </tr>
                                         @endforeach
                                         @else
@@ -136,8 +136,8 @@ $timezone = Auth::user()->timezone;
                                                 <td class="">
                                                     <b class="text-black">${{$order->product->price??''}}</b>
                                                 </td>
-                                                <td>{{ convertDateTimeInTimeZone($order->order->created_at, $timezone, 'd-m-Y, H:i A')}}</td>
-                                                <td>{{ convertDateTimeInTimeZone($order->created_at, $timezone, 'd-m-Y, H:i A')}}</td>
+                                                <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
+                                                <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
                                             </tr>
                                             @endforeach
                                         @else
@@ -191,8 +191,8 @@ $timezone = Auth::user()->timezone;
                                                 <td class="">
                                                     <b class="text-black">${{$order->product->price??''}}</b>
                                                 </td>
-                                                <td>{{ convertDateTimeInTimeZone($order->order->created_at, $timezone, 'd-m-Y, H:i A')}}</td>
-                                                <td>{{ convertDateTimeInTimeZone($order->created_at, $timezone, 'd-m-Y, H:i A')}}</td>
+                                                <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
+                                                <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
                                             </tr>
                                             @endforeach
                                         @else

@@ -183,7 +183,7 @@ class VendorPayoutController extends BaseController{
         }
         $vendor_payouts = $vendor_payouts->where('status', $status)->get();
         foreach ($vendor_payouts as $payout) {
-            $payout->date = Carbon::parse($payout->created_at)->format('M d, Y h:i A');
+            $payout->date = dateTimeInUserTimeZone($payout->created_at, $user->timezone);
             $payout->vendorName = $payout->vendor->name;
             $payout->requestedBy = ucfirst($payout->user->name);
             $payout->amount = $payout->amount;

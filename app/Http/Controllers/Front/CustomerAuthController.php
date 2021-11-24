@@ -24,7 +24,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{AppStyling, AppStylingOption, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice};
 use Kutia\Larafirebase\Facades\Larafirebase;
-
+use Math;
 class CustomerAuthController extends FrontController
 {
     use ApiResponser;
@@ -837,5 +837,7 @@ class CustomerAuthController extends FrontController
         }
         return redirect()->route('customer.login');
     }
+
+    
 }
 

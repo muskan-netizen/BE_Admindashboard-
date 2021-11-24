@@ -131,7 +131,7 @@
                                                         @endif
                                                     @endif
                                                 </b>
-                                                <span>{{ dateTimeInUserTimeZone($subscription->end_date, $timezone, false, false) }}</span>
+                                                <span>{{ dateTimeInUserTimeZone($subscription->end_date, $timezone) }}</span>
                                             </div>
                                             <div class="col-sm-6 mb-0 text-center text-sm-right">
                                                 @if( $subscription->end_date >= $now )

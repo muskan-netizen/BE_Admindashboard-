@@ -639,9 +639,9 @@ class FrontController extends Controller
         $time_format = $preferences->time_format;
 
         if($scheduleTime != ''){
-            $datetime = dateTimeInUserTimeZone($scheduleTime, $timezone, true, false);
+            $datetime = dateTimeInUserTimeZone($scheduleTime, $timezone);
         }else{
-            $datetime = dateTimeInUserTimeZone($order_vendor_created_at, $timezone, true, false);
+            $datetime = dateTimeInUserTimeZone($order_vendor_created_at, $timezone);
         }
         if(Carbon::parse($datetime)->isToday()){
             if($time_format == '12'){

@@ -585,9 +585,10 @@ class CartController extends FrontController
             $delivery_status = 1;
             $is_vendor_closed = 0;
             $deliver_charge = 0;
+            $delay_date = 0;
             foreach ($cartData as $ven_key => $vendorData) {
                 $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
-                $delivery_count = 0; $delay_date = 0;
+                $delivery_count = 0; 
                 
                 if(Session::has('vendorTable')){
                     if((Session::has('vendorTableVendorId')) && (Session::get('vendorTableVendorId') == $vendorData->vendor_id)){
@@ -1019,12 +1020,14 @@ class CartController extends FrontController
     public function updateSchedule(Request $request, $domain = '')
     {
         DB::beginTransaction();
-        try{
+        try{ 
             $user = Auth::user();
-            if ($user) {
+            $new_session_token = session()->get('_token');
+            if ($user || $new_session_token) {
                 if($request->task_type == 'now'){
                     $request->schedule_dt = Carbon::now()->format('Y-m-d H:i:s');
                 }else{
+                    if(isset($request->schedule_dt) && !empty($request->schedule_dt)) 
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
@@ -1034,7 +1037,13 @@ class CartController extends FrontController
                 if(isset($request->schedule_dropoff) && !empty($request->schedule_dropoff))  # for pickup laundry
                 $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
-                Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions??null,
+                if ($user) {
+                    $cart_detail = Cart::where('user_id', $user->id)->first();
+                } else {
+                    $cart_detail = Cart::where('unique_identifier', $new_session_token)->first();
+                }
+
+                $cart_detail = $cart_detail->update(['specific_instructions' => $request->specific_instructions??null,
                 'schedule_type' => $request->task_type, 
                 'scheduled_date_time' => $request->schedule_dt??null,
                 'comment_for_pickup_driver' => $request->comment_for_pickup_driver??null,

@@ -117,6 +117,7 @@ class ProductController extends BaseController
         $product = new Product();
         $product->sku = $request->sku;
         $product->url_slug = empty($request->url_slug) ? $request->sku : $request->url_slug;
+        $product->title = empty($request->product_name) ? $request->sku : $request->product_name;
         $product->type_id = $request->type_id;
         $product->category_id = $request->category;
         $product->vendor_id = $request->vendor_id;

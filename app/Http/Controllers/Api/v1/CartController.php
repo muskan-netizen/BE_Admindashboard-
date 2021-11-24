@@ -434,20 +434,13 @@ class CartController extends BaseController
             $vendor_details = [];
             $tax_details = [];
             $is_vendor_closed = 0;
-           
+            $delay_date = 0;
             foreach ($cartData as $ven_key => $vendorData) {
              
                 $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
 
-                // if(Session::has('vendorTable')){
-                //     if((Session::has('vendorTableVendorId')) && (Session::get('vendorTableVendorId') == $vendorData->vendor_id)){
-                //         $cart_dinein_table_id = Session::get('vendorTable');
-                //     }
-                //     Session::forget(['vendorTable', 'vendorTableVendorId']);
-                // }else{
                 $cart_dinein_table_id = $vendorData->vendor_dinein_table_id;
-                // }
 
                 if ($action != 'delivery') {
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id', 'latitude', 'longitude', 'address')->where('id', $vendorData->vendor_id)->first();
@@ -525,6 +518,12 @@ class CartController extends BaseController
                     } else {
                         $prod->cartImg = (isset($prod->product->media[0]) && !empty($prod->product->media[0])) ? $prod->product->media[0]->image : '';
                     }
+
+                    if($prod->product->delay_hrs_min != 0){
+                        if($prod->product->delay_hrs_min > $delay_date)
+                        $delay_date = $prod->product->delay_hrs_min;
+                    }
+
                     if ($prod->pvariant) {
                         $variantsData['price']              = $price_in_currency;
                         $variantsData['id']                 = $prod->pvariant->id;
@@ -766,6 +765,7 @@ class CartController extends BaseController
         $cart->cart_dinein_table_id = $cart_dinein_table_id;
         $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
         $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
+        $cart->delay_date =  $delay_date??0;
         return $cart;
     }
 
