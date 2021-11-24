@@ -9,6 +9,9 @@
 </style>
 @endsection
 @section('content')
+@php
+$timezone = Auth::user()->timezone;
+@endphp
 <header>
     <div class="mobile-fix-option"></div>
     @if(isset($set_template)  && $set_template->template_id == 1)
@@ -138,8 +141,8 @@
                                                                 <h4 class="m-0">{{ $wish['product']['translation_title'] }}</h4>
                                                             </div>
                                                         </td>
-                                                        <td>{{ Session::get('currencySymbol') . $wish['product']['variant_price'] }}</td>
-                                                        <td>{{date('M d, Y', strtotime($wish['added_on']))}}</td>
+                                                        <td>{{ Session::get('currencySymbol') }}@money($wish['product']['variant_price'])</td>
+                                                        <td>{{ dateTimeInUserTimeZone($wish['added_on'], $timezone, false, false) }}</td>
                                                         <td>
                                                             @if(empty($wish['product']['deleted_at']))
                                                                 @if($wish['product']['variant_quantity'] > 0)

@@ -662,9 +662,11 @@ class VendorController extends BaseController
         $stripe_connect_url = '';
         $codes = ['stripe'];
         $payout_creds = PayoutOption::whereIn('code', $codes)->where('status', 1)->first();
-        $creds_arr = json_decode($payout_creds->credentials);
-        $client_id = (isset($creds_arr->client_id)) ? $creds_arr->client_id : '';
-        $test_mode = (isset($paylink_creds->test_mode) && ($paylink_creds->test_mode == '1')) ? true : false;
+        if(!empty($payout_creds->credentials)){
+            $creds_arr = json_decode($payout_creds->credentials);
+            $client_id = (isset($creds_arr->client_id)) ? $creds_arr->client_id : '';
+        }
+        // $test_mode = (isset($paylink_creds->test_mode) && ($paylink_creds->test_mode == '1')) ? true : false;
         // $client = Session::has('client_config') ? Session::get('client_config')->code : '';
 
         $payout_options = PayoutOption::where('status', 1)->get();
@@ -675,9 +677,9 @@ class VendorController extends BaseController
             $is_stripe_connected = 1;
         }
         $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/";
-        $stripe_redirect_url = "http://local.myorder.com/client/verify/oauth/token/stripe"; //$server_url."client/verify/oauth/token/stripe";
+        $stripe_redirect_url = $server_url."client/verify/oauth/token/stripe";
 
-        if($client_id != ''){
+        if((!empty($payout_creds->credentials)) && ($client_id != '')){
             $stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$id.'&client_id='.$client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
         }
         

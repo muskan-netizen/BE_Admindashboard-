@@ -83,10 +83,12 @@
                                 <select class="form-control" id="date_format" name="date_format">
                                     <option value="DD-MM-YYYY" {{ ($preference && $preference->date_format =="DD-MM-YYYY")? "selected" : "" }}>
                                         DD-MM-YYYY</option>
-                                    <option value="DD/MM/YYYY" {{ ($preference && $preference->date_format =="DD/MM/YYYY")? "selected" : "" }}>
-                                        DD/MM/YYYY</option>
+                                    {{-- <option value="DD/MM/YYYY" {{ ($preference && $preference->date_format =="DD/MM/YYYY")? "selected" : "" }}>
+                                        DD/MM/YYYY</option> --}}
                                     <option value="YYYY-MM-DD" {{ ($preference && $preference->date_format =="YYYY-MM-DD")? "selected" : "" }}>
                                         YYYY-MM-DD</option>
+                                    <option value="MM/DD/YYYY" {{ ($preference && $preference->date_format =="MM/DD/YYYY")? "selected" : "" }}>
+                                        MM/DD/YYYY</option>
                                 </select>
                                 @if($errors->has('date_format'))
                                 <span class="text-danger" role="alert">

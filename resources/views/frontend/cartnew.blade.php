@@ -102,6 +102,7 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
                         </div>
                     </div>
                 <% } %>
+               
             </div>
         </div>
         <hr class="mt-2">
@@ -179,6 +180,20 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
                             <% }); %>
                         <% } %>
                     </div>
+
+                    <% if( (vendor_product.product.delay_order_hrs != undefined && vendor_product.product.delay_order_min != undefined ) &&  ((vendor_product.product.delay_order_hrs != 0) || (vendor_product.product.delay_order_hrs != 0))) { %>
+                        <div class="col-12">
+                            <div class="text-danger" style="font-size:12px;">
+                                <i class="fa fa-exclamation-circle"></i>Preparation Time is 
+                                <% if(vendor_product.product.delay_order_hrs > 0) { %>
+                                    <%= vendor_product.product.delay_order_hrs %> Hrs
+                                <% } %>
+                                <% if(vendor_product.product.delay_order_min > 0) { %>
+                                    <%= vendor_product.product.delay_order_min %> Minutes
+                                <% } %>
+                            </div>
+                        </div>
+                    <% } %>
                 </div>
                 
                 <hr>
@@ -345,20 +360,22 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
                 <div class="col-md-5 pr-md-2 mb-2 mb-md-0">
                     <div class="login-form">
                         <ul class="list-inline">
+                            <% if(cart_details.delay_date == 0) { %>
                             <li class="d-inline-block mr-1">
                                 <input type="radio" class="custom-control-input check" id="tasknow" name="task_type" value="now" <%= ((cart_details.schedule_type == 'now' || cart_details.schedule_type == '' || cart_details.schedule_type == null) ? 'checked' : '') %> >
                                 <label class="btn btn-solid" for="tasknow">Now</label>
                             </li>
+                            <% } %>
                             <li class="d-inline-block">
-                                <input type="radio" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" <%= ((cart_details.schedule_type == 'schedule') ? 'checked' : '') %> >
+                                <input type="radio" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" <%= ((cart_details.schedule_type == 'schedule' || cart_details.delay_date == 0) ? 'checked' : '') %> >
                                 <label class="btn btn-solid" for="taskschedule">Schedule</label>
                             </li>
                         </ul>
                     </div>
                 </div>
                 <div class="col-md-7 datenow align-items-center justify-content-between" id="schedule_div" style="<%= ((cart_details.schedule_type == 'now' || cart_details.schedule_type == '' || cart_details.schedule_type == null) ? 'display:none!important' : '') %>">
-                        <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>" min="{{ $now }}">
-                    <!-- <button type="button" class="btn btn-solid"><i class="fa fa-check" aria-hidden="true"></i></button> -->
+                        <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>" 
+                        min="<%= ((cart_details.delay_date != '0') ? cart_details.delay_date : '') %>">
                 </div>
             </div>
             @endif

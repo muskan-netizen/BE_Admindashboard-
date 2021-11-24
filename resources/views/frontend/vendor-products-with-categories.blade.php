@@ -84,15 +84,17 @@
                                 </div>
                                 <div class="ml-sm-1">
                                     <h3>{{$vendor->name}}</h3>
+                                    @if(!empty($vendor->desc))
+                                        <h4 title="{{$vendor->desc}}" style="line-height: 24px">{{ substr($vendor->desc, 0, 80).'...' }}</h4>
+                                    @endif
                                     <ul class="vendor-info">
-                                        <li class="d-block food-items">
+                                        {{-- <li class="d-block food-items">
                                         <i class="icon-ic_eat"></i>
                                             @forelse($listData as $key => $data)
                                                 {{ $data->category->translation_one->name . (( $key !=  count($listData)-1 ) ? ',' : '') }}
                                             @empty
                                             @endforelse
-                                            {{--<a href="#">Pizza</a>, <a href="#">Fast Food</a>, <a href="#">Beverages</a>--}}
-                                        </li>
+                                        </li> --}}
                                         <li class="d-block vendor-location">
                                             <i class="icon-location"></i> {{$vendor->address}}
                                         </li>

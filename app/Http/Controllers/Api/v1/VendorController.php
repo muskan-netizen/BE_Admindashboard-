@@ -169,6 +169,9 @@ class VendorController extends BaseController{
                                 $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
                                 // $q->groupBy('product_id');
                             },'variant.checkIfInCartApp',
+                            'tags.tag.translations' => function ($q) use ($langId) {
+                                $q->where('language_id', $langId);
+                            }
                         ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
                     $products = $products->where('is_live', 1)->where('category_id', $category->category_id)->where('vendor_id', $vid)->get();
                     
@@ -262,6 +265,9 @@ class VendorController extends BaseController{
                             $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
                             // $q->groupBy('product_id');
                         }, 'variant.checkIfInCartApp',
+                        'tags.tag.translations' => function ($q) use ($langId) {
+                            $q->where('language_id', $langId);
+                        }
                     ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id')
                     ->where('products.vendor_id', $vid)
                     ->where('products.is_live', 1)->paginate($paginate);
@@ -575,7 +581,7 @@ class VendorController extends BaseController{
                 $response['vendor'] = $vendor;
                 $response['products'] = ($vendor->vendor_templete_id != 5) ? $products : [];
                 $response['categories'] = ($vendor->vendor_templete_id == 5) ? $listData : [];
-                $response['filterData'] = $variantSets;
+                $response['filterData'] = $variantSets??[];
             }else{
                 $response['vendor'] = [];
                 $response['products'] = [];

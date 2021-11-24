@@ -481,6 +481,22 @@
                             </select>
                         </div>
                     </div>
+                   
+                    @if($configData->delay_order == 1 || $product->delay_order_hrs > 0 || $product->delay_order_min > 0)
+                    <div class="row">
+                        <div class="col-md-2 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Set Delay Time'),['class' => 'control-label']) !!}
+                         </div>
+                        <div class="col-md-5 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Hrs'),['class' => 'control-label']) !!}
+                             <input type="number"  class="form-control" value="{{$product->delay_order_hrs}}" name="delay_order_hrs" placeholder="{{__('hrs')}}">
+                        </div>
+                        <div class="col-md-5 d-flex justify-content-between mb-2">
+                            {!! Form::label('title', __('Minutes'),['class' => 'control-label']) !!}
+                           <input type="number"  class="form-control" value="{{$product->delay_order_min}}" name="delay_order_min" placeholder="{{__('minutes')}}">
+                       </div>
+                    </div>
+                    @endif
 
                     <!-- <div class="row mb-2">
                         {!! Form::label('title', 'Physical',['class' => 'control-label col-sm-2']) !!}

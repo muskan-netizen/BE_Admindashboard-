@@ -50,10 +50,11 @@ class AddressController extends BaseController{
                 $address->user_id = $user->id;
                 $address->is_primary = $request->has('is_primary') ? 1 : 0;
             }
-            foreach ($request->only('address', 'street', 'city', 'state', 'latitude', 'longitude', 'pincode', 'phonecode', 'country_code', 'country') as $key => $value) {
+            $request->request->add(['type' =>($request->has('address_type') && $request->address_type < 3) ? $request->address_type : 3]);
+            foreach ($request->only('address', 'street', 'city', 'state', 'latitude', 'longitude', 'pincode', 'phonecode', 'country_code', 'type', 'country') as $key => $value) {
                 $address[$key] = $value;
             }
-            $request->type == ($request->has('address_type') && $request->address_type < 3) ? $request->address_type : 3;
+            
             $address->save();
             return $this->successResponse($address, $message);
         }catch (Exception $e) {

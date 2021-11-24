@@ -85,7 +85,11 @@ class ProfileController extends BaseController{
                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                 $q->groupBy('product_id');
             },
-        ])->select( "id", "user_id", "product_id")->where('user_id', $user->id)->paginate($paginate);
+        ])
+        ->whereHas('product.category.categoryDetail', function($q){
+            $q->whereNotNull('products.category_id')->whereNull('categories.deleted_at');
+        })
+        ->select( "id", "user_id", "product_id")->where('user_id', $user->id)->paginate($paginate);
     	if($user_wish_details){
     		foreach ($user_wish_details as $user_wish_detail) {
                 if(isset($user_wish_detail->product) && !empty($user_wish_detail->product->category)){

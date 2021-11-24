@@ -157,6 +157,9 @@ class CategoryController extends BaseController
                     $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                     // $q->groupBy('product_id');
                 }, 'variant.checkIfInCartApp',
+                'tags.tag.translations' => function ($q) use ($langId) {
+                    $q->where('language_id', $langId);
+                }
             ])->select('products.category_id', 'products.id', 'mode_of_service', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating')
                 ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit);
             if (!empty($products)) {
@@ -263,6 +266,9 @@ class CategoryController extends BaseController
                     $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
                     // $q->groupBy('product_id');
                 }, 'variant.checkIfInCartApp',
+                'tags.tag.translations' => function ($q) use ($langId) {
+                    $q->where('language_id', $langId);
+                }
             ])->select('products.category_id', 'mode_of_service', 'products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating')
                 ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit);
             if (!empty($products)) {
