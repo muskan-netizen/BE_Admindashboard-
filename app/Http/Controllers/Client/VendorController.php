@@ -658,7 +658,7 @@ class VendorController extends BaseController
         $past_payout_value = $vendor_payouts;
 
         $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value;
-        $available_funds = number_format($available_funds, 2, '.', ',');
+        // $available_funds = number_format($available_funds, 2, '.', ',');
         $past_payout_value = number_format($past_payout_value, 2, '.', ',');
         
         //stripe connected account details
