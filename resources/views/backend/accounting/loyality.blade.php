@@ -21,10 +21,10 @@
         <div class="row">
             <div class="col-12">
                 <div class="card widget-inline">
-                    <div class="card-body">
+                    <div class="card-body p-2">
                         <div class="row">
-                            <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
-                                <div class="p-2 text-center">
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
+                                <div class="text-center">
                                     <h3>
                                         <i class="mdi mdi-trophy-variant-outline text-primary mdi-24px"></i>
                                         <span data-plugin="counterup">{{$type_of_loyality_applied_count}}</span>
@@ -32,8 +32,8 @@
                                     <p class="text-muted font-15 mb-0">{{ __('Type Of') }} {{ $LoyaltyCards }} {{ __('Applied') }}</p>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
-                                <div class="p-2 text-center">
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
+                                <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-primary"></i>
                                         <span data-plugin="counterup">{{$total_loyalty_earned}}</span>
@@ -41,8 +41,8 @@
                                         <p class="text-muted font-15 mb-0">{{ __("Total") }} {{$LoyaltyCards}} {{ __('Earned') }}</p>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
-                                <div class="p-2 text-center">
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
+                                <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-primary"></i>
                                         <span data-plugin="counterup">{{$total_loyalty_spent}}</span>
@@ -50,8 +50,8 @@
                                     <p class="text-muted font-15 mb-0">{{ __('Total') }} {{$LoyaltyCards}} {{ __('Spent') }}</p>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
-                                <div class="p-2 text-center">
+                            <div class="col-6 col-md-3 mb-3 mb-md-0">
+                                <div class="text-center">
                                     <h3>
                                         <i class="mdi mdi-eye-outline text-primary mdi-24px"></i>
                                         <span data-plugin="counterup">0</span> k

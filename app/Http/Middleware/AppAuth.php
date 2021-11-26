@@ -9,7 +9,7 @@ use JWT\Token;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use App\Models\{BlockedToken, User, ClientLanguage, ClientCurrency};
+use App\Models\{BlockedToken, User, ClientLanguage, ClientCurrency,UserDevice};
 
 class AppAuth{
     /**
@@ -40,7 +40,22 @@ class AppAuth{
         if(!$user){
             return response()->json(['error' => 'Invalid Session', 'message' => 'Invalid Token or session has been expired.'], 401);
             abort(404);
+        } 
+       
+        if(isset($user) && $user->status != 1){
+                    $blockToken = new BlockedToken();
+                $header = $request->header();
+                $blockToken->token = $header['authorization'][0];
+                $blockToken->expired = '1';
+                $blockToken->save();
+
+                $del_token = UserDevice::where('access_token', $header['authorization'][0])->delete();
+
+                return response()->json([
+                    'message' => __('Successfully logged out')
+                ]);
         }
+
         $timezone = $user->timezone;
         $languages = ClientLanguage::where('is_primary', 1)->first();
         $primary_cur = ClientCurrency::where('is_primary', 1)->first();

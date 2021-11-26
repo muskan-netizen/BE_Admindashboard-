@@ -266,4 +266,16 @@ if (Session::has('toaster')) {
     });
 </script>
 @endif
+
+
 @yield('script-bottom')
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', 'G-5LPF1QP3Y3');
+</script>

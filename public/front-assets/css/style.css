@@ -5113,8 +5113,8 @@ button.btn.btn-outline:active {
     font-size: 10px;
     line-height: 15px;
     font-weight: 600;
-    top: -40px;
-    right: -20px;
+    top: -30px;
+    right: -15px;
     padding: 3px;
 }
 
@@ -5165,9 +5165,7 @@ button.btn.btn-outline:active {
     font-weight: 400;
 }
 
-/**=====================
-    category css start
-==========================**/
+/**===================== category css start ==========================**/
 .category-block .category-image {
     margin: 0 auto;
     text-align: center;
@@ -19039,9 +19037,9 @@ header.stickycls {
     padding-bottom: 0;
 }
 
-.collection-collapse-block {
+/* .collection-collapse-block {
     padding-bottom: 24px;
-}
+} */
 
 .collection-collapse-block.open {
     margin-bottom: 0;
@@ -31061,8 +31059,8 @@ body[dir=rtl] .slick-slide {
     }
 
     .collection-filter .theme-card {
-        padding-left: 30px;
-        padding-right: 30px;
+        padding-left: 15px;
+        padding-right: 15px;
     }
 
     .collection-filter .collection-sidebar-banner {

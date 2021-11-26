@@ -194,12 +194,15 @@ class CustomerAuthController extends FrontController
                 ]);
             }
             else{
+
                 $preferences = ClientPreference::first();
                 if(!empty($req->email) && ($preferences->verify_email == 0)){
+
                     $validator = $req->validate([
                         'email'  => 'email|unique:users'
                     ]);
                 }
+
                 if(!empty($req->phone_number) && isset($preferences) && ($preferences->verify_phone == 0)){
                     $validator = $req->validate([
                         'phone_number' => 'string|min:8|max:15|unique:users'

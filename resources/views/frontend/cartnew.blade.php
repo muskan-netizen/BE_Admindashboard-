@@ -29,6 +29,10 @@ if(Auth::user()){
 $timezone = Auth::user()->timezone;
 $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
 }
+$clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
+$urlImg =  $clientData ? $clientData->logo['image_fit'].'150/92'.$clientData->logo['image_path'] : " ";
+$languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
+$currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
 
 <header>
@@ -338,8 +342,20 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
             <hr class="my-2">
           
             <% } %>
-
-
+            <% if(client_preference_detail.gifting == 1) { %>
+                <div class="row">
+                    <div class="col-12">
+                      
+                   
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" style="margin-left: 10px;"  id="is_gift" name="is_gift" value="1">
+                                                                                         
+                                <label class="custom-control-label" for="is_gift"><img class="pr-1 align-middle" src="{{ asset('assets/images/gifts_icon.png') }}" alt=""> <span class="align-middle pt-1"> {{__('Does this include a gift?')}}</span></label>
+                            </div>
+                    </div>
+                </div>
+                <hr class="my-2">
+            <% } %>
             <div class="row">
                 <div class="col-6">
                     <p class="total_amt m-0">{{__('Amount Payable')}}</p>
@@ -437,10 +453,11 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
                 </div>
 
                 <div class="row mb-md-3">
-                    <div class="col-sm-6 mb-2 mb-sm-0">
+                    <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-flex align-items-center justify-content-between">
                         <a class="btn btn-solid" href="{{ url('/') }}">{{__('Continue Shopping')}}</a>
+                        <a href="{{route('user.addressBook')}}"><i class="fa fa-pencil" aria-hidden="true"></i> <span>{{ __('Edit Address') }}</span> </a>
                     </div>
-                    <div class="col-sm-6 text-sm-right">
+                    <div class="col-sm-6 col-lg-8 text-sm-right">
                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Place Order')}}</button>
                     </div>
                 </div>
@@ -955,6 +972,11 @@ $now = convertDateTimeInTimeZone($now, $timezone, 'Y-m-d\TH:i');
 <script src="https://js.stripe.com/v3/"></script>
 
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+
+
+
+
+
 <script>
     // Replace the supplied `publicKey` with your own.
     // Ensure that in production you use a production public_key.

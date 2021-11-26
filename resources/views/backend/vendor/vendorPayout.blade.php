@@ -157,7 +157,7 @@
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="card widget-inline">
-                                <div class="card-body">
+                                <div class="card-body p-2">
                                     <div class="row">
                                         <div class="col-sm-6 col-md-3 col-lg mb-3 mb-md-0">
                                             <div class="text-center">

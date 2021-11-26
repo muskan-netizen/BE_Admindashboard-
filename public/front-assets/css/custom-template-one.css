@@ -108,11 +108,11 @@ h6 {
 }
 
 .offset-top {
-    margin-top: 260px;
+    margin-top: 270px;
 }
 
 .inner-pages-offset {
-    margin-top: 177px;
+    margin-top: 207px;
 }
 
 .set-hide-nav-bar {
@@ -519,7 +519,7 @@ h6 {
 
 .suppliers-img-outer img {
     height: 100%;
-    object-fit: scale-down;
+    object-fit: contain;
     width: 100%;
 }
 
@@ -732,8 +732,13 @@ footer ul.social-links li a i,
 }
 
 
+.cab-banner-area{
+    margin-bottom: 0;
+}
 
-
+section#our_vendor_main_div {
+    padding-bottom: 0;
+}
 
 
 
@@ -1096,7 +1101,6 @@ body[dir="rtl"] #social-links li:last-child {
     }
 
     .home-banner-slider .slick-slide {
-        height: 450px;
         border-radius: 50px;
         overflow: hidden;
     }
@@ -1173,7 +1177,7 @@ body[dir="rtl"] #social-links li:last-child {
     }
 
     .home-slider-wrapper .col-12 {
-        padding: 0 50px;
+        padding: 0;
     }
 
     .home-banner-slider .slick-prev,
@@ -1196,7 +1200,7 @@ body[dir="rtl"] #social-links li:last-child {
     }
 
     .pixelstrap li>a {
-        padding: 10px 15px;
+        padding: 10px 0;
     }
 
     .top-header .header-dropdown li span:last-child {
@@ -1244,10 +1248,6 @@ body[dir="rtl"] #social-links li:last-child {
         left: 0;
     }
 
-    .popular-brands {
-        margin: 0;
-    }
-
     .home-slider-wrapper {
         padding-top: 0;
     }
@@ -1267,7 +1267,7 @@ body[dir="rtl"] #social-links li:last-child {
     }
 
     .home-slider-wrapper .col-12 {
-        padding: 0 40px;
+        padding: 0 15px;
     }
 
     .home-banner-slider .slick-prev,
@@ -1356,7 +1356,7 @@ body[dir="rtl"] #social-links li:last-child {
     }
 
     .top-header.site-topbar {
-        padding: 10px 10px 10px 0;
+        padding: 10px 10px 0 0;
         background: transparent;
     }
 

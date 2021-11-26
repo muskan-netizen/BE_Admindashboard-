@@ -95,4 +95,9 @@ class Vendor extends Model{
              ->whereIn('order_status_option_id',[2,4,5]); 
    }
 
+
+   public function getAllCategory(){
+    return $this->hasMany('App\Models\VendorCategory');
+  }
+
 }

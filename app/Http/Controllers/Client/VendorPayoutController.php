@@ -248,7 +248,7 @@ class VendorPayoutController extends BaseController{
                     $query->where('user_id', $user->id);
                 });
             }
-            $vendor_payouts = $vendor_payouts->sum('amount');
+            $vendor_payouts = $vendor_payouts->where('status', 1)->sum('amount');
 
             $past_payout_value = $vendor_payouts;
             $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value;

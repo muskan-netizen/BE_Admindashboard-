@@ -16,6 +16,9 @@ class SearchController extends FrontController{
         $keyword = $request->input('keyword');
         $language_id = Session::get('customerLanguage');
         $preferences = Session::get('preferences');
+        $latitude = session('latitude');
+        $longitude = session('longitude');
+        $selectedAddress = session('selectedPlaceId');
         $allowed_vendors = [];
         if(Session::has('vendors')){
             $allowed_vendors = Session::get('vendors');

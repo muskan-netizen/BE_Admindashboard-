@@ -207,7 +207,8 @@ $timezone = Auth::user()->timezone;
                                                 <br><a target="_blank" href="{{ ($pres) ? @$pres->prescription['proxy_url'].'74/100'.@$pres->prescription['image_path'] : ''}}">{{($product->prescription) ? 'Prescription' : ''}}</a>
                                                 @endforeach
 
-                                            @if($product->addon)
+                                                <p class="p-0 m-0">{{ substr($product->product_variant_sets, 0, -2) }}</p>
+                                            @if($product->addon && count($product->addon))
                                                 <hr class="my-2">
                                                 <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                                 @foreach($product->addon as $addon)
@@ -220,38 +221,38 @@ $timezone = Auth::user()->timezone;
                                         </td>
                                         <td>{{ $product->quantity }}</td>
                                         <td>
-                                            $@money($product->price)
+                                            {{$clientCurrency->currency->symbol}}@money($product->price)
                                             @if($product->addon)
                                                 <hr class="my-2">
                                                 @foreach($product->addon as $addon)
-                                                    <p class="p-0 m-0">${{ $addon->option->price_in_cart }}</p>
+                                                    <p class="p-0 m-0">{{$clientCurrency->currency->symbol}}{{ $addon->option->price_in_cart }}</p>
                                                     {{-- <p class="p-0 m-0">${{ $addon->option->quantity_price }}</p> --}}
                                                 @endforeach
                                             @endif
                                         </td>
 
-                                        <td>$@money($product->total_amount)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}@money($product->total_amount)</td>
                                     </tr>
                                     @endif
                                     @endforeach
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{__('Delivery Fee')}} :</th>
-                                        <td>$@money($vendor->delivery_fee)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->delivery_fee)</td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Sub Total") }} :</th>
                                         <td>
-                                            <div class="fw-bold">$@money($sub_total)</div>
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}@money($sub_total)</div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{__('Total Discount')}} :</th>
-                                        <td>$@money($vendor->discount_amount)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->discount_amount)</td>
                                     </tr>
 
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Estimated Tax") }} :</th>
-                                        <td>$@money($taxable_amount)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}@money($taxable_amount)</td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Reject Reason") }} :</th>
@@ -260,7 +261,7 @@ $timezone = Auth::user()->timezone;
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
-                                            <div class="fw-bold">$@money($vendor->payable_amount+$taxable_amount)</div>
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount+$taxable_amount)</div>
                                         </td>
                                     </tr>
                                 </tbody>

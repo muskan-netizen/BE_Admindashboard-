@@ -22,7 +22,7 @@
                     </div>
                 </div>
                 <div class="col-10">
-                    <div class="row price_head pl-2">
+                    <div class="row price_head pl-3 pl-sm-2">
                         <div class="col-sm-12 pl-2">
                             <div class="d-flex align-items-start justify-content-between">    
                                 <h5 class="mt-0">

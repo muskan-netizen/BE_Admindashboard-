@@ -8,12 +8,15 @@ use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
+use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, CartProductPrescription, ProductVariantSet, Country, UserAddress, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, CartCoupon, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, CartCoupon, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation};
 
 class CartController extends FrontController
 {
+    use ApiResponser;
+    
     private function randomString()
     {
         $random_string = substr(md5(microtime()), 0, 32);
@@ -22,7 +25,7 @@ class CartController extends FrontController
         }
         return $random_string;
     }
-    public function showCart(Request $request, $domain = '')
+    public function showCart(Request $request, $domain = '') 
     {
         if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
             if($request->has('order')){
@@ -80,7 +83,7 @@ class CartController extends FrontController
                 }
             }
         }
-        $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
+        $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery'; 
         $data = array(
             'navCategories' => $navCategories,
             'cartData' => $cartData,
@@ -91,6 +94,8 @@ class CartController extends FrontController
             'action' => $action
         );
         $client_preference_detail = ClientPreference::first();
+        $client_detail = Client::first();
+        // dd($client_detail);
         $public_key_yoco=PaymentOption::where('code','yoco')->first();
         if($public_key_yoco){
 
@@ -98,10 +103,12 @@ class CartController extends FrontController
             $public_key_yoco= json_decode($public_key_yoco);
             $public_key_yoco= $public_key_yoco->public_key??'';
         }
+
+
        
       
        
-        return view('frontend.cartnew',compact('public_key_yoco','cart'))->with($data,$client_preference_detail);
+        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
 
@@ -835,6 +842,55 @@ class CartController extends FrontController
      *
      * @return \Illuminate\Http\Response
      */
+
+     /**
+     * Get Last added product variant
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getLastAddedProductVariant(Request $request, $domain='')
+    {
+        try{
+            $cartProduct = CartProduct::with('addon')->where('cart_id', $request->cart_id)->where('product_id', $request->product_id)->orderByDesc('created_at')->first();
+            
+            return $this->successResponse($cartProduct, '', 200);
+            // dd($cartProduct->toArray());
+            
+        }
+        catch(Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
+    }
+
+    /**
+     * Get Last added product variant
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getProductVariantWithDifferentAddons(Request $request, $domain='')
+    {
+        try{
+            $langId = Session::get('customerLanguage');
+            $cartProducts = CartProduct::with(['product.translation' => function ($qry) use ($langId) {
+                $qry->where('language_id', $langId);
+            }, 'addon.option' => function ($qry) use ($langId) {
+                $qry->where('language_id', $langId);
+            }])
+            ->where('cart_id', $request->cart_id)
+            ->where('product_id', $request->product_id)
+            ->where('variant_id', $request->variant_id)
+            ->orderByDesc('created_at')->get();
+
+            
+
+
+            dd($cartProducts->toArray());
+            return $this->successResponse($cartProducts, '', 200);            
+        }
+        catch(Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
+    }
 
     /**
      * Update Quantityt

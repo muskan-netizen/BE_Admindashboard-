@@ -3,14 +3,14 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Routing\Route;
-use App\Models\{BlockedToken, User, ClientLanguage, ClientCurrency};
+use App\Models\{BlockedToken, User, ClientLanguage, ClientCurrency,UserDevice};
 use Illuminate\Support\Facades\Cache;
 use Request;
 use Config;
 use Illuminate\Support\Facades\DB;
 use JWT\Token;
 use Auth;
-
+use Session;
 class CheckAuth
 {
     /**
@@ -40,6 +40,24 @@ class CheckAuth
             if(!$user){
                 return response()->json(['error' => 'Invalid Session', 'message' => 'Invalid Token or session has been expired.'], 401);
                 abort(404);
+            }
+
+            if(isset($user) && $user->status != 1){
+                     Auth::logout();
+                    if (!empty(Session::get('current_fcm_token'))) {
+                        UserDevice::where('device_token', Session::get('current_fcm_token'))->delete();
+                        Session::forget('current_fcm_token');
+                    }
+
+                    $blockToken = new BlockedToken();
+                    $header = $request->header();
+                    $blockToken->token = $header['authorization'][0];
+                    $blockToken->expired = '1';
+                    $blockToken->save();
+    
+                    $del_token = UserDevice::where('access_token', $header['authorization'][0])->delete();
+
+                    return $next($request);
             }
         }
         if(isset($header['systemuser'])){

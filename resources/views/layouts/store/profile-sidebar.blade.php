@@ -8,7 +8,7 @@
 @endswitch
 <div class="dashboard-left">
     <div class="collection-mobile-back">
-        <span class="filter-back">
+        <span class="filter-back d-lg-none d-inline-block">
             <i class="fa fa-angle-left" aria-hidden="true"></i> back
         </span>
     </div>

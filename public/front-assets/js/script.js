@@ -545,6 +545,7 @@
         }),
         e(".filter-btn").on("click", function (s) {
             e(".collection-filter").css("left", "-15px");
+            e("body").toggleClass("overflow-hidden");
         }),
         e(".filter-back").on("click", function (s) {
             e(".collection-filter").css("left", "-365px"), e(".sidebar-popup").trigger("click");

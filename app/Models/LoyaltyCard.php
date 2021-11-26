@@ -36,4 +36,13 @@ class LoyaltyCard extends Model
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }
+
+    public static function getLoyaltyName($minimum_points){
+    	
+    	$result = LoyaltyCard::where('minimum_points','<=', $minimum_points)->orderBy('id', 'DESC')->first();
+        if($result){
+            return $result->name;
+        }
+    	return "NO";
+    }
 }

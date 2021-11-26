@@ -12,7 +12,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     <div class="container-fluid d-flex align-items-center justify-content-between justify-content-lg-end">
 
-        <ul class="top-site-links d-flex align-items-center p-0 mb-0 mr-xl-2 mr-auto">
+        <ul class="top-site-links d-flex align-items-center p-0 mb-0 mr-lg-2 mr-auto">
             <li class="d_none">
                 <div class="logo-box">
                     @php
@@ -272,7 +272,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </span>
                             @endif
                         </div>
-
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-12">

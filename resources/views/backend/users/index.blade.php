@@ -112,6 +112,7 @@
                                 <th>{{ __("Phone OTP") }}</th>
                                 <th>{{ __('Wallet')}}</th>
                                 <th>{{ __('Orders')}}</th>
+                                 <th>{{ __('Loyalty Card')}}</th>
                                 <th>{{ __('Active Orders') }}</th>
                                 <th>{{ __('Status')}}</th>
                                 <th>{{ __('Action')}}</th>
@@ -303,6 +304,15 @@
                             name: 'orders_count',
                             orderable: false,
                             searchable: false
+                        },
+                         {
+                            data: 'loyalty_name',
+                            name: 'loyalty_name',
+                            orderable: false,
+                            searchable: false,  
+                            "mRender": function(data, type, full) {
+                                return  data.loyalty_name +" ("+ data.count_loyalty_points_earned+")" ;
+                            }
                         },
                         {
                             data: 'currently_working_orders_count',

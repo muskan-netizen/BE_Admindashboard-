@@ -24,7 +24,7 @@ class User extends Authenticatable implements Wallet, WalletFloat
     protected $fillable = [
         'name', 'email', 'password', 'description', 'phone_number', 'image', 'email_verified_at', 'is_verified_phone', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone'
     ];
-
+    protected $appends = ['loyalty_name'];
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -42,6 +42,15 @@ class User extends Authenticatable implements Wallet, WalletFloat
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getLoyaltyNameAttribute(){
+        $count_loyalty_points_earned = $this->hasMany('App\Models\Order', 'user_id', 'id')->sum('loyalty_points_earned'); 
+        $loyalty_name = LoyaltyCard::getLoyaltyName($count_loyalty_points_earned);
+        
+        $data['loyalty_name'] = $loyalty_name;
+        $data['count_loyalty_points_earned'] = $count_loyalty_points_earned;
+        return $data;  
+    } 
 
     public function country(){
        return $this->belongsTo('App\Models\Country')->select('id', 'code', 'name','phonecode'); 
@@ -131,5 +140,14 @@ class User extends Authenticatable implements Wallet, WalletFloat
                ->where('is_deleted', '!=', 1)->whereHas('orderStatusVendor', function($query){
                    $query->whereIn('order_status_option_id',[2,4,5]);
                }); 
+    }
+
+    public function loyaltyCard(){
+        $count_loyalty_points_earned = $this->hasMany('App\Models\Order', 'user_id', 'id')->sum('loyalty_points_earned'); 
+        //Order::where('user_id',$this->id)->sum('loyalty_points_earned');
+        
+        print_r(LoyaltyCard::getLoyaltyName($count_loyalty_points_earned));
+        exit();
+        //return $count_loyalty_points_earned;
     }
 }

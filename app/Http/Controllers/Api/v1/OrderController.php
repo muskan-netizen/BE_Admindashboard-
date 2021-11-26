@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate};
+use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate,ProductVariantSet};
 use App\Models\AutoRejectOrderCron;
 
 class OrderController extends BaseController {
@@ -153,6 +153,7 @@ class OrderController extends BaseController {
                     $order->schedule_pickup = $cart->schedule_pickup??null;
                     $order->schedule_dropoff = $cart->schedule_dropoff??null;
                     $order->specific_instructions = $cart->specific_instructions??null;
+                    $order->is_gift = $request->is_gift??0;
                     $order->save();
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
@@ -222,7 +223,26 @@ class OrderController extends BaseController {
                             $order_product->product_id = $vendor_cart_product->product_id;
                             $order_product->created_by = $vendor_cart_product->created_by;
                             $order_product->variant_id = $vendor_cart_product->variant_id;
-                            
+                            $product_variant_sets = '';
+                            if (isset($vendor_cart_product->variant_id) && !empty($vendor_cart_product->variant_id)) {
+                                $var_sets = ProductVariantSet::where('product_variant_id', $vendor_cart_product->variant_id)->where('product_id', $vendor_cart_product->product->id)
+                                ->with(['variantDetail.trans' => function ($qry) use ($language_id) {
+                                    $qry->where('language_id', $language_id);
+                                },
+                                'optionData.trans' => function ($qry) use ($language_id) {
+                                    $qry->where('language_id', $language_id);
+                                }])->get();
+                                if (count($var_sets)) {
+                                    foreach ($var_sets as $set) {
+                                        if (isset($set->variantDetail) && !empty($set->variantDetail)) {
+                                            $product_variant_set = @$set->variantDetail->trans->title.":".@$set->optionData->trans->title.", ";
+                                            $product_variant_sets .= $product_variant_set;
+                                        }
+                                    }
+                                }
+                            }
+                           
+                            $order_product->product_variant_sets = $product_variant_sets;
                             if(!empty($vendor_cart_product->product->title))
                             $vendor_cart_product->product->title = $vendor_cart_product->product->title;
                             elseif(empty($vendor_cart_product->product->title)  && !empty($vendor_cart_product->product->translation))

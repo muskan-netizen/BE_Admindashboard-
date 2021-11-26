@@ -16,10 +16,10 @@
         <div class="row">
             <div class="col-12">
                 <div class="card widget-inline">
-                    <div class="card-body">
+                    <div class="card-body p-2">
                         <div class="row">
                             <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
-                                <div class="p-2 text-center">
+                                <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-primary"></i>
                                         <span data-plugin="counterup">{{$total_order_value}}</span>
@@ -28,7 +28,7 @@
                                 </div>
                             </div>
                             {{-- <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
-                                <div class="p-2 text-center">
+                                <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-success"></i>
                                         <span data-plugin="counterup" id="total_delivery_fees">{{$total_delivery_fees}}</span>
@@ -37,7 +37,7 @@
                                 </div>
                             </div> --}}
                             <div class="col-sm-6 col-md-4 mb-3 mb-md-0">
-                                <div class="p-2 text-center">
+                                <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-success"></i>
                                         <span data-plugin="counterup" id="total_admin_commissions">{{$total_admin_commissions}}</span>

@@ -57,9 +57,14 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-3 collection-filter">
+                <div class="collection-filter col-xl-3">
                     <div class="theme-card">
-                        <h5 class="title-border">{{__('New Product')}}</h5>
+                        <h5 class="title-border d-flex align-items-center justify-content-between">
+                            <span>{{__('New Product')}}</span>  
+                            <span class="filter-back d-lg-none d-inline-block">
+                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
+                            </span>
+                        </h5>
                         <div class="offer-slider">
                             @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)

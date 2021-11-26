@@ -298,7 +298,9 @@ $(document).ready(function () {
             dataType: 'json',
             url: home_page_data_url,
             beforeSend: function(){
-                $("#shimmer_effect").show();
+                $(".shimmer_effect").show();
+                $(".home-banner-slider").hide();
+                $(".shimmer_effect .menu-slider").css("display" , "flex");
             },
             success: function (response) {
                 if (response.status == "Success") {
@@ -306,15 +308,15 @@ $(document).ready(function () {
                     //     $('.menu-slider').slick('destroy');
                     // }
                     // $('#main-menu').smartmenus('destroy');
-                     $("#main-menu").html('');
+                    $("#main-menu").html('');
                     let nav_categories_template = _.template($('#nav_categories_template').html());
-                     $("#main-menu").append(nav_categories_template({ nav_categories: response.data.navCategories }));
+                    $("#main-menu").append(nav_categories_template({ nav_categories: response.data.navCategories }));
                     // $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
-                //     if($(window).width() >= 320){
-                //         if(!$('.menu-slider').hasClass('slick-initialized')){
-                //             loadMainMenuSlider();
-                //         }
-                //    }
+                    //     if($(window).width() >= 320){
+                    //         if(!$('.menu-slider').hasClass('slick-initialized')){
+                    //             loadMainMenuSlider();
+                    //         }
+                    //    }
                     resizeMenuSlider();
                   
                     var path = window.location.pathname;
@@ -390,7 +392,8 @@ $(document).ready(function () {
             },
             complete:function(data){
                 // Hide image container
-                $("#shimmer_effect").hide();
+                $(".shimmer_effect").hide();
+                $(".home-banner-slider").show();
                }
         });
     }

@@ -46,9 +46,9 @@
         <div class="col-12">
            
             <div class="card widget-inline">
-                <div class="card-body">
+                <div class="card-body p-2">
                     <div class="row">
-                        <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
+                        <div class="col-6 col-md-3 mb-3 mb-md-0">
                             <div class="text-center">
                                 <h3>
                                     <i class="mdi mdi-storefront text-primary mdi-24px"></i>
@@ -57,7 +57,7 @@
                                 <p class="text-muted font-15 mb-0">{{ __('Total') }} {{ $newvendors }}</p>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
+                        <div class="col-6 col-md-3 mb-3 mb-md-0">
                             <div class="text-center">
                                 <h3>
                                     <i class="mdi mdi-store-24-hour text-primary mdi-24px"></i>
@@ -66,7 +66,7 @@
                                 <p class="text-muted font-15 mb-0"> {{ __('Open') }} {{getNomenclatureName('vendors', true)}}</p>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
+                        <div class="col-6 col-md-3 mb-3 mb-md-0">
                             <div class="text-center">
                                 <h3>
                                     <i class="fas fa-money-check-alt text-primary"></i>
@@ -75,7 +75,7 @@
                                 <p class="text-muted font-15 mb-0">{{ __('Total Products') }}</p>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
+                        <div class="col-6 col-md-3 mb-3 mb-md-0">
                             <div class="text-center">
                                 <h3>
                                     <i class="fas fa-money-check-alt text-primary"></i>
@@ -90,7 +90,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-12 col-lg-12 tab-product pt-0">
+        <div class="col-sm-12 col-lg-12 tab-product vendor-products pt-0">
             <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="active-vendor" data-toggle="tab" href="#active_vendor" role="tab" aria-selected="false" data-rel="vendor_active_datatable" data-status="1">

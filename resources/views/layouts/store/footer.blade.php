@@ -53,12 +53,32 @@
     var change_primary_data_url = "{{ route('changePrimaryData') }}";
     var url1 = "{{ route('config.update') }}";
     var url2 = "{{ route('config.get') }}";
+    var razorpay_complete_payment_url = "{{ route('payment.razorpayCompletePurchase') }}";
+    var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var featured_product_language = "{{ __('Featured Product') }}";
     var new_product_language = "{{ __('New Product') }}";
     var on_sale_product_language = "{{ __('On Sale') }}";
     var best_seller_product_language = "{{ __('Best Seller') }}";
     var vendor_language = "{{ __('Vendors') }}";
     var brand_language = "{{ __('Brands') }}";
+
+// Logged In User Detail
+    var logged_in_user_name = "{{Auth::user()->name??''}}";
+    var logged_in_user_email = "{{Auth::user()->email??''}}";
+    var logged_in_user_phone = "{{Auth::user()->phone_number??''}}";
+    var logged_in_user_dial_code = "{{Auth::user()->dial_code??'91'}}";
+// Payment Gateway Key Detail
+    var razorpay_api_key = "{{getRazorPayApiKey()??''}}";
+
+// Client Perference  Detail
+    var client_preference_web_color = "{{getClientPreferenceDetail()->web_color}}";
+    var client_preference_web_rgb_color = "{{getClientPreferenceDetail()->wb_color_rgb}}"; 
+
+// Client Detail
+    var client_company_name = "{{getClientDetail()->company_name}}";
+    var client_logo_url = "{{getClientDetail()->logo_image_url}}";
+
+
     // if((home_page_url != window.location.href) && (home_page_url2 != window.location.href)){
     //     $('.vendor_mods').hide();}
     // else{
@@ -97,6 +117,18 @@
 <script src="{{asset('assets/libs/bootstrap-colorpicker/bootstrap-colorpicker.min.js')}}"></script>
 <script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
 <script src="{{asset('assets/libs/clockpicker/clockpicker.min.js')}}"></script>
+
+<!-- RazourPay Payment Gateway -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!-- RazourPay Payment Gateway -->
+
+<!--WaitMe Loader Script -->
+<script src="{{asset('js/waitMe.min.js')}}"></script>
+<script src="{{asset('js/developer.js')}}"></script>
+<!--WaitMe Loader Script -->
+
+<!-- SweetAlert Script -->
+<script src="{{asset('js/sweetalert2.min.js')}}"></script>
 
 <script src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>

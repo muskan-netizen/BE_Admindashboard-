@@ -180,7 +180,9 @@ class AuthController extends BaseController
                     'email'  => 'email|unique:users'
                 ]);
             }
+
             if(!empty($signReq->phone_number) && ($preferences->verify_phone == 0)){
+
                 $validator = Validator::make($signReq->all(), [
                     'phone_number' => 'string|min:8|max:15|unique:users'
                 ]);

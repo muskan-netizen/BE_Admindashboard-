@@ -4,6 +4,8 @@ use GuzzleHttp\Client;
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ClientPreference;
+use App\Models\Client as ClientData;
+use App\Models\PaymentOption;
 
 function changeDateFormate($date,$date_format){
     return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);    
@@ -88,6 +90,31 @@ function convertDateTimeInTimeZone($date, $timezone, $format = 'Y-m-d H:i:s'){
     $date->setTimezone($timezone);
     return $date->format($format);
 }
+function getClientPreferenceDetail()
+{
+    $client_preference_detail = ClientPreference::first();
+    list($r, $g, $b) = sscanf($client_preference_detail->web_color, "#%02x%02x%02x");
+    $client_preference_detail->wb_color_rgb = "rgb(".$r.", ".$g.", ".$b.")";
+    return $client_preference_detail;
+}
+function getClientDetail()
+{
+    $clientData = ClientData::first();
+    $clientData->logo_image_url = $clientData ? $clientData->logo['image_fit'].'150/92'.$clientData->logo['image_path'] : " ";
+    return $clientData;
+}
+function getRazorPayApiKey()
+{
+    $razorpay_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'razorpay')->where('status', 1)->first();
+    $api_key_razorpay = "";
+    if($razorpay_creds)
+    {
+        $creds_arr_razorpay = json_decode($razorpay_creds->credentials);
+        $api_key_razorpay = (isset($creds_arr_razorpay->api_key)) ? $creds_arr_razorpay->api_key : '';
+    }
+    return $api_key_razorpay;
+}
+
 function dateTimeInUserTimeZone($date, $timezone, $showDate=true, $showTime=true, $showSeconds=false){
     $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
     $date_format = (!empty($preferences->date_format)) ? $preferences->date_format : 'YYYY-MM-DD';

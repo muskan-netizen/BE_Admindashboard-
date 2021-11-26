@@ -1,3 +1,30 @@
+// Razor Pay script
+var razorpay_options = {
+    "key": razorpay_api_key, // Enter the Key ID generated from the Dashboard
+    "amount": "50000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": client_company_name,
+    "description": "Test Transaction",
+    "image": client_logo_url,
+    "order_id": "order_9A33XWu170gUtm", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+        alert(response.razorpay_payment_id);
+        alert(response.razorpay_order_id);
+        alert(response.razorpay_signature);
+    },
+    "prefill": {
+        "name": logged_in_user_name,
+        "email": logged_in_user_email,
+        "contact": "+"+logged_in_user_dial_code+""+logged_in_user_phone
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": client_preference_web_color
+    }
+};
+
 $(document).ready(function() {
     $.ajaxSetup({
         headers: {
@@ -460,7 +487,7 @@ $(document).ready(function() {
     //     });
     // }
 
-    window.paymentViaRazorpay = function paymentViaRazorpay(address_id, order) {
+    window.paymentViaRazorpay = function paymentViaRazorpay(address_id, order, payment_from) {
         let total_amount = 0;
         let tip = 0;
         let tipElement = $("#cart_tip_amount");
@@ -492,6 +519,7 @@ $(document).ready(function() {
             // );
         }
         ajaxData.amount = total_amount;
+        ajaxData.payment_from = 'cart';
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
         $.ajax({
@@ -501,7 +529,13 @@ $(document).ready(function() {
             data: ajaxData,
             success: function(response) {
                 if (response.status == "Success") {
-                    window.location.href = response.data;
+                    // razorpay_options.key = response.data.api_key;
+                    razorpay_options.amount = response.data.amount;
+                    razorpay_options.order_id = response.data.order_id;
+                    razorpay_options.currency = response.data.currency;
+                    $('#proceed_to_pay_modal').modal('hide');
+                    razourPayView(response.data);
+                    // window.location.href = response.data;
                 } else {
                     if (cartElement.length > 0) {
                         success_error_alert('error', response.message, "#cart_payment_form .payment_response");
@@ -524,4 +558,47 @@ $(document).ready(function() {
             }
         });
     }
+
+    window.razourPayCompletePayment = function razourPayCompletePayment(data, response) {
+        data.razorpay_payment_id = response.razorpay_payment_id;
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: razorpay_complete_payment_url,
+            data: data,
+            success: function(response) {
+                console.log(response);
+                if (response.status == "Success") {
+                    window.location.href = response.data;
+                } else {
+                   
+                }
+            },
+            error: function(error) {
+
+            }
+        });
+    }
+     // RazourPay payment gateway
+    window.razourPayView = function razourPayView(data) {
+        razorpay_options.handler = function (response){
+            startLoader('body','We are processing your transaction...');
+            razourPayCompletePayment(data,response);
+            // alert(response.razorpay_payment_id);
+            // alert(response.razorpay_order_id);
+            // alert(response.razorpay_signature);
+        }
+        var rzp1 = new Razorpay(razorpay_options);
+        rzp1.on('payment.failed', function (response){
+                // alert(response.error.code);
+                // alert(response.error.description);
+                // alert(response.error.source);
+                // alert(response.error.step);
+                // alert(response.error.reason);
+                // alert(response.error.metadata.order_id);
+                // alert(response.error.metadata.payment_id);
+        });
+        rzp1.open();
+    }
+     // RazourPay payment gateway
 });

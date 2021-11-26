@@ -11,6 +11,12 @@ jQuery('.home-banner-slider').slick({
           settings: {
             dots: false
           }
+        },
+        {
+          breakpoint: 1199,
+          settings: {
+            arrows: false
+          }
         }
     ]
 });      

@@ -103,7 +103,8 @@ class OrderController extends BaseController{
             });
         })->count();
 
-        return view('backend.order.index', compact('return_requests', 'pending_order_count', 'active_order_count', 'past_order_count'));
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+        return view('backend.order.index', compact('return_requests', 'pending_order_count', 'active_order_count', 'past_order_count','clientCurrency'));
     }
 
     public function postOrderFilter(Request $request, $domain = ''){
@@ -319,7 +320,7 @@ class OrderController extends BaseController{
         'vendor_order_status_option_ids' => $vendor_order_status_option_ids,
         'order_status_options' => $order_status_options, 
         'dispatcher_status_options' => $dispatcher_status_options, 
-        'vendor_order_status_created_dates'=> $vendor_order_status_created_dates]);
+        'vendor_order_status_created_dates'=> $vendor_order_status_created_dates,'clientCurrency' => $clientCurrency]);
     }
 
      /**

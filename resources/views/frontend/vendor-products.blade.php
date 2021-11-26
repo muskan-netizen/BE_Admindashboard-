@@ -105,13 +105,13 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-3 collection-filter">
-                    <div class="collection-filter-block">
-                        <div class="collection-mobile-back"><span class="filter-back"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
+                <div class="collection-filter col-xl-3">
+                    <div class="collection-filter-block mb-3">
+                        <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
                         <div class="collection-collapse-block open">
                             @if(!empty($brands) && count($brands) > 0)
                             <h3 class="collapse-block-title">brand</h3>
-                            <div class="collection-collapse-block-content">
+                            <div class="collection-collapse-block-content pb-0">
                                 <div class="collection-brand-filter">
                                     @foreach($brands as $key => $val)
                                     <div class="custom-control custom-checkbox collection-filter-checkbox">
@@ -127,7 +127,7 @@
                         </div>
                         @if(!empty($variantSets) && count($variantSets) > 0)
                         @foreach($variantSets as $key => $sets)
-                        <div class="collection-collapse-block border-0 open">
+                        <div class="collection-collapse-block border-0 open pt-2 pb-0 border-0">
                             @php
                             $slug = $sets->variantDetail->varcategory->cate ? $sets->variantDetail->varcategory->cate->slug.' > ' : '';
                             @endphp
@@ -163,7 +163,7 @@
                         @endforeach
                         @endif
                         @if($show_range == 1)
-                        <div class="collection-collapse-block border-0 open">
+                        <div class="collection-collapse-block border-0 pt-2 open">
                             <h3 class="collapse-block-title">{{__('Price')}}</h3>
                             <div class="collection-collapse-block-content">
                                 <div class="wrapper mt-3">
@@ -176,7 +176,12 @@
                         @endif
                     </div>
                     <div class="theme-card">
-                        <h5 class="title-border">{{__('New Product')}}</h5>
+                        <h5 class="title-border d-flex align-items-center justify-content-between">
+                            <span>{{__('New Product')}}</span>  
+                            <!-- <span class="filter-back d-lg-none d-inline-block">
+                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
+                            </span> -->
+                        </h5>
                             <div class="offer-slider">
                                 @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
