@@ -99,7 +99,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </div>
                 @endif
                 @if($client_preference_detail->show_contact_us == 1)
-                <div class="col-lg-3 col-6 pl-xl-3 mobile-border">
+                <div class="col-lg-3 col-md-6 col-5 pl-xl-3 mobile-border">
                     <div class="sub-title">
                         <div class="footer-title mt-0 d-none d-md-block">
                             <h4 class="mt-0">{{ __('Find our app on mobile') }}</h4>
@@ -131,7 +131,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 @endif
 
                 @if($client_preference_detail->show_payment_icons == 1)
-                <div class="col-lg-3 col-6 payment-card mobile-border">
+                <div class="col-lg-3 col-md-6 col-7 payment-card mobile-border">
 
                     <div class="sub-title">
                         <div class="footer-title mt-0">

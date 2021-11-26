@@ -469,7 +469,7 @@ class PickupDeliveryController extends BaseController{
                                                     'customer_email' => $customer->email ?? '',
                                                     'recipient_phone' => $request->phone_number ?? $customer->phone_number,
                                                     'recipient_email' => $request->email ?? $customer->email,
-                                                    'task_description' => "Pickup & Delivery From order",
+                                                    'task_description' => $request->task_description??null,
                                                     'allocation_type' => 'a',
                                                     'task_type' => $request->task_type,
                                                     'schedule_time' => $request->schedule_time ?? null,

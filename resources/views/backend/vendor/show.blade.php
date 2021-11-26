@@ -317,7 +317,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <div class="table-responsive" style="max-height: 612px; overflow-y: auto;">
+                                            <div class="table-responsive mb-3" style="height: 330px; overflow-y: auto;">
                                                 <table class="table table-centered table-nowrap table-striped" id="products-datatable">
                                                     <thead>
                                                         <tr>
@@ -370,7 +370,6 @@
 
                                         </div>
                                         <div class="col-md-8">
-
                                             <div class="card-box p-1 m-0" style="height:400px;">
                                                 <div id="show_map-canvas"></div>
                                             </div>

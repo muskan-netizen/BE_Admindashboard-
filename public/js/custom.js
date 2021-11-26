@@ -109,7 +109,6 @@ window.loadMainMenuSlider = function loadMainMenuSlider(){
 
 window.resizeMenuSlider = function resizeMenuSlider(){
     var windowWidth = $(window).width();
-    // if(windowWidth < 1183){
     if(windowWidth < 320){
         $('.menu-slider').removeClass('items-center');
         // $(".sm-horizontal").css("right", "-410px");
@@ -239,8 +238,8 @@ window.initializeSlider = function initializeSlider() {
         speed: 300,
         slidesToShow: 5,
         slidesToScroll: 2,
-        centerMode: true,
-        centerPadding: '60px',
+        // centerMode: true,
+        // centerPadding: '60px',
         arrows: false,
         dots: false,
         responsive: [{

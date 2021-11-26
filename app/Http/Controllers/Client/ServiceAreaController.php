@@ -48,6 +48,7 @@ class ServiceAreaController extends BaseController{
         $area->description      = $request->description;
         $area->polygon          = \DB::raw("ST_GEOMFROMTEXT('POLYGON((".$latlng."))')");
         $area->save();
+      
         return redirect()->back()->with('success', 'Service area saved successfully!');
     }
 
@@ -128,7 +129,7 @@ class ServiceAreaController extends BaseController{
                 $points = [];
                 $centerX = $vendor->latitude;
                 $centerY = $vendor->longitude;
-                $steps = 20;
+                $steps = 30;
                 $distance = $request->radius;
                 $for_lat_deg = (1/69)*$distance;
                 $for_lng_deg = (1/54)*$distance;
@@ -141,7 +142,13 @@ class ServiceAreaController extends BaseController{
                     
                 }
                 $pointse = implode(',',$points);
-
+                $latlng = str_replace('),(', ';', $pointse);
+                $latlng = str_replace(')', '', $latlng);
+                $latlng = str_replace('(', '', $latlng);
+                $latlng = str_replace(', ', ' ', $latlng);
+                $codsArray = explode(';', $latlng);
+                $latlng = implode(', ', $codsArray);
+                $latlng = $latlng. ', ' . $codsArray[0];
 
                 $area = new ServiceArea();
                 $area->vendor_id        = $vendor->id;
@@ -149,8 +156,10 @@ class ServiceAreaController extends BaseController{
                 $area->geo_array        = $pointse;
                 $area->zoom_level       = $request->zoom_level??3;
                 $area->description      = $request->description??null;
-                $area->polygon          = \DB::raw("ST_GEOMFROMTEXT('POLYGON((".$pointse."))')");
+                $area->polygon          = \DB::raw("ST_GEOMFROMTEXT('POLYGON((".$latlng."))')");
                 $area->save();
+
+              
                 return redirect()->back()->with('success', 'Service area updated successfully!');
             }
 

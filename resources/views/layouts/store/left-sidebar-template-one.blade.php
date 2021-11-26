@@ -98,8 +98,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <div class="row align-items-center position-initial">
                         <div class="col-lg-12">
                             <div class="row mobile-header align-items-center my-sm-2">
-                                <div class="col-4 d-flex align-items-center justify-content-sm-between"> 
-                                    <a class="navbar-brand mr-3 d-none d-sm-inline-block" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
+                                <div class="col-12 col-sm-4 d-flex align-items-center justify-content-sm-between mt-2 mt-md-0"> 
+                                    <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-block" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                                     @if($mod_count > 1)
                                         <ul class="nav nav-tabs navigation-tab nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
                                             @if($client_preference_detail->delivery_check == 1)
@@ -483,9 +483,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </div>                                         
                         
                         <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
-                            <li>
+                            <!-- <li>
                                 <div class="mobile-back text-end">{{__('Back')}}<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
-                            </li>
+                            </li> -->
                             @foreach($navCategories as $cate)
                                 @if($cate['name'])
                                 <li>                                    
@@ -528,9 +528,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 </header>
 <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div>
 <script type="text/template" id="nav_categories_template">
-    <li>
+    <!-- <li>
         <div class="mobile-back text-end">Back<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
-    </li>
+    </li> -->
     <% _.each(nav_categories, function(category, key){ %>
         <li>
             <a href="{{route('categoryDetail')}}/<%= category.slug %>">

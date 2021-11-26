@@ -59,11 +59,30 @@
                 </div>            
             </div>
         </div>
-        <div class="col-lg-7 col-xl-9 mb-2">
+        <div class="col-lg-7 col-xl-6 mb-2 cms-content">
             <div class="card">
                 <div class="card-body p-3" id="edit_page_content">
-                    <div class="row mb-2">                        
-                        <div class="offset-xl-6 col-md-4 col-xl-2">
+                    <div class="row">
+                        <div class="col-12">
+                            <h4 class="page-title mt-0">
+                                <input class="form-control mb-2" id="edit_title" name="meta_title" type="text">
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="row align-items-center"> 
+                        <div class="col-lg-6 mb-2">
+                            <!-- <label for="title" class="control-label">{{ __("Title") }}</label> -->
+                            <!-- <input class="form-control" id="edit_title" name="meta_title" type="text"> -->
+                            <div class="site_link position-relative px-0">
+                                <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank"><span id="pwd_spn" class="password-span">{{route('extrapage',['slug' => $page->slug])}}</span></a>
+                                <label class="copy_link float-right" id="cp_btn" title="copy">
+                                    <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
+                                    <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">Copied</span>
+                                </label>
+                            </div>
+                            <span class="text-danger error-text updatetitleError"></span>
+                        </div>                       
+                        <div class="col-md-4 col-xl-2 mb-2">
                             <div class="form-group mb-0">
                                 <select class="form-control" id="client_language">
                                    @foreach($client_languages as $client_language)
@@ -72,7 +91,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 col-xl-2">
+                        <div class="col-md-4 col-xl-2 mb-2">
                             <div class="form-group mb-0">
                                 <select class="form-control" id="published">
                                     <option value="0">{{ __("Draft") }}</option>
@@ -80,41 +99,16 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 col-xl-2 text-right">
+                        <div class="col-md-4 col-xl-2 text-right mb-2">
                             <button type="button" class="btn btn-info w-100" id="update_page_btn"> {{ __("Update") }}</button>
                         </div>
-                    </div>
-                    <div class="row">
-                        <input type="hidden" id="page_id" value="">
-                        <div class="col-lg-6">
+                        <div class="col-12">
                             <div class="row">
-                                <div class="col-12 mb-3">
-                                    <label for="title" class="control-label">{{ __("Title") }}</label>
-                                    <input class="form-control" id="edit_title" name="meta_title" type="text">
-                                    <span class="text-danger error-text updatetitleError"></span>
-                                </div>
-                                <div class="col-12 mb-3">
-                                    <label for="title" class="control-label">{{ __("Meta Keyword") }}</label>
-                                    <textarea class="form-control" id="edit_meta_keyword" rows="3" name="meta_keyword" cols="10"></textarea>
-                                </div>
-                            </div>         
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-12 mb-3">
+                                <div class="col-6 mb-2">
                                     <label for="title" class="control-label">{{ __("Meta Title") }}</label>
                                     <input class="form-control" id="edit_meta_title" name="meta_title" type="text">
                                 </div>
-                                
-                                <div class="col-12 mb-3">
-                                    <label for="title" class="control-label">{{ __("Meta Description") }}</label>
-                                    <textarea class="form-control" id="edit_meta_description" rows="3" name="meta_description" cols="10"></textarea>
-                                </div>                               
-                            </div>         
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-12 mb-3">
+                                <div class="col-6 mb-2">
                                     <label for="title" class="control-label">{{ __("Attach Form") }}</label>
                                     <select class="form-control" name="type_of_form" id="type_of_form">
                                         <option value="0">None</option>
@@ -124,8 +118,27 @@
                                 </div>                               
                             </div>         
                         </div>
-                        <div class="col-12 mb-3">
-                            <label for="title" class="control-label">{{ __("Description") }}</label>
+                    </div>
+                    <div class="row">
+                        <input type="hidden" id="page_id" value="">
+                        <div class="col-lg-6">
+                            <div class="row">                               
+                                <div class="col-12 mb-2">
+                                    <label for="title" class="control-label">{{ __("Meta Keyword") }}</label>
+                                    <textarea class="form-control m-0" id="edit_meta_keyword" rows="1" name="meta_keyword" cols="10"></textarea>
+                                </div>
+                            </div>         
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-12 mb-2">
+                                    <label for="title" class="control-label">{{ __("Meta Description") }}</label>
+                                    <textarea class="form-control m-0" id="edit_meta_description" rows="1" name="meta_description" cols="10"></textarea>
+                                </div>                               
+                            </div>         
+                        </div>
+                        <div class="col-12 mb-2">
+                            <label for="title" class="control-label mb-0">{{ __("Description") }}</label>
                             <textarea class="form-control" id="edit_description" rows="9" name="meta_description" cols="100"></textarea>
                             <span class="text-danger error-text updatedescrpitionError"></span>
                         </div>

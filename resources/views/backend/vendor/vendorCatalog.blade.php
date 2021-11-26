@@ -119,7 +119,7 @@
                 @include('backend.vendor.show-md-3')
             </div>
             <div class="col-lg-9 col-xl-9">
-                <div>
+                <div class="">
                     <ul class="nav nav-pills navtab-bg nav-justified">
                         <li class="nav-item">
                             <a href="{{ route('vendor.catalogs', $vendor->id) }}" aria-expanded="false"

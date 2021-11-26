@@ -2543,10 +2543,24 @@
     position: relative;
   }
 
+  .product-tags #promo-datatable td:first-child {
+    width: 70px;
+}
 
+.product-tags #promo-datatable td:first-child img {
+    width: 100%;
+}
 
+.product-tags #promo-datatable td:nth-child(2) {
+    width: 60%;
+}
 
-
+.page-title .form-control{
+    box-shadow: none;
+}
+.cms-content .form-control {
+    height: 40px !important;
+}
 
 
 
