@@ -95,6 +95,8 @@ class OrderController extends BaseController {
             $taxable_amount = 0;
             $payable_amount = 0;
             $user = Auth::user();
+            $language_id = $user->language??1;
+
             if ($user) {
                 DB::beginTransaction();
                 $subscription_features = array();
