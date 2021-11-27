@@ -227,7 +227,7 @@ class CategoryController extends FrontController{
                 $vendors= $this->getServiceAreaVendors();
                 $vendorData= $vendorData->whereIn('vendors.id', $vendors);
             }
-          //  $vendorData = $vendorData->join('vendor_categories as vct', 'vct.vendor_id', 'vendors.id')->where('vct.category_id', $category_id)->where('vct.status', 1);
+            $vendorData = $vendorData->join('vendor_categories as vct', 'vct.vendor_id', 'vendors.id')->where('vct.category_id', $category_id)->where('vct.status', 1);
             if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
                 
             }
