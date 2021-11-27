@@ -55,6 +55,12 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/mobbex/notify', 'Front\MobbexGatewayController@mobbexNotify')->name('payment.mobbexNotify');
 
 
+	//GCash
+	Route::post('payment/gcash','Front\GCashController@beforePayment')->name('payment.gcash.beforePayment');
+	Route::get('payment/gcash/view','Front\GCashController@webView')->name('payment.gcash.webView');
+
+
+
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
 	Route::post('payment/yoco/app', 'Front\YocoGatewayController@yocoPurchaseApp')->name('payment.yocoPurchaseApp');

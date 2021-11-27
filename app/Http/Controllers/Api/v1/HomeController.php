@@ -137,7 +137,11 @@ class HomeController extends BaseController
             if ($stripe_creds) {
                 $creds_arr = json_decode($stripe_creds->credentials);
             }
-            $homeData['profile']->preferences->stripe_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
+            $razorpay_creds = PaymentOption::select('credentials')->where('code', 'razorpay')->where('status', 1)->first();
+            if ($razorpay_creds) {
+                $razorpay_creds_arr = json_decode($razorpay_creds->credentials);
+            }
+            $homeData['profile']->preferences->razorpay_api_key = (isset($razorpay_creds_arr->api_key) && (!empty($razorpay_creds_arr->api_key))) ? $razorpay_creds_arr->api_key : '';
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

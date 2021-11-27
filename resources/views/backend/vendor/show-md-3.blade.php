@@ -12,12 +12,16 @@
             @if(Auth::user()->is_superadmin == 1)
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light" id="block_btn" data-vendor_id="{{$vendor->id}}" data-status="{{$vendor->status == 2  ? '1' : '2'}}">{{$vendor->status == 2 ? 'Unblock' : 'Block'}}</button>
             @endif
-            @if($client_preferences->need_dispacher_ride == 1 && !in_array($client_preferences->business_type, ['laundry']))
+            <div class="for_pickup_delivery_service_only">
+            @if($client_preferences->need_dispacher_ride == 1 && !in_array($client_preferences->business_type, ['laundry']) && $check_pickup_delivery_service)
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcher" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (Pickup & Delivery)") }} </button>
             @endif
-            @if($client_preferences->need_dispacher_home_other_service == 1 && !in_array($client_preferences->business_type, ['laundry','taxi']))
+            </div>
+            <div class="for_on_demand_service_only">
+            @if($client_preferences->need_dispacher_home_other_service == 1 && !in_array($client_preferences->business_type, ['laundry','taxi']) && $check_on_demand_service)
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcherOnDemand" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (On Demand Services)") }} </button>
             @endif
+            </div>
             @if($client_preferences->need_laundry_service == 1 && in_array($client_preferences->business_type, ['laundry']))
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcherLaundry" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (Laundry Services)") }} </button>
             @endif
@@ -464,14 +468,29 @@ $('#add_user_permission_vendor').submit(function(e) {
             data: {category_id: category_id, status:status, vendor_id:vendor_id},
             success: function(response) {
                 if (response.status == 'Success') {
+                    console.log(response.data);
+                    if(response.data.check_pickup_delivery_service == 1)
+                    {
+                        $('.for_pickup_delivery_service_only').html('<button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcher" data-id="'+response.data.product_categories[0].vendor_id+'">{{__("Login Into Dispatcher (Pickup & Delivery)")}} </button>');
+                    }else{
+                        $('.for_pickup_delivery_service_only').html('');
+                    }
+                    if(response.data.check_on_demand_service == 1)
+                    {
+                        $('.for_on_demand_service_only').html('<button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcherOnDemand" data-id="'+response.data.product_categories[0].vendor_id+'">{{__("Login Into Dispatcher (On Demand Services)")}} </button>');
+                    }else{
+                        $('.for_on_demand_service_only').html('');
+                    }
+
+
                     $('#category_list').html('');
-                   $('#category_list').html('<option value="">Select Category...</option>');
-                   $('#category_list').selectize()[0].selectize.destroy();
-                   $.each(response.data, function (key, value) {
+                    $('#category_list').html('<option value="">Select Category...</option>');
+                    $('#category_list').selectize()[0].selectize.destroy();
+                    $.each(response.data.product_categories, function (key, value) {
                         if(value.category.type_id == 1){
                            $('#category_list').append('<option value='+value.category_id+'>'+value.category.title+'</option>');
                         }
-                   });
+                    });
                 }
             }
         });

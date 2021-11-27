@@ -461,6 +461,8 @@ class VendorController extends BaseController
         abort(404);
         
         $VendorCategory = VendorCategory::where('vendor_id', $id)->where('status', 1)->pluck('category_id')->toArray();
+        $check_pickup_delivery_service = Category::whereIn('id',$VendorCategory)->where('type_id',7)->count();
+        $check_on_demand_service = Category::whereIn('id',$VendorCategory)->where('type_id',8)->count();
         $categories = Category::with('primary')->select('id', 'slug')
                         ->where('id', '>', '1')->where('status', '!=', '2')->where('type_id', '1')
                         ->where('can_add_products', 1)->orderBy('parent_id', 'asc')->where('status', 1)->orderBy('position', 'asc')->get();
@@ -548,7 +550,7 @@ class VendorController extends BaseController
         
         $taxCate = TaxCategory::all();
         
-        return view('backend.vendor.vendorCatalog')->with(['taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents]);
+        return view('backend.vendor.vendorCatalog')->with(['taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service]); 
     }
 
     /**   show vendor page - payout tab      */
@@ -875,10 +877,29 @@ class VendorController extends BaseController
             }
         }
         $product_categories = VendorCategory::with('category')->where('status', 1)->where('vendor_id', $request->vendor_id)->get();
+        $check_pickup_delivery_service = 0;
+        $check_on_demand_service = 0;
         foreach ($product_categories as $product_category) {
+            if(isset($product_category->category) && !empty($product_category->category->translation_one))
             $product_category->category->title = $product_category->category ? $product_category->category->translation_one->name : '';
+            
+            if(isset($product_category->category) && !empty($product_category->category)) {
+                        if($product_category->category->type_id == 7 || $product_category->category->type_id == "7")
+                    {
+                        $check_pickup_delivery_service = 1;
+                    }
+                    if($product_category->category->type_id == 8|| $product_category->category->type_id == "8")
+                    {
+                        $check_on_demand_service = 1;
+                    }
+            }
+            
         }
-        return $this->successResponse($product_categories, 'Category setting saved successfully.');
+        $data['product_categories'] = $product_categories;
+        $data['check_pickup_delivery_service'] = $check_pickup_delivery_service;
+        $data['check_on_demand_service'] = $check_on_demand_service;
+
+        return $this->successResponse($data, 'Category setting saved successfully.');
     }
 
     /**     Check parent category enable status - true if all parent, false if any parent disable     */

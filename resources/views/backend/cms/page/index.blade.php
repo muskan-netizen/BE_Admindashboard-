@@ -36,7 +36,7 @@
                             </thead>
                             <tbody>
                                 @forelse($pages as $page)
-                                    <tr class="page-title active-page page-detail" data-page_id="{{$page->id}}" data-show_url="{{route('cms.page.show', ['id'=> $page->id])}}">
+                                    <tr class="page-title active-page page-detail" data-page_id="{{$page->id}}" data-show_url="{{route('cms.page.show', ['id'=> $page->id])}}" data-active_url="{{route('extrapage',['slug' => $page->slug])}}">
                                         <td>
                                             <a class="text-body" href="javascript:void(0)" id="text_body_{{$page->id}}">{{$page->primary ? $page->primary->title : ''}}</a>
                                         </td>
@@ -74,11 +74,14 @@
                             <!-- <label for="title" class="control-label">{{ __("Title") }}</label> -->
                             <!-- <input class="form-control" id="edit_title" name="meta_title" type="text"> -->
                             <div class="site_link position-relative px-0">
+                                @if(isset($page) && !empty($page))
                                 <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank"><span id="pwd_spn" class="password-span">{{route('extrapage',['slug' => $page->slug])}}</span></a>
                                 <label class="copy_link float-right" id="cp_btn" title="copy">
                                     <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
                                     <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">Copied</span>
                                 </label>
+                                @endif   
+                               
                             </div>
                             <span class="text-danger error-text updatetitleError"></span>
                         </div>                       
@@ -168,6 +171,10 @@
             // $('#edit_page_content #edit_description').val('');
             // $('#edit_page_content #edit_description').summernote('destroy');
             let url = $(this).data('show_url');
+            let active_url = $(this).data('active_url');
+            $('#edit_page_content .password-span').html(active_url);
+            $('#edit_page_content .password-span').closest('a').attr('href',active_url);
+
             let language_id = $('#edit_page_content #client_language :selected').val();
             $.get(url, {language_id:language_id},function(response) {
               if(response.status == 'Success'){
@@ -256,6 +263,19 @@
             });
         });
     });
+</script>
+<script>
+    $(document).on('click', '.copy_link', function() {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($('#pwd_spn').text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+        $("#show_copy_msg_on_click_copy").show();
+        setTimeout(function() {
+            $("#show_copy_msg_on_click_copy").hide();
+        }, 1000);
+    })
 </script>
 @endsection
 @section('script')

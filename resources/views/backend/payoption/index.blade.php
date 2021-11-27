@@ -74,6 +74,7 @@
                 $merchant_id = (isset($creds->merchant_id)) ? $creds->merchant_id : '';
                 $merchant_key = (isset($creds->merchant_key)) ? $creds->merchant_key : '';
                 $passphrase = (isset($creds->passphrase)) ? $creds->passphrase : '';
+                $merchant_account = (isset($creds->merchant_account)) ? $creds->merchant_account : '';
                 ?>
 
                 <div class="card-box h-100">
@@ -238,7 +239,7 @@
                             </div>
                         </div>
                     </div>
-                    @endif
+                    @endif 
 
                     @if ( (strtolower($opt->code) == 'razorpay') )
                     <div id="razorpay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
@@ -246,13 +247,38 @@
                             <div class="col-12">
                                 <div class="form-group mb-0">
                                     <label for="razorpay_api_key" class="mr-3">{{ __("Api Key") }}</label>
-                                    <input type="password" name="razorpay_api_key" id="razorpay_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                    <input type="text" name="razorpay_api_key" id="razorpay_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-0">
                                     <label for="razorpay_api_secret_key" class="mr-3">{{ __("Api Secret Key") }}</label>
-                                    <input type="password" name="razorpay_api_secret_key" id="razorpay_api_secret_key" class="form-control" value="{{$api_secret_key}}" @if($opt->status == 1) required @endif>
+                                    <input type="text" name="razorpay_api_secret_key" id="razorpay_api_secret_key" class="form-control" value="{{$api_secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'gcash') )
+                    <div id="gcash_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="gcash_merchant_account" class="mr-3">{{ __("Merchant Account") }}</label>
+                                    <input type="text" name="gcash_merchant_account" id="gcash_merchant_account" class="form-control" value="{{$merchant_account}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="gcash_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="password" name="gcash_api_key" id="gcash_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="gcash_secret_key" class="mr-3">{{ __("Api Secret Key") }}</label>
+                                    <input type="text" name="gcash_secret_key" id="gcash_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

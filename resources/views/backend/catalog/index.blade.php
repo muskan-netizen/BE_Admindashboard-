@@ -48,7 +48,9 @@
                             <input type="hidden" name="orderDta" id="orderDta" value="" />
                         </form>
                         <div class="custom-dd-empty dd" id="nestable_list_3">
-                            <?php print_r($html); ?>
+                            <div class="outer-box">
+                                <?php print_r($html); ?>
+                            </div>    
                         </div>
                     </div>
                 </div>
@@ -84,7 +86,7 @@
                             @csrf
                             <input type="hidden" name="orderData" id="orderVariantData" value="" />
                         </form>
-                        <div class="table-responsive">
+                        <div class="table-responsive outer-box">
                             <table class="table table-centered table-nowrap table-striped" id="varient-datatable">
                                 <thead>
                                     <tr>
@@ -155,7 +157,7 @@
                             @csrf
                             <input type="hidden" name="orderData" id="orderBrandData" value="" />
                         </form>
-                        <div class="table-responsive">
+                        <div class="table-responsive outer-box">
                             <table class="table table-centered table-nowrap table-striped" id="brand-datatable">
                                 <thead>
                                     <tr>

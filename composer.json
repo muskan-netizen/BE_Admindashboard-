@@ -10,6 +10,7 @@
     "require": {
         "php": "^7.4.0",
         "99designs/phumbor": "^1.2",
+        "adyen/php-api-library": "^11.0",
         "akibtanjim/currency-converter": "^1.0",
         "algolia/algoliasearch-client-php": "^3.0",
         "artisangang/jwt": "^0.2.0",

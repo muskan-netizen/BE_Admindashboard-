@@ -61,6 +61,8 @@
     var best_seller_product_language = "{{ __('Best Seller') }}";
     var vendor_language = "{{ __('Vendors') }}";
     var brand_language = "{{ __('Brands') }}";
+/////GCash Payment Routes
+    var gcash_before_payment = "{{route('payment.gcash.beforePayment')}}"; 
 
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";

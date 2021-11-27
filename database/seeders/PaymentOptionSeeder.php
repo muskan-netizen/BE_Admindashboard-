@@ -24,7 +24,8 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '7', 'path' => 'mobbex/sdk', 'code' => 'mobbex', 'title' => 'Mobbex', 'off_site' => '1', 'status' => '0'),
         array('id' => '8', 'path' => 'yoco/yoco-php-laravel', 'code' => 'yoco', 'title' => 'Yoco', 'off_site' => '1', 'status' => '0'),
         array('id' => '9', 'path' => 'paylink/paylink', 'code' => 'paylink', 'title' => 'Paylink', 'off_site' => '1', 'status' => '0'),
-        array('id' => '10', 'path' => 'razorpay/razorpay', 'code' => 'razorpay', 'title' => 'Razorpay', 'off_site' => '1', 'status' => '0')
+        array('id' => '10', 'path' => 'razorpay/razorpay', 'code' => 'razorpay', 'title' => 'Razorpay', 'off_site' => '0', 'status' => '0'),
+        array('id' => '11', 'path' => 'adyen/php-api-library', 'code' => 'gcash', 'title' => 'GCash', 'off_site' => '1', 'status' => '0'), 
       ); 
 
       if($option_count == 0)

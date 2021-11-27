@@ -601,4 +601,50 @@ $(document).ready(function() {
         rzp1.open();
     }
      // RazourPay payment gateway
+
+/////////////////////////////////////////////GCash payment Gateway Integration/////////////
+    window.paymentViaGCash = function paymentViaGCash(address_id,payment_option_id){
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let total_amount = 0;
+        let ajaxData = [];
+        if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            ajaxData.push({name: 'payment_from', value: 'wallet'});
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            ajaxData = $("#subscription_payment_form").serializeArray();
+            ajaxData.push({name: 'payment_from', value: 'subscription'});
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            ajaxData.push( 
+                {name: 'payment_from', value: 'tip'},
+                {name: 'order_number', value: $("#order_number").val()}
+            );
+        }
+        ajaxData.push(
+            {name: 'amount', value: total_amount}, 
+            {name: 'returnSuccessUrl', value: path},
+            {name: 'returnFailureUrl', value: path}
+        );
+        ajaxData.push({ name: 'payment_option_id', value: payment_option_id });
+        console.log(ajaxData);
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: gcash_before_payment,
+            data: ajaxData, 
+            success: function(response) {
+                if (response.status == "Success") {
+                    console.log(response);
+                    window.location.href = response.data.data.checkouturl;
+                }
+            }
+        });
+
+    }
+
 });
+
+
+

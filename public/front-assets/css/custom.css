@@ -2,9 +2,24 @@ html {
     scroll-behavior: smooth;
 }
 
+@font-face {
+    font-family: 'Zen Kaku Gothic Antique';
+    src: url('../fonts/ZenKakuGothicAntique-Regular.eot');
+    src: url('../fonts/ZenKakuGothicAntique-Regular.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/ZenKakuGothicAntique-Regular.woff2') format('woff2'),
+        url('../fonts/ZenKakuGothicAntique-Regular.woff') format('woff'),
+        url('../fonts/ZenKakuGothicAntique-Regular.ttf') format('truetype'),
+        url('../fonts/ZenKakuGothicAntique-Regular.svg#ZenKakuGothicAntique-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
 body {
     font-size: 16px;
     position: initial;
+    font-family: 'Zen Kaku Gothic Antique';
 }
 
 a {
@@ -66,7 +81,7 @@ a {
 }
 
 header.site-header.fixed-bar {
-    top: -43px;
+    top: -44px;
 }
 
 .fixed-bar .nav-cate-img {
@@ -165,6 +180,12 @@ header.site-header.fixed-bar {
 
 .product-right .size-box ul li.active {
     background-color: inherit;
+}
+
+span.view-password {
+    position: absolute;
+    top: 9px;
+    right: 70px;
 }
 
 .collection-filter-block {
@@ -5019,9 +5040,9 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     margin: auto !important;
 }
 
-/* .menu-slider.items-center .slick-track {
+.menu-slider.items-center .slick-track {
     justify-content: space-between;
-} */
+} 
 
 .menu-slider .slick-slide {
     display: inline-block;
@@ -6468,7 +6489,11 @@ body .footer-theme .sub-title h4 {
 }
 
 
-
+/* Dynamic HTML Css */
+.become-img img.img-fluid {
+    height: 200px;
+    margin: auto;
+}
 
 
 
@@ -7138,9 +7163,6 @@ body[dir="rtl"] .inner_spacing h3 {
     li.mobile-menu-btn.d-sm-inline-block.d-none,
     .main-menu .menu-right .icon-nav li.d-ipad {
         display: none !important;
-    }
-    .menu-slider.slick-initialized .slick-slide:nth-child(1) {
-        display: none;
     }
     .menu-slider .slick-slide {
         width: max-content !important;

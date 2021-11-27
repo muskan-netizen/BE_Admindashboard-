@@ -517,7 +517,7 @@ class PickupDeliveryController extends FrontController{
                     'customer_email' => $customer->email ?? '',
                     'cash_to_be_collected' => $payable_amount??0.00,
                     'schedule_time' => $request->schedule_time ?? null,
-                    'task_description' => "Pickup & Delivery From order",
+                    'task_description' => null,
                     'order_time_zone' => $request->order_time_zone ??null,
                     'customer_name' => $customer->name ?? 'Dummy Customer',
                     'recipient_email' => $request->email ?? $customer->email,

@@ -119,6 +119,108 @@
     
     <div class="cab-content-area">
 
+
+        <!-- Dynamic Html Section Start From Here -->
+        <section class="dynamic-html pb-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-4">
+                        <h2 class="h2-heading">
+                            Dynamic html
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-4 mb-3">
+                        <div class="become-dnyamic-box text-center">
+                            <div class="become-img mb-4">
+                                <img class="img-fluid" src="{{asset('front-assets/images/become-driver.svg')}}" alt="">
+                            </div>
+                            <div class="become-content">
+                                <h3><b>Become a Dasher</b></h3>
+                                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloremque possimus placeat, similique fugit odio dolore?</p>
+                                <a class="become-btn" href="#"><b>Start earning</b></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 mb-3">
+                        <div class="become-dnyamic-box text-center">
+                            <div class="become-img mb-4">
+                                <img class="img-fluid" src="{{asset('front-assets/images/become-partner.svg')}}" alt="">
+                            </div>
+                            <div class="become-content">
+                                <h3><b>Become a Partner</b></h3>
+                                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloremque possimus placeat, similique fugit odio dolore?</p>
+                                <a class="become-btn" href="#"><b>Signup your store</b></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 mb-3">
+                        <div class="become-dnyamic-box text-center">
+                            <div class="become-img mb-4">
+                                <img class="img-fluid" src="{{asset('front-assets/images/become-try-app.svg')}}" alt="">
+                            </div>
+                            <div class="become-content">
+                                <h3><b>Try the App</b></h3>
+                                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloremque possimus placeat, similique fugit odio dolore?</p>
+                                <a class="become-btn" href="#"><b>Get the App</b></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Html Section Start From Here -->
+        <section class="dynamic-html pb-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-4">
+                        <h2 class="h2-heading">
+                            Tracking Order
+                        </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-4 mb-3">
+                        <div class="become-dnyamic-box text-center">
+                            <div class="become-img mb-4">
+                                <img class="img-fluid" src="{{asset('front-assets/images/minimum-order.svg')}}" alt="">
+                            </div>
+                            <div class="become-content">
+                                <h3><b>No Minimum Order</b></h3>
+                                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloremque possimus placeat, similique fugit odio dolore?</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 mb-3">
+                        <div class="become-dnyamic-box text-center">
+                            <div class="become-img mb-4">
+                                <img class="img-fluid" src="{{asset('front-assets/images/location-tracking.svg')}}" alt="">
+                            </div>
+                            <div class="become-content">
+                                <h3><b>Live Order Tracking</b></h3>
+                                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloremque possimus placeat, similique fugit odio dolore?</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 mb-3">
+                        <div class="become-dnyamic-box text-center">
+                            <div class="become-img mb-4">
+                                <img class="img-fluid" src="{{asset('front-assets/images/fast-delivery.svg')}}" alt="">
+                            </div>
+                            <div class="become-content">
+                                <h3><b>Lightning-Fast Delivery</b></h3>
+                                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloremque possimus placeat, similique fugit odio dolore?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
         <!-- Royo Business Start From Here -->
         <section class="royo-business p-0">
             <div class="container p-64">

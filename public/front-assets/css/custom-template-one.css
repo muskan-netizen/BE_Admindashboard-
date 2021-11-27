@@ -1,7 +1,77 @@
 body {
-    font-family: 'Eina02';
-    font-weight: 400;
+    font-family: 'Zen Kaku Gothic Antique';
 }
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6{
+    font-weight: bold !important;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter-Regular.eot');
+    src: url('../fonts/Inter-Regular.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/Inter-Regular.woff2') format('woff2'),
+        url('../fonts/Inter-Regular.woff') format('woff'),
+        url('../fonts/Inter-Regular.ttf') format('truetype'),
+        url('../fonts/Inter-Regular.svg#Inter-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-Regular.eot');
+    src: url('../fonts/Montserrat-Regular.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/Montserrat-Regular.woff2') format('woff2'),
+        url('../fonts/Montserrat-Regular.woff') format('woff'),
+        url('../fonts/Montserrat-Regular.ttf') format('truetype'),
+        url('../fonts/Montserrat-Regular.svg#Montserrat-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Raleway';
+    src: url('../fonts/Raleway-Regular.eot');
+    src: url('../fonts/Raleway-Regular.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/Raleway-Regular.woff2') format('woff2'),
+        url('../fonts/Raleway-Regular.woff') format('woff'),
+        url('../fonts/Raleway-Regular.ttf') format('truetype'),
+        url('../fonts/Raleway-Regular.svg#Raleway-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Zen Kaku Gothic Antique';
+    src: url('../fonts/ZenKakuGothicAntique-Regular.eot');
+    src: url('../fonts/ZenKakuGothicAntique-Regular.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/ZenKakuGothicAntique-Regular.woff2') format('woff2'),
+        url('../fonts/ZenKakuGothicAntique-Regular.woff') format('woff'),
+        url('../fonts/ZenKakuGothicAntique-Regular.ttf') format('truetype'),
+        url('../fonts/ZenKakuGothicAntique-Regular.svg#ZenKakuGothicAntique-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Zen Kaku Gothic Antique';
+    src: url('../fonts/ZenKakuGothicAntique-Bold.eot');
+    src: url('../fonts/ZenKakuGothicAntique-Bold.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/ZenKakuGothicAntique-Bold.woff2') format('woff2'),
+        url('../fonts/ZenKakuGothicAntique-Bold.woff') format('woff'),
+        url('../fonts/ZenKakuGothicAntique-Bold.ttf') format('truetype'),
+        url('../fonts/ZenKakuGothicAntique-Bold.svg#ZenKakuGothicAntique-Bold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+
 
 @font-face {
     font-family: 'Eina02';
@@ -183,7 +253,7 @@ h6 {
 }
 
 .navigation-tab-item .nav-link.active {
-    color: #fff;
+    color:  #fff;
     font-weight: 600;
     background-color: transparent;
 }
@@ -320,7 +390,7 @@ h6 {
 
 .product-description h3 {
     color: #000000;
-    font-family: 'Eina02';
+    font-family: 'Zen Kaku Gothic Antique';
     font-weight: 600;
     font-size: 17px;
     letter-spacing: 0;
@@ -330,7 +400,7 @@ h6 {
 .product-description p {
     opacity: 0.67;
     color: #000000;
-    font-family: 'Eina02';
+    font-family: 'Zen Kaku Gothic Antique';
     font-weight: 400;
     font-size: 13px;
     letter-spacing: 0;
@@ -343,7 +413,7 @@ h6 {
 
 .product-description b {
     color: #000;
-    font-family: 'Eina02';
+    font-family: 'Zen Kaku Gothic Antique';
     font-weight: 700;
     font-size: 16px;
     letter-spacing: 0;
@@ -352,7 +422,7 @@ h6 {
 
 .h2-heading {
     color: #000;
-    font-family: 'Eina02';
+    font-family: 'Zen Kaku Gothic Antique';
     font-weight: 700;
     font-size: 33px;
     letter-spacing: 0;
@@ -370,7 +440,7 @@ h6 {
     line-height: 35px;
     border-radius: 27.5px;
     color: #EC5837;
-    font-family: 'Eina02';
+    font-family: 'Zen Kaku Gothic Antique';
     font-weight: 600;
     font-size: 13px;
     letter-spacing: 0;
@@ -399,7 +469,7 @@ h6 {
     height: 40px;
     text-indent: -8px;
     line-height: 10px;
-    font-family: 'Eina02';
+    font-family: 'Zen Kaku Gothic Antique';
     display: flex;
     align-items: center;
     justify-content: center;

@@ -656,7 +656,7 @@ class PickupDeliveryController extends BaseController{
 
     public function getOrderTrackingDetails(Request $request){
 
-        $order = OrderVendor::where('order_id',$request->order_id)->with('products')->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
+        $order = OrderVendor::where('order_id',$request->order_id)->with(['products.productRating.reviewFiles'])->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
         $response = Http::get($request->new_dispatch_traking_url);
         if($response->status() == 200){
            $response = $response->json();
