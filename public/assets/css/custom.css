@@ -525,8 +525,14 @@ span.inner-div {
 }
 
 .outer-box {
-    height: calc(100vh - 47vh);
+    height: calc(100vh - 40vh);
     overflow: auto;
+}
+
+span.view-password {
+    position: absolute;
+    top: 9px;
+    right: 70px;
 }
 
 .variant-row .card-body {

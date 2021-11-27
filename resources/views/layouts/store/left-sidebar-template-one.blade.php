@@ -169,7 +169,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                                 <% _.each(results, function(result, k){ %>
                                                     <a class="col-12 text-center list-items pt-2" href="<%= result.redirect_url %>">
                                                     <img src="<%= result.image_url%>" alt="">
-                                                    <div class="result-item-name"><b><%= result.name %></b> <span>Dish</span> </div>
+                                                    <div class="result-item-name"><b><%= result.name %></b> 
+                                                        <!-- <span>Dish</span>  -->
+                                                    </div>
                                                     </a>
                                                 <% }); %>
                                             </div>

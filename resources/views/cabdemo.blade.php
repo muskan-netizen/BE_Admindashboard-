@@ -219,6 +219,35 @@
             </div>
         </section>
 
+        <!-- Country Flag Section Start From Here -->
+        <section class="country-flag pb-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 col-sm-6 mb-3 text-center">
+                        <div class="country-flag">
+                            <img class="img-fluid" src="{{asset('front-assets/images/flag/united-states.png')}}" alt="">
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 mb-3 text-center">
+                        <div class="country-flag">
+                            <img class="img-fluid" src="{{asset('front-assets/images/flag/canada.png')}}" alt="">
+                        </div>
+                    </div>
+                    <div class="col-12 mt-4 mb-3 text-center">
+                        <div class="country-content">
+                            <p>
+                                <b>
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex quaerat, et id impedit consectetur sunt numquam deleniti quam ea quidem aliquam repellat fugiat quia dolores odit similique iusto consequatur perspiciatis vitae qui amet? Voluptate, voluptatibus.
+                                </b>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
 
 
         <!-- Royo Business Start From Here -->

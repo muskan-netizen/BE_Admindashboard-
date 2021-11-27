@@ -188,6 +188,11 @@ span.view-password {
     right: 70px;
 }
 
+.country-content p {
+    font-size: 30px;
+    line-height: 42px;
+}
+
 .collection-filter-block {
     padding: 20px 10px 10px;
 }
