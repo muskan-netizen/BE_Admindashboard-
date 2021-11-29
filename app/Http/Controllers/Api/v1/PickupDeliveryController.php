@@ -442,7 +442,7 @@ class PickupDeliveryController extends BaseController{
                 $tasks = array();
                 if ($request->payment_option_id == 1) {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $request->amount;
+                    $payable_amount = $order->payable_amount;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;

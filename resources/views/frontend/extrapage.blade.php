@@ -143,7 +143,7 @@
                                     $Dine_In = ($Dine_In === 'Dine-In') ? __('Dine-In') : $Dine_In;
                                 @endphp
                                         <div class="col-md-2 mb-3"> 
-                                            <label for="">Dine In</label>
+                                            <label for="">{{$Dine_In}}</label>
                                             <div class="toggle-icon">
                                                 <input type="checkbox" id="dine-in" name="dine_in"><label for="dine-in">Toggle</label>
                                             </div>
@@ -155,7 +155,7 @@
                                     $Takeaway = ($Takeaway === 'Takeaway') ? __('Takeaway') : $Takeaway;
                                     @endphp
                                         <div class="col-md-2 mb-3">
-                                            <label for="">Takeaway</label>
+                                            <label for="">{{$Takeaway}}</label>
                                             <div class="toggle-icon">
                                                 <input type="checkbox" id="takeaway" name="takeaway"><label for="takeaway">Toggle</label>
                                             </div>
@@ -167,7 +167,7 @@
                                     $Delivery = ($Delivery === 'Delivery') ? __('Delivery') : $Delivery;
                                      @endphp
                                         <div class="col-md-2 mb-3">
-                                            <label for="">Delivery</label>
+                                            <label for="">{{$Delivery}}</label>
                                             <div class="toggle-icon">
                                                 <input type="checkbox" id="delivery" name="delivery"><label for="delivery">Toggle</label>
                                             </div>
