@@ -7217,6 +7217,7 @@ body[dir="rtl"] .inner_spacing h3 {
     }
     .menu-slider{
         white-space: nowrap;
+        justify-content: center;
     }
     .menu-slider .slick-track{
         width: 100% !important;
