@@ -134,6 +134,13 @@
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
+        function getPercentageAmount(percent,amouny){
+            var totalPercent = (amouny/percent);
+
+            return numberWithCommas(parseFloat(totalPercent).toFixed(2));
+        }
+
+
         function numberWithCommas(x) {
         // x=x.toFixed(2)
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -210,7 +217,7 @@
                             }},
                             {data: 'admin_commission_percentage_amount', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
-                                return numberWithCommas(data);
+                                return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
                             {data: 'payable_amount', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {

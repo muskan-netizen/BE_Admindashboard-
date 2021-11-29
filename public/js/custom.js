@@ -1710,7 +1710,6 @@ $(document).ready(function() {
             map: map,
             position: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
         });
-
         // geocoder.geocode(
         //     { 'latLng': latlng },
         //     function (results, status) {
@@ -1722,7 +1721,6 @@ $(document).ready(function() {
         //     }
         // );
     }
-
     function cartHeader(address_id) {
         $(".shopping-cart").html("");
         $(".spinner-box").show();

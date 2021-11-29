@@ -63,7 +63,7 @@ class OrderController extends FrontController
     {
         $user = Auth::user();
         $currency_id = Session::get('customerCurrency');
-        
+
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
         $pastOrders = Order::with([
@@ -547,7 +547,7 @@ class OrderController extends FrontController
         //     $navCategories = $this->categoryNav($langId);
         //     return view('frontend/orderPayment')->with(['navCategories' => $navCategories, 'first_name' => $request->first_name, 'last_name' => $request->last_name, 'email_address' => $request->email_address, 'phone' => $request->phone, 'total_amount' => $request->total_amount, 'address_id' => $request->address_id]);
         // }
-       
+
         $order_response = $this->orderSave($request, "1");
         $response = $order_response->getData();
         if ($response->status == 'Success') {
@@ -747,7 +747,7 @@ class OrderController extends FrontController
                             }
                         }
                     }
-                   
+
                     $order_product->product_variant_sets = $product_variant_sets;
                     if (!empty($vendor_cart_product->product->title)) {
                         $vendor_cart_product->product->title = $vendor_cart_product->product->title;
@@ -760,7 +760,7 @@ class OrderController extends FrontController
 
 
                     $order_product->product_name = $vendor_cart_product->product->title ?? $vendor_cart_product->product->sku;
-                  
+
                     $order_product->product_dispatcher_tag = $vendor_cart_product->product->tags;
                     $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                     $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
@@ -871,7 +871,7 @@ class OrderController extends FrontController
             if ((isset($request->tip)) && ($request->tip != '') && ($request->tip > 0)) {
                 $tip_amount = $request->tip;
                 $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
-                $order->tip_amount = number_format($tip_amount, 2);
+                $order->tip_amount =$tip_amount;
             }
             $payable_amount = $payable_amount + $tip_amount;
             $order->total_delivery_fee = $total_delivery_fee;
@@ -1233,10 +1233,10 @@ class OrderController extends FrontController
 
         /////////////// **************** for laundry accept order *************** ////////////////
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
-      
+
         if ($dispatch_domain_laundry && $dispatch_domain_laundry != false) {
             $laundry = 0;
-          
+
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 if ($prod->product->category->categoryDetail->type_id == 9) {     ///////// if product from laundry
                     $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
@@ -1246,17 +1246,17 @@ class OrderController extends FrontController
                                 $team_tag = $dispatch_domain_laundry->laundry_pickup_team ?? null;
                                 $colm = $x;
                             }
- 
+
                             if ($x == 2) {
                                 $team_tag = $dispatch_domain_laundry->laundry_dropoff_team ?? null;
                                 $colm = $x;
                             }
-                            
- 
-                          
+
+
+
                             $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry, $team_tag, $colm);
                         }
-                           
+
                         if ($order_dispatchs && $order_dispatchs == 1) {
                             $laundry = 1;
                             return 1;
@@ -1479,7 +1479,7 @@ class OrderController extends FrontController
                 $payable_amount = 0.00;
             }
 
-                   
+
             $dynamic = uniqid($order->id.$vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'longitude', 'address')->first();
@@ -1513,7 +1513,7 @@ class OrderController extends FrontController
                     $task_type = 'now';
                 }
             }
-                        
+
 
             if ($colm == 2) { # 1 for pickup from vendor drop to customer
                 $desc= $order->comment_for_dropoff_driver??null;
@@ -1525,7 +1525,7 @@ class OrderController extends FrontController
                             'post_code' => '',
                             'barcode' => '',
                             );
-            
+
                 $tasks[] = array('task_type_id' => 2,
                             'latitude' => $cus_address->latitude??'',
                             'longitude' => $cus_address->longitude??'',
@@ -1534,7 +1534,7 @@ class OrderController extends FrontController
                             'post_code' => $cus_address->pincode??'',
                             'barcode' => '',
                             );
-                           
+
 
                 if (isset($order->schedule_dropoff) && !empty($order->schedule_dropoff)) {
                     $task_type = 'schedule';
@@ -1543,10 +1543,10 @@ class OrderController extends FrontController
                     $task_type = 'now';
                 }
             }
-                        
 
-                        
-                                   
+
+
+
             $postdata =  ['customer_name' => $customer->name ?? 'Dummy Customer',
                                                         'customer_phone_number' => $customer->phone_number ?? rand(111111, 11111),
                                                         'customer_email' => $customer->email ?? null,
@@ -1563,12 +1563,12 @@ class OrderController extends FrontController
                                                         'task' => $tasks
                                                         ];
 
-                      
+
             $client = new Client(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key,
                                                         'shortcode' => $dispatch_domain->laundry_service_key_code,
                                                         'content-type' => 'application/json']
                                                             ]);
-                                                
+
             $url = $dispatch_domain->laundry_service_key_url;
             $res = $client->post(
                 $url.'/api/task/create',
@@ -1577,12 +1577,12 @@ class OrderController extends FrontController
                             )]
             );
             $response = json_decode($res->getBody(), true);
-                      
+
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url']??'';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
                                 ->update(['web_hook_code' => $dynamic,'dispatch_traking_url' => $dispatch_traking_url]);
-            
+
                 return 1;
             }
             return 2;
@@ -1630,7 +1630,7 @@ class OrderController extends FrontController
         }
     }
 
-    
+
 
     public function sendSuccessNotification($id, $vendorId)
     {

@@ -2083,7 +2083,7 @@ label.logo-size {
     background: #43bee1;
 }
 
-/* 
+/*
 .category-img{
     height: 310px;
 } */
@@ -2684,7 +2684,6 @@ h3 .fas.fa-money-check-alt {
     grid-template-columns: repeat(3, 0fr) 20%;
     grid-gap: 10px;
 }
-
 .review-product-img img {
     width: 100px;
     height: 100px;
