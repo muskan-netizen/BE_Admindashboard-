@@ -75,7 +75,7 @@
                                                         {{ $loyalty_points_used }}
                                                     </div>
                                                     <div class="ponits-heading">
-                                                        {{ __('Total Point Spent') }}
+                                                        {{ __('Total Points Spent') }}
                                                     </div>
                                                 </div>
                                             </div>
