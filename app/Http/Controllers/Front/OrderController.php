@@ -127,7 +127,7 @@ class OrderController extends FrontController
                 if ($vendor->dineInTable) {
                     $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
                     $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
-                    $vendor->dineInTableCategory = $vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
+                    $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
                 }
             }
         }
@@ -147,7 +147,7 @@ class OrderController extends FrontController
                 if ($vendor->dineInTable) {
                     $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
                     $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
-                    $vendor->dineInTableCategory = $vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
+                    $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
                 }
             }
         }
@@ -162,8 +162,7 @@ class OrderController extends FrontController
             'vendors' => function ($q) {
                 $q->whereHas('products.productReturn');
             }
-        ])
-            ->whereHas('vendors.products.productReturn')
+        ])->whereHas('vendors.products.productReturn')
             ->where('orders.user_id', $user->id)->orderBy('orders.id', 'DESC')->paginate(20);
         foreach ($returnOrders as $order) {
             foreach ($order->vendors as $vendor) {
@@ -179,7 +178,7 @@ class OrderController extends FrontController
                 if ($vendor->dineInTable) {
                     $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
                     $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
-                    $vendor->dineInTableCategory = $vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
+                    $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
                 }
             }
         }
@@ -187,10 +186,12 @@ class OrderController extends FrontController
 
         if (empty($clientCurrency)) {
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-        }
+        } 
 
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
 
+     //   dd($activeOrders->toArray());
+   
         return view('frontend/account/orders')->with(['payments' => $payments, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency]);
     }
 

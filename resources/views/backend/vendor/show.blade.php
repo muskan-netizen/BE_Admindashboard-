@@ -807,7 +807,7 @@
     }*/
 
 
-
+ 
     function initialize_show() {
 
         // var myLatlng = new google.maps.LatLng("{{ $center['lat'] }}","{{ $center['lng']  }}");
@@ -826,8 +826,8 @@
         const marker = new google.maps.Marker({
             map: map,
             position: {
-                lat: 30.7333,
-                lng: 76.7794
+                lat: latitude,
+                lng: longitude
             },
         });
 

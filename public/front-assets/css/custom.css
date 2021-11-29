@@ -7290,9 +7290,6 @@ body[dir="rtl"] .inner_spacing h3 {
     .product-banner-img {
         height: 200px;
     }
-    .menu-slider .slick-track{
-        justify-content: space-between;
-    }
     .home-banner-slider img {
         border-radius: 5px !important;
     }
