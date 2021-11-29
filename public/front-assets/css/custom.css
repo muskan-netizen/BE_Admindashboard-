@@ -182,6 +182,10 @@ header.site-header.fixed-bar {
     background-color: inherit;
 }
 
+.country-flag {
+    background: rgb(0 0 0 / 5%);
+}
+
 span.view-password {
     position: absolute;
     top: 9px;
@@ -189,8 +193,8 @@ span.view-password {
 }
 
 .country-content p {
-    font-size: 30px;
-    line-height: 42px;
+    font-size: 20px;
+    line-height: 32px;
 }
 
 .collection-filter-block {
@@ -2203,7 +2207,7 @@ label {
 
 .search_form input.form-control {
     font-size: 18px;
-    height: 50px;
+    height: 38px;
     background: transparent;
     padding: 0;
 }
@@ -3762,12 +3766,105 @@ h4#driver_name {
     margin-left: 2px;
 }
 
-
-
 .product-rating-star i {
     color: #fdcc0d;
     font-size: 14px;
 }
+
+.rating-number {
+    width: 26px;
+    height: 26px;
+    line-height: 24px;
+    text-align: center;
+    background: rgb(0 0 0 / 10%);
+    border-radius: 50%;
+    color: #000;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.pref-timing {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: rgb(255 255 255 / 100%);
+    border-radius: 2px;
+    text-align: center;
+    padding: 0 3px 2px 4px;
+    font-size: 12px;
+    line-height: 17px;
+    color: #000;
+    font-weight: 700;
+}
+
+.suppliers-img-outer .fa.fa-heart-o {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: red;
+    width: 26px;
+    height: 26px;
+    text-align: center;
+    background: rgb(0 0 0 / 13%);
+    line-height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* Website Dark Mood Css Start Form Here */

@@ -16,7 +16,7 @@ use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCur
 class CartController extends FrontController
 {
     use ApiResponser;
-    
+
     private function randomString()
     {
         $random_string = substr(md5(microtime()), 0, 32);
@@ -25,7 +25,7 @@ class CartController extends FrontController
         }
         return $random_string;
     }
-    public function showCart(Request $request, $domain = '') 
+    public function showCart(Request $request, $domain = '')
     {
         if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
             if($request->has('order')){
@@ -83,7 +83,7 @@ class CartController extends FrontController
                 }
             }
         }
-        $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery'; 
+        $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
         $data = array(
             'navCategories' => $navCategories,
             'cartData' => $cartData,
@@ -105,9 +105,9 @@ class CartController extends FrontController
         }
 
 
-       
-      
-       
+
+
+
         return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
@@ -150,8 +150,8 @@ class CartController extends FrontController
                     $sel->groupBy('product_id');
                 }
             ])->find($request->product_id);
-              
-            # if product type is not equal to on demand 
+
+            # if product type is not equal to on demand
             if($productDetail->category->categoryDetail->type_id != 8  && $productDetail->sell_when_out_of_stock == 0){
                 if(!empty($already_added_product_in_cart)){
                     if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
@@ -165,7 +165,7 @@ class CartController extends FrontController
                     $request->quantity = $productDetail->variant[0]->quantity;
                 }
             }
-          
+
 
             $addonSets = $addon_ids = $addon_options = array();
             if($request->has('addonID')){
@@ -236,7 +236,7 @@ class CartController extends FrontController
                     CartProduct::where('cart_id', $cart_detail->id)->delete();
                 }
             }
-            
+
             $cartProduct = CartProduct::where('product_id', $request->product_id)->where('variant_id', $request->variant_id)->where('cart_id', $cart_detail->id)->first();
             if(!$cartProduct){
                 $isnew = 1;
@@ -283,7 +283,7 @@ class CartController extends FrontController
             //     $cart_detail->cartProducts()->save($checkIfExist);
             // } else {
                 // $productForVendor = Product::where('id', $request->product_id)->first();
-                
+
                 // $cart_product = CartProduct::updateOrCreate(['cart_id' =>  $cart_detail->id, 'product_id' => $request->product_id], $cart_product_detail);
                 // $create_cart_addons = [];
                 // if ($addon_options_ids) {
@@ -503,7 +503,7 @@ class CartController extends FrontController
         $address = [];
         $cart_id = $cart->id;
         $user = Auth::user();
-        $langId = Session::get('customerLanguage');
+        $langId = Session::has('customerLanguage') ? Session::get('customerLanguage') : 1;
         $curId = Session::get('customerCurrency');
         $preferences = ClientPreference::with(['client_detail:id,code,country_id'])->first();
         $countries = Country::get();
@@ -527,7 +527,7 @@ class CartController extends FrontController
         $longitude = ($address) ? $address->longitude : '';
 
         $delifproductnotexist = CartProduct::where('cart_id', $cart_id)->doesntHave('product')->delete();
-      
+
         $cartData = CartProduct::with([
             'vendor', 'vendor.slot.day', 'vendor.slotDate', 'coupon' => function ($qry) use ($cart_id) {
                 $qry->where('cart_id', $cart_id);
@@ -549,7 +549,10 @@ class CartController extends FrontController
                 $qry->where('language_id', $langId);
             },
             'vendorProducts.addon.option' => function ($qry) use ($langId) {
-                $qry->where('language_id', $langId);
+                $qry->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                $qry->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
+                $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
+                // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
         ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         $loyalty_amount_saved = 0;
@@ -595,8 +598,8 @@ class CartController extends FrontController
             $delay_date = 0;
             foreach ($cartData as $ven_key => $vendorData) {
                 $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
-                $delivery_count = 0; 
-                
+                $delivery_count = 0;
+
                 if(Session::has('vendorTable')){
                     if((Session::has('vendorTableVendorId')) && (Session::get('vendorTableVendorId') == $vendorData->vendor_id)){
                         $cart_dinein_table_id = Session::get('vendorTable');
@@ -646,7 +649,7 @@ class CartController extends FrontController
                     $prod->pvariant->media_one = isset($prod->pvariant->media) ? $prod->pvariant->media->first() : [];
                     $prod->pvariant->media_second = isset($prod->product->media) ? $prod->product->media->first() : [];
                     $prod->pvariant->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
-                    $prod->pvariant->quantity_price = number_format($quantity_price, 2, '.', '');
+                    $prod->quantity_price = number_format($quantity_price, 2, '.', '');
                     $payable_amount = $payable_amount + $quantity_price;
                     $taxData = array();
                     if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
@@ -852,10 +855,10 @@ class CartController extends FrontController
     {
         try{
             $cartProduct = CartProduct::with('addon')->where('cart_id', $request->cart_id)->where('product_id', $request->product_id)->orderByDesc('created_at')->first();
-            
+
             return $this->successResponse($cartProduct, '', 200);
             // dd($cartProduct->toArray());
-            
+
         }
         catch(Exception $ex){
             return $this->errorResponse($ex->getMessage(), $ex->getCode());
@@ -871,21 +874,75 @@ class CartController extends FrontController
     {
         try{
             $langId = Session::get('customerLanguage');
+            $cur_ids = Session::get('customerCurrency');
+            if(isset($cur_ids) && !empty( $cur_ids)){
+                $clientCurrency = ClientCurrency::where('currency_id','=', $cur_ids)->first();
+            }else{
+                $clientCurrency = ClientCurrency::where('is_primary','=', 1)->first();
+            }
+
             $cartProducts = CartProduct::with(['product.translation' => function ($qry) use ($langId) {
-                $qry->where('language_id', $langId);
-            }, 'addon.option' => function ($qry) use ($langId) {
-                $qry->where('language_id', $langId);
-            }])
+                $qry->where('language_id', $langId)->groupBy('product_translations.language_id');
+            },
+            //  'addon.option.translation' => function ($qry) use ($langId) {
+            //     $qry->where('language_id', $langId)->groupBy('addon_option_translations.language_id');
+            // }, 'addon.set' => function ($qry) use ($langId) {
+            //     $qry->where('language_id', $langId)->groupBy('addon_sets.id');
+            // },
+            'product.media.image',
+            'pvariant.media.pimage.image',
+            'vendor.slot.day', 'vendor.slotDate',
+            ])
             ->where('cart_id', $request->cart_id)
             ->where('product_id', $request->product_id)
-            ->where('variant_id', $request->variant_id)
-            ->orderByDesc('created_at')->get();
+            ->select('*','id as add_on_set_and_option')->orderByDesc('created_at')->get();
 
-            
+            $multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+            foreach ($cartProducts as $key => $cart) {
+                $cart->is_vendor_closed = 0;
+                $cart->variant_multiplier = $multiplier;
+                $variant_price = ($cart->pvariant) ? ($cart->pvariant->price * $multiplier) : 0;
 
+                $product = $cart->product;
+                $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
 
-            dd($cartProducts->toArray());
-            return $this->successResponse($cartProducts, '', 200);            
+                if($cart->pvariant && $cart->pvariant->media->isNotEmpty()){
+                    $image_fit = $cart->pvariant->media->first()->pimage->image->path['image_fit'];
+                    $image_path = $cart->pvariant->media->first()->pimage->image->path['image_path'];
+                    $product->product_image = $image_fit . '300/300' . $image_path;
+                }elseif($product->media->isNotEmpty()){
+                    $image_fit = $product->media->first()->image->path['image_fit'];
+                    $image_path = $product->media->first()->image->path['image_path'];
+                    $product->product_image = $image_fit . '300/300' . $image_path;
+                }else{
+                    $product->product_image = $this->loadDefaultImage();
+                }
+
+                $addon_set = $cart->add_on_set_and_option;
+                foreach ($addon_set as $skey => $set) {
+                    $set->addon_set_translation_title = ($set->translation->isNotEmpty()) ? $set->translation->first()->title : $set->title;
+                    foreach ($set->options as $okey => $option) {
+                        $option->option_translation_title = ($option->translation->isNotEmpty()) ? $option->translation->first()->title : $option->title;
+                        $opt_price_in_doller_compare = $option->price * $multiplier;
+                        $variant_price = $variant_price + $opt_price_in_doller_compare;
+                    }
+                }
+                $cart->variant_price = $variant_price;
+                $cart->addon_set = $addon_set;
+                $cart->total_variant_price = number_format($cart->quantity * $variant_price, 2, '.', '');
+
+                if($cart->vendor->show_slot == 0){
+                    if( ($cart->vendor->slotDate->isEmpty()) && ($cart->vendor->slot->isEmpty()) ){
+                        $cart->is_vendor_closed = 1;
+                    }else{
+                        $cart->is_vendor_closed = 0;
+                    }
+                }
+                unset($cartProducts[$key]->add_on_set_and_option);
+            }
+
+            $returnHTML = view('frontend.product-with-different-addons-modal')->with(['cartProducts'=>$cartProducts])->render();
+            return $this->successResponse($returnHTML, '', 200);
         }
         catch(Exception $ex){
             return $this->errorResponse($ex->getMessage(), $ex->getCode());
@@ -912,12 +969,12 @@ class CartController extends FrontController
             if($productDetail->variant[0]->quantity < $request->quantity){
                 return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart')]);
             }
-         
+
         }
 
          $cartProduct->quantity = $request->quantity;
         $cartProduct->save();
-       
+
         return response()->json("Successfully Updated");
     }
 
@@ -984,7 +1041,7 @@ class CartController extends FrontController
     }
 
 
-    # get delivery fee from dispatcher 
+    # get delivery fee from dispatcher
     public function getDeliveryFeeDispatcher($vendor_id)
     {
         try {
@@ -1025,7 +1082,7 @@ class CartController extends FrontController
         } catch (\Exception $e) {
         }
     }
-    # check if last mile delivery on 
+    # check if last mile delivery on
     public function checkIfLastMileOn()
     {
         $preference = ClientPreference::first();
@@ -1076,14 +1133,14 @@ class CartController extends FrontController
     public function updateSchedule(Request $request, $domain = '')
     {
         DB::beginTransaction();
-        try{ 
+        try{
             $user = Auth::user();
             $new_session_token = session()->get('_token');
             if ($user || $new_session_token) {
                 if($request->task_type == 'now'){
                     $request->schedule_dt = Carbon::now()->format('Y-m-d H:i:s');
                 }else{
-                    if(isset($request->schedule_dt) && !empty($request->schedule_dt)) 
+                    if(isset($request->schedule_dt) && !empty($request->schedule_dt))
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
@@ -1100,7 +1157,7 @@ class CartController extends FrontController
                 }
 
                 $cart_detail = $cart_detail->update(['specific_instructions' => $request->specific_instructions??null,
-                'schedule_type' => $request->task_type, 
+                'schedule_type' => $request->task_type,
                 'scheduled_date_time' => $request->schedule_dt??null,
                 'comment_for_pickup_driver' => $request->comment_for_pickup_driver??null,
                 'comment_for_dropoff_driver' => $request->comment_for_dropoff_driver??null,
@@ -1146,13 +1203,13 @@ class CartController extends FrontController
         }
     }
 
-    // add ones add in cart for ondemand 
+    // add ones add in cart for ondemand
 
     public function postAddToCartAddons(Request $request, $domain = '')
     {
-      
+
         try {
-           
+
             $user = Auth::user();
              $addon_ids = $request->addonID;
              $addon_options_ids = $request->addonoptID;
@@ -1190,11 +1247,11 @@ class CartController extends FrontController
                     'data' => $addon
                 ], 404);
             }
-        
+
             }
-               
-           
-              
+
+
+
                     CartAddon::where('cart_id',$request->cart_id)->where('cart_product_id',$request->cart_product_id)->delete();
                     if (count($addon_options) > 0) {
                         $saveAddons = array();
@@ -1208,11 +1265,11 @@ class CartController extends FrontController
                         }
                         CartAddon::insert($saveAddons);
                     }
-                   
-                
-        
 
-           
+
+
+
+
             return response()->json(['status' => 'success', 'message' => 'Addons Added Successfully!']);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);

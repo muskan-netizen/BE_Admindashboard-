@@ -33,7 +33,7 @@
     <div class="collection-wrapper">
         <div class="container">
             <div class="row">
-                <div class="collection-content col">
+                <div class="collection-content col-lg-9">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="collection-product-wrapper w-100">

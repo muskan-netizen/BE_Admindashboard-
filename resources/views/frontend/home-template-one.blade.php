@@ -70,13 +70,20 @@
 
         <div>
             <a class="suppliers-box d-block px-2" href="{{route('vendorDetail')}}/<%= vendor.slug %>">
-                <div class="suppliers-img-outer">
+                <div class="suppliers-img-outer position-relative">
                     <img class="fluid-img mx-auto" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
+                    <div class="pref-timing">
+                        <span>35 min</span>
+                    </div>
+                    <i class="fa fa-heart-o" aria-hidden="true"></i>                    
                 </div>
                 <div class="supplier-rating">
-                    <h6 class="mb-1"><%= vendor.name %></h6>
-                    <p title="<%= vendor.categoriesList %>" class="vendor-cate border-bottom pb-1 mb-1 ellips"><%= vendor.categoriesList %></p>
-                    <div class="product-timing">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6 class="mb-1 ellips"><%= vendor.name %></h6>
+                        <span class="rating-number">4.5</span>
+                    </div>
+                    <p title="<%= vendor.categoriesList %>" class="vendor-cate mb-1 ellips"><%= vendor.categoriesList %></p>
+                    <!-- <div class="product-timing">
                         <small title="<%= vendor.address %>" class="ellips d-block"><span class="icon-location2"></span> <%= vendor.address %></small>
                         <% if(vendor.timeofLineOfSightDistance != undefined){ %>
                             <ul class="timing-box mb-1">
@@ -88,8 +95,8 @@
                                 </li>
                             </ul>
                         <% } %>
-                    </div>
-                    @if($client_preference_detail)
+                    </div> -->
+                    <!-- @if($client_preference_detail)
                         @if($client_preference_detail->rating_check == 1)
                             <% if(vendor.vendorRating > 0){%>
                                 <ul class="custom-rating m-0 p-0">
@@ -104,7 +111,7 @@
                                 </ul>
                             <% } %>
                         @endif
-                    @endif
+                    @endif -->
                 </div>
             </a>
         </div> 
@@ -167,6 +174,9 @@
             <a class="suppliers-box d-block px-2" href="{{route('vendorDetail')}}/<%= vendor.slug %>">
                 <div class="suppliers-img-outer">
                     <img class="fluid-img mx-auto" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
+                    <div class="pref-timing">
+                        <span>35 min</span>
+                    </div>
                 </div>
                 <div class="supplier-rating">
                     <h6 class="mb-1"><%= vendor.name %></h6>

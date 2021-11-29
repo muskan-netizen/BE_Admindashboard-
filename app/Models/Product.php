@@ -99,6 +99,10 @@ class Product extends Model{
       return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode'); 
     }
 
+    public function reviews(){
+      return $this->hasMany('App\Models\OrderProductRating', 'product_id', 'id'); 
+    }
+
     public function variant_list(){
        return $this->hasMany('App\Models\ProductVariantSet')
        ->join('variants as pv', 'pv.id', 'product_variant_sets.variant_type_id')

@@ -227,12 +227,16 @@ class CategoryController extends FrontController{
                 $vendors= $this->getServiceAreaVendors();
                 $vendorData= $vendorData->whereIn('vendors.id', $vendors);
             }
-            $vendorData = $vendorData->join('vendor_categories as vct', 'vct.vendor_id', 'vendors.id')->where('vct.category_id', $category_id)->where('vct.status', 1);
+         //   $vendorData = $vendorData->join('vendor_categories as vct', 'vct.vendor_id', 'vendors.id')->where('vct.category_id', $category_id)->where('vct.status', 1);
+            $vendorData = $vendorData->whereHas('getAllCategory' , function ($q)use($category_id){
+                $q->where('category_id', $category_id)->where('status', 1);
+            });
+
             if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
                 
             }
             $vendorData = $vendorData->where('vendors.status', '!=', $this->field_status)->paginate($pagiNate);
-           
+          
             foreach ($vendorData as $key => $value) {
                 $value = $this->getLineOfSightDistanceAndTime($value, $preferences);
                 $value->vendorRating = $this->vendorRating($value->products);
@@ -259,6 +263,7 @@ class CategoryController extends FrontController{
                     }
                 }
                 $value->categoriesList = $categoriesList;
+                Log::info($value->id.":".$value->categoriesList);
             }
             return $vendorData;
         }

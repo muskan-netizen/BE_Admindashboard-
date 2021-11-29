@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Session;
 class CartProduct extends Model{
 
     use HasFactory;
@@ -44,5 +44,28 @@ class CartProduct extends Model{
     
     public function vendorProducts(){
       return $this->hasMany(CartProduct::class, 'vendor_id', 'vendor_id')->leftjoin('client_currencies as cc', 'cc.currency_id', 'cart_products.currency_id')->select('cart_products.id', 'cart_products.cart_id', 'cart_products.product_id', 'cart_products.quantity', 'cart_products.variant_id', 'cart_products.is_tax_applied', 'cart_products.tax_category_id', 'cart_products.currency_id', 'cc.doller_compare', 'cart_products.vendor_id', 'cart_products.scheduled_date_time')->orderBy('cart_products.created_at', 'asc')->orderBy('cart_products.vendor_id', 'asc');
+    }
+
+
+    public function getAddOnSetAndOptionAttribute()
+    {
+       $cart_product_id = $this->attributes['id'];
+       $langId = Session::has('customerLanguage') ? Session::get('customerLanguage') : 1;
+        $cart_addons = \App\Models\CartAddon::where('cart_product_id',$cart_product_id)->pluck('addon_id');
+        $addoset = [];
+        if($cart_addons){
+          $cart_options = \App\Models\CartAddon::where('cart_product_id',$cart_product_id)->pluck('option_id');
+          $addoset =  \App\Models\AddonSet::with(['translation' => function ($qry) use ($langId) {
+                $qry->where('addon_set_translations.language_id', $langId);
+            }])->whereIn('id',$cart_addons)->get();
+          foreach($addoset as $key => $setsection)
+          {
+              $add_options = \App\Models\AddonOption::with(['translation' => function ($qry) use ($langId) {
+                    $qry->where('addon_option_translations.language_id', $langId);
+                }])->where('addon_id',$setsection->id)->whereIn('id',$cart_options)->get();
+              $setsection->options = $add_options;
+          }
+        }
+        return $addoset;
     }
 }

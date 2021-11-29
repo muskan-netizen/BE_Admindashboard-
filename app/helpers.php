@@ -8,9 +8,9 @@ use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 
 function changeDateFormate($date,$date_format){
-    return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);    
+    return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
 }
-   
+
 function pr($var) {
   	echo '<pre>';
 	print_r($var);
@@ -137,7 +137,11 @@ function dateTimeInUserTimeZone($date, $timezone, $showDate=true, $showTime=true
             $timeFormat = ' HH:mm'.$secondsKey;
         }
     }
-    
+
     $format = $dateFormat . $timeFormat;
     return $date->isoFormat($format);
+}
+
+function helper_number_formet($number){
+    return number_format($number,2);
 }

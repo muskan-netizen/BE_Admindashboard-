@@ -73,7 +73,7 @@
         </div>
         <div class="container">
             <div class="row">
-                <div class="collection-filter col-xl-3">
+                <div class="collection-filter col-lg-3">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>  
@@ -158,7 +158,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="collection-content col">
+                <div class="collection-content col-lg-9">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">

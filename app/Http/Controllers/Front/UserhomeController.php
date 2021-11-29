@@ -37,7 +37,7 @@ class UserhomeController extends FrontController
     {
         $client_preferences = ClientPreference::first();
         return response()->json(['success' => true, 'client_preferences' => $client_preferences]);
-        dd("neskjbf");
+        
     }
 
     public function getLastMileTeams()
@@ -103,11 +103,7 @@ class UserhomeController extends FrontController
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
             $url = $dispatch_domain->delivery_service_key_url;
             $endpoint =$url . "/api/send-documents";
-            // $endpoint = "http://192.168.99.177:8006/api/send-documents";
-            // $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-           // $dispatch_domain->delivery_service_key_code = '1da2e9';
-           // $dispatch_domain->delivery_service_key = 'TMJdbQlNWkYl1JzMONzRgF4zQFuP8s';
-            $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
+             $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
 
             $response = $client->post($endpoint);
             $response = json_decode($response->getBody(), true);
@@ -127,8 +123,6 @@ class UserhomeController extends FrontController
         $client_preferences = ClientPreference::first();
         $navCategories = $this->categoryNav($language_id);
         $client = Auth::user();
-        // $ClientPreference = ClientPreference::where('client_code', $client->code)->first();
-        // $preference = $ClientPreference ? $ClientPreference : new ClientPreference();
         $page_detail = Page::with(['translations' => function ($q) {
             $q->where('language_id', session()->get('customerLanguage'));
         }])->where('slug', 'driver-registration')->firstOrFail();
@@ -136,9 +130,6 @@ class UserhomeController extends FrontController
 
         $tag = [];
         
-        // if (isset($preference) && $preference->need_delivery_service == '1') {
-        //     $last_mile_teams = $this->getLastMileTeams();
-        // }
         $showTag = implode(',', $tag);
         $driver_registration_documents = json_decode($this->driverDocuments());
         return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents'));
@@ -257,7 +248,7 @@ class UserhomeController extends FrontController
             if (isset($set_template)  && $set_template->template_id == 2)
                 return view('frontend.home')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
             else
-                return view('frontend.home')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+            return view('frontend.home-template-one')->with(['home' => $home,  'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
         } catch (Exception $e) {
             pr($e->getCode());
             die;

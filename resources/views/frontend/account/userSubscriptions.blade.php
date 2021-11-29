@@ -158,7 +158,7 @@
                     
                     @if($subscription_plans->isNotEmpty())
                         @foreach($subscription_plans as $plan)
-                            <div class="col-md-4 col-sm-6">
+                            <div class="col-md-4 col-sm-6 mb-3 mb-md-4">
                                 <div class="pricingtable">
                                     <div class="gold-icon position-relative">
                                         <img src="{{ $plan->image['proxy_url'].'100/100'.$plan->image['image_path'] }}">

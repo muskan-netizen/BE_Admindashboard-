@@ -66,7 +66,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="collection-filter col-xl-3">
+                <div class="collection-filter col-lg-3">
                     <!-- side-bar colleps block stat -->
                     <div class="collection-filter-block p-0 m-0">
                         <!-- <div class="collection-mobile-back">
@@ -208,7 +208,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="collection-content col">
+                <div class="collection-content col-lg-9">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">

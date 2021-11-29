@@ -13,11 +13,11 @@
 </header>
 <section class="cab-booking pt-0">
     <div id="map_canvas" style="width: 100%; height: 100%;"></div>
-   
+
     <div class="booking-experience ds bc">
         <div class="address-form">
-            
-           
+
+
             <div class="table-responsive style-4">
                 <div class="cab-button d-flex flex-nowrap align-items-center py-2" id="vendor_main_div"></div>
             </div>
@@ -74,7 +74,7 @@
                     </div>
                 </div>
                 <div class="coupon_box d-flex w-100 py-2 align-items-center justify-content-between">
-                    <label class="mb-0 ml-1">   
+                    <label class="mb-0 ml-1">
                         <img src="{{asset('assets/images/discount_icon.svg')}}">
                         <span class="code-text">Select a promo code</span>
                     </label>
@@ -136,12 +136,12 @@
                     <h4><b></b></h4>
                     <% }else { %>
                     <h4><b>Searching For Nearby Drivers</b></h4>
-                    <% } %> 
+                    <% } %>
                     <div class="new-loader"></div>
                 </div>
                 <div class="cab-location-details mt-2" id="driver_details_main_div" style="display:none;">
                    <div class="row align-items-center">
-                       
+
                        <div class="col-12 driver-profile-box">
                             <div class="taxi-img">
                                <img src="" id="driver_image">
@@ -166,7 +166,7 @@
                     <div class="col-6 mb-2 text-right" id="distance">--</div>
                     <div class="col-6 mb-2">Order ID</div>
                     <div class="col-6 mb-2 text-right" id=""><%= result.order_number %></div>
-                    <div class="col-6 mb-2">Amount Paid</div>
+                    <div class="col-6 mb-2" >Amount Paid</div>
                     <div class="col-6 mb-2 text-right">$<%= result.payable_amount %></div>
                     <div class="col-6 mb-2">Status</div>
                     <div class="col-6 mb-2 text-right" id="dispatcher_status_show"></div>
@@ -174,15 +174,15 @@
             </div>
         </script>
 
-      
-       
+
+
 
         <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
         <div class="promo-box style-4 d-none">
             <a class="d-block mt-2 close-promo-code-detail-box" href="javascript:void(0)">✕</a>
             <div class="row" id="cab_booking_promo_code_list_main_div">
-                
-            </div>    
+
+            </div>
         </div>
 
         <ul class="product_list d-flex align-items-center p-0 flex-wrap m-0" style="display:none !important;" id="rating_of_cab">
@@ -207,7 +207,7 @@
     </div>
 
 
-   
+
 </section>
 <div class="modal fade product-rating" id="product_rating" tabindex="-1" aria-labelledby="product_ratingLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -231,8 +231,8 @@
 <script src="{{asset('js/cab_booking_details.js') }}"></script>
 
 <script>
-  
-   
+
+
 var autocomplete_urls = "{{url('looking/vendor/list/14')}}";
 var get_product_detail = "{{url('looking/product-detail')}}";
 var promo_code_list_url = "{{route('verify.promocode.list')}}";
@@ -256,10 +256,10 @@ $('body').on('click', '.add_edit_review', function (event) {
         var order_vendor_product_id = $(this).data('order_vendor_product_id');
         $.get('/rating/get-product-rating?id=' + id +'&order_vendor_product_id=' + order_vendor_product_id, function(markup)
         {
-            $('#product_rating').modal('show'); 
+            $('#product_rating').modal('show');
             $('#review-rating-form-modal').html(markup);
             $('#review-upload-form').append('<input type="hidden" name="rating_for_dispatch" value="'+dispatch_order_id+'" id="rating_for_dispatch">');
-           
+
         });
     });
 

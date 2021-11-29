@@ -6,7 +6,7 @@ use DataTables;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Models\OrderVendor;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
@@ -64,7 +64,7 @@ class VendorController extends Controller{
                 $query->between($from_date." 00:00:00", $to_date." 23:59:59");
             }
         }])->where('status', '!=', '2')->orderBy('id', 'desc');
-        
+
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -73,6 +73,7 @@ class VendorController extends Controller{
 
         $vendors = $vendors->get();
         foreach ($vendors as $vendor) {
+
             $vendor->total_paid = 0.00;
             $vendor->url = route('vendor.show', $vendor->id);
             $vendor->view_url = route('vendor.show', $vendor->id);
@@ -82,8 +83,8 @@ class VendorController extends Controller{
             $vendor->promo_admin_amount = number_format($vendor->orders->where('coupon_paid_by', 1)->sum('discount_amount'), 2, ".","");
             $vendor->promo_vendor_amount = number_format($vendor->orders->where('coupon_paid_by', 0)->sum('discount_amount'), 2, ".","");
             $vendor->cash_collected_amount = number_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount'), 2, ".","");
-            $vendor->admin_commission_amount = number_format($vendor->orders->sum('admin_commission_percentage_amount')+ $vendor->orders->sum('admin_commission_percentage_amount'), 2, ".","");
-            $admin_commission_amount = $vendor->orders->sum('admin_commission_percentage_amount')+ $vendor->orders->sum('admin_commission_percentage_amount');
+            $vendor->admin_commission_amount = number_format($vendor->orders->sum('admin_commission_percentage_amount'), 2, ".","");
+            $admin_commission_amount = $vendor->orders->sum('admin_commission_percentage_amount');
             $vendor->vendor_earning = number_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $admin_commission_amount), 2, ".","");
         }
         return Datatables::of($vendors)

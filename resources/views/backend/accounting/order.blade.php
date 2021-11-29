@@ -11,7 +11,7 @@
                     <h4 class="page-title">{{ __('Orders') }}</h4>
                 </div>
             </div>
-        </div>     
+        </div>
         <div class="row">
             <div class="col-12">
                 <div class="card widget-inline">
@@ -57,8 +57,8 @@
                     </div>
                 </div>
             </div>
-        </div>    
-    </div> 
+        </div>
+    </div>
 </div>
 <div class="container-fluid">
     <div class="row">
@@ -66,7 +66,7 @@
             <div class="card">
                 <div class="card-body position-relative">
                     <div class="top-input position-absolute">
-                        <div class="row">                            
+                        <div class="row">
                             <div class="col-md-9">
                                 <div class="row">
                                     <div class="col">
@@ -117,7 +117,7 @@
                                 </tr>
                             </thead>
                             <tbody id="accounting_vendor_tbody_list">
-                                
+
                             </tbody>
                         </table>
                     </div>
@@ -134,11 +134,15 @@
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
+        function numberWithCommas(x) {
+        // x=x.toFixed(2)
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
         getOrderList();
         function getOrderList() {
             $(document).ready(function() {
                 initDataTable();
-                $("#range-datepicker").flatpickr({ 
+                $("#range-datepicker").flatpickr({
                     mode: "range",
                     onClose: function(selectedDates, dateStr, instance) {
                         initDataTable();
@@ -169,7 +173,7 @@
                         drawCallback: function () {
                             $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
                         },
-                        buttons: [{   
+                        buttons: [{
                                 className:'btn btn-success waves-effect waves-light',
                                 text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>Export CSV',
                                 action: function ( e, dt, node, config ) {
@@ -192,11 +196,26 @@
                             {data: 'created_date', name: 'name',orderable: false, searchable: false},
                             {data: 'user_name', name: 'Customer Name',orderable: false, searchable: false},
                             {data: 'vendor.name', name: 'vendor_name', orderable: false, searchable: false},
-                            {data: 'subtotal_amount', name: 'action', orderable: false, searchable: false},
-                            {data: 'discount_amount', name: 'action', orderable: false, searchable: false},
-                            {data: 'admin_commission_fixed_amount', name: 'action', orderable: false, searchable: false},
-                            {data: 'admin_commission_percentage_amount', name: 'action', orderable: false, searchable: false},
-                            {data: 'payable_amount', name: 'action', orderable: false, searchable: false},
+                            {data: 'subtotal_amount', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
+                            {data: 'discount_amount', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
+                            {data: 'admin_commission_fixed_amount', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
+                            {data: 'admin_commission_percentage_amount', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
+                            {data: 'payable_amount', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
                             {data: 'order_detail.payment_option.title', name: 'action', orderable: false, searchable: false},
                             {data: 'order_status', name: 'order_status', orderable: false, searchable: false, "mRender": function ( data, type, full ) {
                               return "<h5><span class='badge bg-success'>"+full.order_status+"</span></h5>";
@@ -204,7 +223,7 @@
                         ]
                     });
                 }
-                
+
             });
         }
     });

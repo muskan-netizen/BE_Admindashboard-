@@ -106,7 +106,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </div>
                     </div>
                 <% } %>
-               
+
             </div>
         </div>
         <hr class="mt-2">
@@ -133,7 +133,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <% }); %>
                             </div>
                             <div class="col-md-2 text-md-center order-1 mb-1 mb-md-0">
-                                <div class="items-price">{{Session::get('currencySymbol')}}<%= vendor_product.pvariant.price %></div>
+                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price) %></div>
                             </div>
                             <div class="col-8 col-md-4 text-md-center order-3 order-md-2">
                                 <div class="number d-flex justify-content-md-center">
@@ -159,7 +159,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 </a>
                             </div>
                             <div class="col-4 col-md-2 text-right order-4">
-                                <div class="items-price">{{Session::get('currencySymbol')}}<%= vendor_product.pvariant.quantity_price %></div>
+                                <div class="items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.quantity_price) %></div>
                             </div>
                         </div>
                         <% if(vendor_product.addon.length != 0) { %>
@@ -175,10 +175,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <p class="p-0 m-0"><%= addon.option.title %></p>
                                 </div>
                                 <div class="col-md-2 col-sm-4 text-center">
-                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= addon.option.price_in_cart %></div>
+                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.price_in_cart) %></div>
                                 </div>
                                 <div class="col-md-7 col-sm-4 text-right">
-                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= addon.option.quantity_price %></div>
+                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
                                 </div>
                             </div>
                             <% }); %>
@@ -188,7 +188,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <% if( (vendor_product.product.delay_order_hrs != undefined && vendor_product.product.delay_order_min != undefined ) &&  ((vendor_product.product.delay_order_hrs != 0) || (vendor_product.product.delay_order_hrs != 0))) { %>
                         <div class="col-12">
                             <div class="text-danger" style="font-size:12px;">
-                                <i class="fa fa-exclamation-circle"></i>Preparation Time is 
+                                <i class="fa fa-exclamation-circle"></i>Preparation Time is
                                 <% if(vendor_product.product.delay_order_hrs > 0) { %>
                                     <%= vendor_product.product.delay_order_hrs %> Hrs
                                 <% } %>
@@ -199,7 +199,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </div>
                     <% } %>
                 </div>
-                
+
                 <hr>
             <% }); %>
             <div class="row">
@@ -226,8 +226,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <p class="total_amt m-0">{{__('Delivery Fee')}} :</p>
                         </div>
                         <div class="col-4 text-right">
-                            <p class="total_amt mb-1 <% if(product.delivery_fee_charges > 0) { %>{{ ((in_array(1, $subscription_features)) ) ? 'discard_price' : '' }}<% } %>">{{Session::get('currencySymbol')}} <%= product.delivery_fee_charges %></p>
-                            <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= product.product_total_amount %></p>
+                            <p class="total_amt mb-1 <% if(product.delivery_fee_charges > 0) { %>{{ ((in_array(1, $subscription_features)) ) ? 'discard_price' : '' }}<% } %>">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges) %></p>
+                            <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.product_total_amount) %></p>
                         </div>
                     </div>
                 </div>
@@ -239,23 +239,23 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <div class="col-12">
             @if(isset($cart) && !empty($cart) && $client_preference_detail->business_type == 'laundry')
             <div class="row">
-                <div class="col-4">{{__('Comment for Pickup Driver ')}}</div> 
-                <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Please reach before time if possible')}}" id="comment_for_pickup_driver" value ="{{$cart->comment_for_pickup_driver??''}}" name="comment_for_pickup_driver"></div> 
+                <div class="col-4">{{__('Comment for Pickup Driver ')}}</div>
+                <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Please reach before time if possible')}}" id="comment_for_pickup_driver" value ="{{$cart->comment_for_pickup_driver??''}}" name="comment_for_pickup_driver"></div>
             </div>
             <hr class="my-2">
             <div class="row">
-                <div class="col-4">{{__('Comment for Dropoff Driver ')}}</div> 
-                <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Do call me before drop off')}}" id="comment_for_dropoff_driver" value ="{{$cart->comment_for_dropoff_driver??''}}"  name="comment_for_dropoff_driver"></div> 
+                <div class="col-4">{{__('Comment for Dropoff Driver ')}}</div>
+                <div class="col-8"><input class="form-control" type="text" placeholder="{{__('Eg. Do call me before drop off')}}" id="comment_for_dropoff_driver" value ="{{$cart->comment_for_dropoff_driver??''}}"  name="comment_for_dropoff_driver"></div>
             </div>
             <hr class="my-2">
             <div class="row">
-                <div class="col-4">{{__('Comment for Vendor ')}}</div> 
-                <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Eg. Please do the whites separately')}}" id="comment_for_vendor" value ="{{$cart->comment_for_vendor??''}}"  name="comment_for_vendor"></div> 
+                <div class="col-4">{{__('Comment for Vendor ')}}</div>
+                <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Eg. Please do the whites separately')}}" id="comment_for_vendor" value ="{{$cart->comment_for_vendor??''}}"  name="comment_for_vendor"></div>
             </div>
             <hr class="my-2">
             <div class="row">
                 <div class="col-md-6">
-                    <label for="">{{__('Schedule Pickup ')}}</label> 
+                    <label for="">{{__('Schedule Pickup ')}}</label>
                     <input type="datetime-local" id="schedule_datetime_pickup" name="schedule_pickup" class="form-control" placeholder="Inline calendar" value="{{ $cart->schedule_pickup??'' }}" min="{{ $now }}">
                 </div>
                 <div class="col-md-6">
@@ -265,41 +265,41 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
             @else
             <div class="row">
-                <div class="col-4">{{__('Specific instructions')}}</div> 
-                <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions ?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions"></div> 
+                <div class="col-4">{{__('Specific instructions')}}</div>
+                <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions ?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions"></div>
             </div>
            @endif
-            
+
         </div>
         <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">
             <div class="row">
                 <div class="col-6">{{__('Sub Total')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= cart_details.gross_amount %></div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
             </div>
             <hr class="my-2">
             <div class="row">
                 <div class="col-6">{{__('Tax')}}</div>
-                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= cart_details.total_taxable_amount %></div>
+                <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_taxable_amount) %></div>
             </div>
             <hr class="my-2">
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
-                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= cart_details.total_subscription_discount %></div>
+                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_subscription_discount) %></div>
                 </div>
                 <hr class="my-2">
             <% } %>
             <% if(cart_details.loyalty_amount > 0) { %>
                 <div class="row">
                     <div class="col-6">{{__('Loyalty Amount')}}</div>
-                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= cart_details.loyalty_amount %></div>
+                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.loyalty_amount) %></div>
                 </div>
                 <hr class="my-2">
             <% } %>
             <% if(cart_details.wallet_amount_used != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Wallet Amount')}}</div>
-                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= cart_details.wallet_amount_used %></div>
+                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.wallet_amount_used) %></div>
                 </div>
                 <hr class="my-2">
             <% } %>
@@ -312,19 +312,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <% if(cart_details.total_payable_amount > 0) { %>
                             <input type="radio" class="tip_radio" id="control_01" name="select" value="<%= cart_details.tip_5_percent %>">
                             <label class="tip_label" for="control_01">
-                                <h5 class="m-0" id="tip_5">{{Session::get('currencySymbol')}}<%= cart_details.tip_5_percent %></h5>
+                                <h5 class="m-0" id="tip_5">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.tip_5_percent) %></h5>
                                 <p class="m-0">5%</p>
                             </label>
-                        
+
                             <input type="radio" class="tip_radio" id="control_02" name="select" value="<%= cart_details.tip_10_percent %>" >
                             <label class="tip_label" for="control_02">
-                                <h5 class="m-0" id="tip_10">{{Session::get('currencySymbol')}}<%= cart_details.tip_10_percent %></h5>
+                                <h5 class="m-0" id="tip_10">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.tip_10_percent) %></h5>
                                 <p class="m-0">10%</p>
                             </label>
-                        
+
                             <input type="radio" class="tip_radio" id="control_03" name="select" value="<%= cart_details.tip_15_percent %>" >
                             <label class="tip_label" for="control_03">
-                                <h5 class="m-0" id="tip_15">{{Session::get('currencySymbol')}}<%= cart_details.tip_15_percent %></h5>
+                                <h5 class="m-0" id="tip_15">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.tip_15_percent) %></h5>
                                 <p class="m-0">15%</p>
                             </label>
 
@@ -340,16 +340,16 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 </div>
             </div>
             <hr class="my-2">
-          
+
             <% } %>
             <% if(client_preference_detail.gifting == 1) { %>
                 <div class="row">
                     <div class="col-12">
-                      
-                   
+
+
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="custom-control-input" style="margin-left: 10px;"  id="is_gift" name="is_gift" value="1">
-                                                                                         
+
                                 <label class="custom-control-label" for="is_gift"><img class="pr-1 align-middle" src="{{ asset('assets/images/gifts_icon.png') }}" alt=""> <span class="align-middle pt-1"> {{__('Does this include a gift?')}}</span></label>
                             </div>
                     </div>
@@ -361,7 +361,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <p class="total_amt m-0">{{__('Amount Payable')}}</p>
                 </div>
                 <div class="col-6 text-right">
-                    <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= cart_details.total_payable_amount %></p>
+                    <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_payable_amount) %></p>
                     <div>
                         <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
                         <input type="hidden" name="cart_total_payable_amount" value="<%= cart_details.total_payable_amount %>">
@@ -390,13 +390,20 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                 </div>
                 <div class="col-md-7 datenow align-items-center justify-content-between" id="schedule_div" style="<%= ((cart_details.schedule_type == 'now' || cart_details.schedule_type == '' || cart_details.schedule_type == null) ? 'display:none!important' : '') %>">
-                        <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>" 
+                    <% if(cart_details.delay_date != 0) { %>
+                        <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>"
                         min="<%= ((cart_details.delay_date != '0') ? cart_details.delay_date : '') %>">
+                        <% } else { %>
+                            <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>"
+                            min="{{$now}}">
+
+                            <% } %>
+
                 </div>
             </div>
             @endif
             <% } %>
-            
+
         </div>
     </div>
 </script>
@@ -489,11 +496,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="col-12 p-0">
                     <div class="product-4 product-m no-arrow">
                         <% _.each(cart_details.upSell_products, function(product, key){%>
-                            
+
                             <a class="common-product-box scale-effect text-center" href="{{route('productDetail')}}/<%= product.url_slug %>">
                                 <div class="img-outer-box position-relative">
                                     <img src="<%= product.image_url %>" alt="">
-                                </div>    
+                                </div>
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing px-0">
                                         <div class="product-description">
@@ -502,7 +509,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                             <p class="border-bottom pb-1">In <%= product.category_name %></p>
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <b><% if(product.inquiry_only == 0) { %>
-                                                    {{ Session::get('currencySymbol') }}<%= product.variant_price %>
+                                                    {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.variant_price) %>
                                                 <% } %></b>
 
                                                 @if($client_preference_detail)
@@ -514,8 +521,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                                             </div>
                                                         <% } %>
                                                     @endif
-                                                @endif  
-                                            </div>                       
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -537,7 +544,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <a class="common-product-box scale-effect text-center" href="{{route('productDetail')}}/<%= product.url_slug %>">
                                 <div class="img-outer-box position-relative">
                                     <img src="<%= product.image_url %>" alt="">
-                                </div>    
+                                </div>
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing px-0">
                                         <div class="product-description">
@@ -546,7 +553,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                             <p class="border-bottom pb-1">In <%= product.category_name %></p>
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <b><% if(product.inquiry_only == 0) { %>
-                                                    {{ Session::get('currencySymbol') }}<%= product.variant_price %>
+                                                    {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.variant_price) %>
                                                 <% } %></b>
 
                                                 @if($client_preference_detail)
@@ -558,8 +565,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                                             </div>
                                                         <% } %>
                                                     @endif
-                                                @endif  
-                                            </div>                       
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -589,7 +596,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <button class="btn btn-solid apply_promo_code_btn" data-vendor_id="" data-cart_id=""
                             data-coupon_id="" data-amount="" style="display:none">Apply</button>
                             <span class="invalid-feedback manual_promocode" role="alert">
-                                
+
                             </span>
                         </div>
                     </div>
@@ -648,7 +655,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <% _.each(payment_options, function(payment_option, k){%>
                     <div class="" id="" role="tabpanel">
                         <label class="radio mt-2">
-                            <%= payment_option.title %> 
+                            <%= payment_option.title %>
                             <input type="radio" name="cart_payment_method" id="radio-<%= payment_option.slug %>" value="<%= payment_option.id %>" data-payment_option_id="<%= payment_option.id %>">
                             <span class="checkround"></span>
                         </label>
@@ -951,14 +958,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
 {{-- <form action="{{ route('payment.razorpayCompletePurchase',[app('request')->input('amount'),app('request')->input('order')]) }}" method="POST" id="razorpay_gateway">
     @csrf
-    <script src="https://checkout.razorpay.com/v1/checkout.js" 
-        data-key="<?php echo app('request')->input('api_key'); ?>" 
-        data-amount="<?php echo app('request')->input('amount'); ?>" 
-        data-buttontext="Pay" 
-        data-name="Razorpay Payment gateway" 
-        data-description="Rozerpay" 
-        data-prefill.name="name" 
-        data-prefill.email="email" 
+    <script src="https://checkout.razorpay.com/v1/checkout.js"
+        data-key="<?php echo app('request')->input('api_key'); ?>"
+        data-amount="<?php echo app('request')->input('amount'); ?>"
+        data-buttontext="Pay"
+        data-name="Razorpay Payment gateway"
+        data-description="Rozerpay"
+        data-prefill.name="name"
+        data-prefill.email="email"
         data-theme.color="#ff7529">
     </script>
 </form> --}}
@@ -983,7 +990,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var sdk = new window.YocoSDK({
         publicKey: yoco_public_key
     });
-    var inline='';   
+    var inline='';
 </script>
 <script type="text/javascript">
    var guest_cart = {{ $guest_user ? 1 : 0 }};
@@ -1064,7 +1071,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             }
         });
     });
-   
+
     $(document).delegate('#cart_payment_form input[name="cart_payment_method"]', 'change', function() {
         var method = $(this).attr('id');
         if (method.replace('radio-', '') == 'stripe') {

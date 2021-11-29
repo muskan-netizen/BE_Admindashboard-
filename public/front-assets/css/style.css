@@ -14133,10 +14133,6 @@ header.stickycls {
         width: max-content !important;
     }
 
-    .menu-slider .slick-slide:first-child{
-        display: none !important;
-    }
-
     /* .sm-horizontal {
         position: fixed !important;
         background-color: #fff;

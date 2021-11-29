@@ -10,7 +10,7 @@
         @include('layouts.store/left-sidebar-template-one')
         @endif
 </header>
- 
+
 <section class="home-serivces">
     <div class="container">
         <div class="row mb-lg-5 mb-md-4 mb-3">
@@ -42,7 +42,7 @@
 
                     <div class="col-md-8">
                         @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && app('request')->input('addons') != 1)
-                                     
+
                          <!-- Start Main Nav -->
                         <nav id='main-nav'>
                             <ul id='main-nav-list'>
@@ -58,13 +58,13 @@
                         <!-- End Main Nav -->
 
                         @endif
-                        
+
                         <div class="card-box">
                                      <!-- static html -->
-                                
+
                                 @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
                                      @if(!empty($category->childs) && count($category->childs) > 0)
-                             
+
                                     <!-- Start Conent Wrapper -->
                                     <div id='main-wrapper'  class="@if(app('request')->input('addons') == 1) d-none @endif">
                                                 @foreach ($category->childs as $key => $childs)
@@ -77,8 +77,8 @@
                                                             <img class="img-fluid" src="{{$childs->image['proxy_url'] . '1000/200' . $childs->image['image_path']}}" alt="">
                                                         </div>
                                                         @endif
-                                               
-                                                        
+
+
                                                             @foreach ($childs->products as $data)
 
                                                             @php
@@ -88,7 +88,7 @@
                                                                 $data->variant_price = (!empty($data->variant->first())) ? $data->variant->first()->price : 0;
                                                             @endphp
 
-                                                            <div class="row classes_wrapper no-gutters align-items-center" href="#">                                       
+                                                            <div class="row classes_wrapper no-gutters align-items-center" href="#">
                                                                 <div class="col-md-9 col-sm-8 pr-md-2">
                                                                     <h5 class="mb-1"><b>{!! (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku !!}</b></h5>
                                                                     <p class="mb-1">{!! (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku !!}</p>
@@ -96,8 +96,8 @@
                                                                         <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
                                                                             {{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}
                                                                         @endif</h5>
-                                                                        
-                        
+
+
                                                                         @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
                                                                         @php
                                                                             $cartcount = 1;
@@ -123,19 +123,19 @@
                                                                                 <i class="fa fa-plus" aria-hidden="true"></i>
                                                                             </span>
                                                                         </div>
-                                                                        
+
                                                                         @endif
-                        
+
                                                                     </div>
                                                                 </div>
-                                                                
 
-                                                               
+
+
 
                                                                 <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
                                                                     <?php $imagePath = $imagePath2 = '';
                                                                         $mediaCount = count($data->media);
-                                                                        for ($i = 0; $i < $mediaCount && $i < 2; $i++) { 
+                                                                        for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
                                                                             if($i == 0){
                                                                                 $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                                             }
@@ -146,26 +146,26 @@
                                                                     </div>
                                                                 </div>
 
-                                                                 
+
                                                             </div>
                                                             <hr>
                                                             @endforeach
-                                                            
+
                                                         </div>
                                                 @endif
                                                 @endforeach
-                                         
+
                                     </div>
                                     <!-- End Content Wrapper -->
-                                    @endif 
-                                @endif                
-                                
+                                    @endif
+                                @endif
 
-                            
+
+
                             <!-- end statis html -->
-                                    
+
                                     <!-- for single level category -->
-                                  
+
                             @if(!empty($category->childs) && count($category->childs) == 0)
 
                                         @if(app('request')->input('step') == '1' || empty(app('request')->input('step')))
@@ -173,7 +173,7 @@
                                             <div class="service-data mt-4">
                                                 <h4><b>{{ $category->translation_name }}</b></h4>
 
-                                            
+
                                                 @if(!empty($category->image))
                                                 <div class="service-img mb-3">
                                                     <img class="img-fluid" src="{{$category->image['proxy_url'] . '1000/200' . $category->image['image_path']}}" alt="">
@@ -182,7 +182,7 @@
                                                 @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
                                                 {{-- new product design  --}}
-                                                <div class="row classes_wrapper no-gutters align-items-center" href="#">                                       
+                                                <div class="row classes_wrapper no-gutters align-items-center" href="#">
                                                     <div class="col-md-9 col-sm-8 pr-md-2">
                                                         <h5 class="mb-1"><b>{!! $data->translation_title !!}</b></h5>
                                                         <p class="mb-1">{!! $data->translation_description !!}</p>
@@ -190,7 +190,7 @@
                                                     <div class="col-md-3 col-sm-4 mb-3">
                                                         <?php $imagePath = $imagePath2 = '';
                                                             $mediaCount = count($data->media);
-                                                            for ($i = 0; $i < $mediaCount && $i < 2; $i++) { 
+                                                            for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
                                                                 if($i == 0){
                                                                     $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                                 }
@@ -231,32 +231,32 @@
                                                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                                                     </span>
                                                                 </div>
-                                                                
+
                                                                 @endif
 
                                                             </div>
                                                     </div>
                                                 </div>
                                                 <hr>
-                                                
 
-                                            
+
+
                                                 @endforeach
                                             @else
                                                 <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">No Product Found</h5></div>
                                             @endif
 
-                                            
+
 
                                             </div>
                                         </div>
-                                        
+
                                         @endif
                             @endif
                             <!-- end single level category -->
 
                              <!-- Step if addons avilable  Html -->
-                           
+
                             @if(app('request')->input('addons') == '1' && app('request')->input('dateset') != '1')
                              <div id="step-4-ondemand">
                                 @foreach ($cartData as $key => $cart_data)
@@ -288,18 +288,18 @@
                                                         @endphp
                                                 </h6>
                                                 <span class="productAddonSetOptions" data-min="{{$addon->addOnName->min_select}}" data-cart_id="{{$cart_data->cart_id}}" data-cart_product_id="{{$cart_data->id}}" data-max="{{$addon->addOnName->max_select}}" data-addonset-title="{{$addon->addOnName->title}}">
-                                                
+
                                                 <div class="booking-time radio-btns long-radio">
                                                         @foreach($addon->setoptions as $k => $option)
                                                             @php $checked = ''; @endphp
                                                             @foreach ($cart_data->addon as $value)
-                                                               @if($checked != 'checked') 
+                                                               @if($checked != 'checked')
                                                                     @if($addon->addOnName->id == $value->addon_id && $value->option_id == $option->id  && $value->cart_product_id  == $cart_data->id)
                                                                     @php $checked = 'checked'; @endphp
                                                                     @else
                                                                     @php $checked = ''; @endphp
                                                                     @endif
-                                                               @endif 
+                                                               @endif
 
                                                             @endforeach
                                                             <div>
@@ -317,25 +317,25 @@
                                         @endforeach
                                         <hr>
                                         </div>
-                                        
+
                                      @endif
                                      <!-- end show add ons -->
-                                   
+
                                 @endforeach
                                   </div>
                             @endif
                              <!--Step if addons avilable  Html -->
 
-                           
+
                             <!-- Step Two Html -->
-                           
+
                             @if(app('request')->input('step') == '2')
                                 <div id="step-2-ondemand">
-                                    
+
                                     @foreach ($cartData as $cd => $cart_data)
                                       @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
                                         <div  id="date_time_set_div{{$cart_data->id}}">
-                                         
+
                                         <h4 class="mb-2"><b>When would you like your service?</b></h4>
                                         <div class="date-items radio-btns hide">
                                             @foreach ($period as $key => $date)
@@ -372,13 +372,13 @@
                                         </div>
                                         <hr>
                                         @endif
-                                    @endforeach     
-                            
+                                    @endforeach
+
                                         <div class="booking-time-wrapper">
                                             <h4 class="mt-4 mb-2"><b>Do you have any specific instructions?</b></h4>
                                             <textarea class="form-control" name="specific_instructions" id="specific_instructions" cols="30" rows="7"></textarea>
-                                        </div> 
-                                           
+                                        </div>
+
                                 </div>
                             @endif
                             <!--end step 2 html -->
@@ -393,10 +393,10 @@
                                         <div class="row d-flex justify-space-around">
                                             @if(!$guest_user)
                                                 <div class="col-lg-8 left_box">
-                                                    
+
                                                 </div>
                                             @endif
-                                           
+
                                         </div>
 
                                         <div class="row mb-4">
@@ -411,41 +411,41 @@
                                 <div class="col-sm-6 text-md-right">
                                     <button id="order_placed_btn" class="btn btn-solid d-none" type="button" {{$addresses->count() == 0 ? 'disabled': ''}}>{{__('Continue')}}</button>
                                 </div>
-                               
-                            @endif    
-                           
-                        </div> 
-                        
+
+                            @endif
+
+                        </div>
+
                          <div class="footer-card">
                             @if((app('request')->input('step') == '1' || empty(app('request')->input('step'))) && empty(app('request')->input('addons')))
                                 <a href="?step=2" id="next-button-ondemand-2" style="display: none;"><span class="btn btn-solid float-right">Next</span></a>
                                 @elseif(app('request')->input('step') == '1' && app('request')->input('addons') == '1')
-                                    <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
+                                    <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
                                     <a href="?step=2&dateset=1&addons=1" id="next-button-ondemand-2"><span class="btn btn-solid float-right">Next</span></a>
                                 @elseif(app('request')->input('step') == '2' && empty(app('request')->input('addons')))
-                                    <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
+                                    <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
                                     @if(Auth::guest())
                                         <a href="{{route('customer.login')}}" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
                                     @else
                                         <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
                                     @endif
                                 @elseif(app('request')->input('step') == '2' && !empty(app('request')->input('dateset')))
-                                        <a href="?step=1"><span class="btn btn-solid float-left"><</span></a> 
+                                        <a href="?step=1"><span class="btn btn-solid float-left"><</span></a>
                                         @if(Auth::guest())
                                             <a href="{{route('customer.login')}}" id="next-button-ondemand-3" ><span class="btn btn-solid float-right">Continue</span></a>
                                         @else
                                             <a href="#" id="next-button-ondemand-3"><span class="btn btn-solid float-right">Continue</span></a>
-                                        @endif    
+                                        @endif
                                 @elseif(app('request')->input('step') == '3')
                                     <a href="?step=2"><span class="btn btn-solid"><</span></a>
                                     <a href="?step=3" id="next-button-ondemand-4"><span class="btn btn-solid float-right">Continue</span></a>
-                                @else                           
+                                @else
                             @endif
                         </div>
-                       
+
 
                     </div>
-                    
+
                     <div class="col-md-4">
                         <div class="card-box p-2">
                             <div class="product-order">
@@ -458,7 +458,7 @@
                                         <div class="circle-core"></div>
                                     </div>
                                 </div>
-                            
+
                                 <script type="text/template" id="header_cart_template_ondemand">
                                         <% _.each(cart_details.products, function(product, key){%>
                                             <li>
@@ -474,15 +474,15 @@
                                                     </th>
                                                 </li>
                                                 <% } %>
-                                            <% _.each(product.vendor_products, function(vendor_product, vp){%>  
+                                            <% _.each(product.vendor_products, function(vendor_product, vp){%>
                                                 <li id="cart_product_<%= vendor_product.id %>" data-qty="<%= vendor_product.quantity %>">
-                                                        <div class='media-body'>                                                                
+                                                        <div class='media-body'>
                                                             <h6 class="d-flex align-items-center justify-content-between">
                                                                 <span class="ellips"><%= vendor_product.quantity %>x <%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></span>
-                                                                <span>{{Session::get('currencySymbol')}}<%= vendor_product.pvariant.price %></span>
+                                                                <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.price) %></span>
                                                             </h6>
                                                         </div>
-                                                    
+
                                                     <div class='close-circle'>
                                                         <a  class="action-icon d-block mb-3 remove_product_via_cart" data-product="<%= vendor_product.id %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                                             <i class="fa fa-trash-o" aria-hidden="true"></i>
@@ -502,28 +502,28 @@
                                                             <p class="p-0 m-0"><%= addon.option.title %></p>
                                                         </div>
                                                         <div class="col-md-2 col-sm-4 text-center">
-                                                            <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= addon.option.price_in_cart %></div>
+                                                            <div class="extra-items-price">{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(addon.option.price_in_cart) %></div>
                                                         </div>
                                                         <div class="col-md-7 col-sm-4 text-right">
-                                                            <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= addon.option.quantity_price %></div>
+                                                            <div class="extra-items-price">{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(addon.option.quantity_price) %></div>
                                                         </div>
                                                     </div>
                                                     <% }); %>
                                                 <% } %>
                                                 <hr class="my-2">
-                                                  
+
 
                                             <% }); %>
                                         <% }); %>
-                                            
-                                                    
+
+
                                         @foreach ($cartData as $cd => $cart_data)
                                         @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
                                         <h4 class="mb-2"><b>{!! (!empty($cart_data->product->translation->first())) ? $cart_data->product->translation->first()->title : $cart_data->product->sku !!}</b></h4>
-                                       
+
                                         <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('DATE & TIME')}} </h5>
                                         <li>
-                                            <div class='media-body'>                                                                
+                                            <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Date')}}</span>
                                                     <span id="show_date{{$cart_data->id}}">@if(isset($cart_data->scheduled_date_time)) {{ date('d-m-Y', strtotime($cart_data->scheduled_date_time)) }}  @else -- @endif </span>
@@ -532,7 +532,7 @@
                                         </li>
 
                                         <li>
-                                            <div class='media-body'>                                                                
+                                            <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Start Time')}}</span>
                                                     <span id="show_time{{$cart_data->id}}">@if(isset($cart_data->scheduled_date_time)) {{ date('H:i', strtotime($cart_data->scheduled_date_time)) }}  @else -- @endif</span>
@@ -544,16 +544,16 @@
 
                                         <h5 class="d-flex align-items-center justify-content-between pb-2">{{__('PRICE DETAILS')}} </h5>
                                         <li>
-                                            <div class='media-body'>                                                                
+                                            <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Price')}}</span>
-                                                    <span>{{Session::get('currencySymbol')}}<%= cart_details.gross_amount %></span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.gross_amount) %></span>
                                                 </h6>
                                             </div>
                                         </li>
 
                                         <li>
-                                            <div class='media-body'>                                                                
+                                            <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Tax')}}</span>
                                                     <span>{{Session::get('currencySymbol')}}<%= cart_details.total_taxable_amount %></span>
@@ -563,20 +563,20 @@
 
                                         <% if(cart_details.loyalty_amount > 0) { %>
                                         <li>
-                                            <div class='media-body'>                                                                
+                                            <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Loyalty Amount')}} </span>
-                                                    <span>{{Session::get('currencySymbol')}}<%= cart_details.loyalty_amount %></span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.loyalty_amount) %></span>
                                                 </h6>
                                             </div>
                                         </li>
                                         <% } %>
 
                                         <li>
-                                            <div class='media-body'>                                                                
+                                            <div class='media-body'>
                                                 <h6 class="d-flex align-items-center justify-content-between">
                                                     <span class="ellips">{{__('Total')}}</span>
-                                                    <span>{{Session::get('currencySymbol')}}<%= cart_details.total_payable_amount %></span>
+                                                    <span>{{Session::get('currencySymbol')}}<%=  Helper.formatPrice(cart_details.total_payable_amount) %></span>
                                                 </h6>
                                             </div>
                                         </li>
@@ -584,8 +584,8 @@
                                  </script>
                                  <ul class="show-div shopping-cart" id="header_cart_main_ul_ondemand">
                                  </ul>
-                                
-                                
+
+
                             </div>
                         </div>
                     </div>
@@ -693,7 +693,8 @@
 @section('script')
 <script src="https://js.stripe.com/v3/"></script>
 <script type="text/javascript">
-     var guest_cart = {{ $guest_user ? 1 : 0 }};
+
+    var guest_cart = {{ $guest_user ? 1 : 0 }};
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
@@ -712,7 +713,7 @@
     var update_addons_in_cart = "{{route('addToCartAddons')}}";
     var addonids = [];
     var addonoptids = [];
-  
+
 
     $(document).on('click', '.showMapHeader', function(){
         var lats = document.getElementById('latitude').value;
@@ -723,13 +724,13 @@
             center:myLatlng,
             zoom:13,
             mapTypeId:google.maps.MapTypeId.ROADMAP
-            
+
         };
         var map=new google.maps.Map(document.getElementById("pick-address-map"), mapProp);
         var marker = new google.maps.Marker({
             position: myLatlng,
             map: map,
-            draggable:true  
+            draggable:true
         });
         // marker drag event
         google.maps.event.addListener(marker,'drag',function(event) {
@@ -743,24 +744,24 @@
         });
         $('#pick_address').modal('show');
     });
-    
+
 </script>
 
 <script>
       $(document).ready(function() {
-        
+
         $('#main-nav-list').onePageNav({
           scrollThreshold: 0.2, // Adjust if Navigation highlights too early or too late
           scrollOffset: 75 //Height of Navigation Bar
         });
-        
-        // Sticky Header - http://jqueryfordesigners.com/fixed-floating-elements/         
+
+        // Sticky Header - http://jqueryfordesigners.com/fixed-floating-elements/
         var top = $('#main-nav').offset().top - parseFloat($('#main-nav').css('margin-top').replace(/auto/, 0));
-        
+
         $(window).scroll(function (event) {
           // what the y position of the scroll is
           var y = $(this).scrollTop();
-          
+
           // whether that's below the form
           if (y >= top) {
             // if so, ad the fixed class
@@ -770,11 +771,11 @@
             $('#main-nav').removeClass('fixed');
           }
         });
-        
+
       });
-      
+
       ;(function($, window, document, undefined){
-      
+
         // our plugin constructor
         var OnePageNav = function(elem, options){
           this.elem = elem;
@@ -788,7 +789,7 @@
           this.$doc = $(document);
           this.docHeight = this.$doc.height();
         };
-      
+
         // the plugin prototype
         OnePageNav.prototype = {
           defaults: {
@@ -803,56 +804,56 @@
             end: false,
             scrollChange: false
           },
-      
+
           init: function() {
             var self = this;
-            
+
             // Introduce defaults that can be extended either
             // globally or using an object literal.
             self.config = $.extend({}, self.defaults, self.options, self.metadata);
-            
+
             //Filter any links out of the nav
             if(self.config.filter !== '') {
               self.$nav = self.$nav.filter(self.config.filter);
             }
-            
+
             //Handle clicks on the nav
             self.$nav.on('click.onePageNav', $.proxy(self.handleClick, self));
-      
+
             //Get the section positions
             self.getPositions();
-            
+
             //Handle scroll changes
             self.bindInterval();
-            
+
             //Update the positions on resize too
             self.$win.on('resize.onePageNav', $.proxy(self.getPositions, self));
-      
+
             return this;
           },
-          
+
           adjustNav: function(self, $parent) {
             self.$elem.find('.' + self.config.currentClass).removeClass(self.config.currentClass);
             $parent.addClass(self.config.currentClass);
           },
-          
+
           bindInterval: function() {
             var self = this;
             var docHeight;
-            
+
             self.$win.on('scroll.onePageNav', function() {
               self.didScroll = true;
             });
-            
+
             self.t = setInterval(function() {
               docHeight = self.$doc.height();
-              
+
               //If it was scrolled
               if(self.didScroll) {
                 self.didScroll = false;
                 self.scrollChange();
               }
-              
+
               //If the document height changes
               if(docHeight !== self.docHeight) {
                 self.docHeight = docHeight;
@@ -860,59 +861,59 @@
               }
             }, 250);
           },
-          
+
           getHash: function($link) {
             return $link.attr('href').split('#')[1];
           },
-          
+
           getPositions: function() {
             var self = this;
             var linkHref;
             var topPos;
             var $target;
-            
+
             self.$nav.each(function() {
               linkHref = self.getHash($(this));
               $target = $('#' + linkHref);
-      
+
               if($target.length) {
                 topPos = $target.offset().top;
                 self.sections[linkHref] = Math.round(topPos) - self.config.scrollOffset;
               }
             });
           },
-          
+
           getSection: function(windowPos) {
             var returnValue = null;
             var windowHeight = Math.round(this.$win.height() * this.config.scrollThreshold);
-      
+
             for(var section in this.sections) {
               if((this.sections[section] - windowHeight) < windowPos) {
                 returnValue = section;
               }
             }
-            
+
             return returnValue;
           },
-          
+
           handleClick: function(e) {
             var self = this;
             var $link = $(e.currentTarget);
             var $parent = $link.parent();
             var newLoc = '#' + self.getHash($link);
-            
+
             if(!$parent.hasClass(self.config.currentClass)) {
               //Start callback
               if(self.config.begin) {
                 self.config.begin();
               }
-              
+
               //Change the highlighted nav item
               self.adjustNav(self, $parent);
-              
+
               //Removing the auto-adjust on scroll
               self.unbindInterval();
-              
+
               //Scroll to the correct position
               $.scrollTo(newLoc, self.config.scrollSpeed, {
                 axis: 'y',
@@ -925,10 +926,10 @@
                   if(self.config.changeHash) {
                     window.location.hash = newLoc;
                   }
-                  
+
                   //Add the auto-adjust on scroll back in
                   self.bindInterval();
-                  
+
                   //End callback
                   if(self.config.end) {
                     self.config.end();
@@ -936,24 +937,24 @@
                 }
               });
             }
-      
+
             e.preventDefault();
           },
-          
+
           scrollChange: function() {
             var windowTop = this.$win.scrollTop();
             var position = this.getSection(windowTop);
             var $parent;
-            
+
             //If the position is set
             if(position !== null) {
               $parent = this.$elem.find('a[href$="#' + position + '"]').parent();
-              
+
               //If it's not already the current section
               if(!$parent.hasClass(this.config.currentClass)) {
                 //Change the highlighted nav item
                 this.adjustNav(this, $parent);
-                
+
                 //If there is a scrollChange callback
                 if(this.config.scrollChange) {
                   this.config.scrollChange($parent);
@@ -961,23 +962,23 @@
               }
             }
           },
-          
+
           unbindInterval: function() {
             clearInterval(this.t);
             this.$win.unbind('scroll.onePageNav');
           }
         };
-      
+
         OnePageNav.defaults = OnePageNav.prototype.defaults;
-      
+
         $.fn.onePageNav = function(options) {
           return this.each(function() {
             new OnePageNav(this, options).init();
           });
         };
-        
+
       })( jQuery, window , document );
     </script>
 
-    
+
 @endsection

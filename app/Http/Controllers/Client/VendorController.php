@@ -797,7 +797,7 @@ class VendorController extends BaseController
 
         $vendor_payouts = $vendor_payouts->get();
         foreach ($vendor_payouts as $payout) {
-            $payout->date = Carbon::parse($payout->created_at)->format('M d, Y h:i A');
+            $payout->date = dateTimeInUserTimeZone($payout->created_at, $user->timezone);
             $payout->amount = $payout->amount;
             $payout->type = $payout->payoutOption->title;
         }

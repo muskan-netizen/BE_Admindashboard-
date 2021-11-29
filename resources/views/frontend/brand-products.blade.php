@@ -68,7 +68,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="collection-filter col-xl-3">
+                <div class="collection-filter col-lg-3">
                     <div class="collection-filter-block">
                         <!-- <div class="collection-mobile-back">
                             <span class="filter-back d-lg-none d-inline-block">
@@ -204,7 +204,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="collection-content col">
+                <div class="collection-content col-lg-9">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">

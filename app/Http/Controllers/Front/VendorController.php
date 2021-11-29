@@ -56,6 +56,9 @@ class VendorController extends FrontController
             $value->categoriesList = $categoriesList;
             $value->vendorRating = $this->vendorRating($value->products);
         }
+        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+            $vendors = $vendors->sortBy('lineOfSightDistance')->values()->all();
+        }
         return view('frontend/vendor-all')->with(['navCategories' => $navCategories,'vendors' => $vendors]);
     }
     /**
@@ -463,8 +466,8 @@ class VendorController extends FrontController
                 },
                 'addOn.setoptions' => function ($q2) use ($langId) {
                     $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
-                    $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
-                    $q2->where('apt.language_id', $langId);
+                    $q2->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
+                    $q2->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 }
             ])->where('is_live', 1)->where('url_slug', $request->slug)->first();
         if(!empty($AddonData)){
@@ -597,14 +600,23 @@ class VendorController extends FrontController
 
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
 
-        // $vendor_categories = VendorCategory::with(['category.translation_one'])
-        // ->where('vendor_id', $vid)
-        // ->whereHas('category.translation_one', function ($query) use ($keyword){
-        //     $query->where('name', 'like', '%'.$keyword.'%');
-        // })
-        // ->whereHas('category', function($query) {
-        //         $query->whereIn('type_id', [1]);
-        // })->where('status', 1)->get();
+        $vendor = Vendor::with('slot.day', 'slotDate')
+            ->select('id','email', 'name', 'show_slot')->where('id', $vid)->where('status', 1)->firstOrFail();
+        $vendor->is_vendor_closed = 0;
+        if($vendor->show_slot == 0){
+            if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
+                $vendor->is_vendor_closed = 1;
+            }else{
+                $vendor->is_vendor_closed = 0;
+                if($vendor->slotDate->isNotEmpty()){
+                    $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
+                    $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
+                }elseif($vendor->slot->isNotEmpty()){
+                    $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
+                    $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
+                }
+            }
+        }
 
         $vendorCategory = 0;
         if($vCat != ''){
@@ -708,7 +720,7 @@ class VendorController extends FrontController
         // dd($vendor_categories->toArray());
 
         $listData = $vendor_categories;
-        $returnHTML = view('frontend.vendor-search-products')->with(['listData'=>$listData])->render();
+        $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor, 'listData'=>$listData])->render();
         return response()->json(array('status'=>'Success', 'html'=>$returnHTML));
     }
 

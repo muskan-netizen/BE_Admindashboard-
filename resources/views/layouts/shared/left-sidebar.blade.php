@@ -22,7 +22,7 @@
                 <img src="{{ asset('assets/images/logo-dark.png') }}" alt="" height="20">
             </span>
         </a>
-        
+
         <a href="{{route('client.dashboard')}}" class="logo logo-light text-center">
             <span class="logo-sm">
                 <img src="{{$urlImg}}"
@@ -153,7 +153,7 @@
                                             @endif
                                         </ul>
                                     </div>
-                                </li> 
+                                </li>
                             @endif
                             @if(Auth::user()->is_superadmin == 1)
                             {{-- @if(count(array_intersect($subscription_permissions, $allowed)) || Auth::user()->is_superadmin == 1) --}}
@@ -189,6 +189,12 @@
                                     </a>
                                 </li>
                             @endif
+                             <li>
+                                <a href="{{route('review.index')}}">
+                                    <span class="icon-customer-2"></span>
+                                    <span> {{ __('Product Reviews') }} </span>
+                                </a>
+                            </li>
                         </ul>
                 </li>
                 @endif
@@ -306,7 +312,7 @@
                     </a>
                     <ul class="nav-second-level">
 
-                        @if(Auth::user()->is_superadmin == 1)    
+                        @if(Auth::user()->is_superadmin == 1)
                         <li>
                             <a href="#sidebarbanner" data-toggle="collapse">
                                 <span class="icon-styling"></span>
@@ -328,7 +334,7 @@
                         @endif
 
 
-                       
+
                         @if(in_array('promocode',$allowed) || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('promocode.index')}}">
@@ -352,7 +358,7 @@
                     </ul>
                 </li>
                 @endif
-                
+
                 @if(count(array_intersect($extra_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
                     @if($client_preference->celebrity_check == 1 || $client_preference->enquire_mode == 1)
                         <li>
@@ -362,7 +368,7 @@
                             </a>
                             <ul class="nav-second-level">
                                 {{-- @if(!empty($client_preference) && $client_preference->celebrity_check == 1) --}}
-                                @if(Auth::user()->is_superadmin == 1 && $client_preference->celebrity_check == 1)   
+                                @if(Auth::user()->is_superadmin == 1 && $client_preference->celebrity_check == 1)
                                     @if(in_array('celebrity',$allowed) || Auth::user()->is_superadmin == 1)
                                         <li>
                                             <a href="{{ route('celebrity.index') }}">

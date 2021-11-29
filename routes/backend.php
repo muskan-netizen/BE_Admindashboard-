@@ -134,6 +134,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/registration/document/delete', [VendorRegistrationDocumentController::class, 'destroy'])->name('vendor.registration.document.delete');
 
         Route::resource('tag', 'Client\TagController');
+        
         Route::get('tag/edit', [TagController::class, 'show'])->name('tag.edit');
         Route::post('tag/create', [TagController::class, 'store'])->name('tag.create');
         Route::post('tag/update', [TagController::class, 'update'])->name('tag.update');
@@ -262,6 +263,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::post('updateCreateVendorInDispatchOnDemand', 'Client\VendorController@updateCreateVendorInDispatchOnDemand')->name('update.Create.Vendor.In.Dispatch.OnDemand');
             Route::post('updateCreateVendorInDispatchLaundry', 'Client\VendorController@updateCreateVendorInDispatchLaundry')->name('update.Create.Vendor.In.Dispatch.Laundry');
         });
+
+        Route::resource('review', 'Client\ReviewController');
     });
 });
 
