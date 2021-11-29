@@ -27,11 +27,11 @@
             if(response.status == '200'){
                 $('#cab_detail_box').html('');
 
-                var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
-                    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                     } };
+                // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
+                //     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                //      } };
 
-                var orderSuccessData = _.extend({ Helper: Helper },{result: response.data, product_image: response.data.product_image});
+                var orderSuccessData = _.extend({ Helper: NumberFormatHelper },{result: response.data, product_image: response.data.product_image});
 
                 let order_success_template = _.template($('#order_success_template').html());
                 $("#cab_detail_box").append(order_success_template(orderSuccessData)).show();
@@ -154,11 +154,11 @@ $(document).ready(function () {
                 if(response.status == '200'){
                     window.location.replace(response.data.route);
                     $('#cab_detail_box').html('');
-                    var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
-                        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                         } };
+                    // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
+                    //     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    //      } };
 
-                    var orderSuccessData = _.extend({ Helper: Helper },{result: response.data, product_image: product_image});
+                    var orderSuccessData = _.extend({ Helper: NumberFormatHelper },{result: response.data, product_image: product_image});
 
                     let order_success_template = _.template($('#order_success_template').html());
                     $("#cab_detail_box").append(order_success_template(orderSuccessData)).show();
@@ -417,10 +417,10 @@ $(document).ready(function () {
                     $('.cab-booking-main-loader').hide();
                     $('#search_product_main_div').html('');
                     if(response.data.length != 0){
-                        var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
-                            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                             } };
-                             var productData = _.extend({ Helper: Helper }, {results: response.data.products});
+                        // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
+                        //     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        //      } };
+                             var productData = _.extend({ Helper: NumberFormatHelper }, {results: response.data.products});
 
                         let products_template = _.template($('#products_template').html());
                         $("#search_product_main_div").append(products_template(productData)).show();
@@ -550,10 +550,10 @@ $(document).ready(function () {
                     $('#cab_detail_box').html('');
                     $('.cab-booking-main-loader').hide();
                     if(response.data.length != 0){
-                        var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
-                            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                             } };
-                        var cabData = _.extend({ Helper: Helper },{result: response.data});
+                        // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
+                        //     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        //      } };
+                        var cabData = _.extend({ Helper: NumberFormatHelper },{result: response.data});
 
                         $('.address-form').addClass('d-none');
                         $('.cab-detail-box').removeClass('d-none');

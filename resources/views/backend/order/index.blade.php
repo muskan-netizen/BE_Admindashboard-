@@ -396,11 +396,11 @@
                         $(".tab-pane").html('');
                     }
                     if (response.data.orders.data.length != 0) {
-                        var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
-                                    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                                 } };
+                        // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
+                        //             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        //          } };
 
-                        var orderData = _.extend({ Helper: Helper },{
+                        var orderData = _.extend({ Helper: NumberFormatHelper },{
                                                                 orders: response.data.orders.data,
                                                                 next_page_url: response.data.orders.next_page_url,
                                                                 filter_order_status: filter_order_status

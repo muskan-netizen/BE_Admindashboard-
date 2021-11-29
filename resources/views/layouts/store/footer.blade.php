@@ -102,6 +102,14 @@
         var defaultLocationName = "{{$client_preference_detail->Default_location_name}}";
     @endif
 
+    var NumberFormatHelper = { formatPrice: function(x){
+        if(x){
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        return x;
+        }
+    };
+
 </script>
 <script src="{{asset('assets/js/constants.js')}}"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
