@@ -767,6 +767,10 @@ class CartController extends FrontController
                         $vendorData->is_vendor_closed = 0;
                     }
                 }
+                if($vendorData->vendor->$action == 0){
+                    $vendorData->is_vendor_closed = 1;
+                    $delivery_status = 0;
+                }
                 $total_payable_amount = $total_payable_amount + $payable_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
@@ -854,11 +858,12 @@ class CartController extends FrontController
     public function getLastAddedProductVariant(Request $request, $domain='')
     {
         try{
-            $cartProduct = CartProduct::with('addon')->where('cart_id', $request->cart_id)->where('product_id', $request->product_id)->orderByDesc('created_at')->first();
+            $cartProduct = CartProduct::with('addon')
+                ->where('cart_id', $request->cart_id)
+                ->where('product_id', $request->product_id)
+                ->orderByDesc('created_at')->first();
 
             return $this->successResponse($cartProduct, '', 200);
-            // dd($cartProduct->toArray());
-
         }
         catch(Exception $ex){
             return $this->errorResponse($ex->getMessage(), $ex->getCode());
@@ -866,7 +871,7 @@ class CartController extends FrontController
     }
 
     /**
-     * Get Last added product variant
+     * Get current product variants with different addons
      *
      * @return \Illuminate\Http\Response
      */

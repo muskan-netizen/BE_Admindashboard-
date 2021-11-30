@@ -16,6 +16,7 @@ use App\Http\Controllers\Client\Accounting\PromoCodeController;
 use App\Http\Controllers\Client\VendorRegistrationDocumentController;
 use App\Http\Controllers\Client\TagController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
+use App\Http\Controllers\Client\ProductFaqController;
 
 Route::get('email-test', function () {
     $details['email'] = 'testmail@yopmail.com';
@@ -139,6 +140,15 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('tag/create', [TagController::class, 'store'])->name('tag.create');
         Route::post('tag/update', [TagController::class, 'update'])->name('tag.update');
         Route::post('tag/delete', [TagController::class, 'destroy'])->name('tag.delete');
+
+
+        Route::resource('productfaq', 'Client\ProductFaqController');
+        Route::get('product/faq/edit', [ProductFaqController::class, 'show'])->name('product.faq.edit');
+        Route::post('productfaq/create', [ProductFaqController::class, 'store'])->name('product.faq.create');
+        Route::post('productfaq/update', [ProductFaqController::class, 'update'])->name('product.faq.update');
+        Route::post('product/faq/delete', [ProductFaqController::class, 'destroy'])->name('product.faq.delete');
+
+
 
         Route::resource('driverregistrationdocument', 'Client\DriverRegistrationDocumentController');
         Route::get('driver/registration/document/edit', [DriverRegistrationDocumentController::class, 'show'])->name('driver.registration.document.edit');

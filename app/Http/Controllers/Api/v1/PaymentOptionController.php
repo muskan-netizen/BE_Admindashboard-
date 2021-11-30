@@ -30,6 +30,9 @@ class PaymentOptionController extends BaseController{
             $code = array('cod', 'paypal', 'payfast', 'stripe', 'mobbex','yoco','paylink','razorpay','gcash');
         }
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'title', 'off_site']);
+        foreach($payment_options as $option){
+            $option->title = __($option->title);
+        }
         return $this->successResponse($payment_options, '', 201);
     }
 

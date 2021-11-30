@@ -657,7 +657,7 @@
                                         <%= option.title %>
                                     </label>
                                     <div>
-                                        <span class="addon_price mr-1 font-14">$<%= option.price %></span>
+                                        <span class="addon_price mr-1 font-14">{{Session::get('currencySymbol')}}<%= option.price %></span>
                                         <input type="checkbox" id="inlineCheckbox_<%= key1 %>_<%= key2 %>" class="product_addon_option" name="addonData[<%= key1 %>][]" addonId="<%= addon.addon_id %>" addonOptId="<%= option.id %>" addonPrice="<%= option.price %>">
                                     </div>
                                 </div>

@@ -56,7 +56,7 @@
         @forelse($addresses as $k => $address)
         <div class="col-md-12">
             <div class="delivery_box px-0">
-                <label class="radio m-0">{{$address->address}}, {{$address->state}} {{$address->pincode}}
+                <label class="radio m-0">{{ ($address->house_number ?? false) ? $address->house_number."," : '' }} {{$address->address}}, {{$address->state}} {{$address->pincode}}
                     @if($address->is_primary)
                     <input type="radio" name="address_id" value="{{$address->id}}" checked="checked">
                     @else
@@ -137,7 +137,18 @@
                         <span class="text-danger" id="address_error"></span>
                     </div>
                 </div>
+
                 <div class="form-row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <label for="house_number">{{ __('House / Apartment/ Flat number') }}</label>
+                        <input type="text" class="form-control" id="house_number" placeholder="{{ __('House / Apartment/ Flat number') }}" name="house_number" >
+                        <span class="text-danger" id="house_number_error"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="street">{{ __('Street') }}</label>
+                        <input type="text" class="form-control" id="street" placeholder="{{ __('Street') }}" name="street" >
+                        <span class="text-danger" id="street_error"></span>
+                    </div>
                     <div class="col-md-6 mb-3">
                         <label for="city">{{__('City')}}</label>
                         <input type="text" class="form-control" id="city" placeholder="{{__('City')}}" value="">

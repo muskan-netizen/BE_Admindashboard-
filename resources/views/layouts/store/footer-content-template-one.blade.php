@@ -102,7 +102,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 <div class="col-lg-3 col-md-6 col-5 pl-xl-3 mobile-border">
                     <div class="sub-title">
                         <div class="footer-title mt-0 d-none d-md-block">
-                            <h4 class="mt-0">{{ __('Find our app on mobile') }}</h4>
+                            <h4 class="mt-0">{{ __('Find Our App On Mobile') }}</h4>
                         </div>
                         <div class="footer-contant">
                             <div class="store-btn mb-3 d-none d-md-block">
@@ -112,7 +112,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
 
                             @if(count($social_media_details))
                             <div class="footer-title mt-0">
-                                <h4 class="mt-0">{{ __('Keep in Touch') }}</h4>
+                                <h4 class="mt-0">{{ __('Keep In Touch') }}</h4>
                             </div>
                             <ul class="social-links d-flex">
                                 @foreach($social_media_details as $social_media_detail)
@@ -176,7 +176,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                             $prevYear = $currYear - 1;
                             $currYear = substr($currYear, -2);
                         @endphp
-                        <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} | All rights reserved</p>
+                        <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} | {{__('All rights reserved')}}</p>
                     </div>
                 </div>
             </div>

@@ -45,7 +45,7 @@
                         <div class="col-md-3"><h4>{{ __("Customer") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Address") }}</h4></div>
                     </div>
-                    {{-- <%= order.is_gift %> is gift  --}}
+
                     <div class="row no-gutters order_data mb-lg-2">
                         <div class="col-md-3"><h6 class="m-0">#<%= order.order_number %> </h6></div>
 
@@ -57,7 +57,7 @@
                         <% if(order.address !== null) { %>
                         <div class="col-md-3">
                             <p class="ellipsis mb-0" data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">
-                                <%= order.address.address %>
+                                <%= order.address.house_number?order.address.house_number+',' : ''  %> <%= order.address.address %>
                             </p>
                         </div>
                         <% } %>

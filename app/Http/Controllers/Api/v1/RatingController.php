@@ -39,7 +39,7 @@ class RatingController extends BaseController{
                     foreach ($image as $files) {
                     $file =  substr(md5(microtime()), 0, 15).'_'.$files->getClientOriginalName();
                     $code = Client::orderBy('id','asc')->value('code');
-                    $storage = Storage::disk('s3')->put('/'.$code.'/review', $files, 'public');
+                    $storage = Storage::disk('s3')->put($code.'/review', $files, 'public');
                     $img = new OrderProductRatingFile();
                     $img->order_product_rating_id = $ratings->id;
                     $img->file = $storage;

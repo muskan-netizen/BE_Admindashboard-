@@ -105,7 +105,7 @@
                     <div class="col-sm-6">
                         <h4>{{__('Shipping Address')}}</h4>
                         <ul class="order-detail">
-                            <li>{{$order->address ? $order->address->address : ''}}</li>
+                            <li> {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{$order->address ? $order->address->address : ''}}</li>
                         </ul>
                     </div>
                     <div class="col-sm-12 payment-mode">
@@ -122,7 +122,7 @@
 <!-- <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script> -->
 
     <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
-    
+
     <script>
         var url = window.location.href;
         var arr = url.split("/");

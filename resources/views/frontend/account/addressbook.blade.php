@@ -116,7 +116,7 @@
                                                     <h6 class="mt-0 mb-2"><i class="fa fa-{{ ($add->type == 1 || $add->type == 3) ? 'home' : 'building' }} mr-1" aria-hidden="true"></i> {{ ($add->type == 1) ? __('Home') : (($add->type == 2) ? __('Office') : __('Others')) }}</h6>
                                                 </div>
                                                 <div class="px-2">
-                                                    <p class="mb-1">{{$add->address}}</p>
+                                                    <p class="mb-1">{{ ($add->house_number ?? false) ? $add->house_number."," : '' }} {{$add->address}}</p>
                                                     <p class="mb-1">{{$add->street}}</p>
                                                     <p class="mb-1">{{$add->city}}, {{$add->state}} {{$add->pincode}}</p>
                                                     <p class="mb-1">{{$add->country  ? $add->country : ''}}</p>
@@ -185,7 +185,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="delivery_box pt-0 pl-0  pb-3">
-                                    <label class="radio m-0">{{ __('Home') }}  
+                                    <label class="radio m-0">{{ __('Home') }}
                                         <input type="radio" name="type" <%= (typeof address != 'undefined') ? ((address.type == 1) ? 'checked="checked"' : '') : 'checked="checked"' %> value="1">
                                         <span class="checkround"></span>
                                     </label>
@@ -193,7 +193,7 @@
                             </div>
                             <div class="col-md-3">
                             <div class="delivery_box pt-0 pl-0  pb-3">
-                                <label class="radio m-0">{{ __('Office') }} 
+                                <label class="radio m-0">{{ __('Office') }}
                                     <input type="radio" name="type" <%= ((typeof address != 'undefined') && (address.type == 2)) ? 'checked="checked"' : '' %> value="2">
                                     <span class="checkround"></span>
                                 </label>
@@ -226,22 +226,31 @@
                         </div>
                         <div class="form-row">
                             <div class="col-md-6 mb-2">
+                                <label for="house_number">{{ __('House / Apartment/ Flat number') }}</label>
+                                <input type="text" class="form-control" id="house_number" placeholder="{{ __('House / Apartment/ Flat number') }}" name="house_number" value="<%= ((typeof address != 'undefined') && (address.house_number != null)) ? address.house_number : '' %>">
+                                <span class="text-danger" id="house_number_error"></span>
+                            </div>
+                            <div class="col-md-6 mb-2">
                                 <label for="street">{{ __('Street') }}</label>
                                 <input type="text" class="form-control" id="street" placeholder="{{ __('Street') }}" name="street" value="<%= ((typeof address != 'undefined') && (address.street != null)) ? address.street : '' %>">
                                 <span class="text-danger" id="street_error"></span>
                             </div>
+
+                        </div>
+                        <div class="form-row">
                             <div class="col-md-6 mb-2">
                                 <label for="city">{{ __('City') }}</label>
                                 <input type="text" class="form-control" id="city" name="city" placeholder="{{ __('City') }}" value="<%= ((typeof address != 'undefined') && (address.city != null)) ? address.city : '' %>" required="required">
                                 <span class="text-danger" id="city_error"></span>
                             </div>
-                        </div>
-                        <div class="form-row">
                             <div class="col-md-6 mb-2">
                                 <label for="state">{{ __('State') }}</label>
                                 <input type="text" class="form-control" id="state" name="state" placeholder="{{ __('State') }}" value="<%= ((typeof address != 'undefined') && (address.state != null)) ? address.state : '' %>" required="required">
                                 <span class="text-danger" id="state_error"></span>
                             </div>
+
+                        </div>
+                        <div class="form-row mb-0">
                             <div class="col-md-6 mb-2">
                                 <label for="country">{{ __('Country') }}</label>
                                 <select name="country" id="country" class="form-control" value="<%= ((typeof address != 'undefined') && (address.country_id != null)) ? address.country_id : '' %>" required="required">
@@ -251,8 +260,6 @@
                                 </select>
                                 <span class="text-danger" id="country_error"></span>
                             </div>
-                        </div>
-                        <div class="form-row mb-0">
                             <div class="col-md-6 mb-2">
                                 <label for="pincode">{{ __('Zip Code') }}</label>
                                 <input type="text" class="form-control" id="pincode" name="pincode" placeholder="{{ __('Zip Code') }}" value="<%= ((typeof address != 'undefined') && (address.pincode != null)) ? address.pincode : ''%>" required="required">
@@ -264,7 +271,7 @@
                             </div>
                         </div>
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
         </form>
@@ -273,7 +280,7 @@
 <div class="modal fade" id="add_edit_address" tabindex="-1" aria-labelledby="addedit-addressLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
-      
+
     </div>
   </div>
 </div>
@@ -363,7 +370,7 @@
             url: verify_information_url,
             data: {
                 "_token": "{{ csrf_token() }}",
-                "type": $type, 
+                "type": $type,
             },
             beforeSend : function() {
                 if(ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
@@ -431,13 +438,13 @@
             center:myLatlng,
             zoom:13,
             mapTypeId:google.maps.MapTypeId.ROADMAP
-            
+
         };
         var map=new google.maps.Map(document.getElementById("pick-address-map"), mapProp);
         var marker = new google.maps.Marker({
             position: myLatlng,
             map: map,
-            draggable:true  
+            draggable:true
         });
         // marker drag event
         google.maps.event.addListener(marker,'drag',function(event) {

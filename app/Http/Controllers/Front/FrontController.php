@@ -125,19 +125,26 @@ class FrontController extends Controller
     }
 
     public function getServiceAreaVendors(){
+        $client_preferences = ClientPreference::where('id', '>', 0)->first();
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
         $vendorType = Session::get('vendorType');
+        $preferences = Session::has('preferences') ? Session::get('preferences') : $client_preferences;
+        $selectedAddress = $preferences->Default_location_name;
+        Session::put('selectedAddress', $selectedAddress);
         $serviceAreaVendors = Vendor::select('id');
         $vendors = [];
         if($vendorType){
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
         }
-        $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
-                $query->select('vendor_id')
-                ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
-            })
-            ->where('status', 1)->get();
+        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+            $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
+                    $query->select('vendor_id')
+                    ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+                });
+        }
+        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
+
 
         if($serviceAreaVendors->isNotEmpty()){
             foreach($serviceAreaVendors as $value){

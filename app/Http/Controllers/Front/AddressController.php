@@ -69,6 +69,7 @@ class AddressController extends FrontController{
         $address->pincode = $request->pincode??"";
         $address->latitude  = $request->latitude;
         $address->longitude  = $request->longitude;
+        $address->house_number = $request->house_number??"";
         $address->save();
         if($request->ajax()){
             return response()->json(['status' => 'success', 'message' => __('Address Has Been Added Successfully'), 'address' => $address]);
@@ -111,6 +112,7 @@ class AddressController extends FrontController{
         $address->pincode = $request->pincode;
         $address->latitude  = $request->latitude;
         $address->longitude  = $request->longitude;
+        $address->house_number = $request->house_number??"";
         $address->save();
         return redirect()->route('user.addressBook')->with('success', __('Address Has Been Updated Successfully'));
     }
@@ -140,7 +142,7 @@ class AddressController extends FrontController{
         $countries = Country::all();
         return response()->json(['status' => 'success', 'countries' => $countries, 'address' => $address]);
     }
-   
+
     /**
      * Set Primary Address for user
      *
@@ -163,6 +165,6 @@ class AddressController extends FrontController{
         $address = UserAddress::find($id)->delete();
         return redirect()->route('user.addressBook')->with('success', __('Address Has Been Deleted Successfully'));
     }
-   
+
 
 }

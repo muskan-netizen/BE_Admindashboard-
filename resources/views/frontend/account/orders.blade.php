@@ -390,7 +390,7 @@ $timezone = Auth::user()->timezone;
                                                     <div class="col-md-3">
                                                         <span class="ellipsis" data-toggle="tooltip" data-placement="top" title="">
                                                             @if($order->address)
-                                                                {{$order->address->address}}, {{$order->address->street}}, {{$order->address->city}}, {{$order->address->state}}, {{$order->address->country}} {{$order->address->pincode}}
+                                                            {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{$order->address->address}}, {{$order->address->street}}, {{$order->address->city}}, {{$order->address->state}}, {{$order->address->country}} {{$order->address->pincode}}
                                                             @else
                                                                 NA
                                                             @endif

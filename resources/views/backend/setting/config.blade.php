@@ -1055,6 +1055,12 @@
                   </div>
                   <div class="col-md-4">
                      <div class="form-group mb-3">
+                        <label for="product_order_form" class="mr-2 mb-0">{{__('Product Order Form')}}</label>
+                        <input type="checkbox" data-plugin="switchery" name="product_order_form" id="product_order_form" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->product_order_form == '1')) checked='checked' @endif>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group mb-3">
                         <label for="gifting" class="mr-2 mb-0">{{__('Gifting')}}</label>
                         <input type="checkbox" data-plugin="switchery" name="gifting" id="gifting" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->gifting == '1')) checked='checked' @endif>
                      </div>

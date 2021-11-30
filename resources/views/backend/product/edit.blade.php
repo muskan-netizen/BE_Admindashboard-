@@ -273,14 +273,16 @@
                             <div class="row mb-2">
                                 @foreach($productVariants as $vk => $var)
                                 <div class="col-sm-3">
-                                    <label class="control-label">{{$var->title}}</label>
+                                    <label class="control-label">{{$var->title??null}}</label>
                                 </div>
                                 <div class="col-sm-9">
                                     @foreach($var->option as $key => $opt)
-                                    <div class="checkbox checkbox-success form-check-inline pr-3">
-                                        <input type="checkbox" name="variant{{$var->id}}" class="intpCheck" opt="{{$opt->id.';'.$opt->title}}" varId="{{$var->id.';'.$var->title}}" id="opt_vid_{{$opt->id}}" @if(in_array($opt->id, $existOptions)) checked @endif>
-                                        <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
-                                    </div>
+                                    @if(isset($opt) && !empty($opt->title) && isset($var) && !empty($var->title) )
+                                        <div class="checkbox checkbox-success form-check-inline pr-3">
+                                            <input type="checkbox" name="variant{{$var->id}}" class="intpCheck" opt="{{$opt->id.';'.$opt->title}}" varId="{{$var->id.';'.$var->title}}" id="opt_vid_{{$opt->id}}" @if(in_array($opt->id, $existOptions)) checked @endif>
+                                            <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
+                                        </div>
+                                    @endif    
                                     @endforeach
                                 </div>
                                 @endforeach
@@ -315,7 +317,11 @@
                                     $vsets = '';
 
                                     foreach ($varnt->set as $vs) {
-                                        $vsets .= $vs->title . ', ';
+                                        if(isset($vs) && !empty($vs->title)){
+                                            $vsets .= $vs->title . ', ';
+                                        }
+                                        
+                                        
                                     }
                                     ?>
                                     <tr id="tr_{{$varnt->id}}">
@@ -330,7 +336,7 @@
                                         <td>
                                             <input type="hidden" name="variant_ids[]" value="{{$varnt->id}}">
                                             <input type="hidden" class="exist_sets" value="{{$existSet[(count($existSet) - 1)]}}">
-                                            <input type="text" name="variant_titles[]" value="{{$varnt->title}}">
+                                            <input type="text" name="variant_titles[]" value="{{$varnt->title??null}}">
                                         </td>
                                         <td>{{rtrim($vsets, ', ')}}</td>
                                         <td>
@@ -429,9 +435,9 @@
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}
                             <select class="selectize-select1 form-control" name="tags" required>
                                 @if($agent_dispatcher_on_demand_tags != null && count($agent_dispatcher_on_demand_tags))
-                                @foreach($agent_dispatcher_on_demand_tags as $key => $tags)
-                                <option value="{{ $tags['name'] }}" @if($product->tags == $tags['name']) selected="selected" @endif>{{ ucfirst($tags['name']) }}</option>
-                                @endforeach
+                                    @foreach($agent_dispatcher_on_demand_tags as $key => $tags)
+                                    <option value="{{ $tags['name'] }}" @if($product->tags == $tags['name']) selected="selected" @endif>{{ ucfirst($tags['name']) }}</option>
+                                    @endforeach
                                 @endif
                             </select>
                         </div>
@@ -465,7 +471,7 @@
                             <select class="form-control " id="brand_idBox" name="brand_id">
                                 <option value="">Select</option>
                                 @foreach($brands as $brand)
-                                <option value="{{$brand->id}}" @if(!empty($product->brand) && $product->brand->id == $brand->id) selected @endif>{{$brand->title}}</option>
+                                <option value="{{$brand->id}}" @if(!empty($product->brand) && $product->brand->id == $brand->id) selected @endif>{{$brand->title??null}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -476,7 +482,7 @@
                             <select class="form-control " id="typeSelectBox" name="tax_category">
                                 <option value="">Select</option>
                                 @foreach($taxCate as $cate)
-                                <option value="{{$cate->id}}" @if($product->variant[0]->tax_category_id == $cate->id) selected @endif>{{$cate->title}}</option>
+                                <option value="{{$cate->id}}" @if($product->variant[0]->tax_category_id == $cate->id) selected @endif>{{$cate->title??null}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -578,7 +584,7 @@
                             {!! Form::label('title', __('Select Addon Set'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="addon_sets[]" data-toggle="select2" multiple="multiple" placeholder="Select addon...">
                                 @foreach($addons as $set)
-                                 <option value="{{$set->id}}" @if(in_array($set->id, $addOn_ids)) selected @endif>{{$set->title}}</option>
+                                 <option value="{{$set->id}}" @if(in_array($set->id, $addOn_ids)) selected @endif>{{$set->title??null}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -587,7 +593,9 @@
                             {!! Form::label('title', __('Up Sell Products'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="up_cell[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
                                 @foreach($otherProducts as $otherProduct)
-                                <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $upSell_ids)) selected @endif>{{$otherProduct->primary->title}}</option>
+                                    @if(isset($otherProduct) && !empty($otherProduct->primary))
+                                    <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $upSell_ids)) selected @endif>{{$otherProduct->primary->title??null}}</option>
+                                    @endif                                   
                                 @endforeach
                             </select>
                         </div>
@@ -596,7 +604,9 @@
                             {!! Form::label('title', __('Cross Sell Products'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="cross_cell[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
                                 @foreach($otherProducts as $otherProduct)
-                                <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $crossSell_ids)) selected @endif>{{$otherProduct->primary->title}}</option>
+                                    @if(isset($otherProduct) && !empty($otherProduct->primary))
+                                    <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $crossSell_ids)) selected @endif>{{$otherProduct->primary->title??null}}</option>
+                                    @endif   
                                 @endforeach
                             </select>
                         </div>
@@ -604,7 +614,9 @@
                             {!! Form::label('title', __('Related Products'),['class' => 'control-label']) !!}
                             <select class="form-control select2-multiple" name="releted_product[]" data-toggle="select2" multiple="multiple" placeholder="Select gear...">
                                 @foreach($otherProducts as $otherProduct)
-                                <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $related_ids)) selected @endif>{{$otherProduct->primary->title}}</option>
+                                    @if(isset($otherProduct) && !empty($otherProduct->primary))
+                                    <option value="{{$otherProduct->id}}" @if(in_array($otherProduct->id, $related_ids)) selected @endif>{{$otherProduct->primary->title??null}}</option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
@@ -623,6 +635,70 @@
                     </div>
                 </div>
                 @endif
+
+
+                <!-- start product faqs -->
+                @if($configData->product_order_form == 1) 
+                <div class="row">
+                    <div class="col-lg-12">
+                             <div class="card-box pb-2">
+                                <div class="d-flex align-items-center justify-content-between">
+                                   <h4 class="header-title text-uppercase m-0">{{ __("Product Order Form") }}</h4>
+                                   <a class="btn btn-info d-block" id="add_product_faq_modal_btn">
+                                      <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+                                   </a>
+                                </div>
+                                <div class="table-responsive mt-3 mb-1">
+                                   <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                                      <thead>
+                                         <tr>
+                                            <th>{{ __("Question") }}</th>
+                                            <th>{{ __("Is Required?") }}</th>
+                                            <th>{{ __("Action") }}</th>
+                                         </tr>
+                                      </thead>
+                                      <tbody id="post_list">
+                                         @forelse($product_faqs as $product_faq)
+                                         <tr>
+                                            <td>
+                                               <a class="edit_product_faq_btn" data-product_faq_id="{{$product_faq->id}}" href="javascript:void(0)">   
+                                                  {{$product_faq->primary ? $product_faq->primary->name : ''}}
+                                               </a>   
+                                            </td>
+                                            <td>{{ ($product_faq->is_required == 1)?"Yes":"No" }}</td>
+                                            <td>
+                                               <div>
+                                                  <div class="inner-div" style="float: left;">
+                                                     <a class="action-icon edit_product_faq_btn" data-product_faq_id="{{$product_faq->id}}" href="javascript:void(0)">
+                                                        <i class="mdi mdi-square-edit-outline"></i>
+                                                     </a>
+                                                  </div>
+                                                  <div class="inner-div">
+                                                     <button type="button" class="btn btn-primary-outline action-icon delete_product_faq_btn" data-product_faq_id="{{$product_faq->id}}">
+                                                        <i class="mdi mdi-delete"></i>
+                                                     </button>
+                                                  </div>
+                                               </div>
+                                            </td>
+                                         </tr>
+                                         @empty
+                                         <tr align="center">
+                                            <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                                         </tr>
+                                         @endforelse
+                                      </tbody>
+                                   </table>
+                                </div>
+                             </div>
+              
+              
+                          </div>
+              
+                       
+                 </div>
+                 @endif
+                 <!-- end product faqs -->
+
             </div>
         </div>
     </form>
@@ -647,6 +723,61 @@
 <style>
 
 </style>
+
+<!-- product faq modal -->
+<div id="add_product_faq_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+       <div class="modal-content">
+          <div class="modal-header border-bottom">
+             <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Product Order Form Question") }}</h4>
+             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          </div>
+          <div class="modal-body">
+             <form id="productFaqForm" method="POST" action="javascript:void(0)">
+                @csrf
+                <div id="save_social_media">
+                   <input type="hidden" name="product_faq_id" value="">
+                   <div class="row">
+                     
+                      <div class="col-md-6">
+                         <div class="form-group position-relative">
+                            <label for="">Is Required?</label>
+                            <div class="input-group mb-2">
+                               <select class="form-control" name="is_required">
+                                  <option value="1">Yes</option>
+                                  <option value="0">No</option>
+                               </select>
+                            </div>
+                         </div>
+                      </div>
+                      @forelse($languages as $k => $client_language)
+                      <div class="col-md-6 mb-2">
+                         <div class="row">
+                            <div class="col-12">
+                               <div class="form-group position-relative">
+                                  <label for="">{{ __("Question") }} ({{$client_language->langName}})</label>
+                                  <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
+                                  <input class="form-control" name="name[{{$k}}]" type="text" id="product_faq_name_{{$client_language->langId}}">
+                               </div>
+                               @if($k == 0)
+                                  <span class="text-danger error-text social_media_url_err"></span>
+                               @endif
+                            </div>
+                         </div>
+                      </div>
+                      @empty
+                      @endforelse
+                   </div>
+                </div>
+             </form>
+          </div>
+          <div class="modal-footer">
+             <button type="button" class="btn btn-primary submitSaveProductFaq">{{ __("Save") }}</button>
+          </div>
+       </div>
+    </div>
+ </div>
+<!-- end product faq -->
 
 @endsection
 
@@ -1069,4 +1200,96 @@
         }, 1000);
     })
 </script>
+
+<!-- start product faq -->
+<script>
+ $('#add_product_faq_modal_btn').click(function(e) {
+         document.getElementById("productFaqForm").reset();
+         $('#add_product_faq_modal input[name=product_faq_id]').val("");
+         $('#add_product_faq_modal').modal('show');
+         $('#add_product_faq_modal #standard-modalLabel').html('Add Product Order Form Question');
+      });
+
+      $(document).on("click", ".delete_product_faq_btn", function() {
+         var product_faq_id = $(this).data('product_faq_id');
+         if (confirm('Are you sure?')) {
+            $.ajax({
+               type: "POST",
+               dataType: 'json',
+               url: "{{ route('product.faq.delete') }}",
+               data: {
+                  _token: "{{ csrf_token() }}",
+                  product_faq_id: product_faq_id
+               },
+               success: function(response) {
+                  if (response.status == "Success") {
+                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                     setTimeout(function() {
+                        location.reload()
+                     }, 2000);
+                  }
+               }
+            });
+         }
+      });
+
+      $(document).on('click', '.submitSaveProductFaq', function(e) {
+         var product_faq_id = $("#add_product_faq_modal input[name=product_faq_id]").val();
+         if (product_faq_id) {
+            var post_url = "{{ route('product.faq.update') }}";
+         } else {
+            var post_url = "{{ route('product.faq.create') }}";
+         }
+         var form_data = new FormData(document.getElementById("productFaqForm"));
+         $.ajax({
+            url: post_url,
+            method: 'POST',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+               if (response.status == 'Success') {
+                  $('#add_or_edit_social_media_modal').modal('hide');
+                  $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+               }
+            },
+            error: function(response) {
+               $('#add_product_faq_modal .social_media_url_err').html('The default language name field is required.');
+            }
+         });
+      });
+      $(document).on("click", ".edit_product_faq_btn", function() {
+         let product_faq_id = $(this).data('product_faq_id');
+         $('#add_product_faq_modal input[name=product_faq_id]').val(product_faq_id);
+         $.ajax({
+            method: 'GET',
+            data: {
+                product_faq_id: product_faq_id
+            },
+            url: "{{ route('product.faq.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                  $("#add_product_faq_modal input[name=product_faq_id]").val(response.data.id);
+                  $(document).find("#add_product_faq_modal select[name=is_required]").val(response.data.is_required).change();
+                  $('#add_product_faq_modal #standard-modalLabel').html('Update Product Order Form Question');
+                  $('#add_product_faq_modal').modal('show');
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_product_faq_modal #product_faq_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {
+
+            }
+         });
+      });
+
+    </script>
+
+<!-- end product faq -->
 @endsection

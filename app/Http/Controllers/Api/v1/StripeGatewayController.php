@@ -42,7 +42,7 @@ class StripeGatewayController extends BaseController
             $amount = $this->getDollarCompareAmount($request->amount);
             $token = $request->input('stripe_token');
             $response = $this->gateway->purchase([
-                'currency' => 'INR', //$this->currency,
+                'currency' => $this->currency,
                 'token' => $token,
                 'amount' => $amount,
                 'metadata' => ['cart_id' => ($request->cart_id) ? $request->cart_id : 0],

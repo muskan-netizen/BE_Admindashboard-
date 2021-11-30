@@ -153,13 +153,13 @@
         $("#input_file_banner").change(function() {
             readURL(this, '#upload_banner_preview');
         });
-        var input = document.querySelector("#phone");
-        window.intlTelInput(input, {
-            separateDialCode: true,
-            hiddenInput: "full_number",
-            utilsScript: "{{asset('assets/js/utils.js')}}",
-            initialCountry: "{{ Session::get('default_country_code','US') }}",
-        });
+        // var input = document.querySelector("#phone");
+        // window.intlTelInput(input, {
+        //     separateDialCode: true,
+        //     hiddenInput: "full_number",
+        //     utilsScript: "{{asset('assets/js/utils.js')}}",
+        //     initialCountry: "{{ Session::get('default_country_code','US') }}",
+        // });
 
         function initialize() {
             var input = document.getElementById('address');

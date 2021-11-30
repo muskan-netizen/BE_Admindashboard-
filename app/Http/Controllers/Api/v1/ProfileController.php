@@ -222,7 +222,7 @@ class ProfileController extends BaseController{
         }
         $imgType = ($request->has('type')) ? $request->type : 'jpg';
         $code = Client::orderBy('id','asc')->value('code');
-        $imageName = '/'.$code.'/profile/'.$user->id.substr(md5(microtime()), 0, 15).'.'.$imgType;
+        $imageName = $code.'/profile/'.$user->id.substr(md5(microtime()), 0, 15).'.'.$imgType;
         $save = Storage::disk('s3')->put($imageName, $img, 'public');
         $user->image = $imageName;
         $user->save();

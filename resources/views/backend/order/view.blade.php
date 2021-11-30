@@ -60,7 +60,7 @@ $timezone = Auth::user()->timezone;
                                     else
                                     $open_option = [$order->vendors->first()->order_status_option_id + 1];
                                     @endphp
-                                    
+
                                     <!-- List of completed order status -->
                                     @foreach ($vendor_order_statuses as $key => $vendor_order_status)
                                         @php
@@ -281,7 +281,7 @@ $timezone = Auth::user()->timezone;
                     <div class="card-body">
                         <h4 class="header-title mb-3">{{ __("Shipping Information") }}</h4>
                         <h5 class="font-family-primary fw-semibold">{{$order->user->name}}</h5>
-                        <p class="mb-2"><span class="fw-semibold me-2">{{ __("Address") }}:</span> {{ $order->address ? $order->address->address : ''}}</p>
+                        <p class="mb-2"><span class="fw-semibold me-2">{{ __("Address") }}:</span> {{ $order->address->house_number ? $order->address->house_number."," : ''}} {{ $order->address ? $order->address->address : ''}}</p>
                         @if(isset($order->address) && !empty($order->address->street))
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('Street')}}:</span> {{ $order->address ? $order->address->street : ''}}</p>
                         @endif
@@ -305,7 +305,7 @@ $timezone = Auth::user()->timezone;
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('City')}}:</span> {{ $order->address ? $order->address->city : ''}}</p>
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("State") }}:</span> {{ $order->address ? $order->address->state : ''}}</p>
                         <p class="mb-0"><span class="fw-semibold me-2">{{ __("Zip Code") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
-                   
+
                     </div>
                 </div>
             </div>
@@ -321,7 +321,7 @@ $timezone = Auth::user()->timezone;
                         @endif
                     </div>
 
-                   
+
                     <div class="card-body">
                         <h4 class="header-title mb-3">{{ __('Comment/Schedule Information') }}</h4>
                         @if($order->comment_for_pickup_driver)
@@ -347,14 +347,14 @@ $timezone = Auth::user()->timezone;
                         @if($order->specific_instructions)
                           <p class="mb-2"><span class="fw-semibold me-2">{{ __('Specific instructions') }} :</span> {{ $order->specific_instructions ?? ''}}</p>
                         @endif
-                        
+
                     </div>
-                   
+
 
                 </div>
             </div>
 
-            
+
         </div>
 
 

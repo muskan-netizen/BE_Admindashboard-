@@ -22,12 +22,10 @@ class VendorController extends FrontController
         $preferences = Session::get('preferences');
         $navCategories = $this->categoryNav($langId);
 
-        $ses_vendors = array();
-        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-            if(Session::has('vendors')){
-                $ses_vendors = Session::get('vendors');
-                }
-        }
+        $ses_vendors = $this->getServiceAreaVendors();
+        // if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+        //     $ses_vendors = $this->getServiceAreaVendors();
+        // }
 
         $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where('status', 1);
         

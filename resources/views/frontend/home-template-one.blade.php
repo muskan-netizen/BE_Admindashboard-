@@ -23,6 +23,22 @@
 </button>
 
 @if(count($banners))
+
+<section class="no-store-wrapper mb-3" style="display:none">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <img class="no-store-image w-100 mt-2 mb-2" src="{{ asset('images/no-stores.svg') }}" style="max-height: 250px;">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 text-center mt-2">
+                <h4>{{__('There are no store available in your area currently.')}}</h4>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="home-slider-wrapper mb-3">
     <div class="container">
         <div class="row">
@@ -72,15 +88,23 @@
             <a class="suppliers-box d-block px-2" href="{{route('vendorDetail')}}/<%= vendor.slug %>">
                 <div class="suppliers-img-outer position-relative">
                     <img class="fluid-img mx-auto" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
-                    <div class="pref-timing">
-                        <span>35 min</span>
-                    </div>
+                    <% if(vendor.timeofLineOfSightDistance != undefined){ %>
+                        <div class="pref-timing">
+                            <span><%= vendor.timeofLineOfSightDistance %> min</span>
+                        </div>
+                    <% } %>
                     <i class="fa fa-heart-o" aria-hidden="true"></i>                    
                 </div>
                 <div class="supplier-rating">
                     <div class="d-flex align-items-center justify-content-between">
                         <h6 class="mb-1 ellips"><%= vendor.name %></h6>
-                        <span class="rating-number">4.5</span>
+                        @if($client_preference_detail)
+                            @if($client_preference_detail->rating_check == 1)
+                                <% if(vendor.vendorRating > 0){%>
+                                    <span class="rating-number"><%= vendor.vendorRating %></span>
+                                <% } %>
+                            @endif
+                        @endif
                     </div>
                     <p title="<%= vendor.categoriesList %>" class="vendor-cate mb-1 ellips"><%= vendor.categoriesList %></p>
                     <!-- <div class="product-timing">

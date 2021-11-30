@@ -298,9 +298,11 @@ $(document).ready(function () {
             dataType: 'json',
             url: home_page_data_url,
             beforeSend: function(){
+                $(".no-store-wrapper").hide();
                 $(".shimmer_effect").show();
                 $(".home-banner-slider").hide();
                 $("#main-menu").hide();
+                $("#our_vendor_main_div").hide();
                 $(".shimmer_effect .menu-slider").css("display" , "flex");
             },
             success: function (response) {
@@ -323,6 +325,8 @@ $(document).ready(function () {
                   
                     var path = window.location.pathname;
                     if (path == '/') {
+                        $(".home-slider-wrapper").show();
+                        $("#our_vendor_main_div").show();
                         $(".slide-6").slick('destroy');
                         $(".product-4").slick('destroy');
                         $(".product-5").slick('destroy');
@@ -338,58 +342,64 @@ $(document).ready(function () {
                         $("#featured_products").html('');
                         $("#on_sale").html('');
                         let vendors = response.data.vendors;
-                        let banner_template = _.template($('#banner_template').html());
-                        let vendors_template = _.template($('#vendors_template').html());
-                        let products_template = _.template($('#products_template').html());
-                        let trending_vendors_template = _.template($('#trending_vendors_template').html());
-                        let recent_orders_template = _.template($('#recent_orders_template').html());
-                        $(".render_brands").append(banner_template({ brands: response.data.brands, type: brand_language }));
-                        $(".render_vendors").append(vendors_template({ vendors: response.data.vendors , type: vendor_language}));
-                        $(".render_new_products").append(products_template({ products: response.data.new_products, type: new_product_language }));
-                        $(".render_best_sellers").append(products_template({ products: response.data.new_products, type: best_seller_product_language}));
-                        $(".render_featured_products").append(products_template({ products: response.data.feature_products, type: featured_product_language }));
-                        $(".render_on_sale").append(products_template({ products: response.data.on_sale_products, type: on_sale_product_language }));
-                        $(".render_trending_vendors").append(trending_vendors_template({ trending_vendors: response.data.trending_vendors , type: vendor_language}));
-                        $(".render_recent_orders").append(recent_orders_template({ recent_orders: response.data.active_orders}));
-                        
-                        if (response.data.new_products.length > 0) {
-                            $('.render_full_new_products').removeClass('d-none');
-                        } else {
-                            $('.render_full_new_products1').addClass('d-none');
+                        if(vendors != ''){
+                            let banner_template = _.template($('#banner_template').html());
+                            let vendors_template = _.template($('#vendors_template').html());
+                            let products_template = _.template($('#products_template').html());
+                            let trending_vendors_template = _.template($('#trending_vendors_template').html());
+                            let recent_orders_template = _.template($('#recent_orders_template').html());
+                            $(".render_brands").append(banner_template({ brands: response.data.brands, type: brand_language }));
+                            $(".render_vendors").append(vendors_template({ vendors: response.data.vendors , type: vendor_language}));
+                            $(".render_new_products").append(products_template({ products: response.data.new_products, type: new_product_language }));
+                            $(".render_best_sellers").append(products_template({ products: response.data.new_products, type: best_seller_product_language}));
+                            $(".render_featured_products").append(products_template({ products: response.data.feature_products, type: featured_product_language }));
+                            $(".render_on_sale").append(products_template({ products: response.data.on_sale_products, type: on_sale_product_language }));
+                            $(".render_trending_vendors").append(trending_vendors_template({ trending_vendors: response.data.trending_vendors , type: vendor_language}));
+                            $(".render_recent_orders").append(recent_orders_template({ recent_orders: response.data.active_orders}));
+                            
+                            if (response.data.new_products.length > 0) {
+                                $('.render_full_new_products').removeClass('d-none');
+                            } else {
+                                $('.render_full_new_products1').addClass('d-none');
+                            }
+                            if (response.data.new_products.length > 0) {
+                                $('.render_full_best_sellers').removeClass('d-none');
+                            } else {
+                                $('.render_full_best_sellers').addClass('d-none');
+                            }
+                            if (response.data.on_sale_products.length > 0) {
+                                $('.render_full_on_sale').removeClass('d-none');
+                            } else {
+                                $('.render_full_on_sale').addClass('d-none');
+                            }
+                            if (response.data.feature_products.length > 0) {
+                                $('.render_full_featured_products').removeClass('d-none');
+                            } else {
+                                $('.render_full_featured_products').addClass('d-none');
+                            }
+                            if (vendors.length > 0) {
+                                $('#our_vendor_main_div').removeClass('d-none');
+                            } else {
+                                $('#our_vendor_main_div').addClass('d-none');
+                            }
+                            if (response.data.active_orders.length > 0) {
+                                $('.render_full_recent_orders').removeClass('d-none');
+                            } else {
+                                $('.render_full_recent_orders').addClass('d-none');
+                            }
+                            initializeSlider();
                         }
-                        if (response.data.new_products.length > 0) {
-                            $('.render_full_best_sellers').removeClass('d-none');
-                        } else {
-                            $('.render_full_best_sellers').addClass('d-none');
+                        else{
+                            $(".home-slider-wrapper").hide();
+                            $("#our_vendor_main_div").hide();
+                            $(".no-store-wrapper").show();
                         }
-                        if (response.data.on_sale_products.length > 0) {
-                            $('.render_full_on_sale').removeClass('d-none');
-                        } else {
-                            $('.render_full_on_sale').addClass('d-none');
-                        }
-                        if (response.data.feature_products.length > 0) {
-                            $('.render_full_featured_products').removeClass('d-none');
-                        } else {
-                            $('.render_full_featured_products').addClass('d-none');
-                        }
-                        if (vendors.length > 0) {
-                            $('#our_vendor_main_div').removeClass('d-none');
-                        } else {
-                            $('#our_vendor_main_div').addClass('d-none');
-                        }
-                        if (response.data.active_orders.length > 0) {
-                            $('.render_full_recent_orders').removeClass('d-none');
-                        } else {
-                            $('.render_full_recent_orders').addClass('d-none');
-                        }
-                        initializeSlider();
                     }
                     else {
                         if ((latitude) && (longitude) && (selected_address)) {
                             window.location.href = home_page_url;
                         }
                     }
-                } else {
                 }
             },
             complete:function(data){
@@ -397,6 +407,7 @@ $(document).ready(function () {
                 $(".shimmer_effect").hide();
                 $(".home-banner-slider").show();
                 $("#main-menu").show();
+                // $("#our_vendor_main_div").show();
             }
         });
     }
