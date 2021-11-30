@@ -27,22 +27,22 @@ class SearchController extends FrontController{
             $vendors = $vendors->whereIn('id', $allowed_vendors);
         }
        
-        // if($preferences){
-        //     if( (empty($latitude)) && (empty($longitude)) && (empty($selectedAddress)) ){
-        //         $selectedAddress = $preferences->Default_location_name;
-        //         $latitude = $preferences->Default_latitude;
-        //         $longitude = $preferences->Default_longitude;
-        //         Session::put('latitude', $latitude);
-        //         Session::put('longitude', $longitude);
-        //         Session::put('selectedAddress', $selectedAddress);
-        //     }
-        //     if(($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude) ){
-        //         $vendors = $vendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
-        //             $query->select('vendor_id')
-        //             ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
-        //         });
-        //     }
-        // }
+        if($preferences){
+            if( (empty($latitude)) && (empty($longitude)) && (empty($selectedAddress)) ){
+                $selectedAddress = $preferences->Default_location_name;
+                $latitude = $preferences->Default_latitude;
+                $longitude = $preferences->Default_longitude;
+                Session::put('latitude', $latitude);
+                Session::put('longitude', $longitude);
+                Session::put('selectedAddress', $selectedAddress);
+            }
+            if(($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude) ){
+                $vendors = $vendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
+                    $query->select('vendor_id')
+                    ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+                });
+            }
+        }
         $vendors = $vendors->where(function ($q) use ($keyword) {
                         $q->where('name', 'LIKE', "%$keyword%");
                     })->where('status', '!=', 2)->get();

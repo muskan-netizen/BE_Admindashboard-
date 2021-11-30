@@ -130,8 +130,6 @@ class FrontController extends Controller
         $longitude = Session::get('longitude');
         $vendorType = Session::get('vendorType');
         $preferences = Session::has('preferences') ? Session::get('preferences') : $client_preferences;
-        $selectedAddress = $preferences->Default_location_name;
-        Session::put('selectedAddress', $selectedAddress);
         $serviceAreaVendors = Vendor::select('id');
         $vendors = [];
         if($vendorType){
