@@ -133,15 +133,20 @@ class HomeController extends BaseController
             $homeData['mobile_banners'] = $mobile_banners;
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
-            $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
-            if ($stripe_creds) {
-                $creds_arr = json_decode($stripe_creds->credentials);
+            
+            $payment_codes = ['stripe', 'razorpay'];
+            $payment_creds = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
+            if ($payment_creds) {
+                foreach($payment_creds as $creds){
+                    $creds_arr = json_decode($creds->credentials);
+                    if($creds->code == 'stripe'){
+                        $homeData['profile']->preferences->stripe_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
+                    }
+                    if($creds->code == 'razorpay'){
+                        $homeData['profile']->preferences->razorpay_api_key = (isset($creds_arr->api_key) && (!empty($creds_arr->api_key))) ? $creds_arr->api_key : '';
+                    }
+                }
             }
-            $razorpay_creds = PaymentOption::select('credentials')->where('code', 'razorpay')->where('status', 1)->first();
-            if ($razorpay_creds) {
-                $razorpay_creds_arr = json_decode($razorpay_creds->credentials);
-            }
-            $homeData['profile']->preferences->razorpay_api_key = (isset($razorpay_creds_arr->api_key) && (!empty($razorpay_creds_arr->api_key))) ? $razorpay_creds_arr->api_key : '';
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

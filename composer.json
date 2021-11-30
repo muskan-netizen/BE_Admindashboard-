@@ -51,6 +51,7 @@
         "paystackhq/omnipay-paystack": "^1.0",
         "predis/predis": "^1.1",
         "r0bdiablo/laravel5-phumbor": "^1.0",
+        "rak/simplify": "dev-master",
         "rap2hpoutre/laravel-log-viewer": "^1.7",
         "razorpay/razorpay": "2.*",
         "rivalex/laravel-intl": "^1.1",
