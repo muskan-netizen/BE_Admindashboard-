@@ -60,6 +60,12 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/gcash/view','Front\GCashController@webView')->name('payment.gcash.webView');
 
 
+	//Simplify
+	Route::get('payment/simplify/view','Front\SimplifyController@webView')->name('payment.simplify.webView');
+	Route::post('payment/simplify/before','Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
+	Route::post('payment/simplify','Front\SimplifyController@createPayment')->name('payment.simplify.createPayment');
+
+
 
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');

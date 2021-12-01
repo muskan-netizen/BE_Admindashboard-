@@ -13,6 +13,8 @@
         @include('layouts.store/left-sidebar-template-one')
         @endif
 </header>
+
+@if(count($vendors) > 0)
 <section class="section-b-space new-pages pb-265">
     <div class="container">
         <div class="row">
@@ -96,7 +98,24 @@
         </div>
     </div>
 </section>
+@else
+<section class="no-store-wrapper mb-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <img class="no-store-image w-100 mt-2 mb-2" src="{{ asset('images/no-stores.svg') }}" style="max-height: 250px;">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 text-center mt-2">
+                <h4>{{__('There are no store available in your area currently.')}}</h4>
+            </div>
+        </div>
+    </div>
+</section>
+@endif
 @endsection
+
 @section('script')
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>

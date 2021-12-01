@@ -23,13 +23,10 @@ class VendorController extends FrontController
         $navCategories = $this->categoryNav($langId);
 
         $ses_vendors = $this->getServiceAreaVendors();
-        // if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-        //     $ses_vendors = $this->getServiceAreaVendors();
-        // }
 
         $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where('status', 1);
         
-        if (count($ses_vendors) > 0) {
+        if (is_array($ses_vendors)) {
             $vendors = $vendors->whereIn('id', $ses_vendors);
         }
 

@@ -71,6 +71,7 @@
                 $publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
                 $secret_key = (isset($creds->secret_key)) ? $creds->secret_key : '';
                 $public_key = (isset($creds->public_key)) ? $creds->public_key : '';
+                $private_key = (isset($creds->private_key)) ? $creds->private_key : '';
                 $merchant_id = (isset($creds->merchant_id)) ? $creds->merchant_id : '';
                 $merchant_key = (isset($creds->merchant_key)) ? $creds->merchant_key : '';
                 $passphrase = (isset($creds->passphrase)) ? $creds->passphrase : '';
@@ -279,6 +280,38 @@
                                 <div class="form-group mb-0">
                                     <label for="gcash_secret_key" class="mr-3">{{ __("Api Secret Key") }}</label>
                                     <input type="text" name="gcash_secret_key" id="gcash_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'simplify') )
+                    <div id="simplify_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="simplify_public_key" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="simplify_public_key" id="simplify_public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="simplify_private_key" class="mr-3">{{ __("Private Key") }}</label>
+                                    <input type="password" name="simplify_private_key" id="simplify_private_key" class="form-control" value="{{$private_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'square') )
+                    <div id="square_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="square_application_id" class="mr-3">{{ __("Application ID") }}</label>
+                                    <input type="text" name="square_application_id" id="square_application_id" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

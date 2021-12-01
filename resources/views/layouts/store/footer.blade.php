@@ -64,6 +64,11 @@
 /////GCash Payment Routes
     var gcash_before_payment = "{{route('payment.gcash.beforePayment')}}"; 
 
+///////////////Simplify Payment Routes
+    var simplify_payment_web_view = "{{route('payment.simplify.webView')}}";
+    var simplify_before_payment = "{{route('payment.simplify.beforePayment')}}";
+    var simplify_create_payment = "{{route('payment.simplify.createPayment')}}";
+
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";
     var logged_in_user_email = "{{Auth::user()->email??''}}";

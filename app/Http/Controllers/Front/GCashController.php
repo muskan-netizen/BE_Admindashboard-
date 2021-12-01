@@ -18,7 +18,6 @@ class GCashController extends Controller
     }
     public function webView(Request $request)
     {
-    	$response = Session::get('gcash_session_data',[]);
-    	return view('frontend.gcash_view')->with('response',$response);
+    	return view('frontend.gcash_view');
     }
 }

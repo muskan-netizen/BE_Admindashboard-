@@ -22,8 +22,6 @@
   Launch demo modal
 </button>
 
-@if(count($banners))
-
 <section class="no-store-wrapper mb-3" style="display:none">
     <div class="container">
         <div class="row">
@@ -39,6 +37,7 @@
     </div>
 </section>
 
+@if(count($banners))
 <section class="home-slider-wrapper mb-3">
     <div class="container">
         <div class="row">

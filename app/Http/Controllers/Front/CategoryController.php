@@ -55,27 +55,11 @@ class CategoryController extends FrontController{
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && (isset($category->type_id)) && !in_array($category->type_id,[4,5]) ){
             $latitude = Session::get('latitude');
             $longitude = Session::get('longitude');
-            // $vendorType = Session::get('vendorType');
-            // $serviceAreaVendors = Vendor::select('id');
-            // if($vendorType){
-            //     $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
-            // }
-            // $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
-            //         $query->select('vendor_id')
-            //         ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
-            //     })
-            //     ->where('status', 1)->get();
-
-            // if($serviceAreaVendors->isNotEmpty()){
-            //     foreach($serviceAreaVendors as $value){
-            //         $vendors[] = $value->id;
-            //     }
-            // }
             $vendors = $this->getServiceAreaVendors();
             $redirect_to = $category->type->redirect_to; 
             $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';  
-            // if(Session::has('vendors')){
-            if( (isset($vendors)) && (count($vendors) > 0) ){
+            
+            if( is_array($vendors) ){
                 Session::put('vendors', $vendors);
                 //remake child categories array
                 if($category->childs->isNotEmpty()){

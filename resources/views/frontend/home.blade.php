@@ -84,6 +84,21 @@
 </header>
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
 
+<section class="no-store-wrapper mb-3" style="display:none">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <img class="no-store-image w-100 mt-2 mb-2" src="{{ asset('images/no-stores.svg') }}" style="max-height: 250px;">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 text-center mt-2">
+                <h4>{{__('There are no store available in your area currently.')}}</h4>
+            </div>
+        </div>
+    </div>
+</section>
+
 @if(count($banners))
 <section class="p-0 small-slider">
     <div class="slide-1 home-slider">

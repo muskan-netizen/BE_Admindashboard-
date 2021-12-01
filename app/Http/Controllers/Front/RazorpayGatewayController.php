@@ -36,7 +36,7 @@ class RazorpayGatewayController extends FrontController
         $this->API_SECRET_KEY = $api_secret_key;
         $this->api = new Api($api_key, $api_secret_key);
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'INR';
     }
 
     public function razorpayPurchase(Request $request) 

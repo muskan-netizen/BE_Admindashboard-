@@ -25,7 +25,9 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '8', 'path' => 'yoco/yoco-php-laravel', 'code' => 'yoco', 'title' => 'Yoco', 'off_site' => '1', 'status' => '0'),
         array('id' => '9', 'path' => 'paylink/paylink', 'code' => 'paylink', 'title' => 'Paylink', 'off_site' => '1', 'status' => '0'),
         array('id' => '10', 'path' => 'razorpay/razorpay', 'code' => 'razorpay', 'title' => 'Razorpay', 'off_site' => '0', 'status' => '0'),
-        array('id' => '11', 'path' => 'adyen/php-api-library', 'code' => 'gcash', 'title' => 'GCash', 'off_site' => '1', 'status' => '0'), 
+        array('id' => '11', 'path' => 'adyen/php-api-library', 'code' => 'gcash', 'title' => 'GCash', 'off_site' => '1', 'status' => '0'),
+        array('id' => '12', 'path' => 'rak/simplify', 'code' => 'simplify', 'title' => 'Simplify', 'off_site' => '1', 'status' => '0'),
+        array('id' => '13', 'path' => 'square/square', 'code' => 'square', 'title' => 'Square', 'off_site' => '1', 'status' => '0'),
       ); 
 
       if($option_count == 0)

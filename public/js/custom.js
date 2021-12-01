@@ -673,6 +673,9 @@ $(document).ready(function() {
             }else if (payment_option_id == 10) {
                 paymentViaRazorpay_wallet('', payment_option_id);
             }
+            else if (payment_option_id == 12) {
+                paymentViaSimplify('', '');
+            }
         } else {
             _this.attr("disabled", false);
             success_error_alert('error', 'Please select any payment option', "#subscription_payment .payment_response");
@@ -1267,12 +1270,6 @@ $(document).ready(function() {
             data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt,is_gift:is_gift },
             success: function(response) {
                 if (response.status == "Success") {
-                    // var ip_address = window.location.host;
-                    // var host_arr = ip_address.split(".");
-                    // let socket = io(constants.socket_domain, {
-                    //       query: {"user_id": host_arr[0]+"_cus", "subdomain":host_arr[0]}
-                    //     });
-                    // socket.emit("createOrder", response.data );
                     orderResponse = response.data;
                     // return orderResponse;
                 } else {
@@ -1297,6 +1294,7 @@ $(document).ready(function() {
                 $('.spinner-overlay').hide();
             }
         });
+        console.log(orderResponse);
         return orderResponse;
     }
     $(document).on("click", ".proceed_to_pay", function() {
@@ -1348,13 +1346,6 @@ $(document).ready(function() {
                 // Re-enable button now that request is complete
                 alert("error occured: " + error);
             });
-        } else if (payment_option_id == 10) {
-            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-            if (order != '') {
-                paymentViaRazorpay(address_id, order,'cart');
-            } else {
-                return false;
-            }
         } else if (payment_option_id == 3) {
             paymentViaPaypal(address_id, payment_option_id);
         } else if (payment_option_id == 5) {
@@ -1372,6 +1363,20 @@ $(document).ready(function() {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
                 paymentViaPaylink(address_id, order);
+            } else {
+                return false;
+            }
+        }else if (payment_option_id == 10) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaRazorpay(address_id, order,'cart');
+            } else {
+                return false;
+            }
+        }else if (payment_option_id == 12) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaSimplify(address_id, order);
             } else {
                 return false;
             }
@@ -1523,6 +1528,9 @@ $(document).ready(function() {
             paymentViaRazorpay_wallet('', payment_option_id);
         }else if (payment_option_id == 11) {
             paymentViaGCash('', payment_option_id);
+        }
+        else if (payment_option_id == 12) {
+            paymentViaSimplify('', '');
         } else if (payment_option_id == 8) {
             inline.createToken().then(function(result) {
                 if (result.error) {
