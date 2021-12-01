@@ -270,7 +270,7 @@
                                                         @php
                                                             $min_select = '';
                                                             if($addon->addOnName->min_select > 0){
-                                                                $min_select = 'Minimun '.$addon->addOnName->min_select;
+                                                                $min_select = 'Minimum '.$addon->addOnName->min_select;
                                                             }
                                                             $max_select = '';
                                                             $type_input = 'checkbox';

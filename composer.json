@@ -62,6 +62,7 @@
         "spatie/geocoder": "^3.10",
         "spatie/laravel-webhook-client": "^2.7",
         "spatie/laravel-webhook-server": "^2.0",
+        "square/square": "16.0.0.20211117",
         "staudenmeir/laravel-adjacency-list": "^1.0",
         "stripe/stripe-php": "^7.100",
         "twilio/sdk": "^6.13",

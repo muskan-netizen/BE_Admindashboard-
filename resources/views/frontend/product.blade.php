@@ -321,7 +321,7 @@
                                                         @php
                                                             $min_select = '';
                                                             if($addon->min_select > 0){
-                                                                $min_select = 'Minimun '.$addon->min_select;
+                                                                $min_select = 'Minimum '.$addon->min_select;
                                                             }
                                                             $max_select = '';
                                                             if($addon->max_select > 0){
@@ -359,7 +359,7 @@
                                                             @php
                                                                 $min_select = '';
                                                                 if($addon->min_select > 0){
-                                                                    $min_select = 'Minimun '.$addon->min_select;
+                                                                    $min_select = 'Minimum '.$addon->min_select;
                                                                 }
                                                                 $max_select = '';
                                                                 if($addon->max_select > 0){

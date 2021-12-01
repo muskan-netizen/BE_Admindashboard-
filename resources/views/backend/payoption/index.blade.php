@@ -66,6 +66,8 @@
                 $password = (isset($creds->password)) ? $creds->password : '';
                 $signature = (isset($creds->signature)) ? $creds->signature : '';
                 $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+                $application_id = (isset($creds->application_id)) ? $creds->application_id : '';
+                $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                 $api_access_token = (isset($creds->api_access_token)) ? $creds->api_access_token : '';
                 $api_secret_key = (isset($creds->api_secret_key)) ? $creds->api_secret_key : '';
                 $publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
@@ -89,7 +91,7 @@
                                 <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
                             </div>
                         </div>
-                        @if ( (strtolower($opt->code) != 'cod') )
+                        @if ( (strtolower($opt->code) != 'cod') &&  (strtolower($opt->code) != 'razorpay') &&  (strtolower($opt->code) != 'simplify'))
                         <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-3">{{ __('Sandbox') }}</label>
@@ -311,7 +313,15 @@
                             <div class="col-12">
                                 <div class="form-group mb-0">
                                     <label for="square_application_id" class="mr-3">{{ __("Application ID") }}</label>
-                                    <input type="text" name="square_application_id" id="square_application_id" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
+                                    <input type="text" name="square_application_id" id="square_application_id" class="form-control" value="{{$application_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="square_access_token" class="mr-3">{{ __("Access Token") }}</label>
+                                    <input type="password" name="square_access_token" id="square_access_token" class="form-control" value="{{$api_access_token}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

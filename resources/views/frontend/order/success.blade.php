@@ -95,7 +95,7 @@
             <div class="col-lg-6">
                 <div class="row order-success-sec">
                     <div class="col-sm-6">
-                        <h4>{{__('Summery')}}</h4>
+                        <h4>{{__('Summary')}}</h4>
                         <ul class="order-detail">
                             <li>{{__('Order ID')}}: {{$order->order_number}}</li>
                             <li>{{__('Order Date')}}: {{ date('F d, Y', strtotime($order->created_at)) }}</li>

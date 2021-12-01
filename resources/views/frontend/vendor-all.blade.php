@@ -30,7 +30,7 @@
                             <img class="fluid-img mx-auto" src="{{$vendor->logo['image_fit']}}200/200{{$vendor->logo['image_path']}}" alt="">
                         </div>
                         <div class="supplier-rating">
-                            <h6 class="mb-1">{{$vendor->name}}</h6>
+                            <h6 class="mb-1 ellips">{{$vendor->name}}</h6>
                             <p title="{{$vendor->categoriesList}}" class="vendor-cate border-bottom pb-1 mb-1 ellips">{{$vendor->categoriesList}}</p>
                             <div class="product-timing">
                                 <small title="{{$vendor->address}}" class="ellips d-block"><i class="fa fa-map-marker"></i> {{$vendor->address}}</small>
@@ -95,6 +95,13 @@
                 </div>
             </div> --}}
             @endforeach
+            <div class="col-12">
+                <div class="pagination pagination-rounded justify-content-end mb-0">
+                    @if(!empty($vendors))
+                        {{ $vendors->links() }}
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 </section>

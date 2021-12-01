@@ -644,7 +644,7 @@ class CartController extends BaseController
                                 }
                                 $codeApplied = 1;
                             } else {
-                                $variantsData['coupon_msg'] = "Spend minimun " . $minimum_spend . " to apply this coupon";
+                                $variantsData['coupon_msg'] = "Spend Minimum " . $minimum_spend . " to apply this coupon";
                                 $variantsData['coupon_not_appiled'] = 1;
                             }
                         }

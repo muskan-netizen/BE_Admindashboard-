@@ -24,14 +24,14 @@
             }
         }
         .payment-top-haeder{
-            background: #ff8f68;
+            background: {{getClientPreferenceDetail()->web_color}}; 
         }
         .btn-solid{
             padding: 13px 29px;
             color: #ffffff !important;
             letter-spacing: 0.05em;
             border: 2px solid var(--theme-deafult);
-            background: #ff8f68;
+            background: {{getClientPreferenceDetail()->web_color}};
             -webkit-transition: background 300ms ease-in-out;
             transition: background 300ms ease-in-out;
         }
@@ -43,7 +43,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12 text-center">
-                <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="50"> 
+                <img src="{{ getClientDetail()->logo_image_url }}" alt="" height="50"> 
             </div>
         </div>
     </div>

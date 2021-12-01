@@ -207,6 +207,16 @@ class PaymentOptionController extends BaseController
                         'private_key' => $request->simplify_private_key,
                     ));
                 }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'square')) {
+                    $validatedData = $request->validate([
+                        'square_application_id' => 'required',
+                        'square_access_token' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'application_id' => $request->square_application_id,
+                        'api_access_token' => $request->square_access_token,
+                    ));
+                }
             }
             PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
         }

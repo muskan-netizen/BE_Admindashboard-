@@ -21,18 +21,28 @@ class VendorController extends FrontController
         $langId = Session::get('customerLanguage');
         $preferences = Session::get('preferences');
         $navCategories = $this->categoryNav($langId);
-
+        $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 30;
         $ses_vendors = $this->getServiceAreaVendors();
 
         $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where('status', 1);
         
         if (is_array($ses_vendors)) {
+            $latitude = Session::get('latitude') ?? '';
+            $longitude = Session::get('longitude') ?? '';
+            $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+            //3961 for miles and 6371 for kilometers
+            $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+            $vendors = $vendors->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) * 
+                    cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) + 
+                    sin( radians(' . $latitude . ') ) *
+                    sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
             $vendors = $vendors->whereIn('id', $ses_vendors);
         }
 
-        $vendors = $vendors->get();
+        $vendors = $vendors->paginate($pagiNate);
 
         foreach ($vendors as $key => $value) {
+            $value = $this->getLineOfSightDistanceAndTime($value, $preferences);
             $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
             $categoriesList = '';
             foreach($vendorCategories as $key => $category){
@@ -50,9 +60,6 @@ class VendorController extends FrontController
             }
             $value->categoriesList = $categoriesList;
             $value->vendorRating = $this->vendorRating($value->products);
-        }
-        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-            $vendors = $vendors->sortBy('lineOfSightDistance')->values()->all();
         }
         return view('frontend/vendor-all')->with(['navCategories' => $navCategories,'vendors' => $vendors]);
     }

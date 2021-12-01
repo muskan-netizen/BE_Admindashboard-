@@ -17,7 +17,7 @@
                 <div class="success-text">
                 	<i class="fa fa-check-circle" aria-hidden="true"></i>
                     <h2>{{__('Thank You')}}</h2>
-                    <p>{{__('Payment is successfully processed')}}</p>
+                    <p>{{__('Your order has been placed successfully')}}</p>
                     <p><a href="{{ route('user.orders') }}">{{__('View Order')}}</a></p>
                 </div>
             </div>
