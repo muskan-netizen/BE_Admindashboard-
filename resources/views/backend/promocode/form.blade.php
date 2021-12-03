@@ -57,13 +57,13 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="col-md-6">
-                <?php 
+                <?php
                 $pricevalue = (isset($promo->id) && $promo->id > 0 && $promo->promo_type_id == 1) ? (int)$promo->amount : $promo->amount; ?>
                 <div class="form-group" id="amountInput">
                     {!! Form::label('title', __('Amount'),['class' => 'control-label']) !!}
-                    {!! Form::number('amount', $pricevalue, ['class' => 'form-control amountInputField', 'id' => 'amountInputField', 'placeholder'=>'Enter total amount', 'max' => "10000", 'min' => "1", "onKeyPress" => "return check(event,value)", "onInput" => "checkLength()"]) !!}
+                    {!! Form::number('amount', $pricevalue, ['class' => 'form-control amountInputField', 'id' => 'amountInputField', 'placeholder'=> __('Enter total amount'), 'max' => "10000", 'min' => "1", "onKeyPress" => "return check(event,value)", "onInput" => "checkLength()"]) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>
@@ -175,8 +175,8 @@
                 <div class="form-group">
                     {!! Form::label('title', __('Restriction Type'),['class' => 'control-label']) !!}
                     <select class="selectize-select form-control" name="restriction_type">
-                        <option value='include' @if($promo->restriction_type == 1) selected @endif>Include</option>
-                        <option value='exclude' @if($promo->restriction_type == 1) selected @endif>Exclude</option>
+                        <option value='include' @if($promo->restriction_type == 1) selected @endif>{{__('Include')}}</option>
+                        <option value='exclude' @if($promo->restriction_type == 1) selected @endif>{{__('Exclude')}}</option>
                     </select>
                 </div>
             </div>

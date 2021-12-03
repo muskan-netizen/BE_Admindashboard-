@@ -63,7 +63,7 @@
             @if($order->tip_amount > 0)
                 <tr class="pad-left-right-space">
                     <td colspan="2" align="left">
-                        <p style="font-size: 14px;"><b>Tip</b></p>
+                        <p style="font-size: 14px;"><b>{{__('Tip')}}</b></p>
                     </td>
                     <td colspan="2" align="right">
                         <b>{{$currencySymbol . number_format($order->tip_amount, 2, '.', '')}}</b>
@@ -73,7 +73,7 @@
             @if($order->subscription_discount > 0)
                 <tr class="pad-left-right-space">
                     <td colspan="2" align="left">
-                        <p style="font-size: 14px;"><b>Subscription Discount</b></p>
+                        <p style="font-size: 14px;"><b>{{__('Subscription Discount')}}</b></p>
                     </td>
                     <td colspan="2" align="right">
                         <b>{{$currencySymbol . number_format($order->subscription_discount, 2, '.', '')}}</b>
@@ -83,7 +83,7 @@
             @if($order->loyalty_amount_saved > 0)
             <tr class="pad-left-right-space">
                 <td colspan="2" align="left">
-                    <p style="font-size: 14px;"><b>Loyalty Amount Used</b></p>
+                    <p style="font-size: 14px;"><b>{{__('Loyalty Amount Used')}}</b></p>
                 </td>
                 <td colspan="2" align="right">
                     <b>{{$currencySymbol . number_format($order->loyalty_amount_saved, 2, '.', '')}}</b>
@@ -93,7 +93,7 @@
             @if($order->wallet_amount_used > 0)
             <tr class="pad-left-right-space">
                 <td colspan="2" align="left">
-                    <p style="font-size: 14px;"><b>Wallet Amount Used</b></p>
+                    <p style="font-size: 14px;"><b>{{__('Wallet Amount Used')}}</b></p>
                 </td>
                 <td colspan="2" align="right">
                     <b>{{$currencySymbol . number_format($order->wallet_amount_used, 2, '.', '')}}</b>
@@ -103,7 +103,7 @@
             @if($order->total_discount > 0)
             <tr class="pad-left-right-space">
                 <td colspan="2" align="left">
-                    <p style="font-size: 14px;"><b>Total Discount</b></p>
+                    <p style="font-size: 14px;"><b>{{__('Total Discount')}}</b></p>
                 </td>
                 <td colspan="2" align="right">
                     <b>{{$currencySymbol . number_format($order->total_discount, 2, '.', '')}}</b>

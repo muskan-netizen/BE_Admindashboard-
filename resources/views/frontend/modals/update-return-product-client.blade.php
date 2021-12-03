@@ -18,7 +18,7 @@
             @if (isset($return_details->returnFiles))
             <div class="row form-group rating_files">
                 <div class="col-12">
-                    <label>Uploaded Files</label>
+                    <label>{{__("Uploaded Files")}}</label>
                 </div>
 
                 <div class="col-10">
@@ -51,11 +51,11 @@
                 </div>
                 <div class="col-md-12">
                     <select class="form-control" name="status">
-                       <option value="Pending" @if($return_details->status == 'Pending') selected="selected" @endif>Pending</option>
-                       <option value="Accepted" @if($return_details->status == 'Accepted') selected="selected" @endif>Accepted</option>
-                       <option value="Rejected" @if($return_details->status == 'Rejected') selected="selected" @endif>Rejected</option>
+                       <option value="Pending" @if($return_details->status == 'Pending') selected="selected" @endif>{{__('Pending')}}</option>
+                       <option value="Accepted" @if($return_details->status == 'Accepted') selected="selected" @endif>{{__('Accepted')}}</option>
+                       <option value="Rejected" @if($return_details->status == 'Rejected') selected="selected" @endif>{{__('Rejected')}}</option>
                     </select>
-                </div>     
+                </div>
             </div>
 
             <div class="form-group">
@@ -65,7 +65,7 @@
 
             <span class="text-danger" id="error-msg"></span>
             <span class="text-success" id="success-msg"></span>
-            <button class="btn btn-primary w-100 mt-3" id="return_form_button">Update</button>
+            <button class="btn btn-primary w-100 mt-3" id="return_form_button">{{__('Update')}}</button>
         </form>
 
 
@@ -76,7 +76,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        
+
         $('#return-upload-form').submit(function(e) {
             e.preventDefault();
 

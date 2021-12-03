@@ -113,6 +113,32 @@
         </div>
     </div>
 </div>
+{{-- <div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Service Fee") }}</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+
+                    <div class="col-md-12">
+                        <div class="form-group" id="service_fee_percentInput">
+                            {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
+                            <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> --}}
 @if(Auth::user()->is_superadmin == 1)
 <div class="card-box">
     <div class="row text-left">
@@ -129,7 +155,7 @@
                     <div class="col-md-12">
                         <div class="form-group" id="commission_percentInput">
                             {!! Form::label('title', __('Commission Percent'),['class' => 'control-label']) !!}
-                            <input class="form-control" name="commission_percent" type="text" value="{{$vendor->commission_percent}}" onkeypress="return isNumberKey(event)">
+                            <input class="form-control" name="commission_percent" type="text" value="{{$vendor->commission_percent}}" onkeypress="return isNumberKey(event)"  onkeydown="if(this.value.length > 6) return false;">
                         </div>
                     </div>
                     <div class="col-md-12">
@@ -144,6 +170,12 @@
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="commission_monthly" type="text" value="{{$vendor->commission_monthly}}">
                         </div>
                     </div> -->
+                    <div class="col-md-12">
+                        <div class="form-group" id="service_fee_percentInput">
+                            {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
+                            <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
+                        </div>
+                    </div>
                     <div class="col-12">
                         <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
                     </div>

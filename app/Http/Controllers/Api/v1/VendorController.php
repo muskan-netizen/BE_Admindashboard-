@@ -168,7 +168,7 @@ class VendorController extends BaseController{
                             'variant' => function($q) use($langId){
                                 $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
                                 // $q->groupBy('product_id');
-                            },'variant.checkIfInCartApp',
+                            },'variant.checkIfInCartApp', 'checkIfInCartApp',
                              'tags.tag.translations' => function ($q) use ($langId) {
                                 $q->where('language_id', $langId);
                             }
@@ -264,7 +264,7 @@ class VendorController extends BaseController{
                         'variant' => function($q) use($langId){
                             $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
                             // $q->groupBy('product_id');
-                        }, 'variant.checkIfInCartApp',
+                        }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                         'tags.tag.translations' => function ($q) use ($langId) {
                             $q->where('language_id', $langId);
                         }
@@ -418,7 +418,7 @@ class VendorController extends BaseController{
                             'variant' => function ($q) use ($langId) {
                                 $q->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
                             // $q->groupBy('product_id');
-                            },'variant.checkIfInCartApp',
+                            },'variant.checkIfInCartApp', 'checkIfInCartApp',
                         ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
                         $products = $products->where('is_live', 1)->where('category_id', $category->category_id)->where('vendor_id', $vid)->get();
                     
@@ -512,7 +512,7 @@ class VendorController extends BaseController{
                             'variant' => function ($q) use ($langId) {
                                 $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
                             // $q->groupBy('product_id');
-                            }, 'variant.checkIfInCartApp',
+                            }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                         ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
                     if (!empty($slug2)) {
                         $category = Category::select('id')->where('slug', $slug2)->first();

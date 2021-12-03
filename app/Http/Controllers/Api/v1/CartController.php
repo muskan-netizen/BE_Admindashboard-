@@ -252,6 +252,8 @@ class CartController extends BaseController
             $cartData = $this->getCart($cart_detail, $user->language, $user->currency, $request->type);
             if ($cartData && !empty($cartData)) {
                 $cartData->cart_product_id = $cartProduct->id;
+                $product_total_quantity_in_cart = CartProduct::where(['cart_id'=>$cartProduct->cart_id,'product_id'=> $product->id])->sum('quantity');
+                $cartData->product_total_qty_in_cart = intval($product_total_quantity_in_cart);
                 return $this->successResponse($cartData);
             } else {
                 return $this->successResponse($cartData);
@@ -533,9 +535,10 @@ class CartController extends BaseController
             $tax_details = [];
             $is_vendor_closed = 0;
             $delay_date = 0;
+            $total_service_fee = 0;
             foreach ($cartData as $ven_key => $vendorData) {
              
-                $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
+                $vendor_products_total_amount = $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
 
                 $cart_dinein_table_id = $vendorData->vendor_dinein_table_id;
@@ -611,6 +614,7 @@ class CartController extends BaseController
                     $quantity_price = $price_in_doller_compare * $prod->quantity;
                     $item_count = $item_count + $prod->quantity;
                     $proSum = $proSum + $quantity_price;
+                    $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
                         $prod->cartImg = $prod->pvariant->image->imagedata;
                     } else {
@@ -717,7 +721,6 @@ class CartController extends BaseController
                     }
                     $prod->variants = $variantsData;
                     $prod->variant_options = $variant_options;
-                    $payable_amount = $payable_amount;
                     $prod->product_addons = $vendorAddons;
                 //    Log::info($prod);
                     $product = Product::with([
@@ -770,6 +773,13 @@ class CartController extends BaseController
                 } else {
                     $vendorData->couponData = $couponData;
                 }
+                $vendor_service_fee_percentage_amount = 0;
+                if($vendorData->vendor->service_fee_percent > 0){
+                    $vendor_service_fee_percentage_amount = ($vendor_products_total_amount * $vendorData->vendor->service_fee_percent) / 100 ;
+                    $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
+                }
+                $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
+                $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
                 $vendorData->vendor_gross_total = $payable_amount;
                 $vendorData->discount_amount = $discount_amount;
                 $vendorData->discount_percent = $discount_percent;
@@ -818,6 +828,7 @@ class CartController extends BaseController
             $total_disc_amount = $total_disc_amount + $total_subscription_discount;
             $cart->total_subscription_discount = $total_subscription_discount * $clientCurrency->doller_compare;
         }
+        $cart->total_service_fee = number_format($total_service_fee, 2, '.', '');
         $cart->total_tax = $total_tax;
         $cart->tax_details = $tax_details;
         $cart->gross_paybale_amount = $total_paying;

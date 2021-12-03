@@ -26,14 +26,14 @@
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
-                            <h2>Return Order</h2>
+                            <h2>{{__("Return Order")}}</h2>
                         </div>
                         <div class="welcome-msg">
-                            <h5>Here are your for return product !</h5>
+                            <h5>{{__("Here are your for return product !")}}</h5>
                         </div>
                         <div class="row">
                             <div class="container">
-                                @foreach($order->vendors as $key => $vendor)    
+                                @foreach($order->vendors as $key => $vendor)
                                 @foreach($vendor->products as  $key => $product)
                                 <tr>
                                     <td>
@@ -45,17 +45,17 @@
                                                 </div>
                                                 <div class="items-name ml-2">
                                                     <h4 class="mt-0 mb-1"><b>{{ $product->product_name }}</b></h4>
-                                                    <label><b>Quantity</b>: {{ $product->quantity }}</label>
+                                                    <label><b>{{_("Quantity")}}</b>: {{ $product->quantity }}</label>
                                                 </div>
                                             </label>
                                         </div>
                                     </td>
-                                   
-                                    
+
+
                                 </tr>
-                                @endforeach  
-                            @endforeach  
-                              
+                                @endforeach
+                            @endforeach
+
                                 <form id="return-upload-form" class="theme-form" action="javascript:void(0)" method="post" enctype="multipart/form-data">
                                         @csrf
                                     <input type="hidden" name="order_vendor_product_id" value="{{app('request')->input('return_ids')}}">
@@ -72,17 +72,17 @@
                                                     <span class="plus_icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
                                                 </label>
                                                 <input id="input-file" type="file" name="images[]" accept="image/*"  multiple>
-                                                
+
                                             </div>
                                         </div>
                                         <div class="col-10">
                                             <span class="row show-multiple-image-preview" id="thumb-output">
                                             </span>
                                         </div>
-                                        
+
                                     </div>
-                    
-                                    
+
+
                                     <div class="row form-group">
                                         <div class="col-md-6">
                                             <label>{{__('Reason for return product')}}</label>
@@ -91,7 +91,7 @@
                                                     <option value="{{$reason->title}}">{{$reason->title}}</option>
                                                 @endforeach
                                             </select>
-                                        </div>    
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label>{{__('Comments (Optional)')}}:</label>
@@ -105,7 +105,7 @@
                         </div>
 
 
-                       
+
                     </div>
                 </div>
             </div>
@@ -128,48 +128,48 @@
             $(this).remove();
             $("#"+img_id).remove();
         });
-     
+
     $.ajaxSetup({
     headers: {
     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
     });
     $(function() {
-   
-    
+
+
     $('#input-file').on('change', function() {
-        $('#files_set').val(1); 
+        $('#files_set').val(1);
        $(this).closest("form").submit();
     });
-    
+
     $('.server-img-del').on('click',function(e){
         var img_id = $(this).data('id');
         $(this).prev().remove();
          $(this).remove();
          $("#remove_files").append("<input type='hidden' name='remove_files[]' value='"+ img_id +"'>");
     });
-    
-    
-    
-    
-    
-    });    
+
+
+
+
+
+    });
     $('#return-upload-form').submit(function(e) {
     e.preventDefault();
-    
+
     var formData = new FormData(this);
     let TotalImages = $('#input-file')[0].files.length; //Total Images
     let comments = $('#comments').val();
     if(TotalImages > 0)
     {
-        
+
     let images = $('#input-file')[0];
     for (let i = 0; i < TotalImages; i++) {
     formData.append('images' + i, images.files[i]);
     }
     formData.append('TotalImages', TotalImages);
     formData.append('folder', '/return');
-    
+
     $.ajax({
     type:'POST',
     url: "{{ route('uploadfile')}}",
@@ -183,14 +183,14 @@
         },
     success: (data) => {
     if(data.status == 'Success')
-        {   
+        {
             $("#input-file").val('');
             for(var i = 0; i < data.data.length; i++) {
                 $("#remove_files").append("<input type='hidden' name='add_files[]' id='"+ data.data[i]['ids'] +"' = value='"+ data.data[i]['name'] +"'>");
                 $("#thumb-output").append("<div class='col-6 col-md-3 col-lg-2'> <img class=\"update_pic\" src=\"" + data.data[i]['img_path'] + "\" />" +
                 "<i class='fa fa-trash local-img-del' aria-hidden='true' data-id='"+ data.data[i]['ids'] +"'></i></div>");
             }
-    
+
             $("#return_form_button").html('Request').prop('disabled', false);
         }else{
             $('#error-msg').text(data.message);
@@ -226,7 +226,7 @@
             {
                 $("#return_form_button").html('Request');
                 var url = "{{route('user.orders',['pageType' => 'returnOrders'])}}";
-                $(location).prop('href', url); 
+                $(location).prop('href', url);
             }
         }else{
             $('#error-msg').text(data.message);
@@ -239,14 +239,14 @@
     }
     });
     }
-    
-    
-    
+
+
+
     });
-    
+
     });
     </script>
-    
+
 
 
 

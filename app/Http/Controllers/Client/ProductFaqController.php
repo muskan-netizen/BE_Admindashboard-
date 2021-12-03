@@ -19,8 +19,10 @@ class ProductFaqController extends BaseController{
             DB::beginTransaction();
             $product_faq = new ProductFaq();
             $product_faq->is_required = $request->is_required;
+            $product_faq->product_id = $request->product_id;
             $product_faq->save();
             $language_id = $request->language_id;
+            
             foreach ($request->name as $k => $name) {
                 if($name){
                     $ProductFaqTranslation = new ProductFaqTranslation();
@@ -71,6 +73,7 @@ class ProductFaqController extends BaseController{
             $product_faq_id = $request->product_faq_id;
             $product_faq = ProductFaq::where('id', $product_faq_id)->first();
             $product_faq->is_required = $request->is_required;
+            $product_faq->product_id = $request->product_id;
             $product_faq->save();
             $language_id = $request->language_id;
             ProductFaqTranslation::where('product_faq_id', $product_faq_id)->delete();

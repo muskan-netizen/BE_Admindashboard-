@@ -322,6 +322,12 @@ $timezone = Auth::user()->timezone;
                                                                     <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 @endif
+                                                                @if($order->total_service_fee > 0)
+                                                                <li class="d-flex align-items-center justify-content-between">
+                                                                    <label class="m-0">{{__('Service Fee')}}</label>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_service_fee * $clientCurrency->doller_compare)</span>
+                                                                </li>
+                                                                @endif
                                                                 @if($order->tip_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Tip Amount')}}</label>
@@ -524,6 +530,12 @@ $timezone = Auth::user()->timezone;
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{__('Tax')}}</label>
                                                                     <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * $clientCurrency->doller_compare)</span>
+                                                                </li>
+                                                                @endif
+                                                                @if($order->total_service_fee > 0)
+                                                                <li class="d-flex align-items-center justify-content-between">
+                                                                    <label class="m-0">{{__('Service Fee')}}</label>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_service_fee * $clientCurrency->doller_compare)</span>
                                                                 </li>
                                                                 @endif
                                                                 @if($order->tip_amount > 0)
@@ -763,6 +775,12 @@ $timezone = Auth::user()->timezone;
                                                                 <label class="m-0">{{__('Tax')}}</label>
                                                                 <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * $clientCurrency->doller_compare)</span>
                                                             </li>
+                                                            @endif
+                                                            @if($order->total_service_fee > 0)
+                                                                <li class="d-flex align-items-center justify-content-between">
+                                                                    <label class="m-0">{{__('Service Fee')}}</label>
+                                                                    <span>{{Session::get('currencySymbol')}}@money($order->total_service_fee * $clientCurrency->doller_compare)</span>
+                                                                </li>
                                                             @endif
                                                             @if($order->tip_amount > 0)
                                                             <li class="d-flex align-items-center justify-content-between">

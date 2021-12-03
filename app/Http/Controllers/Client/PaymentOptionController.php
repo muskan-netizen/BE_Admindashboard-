@@ -211,16 +211,18 @@ class PaymentOptionController extends BaseController
                     $validatedData = $request->validate([
                         'square_application_id' => 'required',
                         'square_access_token' => 'required',
+                        'square_location_id' => 'required',
                     ]);
                     $json_creds = json_encode(array(
                         'application_id' => $request->square_application_id,
                         'api_access_token' => $request->square_access_token,
+                        'location_id' => $request->square_location_id,
                     ));
                 }
             }
             PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
         }
-        $toaster = $this->successToaster('Success', $msg);
+        $toaster = $this->successToaster(__('Success'), $msg);
         return redirect()->back()->with('toaster', $toaster);
     }
 
@@ -265,7 +267,7 @@ class PaymentOptionController extends BaseController
             }
             PayoutOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
         }
-        $toaster = $this->successToaster('Success', $msg);
+        $toaster = $this->successToaster(__('Success'), $msg);
         return redirect()->back()->with('toaster', $toaster);
     }
 

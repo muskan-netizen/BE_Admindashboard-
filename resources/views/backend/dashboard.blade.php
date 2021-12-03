@@ -287,6 +287,10 @@
 <script>
 @section('script')
 @endsection
+    var Revenue_lng = "{{__('Revenue')}}";
+    var Sales_lng = "{{__('Sales')}}";
+    var Net_Revenue_lng = "{{__('Net Revenue')}}";
+    var Number_of_Sales_lng = "{{__('Number of Sales')}}";
     var categoryInfo_url = "{{route('client.categoryInfo')}}";
     var yearlyInfo_url = "{{route('client.yearlySalesInfo')}}";
     var weeklyInfo_url = "{{route('client.weeklySalesInfo')}}";

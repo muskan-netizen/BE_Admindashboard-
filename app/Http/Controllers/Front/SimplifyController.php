@@ -17,16 +17,12 @@ class SimplifyController extends FrontController
 	private $private_key;
 	public function __construct()
   	{
-		$gcash_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'simplify')->where('status', 1)->first();
-	    $creds_arr = json_decode($gcash_creds->credentials);
+		$simp_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'simplify')->where('status', 1)->first();
+	    $creds_arr = json_decode($simp_creds->credentials);
 	    $this->public_key = $creds_arr->public_key??'';
 	    $this->private_key = $creds_arr->private_key??'';
 	}
 
-    public function webView(Request $request)
-    {
-    	return view('frontend.payment_gatway.simplify_view')->with(['public_key' => $this->public_key]);
-    }
     public function beforePayment(Request $request)
     {
     	$data = $request->all();
@@ -70,8 +66,6 @@ class SimplifyController extends FrontController
     	$request['amount'] = $amount;
     	if($payment->paymentStatus == 'APPROVED')
     	{
-    		// $data['authorization_id'] = $payment->id;
-    		// $capture = $this->captureAuthorization($data);
             $returnUrl = $this->sucessPayment($request,$payment);
         } else{
             $returnUrl = $this->failedPayment($request,$payment);

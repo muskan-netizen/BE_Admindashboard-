@@ -147,7 +147,7 @@ class ProductController extends BaseController
             $proVariant->barcode = $this->generateBarcodeNumber();
             $proVariant->save();
             ProductTranslation::insert($datatrans);
-            return redirect('client/product/' . $product->id . '/edit')->with('success', 'Product added successfully!');
+            return redirect('client/product/' . $product->id . '/edit')->with('success', __('Product added successfully!') );
         }
     }
 
@@ -213,27 +213,27 @@ class ProductController extends BaseController
         $otherProducts = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
         $configData = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form')->first();
         $celebrities = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
-        
+
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
         $pro_tags = [];
 
          if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 7) # if type is pickup delivery then get dispatcher tags
-        {   
+        {
             $vendor_id = $product->vendor_id;
             $agent_dispatcher_tags = $this->getDispatcherTags($vendor_id);
         }
         if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 8) # if type is on demand
-        {   
+        {
             $vendor_id = $product->vendor_id;
             $agent_dispatcher_on_demand_tags = $this->getDispatcherOnDemandTags($vendor_id);
-           
+
         }
-        
+
         $pro_tags = Tag::with('primary')->whereHas('primary')->get();
         $product_faqs = ProductFaq::with('primary')->get();
-     
-        
+
+
         $set_product_tags = ProductTag::where('product_id',$product->id)->pluck('tag_id')->toArray();
 
         return view('backend/product/edit', ['product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags,'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids]);
@@ -272,8 +272,8 @@ class ProductController extends BaseController
             $product->{$k} = $val;
         }
 
-        
-      
+
+
         $product->sku = $request->sku;
         $product->url_slug = $request->url_slug;
         $product->tags        = $request->tags??null;
@@ -301,7 +301,7 @@ class ProductController extends BaseController
             $product->sell_when_out_of_stock = 1;
         }
         $product->save();
-      
+
         if ($product->id > 0) {
             $trans = ProductTranslation::where('product_id', $product->id)->where('language_id', $request->language_id)->first();
             if (!$trans) {
@@ -431,7 +431,7 @@ class ProductController extends BaseController
                 $variantData->save();
             }
         }
-        $toaster = $this->successToaster('Success', 'Product  updated successfully.');
+        $toaster = $this->successToaster(__('Success'),__('Product updated successfully') );
         // return redirect('client/vendor/catalogs/' . $product->vendor_id)->with('toaster', $toaster);
         return redirect()->back()->with('toaster', $toaster);
     }
@@ -445,31 +445,31 @@ class ProductController extends BaseController
     public function destroy($domain = '', $id)
     {
         try{
-           
+
             DB::beginTransaction();
             $product = Product::find($id);
             $dynamic = time();
-           
+
             Product::where('id', $id)->update(['sku' => $product->sku.$dynamic ,'url_slug' => $product->url_slug.$dynamic]);
-            
+
             $tot_var  = ProductVariant::where('product_id', $id)->get();
             foreach($tot_var as $varr)
-            {   
+            {
                 $dynamic = time().substr(md5(mt_rand()), 0, 7);
                 ProductVariant::where('id', $varr->id)->update(['sku' => $product->sku.$dynamic]);
             }
-          
+
             Product::where('id', $id)->delete();
-            
+
             CartProduct::where('product_id', $id)->delete();
             UserWishlist::where('product_id', $id)->delete();
-           
+
              DB::commit();
             return redirect()->back()->with('success', 'Product deleted successfully!');
         }
         catch(\Exception $ex){
             DB::rollback();
-            redirect()->back()->with('error', $ex->getMessage());
+            redirect()->back()->with(__('Errors'), $ex->getMessage());
         }
     }
 
@@ -800,9 +800,9 @@ class ProductController extends BaseController
     }
 
 
-      # get dispatcher tags from dispatcher panel  
+      # get dispatcher tags from dispatcher panel
       public function getDispatcherTags($vendor_id){
-        try {   
+        try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
                 if ($dispatch_domain && $dispatch_domain != false) {
 
@@ -813,20 +813,20 @@ class ProductController extends BaseController
                                                         'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                         'content-type' => 'application/json']
                                                             ]);
-                            $url = $dispatch_domain->pickup_delivery_service_key_url;                      
+                            $url = $dispatch_domain->pickup_delivery_service_key_url;
                             $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
-                            $response = json_decode($res->getBody(), true); 
+                            $response = json_decode($res->getBody(), true);
                             if($response && $response['message'] == 'success'){
                                 return $response['tags'];
                             }
-                    
+
                 }
-            }    
+            }
             catch(\Exception $e){
-            
+
             }
     }
-    # check if last mile delivery on 
+    # check if last mile delivery on
     public function checkIfPickupDeliveryOn(){
         $preference = ClientPreference::first();
         if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
@@ -836,9 +836,9 @@ class ProductController extends BaseController
     }
 
 
-      # get dispatcher on demand tags from dispatcher panel  
+      # get dispatcher on demand tags from dispatcher panel
       public function getDispatcherOnDemandTags($vendor_id){
-        try {   
+        try {
             $dispatch_domain = $this->checkIfOnDemandOn();
                 if ($dispatch_domain && $dispatch_domain != false) {
 
@@ -849,20 +849,20 @@ class ProductController extends BaseController
                                                         'shortcode' => $dispatch_domain->dispacher_home_other_service_key_code,
                                                         'content-type' => 'application/json']
                                                             ]);
-                            $url = $dispatch_domain->dispacher_home_other_service_key_url;                      
+                            $url = $dispatch_domain->dispacher_home_other_service_key_url;
                             $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
-                            $response = json_decode($res->getBody(), true); 
+                            $response = json_decode($res->getBody(), true);
                             if($response && $response['message'] == 'success'){
                                 return $response['tags'];
                             }
             //                Log::info($response);
                 }
-            }    
+            }
             catch(\Exception $e){
                 Log::info($e->getMessage());
             }
     }
-    # check if last mile delivery on 
+    # check if last mile delivery on
     public function checkIfOnDemandOn(){
         $preference = ClientPreference::first();
         if($preference->need_dispacher_home_other_service == 1 && !empty($preference->dispacher_home_other_service_key) && !empty($preference->dispacher_home_other_service_key_url) && !empty($preference->dispacher_home_other_service_key_code))
@@ -871,20 +871,20 @@ class ProductController extends BaseController
             return false;
     }
 
-    # update all products action  
+    # update all products action
     public function updateActions(Request $request){
         if(isset($request->is_new) && $request->is_new == 'true')
         $is_new = 1;
         else
         $is_new = 0;
 
-        if (isset($request->is_featured) && $request->is_featured == 'true') { 
+        if (isset($request->is_featured) && $request->is_featured == 'true') {
             $is_featured = 1;
         }
         else
         $is_featured = 0;
 
-        if (isset($request->last_mile) && $request->last_mile == 'true') { 
+        if (isset($request->last_mile) && $request->last_mile == 'true') {
             $Requires_last_mile  = 1;
         }
         else
@@ -921,12 +921,12 @@ class ProductController extends BaseController
 
         }
 
-  
+
         return response()->json([
             'status' => 'success',
             'message' => __('Product action Submitted successfully!')
         ]);
     }
-    
+
 
 }

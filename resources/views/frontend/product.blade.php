@@ -130,7 +130,7 @@
                                             if($product->variant->first()->media->isNotEmpty()){
                                                 $product->media = $product->variant->first()->media;
                                             }
-                                            
+
                                             if($product->media->isEmpty()){
                                                 $arr = [
                                                     'image' => (object)[
@@ -213,7 +213,7 @@
                                         </a>
                                     </p>
                                 </div>
-                            </div>  
+                            </div>
 
                             <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text">
                                 <div class="product-right inner_spacing">
@@ -224,7 +224,7 @@
                                         <b> <img src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
                                     </h6>
                                     @if($client_preference_detail)
-                                        @if($client_preference_detail->rating_check == 1)  
+                                        @if($client_preference_detail->rating_check == 1)
                                             @if($product->averageRating > 0)
                                                 <span class="rating">{{ number_format($product->averageRating, 1, '.', '') }} <i class="fa fa-star text-white p-0"></i></span>
                                             @endif
@@ -307,9 +307,9 @@
                                             @endif
                                         </div>
                                         @endif
-                                       
+
                                     </div>
-                                    
+
                                     @if(!empty($product->addOn) && $product->addOn->count() > 0)
                                     <div class="border-product">
                                         <h6 class="product-title">Addon List</h6>
@@ -347,7 +347,7 @@
                                                     </div>
                                                 </div>
                                             @endforeach
-                                        </div>                
+                                        </div>
 
 
                                         {{--<table class="table table-centered table-nowrap table-striped d-none" id="addon-table">
@@ -399,14 +399,14 @@
                                         </button>
                                         @endif
                                         @if($product->inquiry_only == 0)
-                                        @php    
+                                        @php
                                         if($product->sell_when_out_of_stock == 1 && $product->variant[0]->quantity == 0){
                                             $product_quantity_in_cart = 1;
                                             $product->variant[0]->quantity = 2;
                                         }
                                         else
                                         $product_quantity_in_cart = $product_in_cart->quantity??0;
-                                       
+
                                         @endphp
                                             <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ ($vendor_info->is_vendor_closed == 1 || ($product->variant[0]->quantity <= $product_quantity_in_cart)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
                                             @if($vendor_info->is_vendor_closed == 1)
@@ -654,7 +654,7 @@
                 <a class="common-product-box scale-effect text-center" href="{{route('productDetail')}}/{{ $related_product->url_slug }}">
                     <div class="img-outer-box position-relative">
                         <img src="{{ $related_product->image_url }}" alt="">
-                    </div>    
+                    </div>
                     <div class="media-body align-self-center">
                         <div class="inner_spacing px-0">
                             <div class="product-description">
@@ -674,14 +674,14 @@
                                                 <span class="rating">{{ $related_product->averageRating }} <i class="fa fa-star text-white p-0"></i></span>
                                             @endif
                                         @endif
-                                    @endif  
-                                </div>                       
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
                 </a>
 
-                
+
                 </div>
                 {{--<div class="col-xl-2 col-md-4 col-sm-6">
                     <div class="product-box">
@@ -911,15 +911,11 @@
             success: function(response) {
                 if(response.status == 'Success'){
                     $("#variant_response span").html('');
-                    // var res = response.variant;
-                    // $('#prod_variant_id').val(res.id);
-                    // $('#productPriceValue').html(res.productPrice);
-                    // $('#instock').html("In Stock (" + res.quantity + ")");
                     if(response.variant != ''){
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
                         $("#product_variant_wrapper").append(variant_template({variant:response.variant}));
-                    
+
                         $('#product_variant_quantity_wrapper').html('');
                         let variant_quantity_template = _.template($('#variant_quantity_template').html());
                         $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
@@ -999,7 +995,7 @@
 
 
 <script>
-        
+
         (function ($, window) {
             let ele = null,
                 exzoom_img_box = null,
@@ -1605,7 +1601,7 @@
                 return res;
             }
 
-            // 闭包结束     
+            // 闭包结束
         })(jQuery, window);
 
 

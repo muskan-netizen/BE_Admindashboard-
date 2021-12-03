@@ -76,7 +76,7 @@
                         </div>
                         <div class="row mt-3">
                             <div class="col-12 text-center">
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
 
 
         <footer class="footer footer-alt">
-            <script>document.write(new Date().getFullYear())</script> &copy; All rights reserved by 
+            <script>document.write(new Date().getFullYear())</script> &copy; {{__('All rights reserved')}} by
         </footer>
 
         @include('layouts.shared.footer-script')

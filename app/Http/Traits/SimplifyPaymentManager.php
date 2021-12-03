@@ -54,32 +54,5 @@ trait SimplifyPaymentManager{
         ];
     }
   }
-  public function captureAuthorization($data)
-  {
-    $this->init();
-    try {
-        $payment = Simplify::createPayment(array(
-            'authorization' => $data['authorization_id'], //Authorization ID you received in Authorizing
-            'reference' => 'IO-4521458',
-            'amount' => 1000, // 10 AED multiplied by 100
-            'description' => 'payment description',
-            'currency' => 'AED',
-            'order' => [
-                'source' => $data['source'],
-                'status' => 'INCOMPLETE',
-                'customerEmail' => $data['email'],
-                'customerName' => $data['username'],
-            ]
-        ));
-        if ($payment->paymentStatus == 'APPROVED') {
-            Log::info(print_r($payment, true)); // Printing reponse to your log file.
-            return $payment;
-        }
-    } catch (Exception $e) {
-        return [
-            'auth_message' => $e->getMessage(), // Capture Failed
-        ];
-    }
-  }
 
 }

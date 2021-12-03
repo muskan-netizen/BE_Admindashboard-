@@ -220,7 +220,6 @@
             dataType: 'json',
             success: function(response) {
                 if (response.status == 'success') {
-                    console.log(response.message);
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                 }
             }
@@ -247,7 +246,6 @@
             dataType: 'json',
             success: function(response) {
                 if (response.status == 'success') {
-                    console.log(response.message);
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                 }
             }
@@ -274,7 +272,6 @@
             dataType: 'json',
             success: function(response) {
                 if (response.status == 'success') {
-                    console.log(response.message);
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                 }
             }
@@ -301,7 +298,6 @@
             dataType: 'json',
             success: function(response) {
                 if (response.status == 'success') {
-                    console.log(response.message);
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                 }
             }
@@ -328,7 +324,6 @@
             dataType: 'json',
             success: function(response) {
                 if (response.status == 'success') {
-                    console.log(response.message);
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                 }
             }
@@ -356,7 +351,6 @@
             dataType: 'json',
             success: function(response) {
                 if (response.status == 'success') {
-                    console.log(response.message);
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                 }
             }
@@ -384,7 +378,6 @@
             dataType: 'json',
             success: function(response) {
                 if (response.status == 'success') {
-                    console.log(response.message);
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                 }
             }
@@ -412,7 +405,6 @@
             dataType: 'json',
             success: function(response) {
                 if (response.status == 'success') {
-                    console.log(response.message);
                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
                 }
             }

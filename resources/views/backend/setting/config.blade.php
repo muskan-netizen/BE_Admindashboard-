@@ -139,7 +139,7 @@
                         </span>
                         @endif
                      </div>
-                     
+
                      @if($last_mile_teams != null && count($last_mile_teams))
                      <div class="form-group mt-3 mb-0" style="{{(isset($preference) && $preference->need_delivery_service == '1') ? '' : 'display: none;'}}" id="lastMileTeamListDiv">
                         <div class="form-group">
@@ -149,7 +149,7 @@
                               @foreach($last_mile_teams as $nm)
                                  <option value="{{$nm['name']}}" @if($preference->last_mile_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
                               @endforeach
-                              
+
                             </select>
                         </div>
                      </div>
@@ -212,7 +212,7 @@
                   </div>
                </div>
             </div>
-         </div> 
+         </div>
          @endif
 
          @if($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app' )
@@ -312,7 +312,7 @@
                         </span>
                         @endif
                      </div>
-                     
+
                      @if($laundry_teams != null && count($laundry_teams))
                      <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{(isset($preference) && $preference->need_laundry_service == '1') ? '' : 'display: none;'}}" id="laundryPickupTeamListDiv">
                         <div class="form-group">
@@ -322,7 +322,7 @@
                               @foreach($laundry_teams as $nm)
                                  <option value="{{$nm['name']}}" @if($preference->laundry_pickup_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
                               @endforeach
-                              
+
                             </select>
                         </div>
                      </div>
@@ -335,7 +335,7 @@
                               @foreach($laundry_teams as $nm)
                                  <option value="{{$nm['name']}}" @if($preference->laundry_dropoff_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
                               @endforeach
-                              
+
                             </select>
                         </div>
                      </div>
@@ -347,7 +347,7 @@
             </div>
          </div>
          @endif
-        
+
          {{-- <div class="col-lg-3 col-md-6 mb-3">
             <div class="row h-100">
                <div class="col-12">
@@ -950,7 +950,7 @@
                </div>
                @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
                <div class="col-xl-12 mb-4">
-                  
+
                   <div class="card-box mb-0">
                      <h4 class="header-title text-uppercase">{{ __("Vendor") }}</h4>
                      <div class="row align-items-center">
@@ -1013,7 +1013,7 @@
                         </div>
                      </div>
                      @endif
-                 
+
                   <div class="col-md-4">
                      <div class="form-group mb-3">
                         <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Off Scheduling  Order')}}</label>
@@ -1034,7 +1034,7 @@
                      </div>
                   </div>
                   @endif
-                 
+
                   <div class="col-md-4">
                      <div class="form-group mb-3">
                         <label for="tip_before_order" class="mr-2 mb-0">{{__('Tip Before Order')}}</label>
@@ -1102,12 +1102,12 @@
                            @forelse($vendor_registration_documents as $vendor_registration_document)
                            <tr>
                               <td>
-                                 <a class="edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">   
+                                 <a class="edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">
                                     {{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}
-                                 </a>   
+                                 </a>
                               </td>
                               <td>{{$vendor_registration_document->file_type}}</td>
-                              <td>{{ ($vendor_registration_document->is_required == 1)?"Yes":"No" }}</td>
+                              <td>{{ ($vendor_registration_document->is_required == 1)?__('Yes'):__('No') }}</td>
                               <td>
                                  <div>
                                     <div class="inner-div" style="float: left;">
@@ -1134,7 +1134,7 @@
                </div>
 
 
-               <div class="card-box pb-2">                
+               <div class="card-box pb-2">
                   <div class="table-responsive mb-1">
                      <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                         <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
@@ -1163,7 +1163,7 @@
                   <!-- <div class="page-title-box">
                      <h4 class="page-title text-uppercase">{{__('Distance to Time Calculator')}}</h4>
                   </div> -->
-                  
+
                   <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                      <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
                      @csrf
@@ -1196,14 +1196,14 @@
 
       <div class="col-xl-6">
          <div class="row">
-          
+
             <div class="col-xl-6 mb-3">
-           
+
                <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
                   @csrf
                   <div class="card-box mb-0 pb-1">
                      <div class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title text-uppercase">Refer and Earn</h4> 
+                        <h4 class="header-title text-uppercase">Refer and Earn</h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                      </div>
                      <div class="col-xl-12 my-2" id="addCur-160">
@@ -1223,7 +1223,7 @@
                   @csrf
                   <div class="card-box mb-0 pb-1">
                      <div class="d-flex align-items-center justify-content-between">
-                  <h4 class="header-title text-uppercase">{{ __('Order Email Notification') }}</h4> 
+                  <h4 class="header-title text-uppercase">{{ __('Order Email Notification') }}</h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                      </div>
                      <div class="col-xl-12 my-2" id="addCur-160">
@@ -1235,12 +1235,12 @@
             </div>
 
             <div class="col-xl-6 mb-3">
-           
+
                <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
                   @csrf
                   <div class="card-box product-tags mb-0 pb-1">
                      <div class="d-flex align-items-center justify-content-between">
-                     <h4 class="header-title text-uppercase">{{ __('Tags for Product')}}</h4> 
+                     <h4 class="header-title text-uppercase">{{ __('Tags for Product')}}</h4>
                         <a class="btn btn-info d-block" id="add_product_tag_modal_btn">
                            <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
                         </a>
@@ -1258,12 +1258,12 @@
                               @forelse($tags as $tag)
                               <tr>
                                  <td>
-                                    <img src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}"> 
+                                    <img src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}">
                                  </td>
                                  <td>
-                                    <a class="edit_product_tag_btn" data-tag_id="{{$tag->id}}" href="javascript:void(0)">   
+                                    <a class="edit_product_tag_btn" data-tag_id="{{$tag->id}}" href="javascript:void(0)">
                                        {{$tag->primary ? $tag->primary->name : ''}}
-                                    </a>   
+                                    </a>
                                  </td>
                                   <td>
                                     <div>
@@ -1298,12 +1298,12 @@
          </div>
       </div>
 
-      
+
 
    </div>
 
-   
-   
+
+
    <div class="row">
       {{--<div class="col-lg-6">
          <div class="page-title-box">
@@ -1329,9 +1329,9 @@
                      @forelse($driver_registration_documents as $driver_registration_document)
                      <tr>
                         <td>
-                           <a class="edit_driver_registration_document_btn" data-driver_registration_document_id="{{$driver_registration_document->id}}" href="javascript:void(0)">   
+                           <a class="edit_driver_registration_document_btn" data-driver_registration_document_id="{{$driver_registration_document->id}}" href="javascript:void(0)">
                               {{$driver_registration_document->primary ? $driver_registration_document->primary->name : ''}}
-                           </a>   
+                           </a>
                         </td>
                         <td>{{$driver_registration_document->file_type}}</td>
                         <td>
@@ -1359,7 +1359,7 @@
             </div>
          </div>
       </div> --}}
-     
+
    </div>
 
    <div style="display:none;">
@@ -1513,8 +1513,8 @@
                               <label for="">Is Required?</label>
                               <div class="input-group mb-2">
                                  <select class="form-control" name="is_required">
-                                    <option value="1">Yes</option>
-                                    <option value="0">No</option>
+                                    <option value="1">{{__('Yes')}}</option>
+                                    <option value="0">{{__('No')}}</option>
                                  </select>
                               </div>
                            </div>
@@ -1620,7 +1620,7 @@
                            <label>{{ __('Upload Icon') }}</label>
                            <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify"  />
                            <label class="logo-size text-right w-100">{{ __("Icon Size") }} 100X100</label>
-                       </div> 
+                       </div>
 
                         @forelse($client_languages as $k => $client_language)
                         <div class="col-md-6 mb-2">
@@ -2070,7 +2070,7 @@
          $('#show-map-modal').modal('hide');
       });
 
-     
+
       var hyprlocal = $('#is_hyperlocal');
       if(hyprlocal.length > 0){
          hyprlocal[0].onchange = function() {
@@ -2082,7 +2082,7 @@
          }
          }
       }
-      
+
       var delivery_service = $('#need_delivery_service');
       var dispatcherDiv = $('#need_dispacher_ride');
       var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
@@ -2180,21 +2180,21 @@
          optionsChecked("dinein_check");
          }
       }
-      
+
       var takeaway_option = $('#takeaway_check');
       if(takeaway_option.length > 0){
          takeaway_option[0].onchange = function() {
          optionsChecked("takeaway_check");
       }
       }
-      
+
       var delivery_option = $('#delivery_check');
       if(delivery_option > 0){
          delivery_option[0].onchange = function() {
          optionsChecked("delivery_check");
          }
       }
-     
+
 
       function optionsChecked(id) {
          var delivery_checked = $("#delivery_check").is(":checked");

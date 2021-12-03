@@ -118,6 +118,9 @@ function getRazorPayApiKey()
 function dateTimeInUserTimeZone($date, $timezone, $showDate=true, $showTime=true, $showSeconds=false){
     $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
     $date_format = (!empty($preferences->date_format)) ? $preferences->date_format : 'YYYY-MM-DD';
+    if($date_format == 'DD/MM/YYYY'){
+        $date_format = 'DD-MM-YYYY';
+    }
     $time_format = (!empty($preferences->time_format)) ? $preferences->time_format : '24';
     $date = Carbon::parse($date, 'UTC');
     $date->setTimezone($timezone);

@@ -40,19 +40,7 @@ class PickupDeliveryController extends BaseController{
             if(!$vendor){
                 return response()->json(['error' => __('No record found.')], 200);
             }
-            // $variantSets =  ProductVariantSet::with(['options' => function($zx) use($langId){
-            //                     $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
-            //                     $zx->select('variant_options.*', 'vt.title');
-            //                     $zx->where('vt.language_id', $langId);
-            //                 }])->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id')
-            //                 ->join('variant_translations as vt','vt.variant_id','vr.id')
-            //                 ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
-            //                 ->where('vt.language_id', $langId)
-            //                 ->whereIn('product_id', function($qry) use($vid){ 
-            //                 $qry->select('id')->from('products')
-            //                     ->where('vendor_id', $vid);
-            //                 })
-            //             ->groupBy('product_variant_sets.variant_type_id')->get();
+           
             $products = Product::with(['category.categoryDetail', 'inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
@@ -62,6 +50,8 @@ class PickupDeliveryController extends BaseController{
                         'variant' => function($q) use($langId){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
+                        },'ProductFaq.translations' => function ($qs) use($langId){
+                            $qs->where('language_id',$langId);
                         },
                     ])->join('product_categories as pc', 'pc.product_id', 'products.id')
                     ->whereNotIn('pc.category_id', function($qr) use($vid){ 
@@ -355,6 +345,13 @@ class PickupDeliveryController extends BaseController{
                 $order_product->created_by = null;
                 $order_product->variant_id = $variant->id;
                 $order_product->product_name = $product->sku;
+                
+                if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
+                $user_product_order_form = json_encode($request->user_product_order_form);
+                else
+                $user_product_order_form = null;
+
+                $order_product->user_product_order_form = $user_product_order_form;
                 if ($product->pimage) {
                     $order_product->image = $product->pimage->first() ? $product->pimage->first()->path : '';
                 }

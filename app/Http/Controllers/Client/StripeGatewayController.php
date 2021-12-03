@@ -63,7 +63,7 @@ class StripeGatewayController extends BaseController{
             else{
                 $customer_id = $saved_payment_method->customerReference;
             }
-            
+
             // $subscriptionResponse = $this->gateway->createSubscription(array(
             //     "customerReference" => $customer_id,
             //     'plan' => 'Basic Plan',
@@ -103,8 +103,8 @@ class StripeGatewayController extends BaseController{
             $user = Auth::user();
             $vendor = $request->state;
             if($request->has('code')){
-                $code = $request->code;    
-                $checkIfExists = VendorConnectedAccount::where('user_id', $user->id)->where('vendor_id', $vendor)->first();        
+                $code = $request->code;
+                $checkIfExists = VendorConnectedAccount::where('user_id', $user->id)->where('vendor_id', $vendor)->first();
                 if($vendor > 0){
                     if($checkIfExists){
                         $msg = __('You are already connected to stripe');
@@ -128,24 +128,24 @@ class StripeGatewayController extends BaseController{
                         $connectdAccount->payment_option_id = 2;
                         $connectdAccount->status = 1;
                         $connectdAccount->save();
-                        
+
                         $msg = __('Stripe connect has been enabled successfully');
-                        $toaster = $this->successToaster('Success', $msg);
+                        $toaster = $this->successToaster(__('Success'), $msg);
                     }
                 }else{
                     $msg = __('Invalid Data');
-                    $toaster = $this->errorToaster('Error', $msg);
+                    $toaster = $this->errorToaster(__('Errors'), $msg);
                 }
             }
             else{
                 $msg = __('Stripe connect has been declined');
-                $toaster = $this->errorToaster('Error', $msg);
+                $toaster = $this->errorToaster(__('Errors'), $msg);
             }
         }
         catch(Exception $ex){
-            $toaster = $this->errorToaster('Error', $ex->getMessage());
+            $toaster = $this->errorToaster(__('Errors'), $ex->getMessage());
         }
-        
+
         return Redirect::To(route('vendor.payout', $vendor))->with('toaster', $toaster);
     }
 
@@ -155,7 +155,7 @@ class StripeGatewayController extends BaseController{
             $user = Auth::user();
             $connected_account = VendorConnectedAccount::where('vendor_id', $id)->first();
             if($connected_account && (!empty($connected_account->account_id))){
-                
+
                 // $stripe = new \Stripe\StripeClient($this->payout_secret_key);
                 // $payment_intent = $stripe->paymentIntents->create([
                 //     'payment_method_types' => ['card'],
@@ -174,7 +174,7 @@ class StripeGatewayController extends BaseController{
                 //     'destination' => $connected_account->account_id,
                 //     'transfer_group' => $charge_id,
                 // ]);
-                
+
             }else{
                 return $this->errorResponse('You are not connected to stripe', 400);
             }

@@ -21,7 +21,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </div>
                 @endif
 
-               
+
                 <div class="col-lg-3 col-md-6 col-5 pt-md-4 pt-lg-0">
                     <div class="sub-title">
                         <div class="footer-title mt-0">

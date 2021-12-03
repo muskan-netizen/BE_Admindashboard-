@@ -51,12 +51,12 @@
                                     <div class="form-group">
                                         <label for="name" class="control-label"> Status </label> <br/>
                                         <select id="selectize-select" name="status">
-                                            <option data-display="Select" value="0">Not Available</option>
-                                            <option value="1">Available</option>
+                                            <option data-display="Select" value="0">{{__('Not Available')}}</option>
+                                            <option value="1">{{__('Available')}}</option>
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-10"></div>
                                     <div class="col-md-2 pull-right">

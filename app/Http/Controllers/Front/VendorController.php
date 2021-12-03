@@ -318,7 +318,9 @@ class VendorController extends FrontController
 
             $vendor_categories = VendorCategory::with(['category.translation' => function($q) use($langId){
                 $q->where('category_translations.language_id', $langId);
-            }])->where('vendor_id', $vid);
+            }])
+            ->whereHas('category')
+            ->where('vendor_id', $vid);
             if($categorySlug != ''){
                 $vendor_categories = $vendor_categories->whereHas('category', function($query) use($categorySlug) {
                     $query->where('slug', $categorySlug);

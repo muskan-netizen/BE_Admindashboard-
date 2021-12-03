@@ -66,8 +66,8 @@
                 $password = (isset($creds->password)) ? $creds->password : '';
                 $signature = (isset($creds->signature)) ? $creds->signature : '';
                 $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+                $location_id= (isset($creds->location_id)) ? $creds->location_id : '';
                 $application_id = (isset($creds->application_id)) ? $creds->application_id : '';
-                $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                 $api_access_token = (isset($creds->api_access_token)) ? $creds->api_access_token : '';
                 $api_secret_key = (isset($creds->api_secret_key)) ? $creds->api_secret_key : '';
                 $publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
@@ -322,6 +322,14 @@
                                 <div class="form-group mb-0">
                                     <label for="square_access_token" class="mr-3">{{ __("Access Token") }}</label>
                                     <input type="password" name="square_access_token" id="square_access_token" class="form-control" value="{{$api_access_token}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="square_location_id" class="mr-3">{{ __("Location ID") }}</label>
+                                    <input type="text" name="square_location_id" id="square_location_id" class="form-control" value="{{$location_id}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

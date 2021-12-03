@@ -70,6 +70,9 @@
                             @if($order->taxable_amount > 0)
                                 <li>{{__('Tax')}} <span>{{Session::get('currencySymbol')}}@money($order->taxable_amount * @$clientCurrency->doller_compare)</span></li>
                             @endif
+                            @if($order->total_service_fee > 0)
+                                <li>{{__('Service Fee')}} <span>{{Session::get('currencySymbol')}}@money($order->total_service_fee * @$clientCurrency->doller_compare)</span></li>
+                            @endif
                             @if($order->total_delivery_fee > 0)
                                 <li>{{__('Delivery Fee')}} <span>{{Session::get('currencySymbol')}}@money($order->total_delivery_fee * @$clientCurrency->doller_compare)</span></li>
                             @endif

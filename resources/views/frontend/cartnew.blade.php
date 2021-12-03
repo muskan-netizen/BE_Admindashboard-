@@ -95,7 +95,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <% if( product.is_vendor_closed == 1 ) { %>
                     <div class="col-12">
                         <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> Vendor is not accepting orders right now.
+                            <i class="fa fa-exclamation-circle"></i> {{__('Vendor is not accepting orders right now.')}}
                         </div>
                     </div>
                 <% } %>
@@ -282,6 +282,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_taxable_amount) %></div>
             </div>
             <hr class="my-2">
+            <% if(cart_details.total_service_fee > 0) { %>
+                <div class="row">
+                    <div class="col-6">{{__('Service Fee')}}</div>
+                    <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_service_fee) %></div>
+                </div>
+                <hr class="my-2">
+            <% } %>
             <% if(cart_details.total_subscription_discount != undefined) { %>
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
@@ -379,12 +386,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <% if(cart_details.delay_date == 0) { %>
                             <li class="d-inline-block mr-1">
                                 <input type="radio" class="custom-control-input check" id="tasknow" name="task_type" value="now" <%= ((cart_details.schedule_type == 'now' || cart_details.schedule_type == '' || cart_details.schedule_type == null) ? 'checked' : '') %> >
-                                <label class="btn btn-solid" for="tasknow">Now</label>
+                                <label class="btn btn-solid" for="tasknow">{{__('Now')}}</label>
                             </li>
                             <% } %>
                             <li class="d-inline-block">
                                 <input type="radio" class="custom-control-input check" id="taskschedule" name="task_type" value="schedule" <%= ((cart_details.schedule_type == 'schedule' || cart_details.delay_date != 0) ? 'checked' : '') %> >
-                                <label class="btn btn-solid" for="taskschedule">Schedule</label>
+                                <label class="btn btn-solid" for="taskschedule">{{__('Schedule')}}</label>
                             </li>
                         </ul>
                     </div>

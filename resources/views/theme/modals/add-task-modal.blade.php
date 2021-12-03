@@ -3,7 +3,7 @@
         <div class="card-box">
             @csrf
             <div class="row d-flex align-items-center" id="dateredio">
-                
+
                 <div class="col-md-3">
                     <h4 class="header-title mb-3">Customer</h4>
                 </div>
@@ -86,13 +86,13 @@
                 </div>
             </div>
             </div>
-            
+
 
             <div class="taskrepet newAddHead" id="newadd">
                 <div class="copyin1 cloningDiv" id="copyin1">
                   <div class="requried allset">
                     <div class="row firstclone1">
-                        
+
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 <select class="form-control selecttype mt-1 taskselect" id="task_type"  name="task_type_id[]" required>
@@ -126,7 +126,7 @@
                             {{-- <h4 class="header-title mb-2">Saved Addresses</h4> --}}
                         </div>
                     </div>
-                    
+
                     <span class="span1 addspan">Please select a address or create new</span>
 
                     <div class="row cust_add_div" id="addHeader1">
@@ -156,7 +156,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
               </div>
               <div id="addSubFields" style="width:100%;height:400px; display: none;">&nbsp;</div>
@@ -184,7 +184,7 @@
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
-                       
+
                         <span class="invalid-feedback" role="alert">
                             <strong></strong>
                         </span>
@@ -192,10 +192,10 @@
 
                 </div>
                 <div class="col-md-6">
-                   
+
                     <div class="form-group" id="colorInput">
                         <label class="btn btn-info width-lg waves-effect waves-light newchnageimage upload-img-btn">
-                            <span><i class="fas fa-image mr-2"></i>Upload Image</span>
+                            <span><i class="fas fa-image mr-2"></i>{{__('Upload Image')}}</span>
                             <input id="file" type="file" name="file[]" multiple style="display: none"/>
                         </label>
                         <img class="showsimagegall" src="{{url('assets/images/ic_image_placeholder.png')}}" alt="">

@@ -599,7 +599,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         </button>
       </div>
       <div class="modal-body">
-        <h6 class="m-0">{{__('This change will remove all your cart products. Do you really want to continue ?')}}</h6>
+        <h6 class="m-0">{{__('Este cambio removerá los productos actuales en tu carrito. ¿Deseas continuar?')}}</h6>
       </div>
       <div class="modal-footer flex-nowrap justify-content-center align-items-center">
         <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>

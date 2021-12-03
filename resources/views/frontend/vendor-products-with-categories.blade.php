@@ -311,7 +311,7 @@
                                                                     </span>
                                                                 </div>
                                                                 @else
-                                                                <span class="text-danger">Out of stock</span>
+                                                                <span class="text-danger">stock</span>
                                                                 @endif
                                                             @endif
                                                             @if( $is_customizable )
@@ -432,7 +432,7 @@
             <li class="border_0">
                 <th colspan="7">
                     <div class="text-danger">
-                        Products for this vendor are not deliverable at your area. Please change address or remove product.
+                        {{__('Products for this vendor are not deliverable at your area. Please change address or remove product.')}}
                     </div>
                 </th>
             </li>
@@ -544,7 +544,7 @@
         <span>{{__('Total')}}</span>
         <span>{{Session::get('currencySymbol')}}<%= cart_details.total_payable_amount %></span>
     </div>
-    <a class="checkout-btn text-center d-block" href="{{route('showCart')}}">Checkout</a>
+    <a class="checkout-btn text-center d-block" href="{{route('showCart')}}">{{__('Checkout')}}</a>
 </script>
 <script type="text/template" id="empty_cart_template">
     <div class="row">

@@ -93,7 +93,7 @@
         </div>
         <div class="row">
             <div class="col-12 text-center mt-2">
-                <h4>{{__('There are no store available in your area currently.')}}</h4>
+                <h4>{{__('There are no stores available in your area currently.')}}</h4>
             </div>
         </div>
     </div>
@@ -180,7 +180,7 @@
                 <label class="product-tag"><%= type %></label>
                 <div class="product-image">
                     <img src="<%= product.image_url %>" alt="">
-                </div>    
+                </div>
                 <div class="media-body align-self-center">
                     <div class="inner_spacing px-0">
                         <div class="d-flex align-items-center justify-content-between">
@@ -260,7 +260,7 @@
             <div class="row">
                 <div class="col-5 col-sm-3">
                     <h5 class="m-0">{{__('Order Status')}}</h5>
-                    <ul class="status_box mt-1 pl-0"> 
+                    <ul class="status_box mt-1 pl-0">
                     <% if(vendor.order_status){ %>
                         <li>
                         <% if(vendor.order_status == 'placed'){ %>
@@ -275,7 +275,7 @@
                             <label class="m-0 in-progress"><%= (vendor.order_status).charAt(0).toUpperCase() + (vendor.order_status).slice(1) %></label>
                         </li>
                     <% } %>
-                    
+
                     <% if(vendor.dispatch_traking_url){ %>
                         <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
                         <a href="{{route('front.booking.details')}}/<%= order.order_number %>" target="_blank">{{ __('Details') }}</a>
@@ -430,10 +430,10 @@
             <div class="modal-footer d-block">
                 <div class="row no-gutters">
                     <div class="col-6 pr-1">
-                        <button type="button" class="btn btn-solid w-100 age_restriction_yes" data-dismiss="modal">Yes</button>
+                        <button type="button" class="btn btn-solid w-100 age_restriction_yes" data-dismiss="modal">{{__('Yes')}}</button>
                     </div>
                     <div class="col-6 pl-1">
-                        <button type="button" class="btn btn-solid w-100 age_restriction_no" data-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-solid w-100 age_restriction_no" data-dismiss="modal">{{__('No')}}</button>
                     </div>
                 </div>
             </div>

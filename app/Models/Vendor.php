@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Vendor extends Model{
   //use Searchable;
-    protected $fillable = ['name','slug','desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order'];
+    protected $fillable = ['name','slug','desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent'];
 
     public function serviceArea(){
        return $this->hasMany('App\Models\ServiceArea')->select('vendor_id', 'geo_array', 'name'); 

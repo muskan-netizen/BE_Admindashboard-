@@ -7,7 +7,7 @@ use Session;
 use DataTables;
 use Carbon\Carbon;
 use Omnipay\Omnipay;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
@@ -32,7 +32,7 @@ class VendorPayoutController extends BaseController{
             $this->gateway->setApiKey($api_key);
             $this->gateway->setTestMode($testmode); //set it to 'false' when go live
         }
-       
+
     }
 
     public function index(Request $request){
@@ -76,7 +76,7 @@ class VendorPayoutController extends BaseController{
                 $query->between($from_date." 00:00:00", $to_date." 23:59:59");
             }
         }])->where('status', '!=', '2')->orderBy('id', 'desc');
-        
+
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -209,7 +209,7 @@ class VendorPayoutController extends BaseController{
             $payout = VendorPayout::where('id', $id)->first();
             $user = Auth::user();
             $vendor_id = $payout->vendor_id;
-            
+
             $total_delivery_fees = OrderVendor::where('vendor_id', $vendor_id)->orderBy('id','desc');
             if ($user->is_superadmin == 0) {
                 $total_delivery_fees = $total_delivery_fees->whereHas('vendor.permissionToUser', function ($query) use($user) {
@@ -261,11 +261,11 @@ class VendorPayoutController extends BaseController{
             $payout->status = 1;
             $payout->save();
             DB::commit();
-            $toaster = $this->successToaster('Success', __('Payout has been completed successfully'));
+            $toaster = $this->successToaster(__('Success'), __('Payout has been completed successfully'));
         }
         catch(Exception $ex){
             DB::rollback();
-            $toaster = $this->errorToaster('Error', $ex->message());
+            $toaster = $this->errorToaster(__('Errors'), $ex->message());
         }
         return Redirect()->back()->with('toaster', $toaster);
     }

@@ -69,7 +69,7 @@ class FrontController extends Controller
             $categories = $this->buildTree($categories->toArray());
         }
 
-      
+
         return $categories;
     }
 
@@ -111,7 +111,7 @@ class FrontController extends Controller
                         $this->getChildCategoriesForVendor($child->id, $langId, $vid);
                     }
                 }
-                
+
                 $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
                 }])->where('vendor_id', $vid)->where('category_id', $cate->id)->where('status', 1)->first();
@@ -460,7 +460,7 @@ class FrontController extends Controller
         }
         $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
         $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
-        $amount = number_format($amount, 2);
+        $amount = number_format($amount, 2,'.','');
         return $amount;
     }
 
@@ -473,7 +473,7 @@ class FrontController extends Controller
     }
 
 
-    // get cart data in on demand product listing page 
+    // get cart data in on demand product listing page
     public function getCartOnDemand($request)
     {
         $cartData = [];
@@ -510,7 +510,7 @@ class FrontController extends Controller
 
         $user = Auth::user();
         $timezone = $user->timezone ?? 'Asia/Kolkata';
-        
+
         $start_date = new DateTime("now", new  DateTimeZone($timezone) );
         $start_date =  $start_date->format('Y-m-d');
         $end_date = Date('Y-m-d', strtotime('+13 days'));
@@ -526,8 +526,8 @@ class FrontController extends Controller
 
     /////////// ***************    get all time slots *******************************  /////////////////////
     function SplitTime($StartTime, $EndTime, $Duration="30"){
-       
-       
+
+
         $ReturnArray = array ();// Define output
         if(date ("i", strtotime($StartTime)) > 30)
         $startwith = 00;
@@ -538,10 +538,10 @@ class FrontController extends Controller
         $StartTime    = strtotime ($StartTime); //Get Timestamp
         $EndTime      = strtotime ($EndTime); //Get Timestamp
         $AddMins  = $Duration * 30;
-       
-        
+
+
         while ($StartTime <= $EndTime) //Run loop
-        {   
+        {
             $ReturnArray[] = date ("G:i", $StartTime);
             $StartTime += $AddMins; //Endtime check
         }
@@ -606,7 +606,7 @@ class FrontController extends Controller
           $dist = rad2deg($dist);
           $miles = $dist * 60 * 1.1515;
           $unit = strtolower($unit);
-      
+
           if ($unit == "kilometer") {
             return ($miles * 1.609344);
           } else if ($unit == "nautical mile") {
@@ -628,7 +628,7 @@ class FrontController extends Controller
         // }else{
         //     $datetime = Carbon::parse($order_vendor_created_at)->setTimezone(Auth::user()->timezone)->addMinutes($minutes)->toDateTimeString();
         // }
-        
+
         // if(Carbon::parse($datetime)->isToday()){
         //     $format = 'h:i A';
         // }else{

@@ -685,6 +685,47 @@ $(document).ready(function() {
         data._token = $('input[name=_token]').val();
         $.redirect(simplify_before_payment, data);
     }
+/////////////////////////////////////////////Square Pamyent Gateway /////////////////////////////////////////
+    window.paymentViaSquare = function paymentViaSquare(address_id,order){
+        let total_amount = 0;
+        let tip = 0;
+        let tipElement = $("#cart_tip_amount");
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let cart_id = $("#cart_total_payable_amount").data("cart_id");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+        let walletElement = $("input[name='wallet_amount']");
+        let ajaxData = [];
+        let data = [];
+        
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            tip = tipElement.val();
+            data.tip = tip;
+            data.address_id = address_id;
+            data.payment_from = 'cart';
+            data.cart_id = cart_id;
+            data.order_number = order.order_number;
+
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            data.payment_from ='wallet';
+        } else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            // ajaxData = $("#subscription_payment_form").serializeArray();
+            data.subscription_id = subscription_id.val();
+            data.payment_from ='subscription';
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            data.payment_from ='tip';
+            data.order_number = $("#order_number").val();
+        }
+        data.amount = total_amount;
+        data.payment_option_id =13;
+        data._token = $('input[name=_token]').val(); 
+        $.redirect(square_before_payment, data);
+    }
+
 
 });
 

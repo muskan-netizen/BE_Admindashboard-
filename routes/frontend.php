@@ -61,9 +61,13 @@ Route::group(['middleware' => ['domain']], function () {
 
 
 	//Simplify
-	Route::get('payment/simplify/view','Front\SimplifyController@webView')->name('payment.simplify.webView');
-	Route::post('payment/simplify/before','Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
+	Route::post('payment/simplify/page','Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
 	Route::post('payment/simplify','Front\SimplifyController@createPayment')->name('payment.simplify.createPayment');
+
+
+	//Square
+	Route::post('payment/square/page','Front\SquareController@beforePayment')->name('payment.square.beforePayment');
+	Route::post('payment/square','Front\SquareController@createPayment')->name('payment.square.createPayment');
 
 
 

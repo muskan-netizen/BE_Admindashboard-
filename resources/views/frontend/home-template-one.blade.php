@@ -10,7 +10,7 @@
         padding-bottom: 20px;
     }
 </style>
-@endsection 
+@endsection
 @section('content')
 <header>
     <div class="mobile-fix-option"></div>
@@ -31,7 +31,7 @@
         </div>
         <div class="row">
             <div class="col-12 text-center mt-2">
-                <h4>{{__('There are no store available in your area currently.')}}</h4>
+                <h4>{{__('There are no stores available in your area currently.')}}</h4>
             </div>
         </div>
     </div>
@@ -71,8 +71,8 @@
                         @if($url)
                     </a>
                     @endif
-                    @endforeach    
-                   
+                    @endforeach
+
                 </div>
             </div>
         </div>
@@ -92,7 +92,7 @@
                             <span><%= vendor.timeofLineOfSightDistance %> min</span>
                         </div>
                     <% } %>
-                    <i class="fa fa-heart-o" aria-hidden="true"></i>                    
+                    <i class="fa fa-heart-o" aria-hidden="true"></i>
                 </div>
                 <div class="supplier-rating">
                     <div class="d-flex align-items-center justify-content-between">
@@ -137,10 +137,10 @@
                     @endif -->
                 </div>
             </a>
-        </div> 
+        </div>
 
     <% }); %>
-</script>   
+</script>
 
 <script type="text/template" id="banner_template">
     <% _.each(brands, function(brand, k){%>
@@ -160,7 +160,7 @@
         <a class="common-product-box scale-effect text-center" href="{{route('productDetail')}}/<%= product.url_slug %>">
             <div class="img-outer-box position-relative">
                 <img src="<%= product.image_url %>" alt="">
-            </div>    
+            </div>
             <div class="media-body align-self-center">
                 <div class="inner_spacing px-0">
                     <div class="product-description">
@@ -181,8 +181,8 @@
                                         </div>
                                     <% } %>
                                 @endif
-                            @endif  
-                        </div>                       
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -235,7 +235,7 @@
                     @endif
                 </div>
             </a>
-        </div> 
+        </div>
 
     <% }); %>
 </script>
@@ -260,7 +260,7 @@
             <div class="row">
                 <div class="col-5 col-sm-3">
                     <h5 class="m-0">{{__('Order Status')}}</h5>
-                    <ul class="status_box mt-1 pl-0"> 
+                    <ul class="status_box mt-1 pl-0">
                     <% if(vendor.order_status){ %>
                         <li>
                         <% if(vendor.order_status == 'placed'){ %>
@@ -275,7 +275,7 @@
                             <label class="m-0 in-progress"><%= (vendor.order_status).charAt(0).toUpperCase() + (vendor.order_status).slice(1) %></label>
                         </li>
                     <% } %>
-                    
+
                     <% if(vendor.dispatch_traking_url){ %>
                         <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
                         <a href="{{route('front.booking.details')}}/<%= order.order_number %>" target="_blank">{{ __('Details') }}</a>
@@ -402,13 +402,13 @@
 <section class="section-b-space ratio_asos d-none pt-0 mt-0" id="our_vendor_main_div">
     <div class="vendors">
         @foreach($homePageLabels as $key => $homePageLabel)
-        @if($homePageLabel->slug == 'pickup_delivery') 
-                @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) 
+        @if($homePageLabel->slug == 'pickup_delivery')
+                @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
                   @include('frontend.booking.cabbooking-single-module')
-                @endif 
+                @endif
         @elseif($homePageLabel->slug == 'dynamic_page')
                 @include('frontend.included_files.dynamic_page')
-        @elseif($homePageLabel->slug == 'brands')  
+        @elseif($homePageLabel->slug == 'brands')
         <section class="popular-brands left-shape position-relative">
             <div class="container">
                 <div class="row align-items-center">
@@ -424,19 +424,19 @@
                     </div>
                 </div>
             </div>
-        </section> 
+        </section>
         @elseif($homePageLabel->slug == 'vendors')
         <section class="suppliers-section pt-0 mb-2">
         <div class="container">
             <div class="row">
                 <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-2">
                     <h2 class="h2-heading">{{ $homePageLabel->slug == 'vendors' ? getNomenclatureName('vendors', true) :  __($homePageLabel->title) }}</h2>
-                    <a class="btn btn-solid" href="{{route('vendor.all')}}">See all</a>
+                    <a class="btn btn-solid" href="{{route('vendor.all')}}">{{__("See all")}}</a>
                 </div>
                 <div class="col-12">
                     <div class="suppliers-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 
-                       
+
                     </div>
                 </div>
             </div>
@@ -452,7 +452,7 @@
                 <div class="col-12">
                     <div class="suppliers-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 
-                       
+
                     </div>
                 </div>
             </div>
@@ -463,7 +463,7 @@
             <div class="row">
                 <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-0">
                     <h2 class="h2-heading">
-                    @php    
+                    @php
                     if($homePageLabel->slug == 'vendors'){
                         echo getNomenclatureName('vendors', true);
                     } elseif($homePageLabel->slug == 'recent_orders'){
@@ -506,10 +506,10 @@
             <div class="modal-footer d-block">
                 <div class="row no-gutters">
                     <div class="col-6 pr-1">
-                        <button type="button" class="btn btn-solid w-100 age_restriction_yes" data-dismiss="modal">Yes</button>
+                        <button type="button" class="btn btn-solid w-100 age_restriction_yes" data-dismiss="modal">{{__('Yes')}}</button>
                     </div>
                     <div class="col-6 pl-1">
-                        <button type="button" class="btn btn-solid w-100 age_restriction_no" data-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-solid w-100 age_restriction_no" data-dismiss="modal">{{__('No')}}</button>
                     </div>
                 </div>
             </div>

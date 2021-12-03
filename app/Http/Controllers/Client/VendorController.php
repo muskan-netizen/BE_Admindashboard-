@@ -42,7 +42,7 @@ class VendorController extends BaseController
             $this->is_payout_enabled = 0;
         }
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -133,14 +133,14 @@ class VendorController extends BaseController
             return Redirect::route('vendor.catalogs', $vendors->first()->id);
         }else{
             return view('backend/vendor/index')->with([
-                'vendors' => $vendors, 
-                'vendor_docs' => $vendor_docs, 
-                'csvVendors' => $csvVendors, 
-                'total_vendor_count' => $total_vendor_count, 
-                'client_preferences' => $client_preferences, 
-                'active_vendor_count' => $active_vendor_count, 
-                'blocked_vendor_count' => $blocked_vendor_count, 
-                'available_vendors_count' => $available_vendors_count, 
+                'vendors' => $vendors,
+                'vendor_docs' => $vendor_docs,
+                'csvVendors' => $csvVendors,
+                'total_vendor_count' => $total_vendor_count,
+                'client_preferences' => $client_preferences,
+                'active_vendor_count' => $active_vendor_count,
+                'blocked_vendor_count' => $blocked_vendor_count,
+                'available_vendors_count' => $available_vendors_count,
                 'awaiting__Approval_vendor_count' => $awaiting__Approval_vendor_count,
                 'vendor_registration_documents' => $vendor_registration_documents,
                 'vendors_product_count' => $vendors_product_count, 'vendors_active_order_count' => $vendors_active_order_count]);
@@ -303,14 +303,14 @@ class VendorController extends BaseController
     /*  /**   show vendor page - config tab      */
     public function show($domain = '', $id)
     {
-        
+
         $active = array();
         $categoryToggle = array();
         $user = Auth::user();
         $vendor = Vendor::findOrFail($id);
 
-     
-        
+
+
         $client_preferences = ClientPreference::first();
         $dinein_categories = VendorDineinCategory::where('vendor_id', $id)->get();
         $vendor_tables = VendorDineinTable::where('vendor_id', $id)->with('category')->get();
@@ -459,7 +459,7 @@ class VendorController extends BaseController
         $vendor  =  $vendor->first();
         if(empty($vendor))
         abort(404);
-        
+
         $VendorCategory = VendorCategory::where('vendor_id', $id)->where('status', 1)->pluck('category_id')->toArray();
         $check_pickup_delivery_service = Category::whereIn('id',$VendorCategory)->where('type_id',7)->count();
         $check_on_demand_service = Category::whereIn('id',$VendorCategory)->where('type_id',8)->count();
@@ -528,7 +528,7 @@ class VendorController extends BaseController
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
                     unset($product_categories_hierarchy[$k]);
                 }
-               
+
             }
         }
         $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
@@ -547,10 +547,10 @@ class VendorController extends BaseController
         $vendor_name = preg_replace('/\s+/', '', $vendor_name);
         if(isset($vendor_name) && !empty($vendor_name))
         $sku_url = $sku_url.".".$vendor_name;
-        
+
         $taxCate = TaxCategory::all();
-        
-        return view('backend.vendor.vendorCatalog')->with(['taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service]); 
+
+        return view('backend.vendor.vendorCatalog')->with(['taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service]);
     }
 
     /**   show vendor page - payout tab      */
@@ -571,9 +571,9 @@ class VendorController extends BaseController
         if(empty($vendor)){
             abort(404);
         }
-        
+
         $VendorCategory = VendorCategory::where('vendor_id', $id)->where('status', 1)->pluck('category_id')->toArray();
-        
+
         $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
             ->where('id', '>', '1')
             // ->where('is_core', 1)
@@ -584,7 +584,7 @@ class VendorController extends BaseController
             ->orderBy('id', 'asc')
             ->where('status', 1)
             ->orderBy('parent_id', 'asc')->get();
-        
+
         /*    get active category list also with parent     */
         foreach ($categories as $category) {
             if (in_array($category->id, $VendorCategory) && $category->parent_id == 1) {
@@ -598,7 +598,7 @@ class VendorController extends BaseController
             $build = $this->buildTree($categories->toArray());
             $categoryToggle = $this->printTreeToggle($build, $active);
         }
-        
+
         $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
         $client_preferences = ClientPreference::first();
         $woocommerce_detail = Woocommerce::first();
@@ -662,7 +662,7 @@ class VendorController extends BaseController
         $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value;
         // $available_funds = number_format($available_funds, 2, '.', ',');
         $past_payout_value = number_format($past_payout_value, 2, '.', ',');
-        
+
         //stripe connected account details
         $stripe_connect_url = '';
         $codes = ['stripe'];
@@ -687,7 +687,7 @@ class VendorController extends BaseController
         if((!empty($payout_creds->credentials)) && ($client_id != '')){
             $stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$id.'&client_id='.$client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
         }
-        
+
         $taxCate = TaxCategory::all();
         return view('backend.vendor.vendorPayout')->with(['taxCate' => $taxCate,'sku_url' => $sku_url, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory, 'tab' => 'payout', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'stripe_connect_url'=> $stripe_connect_url, 'is_payout_enabled'=>$this->is_payout_enabled, 'is_stripe_connected'=>$is_stripe_connected, 'total_order_value' => number_format($total_order_value, 2), 'total_admin_commissions' => number_format($total_admin_commissions, 2), 'total_promo_amount'=>$total_promo_amount, 'past_payout_value'=>$past_payout_value, 'available_funds'=>$available_funds, 'payout_options' => $payout_options]);
     }
@@ -770,11 +770,11 @@ class VendorController extends BaseController
             $payout->status = $request->status;
             $payout->save();
             DB::commit();
-            $toaster = $this->successToaster('Success', __('Payout is created successfully'));
+            $toaster = $this->successToaster(__('Success'), __('Payout is created successfully'));
         }
         catch(Exception $ex){
             DB::rollback();
-            $toaster = $this->errorToaster('Error', $ex->message());
+            $toaster = $this->errorToaster(__('Errors'), $ex->message());
         }
         return Redirect()->back()->with('toaster', $toaster);
     }
@@ -841,16 +841,21 @@ class VendorController extends BaseController
         } else {
             $vendor->auto_reject_time = "";
         }
-        
+
         $vendor->is_show_vendor_details = ($request->has('is_show_vendor_details') && $request->is_show_vendor_details == 'on') ? 1 : 0;
         if ($request->has('commission_percent')) {
             $vendor->commission_percent         = $request->commission_percent;
             $vendor->commission_fixed_per_order = $request->commission_fixed_per_order;
             $vendor->commission_monthly         = $request->commission_monthly;
+            $vendor->service_fee_percent         = $request->service_fee_percent;
             //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
             $vendor->show_slot         = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
             $msg = 'commission configuration';
         }
+        // if ($request->has('service_fee_percent')) {
+        //     $vendor->service_fee_percent         = $request->service_fee_percent;
+        //     $msg = 'commission configuration';
+        // }
         $vendor->save();
         return redirect()->back()->with('success', $msg . ' updated successfully!');
     }
@@ -882,7 +887,7 @@ class VendorController extends BaseController
         foreach ($product_categories as $product_category) {
             if(isset($product_category->category) && !empty($product_category->category->translation_one))
             $product_category->category->title = $product_category->category ? $product_category->category->translation_one->name : '';
-            
+
             if(isset($product_category->category) && !empty($product_category->category)) {
                         if($product_category->category->type_id == 7 || $product_category->category->type_id == "7")
                     {
@@ -893,7 +898,7 @@ class VendorController extends BaseController
                         $check_on_demand_service = 1;
                     }
             }
-            
+
         }
         $data['product_categories'] = $product_categories;
         $data['check_pickup_delivery_service'] = $check_pickup_delivery_service;
@@ -965,7 +970,7 @@ class VendorController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function updateCreateVendorInDispatch(Request $request)
-    {  
+    {
         DB::beginTransaction();
         try {
                     $dispatch_domain = $this->checkIfPickupDeliveryOnCommon();
@@ -1002,7 +1007,7 @@ class VendorController extends BaseController
      // check and update in dispatcher panel
      public function checkUpdateVendorToDispatch($dispatch_domain){
         try {
-                 
+
                 $vendor = Vendor::find($dispatch_domain->vendor_id);
                 $unique = Auth::user()->code;
                 $postdata =  ['vendor_id' => $dispatch_domain->vendor_id ?? 0,
@@ -1011,12 +1016,12 @@ class VendorController extends BaseController
                 'email' => $unique.$vendor->id."_royodispatch@dispatch.com",
                 'team_tag' => $unique."_".$vendor->id,
                 'public_session' => $dispatch_domain->token];
-           
+
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                     'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                     'content-type' => 'application/json']
                                                         ]);
-                                     
+
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post(
                     $url.'/api/update-create-vendor-order',
@@ -1029,21 +1034,21 @@ class VendorController extends BaseController
                    return $response;
                 }
                 return $response;
-                
+
             }catch(\Exception $e)
-                    {   
+                    {
                         $data = [];
                         $data['status'] = 400;
                         $data['message'] =  $e->getMessage();
                         return $data;
-                                
+
                     }
-                
+
         }
 
 
 
-        // serach customer for vendor permission 
+        // serach customer for vendor permission
 
         public function searchUserForPermission(Request $request)
             {
@@ -1065,7 +1070,7 @@ class VendorController extends BaseController
                         }
                         $output .= '</ul>';
                         echo $output;
-                        
+
                 }
             }
 
@@ -1106,9 +1111,9 @@ class VendorController extends BaseController
                 UserPermissions::insert($addpermission);
             }
         }
-        
+
          //for updating vendor permissions
-        
+
             $addvendorpermissions = UserVendor::updateOrCreate(['user_id' =>  $id,'vendor_id' => $request->vendor_id]);
             DB::commit();
             return $this->successResponse($client,'Updated.');
@@ -1116,10 +1121,10 @@ class VendorController extends BaseController
             DB::rollback();
             return $this->errorResponse($e->getMessage(), 400);
         }
-      
-    } 
-    
-    
+
+    }
+
+
 
     /**
      *update Create Vendor In Dispatch On demand
@@ -1128,7 +1133,7 @@ class VendorController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function updateCreateVendorInDispatchOnDemand(Request $request)
-    {  
+    {
         DB::beginTransaction();
         try {
                     $dispatch_domain = $this->checkIfOnDemandOnCommon();
@@ -1166,7 +1171,7 @@ class VendorController extends BaseController
     // check and update in dispatcher panel on demand
     public function checkUpdateVendorToDispatchOnDemand($dispatch_domain){
         try {
-                 
+
                 $vendor = Vendor::find($dispatch_domain->vendor_id);
                 $unique = Auth::user()->code;
                 $postdata =  ['vendor_id' => $dispatch_domain->vendor_id ?? 0,
@@ -1175,12 +1180,12 @@ class VendorController extends BaseController
                 'email' => $unique.$vendor->id."_royodispatch@dispatch.com",
                 'team_tag' => $unique."_".$vendor->id,
                 'public_session' => $dispatch_domain->token];
-           
+
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->dispacher_home_other_service_key,
                                                     'shortcode' => $dispatch_domain->dispacher_home_other_service_key_code,
                                                     'content-type' => 'application/json']
                                                         ]);
-                                     
+
                 $url = $dispatch_domain->dispacher_home_other_service_key_url;
                 $res = $client->post(
                     $url.'/api/update-create-vendor-order',
@@ -1193,21 +1198,21 @@ class VendorController extends BaseController
                    return $response;
                 }
                 return $response;
-                
+
             }catch(\Exception $e)
-                    {   
+                    {
                         $data = [];
                         $data['status'] = 400;
                         $data['message'] =  $e->getMessage();
                         return $data;
-                                
+
                     }
-                
+
         }
 
-    
 
-    
+
+
     /**
      * Remove the specified user fro vendor permission
      *
@@ -1236,7 +1241,7 @@ class VendorController extends BaseController
                             ->where('status_id', '!=', 4)
                             ->orderBy('end_date', 'desc')
                             ->orderBy('id', 'desc')->first();
-        
+
         if($sub_plans){
             foreach($sub_plans as $sub){
                 $subFeaturesList = array();
@@ -1259,7 +1264,7 @@ class VendorController extends BaseController
         $product_categories = VendorCategory::with(['category', 'category.translation' => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
             ->where('category_translations.language_id', $langId);
-        }])->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get(); 
+        }])->where('status', 1)->where('vendor_id', $id)->groupBy('category_id')->get();
         $p_categories = collect();
         $product_categories_hierarchy = '';
         if ($product_categories) {
@@ -1267,7 +1272,7 @@ class VendorController extends BaseController
                 $p_categories->push($pc->category);
             }
             $product_categories_build = $this->buildTree($p_categories->toArray());
-            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build); 
+            $product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build);
             foreach($product_categories_hierarchy as $k => $cat){
                 $myArr = array(1,3,7,8,9);
                 if (isset($cat['type_id']) && !in_array($cat['type_id'], $myArr)) {
@@ -1279,7 +1284,7 @@ class VendorController extends BaseController
         foreach($product_categories_hierarchy as $key => $product_category){
             $options[] = "<option value=".$product_category['id'].">".$product_category['hierarchy']."</option>";
         }
-       
+
         return response()->json(['status' => 1, 'message' => 'Product Categories', 'product_categories' => $product_categories_hierarchy, 'options' => $options]);
     }
 
@@ -1291,7 +1296,7 @@ class VendorController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function updateCreateVendorInDispatchLaundry(Request $request)
-    {  
+    {
         DB::beginTransaction();
         try {
                     $dispatch_domain = $this->checkIfLaundryOnCommon();
@@ -1327,7 +1332,7 @@ class VendorController extends BaseController
     // check and update in dispatcher panel laundry
     public function checkUpdateVendorToDispatchLaundry($dispatch_domain){
         try {
-                 
+
                 $vendor = Vendor::find($dispatch_domain->vendor_id);
                 $unique = Auth::user()->code;
                 $postdata =  ['vendor_id' => $dispatch_domain->vendor_id ?? 0,
@@ -1336,12 +1341,12 @@ class VendorController extends BaseController
                 'email' => $unique.$vendor->id."_royodispatch@dispatch.com",
                 'team_tag' => $unique."_".$vendor->id,
                 'public_session' => $dispatch_domain->token];
-           
+
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key,
                                                     'shortcode' => $dispatch_domain->laundry_service_key_code,
                                                     'content-type' => 'application/json']
                                                         ]);
-                                     
+
                 $url = $dispatch_domain->laundry_service_key_url;
                 $res = $client->post(
                     $url.'/api/update-create-vendor-order',
@@ -1354,17 +1359,17 @@ class VendorController extends BaseController
                    return $response;
                 }
                 return $response;
-                
+
             }catch(\Exception $e)
-                    {   
+                    {
                         $data = [];
                         $data['status'] = 400;
                         $data['message'] =  $e->getMessage();
                         return $data;
-                                
+
                     }
-                
+
         }
-    
+
 
 }

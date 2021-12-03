@@ -238,9 +238,9 @@ if (Session::has('toaster')) {
 
                     if (status_option_id == 4 || status_option_id == 5) {
                         if (status_option_id == 4)
-                            var next_status = 'Out For Delivery';
+                            var next_status = '{{__("Out For Delivery")}}';
                         else
-                            var next_status = 'Delivered';
+                            var next_status = '{{__("Delivered")}}';
                         that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
                         return false;
                     } else {

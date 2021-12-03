@@ -160,7 +160,6 @@ function showroute(alltask,agent_location,map,product_image){
 
         for (let i = 0; i < alltask.length; i++) {
             if (i != alltask.length - 1 && alltask[i].task_status != 4 && alltask[i].task_status != 5 ) {
-               console.log(alltask[i]);
                 waypts.push({
                     location: new google.maps.LatLng(parseFloat(alltask[i].latitude), parseFloat(alltask[i]
                         .longitude)),

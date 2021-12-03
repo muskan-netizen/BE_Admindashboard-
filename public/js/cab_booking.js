@@ -624,7 +624,6 @@ $(document).ready(function () {
             getLocation();
         }else{
             $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
-                console.log(this.value);
                 if(this.value == ''){
                     var inputId = this.id;
                     $('#'+inputId).val(currentLocation);
@@ -1050,10 +1049,7 @@ $(document).ready(function () {
         },
         function (response, status) {
             if (status !== google.maps.DistanceMatrixStatus.OK) {
-                console.log('Error:', status);
             } else {
-                console.log('distance is'+response.rows[0].elements[0].distance.text);
-                console.log('duration is'+response.rows[0].elements[0].duration.text);
                 $("#distance").text(response.rows[0].elements[0].distance.text).show();
                 $("#duration").text(response.rows[0].elements[0].duration.text).show();
             }
@@ -1061,7 +1057,6 @@ $(document).ready(function () {
     }
 
     function getLocation() {
-        console.log('navigator.geolocation', navigator.geolocation);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition, null);
         } else {

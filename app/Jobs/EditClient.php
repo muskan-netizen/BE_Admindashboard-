@@ -76,7 +76,7 @@ class EditClient implements ShouldQueue
 
         if(!empty($cli_code)){
             DB::connection($schemaName)->table('clients')->where('code', $cli_code)->update($saveData);
-            DB::connection($schemaName)->table('client_preferences')->where('id', 1)->update(['business_type' => $client->business_type]);
+            DB::connection($schemaName)->table('client_preferences')->where('id', 1)->update(['business_type' => $client->business_type,'is_hyperlocal' => 0]);
         } 
 
         DB::disconnect($schemaName);

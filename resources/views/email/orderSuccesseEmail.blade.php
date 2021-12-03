@@ -129,7 +129,7 @@
                     $prevYear = $currYear - 1;
                     $currYear = substr($currYear, -2);
                 @endphp
-                <p>&copy; {{$prevYear}}-{{$currYear}} | All rights reserved</p>
+                <p>&copy; {{$prevYear}}-{{$currYear}} | {{__('All rights reserved')}}</p>
                 {{-- <div>
                     <h4 class="title" style="margin:0;text-align: center;">Follow us</h4>
                 </div>

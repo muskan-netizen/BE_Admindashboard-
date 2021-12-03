@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    const $flatpickr =  $("#range-datepicker").flatpickr({ 
+    const $flatpickr =  $("#range-datepicker").flatpickr({
         mode: "range",
         onClose: function(selectedDates, dateStr, instance) {
             getDashboardData(dashboard_filter_url);
@@ -76,11 +76,11 @@ $(document).ready(function () {
         }
         var options = {
             series: [{
-                name: 'Revenue',
+                name: Revenue_lng,
                 type: 'column',
                 data: revenue
             }, {
-                name: 'Sales',
+                name: Sales_lng,
                 type: 'line',
                 data: sales
             }],
@@ -129,12 +129,12 @@ $(document).ready(function () {
             },
             yaxis: [{
                 title: {
-                    text: 'Net Revenue',
+                    text: Net_Revenue_lng,
                 },
             }, {
                 opposite: true,
                 title: {
-                    text: 'Number of Sales'
+                    text: Number_of_Sales_lng
                 }
             }]
         };
