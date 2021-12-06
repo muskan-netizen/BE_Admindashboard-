@@ -26273,12 +26273,6 @@ body.dark {
     border-color: #404040;
 }
 
-.dark .nav-tabs .nav-link.active {
-    background-color: #2b2b2b;
-    -webkit-transition: all 0.3s ease;
-    transition: all 0.3s ease;
-}
-
 .dark .tab-product .nav-material.nav-tabs .nav-item .nav-link {
     color: #cbcbcb;
 }

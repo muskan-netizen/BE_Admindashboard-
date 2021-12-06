@@ -98,8 +98,23 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <div class="row align-items-center position-initial">
                         <div class="col-lg-12">
                             <div class="row mobile-header align-items-center my-sm-2">
-                                <div class="col-12 col-sm-4 d-flex align-items-center justify-content-sm-between mt-2 mt-md-0">
+                                <div class="col-12 col-sm-4 d-sm-flex align-items-center justify-content-sm-between">
                                     <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-block" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
+                                    <div class="d-flex justify-content-center">
+                                    @if( (Session::get('preferences')))
+                                        @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
+                                            <div class="location-bar d-flex d-sm-none align-items-center justify-content-start mb-2 my-lg-0" href="#edit-address" data-toggle="modal">
+                                                <div class="map-icon mr-2"><span>{{__('Your Location')}}</span> <i class="fa fa-map-marker" aria-hidden="true"></i></div>
+                                                <div class="homepage-address text-left">
+                                                    <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
+                                                </div>
+                                                <div class="down-icon ml-2">
+                                                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endif
+                                    </div>
                                     @if($mod_count > 1)
                                         <ul class="nav nav-tabs navigation-tab nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
                                             @if($client_preference_detail->delivery_check == 1)

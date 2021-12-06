@@ -70,6 +70,7 @@
         <input type="hidden" name="{{$key}}" value="{{$value}}">
         @empty
         @endforelse
+        @csrf
         <input type="hidden" id="source_id" name="source_id" value="">
     </form>
 

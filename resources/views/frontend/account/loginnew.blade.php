@@ -109,9 +109,9 @@
                                 <input type="text" class="form-control" id="username" placeholder="{{ __('Email or Phone Number') }}" required="" name="username" value="{{ old('username')}}">
                             </div>
                             <div class="form-group" id="password-wrapper" style="display:none; position:relative">
-                                <input type="password" class="form-control pr-3" name="password" placeholder="{{ __('Password') }}">
-                                <span class="view-password"><i class="fa fa-eye" aria-hidden="true"></i></span>
-                                <a class="font-14" href="javascript:void(0)" id="send_password_reset_link" style="position:absolute; right:10px; top:7px;">Forgot?</a>
+                                <input id="password-field" type="password" class="form-control pr-3" name="password" placeholder="{{ __('Password') }}">
+                                <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>
+                                <a class="font-14" href="javascript:void(0)" id="send_password_reset_link" style="right:10px;">Forgot?</a>
                             </div>
                             <div class="form-group">
                                 <span id="error-msg" class="font-14 text-danger" style="display:none"></span>
@@ -128,8 +128,9 @@
             <div class="col-lg-6 text-center">
                 <h3 class="mb-md-5 mb-4">{{ __('New Customer') }}</h3>   
                 <div class="create_box">
-                    <h6>{{ __('Create An Account') }}</h6>
-                    <p>{{ __('Sign up for a free account at our store. Registration is quick and easy. It allows you to be able to order from our shop. To start shopping click register.') }}</p>
+                    {{-- <h6>{{ __('Create An Account') }}</h6> --}}
+                    {{-- <p>{{ __('Sign up for a free account at our store. Registration is quick and easy. It allows you to be able to order from our shop. To start shopping click register.') }}</p> --}}
+                    <h6>{{ __('Create a free account and join us!') }}</h6>
                     <a href="{{route('customer.register')}}" class="btn btn-solid mt-4">{{ __('Create An Account') }}</a>
                 </div>
             </div>

@@ -56,7 +56,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <li class="m-hide"><a href="{{ $clientData->getPreference->delivery_service_key_url }}" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __('Last Mile Delivery Dashboard')}}</span></a></li>
             @endif -->
             @if($clientData->getPreference->need_dispacher_ride == 1 && isset($clientData->getPreference->pickup_delivery_service_key_url))
-            <li class="m-hide"><a href="{{ $clientData->getPreference->pickup_delivery_service_key_url }}" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __('Pickup & Delivery  Dashboard')}}</span></a></li>
+            <li class="m-hide"><a href="{{ $clientData->getPreference->pickup_delivery_service_key_url }}" target="_blank"><i class="fa fa-globe" aria-hidden="true"></i><span class="align-middle">{{ __('Pickup & Delivery Dashboard')}}</span></a></li>
             @endif
             @endif
         </ul>
@@ -73,13 +73,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             @endphp
             <a href="{{route('client.dashboard')}}" class="logo logo-dark text-center">
                 <span class="logo-sm">
-                    <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="50">                    
+                    <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="50">
                 </span>
                 <span class="logo-lg">
                     <img src="{{ asset('assets/images/logo-dark.png') }}" alt="" height="20">
                 </span>
             </a>
-            
+
             <a href="{{route('client.dashboard')}}" class="logo logo-light text-center">
                 <span class="logo-sm">
                     <img src="{{$urlImg}}"
@@ -105,7 +105,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <ul class="list-unstyled topnav-menu float-right mb-0">
             <li class="dropdown ">
                 <a class="nav-link dropdown-toggle waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                    Language
+                    {{__('Language')}}
                     {{ $applocale_admin }}
                     <i class="mdi mdi-chevron-down"></i>
                 </a>
@@ -115,13 +115,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <a href="/switch/admin/language?lang=ar" class="dropdown-item" langid="1">Arabic</a>
                     <a href="/switch/admin/language?lang=fr" class="dropdown-item" langid="1">French</a>
                     <a href="/switch/admin/language?lang=de" class="dropdown-item" langid="1">German</a> --}}
-                    
+
                     @foreach($languageList as $key => $listl)
                         <li>
                             <a href="/switch/admin/language?lang={{$listl->language->sort_code}}&langid={{$listl->language_id}}" class="customerLang dropdown-item {{$applocale_admin ==  $listl->language->sort_code ?  'active' : ''}}" langid="{{$listl->language_id}}">{{$listl->language->name}}</a>
                         </li>
                     @endforeach
-                    
+
                     <div class="dropdown-divider"></div>
                 </ul>
             </li>

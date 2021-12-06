@@ -78,7 +78,6 @@ $(document).ready(function () {
         initMap2();
     });
     $(document).on("click", "#pickup_now, #pickup_later",function() {
-
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
         var schedule_datetime = '';
         if($(this).data('rel') =='pickup_later'){
@@ -147,7 +146,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: {time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime},
+            data: {user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id,coupon_id: coupon_id, amount: amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
@@ -557,6 +556,10 @@ $(document).ready(function () {
 
                         $('.address-form').addClass('d-none');
                         $('.cab-detail-box').removeClass('d-none');
+                        if(response.data.faqlist > 0){
+                            console.log(response.data.faqlist);
+                            $('#add_product_order_form').show();
+                        }
                         let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                         $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
                         getDistance();

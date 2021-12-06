@@ -133,7 +133,7 @@ class HomeController extends BaseController
             $homeData['mobile_banners'] = $mobile_banners;
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
-            
+
             $payment_codes = ['stripe', 'razorpay'];
             $payment_creds = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
@@ -299,7 +299,7 @@ class HomeController extends BaseController
             $homeData['on_sale_products'] = $on_sale_product_details;
             $homeData['new_products'] = $new_product_details;
             $homeData['featured_products'] = $feature_product_details;
-            
+
             $brands = Brand::with(['bc.categoryDetail', 'bc.categoryDetail.translation' =>  function ($q) use ($langId) {
                 $q->select('category_translations.name', 'category_translations.category_id', 'category_translations.language_id')->where('category_translations.language_id', $langId);
             }, 'translation' => function ($q) use ($langId) {

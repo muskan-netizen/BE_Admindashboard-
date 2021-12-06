@@ -110,30 +110,30 @@
                                         </thead>
                                         <tbody id="subscriptions_list">
                                             @foreach($subscription_plans as $plan)
-                                            <?php 
+                                            <?php
                                             ?>
                                             <tr data-row-id="{{$plan->slug}}">
-                                                <td> 
+                                                <td>
                                                     <img src="{{$plan->image['proxy_url'].'40/40'.$plan->image['image_path']}}" class="rounded-circle" alt="{{$plan->slug}}" >
                                                 </td>
                                                 <td><a href="javascript:void(0)" class="editSubscriptionPlanBtn" data-id="{{$plan->slug}}">{{$plan->title}}</a></td>
                                                 <td>{{$plan->Description}}</td>
                                                 <td>${{$plan->price}}</td>
-                                                <td>{{$plan->features}}</td>
-                                                <td>{{ucfirst($plan->frequency)}}</td>
+                                                <td>{{__($plan->features)}}</td>
+                                                <td>{{__(ucfirst($plan->frequency))}}</td>
                                                 <td>
                                                     <input type="checkbox" data-id="{{$plan->slug}}" data-plugin="switchery" name="userSubscriptionStatus" class="chk_box status_check" data-color="#43bee1" {{($plan->status == 1) ? 'checked' : ''}} >
-                                                </td> 
-                                                <td> 
+                                                </td>
+                                                <td>
                                                     <div class="form-ul" style="width: 60px;">
                                                         <div class="inner-div" >
                                                             @if(Auth::user()->is_superadmin == 1)
                                                                 <a href="javascript:void(0)" class="action-icon editSubscriptionPlanBtn" data-id="{{$plan->slug}}"><i class="mdi mdi-square-edit-outline"></i></a>
                                                                 <a href="{{route('subscription.plan.delete.user', $plan->slug)}}" onclick="return confirm('Are you sure? You want to delete the subscription plan.')" class="action-icon"> <i class="mdi mdi-delete" title="Delete subscription plan"></i></a>
-                                                            @endif    
+                                                            @endif
                                                         </div>
                                                     </div>
-                                                </td> 
+                                                </td>
                                             </tr>
                                         @endforeach
                                         </tbody>
@@ -168,13 +168,13 @@
                                     <label>{{ __('Upload Image') }}</label>
                                     <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="" />
                                     <label class="logo-size text-right w-100">{{ __('Image Size') }} 120x120</label>
-                                </div> 
+                                </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        {!! Form::label('title', __('Enable'),['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Enable'),['class' => 'control-label']) !!}
                                         <div class="mt-md-1">
                                             <input type="checkbox" data-plugin="switchery" name="status" class="form-control status" data-color="#43bee1" checked='checked'>
                                         </div>
@@ -182,7 +182,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group" id="nameInput">
-                                        {!! Form::label('title', __('Title'),['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Title'),['class' => 'control-label']) !!}
                                         {!! Form::text('title', null, ['class'=>'form-control', 'required'=>'required']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -223,7 +223,7 @@
                                 </div><?php */ ?>
                                 <div class="col-md-12">
                                     <div class="form-group" id="descInput">
-                                        {!! Form::label('title', __('Description'),['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
                                         {!! Form::textarea('description', null, ['class' => 'form-control', 'rows' => '3']) !!}
                                     </div>
                                 </div>

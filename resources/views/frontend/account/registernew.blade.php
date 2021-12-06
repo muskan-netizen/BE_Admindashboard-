@@ -92,12 +92,16 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="">{{ __('Password') }}</label>
-                                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="review" placeholder="{{ __('Enter Your Password') }}" name="password">
-                                    @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $errors->first('password') }}</strong>
-                                    </span>
-                                    @enderror
+                                    <div class="position-relative">
+                                        <input type="password" id="password-field" class="form-control @error('password') is-invalid @enderror" id="review" placeholder="{{ __('Enter Your Password') }}" name="password">
+                                        <!-- <input id="password-field" type="password" class="form-control pr-3" name="password" placeholder="{{ __('Password') }}"> -->
+                                        <span toggle="#password-field" class="fa fa-eye-slash toggle-password" style="right:20px" ></span>
+                                        @error('password')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('password') }}</strong>
+                                        </span>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                             <div class="row form-group mb-0 align-items-center">

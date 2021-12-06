@@ -1746,27 +1746,34 @@ class OrderController extends FrontController
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
-                'phone_number' => 'required|unique',
+                'phone_number' => 'required',
                 'type' => 'required',
                 'vehicle_type_id' => 'required',
                 'make_model' => 'required',
                 'uid' => 'required',
                 'plate_number' => 'required',
                 'color' => 'required',
+                'team' => 'required',
+            ], [
+                "name.required" => __('The name field is required.'),
+                "phone_number.required" => __('The phone number field is required.'),
+                "type.required" => __('The type field is required.'),
+                "vehicle_type_id.required" => __('The transport type is required.'),
+                "make_model.required" => __('The transport details field is required.'),
+                "uid.required" => __('The UID field is required.'),
+                "plate_number.required" => __('The licence plate field is required.'),
+                "color.required" => __('The color field is required.'),
+                "team.required" => __('The team field is required.')
             ]);
-            //$meta_data = '';
-            //$tasks = array();
+            if($validator->fails()){
+                return $this->errorResponse($validator->errors(), 422);
+            }
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-            //$customer = Auth::user();
             if ($dispatch_domain && $dispatch_domain != false) {
-                //$unique = Auth::user()->code;
-                $driver_registration_documents = json_decode($this->driverDocuments());
 
-                //     $rules_array = [];
-                //     foreach ($driver_registration_documents as $driver_registration_document) {
-                //         $rules_array[$driver_registration_document->name] = 'required';
-                //     }
-                //    $request->validate($rules_array);
+                $data = json_decode($this->driverDocuments());
+                $driver_registration_documents = $data->documents;
+                // dd($driver_registration_documents);
 
                 $files = [];
                 if ($driver_registration_documents != null) {
@@ -1869,6 +1876,13 @@ class OrderController extends FrontController
                 if (!array_key_exists(9, $filedata)) {
                     $filedata[9] = ['name' => 'uploaded_file[]', 'contents' => 'abc'];
                 }
+
+                $tags = '';
+                if($request->has('tags') && !empty($request->get('tags'))){
+                    $tagsArray = $request->get('tags');
+                    $tags = implode(',', $tagsArray);
+                }
+
                 $res = $client->post($url . '/api/agent/create', [
 
                     'multipart' => [
@@ -1931,6 +1945,14 @@ class OrderController extends FrontController
                         [
                             'name' => 'color',
                             'contents' => $request->color
+                        ],
+                        [
+                            'name' => 'team_id',
+                            'contents' => $request->team
+                        ],
+                        [
+                            'name' => 'tags',
+                            'contents' => $tags
                         ],
                     ]
 

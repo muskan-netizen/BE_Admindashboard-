@@ -169,18 +169,19 @@
                     "iDisplayLength": 10,
                     language: {
                         search: "",
+                        info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
                         paginate: {
                             previous: "<i class='mdi mdi-chevron-left'>",
                             next: "<i class='mdi mdi-chevron-right'>"
                         },
-                        searchPlaceholder: "Search By Name, Email, Phone Number"
+                        searchPlaceholder: '{{__("Search By Name, Email, Phone Number")}}'
                     },
                     drawCallback: function() {
                         $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
                     },
                     buttons: [{
                         className: 'btn btn-success waves-effect waves-light',
-                        text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>Export CSV',
+                        text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>{{__("Export CSV")}}',
                         action: function(e, dt, node, config) {
                             window.location.href = "{{ route('customer.export') }}";
                         }
@@ -262,7 +263,7 @@
                                 }else{
                                     full.phone_number =  full.phone_number;
                                 }
-                                
+
                                 if (full.is_phone_verified == 1) {
                                     if (full.phone_number) {
                                         return "<i class='mdi mdi-phone-check mr-1 mdi-icons'></i>" + full.phone_number;
@@ -309,7 +310,7 @@
                             data: 'loyalty_name',
                             name: 'loyalty_name',
                             orderable: false,
-                            searchable: false,  
+                            searchable: false,
                             "mRender": function(data, type, full) {
                                 return  data.loyalty_name +" ("+ data.count_loyalty_points_earned+")" ;
                             }
@@ -438,7 +439,7 @@
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script type="text/javascript">
     var mobile_number = '';
-    // $('#add-agent-modal .xyz').val(mobile_number.getSelectedCountryData().dialCode); 
+    // $('#add-agent-modal .xyz').val(mobile_number.getSelectedCountryData().dialCode);
     $('#add-agent-modal .xyz').change(function() {
         var phonevalue = $('.xyz').val();
         $("#countryCode").val(mobile_number.getSelectedCountryData().dialCode);

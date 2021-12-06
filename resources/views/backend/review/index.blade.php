@@ -85,11 +85,12 @@
                     },
                     language: {
                         search: "",
+                        info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
                         paginate: {
                             previous: "<i class='mdi mdi-chevron-left'>",
                             next: "<i class='mdi mdi-chevron-right'>"
                         },
-                        searchPlaceholder: "Search By Name"
+                        searchPlaceholder: '{{__("Search By Name")}}'
                     },
 
 
@@ -104,7 +105,7 @@
                             name: 'product_name',
                             orderable: false,
                             searchable: false,
-                            
+
                         },
                         {
                             data: 'averageRating',

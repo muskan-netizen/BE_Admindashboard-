@@ -1,6 +1,8 @@
 @extends('layouts.store', ['title' => 'Home'])
 @section('css')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
+<link href="{{asset('assets/libs/multiselect/multiselect.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
 <header>
@@ -50,11 +52,11 @@
                                 </div>
                             </div>
                             <div class="col-lg-6">
-                                <div class="col-md-12 mb-3" id="phone_numberInput">
+                                <div class="col-md-12 mb-3" id="nameInput">
                                     <div class="form-group" id="nameInputEdit">
                                         <label for="name" class="control-label">NAME</label>
                                         <input type="text" class="form-control" id="name" placeholder="John Doe" name="name" value="">
-                                        <span class="invalid-feedback" role="alert">
+                                        <span class="invalid-feedback" id="name_error" role="alert">
                                             <strong></strong>
                                         </span>
                                     </div>
@@ -62,28 +64,58 @@
                                 <div class="col-md-12 mb-3" id="phone_numberInput">
                                     <label for="validationCustom02">{{__('CONTACT NUMBER.')}}</label>
                                     <input type="tel" class="form-control" name="phone_number" id="phone" value="{{old('full_number')}}">
-                                    <div class="invalid-feedback" id="phone_number_error"><strong></strong></div>
+                                    <span class="invalid-feedback" id="phone_number_error" role="alert">
+                                        <strong></strong>
+                                    </span>
                                     <input type="hidden" id="countryCode" name="country" value="{{ old('countryData') ? old('countryData') : 'us'}}">
                                     <input type="hidden" id="dialCode" name="country_code" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode',1) }}">
                                 </div>
-                                <div class="col-md-12 mb-3" id="full_nameInput">
+                                <div class="col-md-12 mb-3" id="typeInput">
                                     <div class="form-group" id="typeInputEdit">
                                         <label for="type" class="control-label">TYPE</label>
                                         <select class="form-control" data-style="btn-light" name="type" id="type">
                                             <option value="Employee">Employee</option>
                                             <option value="Freelancer">Freelancer</option>
                                         </select>
-                                        <span class="invalid-feedback" role="alert">
+                                        <span class="invalid-feedback" id="type_error" role="alert">
                                             <strong></strong>
                                         </span>
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-6 mb-2" id="teamInput">
+                                <label for="driverTeam">{{__('TEAM')}}</label>
+                                <select class="form-control" name="team" required>
+                                    @if(count($teams) > 0)
+                                        @foreach($teams as $key => $team)
+                                        <option value="{{ $team->id }}">{{ ucfirst($team->name) }}</option>
+                                        @endforeach
+                                    @endif
+                                </select> 
+                                <span class="invalid-feedback" id="team_error" role="alert">
+                                    <strong></strong>
+                                </span>
+                            </div>
+                            <div class="col-md-6 mb-2" id="tagsInput">
+                                <div class="form-group" id="tagsInputEdit">
+                                    <label for="driverTags">{{__('TAGS')}}</label>
+                                    <select class="select2-multiple form-control" name="tags[]" data-toggle="select2" id="agent_tags" multiple="multiple">
+                                        @if(count($tags) > 0)
+                                            @foreach($tags as $key => $tag)
+                                            <option value="{{ $tag->name }}">{{ ucfirst($tag->name) }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                    <span class="invalid-feedback" id="tags[]_error" role="alert">
+                                        <strong></strong>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="row ">
-                            <div class="col-md-12">
-                                <div class="form-group" id="vehicle_type_idInput">
+                            <div class="col-md-12" id="vehicle_type_idInput">
+                                <div class="form-group" id="vehicle_type_idInputEdit">
                                     <p class="text-muted mt-3 mb-2">TRANSPORT TYPE</p>
                                     <div class="radio radio-blue form-check-inline click cursors">
                                         <input type="radio" id="onfoot" value="1" name="vehicle_type_id" act="add" checked>
@@ -105,7 +137,7 @@
                                         <input type="radio" id="truck" value="5" name="vehicle_type_id" act="add">
                                         <img id="trucks_add" src="{{asset('assets/icons/truck.png')}}" style="float:right;padding-right:40px;">
                                     </div>
-                                    <span class="invalid-feedback" role="alert">
+                                    <span class="invalid-feedback" id="vehicle_type_id_error" role="alert">
                                         <strong></strong>
                                     </span>
                                 </div>
@@ -113,40 +145,40 @@
                         </div>
                     </div>
                     <div class="row ">
-                        <div class="col-md-6">
+                        <div class="col-md-6" id="make_modelInput">
                             <div class="form-group" id="make_modelInputEdit">
                                 <label for="make_model" class="control-label">TRANSPORT DETAILS</label>
                                 <input type="text" class="form-control" id="make_model" placeholder="Year, Make, Model" name="make_model" value="">
-                                <span class="invalid-feedback" role="alert">
+                                <span class="invalid-feedback" id="make_model_error" role="alert">
                                     <strong></strong>
                                 </span>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group" id="make_modelInput1">
+                        <div class="col-md-6" id="uidInput">
+                            <div class="form-group" id="uidInputEdit">
                                 <label for="make_model" class="control-label">UID</label>
                                 <input type="text" class="form-control" id="uid" placeholder="897abd" name="uid" value="">
-                                <span class="invalid-feedback" role="alert">
+                                <span class="invalid-feedback" id="uid_error" role="alert">
                                     <strong></strong>
                                 </span>
                             </div>
                         </div>
                     </div>
                     <div class="row ">
-                        <div class="col-md-6">
+                        <div class="col-md-6" id="plate_numberInput">
                             <div class="form-group" id="plate_numberInputEdit">
                                 <label for="plate_number" class="control-label">LICENCE PLATE</label>
                                 <input type="text" class="form-control" id="plate_number" name="plate_number" placeholder="508.KLV" value="">
-                                <span class="invalid-feedback" role="alert">
+                                <span class="invalid-feedback" id="plate_number_error" role="alert">
                                     <strong></strong>
                                 </span>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6" id="colorInput">
                             <div class="form-group" id="colorInputEdit">
                                 <label for="color" class="control-label">COLOR</label>
                                 <input type="text" class="form-control" id="color" name="color" placeholder="Color" value="">
-                                <span class="invalid-feedback" role="alert">
+                                <span class="invalid-feedback" id="color_error" role="alert">
                                     <strong></strong>
                                 </span>
                             </div>
@@ -159,6 +191,9 @@
                             @if(strtolower($driver_registration_document->file_type) == 'text')
                             <div class="form-group">
                                 <input type="text" class="form-control {{ (!empty($driver_registration_document->is_required))?'required':''}}" id="input_file_logo_{{$driver_registration_document->id}}" name="{{$driver_registration_document->name}}" placeholder="Enter Text" value="">
+                                <span class="invalid-feedback" id="{{$driver_registration_document->name}}_error" role="alert">
+                                    <strong></strong>
+                                </span>
                             </div>
                             @else
                             <div class="file file--upload">
@@ -175,7 +210,9 @@
                                 @elseif(strtolower($driver_registration_document->file_type) == 'pdf')
                                 <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->name}}" accept=".pdf" data-rel="{{$driver_registration_document->id}}" class="{{ (!empty($driver_registration_document->is_required))?'required':''}}">
                                 @endif
-                                <div class="invalid-feedback" id="{{$driver_registration_document->name}}_error"><strong></strong></div>
+                                <span class="invalid-feedback" id="{{$driver_registration_document->name}}_error">
+                                    <strong></strong>
+                                </span>
                             </div>
                             @endif
                         </div>
@@ -196,12 +233,15 @@
 </section>
 @endsection
 @section('script')
+<script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
 <script src="{{ asset('assets/js/jquery.tagsinput-revisited.js') }}"></script>
 <link rel="stylesheet" href="{{ asset('assets/css/jquery.tagsinput-revisited.css') }}" />
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script type="text/javascript">
+    $('.select2-multiple').select2();
+
     var tagList = "{{$showTag}}";
     tagList = tagList.split(',');
 
@@ -515,7 +555,6 @@
         });
         $('#register_btn').click(function() {
             var that = $(this);
-            
             var loop_length = $('.required').length;
             if(loop_length){
                 for(var i = 0; i < loop_length; i++){
@@ -546,7 +585,10 @@
                 success: function(data) {
                     $('#register_btn_loader').hide();
                     that.attr('disabled', false);
-                    if (data.status == 200) {
+                    if (data.status == 200 || data.status == 'Success') {
+                        $("#data-error1").empty();
+                        $("#data-error1").html(data.message);
+                        $("#agent_tags").val('').trigger("change");
                         $('input[type=file]').val('');
                         $("#vendor_signup_form")[0].reset();
                         $('#vendor_signup_form img').attr('src', '');
@@ -559,31 +601,27 @@
                             $('#success_msg').html('').hide();
                         }, 3000);
                     }
-
-                    console.log(data);
-                    if (data.status == 200) {
-                        $("#data-error1").empty();
-                        $("#data-error1").html(data.message);
-                    } else {
+                    else {
                         $("#data-error").empty();
                         $("#data-error").html(data.message);
                     }
                 },
-                error: function(data) {
+                error: function(response) {
                     $("#data-error").empty();
-                    // console.log(data);
-                    $("#data-error").append(response.data);
+                    $("#data-error").append(response.message);
                     that.attr('disabled', false);
                     $('html,body').animate({
                         scrollTop: '0px'
                     }, 1000);
                     $('#register_btn_loader').hide();
                     if (response.status === 422) {
-                        let errors = response.responseJSON.errors;
+                        let errorResponse = $.parseJSON(response.responseText);
+                        let errors = errorResponse.message;
+                        console.log(errors);
                         Object.keys(errors).forEach(function(key) {
-                            $("#" + key + "Input input").addClass("is-invalid");
+                            $("#" + key + "Input input, #" + key + "Input select").addClass("is-invalid");
                             $("#" + key + "_error").children("strong").text(errors[key][0]).show();
-                            $("#" + key + "Input div.invalid-feedback").show();
+                            $("#" + key + "Input span.invalid-feedback").show();
                         });
                     } else {
 

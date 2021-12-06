@@ -205,7 +205,7 @@
                                                 <p class="text-muted font-15 mb-0">{{ __('Available Funds') }}</p>
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -257,7 +257,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody id="vendor_payouts_tbody_list">
-                                                    
+
                                                 </tbody>
                                             </table>
                                         </div>
@@ -311,7 +311,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row mt-2">
                             @foreach($payout_options as $opt)
                                 @if( ($is_stripe_connected && ($opt->code == 'stripe')) || ($opt->code == 'cash') )
@@ -387,7 +387,7 @@
 
         ////////   *******************  Save product action data ******************* ////////////////////////
         // $('#save_product_action_modal').on('submit', function(e) {
-        //     e.preventDefault(); 
+        //     e.preventDefault();
         //     var is_new = $('#is_new').val();
         //     var is_featured = $('#is_featured').val();
         //     var is_live = $('#is_live').val();
@@ -397,7 +397,7 @@
         //         product_id[i] = $(this).val();
         //     });
         //     if (product_id.length == 0) {
-               
+
         //         $("#action-product-modal .close").click();
         //         return;
         //     }
@@ -427,14 +427,14 @@
                 product_id[i] = $(this).val();
             });
             if (product_id.length == 0) {
-               
+
                 $("#action-product-modal .close").click();
                 return;
             }
             if(action_for == 0){
                 return false;
             }
-            
+
             $.ajax({
                 type: "post",
                 url: '{{route("product.update.action")}}',
@@ -453,11 +453,11 @@
                     $(".loader_box").hide();
                 },
                 error: function(response) {
-                    
+
                         $(".show_all_error.invalid-feedback").show();
                         $(".show_all_error.invalid-feedback").text(
                             'Something went wrong, Please try Again.');
-                    
+
                     return response;
                 }
             });
@@ -721,7 +721,7 @@
                 data: ajaxData,
                 success: function(resp) {
                     if (resp.status == 'Success') {
-                        
+
                     } else {
                         $("#payout_response .alert").html(resp.message).show();
                         setTimeout(function(){
@@ -742,7 +742,7 @@
         }
 
 
-        
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
@@ -750,7 +750,7 @@
         });
         initDataTable();
 
-        // $("#range-datepicker").flatpickr({ 
+        // $("#range-datepicker").flatpickr({
         //     mode: "range",
         //     onClose: function(selectedDates, dateStr, instance) {
         //         initDataTable();
@@ -772,7 +772,7 @@
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
                 },
-                // buttons:[{   
+                // buttons:[{
                 //         className:'btn btn-success waves-effect waves-light',
                 //         text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>Export CSV',
                 //         action: function ( e, dt, node, config ) {
@@ -792,7 +792,7 @@
                     {data: 'type', name: 'type', orderable: false, searchable: false},
                     {data: 'status', name: 'status', orderable: false, searchable: false},
                 ]
-            });            
+            });
 
         }
 

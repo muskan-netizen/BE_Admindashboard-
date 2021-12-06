@@ -105,13 +105,13 @@ class Client extends Authenticatable
       $values['image_fit'] = \Config::get('app.FIT_URl');
       $values['original'] = \Storage::disk('s3')->url($img);
       $values['logo_db_value'] = $value;
-      
+
       return $values;
     }
 
 
     public function getCodeAttribute($value)
-    { 
+    {
       if(!empty($this->attributes['id'])){
         $value = str_replace($this->attributes['id']."_",'',$value);
       }

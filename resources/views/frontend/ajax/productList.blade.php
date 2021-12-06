@@ -12,13 +12,27 @@
                     $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
                 }*/ ?>
                 <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-3">
-                    <a href="{{route('productDetail', $data->url_slug)}}" class="product-box scale-effect mt-0">
-                        <div class="product-image p-0">
+                    <a href="{{route('productDetail', $data->url_slug)}}" class="common-product-box scale-effect mt-0">
+                        <div class="img-outer-box position-relative">
                             <img class="img-fluid blur-up lazyload" src="{{$data->image_url}}" alt="">
+                            <div class="pref-timing">
+                                <!--<span>5-10 min</span>-->
+                            </div>
+                            <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
                         </div>
                         <div class="media-body align-self-center">
                             <div class="inner_spacing w-100">
-                                <h3 class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h6 class="card_title mb-1 ellips">{{ $data->translation_title }}</h6>   
+                                    @if($client_preference_detail)
+                                        @if($client_preference_detail->rating_check == 1)  
+                                            @if($data->averageRating > 0)
+                                                <span class="rating-number">{{ number_format($data->averageRating, 1, '.', '') }}</span>
+                                            @endif
+                                        @endif
+                                    @endif                               
+                                </div>
+                                <!-- <h3 class="d-flex align-items-center justify-content-between">
                                     <label class="mb-0">{{ $data->translation_title }}</label>
                                     @if($client_preference_detail)
                                         @if($client_preference_detail->rating_check == 1)  
@@ -27,7 +41,7 @@
                                             @endif
                                         @endif
                                     @endif
-                                </h3>
+                                </h3> -->
                                 <h6 class="mt-0"><b>{{$data->vendor->name}}</b></h6>
                                 @if (strlen($data->translation_description) >= 65)
                                     <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>

@@ -208,14 +208,18 @@
                     </label>
                     <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" id="promo_code_list_btn_cab_booking">Apply</a>
                     <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" style="display:none;">Remove</a>
+                
                 </div>
+               <!-- <div class="text-center my-3">
+                    <button class="clproduct_order_form btn btn-solid w-100"  id="add_product_order_form"  data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" >Product Order Form</button>
+                </div> -->
                 <div class="form-group pmd-textfield pmd-textfield-floating-label" style="display:none;" id="schedule_datetime_main_div">
                     <label class="control-label" for="datetimepicker-default">Select Date and Time</label>
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
                 </div>
             </div>
             <span id="show_error_of_booking" class="error"></span>
-                
+                  
             <div class="payment-promo-container p-2">
                 <h4 class="d-flex align-items-center justify-content-between mb-2"  data-toggle="modal" data-target="#payment_modal">
                     <span id="payment_type">
@@ -423,7 +427,25 @@
     <% } %>
 </script>
 
+
 <!-- end topup wallet -->
+<!-- modal for product order form -->
+<div class="modal fade product-order-form
+" id="product_order_form" tabindex="-1" aria-labelledby="product_order_formLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div id="product-order-form-modal">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- end modal for product order form -->
+
 
 @endsection
 
@@ -444,7 +466,7 @@
     var cabbookingwallet = 1;
     var amount_required_error_msg = "{{__('Please enter amount.') }}";
     var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
-    
+    var product_order_form_element_data = [];
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();
@@ -521,6 +543,47 @@ var order_tracking_details_url = "{{url('looking/order-tracking-details')}}";
 var cab_booking_promo_code_remove_url = "{{url('looking/promo-code/remove')}}";
 var apply_cab_booking_promocode_coupon_url = "{{ route('verify.cab.booking.promo-code') }}";
 
+/// ************* product order form **************///////
+$('body').on('click', '.clproduct_order_form', function (event) {
+        event.preventDefault();
+        var product_id = $(this).data('product_id');
+        $.get('/looking/get-product-order-form?product_id=' + product_id, function(markup)
+        {
+            $('#product_order_form').modal('show');
+            $('#product-order-form-modal').html(markup);
+       
+        });
+    });
+
+    
+///  ************ end product form ***************///////
+
 </script>
+
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        $(document).delegate('#submit_productfaq', 'click', function() {
+       var product_order_form_element = getFormData('#product-order-form-name');
+        $('#product_order_form').modal('hide');
+        });
+    
+       
+        function getFormData(dom_query){
+        var out = {};
+        var s_data = $(dom_query).serializeArray();
+      
+        //transform into simple data/value object
+        for(var i = 0; i < s_data.length; i++){
+              var record = s_data[i];
+              out[record.name] = record.value;
+              product_order_form_element_data.push({'question':record.name,'answer':record.value})
+        }
+        return out;
+        }
+    
+    });
+</script>
+    
 
 @endsection

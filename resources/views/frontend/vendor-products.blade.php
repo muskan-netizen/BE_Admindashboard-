@@ -106,7 +106,7 @@
             </div>
             <div class="row">
                 <div class="collection-filter col-md-3">
-                    <div class="collection-filter-block mb-3">
+                    <div class="collection-filter-block mb-3 bg-transparent p-0">
                         <div class="collection-mobile-back pt-0 border-0"><span class="filter-back d-lg-none d-inline-block"><i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}</span></div>
                         <div class="collection-collapse-block open">
                             @if(!empty($brands) && count($brands) > 0)
@@ -127,7 +127,7 @@
                         </div>
                         @if(!empty($variantSets) && count($variantSets) > 0)
                         @foreach($variantSets as $key => $sets)
-                        <div class="collection-collapse-block border-0 open pt-2 pb-0 border-0">
+                        <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
                             @php
                             $slug = $sets->variantDetail->varcategory->cate ? $sets->variantDetail->varcategory->cate->slug.' > ' : '';
                             @endphp
@@ -137,7 +137,7 @@
                                 <div class="collection-brand-filter">
                                     @if($sets->type == 2)
                                         @foreach($sets->options as $ok => $opt)
-                                        <div class="chiller_cb small_label d-inline-block color-selector">
+                                        <div class="chiller_cb small_label d-inline-block color-selector mt-2">
                                             <?php $checkMark = ($key == 0) ? 'checked' : ''; ?>
                                             <input class="custom-control-input productFilter" type="checkbox" {{$checkMark}} id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" used="variants" optid="{{$opt->id}}">
                                             <label for="Opt{{$key.'-'.$opt->id}}"></label>
@@ -163,7 +163,7 @@
                         @endforeach
                         @endif
                         @if($show_range == 1)
-                        <div class="collection-collapse-block border-0 pt-2 open">
+                        <div class="collection-collapse-block border-0 mb-2 pt-2 open">
                             <h3 class="collapse-block-title">{{__('Price')}}</h3>
                             <div class="collection-collapse-block-content">
                                 <div class="wrapper mt-3">
@@ -197,11 +197,19 @@
                                     <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', $new['url_slug'])}}">
                                         <div class="img-outer-box position-relative">
                                             <img src="{{$new['image_url']}}" alt="">
+                                            <div class="pref-timing">
+                                                <!--<span>5-10 min</span>-->
+                                            </div>
+                                            <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
                                         </div>    
                                         <div class="media-body align-self-center">
                                             <div class="inner_spacing px-0">
                                                 <div class="product-description">
-                                                    <h3 class="m-0">{{ $new['translation_title'] }}</h3>
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>                                                                                    
+                                                        <!--<span class="rating-number">2.0</span>-->                                
+                                                    </div>
+                                                    <!-- <h3 class="m-0">{{ $new['translation_title'] }}</h3> -->
                                                     <p>{{$new['vendor']['name']}}</p>
                                                     <p class="pb-1">In {{$new['category_name']}}</p>
                                                     <div class="d-flex align-items-center justify-content-between">
@@ -212,7 +220,7 @@
                                                             @endif
                                                         </b>
 
-                                                        @if($client_preference_detail)
+                                                        <!-- @if($client_preference_detail)
                                                             @if($client_preference_detail->rating_check == 1)
                                                                 @if($new['averageRating'] > 0)
                                                                     <div class="rating-box">
@@ -221,7 +229,7 @@
                                                                     </div>
                                                                 @endif
                                                             @endif
-                                                        @endif  
+                                                        @endif   -->
                                                     </div>                       
                                                 </div>
                                             </div>
@@ -293,17 +301,32 @@
                                                         $imagePath2 = $data->media[$i]->image->path['image_fit'] . '600/600' . $data->media[$i]->image->path['image_path'];
                                                     }*/ ?>
                                                     <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-4">
-                                                        <a href="{{route('productDetail', $data->url_slug)}}" class="product-box d-block scale-effect mt-0">
-                                                            <div class="product-image p-0">
+                                                        <a href="{{route('productDetail', $data->url_slug)}}" class="common-product-box scale-effect mt-0">
+                                                            <div class="img-outer-box position-relative">
                                                                 <img class="img-fluid blur-up lazyload" src="{{$data->image_url}}" alt="">
+                                                                <div class="pref-timing">
+                                                                    <!--<span>5-10 min</span>-->
+                                                                </div>
+                                                                <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
                                                             </div>
                                                             <div class="media-body align-self-center">
                                                                 <div class="inner_spacing w-100">
-                                                                    <h3>{{ $data->translation_title }}</h3>
+                                                                <div class="d-flex align-items-center justify-content-between">
+                                                                    <h6 class="card_title mb-1 ellips">{{ $data->translation_title }}</h6>   
+                                                                        @if($client_preference_detail)
+                                                                            @if($client_preference_detail->rating_check == 1)  
+                                                                                @if($data->averageRating > 0)
+                                                                                    <span class="rating-number">{{ number_format($data->averageRating, 1, '.', '') }}</span>
+                                                                                @endif
+                                                                            @endif
+                                                                        @endif                               
+                                                                    </div>
+                                                                    <!-- <h3>{{ $data->translation_title }}</h3> -->
                                                                     <p>{{$data->description}}</p>
-                                                                    <p class="border-bottom pb-1 mb-1">In {{$data->category_name}}</p>
+                                                                    <!-- <p class="border-bottom pb-1 mb-1">In {{$data->category_name}}</p> -->
+                                                                    <p>In {{$data->category_name}}</p>
 
-                                                                    <div class="d-flex align-items-center justify-content-between">
+                                                                    <!-- <div class="d-flex align-items-center justify-content-between">
                                                                         @if($data['inquiry_only'] == 0)
                                                                             <h4 class="mt-0">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
                                                                         @endif
@@ -314,7 +337,7 @@
                                                                                 @endif
                                                                             @endif
                                                                         @endif
-                                                                    </div>
+                                                                    </div> -->
                                                                 </div>
                                                             </div>
                                                         </a>

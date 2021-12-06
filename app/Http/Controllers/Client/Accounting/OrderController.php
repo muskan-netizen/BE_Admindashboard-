@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Models\OrderVendor;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use App\Models\OrderStatusOption;
@@ -19,14 +19,14 @@ use DB;
 
 class OrderController extends Controller{
     use ApiResponser;
-    public function index(Request $request){ 
+    public function index(Request $request){
         $total_order_count = 0;
         $total_delivery_fees = 0;
         $total_cash_to_collected = 0;
         $total_earnings_by_vendors = 0;
         $dispatcher_status_options = DispatcherStatusOption::get();
         $order_status_options = OrderStatusOption::where('type', 1)->get();
-        // all vendors 
+        // all vendors
         $vendors = Vendor::where('status', '!=', '2')->orderBy('id', 'desc');
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
@@ -35,7 +35,7 @@ class OrderController extends Controller{
         }
         $vendors = $vendors->get();
 
-        // vendor orders 
+        // vendor orders
         $vendor_orders = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment']);
         if (Auth::user()->is_superadmin == 0) {
             $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
@@ -87,10 +87,13 @@ class OrderController extends Controller{
                     }
                 }
             }
-            $vendor_order->order_status = $order_status;
+            $vendor_order->order_status = __($order_status);
         }
         return Datatables::of($vendor_orders)
             ->addIndexColumn()
+            ->addColumn('payment_option_title',function($row){
+                return __($row->orderDetail->paymentOption->title);
+            })
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('vendor_id'))) {
                     $instance->collection = $instance->collection->filter(function ($row) use ($request) {
@@ -115,7 +118,9 @@ class OrderController extends Controller{
                         return false;
                     });
                 }
-            })->make(true);
+            })
+            ->rawColumns(['payment_option_title'])
+            ->make(true);
     }
 
     public function export() {

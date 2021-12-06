@@ -654,11 +654,20 @@
                 <a class="common-product-box scale-effect text-center" href="{{route('productDetail')}}/{{ $related_product->url_slug }}">
                     <div class="img-outer-box position-relative">
                         <img src="{{ $related_product->image_url }}" alt="">
+                <div class="pref-timing">
+                    <!--<span>5-10 min</span>-->
+                </div>
+                <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
+                    </div>    
                     </div>
                     <div class="media-body align-self-center">
                         <div class="inner_spacing px-0">
                             <div class="product-description">
-                                <h3 class="m-0">{{ $related_product->translation_title }}</h3>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h6 class="card_title mb-1 ellips">{{ $related_product->translation_title }}</h6>                                                                                    
+                                    <!--<span class="rating-number">2.0</span>-->                                
+                                </div>
+                                <!-- <h3 class="m-0">{{ $related_product->translation_title }}</h3> -->
                                 <p>{{ $related_product->vendor_name }}</p>
                                 <p class="border-bottom pb-1">In {{$related_product->category_name}}</p>
                                 <div class="d-flex align-items-center justify-content-between">
@@ -668,14 +677,14 @@
                                         @endif
                                     </b>
 
-                                    @if($client_preference_detail)
+                                    <!-- @if($client_preference_detail)
                                         @if($client_preference_detail->rating_check == 1)
                                             @if($related_product->averageRating > 0)
                                                 <span class="rating">{{ $related_product->averageRating }} <i class="fa fa-star text-white p-0"></i></span>
                                             @endif
                                         @endif
-                                    @endif
-                                </div>
+                                    @endif   -->
+                                </div>                       
                             </div>
                         </div>
                     </div>

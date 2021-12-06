@@ -178,15 +178,16 @@
                         "iDisplayLength": 50,
                         language: {
                             search: "",
+                            info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
                             paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
-                            searchPlaceholder: "Search By Order No.,Vendor,Customer Name"
+                            searchPlaceholder: '{{__("Search By Order No.,Vendor,Customer Name")}}'
                         },
                         drawCallback: function () {
                             $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
                         },
                         buttons: [{
                                 className:'btn btn-success waves-effect waves-light',
-                                text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>Export CSV',
+                                text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>{{__("Export CSV")}}',
                                 action: function ( e, dt, node, config ) {
                                     window.location.href = "{{ route('account.order.export') }}";
                                 }
@@ -227,7 +228,11 @@
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
                             }},
-                            {data: 'order_detail.payment_option.title', name: 'action', orderable: false, searchable: false},
+                            {data: 'order_detail.payment_option.title', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return full.payment_option_title;
+                            }
+                        },
                             {data: 'order_status', name: 'order_status', orderable: false, searchable: false, "mRender": function ( data, type, full ) {
                               return "<h5><span class='badge bg-success'>"+full.order_status+"</span></h5>";
                             }},

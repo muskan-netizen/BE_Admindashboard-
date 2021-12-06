@@ -489,21 +489,51 @@
                     </div>
 
                     @if($configData->delay_order == 1 || $product->delay_order_hrs > 0 || $product->delay_order_min > 0)
+                    @if(in_array($configData->business_type,['laundry']))
                     <div class="row">
-                        <div class="col-md-2 d-flex justify-content-between mb-2">
+                        <div class="col-md-12 mb-2">
+                            {!! Form::label('title', __('Set Pickup Delay Time'),['class' => 'control-label mb-0']) !!}
+                         </div>
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Hrs'),['class' => 'control-label']) !!}
+                             <input type="number"  class="form-control" value="{{$product->pickup_delay_order_hrs}}" name="pickup_delay_order_hrs" placeholder="{{__('hrs')}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Minutes'),['class' => 'control-label']) !!}
+                           <input type="number"  class="form-control" value="{{$product->pickup_delay_order_min}}" name="pickup_delay_order_min" placeholder="{{__('minutes')}}">
+                       </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            {!! Form::label('title', __('Set DropoffDelay Time'),['class' => 'control-label mb-0']) !!}
+                         </div>
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Hrs'),['class' => 'control-label']) !!}
+                             <input type="number"  class="form-control" value="{{$product->dropoff_delay_order_hrs}}" name="dropoff_delay_order_hrs" placeholder="{{__('hrs')}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Minutes'),['class' => 'control-label']) !!}
+                           <input type="number"  class="form-control" value="{{$product->dropoff_delay_order_min}}" name="dropoff_delay_order_min" placeholder="{{__('minutes')}}">
+                       </div>
+                    </div>
+                    @else
+                    <div class="row">
+                        <div class="col-md-12">
                             {!! Form::label('title', __('Set Delay Time'),['class' => 'control-label']) !!}
                          </div>
-                        <div class="col-md-5 d-flex justify-content-between mb-2">
+                        <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Hrs'),['class' => 'control-label']) !!}
                              <input type="number"  class="form-control" value="{{$product->delay_order_hrs}}" name="delay_order_hrs" placeholder="{{__('hrs')}}">
                         </div>
-                        <div class="col-md-5 d-flex justify-content-between mb-2">
+                        <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Minutes'),['class' => 'control-label']) !!}
                            <input type="number"  class="form-control" value="{{$product->delay_order_min}}" name="delay_order_min" placeholder="{{__('minutes')}}">
                        </div>
                     </div>
                     @endif
-
+                    @endif
+                  
                     <!-- <div class="row mb-2">
                         {!! Form::label('title', 'Physical',['class' => 'control-label col-sm-2']) !!}
                         <div class="col-sm-4">

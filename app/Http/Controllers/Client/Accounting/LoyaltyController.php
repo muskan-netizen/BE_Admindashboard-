@@ -5,7 +5,7 @@ use DataTables;
 use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\LoyaltyCard;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use App\Exports\OrderLoyaltyExport;
@@ -17,8 +17,8 @@ class LoyaltyController extends Controller{
 
     public function index(Request $request){
         $loyalty_card_details = LoyaltyCard::get();
-        
-        // total_loyalty_spent 
+
+        // total_loyalty_spent
         $total_loyalty_spent = Order::orderBy('id','desc');
         if (Auth::user()->is_superadmin == 0) {
             $total_loyalty_spent = $total_loyalty_spent->whereHas('vendors.vendor.permissionToUser', function ($query) {
@@ -28,7 +28,7 @@ class LoyaltyController extends Controller{
         $total_loyalty_spent =$total_loyalty_spent->sum('loyalty_points_used');
 
 
-        // total_loyalty_earned 
+        // total_loyalty_earned
         $total_loyalty_earned = Order::orderBy('id','desc');
         if (Auth::user()->is_superadmin == 0) {
             $total_loyalty_earned = $total_loyalty_earned->whereHas('vendors.vendor.permissionToUser', function ($query) {
@@ -37,11 +37,11 @@ class LoyaltyController extends Controller{
         }
         $total_loyalty_earned =$total_loyalty_earned->sum('loyalty_points_earned');
 
-        
+
 
         $payment_options = PaymentOption::where('status', 1)->get();
 
-         // type_of_loyality_applied_count 
+         // type_of_loyality_applied_count
          $type_of_loyality_applied_count = Order::orderBy('id','desc');
          if (Auth::user()->is_superadmin == 0) {
              $type_of_loyality_applied_count = $type_of_loyality_applied_count->whereHas('vendors.vendor.permissionToUser', function ($query) {
@@ -49,8 +49,8 @@ class LoyaltyController extends Controller{
              });
          }
          $type_of_loyality_applied_count =$type_of_loyality_applied_count->distinct('loyalty_membership_id')->count('loyalty_membership_id');
- 
-        
+
+
 
         return view('backend.accounting.loyality',compact('loyalty_card_details', 'total_loyalty_earned','total_loyalty_spent','type_of_loyality_applied_count', 'payment_options'));
     }
@@ -84,6 +84,7 @@ class LoyaltyController extends Controller{
             $order->loyalty_points_used = $order->loyalty_points_used ? $order->loyalty_points_used : '0.00';
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $timezone);
             $order->loyalty_points_earned = $order->loyalty_points_earned ? $order->loyalty_points_earned : '0.00';
+            $order->payment_option_title =  __($order->paymentOption->title);
         }
         return Datatables::of($orders)
             ->addIndexColumn()

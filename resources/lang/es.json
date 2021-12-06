@@ -552,7 +552,7 @@
    "Total Limit": "Límite total",
    "Apply Restriction On": "Aplicar restricción en",
    "Restriction Type": "Tipo de restricción",
-   "Vendors": "Vendedores",
+   "Vendors": "Comercios",
    "Add Promocode": "Agregar código promocional",
    "Edit Promocode": "Editar código promocional",
    "Upload Image": "Subir imágen",
@@ -600,7 +600,7 @@
    "Phone Number": "Número de teléfono",
    "Website": "Sitio web",
    "Delivery": "Entrega",
-   "Catalog": "Catalogar",
+   "Catalog": "Catálogo",
    "Configuration": "Configuración",
    "Categories & Add Ons": "Categorías y complementos",
    "Service Area": "Área de servicios",
@@ -782,7 +782,7 @@
    "Customers": "Clientes",
    "Orders": "Pedidos",
    "Order Detail": "Detalle de la orden",
-   "Sellers": "Vendedores",
+   "Sellers": "Comercios",
    "Shopping Cart": "Carrito de compras",
    "Checkout": "Verificar",
    "Tracking ID": "ID de rastreo",
@@ -906,7 +906,6 @@
    "My Loyalty" : "Mis Puntos",
    "Available" : "Disponible",
    "Not Available" : "No Disponible",
-   "Pickup & Delivery  Dashboard" : "Panel de Delivery",
    "Revenue" :"Ingresos",
    "Sales" : "Ventas",
    "Net Revenue" : "Ingresos Netos",
@@ -918,8 +917,19 @@
    "This change will remove all your cart products. Do you really want to continue ?" : " Este cambio removerá los productos actuales en tu carrito. ¿Deseas continuar?",
    "Are you Sure?" : "Estas segura",
    "Order Status Updated Successfully.":"El estado del pedido se actualizó correctamente.",
-   "You don't have orders right now." : "No tienes pedidos en este momento."
-
+   "You don't have orders right now." : "No tienes pedidos en este momento.",
+   "Search By Order No.,Vendor,Customer Name" : "Buscar por número de pedido, proveedor, nombre de cliente",
+   "Search By Vendor Name" : "Buscar por nombre de proveedor",
+   "Completed" : "Terminado",
+   "Export" : "Exportar",
+   "Free Delivery" : "Entrega gratis",
+   "Trending" : "Tendencias",
+   "Search By Name, Email, Phone Number" : "Buscar por nombre, correo electrónico, número de teléfono",
+   "Export CSV" : "Exportar CSV",
+   "Showing _START_ to _END_  of _TOTAL_ entries" : "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+   "Search By " : "Buscar por",
+   "Pickup & Delivery Dashboard" : "Panel de Delivery",
+   "Create a free account and join us!": "¡Crea una cuenta gratis y únete a nosotros!"
 
 
 

@@ -41,20 +41,68 @@ class EmailTemplateSeeder extends Seeder{
                 'label' => 'Orders',
                 'subject' => 'Orders',
                 'tags' => '{customer_name}, {description}, {products}, {order_id}, {address}', 
-                'content'=>'<table style="width: 100%; background-color:#fff;"> <thead> <tr> <th colspan="2" style="text-align: center;"> <a style="display: block;margin-bottom: 10px;" href="#"><img src="images/logo.png" alt=""> </a> <h1 style="margin: 0 0 10px;font-weight:400;">Thanks for your order</h1> <p style="margin: 0 0 20px;font-weight:300;">Hi {customer_name}, we have received your order #{order_id} and working on it now. <br> We will email you an update as soon as your order is processed. </p> <a style="display: inline-block; padding: 6.7px 29px;border-radius: 4px;background:#8142ff;line-height: 20px; text-transform: uppercase;font-size: 14px;font-weight: 700;text-decoration: none;color: #fff;" href="#">View your order</a> </th> </tr> </thead> <tbody> <tr> <td colspan="2"> <table style="width:100%;border: 1px solid rgb(221 221 221 / 41%);"> <thead> <tr> <th colspan="2" style="border-bottom: 1px solid rgb(221 221 221 / 41%);"> <h3 style="font-weight: 700;">Items Ordered</h3> </th> </tr> </thead> <tbody> <tr style="vertical-align: top;"> <td style="border-bottom: 1px solid rgb(221 221 221 / 41%);border-right: 1px solid rgb(221 221 221 / 41%);width: 50%;"> <p style="margin-bottom: 5px;"><b>Shipping Address:</b></p> <p>{address}</p> </td> </tr> <tr> <td colspan="2" style="padding: 0;"> <table style="width:100%;"> <tbody> {products} </tbody> <tfoot> <tr> <td colspan="2" style="background-color: #8142ff;color: #fff; border-top: 1px solid rgb(221 221 221 / 41%);text-align: center;"> <b>Powered By Royo</b> </td> </tr> </tfoot> </table> </td> </tr> </tbody> </table> </td> </tr> </tbody></table>'
+                'content'=>'<table style="width: 100%; background-color:#fff;">
+                <thead>
+                    <tr>
+                       <th colspan="2" style="text-align: center;">
+                         <h1 style="color: rgba(0,0,0,0.66);font-family: &quot;Times New Roman&quot;;font-size: 28px;font-weight: bold;letter-spacing: 0;line-height: 32px;">Thanks for your order</h1>
+                         <p style="color: rgba(0,0,0,0.66);font-size: 15px;letter-spacing: 0;line-height: 25px;width: 80%;margin: 30px auto 10px;"><span style="display: block;">Hi {customer_name},</span> we have received your order and we working on it now.
+                          We will email you an update as soon as your order is processed.</p>
+                          </th>
+                       </tr>
+                 </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <table style="width:100%; border: 1px solid rgb(221 221 221 / 41%);">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" style="border-bottom: 1px solid rgb(221 221 221 / 41%);">
+                                            <h3 style="font-weight: 700;">Items Ordered</h3>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="vertical-align: top;">
+                                        <td
+                                            style="border-bottom: 1px solid rgb(221 221 221 / 41%);border-right: 1px solid rgb(221 221 221 / 41%);width: 50%;">
+                                            <p style="margin-bottom: 5px;"><b>Shipping Address:</b></p>
+                                            <p>{address}</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="padding: 0;">
+                                            <table style="width:100%;">
+                                                <tbody> {products} </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="2"
+                                                            style="background-color: #8142ff;color: #fff; border-top: 1px solid rgb(221 221 221 / 41%);text-align: center;">
+                                                            <b>Powered By Royo</b> </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>'
             ],
             
             [
                 'label' => 'SuccessEmail',
                 'subject' => 'Success Email Notification',
                 'tags' => '{name}', 
-                'content'=>'<table style="width: 100%; background-color:#fff;"> <thead> <tr> <th colspan="2" style="text-align: center;"> <a style="display: block;margin-bottom: 10px;" href="#"><img src="images/logo.png" alt=""> </a> <h1 style="margin: 0 0 10px;font-weight:400;">Thanks for your order</h1> <p style="margin: 0 0 20px;font-weight:300;">Hi {name}, <br> Payment done successfully. </p> <a style="display: inline-block; padding: 6.7px 29px;border-radius: 4px;background:#8142ff;line-height: 20px; text-transform: uppercase;font-size: 14px;font-weight: 700;text-decoration: none;color: #fff;" href="#">View your order</a> </th> </tr> </thead> <tbody> <tr> <td colspan="2"> <table style="width:100%;border: 1px solid rgb(221 221 221 / 41%);"> <thead> <tr> <th colspan="2" style="border-bottom: 1px solid rgb(221 221 221 / 41%);"> <h3 style="font-weight: 700;">Items Ordered</h3> </th> </tr> </thead> <tbody> <tr style="vertical-align: top;"> <td style="border-bottom: 1px solid rgb(221 221 221 / 41%);border-right: 1px solid rgb(221 221 221 / 41%);width: 50%;"> <p style="margin-bottom: 5px;"><b></b></p> <p></p> </td> </tr> <tr> <td colspan="2" style="padding: 0;"> <table style="width:100%;"> <tbody>  </tbody> <tfoot> <tr> <td colspan="2" style="background-color: #8142ff;color: #fff; border-top: 1px solid rgb(221 221 221 / 41%);text-align: center;"> <b>Powered By Royo</b> </td> </tr> </tfoot> </table> </td> </tr> </tbody> </table> </td> </tr> </tbody></table>'
+                'content'=>'<table style="width: 100%; background-color:#fff;"> <thead> <tr> <th colspan="2" style="text-align: center;"> <a style="display: block;margin-bottom: 10px;" href="#"><img src="images/logo.png" alt=""> </a> <h1 style="margin: 0 0 10px;font-weight:400;">Thanks for your order</h1> <p style="margin: 0 0 20px;font-weight:300;">Hi {name}, <br> Payment done successfully. </p> <a style="display: inline-block; padding: 6.7px 29px;border-radius: 4px;background:#8142ff;line-height: 20px; text-transform: uppercase;font-size: 14px;font-weight: 700;text-decoration: none;color: #fff;" href="#">View your order</a> </th> </tr> </thead> <tbody> <tr> <td colspan="2"> <table style="width:100%; border: 1px solid rgb(221 221 221 / 41%);"> <thead> <tr> <th colspan="2" style="border-bottom: 1px solid rgb(221 221 221 / 41%);"> <h3 style="font-weight: 700;">Items Ordered</h3> </th> </tr> </thead> <tbody> <tr style="vertical-align: top;"> <td style="border-bottom: 1px solid rgb(221 221 221 / 41%);border-right: 1px solid rgb(221 221 221 / 41%);width: 50%;"> <p style="margin-bottom: 5px;"><b></b></p> <p></p> </td> </tr> <tr> <td colspan="2" style="padding: 0;"> <table style="width:100%;"> <tbody>  </tbody> <tfoot> <tr> <td colspan="2" style="background-color: #8142ff;color: #fff; border-top: 1px solid rgb(221 221 221 / 41%);text-align: center;"> <b>Powered By Royo</b> </td> </tr> </tfoot> </table> </td> </tr> </tbody> </table> </td> </tr> </tbody></table>'
             ],
             [
                 'label' => 'FailEmail',
                 'subject' => 'Failure Email Notification',
                 'tags' => '{name}', 
-                'content'=>'<table style="width: 100%; background-color:#fff;"> <thead> <tr> <th colspan="2" style="text-align: center;"> <a style="display: block;margin-bottom: 10px;" href="#"><img src="images/logo.png" alt=""> </a> <h1 style="margin: 0 0 10px;font-weight:400;"></h1> <p style="margin: 0 0 20px;font-weight:300;">Hi {name}, <br> Payment failed. </p> <a style="display: inline-block; padding: 6.7px 29px;border-radius: 4px;background:#8142ff;line-height: 20px; text-transform: uppercase;font-size: 14px;font-weight: 700;text-decoration: none;color: #fff;" href="#">View your order</a> </th> </tr> </thead> <tbody> <tr> <td colspan="2"> <table style="width:100%;border: 1px solid rgb(221 221 221 / 41%);"> <thead> <tr> <th colspan="2" style="border-bottom: 1px solid rgb(221 221 221 / 41%);"> <h3 style="font-weight: 700;">Items Ordered</h3> </th> </tr> </thead> <tbody> <tr style="vertical-align: top;"> <td style="border-bottom: 1px solid rgb(221 221 221 / 41%);border-right: 1px solid rgb(221 221 221 / 41%);width: 50%;"> <p style="margin-bottom: 5px;"><b></b></p> <p></p> </td> </tr> <tr> <td colspan="2" style="padding: 0;"> <table style="width:100%;"> <tbody>  </tbody> <tfoot> <tr> <td colspan="2" style="background-color: #8142ff;color: #fff; border-top: 1px solid rgb(221 221 221 / 41%);text-align: center;"> <b>Powered By Royo</b> </td> </tr> </tfoot> </table> </td> </tr> </tbody> </table> </td> </tr> </tbody></table>'
+                'content'=>'<table style="width: 100%; background-color:#fff;"> <thead> <tr> <th colspan="2" style="text-align: center;"> <a style="display: block;margin-bottom: 10px;" href="#"><img src="images/logo.png" alt=""> </a> <h1 style="margin: 0 0 10px;font-weight:400;"></h1> <p style="margin: 0 0 20px;font-weight:300;">Hi {name}, <br> Payment failed. </p> <a style="display: inline-block; padding: 6.7px 29px;border-radius: 4px;background:#8142ff;line-height: 20px; text-transform: uppercase;font-size: 14px;font-weight: 700;text-decoration: none;color: #fff;" href="#">View your order</a> </th> </tr> </thead> <tbody> <tr> <td colspan="2"> <table style="width:100%; border: 1px solid rgb(221 221 221 / 41%);"> <thead> <tr> <th colspan="2" style="border-bottom: 1px solid rgb(221 221 221 / 41%);"> <h3 style="font-weight: 700;">Items Ordered</h3> </th> </tr> </thead> <tbody> <tr style="vertical-align: top;"> <td style="border-bottom: 1px solid rgb(221 221 221 / 41%);border-right: 1px solid rgb(221 221 221 / 41%);width: 50%;"> <p style="margin-bottom: 5px;"><b></b></p> <p></p> </td> </tr> <tr> <td colspan="2" style="padding: 0;"> <table style="width:100%;"> <tbody>  </tbody> <tfoot> <tr> <td colspan="2" style="background-color: #8142ff;color: #fff; border-top: 1px solid rgb(221 221 221 / 41%);text-align: center;"> <b>Powered By Royo</b> </td> </tr> </tfoot> </table> </td> </tr> </tbody> </table> </td> </tr> </tbody></table>'
             ],
         ];
         EmailTemplate::truncate();

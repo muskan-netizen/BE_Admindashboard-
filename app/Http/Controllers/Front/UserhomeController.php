@@ -167,8 +167,12 @@ class UserhomeController extends FrontController
             $tag = [];
             $showTag = implode(',', $tag);
             $client = Client::with('country')->first();
-            $driver_registration_documents = json_decode($this->driverDocuments());
-            return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client'));
+            $data = json_decode($this->driverDocuments());
+            $driver_registration_documents = $data->documents;
+            $teams = $data->all_teams;
+            $tags = $data->agent_tags;
+            // dd($tags);
+            return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
         }
     }
     public function index(Request $request)

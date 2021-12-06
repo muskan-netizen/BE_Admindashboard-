@@ -418,26 +418,49 @@ class BaseController extends Controller{
         }
     }
 
-    public function formattedOrderETA($minutes, $order_vendor_created_at, $scheduleTime=''){
+    public function formattedOrderETA($minutes, $order_vendor_created_at, $scheduleTime='', $user=''){
         $d = floor ($minutes / 1440);
         $h = floor (($minutes - $d * 1440) / 60);
         $m = $minutes - ($d * 1440) - ($h * 60);
         // return (($d > 0) ? $d.' days ' : '') . (($h > 0) ? $h.' hours ' : '') . (($m > 0) ? $m.' minutes' : '');
 
-        if($scheduleTime != ''){
-            $datetime = Carbon::parse($scheduleTime)->setTimezone(Auth::user()->timezone)->toDateTimeString();
-        }else{
-            $datetime = Carbon::parse($order_vendor_created_at)->setTimezone(Auth::user()->timezone)->addMinutes($minutes)->toDateTimeString();
-        }
+        // if($scheduleTime != ''){
+        //     $datetime = Carbon::parse($scheduleTime)->setTimezone(Auth::user()->timezone)->toDateTimeString();
+        // }else{
+        //     $datetime = Carbon::parse($order_vendor_created_at)->setTimezone(Auth::user()->timezone)->addMinutes($minutes)->toDateTimeString();
+        // }
         
-        if(Carbon::parse($datetime)->isToday()){
-            $format = 'h:i A';
+        // if(Carbon::parse($datetime)->isToday()){
+        //     $format = 'h:i A';
+        // }else{
+        //     $format = 'M d, Y h:i A';
+        // }
+        // // $time = convertDateTimeInTimeZone($datetime, Auth::user()->timezone, $format);
+        // $time = Carbon::parse($datetime)->format($format);
+        if(isset($user) && !empty($user))
+        $user =  $user;
+        else
+        $user = Auth::user();
+
+        $timezone = $user->timezone;
+        $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
+        $date_format = $preferences->date_format;
+        $time_format = $preferences->time_format;
+
+        if($scheduleTime != ''){
+            $datetime = dateTimeInUserTimeZone($scheduleTime, $timezone);
         }else{
-            $format = 'M d, Y h:i A';
+            $datetime = dateTimeInUserTimeZone($order_vendor_created_at, $timezone);
         }
-        // $time = convertDateTimeInTimeZone($datetime, Auth::user()->timezone, $format);
-        $time = Carbon::parse($datetime)->format($format);
-        return $time;
+        if(Carbon::parse($datetime)->isToday()){
+            if($time_format == '12'){
+                $time_format = 'hh:mm A';
+            }else{
+                $time_format = 'HH:mm';
+            }
+            $datetime = Carbon::parse($datetime)->isoFormat($time_format);
+        }
+        return $datetime;
     }
 
     public function getNomenclatureName($searchTerm, $langId, $plural = true){

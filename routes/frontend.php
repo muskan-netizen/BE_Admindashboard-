@@ -10,6 +10,10 @@ Route::get('/debug-sentry', function () {
 Route::group(['middleware' => ['domain']], function () {
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
+	
+
+	Route::get('dispatch-order-status-update-details/{id?}', 'Front\DispatcherController@dispatchOrderDetails')->name('dispatch-order-update-details'); // Order Status update Dispatch details
+
 	Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
 	Route::get('cabbooking', 'Front\CustomerAuthController@getTestHtmlPage');
 	Route::get('demo/cabBooking', 'Front\CustomerAuthController@getDemoCabBookingPage');
@@ -61,12 +65,12 @@ Route::group(['middleware' => ['domain']], function () {
 
 
 	//Simplify
-	Route::post('payment/simplify/page','Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
+	Route::match(['get','post'],'payment/simplify/page','Front\SimplifyController@beforePayment')->name('payment.simplify.beforePayment');
 	Route::post('payment/simplify','Front\SimplifyController@createPayment')->name('payment.simplify.createPayment');
 
 
 	//Square
-	Route::post('payment/square/page','Front\SquareController@beforePayment')->name('payment.square.beforePayment');
+	Route::match(['get','post'],'payment/square/page','Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square','Front\SquareController@createPayment')->name('payment.square.createPayment');
 
 
@@ -257,6 +261,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::post('get-list-of-vehicles/{id}', 'Front\PickupDeliveryController@productsByVendorInPickupDelivery');
 		Route::post('order-tracking-details', 'Front\PickupDeliveryController@getOrderTrackingDetails')->name('bookingIndex');
 		Route::post('promo-code/verify', 'Front\PickupDeliveryController@postVerifyPromoCode')->name('verify.cab.booking.promo-code');
+		Route::get('get-product-order-form', 'Front\PickupDeliveryController@getProductOrderForm')->name('get-product-order-form');
 	});
 	Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');
 });

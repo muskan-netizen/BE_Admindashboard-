@@ -17,7 +17,7 @@
                         @endphp
                 </div>
             </div>
-        </div>     
+        </div>
         <div class="row">
             <div class="col-12">
                 <div class="card widget-inline">
@@ -63,8 +63,8 @@
                     </div>
                 </div>
             </div>
-        </div>    
-    </div> 
+        </div>
+    </div>
 </div>
 <div class="container-fluid">
     <div class="row">
@@ -72,7 +72,7 @@
             <div class="card">
                 <div class="card-body position-relative">
                     <div class="top-input position-absolute">
-                        <div class="row">                            
+                        <div class="row">
                             <div class="col-md-9">
                                 <div class="row">
                                     <div class="col">
@@ -107,7 +107,7 @@
                         <table class="table table-centered table-nowrap table-striped" id="accounting_loyality_datatable" width="100%">
                             <thead>
 
-                               
+
 
                                 <tr>
                                     <th>{{ __('Order ID') }}</th>
@@ -121,7 +121,7 @@
                                 </tr>
                             </thead>
                             <tbody id="accounting_loyality_tbody_list">
-                                
+
                             </tbody>
                         </table>
                     </div>
@@ -143,7 +143,7 @@
         function getOrderList() {
             $(document).ready(function() {
                 initDataTable();
-                $("#range-datepicker").flatpickr({ 
+                $("#range-datepicker").flatpickr({
                     mode: "range",
                     onClose: function(selectedDates, dateStr, instance) {
                         initDataTable();
@@ -168,15 +168,16 @@
                         "iDisplayLength": 50,
                         language: {
                             search: "",
+                            info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
                             paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
-                            searchPlaceholder: "Search By Order No.,Vendor,Customer Name"
+                            searchPlaceholder: '{{__("Search By Order No.,Vendor,Customer Name")}}'
                         },
                         drawCallback: function () {
                             $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
                         },
-                        buttons: [{   
+                        buttons: [{
                             className:'btn btn-success waves-effect waves-light',
-                            text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>Export CSV',
+                            text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>{{__("Export CSV")}}',
                             action: function ( e, dt, node, config ) {
                                 window.location.href = "{{ route('account.loyalty.export') }}";
                             }
@@ -197,7 +198,7 @@
                             {data: 'loyalty_points_used', name: 'loyalty_points_used', orderable: false, searchable: false},
                             {data: 'loyalty_membership', name: 'action', orderable: false, searchable: false},
                             {data: 'loyalty_points_earned', name: 'action', orderable: false, searchable: false},
-                            {data: 'payment_option.title', name: 'action', orderable: false, searchable: false},
+                            {data: 'payment_option_title', name: 'action', orderable: false, searchable: false},
                         ]
                     });
                 }

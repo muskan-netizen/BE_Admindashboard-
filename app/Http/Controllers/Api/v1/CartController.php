@@ -535,6 +535,8 @@ class CartController extends BaseController
             $tax_details = [];
             $is_vendor_closed = 0;
             $delay_date = 0;
+            $pickup_delay_date = 0;
+            $dropoff_delay_date = 0;
             $total_service_fee = 0;
             foreach ($cartData as $ven_key => $vendorData) {
              
@@ -624,6 +626,15 @@ class CartController extends BaseController
                     if($prod->product->delay_hrs_min != 0){
                         if($prod->product->delay_hrs_min > $delay_date)
                         $delay_date = $prod->product->delay_hrs_min;
+                    }
+                    if($prod->product->pickup_delay_hrs_min != 0){
+                        if($prod->product->pickup_delay_hrs_min > $delay_date)
+                        $pickup_delay_date = $prod->product->pickup_delay_hrs_min;
+                    }
+
+                    if($prod->product->dropoff_delay_hrs_min != 0){
+                        if($prod->product->dropoff_delay_hrs_min > $delay_date)
+                        $dropoff_delay_date = $prod->product->dropoff_delay_hrs_min;
                     }
 
                     if ($prod->pvariant) {
@@ -875,6 +886,8 @@ class CartController extends BaseController
         $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
         $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
         $cart->delay_date =  $delay_date??0;
+        $cart->pickup_delay_date =  $pickup_delay_date??0;
+        $cart->dropoff_delay_date =  $dropoff_delay_date??0;
         return $cart;
     }
 

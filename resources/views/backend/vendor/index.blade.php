@@ -23,8 +23,8 @@
                 <h4 class="page-title">{{ $newvendors }}</h4>
             </div>
         </div>
-        
-      
+
+
         @if(isset($client_preference_detail) && $client_preference_detail->single_vendor == 1)
             @if($total_vendor_count == 0)
             <div class="col-sm-6 text-sm-right">
@@ -32,7 +32,7 @@
                 </button>
             </div>
             @endif
-        @else    
+        @else
             <div class="col-sm-6 text-sm-right">
                 <button class="btn btn-info waves-effect waves-light text-sm-right openImportModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                 </button>
@@ -44,7 +44,7 @@
     </div>
     <div class="row">
         <div class="col-12">
-           
+
             <div class="card widget-inline">
                 <div class="card-body p-2">
                     <div class="row">
@@ -115,12 +115,12 @@
                 <div class="tab-pane fade past-order show active" id="active_vendor" role="tabpanel" aria-labelledby="active-vendor">
                     <div class="row">
                         <div class="col-12">
-                           
+
                             <div class="card">
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <form name="saveOrder" id="saveOrder"> @csrf</form>
-                                       
+
                                         <table class="table table-centered table-nowrap table-striped" id="vendor_active_datatable" width="100%">
                                             <thead>
                                                 <tr>
@@ -245,6 +245,7 @@
 @include('backend.vendor.pagescript')
 <script src="{{asset('js/admin_vendor.js')}}"></script>
 <script type="text/javascript">
-    var search_text = "{{getNomenclatureName('vendors', false)}}";
+    var search_text = "{{__('Search By '). getNomenclatureName('vendors', false) . __('Name')}}";
+    var table_info = '{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}';
 </script>
 @endsection

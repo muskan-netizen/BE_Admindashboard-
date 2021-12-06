@@ -70,7 +70,7 @@ $(document).ready(function() {
                     delivery = document.getElementsByClassName('delivery');
                     var switchery = new Switchery(delivery[0]);
                     autocompletesWraps.push('edit');
-                    loadMap(autocompletesWraps); 
+                    loadMap(autocompletesWraps);
                     $('.dropify').dropify();
                 }
             });
@@ -108,8 +108,9 @@ $(document).ready(function() {
                 "dom": '<"toolbar">Bftrip',
                 language: {
                     search: "",
+                    info: table_info,
                     paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" },
-                    searchPlaceholder: "Search By "+search_text+" Name"
+                    searchPlaceholder: search_text
                 },
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded");

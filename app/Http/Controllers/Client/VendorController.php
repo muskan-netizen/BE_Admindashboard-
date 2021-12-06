@@ -69,7 +69,7 @@ class VendorController extends BaseController
             $offers = [];
             $vendor->show_url = route('vendor.catalogs', $vendor->id);
             $vendor->destroy_url = route('vendor.destroy', $vendor->id);
-            $vendor->add_category_option = ($vendor->add_category == 0) ? 'No' : 'Yes';
+            $vendor->add_category_option = ($vendor->add_category == 0) ? __('No') : __('Yes');
             if($vendor->show_slot == 1){
                 $vendor->show_slot_option ="Open";
                 $vendor->show_slot_label ="success";
@@ -80,9 +80,9 @@ class VendorController extends BaseController
                 $vendor->show_slot_label="danger";
                 $vendor->show_slot_option = "Closed";
             }
-            $offers[]= $dinein_check == 1 && $vendor->dine_in == 1 ? 'Dine In' : '';
-            $offers[]= $takeaway_check == 1 && $vendor->takeaway == 1 ? 'Take Away' : '';
-            $offers[]= $delivery_check == 1 && $vendor->delivery == 1 ? 'Delivery' : '';
+            $offers[]= $dinein_check == 1 && $vendor->dine_in == 1 ? __('Dine In') : '';
+            $offers[]= $takeaway_check == 1 && $vendor->takeaway == 1 ? __('Take Away') : '';
+            $offers[]= $delivery_check == 1 && $vendor->delivery == 1 ? __('Delivery') : '';
             $vendor->offers = $offers;
         }
         return Datatables::of($vendors)
@@ -288,7 +288,7 @@ class VendorController extends BaseController
         if ($saveVendor > 0) {
             return response()->json([
                 'status' => 'success',
-                'message' => 'Vendor updated Successfully!',
+                'message' => __('Vendor updated Successfully!'),
                 'data' => $saveVendor
             ]);
         }
@@ -297,7 +297,7 @@ class VendorController extends BaseController
         Vendor::where('id', $request->vendor_id)->update(['status' => $request->status]);
         return response()->json([
             'status' => 'success',
-            'message' => 'Vendor Status Updated Successfully!',
+            'message' => __('Vendor Status Updated Successfully!'),
         ]);
     }
     /*  /**   show vendor page - config tab      */

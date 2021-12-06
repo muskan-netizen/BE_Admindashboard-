@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -55,7 +55,7 @@ class PickupDeliveryController extends FrontController{
                         },'variant' => function($q) use($language_id){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
-                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags')->where('products.id', $product_id)->where('products.is_live', 1)->firstOrFail(); 
+                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags')->where('products.id', $product_id)->where('products.is_live', 1)->first(); 
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product);
@@ -64,6 +64,7 @@ class PickupDeliveryController extends FrontController{
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+        $product->faqlist = count($product->ProductFaq);
         foreach ($product->variant as $k => $v) {
             $product->variant[$k]->price = $product->tags_price;
             $product->variant[$k]->multiplier = 1;
@@ -403,6 +404,13 @@ class PickupDeliveryController extends FrontController{
                 $order_product->created_by = null;
                 $order_product->variant_id = $variant->id;
                 $order_product->product_name = $product->sku;
+                
+                if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
+                $user_product_order_form = json_encode($request->user_product_order_form);
+                else
+                $user_product_order_form = null;
+
+                $order_product->user_product_order_form = $user_product_order_form;
                 if ($product->pimage) {
                     $order_product->image = $product->pimage->first() ? $product->pimage->first()->path : '';
                 }
@@ -671,5 +679,36 @@ class PickupDeliveryController extends FrontController{
             'amount' => 'required'
         ]);
     }
+
+
+    /**
+     * ratings details
+    */
+    public function getProductOrderForm(Request $request){
+        try { 
+            $langId = Auth::user()->language;
+            if(empty($langId))
+            $langId = ClientLanguage::orderBy('is_primary','desc')->value('language_id');
+
+            $product_faqs = ProductFaq::where('product_id',$request->product_id)->with(['translations' => function ($qs) use($langId){
+                $qs->where('language_id',$langId);
+            }])->get();
+         
+            if(isset($product_faqs)){
+              
+                if ($request->ajax()) {
+                 return \Response::json(\View::make('frontend.modals.product-order-form', array('product_faqs'=>  $product_faqs))->render());
+                }
+
+            }
+            return \Response::json(\View::make('frontend.modals.product-order-form', array('product_faqs'=>  $product_faqs))->render());
+           
+            return $this->errorResponse('Invalid product form ', 404);
+            
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+    
 
 }

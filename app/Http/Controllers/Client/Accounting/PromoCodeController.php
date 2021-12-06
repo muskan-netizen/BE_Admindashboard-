@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Models\OrderVendor;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use App\Models\OrderStatusOption;
@@ -30,7 +30,7 @@ class PromoCodeController extends Controller{
         }
         $promo_code_uses_count = $promo_code_uses_count->count('coupon_code');
 
-        /// unique_users_to_use_promo_code_count 
+        /// unique_users_to_use_promo_code_count
         $unique_users_to_use_promo_code_count = OrderVendor::whereNotNull('coupon_id')->distinct('user_id');
         if (Auth::user()->is_superadmin == 0) {
             $unique_users_to_use_promo_code_count = $unique_users_to_use_promo_code_count->whereHas('vendor.permissionToUser', function ($query) {
@@ -39,7 +39,7 @@ class PromoCodeController extends Controller{
         }
         $unique_users_to_use_promo_code_count = $unique_users_to_use_promo_code_count->count('user_id');
 
-        /// admin_paid_total_amt 
+        /// admin_paid_total_amt
         $admin_paid_total_amt = OrderVendor::where('coupon_paid_by', 1);
         if (Auth::user()->is_superadmin == 0) {
             $admin_paid_total_amt = $admin_paid_total_amt->whereHas('vendor.permissionToUser', function ($query) {
@@ -48,7 +48,7 @@ class PromoCodeController extends Controller{
         }
         $admin_paid_total_amt = $admin_paid_total_amt->sum('discount_amount');
 
-    /// vendor_paid_total_amt 
+    /// vendor_paid_total_amt
         $vendor_paid_total_amt = OrderVendor::where('coupon_paid_by', 0);
         if (Auth::user()->is_superadmin == 0) {
             $vendor_paid_total_amt = $vendor_paid_total_amt->whereHas('vendor.permissionToUser', function ($query) {
@@ -57,9 +57,9 @@ class PromoCodeController extends Controller{
         }
         $vendor_paid_total_amt = $vendor_paid_total_amt->sum('discount_amount');
 
-        /// promo_code_options 
+        /// promo_code_options
         $promo_code_options = OrderVendor::whereNotNull('coupon_id')->distinct('coupon_id');
-        
+
         if (Auth::user()->is_superadmin == 0) {
             $promo_code_options = $promo_code_options->whereHas('vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -67,7 +67,7 @@ class PromoCodeController extends Controller{
         }
         $promo_code_options = $promo_code_options->get();
 
-        
+
 
         return view('backend/accounting/promocode', compact('vendor_paid_total_amt','admin_paid_total_amt','promo_code_uses_count','unique_users_to_use_promo_code_count','order_status_options','promo_code_options'));
     }
@@ -92,6 +92,7 @@ class PromoCodeController extends Controller{
             }
             $vendor_orders = $vendor_orders_query->orderBy('id', 'desc')->get();
             foreach ($vendor_orders as $vendor_order) {
+                $vendor_order->payment_option_title = __($vendor_order->orderDetail->paymentOption->title);
                 $order_status = '';
                 $vendor_order->created_date = dateTimeInUserTimeZone($vendor_order->created_at, $timezone);
                 $vendor_order->user_name = $vendor_order->user ? $vendor_order->user->name : '';
@@ -112,7 +113,7 @@ class PromoCodeController extends Controller{
                         }
                     }
                 }
-                $vendor_order->order_status = $order_status;
+                $vendor_order->order_status = __($order_status);
             }
             return Datatables::of($vendor_orders)
                 ->addIndexColumn()
@@ -142,7 +143,7 @@ class PromoCodeController extends Controller{
                     }
                 })->make(true);
         } catch (Exception $e) {
-            
+
         }
     }
     public function export() {

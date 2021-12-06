@@ -69,7 +69,7 @@
             </div>
             <div class="row">
                 <div class="collection-filter col-lg-3">
-                    <div class="collection-filter-block">
+                    <div class="collection-filter-block bg-transparent p-0">
                         <!-- <div class="collection-mobile-back">
                             <span class="filter-back d-lg-none d-inline-block">
                                 <i class="fa fa-angle-left" aria-hidden="true"></i>{{__('Back')}}
@@ -77,14 +77,14 @@
                         </div> -->
                         @if(!empty($variantSets) && count($variantSets) > 0)
                           @foreach($variantSets as $key => $sets)
-                            <div class="collection-collapse-block border-0 open">
+                            <div class="collection-collapse-block border-0 mb-2 open">
                                 <h3 class="collapse-block-title">{{$sets->title}}</h3>
                                 <div class="collection-collapse-block-content">
                                     <div class="collection-brand-filter">
                                         
                                     @if($sets->type == 2)
                                         @foreach($sets->options as $ok => $opt)
-                                            <div class="chiller_cb small_label d-inline-block color-selector">
+                                            <div class="chiller_cb small_label d-inline-block color-selector mt-2">
                                                 <?php $checkMark = ($key == 0) ? 'checked' : ''; ?>
                                                 <input class="custom-control-input productFilter" type="checkbox" {{$checkMark}} id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" used="variants" optid="{{$opt->id}}">
                                                 <label for="Opt{{$key.'-'.$opt->id}}"></label>
@@ -111,7 +111,7 @@
 
                           @endforeach
                         @endif
-                        <div class="collection-collapse-block border-0 open">
+                        <div class="collection-collapse-block border-0 mb-2 open">
                             <h3 class="collapse-block-title">{{__('Price')}}</h3>
                             <div class="collection-collapse-block-content">
                                 <div class="wrapper mt-3">
@@ -143,11 +143,18 @@
                                         <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', $new['url_slug'])}}">
                                             <div class="img-outer-box position-relative">
                                                 <img src="{{$new['image_url']}}" alt="">
+                                                <div class="pref-timing">
+                                                    <!--<span>5-10 min</span>-->
+                                                </div>
+                                                <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
                                             </div>    
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing px-0">
                                                     <div class="product-description">
-                                                        <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3>
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>                                                                                    
+                                                            <!--<span class="rating-number">2.0</span>-->                                
+                                                        </div>
                                                         <p>{{$new['vendor']['name']}}</p>
                                                         <p class="pb-1">In {{$new['category_name']}}</p>
                                                         <div class="d-flex align-items-center justify-content-between">
@@ -158,7 +165,7 @@
                                                                 @endif
                                                             </b>
 
-                                                            @if($client_preference_detail)
+                                                            <!-- @if($client_preference_detail)
                                                                 @if($client_preference_detail->rating_check == 1)
                                                                     @if($new['averageRating'] > 0)
                                                                         <div class="rating-box">
@@ -167,7 +174,7 @@
                                                                         </div>
                                                                     @endif
                                                                 @endif
-                                                            @endif  
+                                                            @endif   -->
                                                         </div>                       
                                                     </div>
                                                 </div>

@@ -596,6 +596,8 @@ class CartController extends FrontController
             $is_vendor_closed = 0;
             $deliver_charge = 0;
             $delay_date = 0;
+            $pickup_delay_date = 0;
+            $dropoff_delay_date = 0;
             $total_service_fee = 0;
             foreach ($cartData as $ven_key => $vendorData) {
                 $vendor_products_total_amount = $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
@@ -694,6 +696,16 @@ class CartController extends FrontController
                     if($prod->product->delay_hrs_min != 0){
                         if($prod->product->delay_hrs_min > $delay_date)
                         $delay_date = $prod->product->delay_hrs_min;
+                    }
+
+                    if($prod->product->pickup_delay_hrs_min != 0){
+                        if($prod->product->pickup_delay_hrs_min > $delay_date)
+                        $pickup_delay_date = $prod->product->pickup_delay_hrs_min;
+                    }
+
+                    if($prod->product->dropoff_delay_hrs_min != 0){
+                        if($prod->product->dropoff_delay_hrs_min > $delay_date)
+                        $dropoff_delay_date = $prod->product->dropoff_delay_hrs_min;
                     }
 
                     if($action == 'delivery'){
@@ -853,6 +865,8 @@ class CartController extends FrontController
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->delay_date =  $delay_date??0;
+            $cart->pickup_delay_date =  $pickup_delay_date??0;
+            $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }

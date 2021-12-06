@@ -27,10 +27,24 @@ class SimplifyController extends FrontController
     {
     	$data = $request->all();
     	$data['public_key'] = $this->public_key;
+        $data['come_from'] = 'app';
+        if($request->isMethod('post'))
+        {
+            $data['come_from'] = 'web';
+        }
+        Log::info("Before Payment");
+        Log::info($data);
     	return view('frontend.payment_gatway.simplify_view')->with(['data' => $data]);
     }
     public function createPayment(Request $request)
     {
+        Log::info("Create Payment");
+        Log::info($request->all());
+        if($request->come_from == "app")
+        {
+            $user = User::where('auth_token', $request->auth_token)->first();
+            Auth::login($user);
+        }
     	$user = Auth::user();
     	$cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
         $amount = $this->getDollarCompareAmount($request->amount);
@@ -70,11 +84,17 @@ class SimplifyController extends FrontController
         } else{
             $returnUrl = $this->failedPayment($request,$payment);
         }
+        // dd($returnUrl);
         return Redirect::to(url($returnUrl));
     }
     public function sucessPayment($request, $pamyent)
     {
-
+        if($request->come_from == "app")
+        {
+            $user = User::where('auth_token', $request->auth_token)->first();
+            Auth::login($user);
+        }
+        $user = Auth::user();
     	$transactionId = $pamyent->id;
     	if($request->payment_from == 'cart'){
             $order_number = $request->order_number;
@@ -95,13 +115,15 @@ class SimplifyController extends FrontController
                     // Auto accept order
                     $orderController = new OrderController();
                     $orderController->autoAcceptOrderIfOn($order->id);
+                    $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+
 
                     // Remove cart
-                    Cart::where('id', $request->cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-                    CartAddon::where('cart_id', $request->cart_id)->delete();
-                    CartCoupon::where('cart_id', $request->cart_id)->delete();
-                    CartProduct::where('cart_id', $request->cart_id)->delete();
-                    CartProductPrescription::where('cart_id', $request->cart_id)->delete();
+                    Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                    CartAddon::where('cart_id', $cart->id)->delete();
+                    CartCoupon::where('cart_id', $cart->id)->delete();
+                    CartProduct::where('cart_id', $cart->id)->delete();
+                    CartProductPrescription::where('cart_id', $cart->id)->delete();
 
                     // Send Notification
                     if (!empty($order->vendors)) {
@@ -115,14 +137,25 @@ class SimplifyController extends FrontController
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
                     $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                 }
-                $returnUrl = route('order.return.success');
+                if($request->come_from == 'app')
+                {
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify'.'&status=200&transaction_id='.$transactionId.'&order='.$order_number;
+                }else{
+                    $returnUrl = route('order.return.success');
+                }
+                
                 return $returnUrl;
             }
         } elseif($request->payment_from == 'wallet'){
             $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $transactionId]);
             $walletController = new WalletController();
             $walletController->creditWallet($request);
-            $returnUrl = route('user.wallet');
+            if($request->come_from == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify'.'&status=200&transaction_id='.$transactionId;
+            }else{
+                $returnUrl = route('user.wallet');
+            }
             return $returnUrl;
         }
         elseif($request->payment_from == 'tip'){
@@ -136,7 +169,12 @@ class SimplifyController extends FrontController
             $request->request->add(['payment_option_id' => 12, 'transaction_id' => $transactionId]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
-            $returnUrl = route('user.subscription.plans');
+            if($request->come_from == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify'.'&status=200&transaction_id='.$transactionId; 
+            }else{
+                $returnUrl = route('user.subscription.plans');
+            }
             return $returnUrl;
         }
         return Redirect::to(route('order.return.success'));
@@ -156,16 +194,40 @@ class SimplifyController extends FrontController
             OrderVendor::where('order_id', $order->id)->delete();
             OrderTax::where('order_id', $order->id)->delete();
             Order::where('id', $order->id)->delete();
-            return route('showCart');
+            if($request->come_from == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify&status=0';
+            }else{
+                $returnUrl = route('showCart');
+            }
+            return $returnUrl;
         }
         elseif($request->payment_form == 'wallet'){
-            return route('user.wallet');
+            if($request->come_from == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify&status=0';
+            }else{
+                $returnUrl = route('user.wallet');
+            }
+            return $returnUrl;
         }
         elseif($request->payment_form == 'tip'){
-            return route('user.orders');
+            if($request->come_from == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify&status=0';
+            }else{
+                $returnUrl = route('user.orders');
+            }
+            return $returnUrl;
         }
         elseif($request->payment_form == 'subscription'){
-            return route('user.subscription.plans');
+            if($request->come_from == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify&status=0';
+            }else{
+                $returnUrl = route('user.subscription.plans');
+            }
+            return $returnUrl;
         }
         return route('order.return.success');
     }
