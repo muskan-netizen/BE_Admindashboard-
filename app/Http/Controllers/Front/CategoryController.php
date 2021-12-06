@@ -248,7 +248,6 @@ class CategoryController extends FrontController{
                     }
                 }
                 $value->categoriesList = $categoriesList;
-                Log::info($value->id.":".$value->categoriesList);
             }
             return $vendorData;
         }
