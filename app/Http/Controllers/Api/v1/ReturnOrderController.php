@@ -58,6 +58,10 @@ class ReturnOrderController extends BaseController{
     public function getReturnProducts(Request $request, $domain = ''){
         try {
             $reasons = ReturnReason::where('status','Active')->orderBy('order','asc')->get();
+            foreach($reasons as $reason){
+                $reason->title = __($reason->title);
+            }
+            
             $order_details = Order::with(['vendors.products' => function ($q1)use($request){
                 $q1->where('id', $request->return_ids);
             },'products' => function ($q1)use($request){
@@ -66,7 +70,7 @@ class ReturnOrderController extends BaseController{
             ->whereHas('vendors.products',function($q)use($request){
                 $q->where('id', $request->return_ids);
             })->where('orders.user_id', Auth::user()->id)->where('id', $request->order_id)->orderBy('orders.id', 'DESC')->first();
-            
+
             if(isset($order_details)){
                 $data = ['order' => $order_details,'reasons' => $reasons];
                 return $this->successResponse($data,'Return Product.');

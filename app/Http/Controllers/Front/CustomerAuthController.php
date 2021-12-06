@@ -623,18 +623,36 @@ class CustomerAuthController extends FrontController
             $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
             if (empty($request->input('user_id'))) {
                 if ($vendor_registration_documents->count() > 0) {
+                    $rules_array = [
+                        'address' => 'required',
+                        'full_name' => 'required',
+                        'email' => 'required|email|unique:users',
+                        // 'vendor_registration_document.*.did_visit' => 'required',
+                        'password' => 'required|string|min:6|max:50',
+                        'confirm_password' => 'required|same:password',
+                        'name' => 'required|string|max:150|unique:vendors',
+                        'phone_number' => 'required|string|min:6|max:15|unique:users',
+                        'check_conditions' => 'required',
+                    ];
+                    foreach ($vendor_registration_documents as $vendor_registration_document) {
+                        if($vendor_registration_document->is_required == 1){
+                            $rules_array[$vendor_registration_document->primary->slug] = 'required';
+                        }
+                    }
+
                     $request->validate(
-                        [
-                            'address' => 'required',
-                            'full_name' => 'required',
-                            'email' => 'required|email|unique:users',
-                            'vendor_registration_document.*.did_visit' => 'required',
-                            'password' => 'required|string|min:6|max:50',
-                            'confirm_password' => 'required|same:password',
-                            'name' => 'required|string|max:150|unique:vendors',
-                            'phone_number' => 'required|string|min:6|max:15|unique:users',
-                            'check_conditions' => 'required',
-                        ],
+                        // [
+                        //     'address' => 'required',
+                        //     'full_name' => 'required',
+                        //     'email' => 'required|email|unique:users',
+                        //     'vendor_registration_document.*.did_visit' => 'required',
+                        //     'password' => 'required|string|min:6|max:50',
+                        //     'confirm_password' => 'required|same:password',
+                        //     'name' => 'required|string|max:150|unique:vendors',
+                        //     'phone_number' => 'required|string|min:6|max:15|unique:users',
+                        //     'check_conditions' => 'required',
+                        // ],
+                        $rules_array,
                         ['check_conditions.required' => __('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy')]
                     );
                 } else {

@@ -156,7 +156,7 @@ class CategoryController extends BaseController
                 'variant' => function ($q) use ($langId) {
                     $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                     // $q->groupBy('product_id');
-                }, 'variant.checkIfInCartApp',
+                }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                 'tags.tag.translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }
@@ -265,7 +265,7 @@ class CategoryController extends BaseController
                 'variant' => function ($q) use ($langId) {
                     $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
                     // $q->groupBy('product_id');
-                }, 'variant.checkIfInCartApp',
+                }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                 'tags.tag.translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }

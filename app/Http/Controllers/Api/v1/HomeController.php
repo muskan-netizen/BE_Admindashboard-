@@ -31,7 +31,7 @@ class HomeController extends BaseController
     {
         try {
             $homeData = array();
-            $client_language = ClientLanguage::select('language_id')->where(['is_primary'=>1, 'is_active'=>1])->first();
+            $client_language = ClientLanguage::select('language_id')->where(['is_primary' => 1, 'is_active' => 1])->first();
             $langId = ($request->hasHeader('language') && !empty($request->header('language'))) ? $request->header('language') : (($client_language) ? $client_language->language_id : 1);
             $homeData['profile'] = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('country_id', 'company_name', 'code', 'sub_domain', 'logo', 'company_address', 'phone_number', 'email')->first();
             $app_styling_detail = AppStyling::getSelectedData();
@@ -91,7 +91,7 @@ class HomeController extends BaseController
             }
             $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id')
                 ->where('status', 1)->where('validity_on', 1)
-                ->with(['category:id,type_id','category.type','vendor'])
+                ->with(['category:id,type_id', 'category.type', 'vendor'])
                 ->where(function ($q) {
                     $q->whereNull('start_date_time')->orWhere(function ($q2) {
                         $q2->whereDate('start_date_time', '<=', Carbon::now())
@@ -135,14 +135,14 @@ class HomeController extends BaseController
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
 
             $payment_codes = ['stripe', 'razorpay'];
-            $payment_creds = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
+            $payment_creds = PaymentOption::select('code', 'credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
-                foreach($payment_creds as $creds){
+                foreach ($payment_creds as $creds) {
                     $creds_arr = json_decode($creds->credentials);
-                    if($creds->code == 'stripe'){
+                    if ($creds->code == 'stripe') {
                         $homeData['profile']->preferences->stripe_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
                     }
-                    if($creds->code == 'razorpay'){
+                    if ($creds->code == 'razorpay') {
                         $homeData['profile']->preferences->razorpay_api_key = (isset($creds_arr->api_key) && (!empty($creds_arr->api_key))) ? $creds_arr->api_key : '';
                     }
                 }
@@ -305,10 +305,10 @@ class HomeController extends BaseController
             }, 'translation' => function ($q) use ($langId) {
                 $q->select('title', 'brand_id', 'language_id')->where('language_id', $langId);
             }])
-            ->whereHas('bc.categoryDetail', function ($q){
-                $q->where('categories.status', 1);
-            })
-            ->select('id', 'image', 'image_banner')->where('status', 1)->orderBy('position', 'asc')->get();
+                ->whereHas('bc.categoryDetail', function ($q) {
+                    $q->where('categories.status', 1);
+                })
+                ->select('id', 'image', 'image_banner')->where('status', 1)->orderBy('position', 'asc')->get();
 
             $homeData['brands'] = $brands;
             $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
@@ -339,10 +339,10 @@ class HomeController extends BaseController
                 $q->groupBy('product_id');
             },
         ])
-        ->whereHas('category.categoryDetail', function($q){
-            $q->whereNull('categories.deleted_at');
-        })
-        ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+            ->whereHas('category.categoryDetail', function ($q) {
+                $q->whereNull('categories.deleted_at');
+            })
+            ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
         if ($where !== '') {
             $products = $products->where($where, 1);
         }
@@ -404,6 +404,13 @@ class HomeController extends BaseController
             $keyword = $request->keyword;
             $langId = Auth::user()->language;
             $curId = Auth::user()->language;
+            $action = $request->has('type') && $request->type ? $request->type : null;
+            $types = ['delivery', "dine_in", "takeaway"];
+
+            if (!in_array($action, $types)) {
+                return response()->json(['error' => 'Type is incorrect.'], 404);
+            }
+
             $response = array();
             if ($for == 'all') {
                 $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
@@ -438,7 +445,7 @@ class HomeController extends BaseController
                     $response[] = $brand;
                 }
 
-                $vendors = Vendor::select('id', 'name  as dataname', 'logo', 'slug', 'address');
+                $vendors = Vendor::select('id', 'name  as dataname', 'logo', 'slug', 'address')->where($action, 1);
                 $vendors = $vendors->where(function ($q) use ($keyword) {
                     $q->where('name', 'LIKE', "%$keyword%")->orWhere('address', 'LIKE', '%' . $keyword . '%');
                 })->where('status', 1)->get();
@@ -459,6 +466,9 @@ class HomeController extends BaseController
                 }, 'media'])->join('product_translations as pt', 'pt.product_id', 'products.id')
                     ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
                     ->where('pt.language_id', $langId)
+                    ->whereHas('vendor', function ($query) use ($action) {
+                        $query->where($action, 1);
+                    })
                     ->where(function ($q) use ($keyword) {
                         $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
                     })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->get();
@@ -472,6 +482,9 @@ class HomeController extends BaseController
                 $products = Product::join('product_translations as pt', 'pt.product_id', 'products.id')
                     ->select('products.id', 'products.sku', 'pt.title', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
                     ->where('pt.language_id', $langId)
+                    ->whereHas('vendor', function ($query) use ($action) {
+                        $query->where($action, 1);
+                    })
                     ->where(function ($q) use ($keyword) {
                         $q->where('products.sku', ' LIKE', '%' . $keyword . '%')
                             ->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')

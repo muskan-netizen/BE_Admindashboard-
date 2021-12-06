@@ -55,15 +55,15 @@
                                 <div class="col-md-12 mb-3" id="nameInput">
                                     <div class="form-group" id="nameInputEdit">
                                         <label for="name" class="control-label">NAME</label>
-                                        <input type="text" class="form-control" id="name" placeholder="John Doe" name="name" value="">
+                                        <input type="text" class="form-control required" id="name" placeholder="John Doe" name="name" value="">
                                         <span class="invalid-feedback" id="name_error" role="alert">
                                             <strong></strong>
                                         </span>
                                     </div>
                                 </div>
                                 <div class="col-md-12 mb-3" id="phone_numberInput">
-                                    <label for="validationCustom02">{{__('CONTACT NUMBER.')}}</label>
-                                    <input type="tel" class="form-control" name="phone_number" id="phone" value="{{old('full_number')}}">
+                                    <label for="validationCustom02">{{__('CONTACT NUMBER')}}</label>
+                                    <input type="tel" class="form-control required" name="phone_number" id="phone" value="{{old('full_number')}}">
                                     <span class="invalid-feedback" id="phone_number_error" role="alert">
                                         <strong></strong>
                                     </span>
@@ -73,7 +73,7 @@
                                 <div class="col-md-12 mb-3" id="typeInput">
                                     <div class="form-group" id="typeInputEdit">
                                         <label for="type" class="control-label">TYPE</label>
-                                        <select class="form-control" data-style="btn-light" name="type" id="type">
+                                        <select class="form-control required" data-style="btn-light" name="type" id="type">
                                             <option value="Employee">Employee</option>
                                             <option value="Freelancer">Freelancer</option>
                                         </select>
@@ -85,7 +85,7 @@
                             </div>
                             <div class="col-md-6 mb-2" id="teamInput">
                                 <label for="driverTeam">{{__('TEAM')}}</label>
-                                <select class="form-control" name="team" required>
+                                <select class="form-control required" name="team" required>
                                     @if(count($teams) > 0)
                                         @foreach($teams as $key => $team)
                                         <option value="{{ $team->id }}">{{ ucfirst($team->name) }}</option>
@@ -148,7 +148,7 @@
                         <div class="col-md-6" id="make_modelInput">
                             <div class="form-group" id="make_modelInputEdit">
                                 <label for="make_model" class="control-label">TRANSPORT DETAILS</label>
-                                <input type="text" class="form-control" id="make_model" placeholder="Year, Make, Model" name="make_model" value="">
+                                <input type="text" class="form-control required" id="make_model" placeholder="Year, Make, Model" name="make_model" value="">
                                 <span class="invalid-feedback" id="make_model_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -157,7 +157,7 @@
                         <div class="col-md-6" id="uidInput">
                             <div class="form-group" id="uidInputEdit">
                                 <label for="make_model" class="control-label">UID</label>
-                                <input type="text" class="form-control" id="uid" placeholder="897abd" name="uid" value="">
+                                <input type="text" class="form-control required" id="uid" placeholder="897abd" name="uid" value="">
                                 <span class="invalid-feedback" id="uid_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -168,7 +168,7 @@
                         <div class="col-md-6" id="plate_numberInput">
                             <div class="form-group" id="plate_numberInputEdit">
                                 <label for="plate_number" class="control-label">LICENCE PLATE</label>
-                                <input type="text" class="form-control" id="plate_number" name="plate_number" placeholder="508.KLV" value="">
+                                <input type="text" class="form-control required" id="plate_number" name="plate_number" placeholder="508.KLV" value="">
                                 <span class="invalid-feedback" id="plate_number_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -177,7 +177,7 @@
                         <div class="col-md-6" id="colorInput">
                             <div class="form-group" id="colorInputEdit">
                                 <label for="color" class="control-label">COLOR</label>
-                                <input type="text" class="form-control" id="color" name="color" placeholder="Color" value="">
+                                <input type="text" class="form-control required" id="color" name="color" placeholder="Color" value="">
                                 <span class="invalid-feedback" id="color_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -556,15 +556,28 @@
         $('#register_btn').click(function() {
             var that = $(this);
             var loop_length = $('.required').length;
+            var hasErrors = false;
             if(loop_length){
                 for(var i = 0; i < loop_length; i++){
                     var data_val = $('.required')[i].value;
                     var attr_name = $('.required')[i].getAttribute('name');
-                    if (data_val.length < 1) {
-                        $("#data-error").text(attr_name+ " is required");
-                        return false;
+                    var label = $($('.required')[i].closest('#'+attr_name+'Input')).find('label').text();
+                    if (data_val.length < 1 || data_val == '') {
+                        // $("#data-error").text(attr_name+ " is required");
+                        $("#" + attr_name + "Input input, #" + attr_name + "Input select").addClass("is-invalid");
+                        $("#" + attr_name + "_error").children("strong").text("The "+ label.toLowerCase() +" field is required").show();
+                        $("#" + attr_name + "Input span.invalid-feedback").show();
+                        if(!hasErrors){
+                            hasErrors = true;
+                        }
                     }
                 }
+            }
+            if(hasErrors){
+                $('html,body').animate({
+                    scrollTop: '0px'
+                }, 1000);
+                return false;
             }
             
             $(this).attr('disabled', true);
@@ -584,7 +597,7 @@
                 },
                 success: function(data) {
                     $('#register_btn_loader').hide();
-                    that.attr('disabled', false);
+                    // that.attr('disabled', false);
                     if (data.status == 200 || data.status == 'Success') {
                         $("#data-error1").empty();
                         $("#data-error1").html(data.message);
@@ -595,7 +608,7 @@
 
                         $('html,body').animate({
                             scrollTop: '0px'
-                        }, 1000);
+                        }, 100);
                         $('#success_msg').html(data.message).show();
                         setTimeout(function() {
                             $('#success_msg').html('').hide();
@@ -609,15 +622,15 @@
                 error: function(response) {
                     $("#data-error").empty();
                     $("#data-error").append(response.message);
-                    that.attr('disabled', false);
+                    // that.attr('disabled', false);
                     $('html,body').animate({
                         scrollTop: '0px'
-                    }, 1000);
+                    }, 100);
                     $('#register_btn_loader').hide();
                     if (response.status === 422) {
                         let errorResponse = $.parseJSON(response.responseText);
                         let errors = errorResponse.message;
-                        console.log(errors);
+                        // console.log(errors);
                         Object.keys(errors).forEach(function(key) {
                             $("#" + key + "Input input, #" + key + "Input select").addClass("is-invalid");
                             $("#" + key + "_error").children("strong").text(errors[key][0]).show();
@@ -628,8 +641,10 @@
                         $(".show_all_error.invalid-feedback").show();
                         $(".show_all_error.invalid-feedback").text('Something went wrong, Please try Again.');
                     }
+                },
+                complete: function(){
+                    that.attr('disabled', false);
                 }
-
             });
         });
     });

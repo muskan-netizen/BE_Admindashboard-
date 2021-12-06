@@ -88,6 +88,7 @@ class OrderController extends FrontController
         $activeOrders = Order::with([
             'vendors' => function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
+                $q->where('order_status_option_id', '!=', 3);
             },
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
@@ -95,6 +96,7 @@ class OrderController extends FrontController
         ])
             ->whereHas('vendors', function ($q) {
                 $q->where('order_status_option_id', '!=', 6);
+                $q->where('order_status_option_id', '!=', 3);
             })
             ->where(function ($q1) {
                 $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
@@ -108,6 +110,7 @@ class OrderController extends FrontController
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+
                 foreach ($vendor->products as $product) {
                     if ($product->pvariant->media->isNotEmpty()) {
                         $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
@@ -131,6 +134,7 @@ class OrderController extends FrontController
                 }
             }
         }
+
         foreach ($pastOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
@@ -182,17 +186,61 @@ class OrderController extends FrontController
                 }
             }
         }
+
+        $rejectedOrders = Order::with([
+            'vendors' => function ($q) {
+                $q->where('order_status_option_id', 3);
+            },
+            'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                $qry->where('language_id', $langId);
+            }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address'
+        ])
+            ->whereHas('vendors', function ($q) {
+                $q->where('order_status_option_id', 3);
+            })
+            ->where(function ($q1) {
+                $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+                $q1->orWhere(function ($q2) {
+                    $q2->where('payment_option_id', 1);
+                });
+            })
+            ->where('orders.user_id', $user->id)
+            ->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+
+            foreach ($rejectedOrders as $order) {
+                foreach ($order->vendors as $vendor) {
+                    $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
+                    $vendor->order_status = $vendor_order_status ? __(strtolower($vendor_order_status->OrderStatusOption->title)) : '';
+                    foreach ($vendor->products as $product) {
+                        if ($product->pvariant->media->isNotEmpty()) {
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                        } elseif ($product->media->isNotEmpty()) {
+                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                        } else {
+                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                        }
+                    }
+                    if ($vendor->dineInTable) {
+                        $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                        $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                        $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
+                    }
+                }
+            }
+            // pr($rejectedOrders->toArray());
+            // exit();
+
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
 
         if (empty($clientCurrency)) {
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-        } 
+        }
 
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
 
      //   dd($activeOrders->toArray());
-   
-        return view('frontend/account/orders')->with(['payments' => $payments, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency]);
+
+        return view('frontend/account/orders')->with(['payments' => $payments,'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency]);
     }
 
     public function getOrderSuccessPage(Request $request)

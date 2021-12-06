@@ -1883,7 +1883,8 @@ h6 {
     background: rgba(247, 184, 75, .25);
     color: #f7b84b;
     border-radius: 50px;
-    padding: 0 5px;
+    padding: 0 5px 2px;
+    font-size: 14px;
 }
 
 .in-progress label {

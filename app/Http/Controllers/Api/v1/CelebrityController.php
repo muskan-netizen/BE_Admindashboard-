@@ -72,16 +72,31 @@ class CelebrityController extends BaseController
                         ->groupBy('product_variant_sets.variant_type_id')->get();
 
             $products = Product::join('product_celebrities as pc', 'pc.product_id', 'products.id')
-                        ->with(['category.categoryDetail','inwishlist' => function($qry) use($userid){
+                    ->with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                        $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                        ->where('category_translations.language_id', $langId);
+                    }, 'inwishlist' => function($qry) use($userid){
                         $qry->where('user_id', $userid);
                     },
-                    'media.image', 'translation' => function($q) use($langId){
-                    $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                    'media.image', 
+                    'addOn' => function($q1) use($langId){
+                        $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                        $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                        $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                        $q1->where('set.status', 1)->where('ast.language_id', $langId);
+                    },
+                    'addOn.setoptions' => function($q2) use($langId){
+                        $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                        $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                        $q2->where('apt.language_id', $langId);
+                    },
+                    'translation' => function($q) use($langId){
+                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     },
                     'variant' => function($q) use($langId){
                         $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
-                        $q->groupBy('product_id');
-                    },
+                        // $q->groupBy('product_id');
+                    }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                 ])
                 ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.celebrity_id')
                 ->where('pc.celebrity_id', $cid)

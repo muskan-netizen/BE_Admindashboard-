@@ -161,7 +161,7 @@ class UserhomeController extends FrontController
             $q->where('language_id', session()->get('customerLanguage'));
         }])->where('slug', $request->slug)->firstOrFail();
         if ($page_detail->primary->type_of_form != 2) {
-            $vendor_registration_documents = VendorRegistrationDocument::get();
+            $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
             return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents'));
         } else {
             $tag = [];
@@ -171,7 +171,6 @@ class UserhomeController extends FrontController
             $driver_registration_documents = $data->documents;
             $teams = $data->all_teams;
             $tags = $data->agent_tags;
-            // dd($tags);
             return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
         }
     }
