@@ -212,13 +212,16 @@ class OrderController extends FrontController
                     $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                     $vendor->order_status = $vendor_order_status ? __(strtolower($vendor_order_status->OrderStatusOption->title)) : '';
                     foreach ($vendor->products as $product) {
-                        if ($product->pvariant->media->isNotEmpty()) {
-                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
-                        } elseif ($product->media->isNotEmpty()) {
-                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
-                        } else {
-                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                        if(isset($product->pvariant->media)){
+                            if ($product->pvariant->media->isNotEmpty()) {
+                                $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                            } elseif ($product->media->isNotEmpty()) {
+                                $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                            } else {
+                                $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                            }
                         }
+                        
                     }
                     if ($vendor->dineInTable) {
                         $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';

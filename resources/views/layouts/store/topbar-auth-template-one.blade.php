@@ -20,7 +20,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
                             <div class="location-bar d-none d-sm-flex align-items-center justify-content-start m-0 p-0 dropdown-toggle order-1 ellips" href="#edit-address" data-toggle="modal">
-                                <div class="map-icon mr-2"><span class="yl-text">{{__('Your Location')}}</span> <i class="fa fa-map-marker" aria-hidden="true"></i></div>
+                                <div class="map-icon mr-1"><span class="yl-text">{{__('Delivering to')}}</span> <i class="fa fa-map-marker" aria-hidden="true"></i></div>
                                 <div class="homepage-address text-left">
                                     <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
                                 </div>
@@ -46,7 +46,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
                             <div class="location-bar d-none d-sm-flex align-items-center justify-content-start" href="#edit-address" data-toggle="modal">
-                                <div class="map-icon mr-2"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
+                                <div class="map-icon mr-1"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
                                 <div class="homepage-address text-left">
                                     <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
                                 </div>

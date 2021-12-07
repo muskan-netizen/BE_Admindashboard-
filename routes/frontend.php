@@ -243,6 +243,10 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::get('get-order-data-in-model', 'Front\ReturnOrderController@getOrderDatainModel')->name('getOrderDatainModel');
 		Route::get('get-return-products', 'Front\ReturnOrderController@getReturnProducts')->name('get-return-products');
 		Route::post('update-product-return', 'Front\ReturnOrderController@updateProductReturn')->name('update.order.return');
+
+		Route::get('get-vendor-order-for-cancel', 'Front\ReturnOrderController@getVendorOrderForCancel')->name('get-vendor-order-for-cancel');
+		Route::post('vendor-order-for-cancel', 'Front\ReturnOrderController@vendorOrderForCancel')->name('order.cancel.customer');
+      
 	});
 	// Return product 
 	Route::group(['prefix' => 'looking'], function () {

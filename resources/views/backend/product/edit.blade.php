@@ -1253,13 +1253,19 @@
                   product_faq_id: product_faq_id
                },
                success: function(response) {
-                  if (response.status == "Success") {
-                     $.NotificationApp.send({{__('Success')}}, response.message, "top-right", "#5ba035", "success");
-                     setTimeout(function() {
-                        location.reload()
-                     }, 2000);
-                  }
+               if (response.status == 'Success') {
+                 
+                  $.NotificationApp.send("{{__('Success')}}", response.message, "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send({{__('Errors')}}, response.message, "top-right", "#ab0535", "error");
                }
+            },
+            error: function(response) {
+               $('#add_product_faq_modal .social_media_url_err').html('Error in delete.');
+            }
             });
          }
       });

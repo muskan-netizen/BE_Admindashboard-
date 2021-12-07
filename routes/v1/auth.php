@@ -75,6 +75,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('get-order-data-in-model', 'Api\v1\ReturnOrderController@getOrderDatainModel');
             Route::get('get-return-products', 'Api\v1\ReturnOrderController@getReturnProducts');
             Route::post('update-product-return', 'Api\v1\ReturnOrderController@updateProductReturn');
+            Route::post('vendor-order-for-cancel', 'Api\v1\ReturnOrderController@vendorOrderForCancel');
         });
 
         // pickup & delivery 

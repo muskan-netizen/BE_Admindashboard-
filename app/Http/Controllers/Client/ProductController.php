@@ -231,7 +231,7 @@ class ProductController extends BaseController
         }
 
         $pro_tags = Tag::with('primary')->whereHas('primary')->get();
-        $product_faqs = ProductFaq::with('primary')->get();
+        $product_faqs = ProductFaq::with('primary')->where('product_id',$product->id)->get();
 
 
         $set_product_tags = ProductTag::where('product_id',$product->id)->pluck('tag_id')->toArray();

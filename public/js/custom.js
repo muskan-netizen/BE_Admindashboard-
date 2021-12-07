@@ -99,6 +99,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider(){
         responsive: [
             { breakpoint: 1400, settings: { slidesToShow: 12, slidesToScroll: 2 } },
             { breakpoint: 1367, settings: { slidesToShow: 8, slidesToScroll: 2} },
+            { breakpoint: 991, settings: { slidesToShow: 6, slidesToScroll: 2} },
             { breakpoint: 767, settings: { slidesToShow: 4, slidesToScroll: 2} },
             // { breakpoint: 1200, settings: "unslick" },
         ],
@@ -178,8 +179,8 @@ window.initializeSlider = function initializeSlider() {
         dots: false,
         infinite: true,
         speed: 300,
-        centerMode: true,
-        centerPadding: '60px',
+        // centerMode: true,
+        // centerPadding: '60px',
         slidesToShow: 2,
         slidesToScroll: 1,
         responsive: [
@@ -292,8 +293,8 @@ window.initializeSlider = function initializeSlider() {
         slidesToScroll: 2,
         autoplay: true,
         autoplaySpeed: 5000,
-        centerMode: true,
-        centerPadding: '40px',
+        // centerMode: true,
+        // centerPadding: '40px',
         rtl: false,
         responsive: [{
                 breakpoint: 1200,

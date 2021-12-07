@@ -557,8 +557,7 @@ $(document).ready(function () {
                         $('.address-form').addClass('d-none');
                         $('.cab-detail-box').removeClass('d-none');
                         if(response.data.faqlist > 0){
-                            console.log(response.data.faqlist);
-                            $('#add_product_order_form').show();
+                            console.log('innset');
                         }
                         let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                         $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();

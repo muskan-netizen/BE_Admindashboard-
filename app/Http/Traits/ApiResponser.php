@@ -20,7 +20,7 @@ use Auth;
 use App\Models\Cart;
 use App\Models\EmailTemplate;
 use App\Models\UserAddress;
-use App\Models\{Product, OrderProductRating, ClientPreference};
+use App\Models\{Product, OrderProductRating, ClientPreference,UserDevice,NotificationTemplate};
 
 trait ApiResponser
 {
@@ -426,4 +426,62 @@ trait ApiResponser
 		}
 		return $cart;
 	}
+
+
+
+	public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id)
+    {
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+            $from = $client_preferences->fcm_server_key;
+            if ($order_status_id == 2) {
+                $notification_content = NotificationTemplate::where('id', 5)->first();
+            } elseif ($order_status_id == 3) {
+                $notification_content = NotificationTemplate::where('id', 6)->first();
+            } elseif ($order_status_id == 4) {
+                $notification_content = NotificationTemplate::where('id', 7)->first();
+            } elseif ($order_status_id == 5) {
+                $notification_content = NotificationTemplate::where('id', 8)->first();
+            } elseif ($order_status_id == 6) {
+                $notification_content = NotificationTemplate::where('id', 9)->first();
+            }
+            if ($notification_content) {
+                $headers = [
+                    'Authorization: key=' . $from,
+                    'Content-Type: application/json',
+                ];
+                $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
+                $data = [
+                    "registration_ids" => $devices,
+                    "notification" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $body_content,
+                        'sound' => "default",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                        'click_action' => route('user.orders'),
+                        "android_channel_id" => "default-channel-id"
+                    ],
+                    "data" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $body_content,
+                        "type" => "order_status_change"
+                    ],
+                    "priority" => "high"
+                ];
+                $dataString = $data;
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
+                $result = curl_exec($ch);
+
+                curl_close($ch);
+            }
+        }
+    }
 }

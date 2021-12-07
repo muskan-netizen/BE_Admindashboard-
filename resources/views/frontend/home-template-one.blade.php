@@ -22,7 +22,7 @@
   Launch demo modal
 </button>
 
-<section class="no-store-wrapper mb-3" style="display:none">
+<section class="no-store-wrapper" style="display:none">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -38,7 +38,7 @@
 </section>
 
 @if(count($banners))
-<section class="home-slider-wrapper mb-3">
+<section class="home-slider-wrapper">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -433,7 +433,7 @@
             </div>
         </section>
         @elseif($homePageLabel->slug == 'vendors')
-        <section class="suppliers-section pt-0 mb-2">
+        <section class="suppliers-section">
         <div class="container">
             <div class="row">
                 <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-2">
@@ -450,7 +450,7 @@
         </div>
        </section>
        @elseif($homePageLabel->slug == 'trending_vendors')
-        <section class="suppliers-section pt-0 mt-4">
+        <section class="suppliers-section">
         <div class="container">
             <div class="row">
                 <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-3">
@@ -468,7 +468,7 @@
         @else
         <section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
-                <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-0">
+                <div class="col-12 top-heading d-flex align-items-center justify-content-between">
                     <h2 class="h2-heading">
                     @php
                     if($homePageLabel->slug == 'vendors'){

@@ -15,6 +15,9 @@ use App\Http\Requests\Web\OrderProductReturnRequest;
 use App\Models\{Client, ClientPreference, EmailTemplate, NotificationTemplate, Order,OrderProductRating,VendorOrderStatus,OrderProduct,OrderProductRatingFile,ReturnReason,OrderReturnRequest,OrderReturnRequestFile, OrderVendor, OrderVendorProduct, User, UserDevice, UserVendor};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
+use App\Models\Client as CP;
+use App\Models\Transaction;
+use App\Models\AutoRejectOrderCron;
 
 class ReturnOrderController extends BaseController{
 	
@@ -213,6 +216,71 @@ class ReturnOrderController extends BaseController{
                 $notified = 1;
             } catch (\Exception $e) {
             }
+        }
+    }
+
+
+      /**
+     * Change the status of order
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function vendorOrderForCancel(Request $request, $domain = '')
+    {
+
+        DB::beginTransaction();
+        $client_preferences = ClientPreference::first();
+        try {
+            $timezone = Auth::user()->timezone;
+            $request->status_option_id = 3;
+            $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
+            $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
+            
+            if ($currentOrderStatus->order_status_option_id == 3 && $request->status_option_id == 3) { //$request->status_option_id == 2){
+                return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
+            }
+            if (!$vendor_order_status_check) {
+                $vendor_order_status = new VendorOrderStatus();
+                $vendor_order_status->order_id = $request->order_id;
+                $vendor_order_status->vendor_id = $request->vendor_id;
+                $vendor_order_status->order_vendor_id = $request->order_vendor_id;
+                $vendor_order_status->order_status_option_id = $request->status_option_id;
+                $vendor_order_status->save();
+                if ($request->status_option_id == 2 || $request->status_option_id == 3) {
+                    $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
+                    AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
+                }
+               
+                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 
+                'reject_reason' => $request->reject_reason,  'cancelled_by' => Auth::id(),
+            ]);
+                $orderData = Order::find($request->order_id);
+
+                if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
+                    $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
+                    $response = Http::get($dispatch_traking_url);
+                }
+                
+                if ($currentOrderStatus->payment_option_id != 1) {
+                    $user = User::find(Auth::id());
+                    $wallet = $user->wallet;
+                    $credit_amount = $currentOrderStatus->payable_amount;
+                    $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
+                }
+                DB::commit();
+     //           $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('Order Cancelled Successfully.')
+                ]);
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
         }
     }
 }

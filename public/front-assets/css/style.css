@@ -658,11 +658,11 @@ label {
 ==========================**/
 section,
 .section-t-space {
-    padding-top: 35px;
+    padding-top: 40px;
 }
 
 .section-b-space {
-    padding-bottom: 40px;
+    padding-bottom: 0;
 }
 
 .large-section {
@@ -29129,7 +29129,7 @@ body[dir=rtl] .slick-slide {
 
     section,
     .section-t-space {
-        padding-top: 60px;
+        padding-top: 30px;
     }
 
     .section-b-space {
@@ -30104,11 +30104,11 @@ body[dir=rtl] .slick-slide {
 
     section,
     .section-t-space {
-        padding-top: 50px;
+        padding-top: 30px;
     }
 
     .section-b-space {
-        padding-bottom: 50px;
+        padding-bottom: 30px;
     }
 
     .header-style-1 .navbar .nav-link {

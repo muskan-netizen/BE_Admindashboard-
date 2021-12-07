@@ -210,9 +210,11 @@
                     <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" style="display:none;">Remove</a>
                 
                 </div>
-               <!-- <div class="text-center my-3">
+                <% if((result.faqlist) && (result.faqlist) > 0 ){ %>
+                <div class="text-center my-3 btn-product-order-form-div">
                     <button class="clproduct_order_form btn btn-solid w-100"  id="add_product_order_form"  data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" >Product Order Form</button>
-                </div> -->
+                </div> 
+                <% } %>
                 <div class="form-group pmd-textfield pmd-textfield-floating-label" style="display:none;" id="schedule_datetime_main_div">
                     <label class="control-label" for="datetimepicker-default">Select Date and Time</label>
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
