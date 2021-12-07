@@ -167,8 +167,6 @@ class HomeController extends BaseController
             $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $latitude = $request->latitude;
             $longitude = $request->longitude;
-            $user_geo[] = $latitude;
-            $user_geo[] = $longitude;
             $paginate = $request->has('limit') ? $request->limit : 12;
             $type = 'delivery';
             if ($request->has('type')) {
@@ -181,17 +179,32 @@ class HomeController extends BaseController
             } else {
                 $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating');
             }
-            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                if ((empty($latitude)) && (empty($longitude))) {
-                    $address = $preferences->Default_location_name;
-                    $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
-                    $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
-                    $request->request->add(['latitude' => $latitude, 'longitude' => $longitude, 'address' => $address]);
-                }
-                $vendorData = $vendorData->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
-                    $query->select('vendor_id')
-                        ->whereRaw("ST_Contains(polygon, ST_GeomFromText('POINT(" . $latitude . " " . $longitude . ")'))");
-                });
+
+            $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
+
+            // if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+            //     if ((empty($latitude)) && (empty($longitude))) {
+            //         $address = $preferences->Default_location_name;
+            //         $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
+            //         $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
+            //         $request->request->add(['latitude' => $latitude, 'longitude' => $longitude, 'address' => $address]);
+            //     }
+            //     $vendorData = $vendorData->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+            //         $query->select('vendor_id')
+            //             ->whereRaw("ST_Contains(polygon, ST_GeomFromText('POINT(" . $latitude . " " . $longitude . ")'))");
+            //     });
+            // }
+            if (is_array($ses_vendors) && (count($ses_vendors) > 0)) {
+                $latitude = ($latitude > 0) ? $latitude : $preferences->Default_latitude;
+                $longitude = ($longitude > 0) ? $longitude : $preferences->Default_longitude;
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                //3961 for miles and 6371 for kilometers
+                $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                $vendorData = $vendorData->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                        cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                        sin( radians(' . $latitude . ') ) *
+                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
+                $vendorData = $vendorData->whereIn('id', $ses_vendors);
             }
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get();
 
@@ -234,9 +247,9 @@ class HomeController extends BaseController
                     $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences);
                 }
             }
-            if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                $vendorData = $vendorData->sortBy('lineOfSightDistance')->values()->all();
-            }
+            // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+            //     $vendorData = $vendorData->sortBy('lineOfSightDistance')->values()->all();
+            // }
 
             $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type);
             $new_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);

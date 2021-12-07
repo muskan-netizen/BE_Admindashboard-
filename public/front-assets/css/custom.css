@@ -6647,7 +6647,7 @@ body .footer-theme .sub-title h4 {
 .product_tag img,.product_tag_filter .lable img {
     width: 20px;
     height: 20px;
-    border-radius: 50px;
+    margin-right: -5px;
 }
 
 .product_tag span.align-middle.pt-1 {
@@ -7586,7 +7586,7 @@ body[dir="rtl"] .inner_spacing h3 {
 }
 
 @media(max-width:767px) {
-    
+
     .brand-box {
         height: 200px !important;
     }
@@ -7802,7 +7802,7 @@ body[dir="rtl"] .inner_spacing h3 {
 }
 
 @media(max-width: 576px) {
-    
+
     .brand-box {
         height: 170px !important;
     }

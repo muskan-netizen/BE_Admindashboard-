@@ -244,7 +244,7 @@
 }
 .switch-square:checked + .lable::before {
   display: inline-block;
-  content: '\f00c';
+  /* content: '\f00c'; */
   background-color: #F5F8FC;
   border-color: #adb8c0;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05), inset 15px 10px -12px rgba(255, 255, 255, 0.1);
@@ -253,6 +253,22 @@
 .switch-square + .lable {
   margin: 0 4px;
   min-height: 24px;
+}
+.switch.switch-bootstrap:checked + .lable::before,.switch.switch-bootstrap + .lable::before{
+    content: "";
+    width: 40px;
+    height: 18px;
+    line-height: 21px;
+}
+.switch.switch-bootstrap + .lable::after{
+    width: 14px;
+    height: 14px;
+}
+.switch + .lable {
+    line-height: 14px;
+}
+.switch.switch-bootstrap:checked + .lable::after {
+    left: 23px;
 }
 .switch-square + .lable::before {
   font-weight: normal;
@@ -278,7 +294,7 @@
 }
 .switch-square.switch-bootstrap + .lable::before {
   font-family: FontAwesome;
-  content: "\f00d";
+  /* content: "\f00d"; */
   box-shadow: none;
   border-width: 0;
   font-size: 16px;
@@ -309,7 +325,7 @@
   transition: left 0.2s ease;
 }
 .switch-square.switch-bootstrap:checked + .lable::before {
-  content: "\f00c";
+ /* content: "\f00c";*/
   text-indent: 6px;
   color: #FFF;
   border-color: #b7d3e5;
@@ -453,17 +469,6 @@
                             <div class="col-md-8"></div>
                             <div class="col-12">
                                 <hr>
-                                <div class="row justify-content-center ">
-                                @if(isset($tags) && !empty($tags))    
-                                    @foreach ($tags as $key =>$tag)
-                                        <label class="label-switch switch-primary product_tag_filter mr-2">
-                                            <input type="checkbox" class="switch switch-bootstrap product_tag_filter status" name="tag_id" id="product_tag_filter_{{$key}}" data-tag_id="{{$tag->id}}"" value="{{$tag->id}}" >
-                                            <span class="lable"> <img class="ml-1" src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}" alt=""> <span class="ml-1">{{$tag->primary ? $tag->primary->name : ''}}</span></span>
-                                        </label>
-                                    @endforeach
-                                @endif        
-                                </div>
-                                <hr>
                                 <div class="row vendor-products-wrapper">
                                     <div class="col-sm-4 col-lg-3 border-right">
                                         <nav class="scrollspy-menu">
@@ -477,6 +482,16 @@
                                         </nav>
                                     </div>
                                     <div class="col-md-8 col-lg-6">
+                                        <div class="row ">
+                                            @if(isset($tags) && !empty($tags))
+                                                @foreach ($tags as $key =>$tag)
+                                                    <label class="label-switch switch-primary product_tag_filter mr-2">
+                                                        <input type="checkbox" class="switch switch-bootstrap product_tag_filter status" name="tag_id" id="product_tag_filter_{{$key}}" data-tag_id="{{$tag->id}}"" value="{{$tag->id}}" >
+                                                        <span class="lable"> @if(isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}" alt="">@endif <span class="ml-1">{{$tag->primary ? $tag->primary->name : ''}}</span></span>
+                                                    </label>
+                                                @endforeach
+                                            @endif
+                                        </div>
                                         @forelse($listData as $key => $data)
                                             <section class="scrolling_section" id="{{ $data->category->slug }}">
                                                 @if (!empty($data->products))

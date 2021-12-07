@@ -10,6 +10,16 @@
     </nav>
 </div>
 <div class="col-md-8 col-lg-6">
+    <div class="row ">
+        @if(isset($tags) && !empty($tags))
+            @foreach ($tags as $key =>$tag)
+                <label class="label-switch switch-primary product_tag_filter mr-2">
+                    <input type="checkbox" class="switch switch-bootstrap product_tag_filter status" {{($tag_id ?? false) ? ( in_array($tag->id, $tag_id) ? 'checked' : '' ) : '' }} name="tag_id" id="product_tag_filter_{{$key}}" data-tag_id="{{$tag->id}}"" value="{{$tag->id}}" >
+                    <span class="lable"> @if(isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}" alt="">@endif <span class="ml-1">{{$tag->primary ? $tag->primary->name : ''}}</span></span>
+                </label>
+            @endforeach
+        @endif
+    </div>
     @forelse($listData as $key => $data)
     <section class="scrolling_section" id="{{$data->category->slug}}">
         <h2 class="category-head mt-0 mb-3">{{$data->category->translation_one->name}} ({{$data->products_count}})</h2>
@@ -202,9 +212,25 @@
     @endforelse
 </div>
 @else
-<div class="col-12 col-lg-9 d-md-inline-block">
-    <h4 class="mt-3 mb-3 text-center">{{ __("No result found") }}</h4>
+<div class="col-sm-4 col-lg-3 border-right">
 </div>
+<div class="col-md-8 col-lg-6">
+    <div class="row ">
+        @if(isset($tags) && !empty($tags))
+            @foreach ($tags as $key =>$tag)
+                <label class="label-switch switch-primary product_tag_filter mr-2">
+                    <input type="checkbox" class="switch switch-bootstrap product_tag_filter status" {{($tag_id ?? false) ? ( in_array($tag->id, $tag_id) ? 'checked' : '' ) : '' }} name="tag_id" id="product_tag_filter_{{$key}}" data-tag_id="{{$tag->id}}"" value="{{$tag->id}}" >
+                    <span class="lable"> @if(isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}" alt="">@endif <span class="ml-1">{{$tag->primary ? $tag->primary->name : ''}}</span></span>
+                </label>
+            @endforeach
+        @endif
+    </div>
+    <hr>
+    <div class="col-12 d-md-inline-block">
+        <h4 class="mt-3 mb-3 text-center">{{ __("No result found") }}</h4>
+    </div>
+</div>
+
 @endif
 <div class="col-12 col-lg-3 d-lg-inline-block d-none">
     <div class="card-box p-0 cart-main-box">

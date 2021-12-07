@@ -594,8 +594,12 @@ class CartController extends BaseController
                         if ($vendorData->coupon->promo->promo_type_id == 1) {
                             $is_percent = 1;
                             $discount_percent = round($vendorData->coupon->promo->amount);
+
+                           
                         } else {
                             $discount_amount = $vendorData->coupon->promo->amount * $clientCurrency->doller_compare;
+
+                            
                         }
                         if ($vendorData->coupon->promo->restriction_on == 0) {
                             foreach ($vendorData->coupon->promo->details as $key => $value) {
@@ -663,7 +667,10 @@ class CartController extends BaseController
                                     $variantsData['coupon_msg'] = "Spend Minimum " . $minimum_spend . " to apply this coupon";
                                     $variantsData['coupon_not_appiled'] = 1;
                                 }
+
+                                
                             }
+                           
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
@@ -774,13 +781,15 @@ class CartController extends BaseController
                         $vendorData->coupon_not_appiled = 1;
                     }
                 }
+
+                
+                
                 $deliver_charge = $deliver_charge * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
                 $vendorData->addonSum = $ttAddon;
                 $vendorData->deliver_charge = $deliver_charge;
                 $total_delivery_amount += $deliver_charge;
                 $vendorData->coupon_apply_on_vendor = $couponApplied;
-                $vendorData->is_coupon_applied = $is_coupon_applied;
                 $vendorData->is_coupon_applied = $is_coupon_applied;
                 if (empty($couponData)) {
                     $vendorData->couponData = NULL;

@@ -63,7 +63,7 @@
 
                 </div>
                 <div class="scheduled-ride">
-                    <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="mx-2 scheduleDateTimeApnd">Now</span> <i class="fa fa-angle-down" aria-hidden="true"></i></button>
+                    <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="mx-2 scheduleDateTimeApnd">{{__('Now')}}</span> <i class="fa fa-angle-down" aria-hidden="true"></i></button>
                 </div>
                 @if($wallet_balance < 0)
                 <div class="row">
@@ -85,8 +85,8 @@
                                 </div>
                             </div>
                             <div class="col-10 pl-3">
-                                <h4><b>Allow location Access</b></h4>
-                                <div class="current-location ellips text-color mb-2">Your current location</div>
+                                <h4><b>{{__('Allow location Access')}}</b></h4>
+                                <div class="current-location ellips text-color mb-2">{{__('Your current location')}}</div>
                                 <hr class="m-0">
                             </div>
                         </a>
@@ -216,7 +216,7 @@
                 </div> 
                 <% } %>
                 <div class="form-group pmd-textfield pmd-textfield-floating-label" style="display:none;" id="schedule_datetime_main_div">
-                    <label class="control-label" for="datetimepicker-default">Select Date and Time</label>
+                    <label class="control-label" for="datetimepicker-default">{{__('Select Date and Time')}}</label>
                     <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="">
                 </div>
             </div>
@@ -225,13 +225,13 @@
             <div class="payment-promo-container p-2">
                 <h4 class="d-flex align-items-center justify-content-between mb-2"  data-toggle="modal" data-target="#payment_modal">
                     <span id="payment_type">
-                        <i class="fa fa-money" aria-hidden="true"></i> Cash
+                        <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
                     </span>
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                 </h4>
                 <div class="row">
                     <div class="col-12">
-                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">Pickup</button>
+                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Pickup')}}</button>
                     </div>
                     <!--<div class="col-6">
                         <button class="btn btn-solid w-100" id="pickup_later" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_later">Pickup Later</button>
@@ -268,7 +268,7 @@
                     <img src="<%= product_image %>" alt="">
                 </div>
                 <div class="cab-location-details" id="searching_main_div">
-                    <h4><b>Searching For Nearby Drivers</b></h4>
+                    <h4><b>{{__('Searching For Nearby Drivers')}}</b></h4>
                     <div class="new-loader"></div>
                 </div>
                 <div class="cab-location-details" id="driver_details_main_div" style="display:none;">
@@ -290,11 +290,11 @@
             </div>
             <div class="cab-amount-details px-2">
                 <div class="row">
-                    <div class="col-6 mb-2">ETA</div>
+                    <div class="col-6 mb-2">{{__('ETA')}}</div>
                     <div class="col-6 mb-2 text-right" id="distance">--</div>
-                    <div class="col-6 mb-2">Order ID</div>
+                    <div class="col-6 mb-2">{{__('Order ID')}}</div>
                     <div class="col-6 mb-2 text-right" id=""><%= result.order_number %></div>
-                    <div class="col-6 mb-2">Amount Paid</div>
+                    <div class="col-6 mb-2">{{__('Amount Paid')}}</div>
                     <div class="col-6 mb-2 text-right">$<%= result.total_amount %></div>
                 </div>
             </div>
@@ -318,14 +318,14 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header pb-0">
-                <h5 class="modal-title" id="payment_modalLabel">Select Payment Method</h5>
+                <h5 class="modal-title" id="payment_modalLabel">{{__('Select Payment Method')}}</h5>
                 <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body p-0">
-                <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="1"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> Cash</span></h4>
-                <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="2"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> Wallet/Card</span></h4>
+                <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="1"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Cash')}}</span></h4>
+                <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="2"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Wallet/Card')}}</span></h4>
                
                 {{-- <h4 class="payment-button"  data-toggle="modal" data-target="#select_payment_option" aria-label="Close">Select Payment Method</h4> --}}
             </div>        
@@ -338,13 +338,13 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="select_payment_optionLabel">Choose payment method</h5>
+                <h5 class="modal-title" id="select_payment_optionLabel">{{__('Choose payment method')}}</h5>
                 <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <h4 class="d-flex  justify-content-between mb-2 mt-3 select_cab_payment_methodx"><span ><i class="fa fa-money mr-3" aria-hidden="true"></i> Cash</span></h4>
+                <h4 class="d-flex  justify-content-between mb-2 mt-3 select_cab_payment_methodx"><span ><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Cash')}}</span></h4>
             </div>        
         </div>
     </div>

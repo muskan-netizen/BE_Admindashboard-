@@ -420,7 +420,7 @@
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-2 cw top-heading pr-0 text-center text-lg-left mb-3 mb-lg-0">
-                        <h2 class="h2-heading">{{ $homePageLabel->slug == 'brands' ? getNomenclatureName('brands', true) :  __($homePageLabel->title) }}</h2>
+                        <h2 class="h2-heading">{{ (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title) }}</h2>
                         <!-- <p>Check out the favorites among people.</p> -->
                     </div>
                     <div class="col-lg-10 cw">

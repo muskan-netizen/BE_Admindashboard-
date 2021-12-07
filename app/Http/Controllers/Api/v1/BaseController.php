@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, VendorCategory};
+use App\Models\{Client, Category, Product, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, Vendor, VendorCategory};
 
 class BaseController extends Controller{
     private $field_status = 2;
@@ -201,6 +201,20 @@ class BaseController extends Controller{
         return $vendor;
     }
 
+    function getLineOfSightDistanceAndTime($vendor, $preferences){
+        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+            $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+            $unit_abbreviation = ($distance_unit == 'mile') ? 'miles' : 'km';
+            $distance_to_time_multiplier = ($preferences->distance_to_time_multiplier > 0) ? $preferences->distance_to_time_multiplier : 2;
+            $distance = $vendor->vendorToUserDistance;
+            $vendor->lineOfSightDistance = number_format($distance, 1, '.', '') .' '. $unit_abbreviation;
+            $vendor->timeofLineOfSightDistance = number_format(floatval($vendor->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', ''); // distance is multiplied by distance time multiplier to calculate travel time
+            // $pretime = $this->getEvenOddTime($vendor->timeofLineOfSightDistance);
+            // $vendor->timeofLineOfSightDistance = $pretime . '-' . (intval($pretime) + 5);
+        }
+        return $vendor;
+    }
+
     protected function in_polygon($points_polygon, $vertices_x, $vertices_y, $longitude_x, $latitude_y){
       $i = $j = $c = 0;
       for ($i = 0, $j = $points_polygon-1 ; $i < $points_polygon; $j = $i++) {
@@ -210,6 +224,35 @@ class BaseController extends Controller{
         }
       }
       return $c;
+    }
+
+    public function getServiceAreaVendors($lat='', $lng='', $type='delivery'){
+        $preferences = ClientPreference::where('id', '>', 0)->first();
+        $user = Auth::user();
+        $latitude = $user->latitude ?? $lat;
+        $longitude = $user->longitude ?? $lng;
+        $vendorType = $user->vendorType ? $user->vendorType : $type;
+        $serviceAreaVendors = Vendor::select('id');
+        $vendors = [];
+        if($vendorType){
+            $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
+        }
+        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+            $latitude = ($latitude > 0) ? $latitude : $preferences->Default_latitude;
+            $longitude = ($longitude > 0) ? $longitude : $preferences->Default_longitude;
+            $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
+                    $query->select('vendor_id')
+                    ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+                });
+        }
+        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
+
+        if($serviceAreaVendors->isNotEmpty()){
+            foreach($serviceAreaVendors as $value){
+                $vendors[] = $value->id;
+            }
+        }
+        return $vendors;
     }
 
     protected function contains($point, $polygon){

@@ -581,7 +581,7 @@ class OrderController extends BaseController
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'longitude', 'address')->first();
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
             $tasks = array();
             $meta_data = '';
 
@@ -598,6 +598,9 @@ class OrderController extends BaseController
                 'address' => $vendor_details->address ?? '',
                 'post_code' => '',
                 'barcode' => '',
+                'flat_no'     => null,
+                'email'       => $vendor_details->email ?? null,
+                'phone_number' => $vendor_details->phone_no ?? null,
             );
 
             $tasks[] = array(
@@ -608,6 +611,9 @@ class OrderController extends BaseController
                 'address' => $cus_address->address ?? '',
                 'post_code' => $cus_address->pincode ?? '',
                 'barcode' => '',
+                'flat_no'     => $cus_address->house_number ?? null,
+                'email'       => $customer->email ?? null,
+                'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
             );
 
             $postdata =  [
@@ -678,7 +684,7 @@ class OrderController extends BaseController
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'longitude', 'address')->first();
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
             $tasks = array();
             $meta_data = '';
 
@@ -694,6 +700,9 @@ class OrderController extends BaseController
                 'address' => $vendor_details->address ?? '',
                 'post_code' => '',
                 'barcode' => '',
+                'flat_no'     => null,
+                'email'       => $vendor_details->email ?? null,
+                'phone_number' => $vendor_details->phone_no ?? null,
             );
 
             $tasks[] = array(
@@ -704,6 +713,9 @@ class OrderController extends BaseController
                 'address' => $cus_address->address ?? '',
                 'post_code' => $cus_address->pincode ?? '',
                 'barcode' => '',
+                'flat_no'     => $cus_address->house_number ?? null,
+                'email'       => $customer->email ?? null,
+                'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
             );
 
             $postdata =  [
@@ -775,7 +787,7 @@ class OrderController extends BaseController
 
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'latitude', 'longitude', 'address')->first();
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
             $tasks = array();
             $meta_data = '';
 
@@ -820,6 +832,9 @@ class OrderController extends BaseController
                     'address' => $vendor_details->address ?? '',
                     'post_code' => '',
                     'barcode' => '',
+                    'flat_no'     => null,
+                    'email'       => $vendor_details->email ?? null,
+                    'phone_number' => $vendor_details->phone_no ?? null,
                 );
 
                 $tasks[] = array(
@@ -830,6 +845,9 @@ class OrderController extends BaseController
                     'address' => $cus_address->address ?? '',
                     'post_code' => $cus_address->pincode ?? '',
                     'barcode' => '',
+                    'flat_no'     => $cus_address->house_number ?? null,
+                    'email'       => $customer->email ?? null,
+                    'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
                 );
 
 

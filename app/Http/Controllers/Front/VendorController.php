@@ -26,9 +26,9 @@ class VendorController extends FrontController
 
         $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where('status', 1);
 
-        if (is_array($ses_vendors)) {
-            $latitude = Session::get('latitude') ?? '';
-            $longitude = Session::get('longitude') ?? '';
+        if (is_array($ses_vendors) && (count($ses_vendors) > 0)) {
+            $latitude = Session::get('latitude') ?? $preferences->Default_latitude;
+            $longitude = Session::get('longitude') ?? $preferences->Default_longitude;
             $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
             //3961 for miles and 6371 for kilometers
             $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
@@ -738,11 +738,11 @@ class VendorController extends FrontController
                 }
             }
         }
-
+        $tags = Tag::with('primary')->get();
         // dd($vendor_categories->toArray());
 
         $listData = $vendor_categories;
-        $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor, 'listData'=>$listData])->render();
+        $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData])->render();
         return response()->json(array('status'=>'Success', 'html'=>$returnHTML));
     }
 

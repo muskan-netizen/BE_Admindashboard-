@@ -16,7 +16,7 @@
                     <form action="{{ route('categoryDetail',$homePageLabel->pickupCategories->first()->categoryDetail->slug??'')}}" class="cab-booking-form">
                                  <div class="cab-input">
                             <div class="form-group mb-1 position-relative">
-                                <input class="form-control edit-other-stop" type="text" placeholder="Enter pickup location" name="pickup_location" id="pickup_location_{{$key}}" data-rel="{{$key}}" >
+                                <input class="form-control edit-other-stop" type="text" placeholder="{{__('Enter pickup location')}}" name="pickup_location" id="pickup_location_{{$key}}" data-rel="{{$key}}" >
                                 <input type="hidden" name="pickup_location_latitude" value="" id="pickup_location_{{$key}}_latitude_home" data-rel="{{$key}}"/>
                                 <input type="hidden" name="pickup_location_longitude" value="" id="pickup_location_{{$key}}_longitude_home" data-rel="{{$key}}"/>
                           
@@ -25,7 +25,7 @@
                                 </a> --}}
                             </div>
                             <div class="form-group mb-0">
-                                <input class="form-control edit-other-stop" type="text" name="destination_location" placeholder="Enter drop location" id="destination_location_{{$key}}" data-rel="{{$key}}" >
+                                <input class="form-control edit-other-stop" type="text" name="destination_location" placeholder="{{__('Enter drop location')}}" id="destination_location_{{$key}}" data-rel="{{$key}}" >
                                 <input type="hidden" name="destination_location_latitude" value="" id="destination_location_{{$key}}_latitude_home" data-rel="{{$key}}"/>
                                 <input type="hidden" name="destination_location_longitude" value="" id="destination_location_{{$key}}_longitude_home" data-rel="{{$key}}"/>
                           

@@ -82,6 +82,9 @@ class AppAuth{
         if(isset($header['longitude'][0]) && !empty($header['longitude'][0])){
             $user->longitude = $header['longitude'][0];
         }
+        if(isset($header['type'][0]) && !empty($header['type'][0])){
+            $user->vendorType = $header['type'][0];
+        }
         $user->language = $language_id;
         $user->currency = $currency_id;
         $user->timezone = $timezone;

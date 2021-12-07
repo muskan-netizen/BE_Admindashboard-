@@ -59,7 +59,7 @@ class CategoryController extends FrontController{
             $redirect_to = $category->type->redirect_to; 
             $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';  
             
-            if( is_array($vendors) ){
+            if( is_array($vendors) &&  (count($vendors) > 0) ){
                 Session::put('vendors', $vendors);
                 //remake child categories array
                 if($category->childs->isNotEmpty()){
@@ -212,36 +212,22 @@ class CategoryController extends FrontController{
                 $vendors= $this->getServiceAreaVendors();
                 $vendorData= $vendorData->whereIn('vendors.id', $vendors);
             }
-         //   $vendorData = $vendorData->join('vendor_categories as vct', 'vct.vendor_id', 'vendors.id')->where('vct.category_id', $category_id)->where('vct.status', 1);
             $vendorData = $vendorData->whereHas('getAllCategory' , function ($q)use($category_id){
                 $q->where('category_id', $category_id)->where('status', 1);
             });
-
-            if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-                
-            }
-            $vendorData = $vendorData->where('vendors.status', '!=', $this->field_status)->paginate($pagiNate);
+            $vendorData = $vendorData->where('vendors.status', 1)->paginate($pagiNate);
           
             foreach ($vendorData as $key => $value) {
                 $value = $this->getLineOfSightDistanceAndTime($value, $preferences);
                 $value->vendorRating = $this->vendorRating($value->products);
-                $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
-                // $categoriesList = '';
-                // foreach ($vendorCategories as $key => $category) {
-                //     if ($category->category) {
-                //         $categoriesList = $categoriesList . $category->category->translation ? $category->category->translation->first()->name : $category->category->slug;
-                //         if ($key !=  $vendorCategories->count() - 1) {
-                //             $categoriesList = $categoriesList . ', ';
-                //         }
-                //     }
-                // }
-                // $value->categoriesList = $categoriesList;
-
+                $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
+                    $q->where('category_translations.language_id', $langId);
+                }])->where('vendor_id', $value->id)->where('status', 1)->get();
                 $categoriesList = '';
                 foreach ($vendorCategories as $key => $category) {
                     if ($category->category) {
-                        $cat_name = isset($category->category->translation_one) ? $category->category->translation_one->name : $category->category->slug;
-                        $categoriesList = $categoriesList . $cat_name ?? '';
+                        $categoryName = $category->category->translation->first() ? $category->category->translation->first()->name : '';
+                        $categoriesList = $categoriesList . $categoryName;
                         if ($key !=  $vendorCategories->count() - 1) {
                             $categoriesList = $categoriesList . ', ';
                         }
@@ -252,8 +238,6 @@ class CategoryController extends FrontController{
             return $vendorData;
         }
         elseif(strtolower($type) == 'brand'){
-            // $brands = Brand::with('bc')
-            //     ->select('id', 'image')->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->paginate($pagiNate);
             $brands = Brand::with(['bc.categoryDetail', 'bc.categoryDetail.translation' =>  function ($q) use ($langId) {
                 $q->select('category_translations.name', 'category_translations.category_id', 'category_translations.language_id')->where('category_translations.language_id', $langId);
             }, 'translation' => function ($q) use ($langId) {

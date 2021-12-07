@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Api\v1;
 use DB;
 use Validation;
 use Carbon\Carbon;
-use App\Models\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, Vendor, Brand, VendorCategory};
+use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, Vendor, Brand, VendorCategory, Permissions, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country};
 
 class VendorController extends BaseController{
     use ApiResponser;
@@ -785,4 +788,244 @@ class VendorController extends BaseController{
     //         'data' => $products,
     //     ]);
     // }
+
+    public function postVendorRegister(Request $request){
+        try {
+            DB::beginTransaction();
+            $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
+            if (empty($request->input('user_id'))) {
+                if ($vendor_registration_documents->count() > 0) {
+                    $rules_array = [
+                        'full_name' => 'required',
+                        'email' => 'required|email|unique:users',
+                        'phone_number' => 'required|string|min:6|max:15|unique:users',
+                        'password' => 'required|string|min:6|max:50',
+                        'confirm_password' => 'required|same:password',
+                        'name' => 'required|string|max:150|unique:vendors',
+                        'address' => 'required',
+                        // 'vendor_registration_document.*.did_visit' => 'required',
+                        'check_conditions' => 'required',
+                    ];
+                    foreach ($vendor_registration_documents as $vendor_registration_document) {
+                        if($vendor_registration_document->is_required == 1){
+                            $rules_array[$vendor_registration_document->primary->slug] = 'required';
+                        }
+                    }
+
+                    $validator = Validator::make($request->all(),
+                        // [
+                        //     'address' => 'required',
+                        //     'full_name' => 'required',
+                        //     'email' => 'required|email|unique:users',
+                        //     'vendor_registration_document.*.did_visit' => 'required',
+                        //     'password' => 'required|string|min:6|max:50',
+                        //     'confirm_password' => 'required|same:password',
+                        //     'name' => 'required|string|max:150|unique:vendors',
+                        //     'phone_number' => 'required|string|min:6|max:15|unique:users',
+                        //     'check_conditions' => 'required',
+                        // ],
+                        $rules_array,
+                        ['check_conditions.required' => __('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy')]
+                    );
+                } else {
+                    $validator = Validator::make($request->all(),
+                        [
+                            'full_name' => 'required',
+                            'email' => 'required|email|unique:users',
+                            'phone_number' => 'required|string|min:6|max:15|unique:users',
+                            'password' => 'required|string|min:6|max:50',
+                            'confirm_password' => 'required|same:password',
+                            'name' => 'required|string|max:150|unique:vendors',
+                            'address' => 'required',
+                            'check_conditions' => 'required',
+                        ],
+                        ['check_conditions.required' => __('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy')]
+                    );
+                }
+            } else {
+                $rules_array = [
+                    'name' => 'required|string|max:150|unique:vendors',
+                    'address' => 'required',
+                    'check_conditions' => 'required',
+                ];
+                foreach ($vendor_registration_documents as $vendor_registration_document) {
+                    if($vendor_registration_document->is_required == 1){
+                        $rules_array[$vendor_registration_document->primary->slug] = 'required';
+                    }
+                }
+                $validator = Validator::make($request->all(),
+                    $rules_array,
+                    ['check_conditions.required' => __('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy')]
+                );
+            }
+            if($validator->fails()){
+                foreach($validator->errors()->toArray() as $error_key => $error_value){
+                    $error = __($error_value[0]);
+                    return $this->errorResponse($error, 422);
+                }
+            }
+            $client_detail = Client::first();
+            $client_preference = ClientPreference::first();
+            if(!$request->user_id){
+                $user = new User();
+                $county = Country::where('code', strtoupper($request->countryData))->first();
+                $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
+                $user->type = 1;
+                $user->status = 1;
+                $user->role_id = 1;
+                $user->is_admin = 1;
+                $user->is_email_verified = 0;
+                $user->is_phone_verified = 0;
+                $user->name = $request->name;
+                $user->email = $request->email;
+                $user->title = $request->title;
+                $user->country_id = $county->id;
+                $user->dial_code = $request->dialCode;
+                $user->phone_token_valid_till = $sendTime;
+                $user->email_token_valid_till = $sendTime;
+                $user->email_token = mt_rand(100000, 999999);
+                $user->phone_token = mt_rand(100000, 999999);
+                $user->phone_number = $request->phone_number;
+                $user->password = Hash::make($request->password);
+                $user->save();
+                $wallet = $user->wallet;
+            }else{
+                $user = User::where('id', $request->user_id)->first();
+                $user->title = $request->title;
+                $user->save();
+            }
+            $vendor = new Vendor();
+            $count = 0;
+            if($client_preference){
+                if($client_preference->dinein_check == 1){$count++;}
+                if($client_preference->takeaway_check == 1){$count++;}
+                if($client_preference->delivery_check == 1){$count++;}
+            }
+            if($count > 1){
+                $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
+                $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
+                $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+            }
+            else{
+                $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
+                $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
+                $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
+            }
+            $vendor->logo = 'default/default_logo.png';
+            $vendor->banner = 'default/default_image.png';
+            if ($request->hasFile('upload_logo')) {
+                $file = $request->file('upload_logo');
+                $vendor->logo = Storage::disk('s3')->put('/vendor', $file, 'public');
+            }
+            if ($request->hasFile('upload_banner')) {
+                $file = $request->file('upload_banner');
+                $vendor->banner = Storage::disk('s3')->put('/vendor', $file, 'public');
+            }
+            $vendor->status = 0;
+            $vendor->name = $request->name;
+            $vendor->email = $request->email;
+            $vendor->phone_no = $user->phone_no;
+            $vendor->address = $request->address;
+            $vendor->website = $request->website;
+            $vendor->latitude = $request->latitude;
+            $vendor->longitude = $request->longitude;
+            $vendor->desc = $request->vendor_description;
+            $vendor->slug = Str::slug($request->name, "-");
+            $vendor->save();
+            $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+            if ($vendor_registration_documents->count() > 0) {
+                foreach ($vendor_registration_documents as $vendor_registration_document) {
+                    $doc_name = str_replace(" ", "_", $vendor_registration_document->primary->slug);
+                    if ($vendor_registration_document->file_type != "Text") {
+                        if ($request->hasFile($doc_name)) {
+                            $vendor_docs =  new VendorDocs();
+                            $vendor_docs->vendor_id = $vendor->id;
+                            $vendor_docs->vendor_registration_document_id = $vendor_registration_document->id;
+                            $filePath = $this->folderName . '/' . Str::random(40);
+                            $file = $request->file($doc_name);
+                            $vendor_docs->file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                            $vendor_docs->save();
+                        }
+                    } else {
+                        if (!empty($request->$doc_name)) {
+                            $vendor_docs =  new VendorDocs();
+                            $vendor_docs->vendor_id = $vendor->id;
+                            $vendor_docs->vendor_registration_document_id = $vendor_registration_document->id;
+                            $vendor_docs->file_name = $request->$doc_name;
+                            $vendor_docs->save();
+                        }
+                    }
+                }
+            }
+            UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
+            foreach ($permission_details as $permission_detail) {
+                UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
+            }
+            $content = '';
+            $email_template = EmailTemplate::where('id', 1)->first();
+            if($email_template){
+                $content = $email_template->content;
+                $content = str_ireplace("{title}", $user->title, $content);
+                $content = str_ireplace("{email}", $user->email, $content);
+                $content = str_ireplace("{address}", $vendor->address, $content);
+                $content = str_ireplace("{website}", $vendor->website, $content);
+                $content = str_ireplace("{description}", $vendor->desc, $content);
+                $content = str_ireplace("{vendor_name}", $vendor->name, $content);
+                $content = str_ireplace("{phone_no}", $user->phone_number, $content);
+            }
+            $email_data = [
+                'title' => $user->title,
+                'email' => $user->email,
+                'powered_by' => url('/'),
+                'banner' => $vendor->banner,
+                'website' => $vendor->website,
+                'address' => $vendor->address,
+                'vendor_logo' => $vendor->logo,
+                'vendor_name' => $vendor->name,
+                'description' => $vendor->desc,
+                'phone_no' => $user->phone_number,
+                'email_template_content' => $content,
+                'subject' => $email_template->subject,
+                'client_name' => $client_detail->name,
+                'customer_name' => ucwords($user->name),
+                'logo' => $client_detail->logo['original'],
+                'mail_from' => $client_preference->mail_from,
+            ];
+            $admin_email_data = [
+                'title' => $user->title,
+                'email' => $user->email,
+                'powered_by' => url('/'),
+                'banner' => $vendor->banner,
+                'website' => $vendor->website,
+                'address' => $vendor->address,
+                'vendor_logo' => $vendor->logo,
+                'vendor_name' => $vendor->name,
+                'description' => $vendor->desc,
+                'phone_no' => $user->phone_number,
+                'email_template_content' => $content,
+                'client_name' => $client_detail->name,
+                'subject' => 'New Vendor Registration',
+                'customer_name' => ucwords($user->name),
+                'logo' => $client_detail->logo['original'],
+                'mail_from' => $client_preference->mail_from,
+            ];
+            try{
+                dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
+                dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
+            }catch(Exception $e) {
+                
+            }
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Vendor Registration Created Successfully!',
+            ]);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }

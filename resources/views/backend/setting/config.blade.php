@@ -1258,7 +1258,7 @@
                               @forelse($tags as $tag)
                               <tr>
                                  <td>
-                                    <img src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}">
+                                    @if(isset($tag->icon) && !empty($tag->icon)) <img src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}">@endif
                                  </td>
                                  <td>
                                     <a class="edit_product_tag_btn" data-tag_id="{{$tag->id}}" href="javascript:void(0)">
