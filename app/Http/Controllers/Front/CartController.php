@@ -748,11 +748,17 @@ class CartController extends FrontController
                         if ($vendorData->coupon->promo->promo_type_id == 2) {
                             $total_discount_percent = $vendorData->coupon->promo->amount;
                             $payable_amount -= $total_discount_percent;
+
+                            $vendorData->coupon_amount_used = $total_discount_percent;
                         } else {
                             $gross_amount = number_format(($payable_amount - $taxable_amount), 2, '.', '');
                             $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
                             $payable_amount -= $percentage_amount;
+
+                            $vendorData->coupon_amount_used = $payable_amount;
                         }
+
+                        
                     }
                 }
                 if (in_array(1, $subscription_features)) {

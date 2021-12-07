@@ -224,12 +224,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <div class="row">
                         <div class="col-8 text-lg-right">
                             <p class="total_amt m-0">{{__('Delivery Fee')}} :</p>
+                            <% if(product.coupon_amount_used > 0) { %>
+                            <p class="total_amt m-0">{{__('Coupon Discount')}} :</p>
+                            <% } %>
                         </div>
                         <div class="col-4 text-right">
                             <p class="total_amt mb-1 <% if(product.delivery_fee_charges > 0) { %>{{ ((in_array(1, $subscription_features)) ) ? 'discard_price' : '' }}<% } %>">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges) %></p>
+                            <% if(product.coupon_amount_used > 0) { %>
+                            <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.coupon_amount_used) %></p>
+                            <% } %>
                             <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.product_total_amount) %></p>
                         </div>
                     </div>
+                   
                 </div>
             </div>
         </div>
