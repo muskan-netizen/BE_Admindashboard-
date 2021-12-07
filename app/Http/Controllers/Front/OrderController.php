@@ -1580,9 +1580,9 @@ class OrderController extends FrontController
                     'address'     => $cus_address->address ?? '',
                     'post_code'   => $cus_address->pincode ?? '',
                     'barcode'     => '',
-                    'flat_no'     => $cus_address->house_number ?? null,
-                    'email'       => $customer->email ?? null,
-                    'phone_number' => $customer->dial_code . $customer->phone_number  ?? null,
+                    'flat_no'     => $cus_address->house_number ?? '',
+                    'email'       => $customer->email ?? '',
+                    'phone_number' => $customer->dial_code . $customer->phone_number  ?? ''
 
                 );
                 $tasks[] = array(
@@ -1595,9 +1595,8 @@ class OrderController extends FrontController
                     'barcode'     => '',
                     'flat_no'     => null,
                     'email'       => $vendor_details->email ?? null,
-                    'phone_number' => $vendor_details->phone_no ?? null,
-
-                );
+                    'phone_number' => $vendor_details->phone_no ?? null
+                 );
 
                 if (isset($order->schedule_pickup) && !empty($order->schedule_pickup)) {
                     $task_type = 'schedule';

@@ -94,7 +94,7 @@ class CelebrityController extends BaseController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     },
                     'variant' => function($q) use($langId){
-                        $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                        $q->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode');
                         // $q->groupBy('product_id');
                     }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                 ])
@@ -103,6 +103,20 @@ class CelebrityController extends BaseController
                 ->paginate($paginate);
             if(!empty($products)){
                 foreach ($products as $key => $product) {
+                    $p_id = $product->id;
+                    $variantData = $product->with(['variantSet' => function ($z) use ($langId, $p_id) {
+                        $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                        $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+                        $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                        $z->where('vt.language_id', $langId);
+                        $z->where('product_variant_sets.product_id', $p_id)->orderBy('product_variant_sets.variant_type_id', 'asc');
+                    },'variantSet.options'=> function($zx) use($langId, $p_id){
+                        $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
+                        ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
+                        ->where('pvs.product_id', $p_id)
+                        ->where('vt.language_id', $langId);
+                    }])->where('id', $p_id)->first();
+                    $product->variantSet = $variantData->variantSet;
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
