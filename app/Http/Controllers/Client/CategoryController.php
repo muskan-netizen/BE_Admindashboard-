@@ -35,11 +35,7 @@ class CategoryController extends BaseController
             $q->select('category_translations.name', 'category_translations.category_id', 'category_translations.language_id')->where('category_translations.language_id', $langId);
         }, 'translation' => function ($q) use ($langId) {
             $q->select('title', 'brand_id', 'language_id')->where('language_id', $langId);
-        }])
-        ->whereHas('bc.categoryDetail', function ($q){
-            $q->where('categories.status', 1);
-        })
-        ->where('status', 1)->orderBy('position', 'asc')->get();
+        }])->where('status', 1)->orderBy('position', 'asc')->get();
 
         $variants = Variant::with('option', 'varcategory.cate.primary','translation_one')->where('status', '!=', 2)->orderBy('position', 'asc')->get();
         $categories = Category::with('translation_one')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
