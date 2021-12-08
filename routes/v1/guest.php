@@ -11,20 +11,22 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('cms/page/list', 'Api\v1\CMSPageController@getPageList');
         Route::get('brand/{id?}', 'Api\v1\BrandController@productsByBrand');
         Route::get('category/{id?}', 'Api\v1\CategoryController@categoryData');
-        Route::get('vendor/{id?}', 'Api\v1\VendorController@productsByVendor');
         Route::post('search/{type}/{id?}', 'Api\v1\HomeController@globalSearch');
         Route::post('cms/page/detail', 'Api\v1\CMSPageController@getPageDetail');
         Route::post('brand/filters/{id?}', 'Api\v1\BrandController@brandFilters');
         Route::get('celebrity/{all?}', 'Api\v1\CelebrityController@celebrityList');
-        Route::post('vendor/filters/{id?}', 'Api\v1\VendorController@vendorFilters');
         Route::post('category/filters/{id?}', 'Api\v1\CategoryController@categoryFilters');
         Route::get('celebrityProducts/{id?}', 'Api\v1\CelebrityController@celebrityProducts');
         Route::post('celebrity/filters/{id?}', 'Api\v1\CelebrityController@celebrityFilters');
+        Route::get('vendor/{id?}', 'Api\v1\VendorController@productsByVendor');
+        Route::post('vendor/filters/{id?}', 'Api\v1\VendorController@vendorFilters');
         Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
         // Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
         Route::get('vendor/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProducts');
-        Route::post('checkIsolateSingleVendor', 'Api\v1\CartController@checkIsolateSingleVendor');
         // Route::get('vendor/category/productsFilter/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProductsFilter');
+        Route::post('vendor/register', 'Api\v1\VendorController@postVendorRegister');
+        Route::post('driver/register', 'Api\v1\AuthController@driverSignup');
+        Route::post('checkIsolateSingleVendor', 'Api\v1\CartController@checkIsolateSingleVendor');
         Route::post('productByVariant/{id}','Api\v1\ProductController@getVariantData')->name('productVariant');
         Route::post('contact-us', 'Api\v1\HomeController@contactUs');
 

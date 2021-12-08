@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Models\Page;
-use App\Models\PageTranslation;
+use Auth;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\v1\BaseController;
+use App\Models\{Client, ClientPreference, Page, PageTranslation, VendorRegistrationDocument};
 
-class CMSPageController extends Controller
+class CMSPageController extends BaseController
 {
 
     use ApiResponser;
@@ -47,16 +47,44 @@ class CMSPageController extends Controller
         // $page->title = $page->primary->title;
         // $page->description = $page->primary->description;
         // unset($page->primary);
-        $page = PageTranslation::leftJoin('pages', function ($join) {
-            $join->on('pages.id', '=', 'page_translations.page_id');
-        })
-            ->where(['page_translations.id' => $page_id, 'page_translations.is_published' => 1])
-            ->first([
-                'page_translations.id',
-                'pages.slug',
-                'page_translations.title',
-                'page_translations.description',
-            ]);
-        return $this->successResponse($page, '', 201);
+        
+        // $page = PageTranslation::leftJoin('pages', function ($join) {
+        //     $join->on('pages.id', '=', 'page_translations.page_id');
+        // })
+        //     ->where(['page_translations.id' => $page_id, 'page_translations.is_published' => 1])
+        //     ->first([
+        //         'page_translations.id',
+        //         'pages.slug',
+        //         'page_translations.title',
+        //         'page_translations.description',
+        //     ]);
+
+        $user = Auth::user();
+        $langId = $user->language;
+        $client_preferences = ClientPreference::first();
+        $data = [];
+        
+        $page_detail = Page::with(['translations' => function ($q) use($langId) {
+            $q->where('language_id', $langId);
+        }])->where('id', $page_id)->firstOrFail();
+
+        $data['page_detail'] = $page_detail;
+
+        if ($page_detail->primary->type_of_form != 2) {
+            $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
+            $data['vendor_registration_documents'] = $vendor_registration_documents;
+        } 
+        else {
+            $client = Client::with('country')->first();
+            $data = json_decode($this->driverDocuments());
+            $driver_registration_documents = $data->documents;
+            $teams = $data->all_teams;
+            $tags = $data->agent_tags;
+            $data['driver_registration_documents'] = $driver_registration_documents;
+            $data['teams'] = $teams;
+            $data['tags'] = $tags;
+        }
+        
+        return $this->successResponse($data, '', 200);
     }
 }

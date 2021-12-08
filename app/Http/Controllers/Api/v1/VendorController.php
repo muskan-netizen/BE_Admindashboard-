@@ -62,8 +62,19 @@ class VendorController extends BaseController{
             $langId = $user->language;
             $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'slug', 'show_slot',
                         'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery')
-                        ->withAvg('product', 'averageRating')
-                        ->where('id', $vid)->first();
+                        ->withAvg('product', 'averageRating');
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $latitude = ($latitude > 0) ? $latitude : $preferences->Default_latitude;
+                $longitude = ($longitude > 0) ? $longitude : $preferences->Default_longitude;
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                //3961 for miles and 6371 for kilometers
+                $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                $vendor = $vendor->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                        cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                        sin( radians(' . $latitude . ') ) *
+                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
+            }
+            $vendor = $vendor->where('id', $vid)->first();
             if(!$vendor){
                 return response()->json(['error' => 'No record found.'], 200);
             }
@@ -87,8 +98,8 @@ class VendorController extends BaseController{
             $vendor->is_show_products_with_category = ($vendor->vendor_templete_id == 5) ? 1 : 0;
             $categoriesList = '';
 
-            if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences);
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
             }
             
             $code = $request->header('code');
@@ -799,6 +810,7 @@ class VendorController extends BaseController{
                         'full_name' => 'required',
                         'email' => 'required|email|unique:users',
                         'phone_number' => 'required|string|min:6|max:15|unique:users',
+                        'dialCode' => 'required',
                         'password' => 'required|string|min:6|max:50',
                         'confirm_password' => 'required|same:password',
                         'name' => 'required|string|max:150|unique:vendors',
@@ -833,6 +845,7 @@ class VendorController extends BaseController{
                             'full_name' => 'required',
                             'email' => 'required|email|unique:users',
                             'phone_number' => 'required|string|min:6|max:15|unique:users',
+                            'dialCode' => 'required',
                             'password' => 'required|string|min:6|max:50',
                             'confirm_password' => 'required|same:password',
                             'name' => 'required|string|max:150|unique:vendors',
