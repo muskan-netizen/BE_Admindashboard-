@@ -93,6 +93,10 @@ class UserSubscriptionController extends BaseController
             foreach ($payment_options as $k => $payment_option) {
                 if( (in_array($payment_option->code, $ex_codes)) || (!empty($payment_option->credentials)) ){
                     $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));
+                    if($payment_option->code == 'stripe'){
+                        $payment_option->title = 'Credit/Debit Card (Stripe)';
+                    }
+                    $payment_option->title = __($payment_option->title);
                     unset($payment_option->credentials);
                 }
                 else{
