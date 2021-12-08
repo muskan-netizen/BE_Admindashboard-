@@ -64,8 +64,8 @@ class VendorController extends BaseController{
                         'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery')
                         ->withAvg('product', 'averageRating');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $latitude = ($latitude > 0) ? $latitude : $preferences->Default_latitude;
-                $longitude = ($longitude > 0) ? $longitude : $preferences->Default_longitude;
+                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
