@@ -304,7 +304,7 @@
                                                             @endforeach
                                                             <div>
                                                                 <div class="radios">
-                                                                <input type="{{$type_input}}" class="productAddonOption" {{ $checked }} id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}" class="productAddonOption"  name="addonData[{{$cart_data->id}}][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}"/>
+                                                                <input type="{{$type_input}}" class="productAddonOption" {{ $checked }} id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}" class="productAddonOption"  name="addonData{{$row}}[{{$cart_data->id}}][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}"/>
                                                                     <label for='inlineCheckbox_{{$key}}{{$row.'_'.$k}}'>
                                                                         <span class="customCheckbox" aria-hidden="true">{{$option->title .' ($'.$option->price.')' }} </span>
                                                                     </label>
