@@ -230,8 +230,8 @@ class BaseController extends Controller{
     public function getServiceAreaVendors($lat=0, $lng=0, $type='delivery'){
         $preferences = ClientPreference::where('id', '>', 0)->first();
         $user = Auth::user();
-        $latitude = ($user->latitude > 0) ? $user->latitude : $lat;
-        $longitude = ($user->longitude > 0) ? $user->longitude : $lng;
+        $latitude = ($user->latitude) ? $user->latitude : $lat;
+        $longitude = ($user->longitude) ? $user->longitude : $lng;
         $vendorType = $user->vendorType ? $user->vendorType : $type;
         $serviceAreaVendors = Vendor::select('id');
         $vendors = [];
@@ -239,8 +239,8 @@ class BaseController extends Controller{
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
         }
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-            $latitude = ($latitude > 0) ? $latitude : $preferences->Default_latitude;
-            $longitude = ($longitude > 0) ? $longitude : $preferences->Default_longitude;
+            $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+            $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
             $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
                     $query->select('vendor_id')
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");

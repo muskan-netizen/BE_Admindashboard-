@@ -182,21 +182,9 @@ class HomeController extends BaseController
 
             $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
 
-            // if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-            //     if ((empty($latitude)) && (empty($longitude))) {
-            //         $address = $preferences->Default_location_name;
-            //         $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
-            //         $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
-            //         $request->request->add(['latitude' => $latitude, 'longitude' => $longitude, 'address' => $address]);
-            //     }
-            //     $vendorData = $vendorData->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
-            //         $query->select('vendor_id')
-            //             ->whereRaw("ST_Contains(polygon, ST_GeomFromText('POINT(" . $latitude . " " . $longitude . ")'))");
-            //     });
-            // }
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $latitude = ($latitude > 0) ? $latitude : $preferences->Default_latitude;
-                $longitude = ($longitude > 0) ? $longitude : $preferences->Default_longitude;
+                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
