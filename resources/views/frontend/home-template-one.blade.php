@@ -150,7 +150,7 @@
         <div>
             <a class="brand-box d-block black-box" href="<%= brand.redirect_url %>">
                 <div class="brand-ing">
-                    <img src="<%= brand.image.image_fit %>500/500<%= brand.image.image_path %>" alt="">
+                    <img src="<%= brand.image.image_fit %>260/260<%= brand.image.image_path %>" alt="">
                 </div>
                 <h6><%= brand.translation_title %></h6>
             </a>
