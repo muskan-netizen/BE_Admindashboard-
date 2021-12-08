@@ -6,7 +6,6 @@ html {
     font-family: 'Zen Kaku Gothic Antique';
     src: url('../fonts/ZenKakuGothicAntique-Regular.eot');
     src: url('../fonts/ZenKakuGothicAntique-Regular.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/ZenKakuGothicAntique-Regular.woff2') format('woff2'),
         url('../fonts/ZenKakuGothicAntique-Regular.woff') format('woff'),
         url('../fonts/ZenKakuGothicAntique-Regular.ttf') format('truetype'),
         url('../fonts/ZenKakuGothicAntique-Regular.svg#ZenKakuGothicAntique-Regular') format('svg');

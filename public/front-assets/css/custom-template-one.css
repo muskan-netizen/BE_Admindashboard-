@@ -10,7 +10,6 @@ body {
     font-family: 'Inter';
     src: url('../fonts/Inter-Regular.eot');
     src: url('../fonts/Inter-Regular.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/Inter-Regular.woff2') format('woff2'),
         url('../fonts/Inter-Regular.woff') format('woff'),
         url('../fonts/Inter-Regular.ttf') format('truetype'),
         url('../fonts/Inter-Regular.svg#Inter-Regular') format('svg');
@@ -20,36 +19,9 @@ body {
 }
 
 @font-face {
-    font-family: 'Montserrat';
-    src: url('../fonts/Montserrat-Regular.eot');
-    src: url('../fonts/Montserrat-Regular.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/Montserrat-Regular.woff2') format('woff2'),
-        url('../fonts/Montserrat-Regular.woff') format('woff'),
-        url('../fonts/Montserrat-Regular.ttf') format('truetype'),
-        url('../fonts/Montserrat-Regular.svg#Montserrat-Regular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Raleway';
-    src: url('../fonts/Raleway-Regular.eot');
-    src: url('../fonts/Raleway-Regular.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/Raleway-Regular.woff2') format('woff2'),
-        url('../fonts/Raleway-Regular.woff') format('woff'),
-        url('../fonts/Raleway-Regular.ttf') format('truetype'),
-        url('../fonts/Raleway-Regular.svg#Raleway-Regular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
     font-family: 'Zen Kaku Gothic Antique';
     src: url('../fonts/ZenKakuGothicAntique-Regular.eot');
     src: url('../fonts/ZenKakuGothicAntique-Regular.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/ZenKakuGothicAntique-Regular.woff2') format('woff2'),
         url('../fonts/ZenKakuGothicAntique-Regular.woff') format('woff'),
         url('../fonts/ZenKakuGothicAntique-Regular.ttf') format('truetype'),
         url('../fonts/ZenKakuGothicAntique-Regular.svg#ZenKakuGothicAntique-Regular') format('svg');
@@ -62,7 +34,6 @@ body {
     font-family: 'Zen Kaku Gothic Antique';
     src: url('../fonts/ZenKakuGothicAntique-Bold.eot');
     src: url('../fonts/ZenKakuGothicAntique-Bold.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/ZenKakuGothicAntique-Bold.woff2') format('woff2'),
         url('../fonts/ZenKakuGothicAntique-Bold.woff') format('woff'),
         url('../fonts/ZenKakuGothicAntique-Bold.ttf') format('truetype'),
         url('../fonts/ZenKakuGothicAntique-Bold.svg#ZenKakuGothicAntique-Bold') format('svg');
@@ -71,13 +42,10 @@ body {
     font-display: swap;
 }
 
-
-
 @font-face {
     font-family: 'Eina02';
     src: url('../fonts/Eina02-SemiBold.eot');
     src: url('../fonts/Eina02-SemiBold.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/Eina02-SemiBold.woff2') format('woff2'),
         url('../fonts/Eina02-SemiBold.woff') format('woff'),
         url('../fonts/Eina02-SemiBold.ttf') format('truetype'),
         url('../fonts/Eina02-SemiBold.svg#Eina02-SemiBold') format('svg');
