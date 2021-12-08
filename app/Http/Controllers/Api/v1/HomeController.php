@@ -194,7 +194,7 @@ class HomeController extends BaseController
             //             ->whereRaw("ST_Contains(polygon, ST_GeomFromText('POINT(" . $latitude . " " . $longitude . ")'))");
             //     });
             // }
-            if (is_array($ses_vendors) && (count($ses_vendors) > 0)) {
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = ($latitude > 0) ? $latitude : $preferences->Default_latitude;
                 $longitude = ($longitude > 0) ? $longitude : $preferences->Default_longitude;
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';

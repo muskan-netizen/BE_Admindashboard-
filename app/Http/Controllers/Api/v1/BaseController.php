@@ -12,6 +12,7 @@ use ConvertCurrency;
 use App\Models\Cart;
 use App\Models\UserDevice;
 use Illuminate\Http\Request;
+use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Twilio\Rest\Client as TwilioClient;
@@ -226,11 +227,11 @@ class BaseController extends Controller{
       return $c;
     }
 
-    public function getServiceAreaVendors($lat='', $lng='', $type='delivery'){
+    public function getServiceAreaVendors($lat=0, $lng=0, $type='delivery'){
         $preferences = ClientPreference::where('id', '>', 0)->first();
         $user = Auth::user();
-        $latitude = $user->latitude ?? $lat;
-        $longitude = $user->longitude ?? $lng;
+        $latitude = ($user->latitude > 0) ? $user->latitude : $lat;
+        $longitude = ($user->longitude > 0) ? $user->longitude : $lng;
         $vendorType = $user->vendorType ? $user->vendorType : $type;
         $serviceAreaVendors = Vendor::select('id');
         $vendors = [];
@@ -531,6 +532,38 @@ class BaseController extends Controller{
         $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
         $amount = number_format($amount, 2);
         return $amount;
+    }
+
+    public function checkIfLastMileDeliveryOn()
+    {
+        $preference = ClientPreference::first();
+        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url)) {
+            return $preference;
+        } else {
+            return false;
+        }
+    }
+
+    public function driverDocuments()
+    {
+        try {
+            $dispatch_domain = $this->checkIfLastMileDeliveryOn();
+            $url = $dispatch_domain->delivery_service_key_url;
+            $endpoint = $url . "/api/send-documents";
+            // $dispatch_domain->delivery_service_key_code = '649a9a';
+            // $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
+            $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
+
+            $response = $client->post($endpoint);
+            $response = json_decode($response->getBody(), true);
+
+            return json_encode($response['data']);
+        } catch (\Exception $e) {
+            $data = [];
+            $data['status'] = 400;
+            $data['message'] =  $e->getMessage();
+            return $data;
+        }
     }
 
 }

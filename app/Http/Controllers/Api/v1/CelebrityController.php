@@ -71,8 +71,7 @@ class CelebrityController extends BaseController
                             })
                         ->groupBy('product_variant_sets.variant_type_id')->get();
 
-            $products = Product::join('product_celebrities as pc', 'pc.product_id', 'products.id')
-                    ->with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+            $products = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
                         $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                         ->where('category_translations.language_id', $langId);
                     }, 'inwishlist' => function($qry) use($userid){
@@ -97,9 +96,19 @@ class CelebrityController extends BaseController
                         $q->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode');
                         // $q->groupBy('product_id');
                     }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
+                    'celebrities' => function($q) use($cid){
+                        $q->where('celebrity_id', $cid);
+                    }
                 ])
-                ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.celebrity_id')
-                ->where('pc.celebrity_id', $cid)
+                // ->join('product_celebrities as pc', 'pc.product_id', 'products.id')
+                // ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.celebrity_id')
+                ->whereHas('celebrities', function($q) use($cid){
+                    $q->where('celebrity_id', $cid);
+                })
+                ->select('id', 'sku', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'brand_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'category_id')
+                //, 'pc.celebrity_id')
+                // ->where('pc.celebrity_id', $cid)
+                ->where('is_live', 1)
                 ->paginate($paginate);
             if(!empty($products)){
                 foreach ($products as $key => $product) {
@@ -118,6 +127,14 @@ class CelebrityController extends BaseController
                     }])->where('id', $p_id)->first();
                     $product->variantSet = $variantData->variantSet;
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+                    $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+                    $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
+                    $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html),ENT_QUOTES) : '';
+                    $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
+                    $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                    $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+                    $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
+                    $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
                     }

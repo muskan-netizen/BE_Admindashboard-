@@ -53,7 +53,7 @@ class CelebrityController extends FrontController
             $new->variant_price = (!empty($new->variant->first())) ? $new->variant->first()->price : 0;
         }
         $newProducts = ($np->count() > 0) ? array_chunk($np->toArray(), ceil(count($np) / 2)) : $np;
-        $celebrity = Celebrity::with(['products.product.variant', 'products.product' => function($query) use($vendorIds){
+        $celebrity = Celebrity::with(['products.product.variant', 'products.product.media.image', 'products.product' => function($query) use($vendorIds){
             $query->whereIn('products.vendor_id', $vendorIds)->paginate();
         }])        
         ->where('slug', $slug)->first();
@@ -66,7 +66,7 @@ class CelebrityController extends FrontController
                     $celebrity->products[$key]->translation_title = (!empty($value->product->translation->first())) ? $value->product->translation->first()->title : $value->product->sku;
                     $celebrity->products[$key]->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $celebrity->products[$key]->variant_price = (!empty($value->product->variant->first())) ? $value->product->variant->first()->price : 0;
-                    $celebrity->products[$key]->image_url = @$value->media->first() ? @$value->media->first()->image->path['image_fit'] . '300/300' . @$value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                    $celebrity->products[$key]->image_url = $value->product->media->first() ? $value->product->media->first()->image->path['image_fit'] . '300/300' . $value->product->media->first()->image->path['image_path'] : $this->loadDefaultImage();
 
                     // foreach ($value->product->variant as $k => $v) {
                     //     $value->product->variant[$k]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;

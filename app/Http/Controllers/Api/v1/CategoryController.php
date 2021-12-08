@@ -103,7 +103,7 @@ class CategoryController extends BaseController
             //     });
             // }
 
-            if (is_array($ses_vendors) && (count($ses_vendors) > 0)) {
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = ($user->latitude) ? $user->latitude : $preferences->Default_latitude;
                 $longitude = ($user->longitude) ? $user->longitude : $preferences->Default_longitude;
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
