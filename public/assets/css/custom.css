@@ -15,7 +15,6 @@
     font-family: 'Zen Kaku Gothic Antique';
     src: url('/assets/fonts/ZenKakuGothicAntique-Regular.eot');
     src: url('/assets/fonts/ZenKakuGothicAntique-Regular.eot?#iefix') format('embedded-opentype'),
-        url('/assets/fonts/ZenKakuGothicAntique-Regular.woff2') format('woff2'),
         url('/assets/fonts/ZenKakuGothicAntique-Regular.woff') format('woff'),
         url('/assets/fonts/ZenKakuGothicAntique-Regular.ttf') format('truetype'),
         url('/assets/fonts/ZenKakuGothicAntique-Regular.svg#ZenKakuGothicAntique-Regular') format('svg');
@@ -28,7 +27,6 @@
     font-family: 'Zen Kaku Gothic Antique';
     src: url('/assets/fonts/ZenKakuGothicAntique-Medium.eot');
     src: url('/assets/fonts/ZenKakuGothicAntique-Medium.eot?#iefix') format('embedded-opentype'),
-        url('/assets/fonts/ZenKakuGothicAntique-Medium.woff2') format('woff2'),
         url('/assets/fonts/ZenKakuGothicAntique-Medium.woff') format('woff'),
         url('/assets/fonts/ZenKakuGothicAntique-Medium.ttf') format('truetype'),
         url('/assets/fonts/ZenKakuGothicAntique-Medium.svg#ZenKakuGothicAntique-Medium') format('svg');
@@ -40,8 +38,7 @@
 @font-face {
     font-family: 'Zen Kaku Gothic Antique';
     src: url('/assets/fonts/ZenKakuGothicAntique-Bold.eot');
-    src: url('/assets/fonts/ZenKakuGothicAntique-Bold.eot?#iefix') format('embedded-opentype'),
-        url('/assets/fonts/ZenKakuGothicAntique-Bold.woff2') format('woff2'),
+    src: url('/assets/fonts/ZenKakuGothicAntique-Bold.eot?#iefix') format('embedded-opentype')
         url('/assets/fonts/ZenKakuGothicAntique-Bold.woff') format('woff'),
         url('/assets/fonts/ZenKakuGothicAntique-Bold.ttf') format('truetype'),
         url('/assets/fonts/ZenKakuGothicAntique-Bold.svg#ZenKakuGothicAntique-Bold') format('svg');
@@ -194,122 +191,6 @@ h6 {
 .icon-clock:before {
     content: "\e94e";
 }
-
-
-/* @font-face {
-      font-family: 'icomoon';
-      src: url('/assets/css/fonts/icomoon.eot?rwbipu');
-      src: url('/assets/css/fonts/icomoon.eot?rwbipu#iefix') format('embedded-opentype'),
-          url('/assets/css/fonts/icomoon.ttf?rwbipu') format('truetype'),
-          url('/assets/css/fonts/icomoon.woff?rwbipu') format('woff'),
-          url('/assets/css/fonts/icomoon.svg?rwbipu#icomoon') format('svg');
-      font-weight: normal;
-      font-style: normal;
-      font-display: block;
-  }
-
-  [class^="icon-"],
-  [class*=" icon-"] {
-      font-family: 'icomoon' !important;
-      speak: never;
-      font-style: normal;
-      font-weight: normal;
-      font-variant: normal;
-      text-transform: none;
-      line-height: 1;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-  }
-
-  .icon-orders:before {
-      content: "\e900";
-  }
-
-  .icon-dash:before {
-      content: "\e907";
-  }
-
-  .icon-vendor:before {
-      content: "\e912";
-  }
-
-  .icon-customzie:before {
-      content: "\e906";
-  }
-
-  .icon-accounting:before {
-      content: "\e913";
-  }
-
-  .icon-customer-2:before {
-      content: "\e905";
-  }
-
-  .icon-subscribe:before {
-      content: "\e910";
-  }
-
-  .icon-settings-1-1:before {
-      content: "\e90e";
-  }
-
-  .icon-profile:before {
-      content: "\e90d";
-  }
-
-  .icon-styling:before {
-      content: "\e90f";
-  }
-
-  .icon-cms:before {
-      content: "\e903";
-  }
-
-  .icon-catalogue:before {
-      content: "\e901";
-  }
-
-  .icon-configuration:before {
-      content: "\e904";
-  }
-
-  .icon-tax:before {
-      content: "\e911";
-  }
-
-  .icon-payment-options:before {
-      content: "\e90c";
-  }
-
-  .icon-marketing:before {
-      content: "\e90b";
-  }
-
-  .icon-banners:before {
-      content: "\e914";
-  }
-
-  .icon-loyaltycard:before {
-      content: "\e90a";
-  }
-
-  .icon-extra:before {
-      content: "\e909";
-  }
-
-  .icon-celebrity:before {
-      content: "\e902";
-  }
-
-  .icon-discount-voucher:before {
-      content: "\e908";
-  }
-
-  .icon-question:before {
-      content: "\e915";
-  } */
-
-
 
 
 .vendor-products .card {

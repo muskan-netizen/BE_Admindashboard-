@@ -357,6 +357,7 @@ header.site-header.fixed-bar {
 }
 
 .add-to-fav {
+    display: none;
     position: absolute;
     right: 10px;
     top: 10px;
@@ -369,6 +370,10 @@ header.site-header.fixed-bar {
     line-height: 28px;
     border-radius: 50%;
     font-size: 12px;
+}
+
+.add-to-fav .fav-heart,.fav-heart{
+    display: none;
 }
 
 .add-to-fav input[type="checkbox"]{
