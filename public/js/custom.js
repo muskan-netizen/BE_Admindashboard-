@@ -391,17 +391,22 @@ $(document).ready(function() {
         let keyword = $(this).val();
         searchResults(keyword);
     });
-
+    var searchAjaxCall = 'ToCancelPrevReq';
     function searchResults(keyword) {
         if (keyword.length <= 2) {
             $('#search_box_main_div').html('').hide();
         }
-        if (keyword.length > 2) {
-            $.ajax({
+        if (keyword.length >= 2) {
+            searchAjaxCall = $.ajax({
                 type: "GET",
                 dataType: 'json',
                 url: autocomplete_url,
                 data: { keyword: keyword },
+                beforeSend: function() {
+                    if (searchAjaxCall != 'ToCancelPrevReq' && searchAjaxCall.readyState < 4) {
+                        searchAjaxCall.abort();
+                    }
+                },
                 success: function(response) {
                     if (response.status == 'Success') {
                         $('#search_box_main_div').html('');
