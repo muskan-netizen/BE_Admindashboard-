@@ -409,7 +409,7 @@ class UserhomeController extends FrontController
         foreach ($new_product_details as  $new_product_detail) {
             $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
-            $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . '260/100' . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $new_products[] = array(
                 'image_url' => $image_url,
                 'sku' => $new_product_detail->sku,
@@ -425,7 +425,7 @@ class UserhomeController extends FrontController
         foreach ($feature_product_details as  $feature_product_detail) {
             $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
             $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
-            $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['proxy_url'] . '260/100' . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $feature_products[] = array(
                 'image_url' => $image_url,
                 'sku' => $feature_product_detail->sku,
@@ -441,7 +441,7 @@ class UserhomeController extends FrontController
         foreach ($on_sale_product_details as  $on_sale_product_detail) {
             $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
             $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
-            $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['proxy_url'] . '260/100' . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $on_sale_products[] = array(
                 'image_url' => $image_url,
                 'sku' => $on_sale_product_detail->sku,

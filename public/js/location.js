@@ -22,7 +22,7 @@ $(document).ready(function () {
             longitude = $("#address-longitude").val();
         }
         getHomePage(latitude, longitude);
-        $(document).ready(function () {
+        // $(document).ready(function () {
             $.ajax({
                 url: client_preferences_url,
                 type: "POST",
@@ -43,9 +43,10 @@ $(document).ready(function () {
                     // }
                 },
             });
-        });
-
-    
+        // });
+    }
+    else{
+        $(".shimmer_effect").hide();
     }
 
     $(".age_restriction_no").click(function () {
@@ -57,7 +58,7 @@ $(document).ready(function () {
         $('#age_restriction').modal('hide');
     });
 
-    $( document ).ready(function() {
+    // $( document ).ready(function() {
         $('.date-items').removeClass('hide');
         $('.date-items').slick({
             infinite: true,
@@ -178,16 +179,16 @@ $(document).ready(function () {
         });
 
         
-    });
+    // });
        
-    $(document ).ready(function() {
+    // $(document ).ready(function() {
         $("#number").hide();
         $("#add_btn").click(function(){
             $("#number").show();
             $(this).hide();
         });
         
-    });
+    // });
 
     if($(".vendor_mods .nav-link").hasClass('active')){
         var tabs = $('.vendor_mods .nav-link.active').parent('.navigation-tab-item').prevAll().length;
