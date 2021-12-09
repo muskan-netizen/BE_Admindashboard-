@@ -22,13 +22,13 @@ class CelebrityController extends BaseController
     {
         try {
             if(empty($keyword) || strtolower($keyword) == 'all'){
-                $celebrity = Celebrity::with('country')->where('status', '!=', 3)
+                $celebrity = Celebrity::with('country')->whereNotIn('status', [2,3])
                             ->select('id', 'name', 'avatar', 'description', 'country_id')->get();
                 return $this->successResponse($celebrity);
             }
             $chars = str_split($keyword);
             $celebrity = Celebrity::with('country')->select('id', 'name', 'avatar', 'description', 'country_id')
-                            ->where('status', '!=', 3)
+                            ->whereNotIn('status', [2,3])
                             ->where(function ($q) use ($chars) {
                                 foreach ($chars as $key => $value) {
                                     if($key == 0){
@@ -51,8 +51,8 @@ class CelebrityController extends BaseController
             $paginate = $request->has('limit') ? $request->limit : 12;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $langId = Auth::user()->language;
-            $celebrity = Celebrity::where('status', '!=', 3)
-                            ->select('id', 'name', 'avatar', 'description', 'country_id')->where('id', $cid)->get();
+            $celebrity = Celebrity::whereNotIn('status', [2,3])
+                            ->select('id', 'name', 'avatar', 'description', 'country_id')->where('id', $cid)->first();
             if(!$celebrity){
                 return $this->errorResponse('Celebrity not found.', 404);
             }
@@ -65,7 +65,7 @@ class CelebrityController extends BaseController
                         ->join('variant_translations as vt','vt.variant_id','vr.id')
                         ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
                         ->where('vt.language_id', $langId)
-                        ->whereIn('product_variant_sets.product_id', function($qry) use($cid){ 
+                        ->whereIn('product_variant_sets.product_id', function($qry) use($cid){
                             $qry->select('product_id')->from('product_celebrities')
                                 ->where('celebrity_id', $cid);
                             })
@@ -77,7 +77,7 @@ class CelebrityController extends BaseController
                     }, 'inwishlist' => function($qry) use($userid){
                         $qry->where('user_id', $userid);
                     },
-                    'media.image', 
+                    'media.image',
                     'addOn' => function($q1) use($langId){
                         $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                         $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
@@ -227,7 +227,7 @@ class CelebrityController extends BaseController
                     ])->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating')
                     ->where('pc.celebrity_id', $cid)
                     ->where('products.is_live', 1)
-                    ->whereIn('id', function($qr) use($startRange, $endRange){ 
+                    ->whereIn('id', function($qr) use($startRange, $endRange){
                         $qr->select('product_id')->from('product_variants')
                             ->where('price',  '>=', $startRange)
                             ->where('price',  '<=', $endRange);

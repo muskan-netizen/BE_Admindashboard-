@@ -156,7 +156,7 @@
                         </div>
                         <div class="col-md-6" id="uidInput">
                             <div class="form-group" id="uidInputEdit">
-                                <label for="make_model" class="control-label">UID</label>
+                                <label for="uid" class="control-label">UID</label>
                                 <input type="text" class="form-control required" id="uid" placeholder="897abd" name="uid" value="">
                                 <span class="invalid-feedback" id="uid_error" role="alert">
                                     <strong></strong>

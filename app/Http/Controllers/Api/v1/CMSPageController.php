@@ -76,13 +76,24 @@ class CMSPageController extends BaseController
         } 
         else {
             $client = Client::with('country')->first();
-            $data = json_decode($this->driverDocuments());
-            $driver_registration_documents = $data->documents;
-            $teams = $data->all_teams;
-            $tags = $data->agent_tags;
-            $data['driver_registration_documents'] = $driver_registration_documents;
-            $data['teams'] = $teams;
-            $data['tags'] = $tags;
+            $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/";
+            $driver_types = array(
+                ['name' => 'type', 'title' => 'Employee', 'value' => 'Employee'],
+                ['name' => 'type', 'title' => 'Freelancer', 'value' => 'Freelancer']
+            );
+            $transport_types = array(
+                ['name' => 'vehicle_type_id', 'type' => 'onfoot', 'value' => 1, 'image'=>$server_url.'assets/icons/walk.png'],
+                ['name' => 'vehicle_type_id', 'type' => 'bycycle', 'value' => 2, 'image'=>$server_url.'assets/icons/cycle.png'],
+                ['name' => 'vehicle_type_id', 'type' => 'motorbike', 'value' => 3, 'image'=>$server_url.'assets/icons/bike.png'],
+                ['name' => 'vehicle_type_id', 'type' => 'car', 'value' => 4, 'image'=>$server_url.'assets/icons/car.png'],
+                ['name' => 'vehicle_type_id', 'type' => 'truck', 'value' => 5, 'image'=>$server_url.'assets/icons/truck.png']
+            );
+            $driverDocs = json_decode($this->driverDocuments(), true);
+            $data['driver_registration_documents'] = $driverDocs['documents'];
+            $data['transport_types'] = $transport_types;
+            $data['driver_types'] = $driver_types;
+            $data['teams'] = $driverDocs['all_teams'];
+            $data['tags'] = $driverDocs['agent_tags'];
         }
         
         return $this->successResponse($data, '', 200);

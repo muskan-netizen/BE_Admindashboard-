@@ -1029,16 +1029,18 @@ class VendorController extends BaseController{
                 
             }
             DB::commit();
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Vendor Registration Created Successfully!',
-            ]);
+            return $this->successResponse($category_details, 'Vendor Registration Created Successfully!', 200);
+            // return response()->json([
+            //     'status' => 'success',
+            //     'message' => 'Vendor Registration Created Successfully!',
+            // ]);
         } catch (Exception $e) {
             DB::rollback();
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+            // return response()->json([
+            //     'status' => 'error',
+            //     'message' => $e->getMessage(),
+            // ]);
         }
     }
 }

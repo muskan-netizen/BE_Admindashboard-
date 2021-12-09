@@ -1138,35 +1138,46 @@ class AuthController extends BaseController
     public function driverSignup(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                'phone_number' => 'required',
-                'type' => 'required',
-                'vehicle_type_id' => 'required',
-                'make_model' => 'required',
-                'uid' => 'required',
-                'plate_number' => 'required',
-                'color' => 'required',
-                'team' => 'required',
-            ], [
-                "name.required" => __('The name field is required.'),
-                "phone_number.required" => __('The phone number field is required.'),
-                "type.required" => __('The type field is required.'),
-                "vehicle_type_id.required" => __('The transport type is required.'),
-                "make_model.required" => __('The transport details field is required.'),
-                "uid.required" => __('The UID field is required.'),
-                "plate_number.required" => __('The licence plate field is required.'),
-                "color.required" => __('The color field is required.'),
-                "team.required" => __('The team field is required.')
-            ]);
-            if ($validator->fails()) {
-                return $this->errorResponse($validator->errors(), 422);
-            }
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
 
                 $data = json_decode($this->driverDocuments());
                 $driver_registration_documents = $data->documents;
+
+                $rules_array = [
+                    'name' => 'required',
+                    'phone_number' => 'required',
+                    'type' => 'required',
+                    'vehicle_type_id' => 'required',
+                    'make_model' => 'required',
+                    'uid' => 'required',
+                    'plate_number' => 'required',
+                    'color' => 'required',
+                    'team' => 'required',
+                ];
+                // foreach ($driver_registration_documents as $driver_registration_document) {
+                //     if($driver_registration_document->is_required == 1){
+                //         $name = str_replace(" ", "_", $driver_registration_document->name);
+                //         $rules_array[$name] = 'required';
+                //     }
+                // }
+                $validator = Validator::make($request->all(), $rules_array, [
+                    "name.required" => __('The name field is required.'),
+                    "phone_number.required" => __('The phone number field is required.'),
+                    "type.required" => __('The type field is required.'),
+                    "vehicle_type_id.required" => __('The transport type is required.'),
+                    "make_model.required" => __('The transport details field is required.'),
+                    "uid.required" => __('The UID field is required.'),
+                    "plate_number.required" => __('The licence plate field is required.'),
+                    "color.required" => __('The color field is required.'),
+                    "team.required" => __('The team field is required.')
+                ]);
+                if ($validator->fails()) {
+                    foreach($validator->errors()->toArray() as $error_key => $error_value){
+                        $error = __($error_value[0]);
+                        return $this->errorResponse($error, 422);
+                    }
+                }
 
                 $files = [];
                 if ($driver_registration_documents != null) {
@@ -1177,10 +1188,10 @@ class AuthController extends BaseController
                         $files[$key]['id'] = $driver_registration_document_id[$key];
                         $driver_registration_document_name[$key] = $driver_registration_document->name;
                         $files[$key]['name'] = $driver_registration_document_name[$key];
-                        $name = $driver_registration_document->name;
-                        $arr = explode(' ', $name);
-                        $name = implode('_', $arr);
-                        $driver_registration_document_file_name[$key] = $request[$name];
+                        $name = str_replace(" ", "_", $driver_registration_document->name);
+                        // $arr = explode(' ', $name);
+                        // $name = implode('_', $arr);
+                        $driver_registration_document_file_name[$key] = $request->file($name);
                         $files[$key]['file_name'] =  $driver_registration_document_file_name[$key];
                     }
                 }

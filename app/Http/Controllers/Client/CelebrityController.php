@@ -35,7 +35,7 @@ class CelebrityController extends BaseController
             'name' => 'required|string|max:150',
         );
         /* upload logo file */
-        if ($request->hasFile('image')) {    
+        if ($request->hasFile('image')) {
             $rules['image'] =  'image|mimes:jpeg,png,jpg,gif';
         }
         $validation  = Validator::make($request->all(), $rules)->validate();
@@ -137,6 +137,7 @@ class CelebrityController extends BaseController
         $loyaltyCard = Celebrity::find($request->id);
         $loyaltyCard->status = $request->status;
         $loyaltyCard->save();
+        return response()->json(array('success' => true, 'data' => $loyaltyCard));
     }
 
     /**

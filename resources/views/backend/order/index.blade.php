@@ -222,7 +222,7 @@
                                     <% } %>
                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Payable') }} </label>
-                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice( (order.payable_amount - order.total_discount_calculate))%></span>
+                                        <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.payable_amount)%></span>
                                     </li>
                                 </ul>
                             </div>
