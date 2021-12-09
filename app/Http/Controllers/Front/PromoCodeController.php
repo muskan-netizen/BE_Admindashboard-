@@ -27,7 +27,7 @@ class PromoCodeController extends Controller{
             $promo_codes = new \Illuminate\Database\Eloquent\Collection;
             $vendor_id = $request->vendor_id;
             $total_minimum_spend = $request->amount;
-            $validator = $this->validatePromoCodeList();
+            $validator = $this->validatePromoCodeList($request);
             if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
             }
@@ -150,8 +150,8 @@ class PromoCodeController extends Controller{
         }
     }
 
-    public function validatePromoCodeList(){
-        return Validator::make(request()->all(), [
+    public function validatePromoCodeList($request){
+        return Validator::make($request->all(), [
             'vendor_id' => 'required',
         ]);
     }
@@ -170,7 +170,7 @@ class PromoCodeController extends Controller{
             // $promo_codes = new \Illuminate\Database\Eloquent\Collection;
             $vendor_id = $request->vendor_id;
             $total_minimum_spend = $request->amount;
-            $validator = $this->validatePromoCodeList();
+            $validator = $this->validatePromoCodeList($request);
             if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
             }

@@ -121,6 +121,7 @@ class CategoryController extends FrontController{
                     ->join('variant_translations as vt','vt.variant_id','vr.id')
                     ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
                     ->where('vt.language_id', $langId)
+                    ->where('vr.status', 1)
                     ->whereIn('product_variant_sets.product_id', function($qry) use($category){ 
                         $qry->select('product_id')->from('product_categories')
                             ->where('category_id', $category->id);
@@ -349,6 +350,7 @@ class CategoryController extends FrontController{
         ->join('variant_translations as vt','vt.variant_id','vr.id')
         ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
         ->where('vt.language_id', $langId)
+        ->where('vr.status', 1)
         ->whereIn('product_variant_sets.product_id', function($qry) use($category){ 
             $qry->select('product_id')->from('product_categories')
                 ->where('category_id', $category->id);

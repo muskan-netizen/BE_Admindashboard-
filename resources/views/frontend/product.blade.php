@@ -29,7 +29,7 @@
         display:none;
     }
     .exzoom .exzoom_btn a.exzoom_next_btn{
-        right: -15px;
+        right: -12px;
     }
     .exzoom .exzoom_nav .exzoom_nav_inner{
         -webkit-transition: all 0.5s;

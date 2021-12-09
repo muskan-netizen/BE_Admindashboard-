@@ -2,27 +2,18 @@ html {
     scroll-behavior: smooth;
 }
 
-@font-face {
-    font-family: 'Zen Kaku Gothic Antique';
-    src: url('../fonts/ZenKakuGothicAntique-Regular.eot');
-    src: url('../fonts/ZenKakuGothicAntique-Regular.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/ZenKakuGothicAntique-Regular.woff') format('woff'),
-        url('../fonts/ZenKakuGothicAntique-Regular.ttf') format('truetype'),
-        url('../fonts/ZenKakuGothicAntique-Regular.svg#ZenKakuGothicAntique-Regular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-
 body {
     font-size: 16px;
     position: initial;
-    font-family: 'Zen Kaku Gothic Antique';
+    font-family: 'Inter' !important;
 }
 
 a {
     color: var(--theme-deafult);
+}
+
+input[type=radio], input[type=checkbox]{
+    cursor: pointer !important;
 }
 
 .onhover-dropdown .onhover-show-div {
@@ -48,7 +39,7 @@ a {
     -ms-transition: all 0.5s ease-in-out;
     -o-transition: all 0.5s ease-in-out;
     transition: all 0.5s ease-in-out;
-    z-index: 999;
+    z-index: 11;
 }
 
 .menu-navigation {
@@ -135,7 +126,7 @@ header.site-header.fixed-bar {
     color: #fff;
     font-size: 14px;
     line-height: 22px;
-    vertical-align: text-top;
+    vertical-align: text-bottom;
 }
 
 .site-topbar .location-bar i {

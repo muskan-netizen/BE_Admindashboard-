@@ -1191,7 +1191,7 @@ class AuthController extends BaseController
                         $name = str_replace(" ", "_", $driver_registration_document->name);
                         // $arr = explode(' ', $name);
                         // $name = implode('_', $arr);
-                        $driver_registration_document_file_name[$key] = $request->file($name);
+                        $driver_registration_document_file_name[$key] = $request->$name;
                         $files[$key]['file_name'] =  $driver_registration_document_file_name[$key];
                     }
                 }

@@ -286,7 +286,7 @@
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Vendors") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 1)}}">
@@ -304,7 +304,7 @@
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Loyalty Cards") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="loyalty_cards_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="loyalty_cards_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 2)}}">
@@ -322,7 +322,7 @@
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Takeaway") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="takeaway_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="takeaway_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 3)}}">
@@ -340,7 +340,7 @@
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Search") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="search_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="search_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 4)}}">
@@ -358,7 +358,7 @@
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Wishlist") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="wishlist_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="wishlist_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 5)}}">
@@ -376,7 +376,7 @@
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Dine-In") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="dinein_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="dinein_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 6)}}">
@@ -394,7 +394,7 @@
                         <div class="row mb-2 flex-nowrap">
                             @foreach($client_languages as $k => $client_language)
                             <div class="col-sm-3">
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Delivery") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="delivery_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="delivery_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 7)}}">

@@ -405,6 +405,8 @@ class HomeController extends BaseController
             $keyword = $request->keyword;
             $langId = Auth::user()->language;
             $curId = Auth::user()->language;
+            $limit = $request->has('limit') ? $request->limit : 10;
+            $page = $request->has('page') ? $request->page : 1;
             $action = $request->has('type') && $request->type ? $request->type : null;
             $types = ['delivery', "dine_in", "takeaway"];
 
@@ -427,7 +429,7 @@ class HomeController extends BaseController
                             ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
                             ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
                     })->orderBy('categories.parent_id', 'asc')
-                    ->orderBy('categories.position', 'asc')->get();
+                    ->orderBy('categories.position', 'asc')->paginate($limit, $page);
                 foreach ($categories as $category) {
                     $category->response_type = 'category';
                     $category->image_url = $category->image['proxy_url'] . '80/80' . $category->image['image_path'];
@@ -439,7 +441,7 @@ class HomeController extends BaseController
                     ->where('bt.title', 'LIKE', '%' . $keyword . '%')
                     ->where('brands.status', '!=', '2')
                     ->where('bt.language_id', $langId)
-                    ->orderBy('brands.position', 'asc')->get();
+                    ->orderBy('brands.position', 'asc')->paginate($limit, $page);
                 foreach ($brands as $brand) {
                     $brand->response_type = 'brand';
                     $brand->image_url = $brand->image['proxy_url'] . '80/80' . $brand->image['image_path'];
@@ -449,7 +451,7 @@ class HomeController extends BaseController
                 $vendors = Vendor::select('id', 'name  as dataname', 'logo', 'slug', 'address')->where($action, 1);
                 $vendors = $vendors->where(function ($q) use ($keyword) {
                     $q->where('name', 'LIKE', "%$keyword%")->orWhere('address', 'LIKE', '%' . $keyword . '%');
-                })->where('status', 1)->get();
+                })->where('status', 1)->paginate($limit, $page);
                 foreach ($vendors as $vendor) {
                     $vendor->response_type = 'vendor';
                     $vendor->image_url = $vendor->logo['proxy_url'] . '80/80' . $vendor->logo['image_path'];
@@ -472,7 +474,7 @@ class HomeController extends BaseController
                     })
                     ->where(function ($q) use ($keyword) {
                         $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
-                    })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->get();
+                    })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->paginate($limit, $page);
                 foreach ($products as $product) {
                     $product->response_type = 'product';
                     $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
@@ -511,7 +513,7 @@ class HomeController extends BaseController
                 if ($for == 'brand') {
                     $products = $products->where('products.brand_id', $dataId);
                 }
-                $products = $products->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->get();
+                $products = $products->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->paginate($limit, $page);
                 foreach ($products as $product) {
                     $product->response_type = 'product';
                     $response[] = $product;
