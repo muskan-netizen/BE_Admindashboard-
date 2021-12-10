@@ -89,6 +89,10 @@ class CMSPageController extends BaseController
                 ['name' => 'vehicle_type_id', 'type' => 'truck', 'value' => 5, 'image'=>$server_url.'assets/icons/truck.png']
             );
             $driverDocs = json_decode($this->driverDocuments(), true);
+            foreach ($driverDocs['documents'] as $key => $doc) {
+                $name = str_replace(" ", "_", $doc['name']);
+                $driverDocs['documents'][$key]['slug'] = $name;
+            }
             $data['driver_registration_documents'] = $driverDocs['documents'];
             $data['transport_types'] = $transport_types;
             $data['driver_types'] = $driver_types;

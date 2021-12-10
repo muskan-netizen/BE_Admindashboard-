@@ -167,10 +167,14 @@ class UserhomeController extends FrontController
             $tag = [];
             $showTag = implode(',', $tag);
             $client = Client::with('country')->first();
-            $data = json_decode($this->driverDocuments());
-            $driver_registration_documents = $data->documents;
-            $teams = $data->all_teams;
-            $tags = $data->agent_tags;
+            $driverDocs = json_decode($this->driverDocuments());
+            $driver_registration_documents = $driverDocs->documents;
+            foreach ($driverDocs->documents as $key => $doc) {
+                $name = str_replace(" ", "_", $doc->name);
+                $doc->slug = $name;
+            }
+            $teams = $driverDocs->all_teams;
+            $tags = $driverDocs->agent_tags;
             return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents','client', 'teams', 'tags'));
         }
     }

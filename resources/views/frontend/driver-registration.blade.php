@@ -186,12 +186,12 @@
                     </div>
                     <div class="form-row">
                         @foreach($driver_registration_documents as $driver_registration_document)
-                        <div class="col-md-6 mb-3" id="{{$driver_registration_document->name}}Input">
+                        <div class="col-md-6 mb-3" id="{{$driver_registration_document->slug}}Input">
                             <label for="">{{$driver_registration_document->name ? $driver_registration_document->name : ''}}</label>
                             @if(strtolower($driver_registration_document->file_type) == 'text')
                             <div class="form-group">
-                                <input type="text" class="form-control {{ (!empty($driver_registration_document->is_required))?'required':''}}" id="input_file_logo_{{$driver_registration_document->id}}" name="{{$driver_registration_document->name}}" placeholder="Enter Text" value="">
-                                <span class="invalid-feedback" id="{{$driver_registration_document->name}}_error" role="alert">
+                                <input type="text" class="form-control {{ (!empty($driver_registration_document->is_required))?'required':''}}" id="input_file_logo_{{$driver_registration_document->id}}" name="{{$driver_registration_document->slug}}" placeholder="Enter Text" value="">
+                                <span class="invalid-feedback" id="{{$driver_registration_document->slug}}_error" role="alert">
                                     <strong></strong>
                                 </span>
                             </div>
@@ -206,11 +206,11 @@
                                     </span>
                                 </label>
                                 @if(strtolower($driver_registration_document->file_type) == 'image')
-                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->name}}" accept="image/*" data-rel="{{$driver_registration_document->id}}" class="{{ (!empty($driver_registration_document->is_required))?'required':''}}">
+                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->slug}}" accept="image/*" data-rel="{{$driver_registration_document->id}}" class="{{ (!empty($driver_registration_document->is_required))?'required':''}}">
                                 @elseif(strtolower($driver_registration_document->file_type) == 'pdf')
-                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->name}}" accept=".pdf" data-rel="{{$driver_registration_document->id}}" class="{{ (!empty($driver_registration_document->is_required))?'required':''}}">
+                                <input id="input_file_logo_{{$driver_registration_document->id}}" type="file" name="{{$driver_registration_document->slug}}" accept=".pdf" data-rel="{{$driver_registration_document->id}}" class="{{ (!empty($driver_registration_document->is_required))?'required':''}}">
                                 @endif
-                                <span class="invalid-feedback" id="{{$driver_registration_document->name}}_error">
+                                <span class="invalid-feedback" id="{{$driver_registration_document->slug}}_error">
                                     <strong></strong>
                                 </span>
                             </div>

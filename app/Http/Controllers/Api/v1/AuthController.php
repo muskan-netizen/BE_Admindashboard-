@@ -1148,19 +1148,19 @@ class AuthController extends BaseController
                     'name' => 'required',
                     'phone_number' => 'required',
                     'type' => 'required',
+                    'team' => 'required',
                     'vehicle_type_id' => 'required',
                     'make_model' => 'required',
                     'uid' => 'required',
                     'plate_number' => 'required',
-                    'color' => 'required',
-                    'team' => 'required',
+                    'color' => 'required'
                 ];
-                // foreach ($driver_registration_documents as $driver_registration_document) {
-                //     if($driver_registration_document->is_required == 1){
-                //         $name = str_replace(" ", "_", $driver_registration_document->name);
-                //         $rules_array[$name] = 'required';
-                //     }
-                // }
+                foreach ($driver_registration_documents as $driver_registration_document) {
+                    if($driver_registration_document->is_required == 1){
+                        $name = str_replace(" ", "_", $driver_registration_document->name);
+                        $rules_array[$name] = 'required';
+                    }
+                }
                 $validator = Validator::make($request->all(), $rules_array, [
                     "name.required" => __('The name field is required.'),
                     "phone_number.required" => __('The phone number field is required.'),

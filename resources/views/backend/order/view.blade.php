@@ -214,7 +214,7 @@ $timezone = Auth::user()->timezone;
                                                 <hr class="my-2">
                                                 <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                                 @foreach($product->addon as $addon)
-                                                    <p class="p-0 m-0">{{ $addon->option->translation_one->title }}</p>
+                                                    <p class="p-0 m-0">{{ $addon->option->translation_title }}</p>
                                                 @endforeach
                                             @endif
                                         </th>

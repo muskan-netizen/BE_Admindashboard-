@@ -300,9 +300,10 @@ class OrderController extends BaseController
             'vendors.products.addon',
             'vendors.products.addon.set',
             'vendors.products.addon.option',
-            'vendors.products.addon.option.translation_one' => function ($q) use ($langId) {
-                $q->select('id', 'addon_opt_id', 'title');
-                $q->where('language_id', $langId);
+            'vendors.products.addon.option.translation' => function ($q) use ($langId) {
+                $q->select('addon_option_translations.id', 'addon_option_translations.addon_opt_id', 'addon_option_translations.title', 'addon_option_translations.language_id');
+                $q->where('addon_option_translations.language_id', $langId);
+                $q->groupBy('addon_option_translations.addon_opt_id', 'addon_option_translations.language_id');
             },
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
@@ -322,6 +323,7 @@ class OrderController extends BaseController
                         $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                     }
                     $opt_quantity_price = number_format($opt_price_in_doller_compare * $product->quantity, 2, '.', '');
+                    $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
                     $addons->option->price_in_cart = $addons->option->price;
                     $addons->option->price = number_format($opt_price_in_currency, 2, '.', '');
                     $addons->option->multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
