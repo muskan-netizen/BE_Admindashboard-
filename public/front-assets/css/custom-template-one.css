@@ -55,11 +55,11 @@ h6 {
 }
 
 .offset-top {
-    margin-top: 270px;
+    margin-top: 220px;
 }
 
 .inner-pages-offset {
-    margin-top: 207px;
+    margin-top: 166px;
 }
 
 .set-hide-nav-bar {
@@ -78,6 +78,7 @@ h6 {
 
 .site-topbar .location-bar {
     background: transparent;
+    white-space: nowrap;
     width: calc(100% - 20px);
 }
 
@@ -124,7 +125,7 @@ h6 {
 
 .navigation-tab-item .nav-link {
     color: rgba(0, 0, 0, 0.39);
-    font-weight: 600;
+    font-weight: 400;
     padding: 5px 0;
     text-align: center;
     line-height: 18px;
@@ -132,14 +133,14 @@ h6 {
 
 .navigation-tab-item .nav-link.active {
     color:  #fff;
-    font-weight: 600;
+    font-weight: 400;
     background-color: transparent;
 }
 
 .search_form input.form-control {
     opacity: 0.81;
     color: #8B8B8B;
-    font-weight: 600;
+    font-weight: 400;
     font-size: 16px;
     letter-spacing: 0;
     line-height: 16px;
@@ -149,7 +150,7 @@ h6 {
 .search_form input.form-control::placeholder {
     opacity: 0.81;
     color: #8B8B8B;
-    font-weight: 600;
+    font-weight: 400;
     font-size: 16px;
 }
 
@@ -500,14 +501,14 @@ h6 {
 }
 
 .nav-cate-img {
-    height: 70px;
-    width: 70px;
+    height: 50px;
+    width: 50px;
     background-color: #F7F7F7;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    margin: 0 auto 10px;
+    margin: 0 auto 5px;
 }
 
 .nav-cate-img img {
@@ -1032,8 +1033,8 @@ body[dir="rtl"] #social-links li:last-child {
     }
 
     .home-banner-slider .slick-slide img {
-        height: 100%;
-        object-fit: cover;
+        /* height: 100%;
+        object-fit: fill; */
         width: 100%;
     }
 

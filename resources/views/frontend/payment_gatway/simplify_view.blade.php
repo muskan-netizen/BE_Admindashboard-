@@ -79,13 +79,15 @@
         Payment.formatCardNumber(number);
         Payment.formatCardCVC(cvc);
         $("#simplify-payment-form").on("submit", function() {
+            var number = $("#cc-number").val();
+            // console.log(number.replace(/\s/g, ''));
             // Disable the submit button
             $("#process-payment-btn").attr("disabled", "disabled");
             // Generate a card token & handle the response
             SimplifyCommerce.generateToken({
                 key: "{{$data['public_key']}}",
                 card: {
-                    number: $("#cc-number").val(),
+                    number: number.replace(/\s/g, ''),
                     cvc: $("#cc-cvc").val(),
                     expMonth: $("#cc-exp-month").val(),
                     expYear: $("#cc-exp-year").val()

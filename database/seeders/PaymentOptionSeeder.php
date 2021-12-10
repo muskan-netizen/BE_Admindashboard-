@@ -28,6 +28,7 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '11', 'path' => 'adyen/php-api-library', 'code' => 'gcash', 'title' => 'GCash', 'off_site' => '1', 'status' => '0'),
         array('id' => '12', 'path' => 'rak/simplify', 'code' => 'simplify', 'title' => 'Simplify', 'off_site' => '1', 'status' => '0'),
         array('id' => '13', 'path' => 'square/square', 'code' => 'square', 'title' => 'Square', 'off_site' => '1', 'status' => '0'),
+        array('id' => '14', 'path' => 'tradesafe/omnipay-ozow', 'code' => 'ozow', 'title' => 'Ozow', 'off_site' => '1', 'status' => '0'),
       ); 
 
       if($option_count == 0)

@@ -18,6 +18,7 @@ use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, Produc
 class VendorController extends BaseController{
     use ApiResponser;
     private $field_status = 2;
+    private $folderName = '/vendor/extra_docs';
 
     public function postVendorCategoryList(Request $request){
         try {
@@ -825,17 +826,6 @@ class VendorController extends BaseController{
                     }
 
                     $validator = Validator::make($request->all(),
-                        // [
-                        //     'address' => 'required',
-                        //     'full_name' => 'required',
-                        //     'email' => 'required|email|unique:users',
-                        //     'vendor_registration_document.*.did_visit' => 'required',
-                        //     'password' => 'required|string|min:6|max:50',
-                        //     'confirm_password' => 'required|same:password',
-                        //     'name' => 'required|string|max:150|unique:vendors',
-                        //     'phone_number' => 'required|string|min:6|max:15|unique:users',
-                        //     'check_conditions' => 'required',
-                        // ],
                         $rules_array,
                         ['check_conditions.required' => __('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy')]
                     );
@@ -1029,7 +1019,7 @@ class VendorController extends BaseController{
                 
             }
             DB::commit();
-            return $this->successResponse($category_details, 'Vendor Registration Created Successfully!', 200);
+            return $this->successResponse('', 'Vendor Registration Created Successfully!', 200);
             // return response()->json([
             //     'status' => 'success',
             //     'message' => 'Vendor Registration Created Successfully!',

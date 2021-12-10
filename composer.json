@@ -56,6 +56,7 @@
         "razorpay/razorpay": "2.*",
         "rivalex/laravel-intl": "^1.1",
         "sentry/sentry-laravel": "^2.7",
+        "shippo/shippo-php": "^1.5",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "socialiteproviders/apple": "^5.0",
         "spatie/db-dumper": "^2.21.1",

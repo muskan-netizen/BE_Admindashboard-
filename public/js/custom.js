@@ -1500,6 +1500,8 @@ $(document).ready(function() {
             paymentViaSimplify('', '');
         }else if (payment_option_id == 13) {
             paymentViaSquare('', '');
+        }else if (payment_option_id == 14) {
+            paymentViaOzow('', '');
         }
     });
     $(document).on("click", ".remove_promo_code_btn", function() {

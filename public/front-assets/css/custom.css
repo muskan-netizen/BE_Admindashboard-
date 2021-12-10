@@ -5,7 +5,7 @@ html {
 body {
     font-size: 16px;
     position: initial;
-    font-family: 'Inter' !important;
+    font-family: 'Zen Kaku Gothic Antique', sans-serif !important;
 }
 
 a {
@@ -39,11 +39,15 @@ input[type=radio], input[type=checkbox]{
     -ms-transition: all 0.5s ease-in-out;
     -o-transition: all 0.5s ease-in-out;
     transition: all 0.5s ease-in-out;
-    z-index: 11;
+    z-index: 111;
 }
 
 .menu-navigation {
     border-bottom: 1px solid rgb(221 221 221 / 50%);
+}
+
+.shimmer_effect > .menu-slider{
+    display: flex!important;
 }
 
 .menu-slider, .home-banner-slider{
@@ -97,7 +101,7 @@ header.site-header.fixed-bar {
 .pixelstrap a,
 .pixelstrap a:hover,
 .pixelstrap a:active {
-    padding: 10px 7px;
+    padding: 0 7px 10px;
     text-align: center;
     width: 120px;
     white-space: normal;
@@ -3818,13 +3822,13 @@ h4#driver_name {
 .rating-number {
     width: 26px;
     height: 26px;
-    line-height: 24px;
+    line-height: 26px;
     text-align: center;
     background: rgb(0 0 0 / 10%);
     border-radius: 50%;
     color: #000;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 11px;
+    font-weight: 500;
 }
 
 .pref-timing {
@@ -3834,11 +3838,11 @@ h4#driver_name {
     background-color: rgb(255 255 255 / 100%);
     border-radius: 2px;
     text-align: center;
-    padding: 0 3px 2px 4px;
+    padding: 3px 3px 1px 4px;
     font-size: 12px;
     line-height: 17px;
     color: #000;
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .card_title {
@@ -4965,8 +4969,8 @@ input.form-control.pac-target-input.gm-err-autocomplete {
 
 .pixelstrap li a img {
     display: block;
-    width: 40px;
-    height: 40px;
+    width: 34px;
+    height: 34px;
     margin: 0 auto 10px;
 }
 
@@ -5776,7 +5780,7 @@ ul#main-nav-list {
 
 .category-head {
     position: sticky;
-    top: 0;
+    top: 122px;
     border-bottom: 1px solid #ddd;
     padding: 20px 0;
     background: #fff;
@@ -5842,7 +5846,7 @@ ul#main-nav-list {
 
 .scrollspy-menu {
     position: sticky;
-    top: 104px;
+    top: 122px;
     width: 300px;
     padding: 10px 0;
     height: auto;
@@ -5888,7 +5892,7 @@ ul#main-nav-list {
     width: 325px;
     max-width: 100%;
     position: sticky;
-    top: 104px;
+    top: 122px;
 }
 
 .cart-main-box-inside {

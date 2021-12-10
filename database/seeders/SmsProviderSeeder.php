@@ -20,6 +20,12 @@ class SmsProviderSeeder extends Seeder
                 'keyword' => 'twilio',
                 'status' => '1'
             ),
+            array(
+                'id' => 2,
+                'provider' => 'mTalkz Service',
+                'keyword' => 'mTalkz',
+                'status' => '1'
+            ),
         ); 
         \DB::table('sms_providers')->insert($maps);
     }

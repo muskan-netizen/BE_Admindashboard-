@@ -301,6 +301,14 @@
                                 </a>
                             </li>
                         @endif
+                         @if(in_array('shipping',$allowed))
+                            <li>
+                                <a href="{{route('shipoption.index')}}">
+                                    <span class="icon-payment-options"></span>
+                                    <span> {{ __('Shipping Options') }} </span>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </li>
                 @endif

@@ -11,19 +11,17 @@
                 <h4 class="page-title">{{ __('Catalog') }}</h4>
             </div>
         </div>
-        <div class="col-sm-12">
-            <div class="text-sm-left">
-                @if (\Session::has('success'))
-                <div class="alert alert-success">
-                    <span>{!! \Session::get('success') !!}</span>
-                </div>
-                @endif
-                @if (\Session::has('error_delete'))
-                <div class="alert alert-danger">
-                    <span>{!! \Session::get('error_delete') !!}</span>
-                </div>
-                @endif
+        <div class="col-sm-12 text-sm-left">
+            @if (\Session::has('success'))
+            <div class="alert alert-success">
+                <span>{!! \Session::get('success') !!}</span>
             </div>
+            @endif
+            @if (\Session::has('error_delete'))
+            <div class="alert alert-danger">
+                <span>{!! \Session::get('error_delete') !!}</span>
+            </div>
+            @endif
         </div>
     </div>
     <div class="row catalog_box">
@@ -48,7 +46,7 @@
                             <input type="hidden" name="orderDta" id="orderDta" value="" />
                         </form>
                         <div class="custom-dd-empty dd" id="nestable_list_3">
-                            <div class="outer-box">
+                            <div class="table-responsive outer-box">
                                 <?php print_r($html); ?>
                             </div>    
                         </div>
@@ -98,34 +96,34 @@
                                 </thead>
                                 <tbody>
                                     @foreach($variants as $key => $variant)
-                                    @if(!empty($variant->translation_one))
-                                    <tr class="variantList" data-row-id="{{$variant->id}}">
-                                        <td><span class="dragula-handle"></span></td>
-                                        <td><a class="editVariantBtn" dataid="{{$variant->id}}" href="javascript:void(0);">{{$variant->title}}</a> <br> <b>{{isset($variant->varcategory->cate->primary->name) ? $variant->varcategory->cate->primary->name : ''}}</b></td>
-                                        <td>
-                                            @foreach($variant->option as $key => $value)
-                                            <label style="margin-bottom: 3px;">
-                                                @if(isset($variant) && !empty($variant->type) && $variant->type == 2)
-                                                <span style="padding:8px; float: left; border: 1px dotted #ccc; background:{{$value->hexacode}};"> </span>
-                                                @endif
-                                                &nbsp;&nbsp; {{$value->title}}</label> <br />
-                                            @endforeach
-                                        </td>
-                                        <td>
-                                            <a class="action-icon editVariantBtn" dataid="{{$variant->id}}" href="javascript:void(0);">
-                                                <i class="mdi mdi-square-edit-outline"></i>
-                                            </a>
-                                            <a class="action-icon deleteVariant" dataid="{{$variant->id}}" href="javascript:void(0);">
-                                                <i class="mdi mdi-delete"></i>
-                                            </a>
-                                            <form action="{{route('variant.destroy', $variant->id)}}" method="POST" style="display: none;" id="varDeleteForm{{$variant->id}}">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="action-icon btn btn-primary-outline" dataid="{{$variant->id}}" onclick="return confirm('Are you sure? You want to delete the variant.')"> <i class="mdi mdi-delete"></i></button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    @endif
+                                        @if(!empty($variant->translation_one))
+                                            <tr class="variantList" data-row-id="{{$variant->id}}">
+                                                <td><span class="dragula-handle"></span></td>
+                                                <td><a class="editVariantBtn" dataid="{{$variant->id}}" href="javascript:void(0);">{{$variant->title}}</a> <br> <b>{{isset($variant->varcategory->cate->primary->name) ? $variant->varcategory->cate->primary->name : ''}}</b></td>
+                                                <td>
+                                                    @foreach($variant->option as $key => $value)
+                                                    <label style="margin-bottom: 3px;">
+                                                        @if(isset($variant) && !empty($variant->type) && $variant->type == 2)
+                                                        <span style="padding:8px; float: left; border: 1px dotted #ccc; background:{{$value->hexacode}};"> </span>
+                                                        @endif
+                                                        &nbsp;&nbsp; {{$value->title}}</label> <br />
+                                                    @endforeach
+                                                </td>
+                                                <td>
+                                                    <a class="action-icon editVariantBtn" dataid="{{$variant->id}}" href="javascript:void(0);">
+                                                        <i class="mdi mdi-square-edit-outline"></i>
+                                                    </a>
+                                                    <a class="action-icon deleteVariant" dataid="{{$variant->id}}" href="javascript:void(0);">
+                                                        <i class="mdi mdi-delete"></i>
+                                                    </a>
+                                                    <form action="{{route('variant.destroy', $variant->id)}}" method="POST" style="display: none;" id="varDeleteForm{{$variant->id}}">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="action-icon btn btn-primary-outline" dataid="{{$variant->id}}" onclick="return confirm('Are you sure? You want to delete the variant.')"> <i class="mdi mdi-delete"></i></button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     @endforeach
                                 </tbody>
                             </table>

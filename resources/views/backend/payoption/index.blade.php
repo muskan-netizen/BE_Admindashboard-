@@ -74,6 +74,7 @@
                 $secret_key = (isset($creds->secret_key)) ? $creds->secret_key : '';
                 $public_key = (isset($creds->public_key)) ? $creds->public_key : '';
                 $private_key = (isset($creds->private_key)) ? $creds->private_key : '';
+                $site_code = (isset($creds->site_code)) ? $creds->site_code : '';
                 $merchant_id = (isset($creds->merchant_id)) ? $creds->merchant_id : '';
                 $merchant_key = (isset($creds->merchant_key)) ? $creds->merchant_key : '';
                 $passphrase = (isset($creds->passphrase)) ? $creds->passphrase : '';
@@ -268,20 +269,8 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-0">
-                                    <label for="gcash_merchant_account" class="mr-3">{{ __("Merchant Account") }}</label>
-                                    <input type="text" name="gcash_merchant_account" id="gcash_merchant_account" class="form-control" value="{{$merchant_account}}" @if($opt->status == 1) required @endif>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group mb-0">
-                                    <label for="gcash_api_key" class="mr-3">{{ __("Api Key") }}</label>
-                                    <input type="password" name="gcash_api_key" id="gcash_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group mb-0">
-                                    <label for="gcash_secret_key" class="mr-3">{{ __("Api Secret Key") }}</label>
-                                    <input type="text" name="gcash_secret_key" id="gcash_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                    <label for="gcash_public_key" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="text" name="gcash_public_key" id="gcash_public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>
@@ -330,6 +319,35 @@
                                 <div class="form-group mb-0">
                                     <label for="square_location_id" class="mr-3">{{ __("Location ID") }}</label>
                                     <input type="text" name="square_location_id" id="square_location_id" class="form-control" value="{{$location_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'ozow') )
+                    <div id="ozow_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="ozow_site_code" class="mr-3">{{ __("Site Code") }}</label>
+                                    <input type="text" name="ozow_site_code" id="ozow_site_code" class="form-control" value="{{$site_code}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="ozow_private_key" class="mr-3">{{ __("Private Key") }}</label>
+                                    <input type="password" name="ozow_private_key" id="ozow_private_key" class="form-control" value="{{$private_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="ozow_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="ozow_api_key" id="ozow_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

@@ -72,6 +72,10 @@
     var square_before_payment = "{{route('payment.square.beforePayment')}}";
     var square_create_payment = "{{route('payment.square.createPayment')}}";
 
+//////////////Ozow payment Routes
+    var ozow_before_payment = "{{route('payment.ozow.beforePayment')}}";
+    var ozow_create_payment = "{{route('payment.ozow.createPayment')}}";
+
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";
     var logged_in_user_email = "{{Auth::user()->email??''}}";

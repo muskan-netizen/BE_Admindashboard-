@@ -19,11 +19,25 @@ use Twilio\Rest\Client as TwilioClient;
 use App\Models\{Client, Category, Product, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, Vendor, VendorCategory};
 
 class BaseController extends Controller{
+
+    use \App\Http\Traits\smsManager;
+
     private $field_status = 2;
 	protected function sendSms($provider, $sms_key, $sms_secret, $sms_from, $to, $body){
         try{
-            $client = new TwilioClient($sms_key, $sms_secret);
-            $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+            $client_preference =  getClientPreferenceDetail();
+            if($client_preference->sms_provider == 1)
+            {
+                $client = new TwilioClient($sms_key, $sms_secret);
+                $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+            }elseif($client_preference->sms_provider == 2) //for mtalkz gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mTalkz_sms($to,$body,$crendentials);
+            }else{
+                $client = new TwilioClient($sms_key, $sms_secret);
+                $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+            }
         }
         catch(\Exception $e){
             return '2';
@@ -514,7 +528,8 @@ class BaseController extends Controller{
         if($result){
             $searchTerm = $result->translations->count() != 0 ? $result->translations->first()->name : ucfirst($searchTerm);
         }
-        return $plural ? $searchTerm : rtrim($searchTerm, 's');
+        return $searchTerm;
+        // return $plural ? $searchTerm : rtrim($searchTerm, 's');
     }
 
     /* doller compare amount */

@@ -29,7 +29,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow');
         $payout_codes = array('cash', 'stripe');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -188,14 +188,10 @@ class PaymentOptionController extends BaseController
                     ));
                 }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'gcash')) {
                     $validatedData = $request->validate([
-                        'gcash_merchant_account' => 'required',
-                        'gcash_api_key' => 'required',
-                        'gcash_secret_key' => 'required'
+                        'gcash_public_key' => 'required',
                     ]);
                     $json_creds = json_encode(array(
-                        'merchant_account' => $request->gcash_merchant_account,
-                        'api_key' => $request->gcash_api_key,
-                        'secret_key' => $request->gcash_secret_key
+                        'public_key' => $request->gcash_public_key,
                     ));
                 }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'simplify')) {
                     $validatedData = $request->validate([
@@ -217,6 +213,18 @@ class PaymentOptionController extends BaseController
                         'application_id' => $request->square_application_id,
                         'api_access_token' => $request->square_access_token,
                         'location_id' => $request->square_location_id,
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'ozow')) {
+                    $validatedData = $request->validate([
+                        'ozow_site_code' => 'required',
+                        'ozow_private_key' => 'required',
+                        'ozow_api_key' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'site_code' => $request->ozow_site_code,
+                        'private_key' => $request->ozow_private_key,
+                        'api_key' => $request->ozow_api_key,
                     ));
                 }
             }

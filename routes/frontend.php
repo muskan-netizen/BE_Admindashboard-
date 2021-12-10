@@ -32,6 +32,10 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::get('payment/gateway/returnResponse', 'Front\PaymentController@getGatewayReturnResponse')->name('payment.gateway.return.response');
 
+	////check Shiprocket
+	Route::get('carrier/test/shiprocket','ShiprocketController@checkShiprocket')->name('carrier.test.shiprocket');
+	Route::post('shiprocket_webhook','ShiprocketController@shiprocketWebhook')->name('carrier.webhook.shiprocket');
+
 
 	// Stripe
 	Route::post('payment/stripe', 'Front\StripeGatewayController@postPaymentViaStripe')->name('payment.stripe');
@@ -72,6 +76,10 @@ Route::group(['middleware' => ['domain']], function () {
 	//Square
 	Route::match(['get','post'],'payment/square/page','Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square','Front\SquareController@createPayment')->name('payment.square.createPayment');
+
+	//Ozow
+	Route::match(['get','post'],'payment/ozow/page','Front\OzowController@beforePayment')->name('payment.ozow.beforePayment');
+	Route::post('payment/ozow','Front\OzowController@createPayment')->name('payment.ozow.createPayment');
 
 
 
