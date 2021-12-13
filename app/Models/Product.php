@@ -176,8 +176,11 @@ class Product extends Model{
        $delay_order_hrs = $this->attributes['dropoff_delay_order_hrs'];
        $delay_order_min = $this->attributes['dropoff_delay_order_min'];
 
+       $delay_order_hrs_pick = $this->attributes['pickup_delay_order_hrs'];
+       $delay_order_min_pick = $this->attributes['pickup_delay_order_min'];
+
        if($delay_order_hrs > 0 || $delay_order_min > 0){
-         $total_minutues = ($delay_order_hrs * 60) + $delay_order_min;
+         $total_minutues = (($delay_order_hrs+$delay_order_hrs_pick) * 60) + ($delay_order_min+$delay_order_min_pick);
 
          $date = Carbon::now()
               ->addMinutes($total_minutues)

@@ -930,7 +930,6 @@
    "Showing _START_ to _END_  of _TOTAL_ entries" : "Mostrando _START_ a _END_ de _TOTAL_ entradas",
    "Search By " : "Buscar por",
    "Create a free account and join us!": "¡Crea una cuenta gratis y únete a nosotros!",
-  
    "Enter Pickup Location" : "Ingrese el lugar de recogida",
    "Enter Drop Location" : "Ingrese la ubicación de la entrega",
    "Request Now" : "Solicitar ahora",
@@ -955,6 +954,5 @@
    "Email Or Phone Number" : "Correo electrónico o número de teléfono",
    "Forgot" : "Olvidó",
    "CONTINUE" : "SEGUIR",
-   "Your Location" : "Tu ubicación",
-
+   "Your Location" : "Tu ubicación"
 }

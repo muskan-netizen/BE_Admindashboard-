@@ -78,8 +78,9 @@
 </style>
 @endsection
 @section('content')
-<div class="container-fluid">
-    <div class="row">
+<div class="container-fluid"><a href="{{route('vendor.edit')}}">{{ $product->vendor->name}} </a>
+    <div class="row"> 
+           
         <div class="col-8 d-flex align-items-center">
             <div class="page-title-box">
                 <h4 class="page-title">{{ __("Edit Product") }}</h4>
