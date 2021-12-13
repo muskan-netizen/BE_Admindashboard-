@@ -40,29 +40,18 @@ class CMSPageController extends BaseController
 
     public function getPageDetail(Request $request)
     {
+        $data = [];
         $page_id = $request->page_id ? $request->page_id : 3;
-        // $page = Page::select('id', 'slug')->with(['primary' => function($query) {
-        //             $query->where('is_published', 1);
-        //         }])->where('id', $page_id)->firstOrFail();
-        // $page->title = $page->primary->title;
-        // $page->description = $page->primary->description;
-        // unset($page->primary);
-        
-        // $page = PageTranslation::leftJoin('pages', function ($join) {
-        //     $join->on('pages.id', '=', 'page_translations.page_id');
-        // })
-        //     ->where(['page_translations.id' => $page_id, 'page_translations.is_published' => 1])
-        //     ->first([
-        //         'page_translations.id',
-        //         'pages.slug',
-        //         'page_translations.title',
-        //         'page_translations.description',
-        //     ]);
+        $code = $request->header('code');
+        $client = Client::where('code',$code)->first();
+        $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/";
+
+        $data['terms_and_conditions'] = $server_url . 'page/terms-conditions';
+        $data['privacy_policy'] = $server_url . 'page/privacy-policy';
 
         $user = Auth::user();
         $langId = $user->language;
         $client_preferences = ClientPreference::first();
-        $data = [];
         
         $page_detail = Page::with(['translations' => function ($q) use($langId) {
             $q->where('language_id', $langId);
@@ -75,8 +64,6 @@ class CMSPageController extends BaseController
             $data['vendor_registration_documents'] = $vendor_registration_documents;
         } 
         else {
-            $client = Client::with('country')->first();
-            $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/";
             $driver_types = array(
                 ['name' => 'type', 'title' => 'Employee', 'value' => 'Employee'],
                 ['name' => 'type', 'title' => 'Freelancer', 'value' => 'Freelancer']

@@ -731,6 +731,32 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </div>
                      </div>
                   </div>
+
+                  <!-- For mTalkz -->
+                  <div class="row sms_fields mx-0" id="mazinhost_fields" style="display : {{$preference->sms_provider == 3 ? 'flex' : 'none'}};">
+                     <div class="col-12">
+                        <div class="form-group mb-3">
+                           <label for="mazinhost_api_key">{{ __("API Key") }}</label>
+                           <input type="text" name="mazinhost_api_key" id="mazinhost_api_key" placeholder="" class="form-control" value="{{ old('mazinhost_api_key', $sms_crendential->api_key ?? '')}}">
+                           @if($errors->has('mazinhost_api_key'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('mazinhost_api_key') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+                     </div>
+                     <div class="col-12">
+                        <div class="form-group mb-3">
+                           <label for="mazinhost_sender_id">{{ __("Sender ID") }}</label>
+                           <input type="text" name="mazinhost_sender_id" id="mazinhost_sender_id" placeholder="" class="form-control" value="{{ old('mazinhost_sender_id', $sms_crendential->sender_id ?? '')}}">
+                           @if($errors->has('mazinhost_sender_id'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('mazinhost_sender_id') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+                     </div>
+                  </div>
                   <div class="col-md-2">
                      <div class="form-group mb-0 text-center">
                         <button class="btn btn-info btn-block" type="submit"> {{ __("Save") }} </button>

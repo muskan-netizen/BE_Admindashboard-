@@ -19,6 +19,7 @@ use App\Models\AutoRejectOrderCron;
 class OrderController extends BaseController
 {
     use ApiResponser;
+    use \App\Http\Traits\OrderTrait;
     /**
      * Display a listing of the resource.
      *
@@ -514,6 +515,7 @@ class OrderController extends BaseController
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
+                $this->ProductVariantStoke($order_id);
                 DB::commit();
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
             }

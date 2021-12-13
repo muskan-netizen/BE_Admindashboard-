@@ -15,7 +15,7 @@
                         <i class="fa fa-times ml-1" aria-hidden="true"></i>
                     </li>
                 </ul>
-                <a class="add-more-location position-relative pl-2" href="javascript:void(0)">Add Destination</a>
+                <a class="add-more-location position-relative pl-2" href="javascript:void(0)">{{_("Add Destination")}}</a>
             </div>
             <div class="location-list style-4 d-none">
                 <a class="search-location-result position-relative d-block" href="#">

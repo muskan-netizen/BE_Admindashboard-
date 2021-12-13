@@ -212,7 +212,7 @@
                 </div>
                 <% if((result.faqlist) && (result.faqlist) > 0 ){ %>
                 <div class="text-center my-3 btn-product-order-form-div">
-                    <button class="clproduct_order_form btn btn-solid w-100"  id="add_product_order_form"  data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" >Product Order Form</button>
+                    <button class="clproduct_order_form btn btn-solid w-100"  id="add_product_order_form"  data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" >{{__('Product Order Form')}}</button>
                 </div> 
                 <% } %>
                 <div class="form-group pmd-textfield pmd-textfield-floating-label" style="display:none;" id="schedule_datetime_main_div">

@@ -8,27 +8,24 @@ trait smsManager{
 
   public function __construct()
   {
-    $this->api_key = "U8RSSodH6KUq1ZHG";
-    $this->sender_id = "690909";
-    $this->api_url = "http://msg.mtalkz.com/V2/http-api-post.php";
+    //
   }
 
-    public function sendMessage($data)
-    {
-        $data = [
-            'apikey' => $this->api_key,
-            'sender_id' => 'BIGSMS',
-            'number' => $data['numbers'],
-            'message' => $data['message']??"Testing",
-            'format' => 'json'
-        ];
-    }
 
     public function mTalkz_sms($to,$message,$crendentials)
     {
         $api_url = "http://msg.mtalkz.com/V2/http-api.php";
         $to_number = substr($to, 1);
         $endpoint = $api_url.'?apikey='.$crendentials->api_key.'&senderid='.$crendentials->sender_id.'&number='.$to_number.'&message='.$message.'&format=json';
+        $response=$this->getGuzzle($endpoint);
+        return $response;
+    }
+
+    public function mazinhost($to,$message,$crendentials)
+    {
+        $api_url = " https://mazinhost.com/smsv1/sms/api";
+        $to_number = substr($to, 1);
+        $endpoint = $api_url.'?action=send-sms&apikey='.$crendentials->api_key.'&to='.$to_number.'&from='.$crendentials->sender_id.'&message='.$message.'&format=json';
         $response=$this->getGuzzle($endpoint);
         return $response;
     }

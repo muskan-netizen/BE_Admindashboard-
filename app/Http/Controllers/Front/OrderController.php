@@ -53,7 +53,7 @@ use Redirect;
 class OrderController extends FrontController
 {
     use ApiResponser;
-
+    use \App\Http\Traits\OrderTrait;
     /**
      * Display a listing of the resource.
      *
@@ -591,6 +591,8 @@ class OrderController extends FrontController
     }
     public function placeOrder(Request $request, $domain = '')
     {
+        //$stock = $this->ProductVariantStoke('18');
+
         // dd($request->all());
         // if ($request->input("payment-group") == '1') {
         //     $langId = Session::get('customerLanguage');
@@ -1255,6 +1257,7 @@ class OrderController extends FrontController
                     }
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
+                $this->ProductVariantStoke($order_id);
                 DB::commit();
                 $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
             }

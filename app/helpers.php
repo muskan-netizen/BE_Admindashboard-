@@ -3,6 +3,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
+use App\Models\ProductVariant;
 use App\Models\ClientPreference;
 use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
@@ -147,4 +148,17 @@ function dateTimeInUserTimeZone($date, $timezone, $showDate=true, $showTime=true
 
 function helper_number_formet($number){
     return number_format($number,2);
+}
+function productvariantQuantity($variantId ,$type=1){
+    if($type==1){
+        $ProductVariant =  ProductVariant::where('id',$variantId)
+        ->select('quantity')->first();
+    }else{
+        $ProductVariant =  ProductVariant::where('sku',$variantId)
+        ->select('quantity')->first();
+    }
+    if($ProductVariant){
+    return  $ProductVariant->quantity;
+    }
+    return "variant not found";
 }

@@ -140,9 +140,15 @@
 <script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
 <script src="{{asset('assets/libs/clockpicker/clockpicker.min.js')}}"></script>
 
+
+
+@if(in_array('razorpay',$client_payment_options)) 
 <!-- RazourPay Payment Gateway -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <!-- RazourPay Payment Gateway -->
+@endif
+
+
 
 <!--WaitMe Loader Script -->
 <script src="{{asset('js/waitMe.min.js')}}"></script>

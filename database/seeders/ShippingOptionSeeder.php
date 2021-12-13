@@ -24,7 +24,7 @@ class ShippingOptionSeeder extends Seeder
       	if($option_count == 0)
       	{
         	DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        	DB::table('payment_options')->truncate();
+        	DB::table('shipping_options')->truncate();
         	DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         	DB::table('shipping_options')->insert($shipping_options);

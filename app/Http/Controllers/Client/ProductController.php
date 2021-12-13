@@ -64,7 +64,7 @@ class ProductController extends BaseController
     {
         $rules = array(
             'sku' => 'required|unique:products',
-            'url_slug' => 'required',
+            'url_slug' => 'required|unique:products',
             'category' => 'required',
             'product_name' => 'required',
         );

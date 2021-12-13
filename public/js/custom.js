@@ -324,7 +324,7 @@ $(document).ready(function() {
     // $(".toggle-nav").click(function() {
     //     $("body").toggleClass("overflow-hidden");
     // });
-    
+
     $(".toggle-password").click(function() {
         $(this).toggleClass("eye");
         var input = $($(this).attr("toggle"));
@@ -335,7 +335,7 @@ $(document).ready(function() {
         }
     });
 
-    
+
     $(".mobile-search-btn").click(function() {
         $(".radius-bar").slideToggle();
     });
@@ -737,8 +737,6 @@ $(document).ready(function() {
                 return false;
             }
         }
-
-
 
         let cartAmount = $("input[name='cart_total_payable_amount']").val();
         let comment_for_pickup_driver = $("input[name='comment_for_pickup_driver']").val(); //commnet for pickup
@@ -1495,7 +1493,7 @@ $(document).ready(function() {
         } else if (payment_option_id == 10) {
             paymentViaRazorpay_wallet('', payment_option_id);
         }else if (payment_option_id == 11) {
-            paymentViaGCash('', payment_option_id);
+            paymentViaGCash('', '');
         }else if (payment_option_id == 12) {
             paymentViaSimplify('', '');
         }else if (payment_option_id == 13) {
@@ -2213,7 +2211,7 @@ $(document).ready(function() {
             }
             else if($(this).hasClass('repeat-customize') && !$(this).hasClass('m-open') ){
                 getLastAddedProductVariant(this, cart_id, product_id, addon);
-            }else{												  
+            }else{
                 $(this).prev().val(++qty);
                 $(this).find('.fa').removeClass("fa-plus").addClass("fa-spinner fa-pulse");
                 updateProductQuantity(product_id, cartproduct_id, qty, base_price, this);

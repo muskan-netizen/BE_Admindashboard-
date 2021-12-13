@@ -929,9 +929,32 @@
    "Export CSV" : "Exportar CSV",
    "Showing _START_ to _END_  of _TOTAL_ entries" : "Mostrando _START_ a _END_ de _TOTAL_ entradas",
    "Search By " : "Buscar por",
-   "Pickup & Delivery Dashboard" : "Panel de Delivery",
-   "Create a free account and join us!": "¡Crea una cuenta gratis y únete a nosotros!"
-
-
+   "Create a free account and join us!": "¡Crea una cuenta gratis y únete a nosotros!",
+  
+   "Enter Pickup Location" : "Ingrese el lugar de recogida",
+   "Enter Drop Location" : "Ingrese la ubicación de la entrega",
+   "Request Now" : "Solicitar ahora",
+   "Schedule For Later" : "Programar para más tarde",
+   "Quick Links" : "enlaces rápidos",
+   "Add Destination" : "Agregar destino",
+   "Add Stop" : "Agregar parada",
+   "Allow Location Access" : "Permitir acceso a la ubicación",
+   "Your Current Location" : "Su ubicación actual",
+   "Product Order Form" : "Formulario de pedido de producto",
+   "Cash" : "dinero en efectivo",
+   "Wallet/Card" : "Tarjeta de cartera",
+   "Pickup" : "Levantar",
+   "Order ID" : "Solicitar ID",
+   "Amount Paid" : "Cantidad pagada",
+   "ETA" : "HPI",
+   "Status" : "Estado",
+   "You Have Arrived At your Destination" : "Ha llegado a su destino",
+   " My Wishlist" : "mi lista de deseos",
+   "Your Refrral Code" : "Su código de referencia",
+   "GMT Time Zone" : "Zona horaria GMT",
+   "Email Or Phone Number" : "Correo electrónico o número de teléfono",
+   "Forgot" : "Olvidó",
+   "CONTINUE" : "SEGUIR",
+   "Your Location" : "Tu ubicación",
 
 }

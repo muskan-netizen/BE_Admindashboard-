@@ -46,7 +46,7 @@ $(document).ready(function () {
         // });
     }
     else{
-        // $(".shimmer_effect").hide();
+        $(".shimmer_effect").hide();
     }
 
     $(".age_restriction_no").click(function () {

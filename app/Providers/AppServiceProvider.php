@@ -67,6 +67,7 @@ class AppServiceProvider extends ServiceProvider
         $stripe_publishable_key = (isset($stripe_creds_arr->publishable_key) && (!empty($stripe_creds_arr->publishable_key))) ? $stripe_creds_arr->publishable_key : '';
         $yoco_public_key = (isset($yoco_creds_arr->public_key) && (!empty($yoco_creds_arr->public_key))) ? $yoco_creds_arr->public_key : '';
         $last_mile_common_set = $this->checkIfLastMileDeliveryOn();
+        $client_payment_options = PaymentOption::where('status', 1)->pluck('code')->toArray();
 
 
         view()->share('last_mile_common_set', $last_mile_common_set);
@@ -79,6 +80,7 @@ class AppServiceProvider extends ServiceProvider
         view()->share('stripe_publishable_key', $stripe_publishable_key);
         view()->share('yoco_public_key', $yoco_public_key);
         view()->share('client_preference_detail', $client_preference_detail);
+        view()->share('client_payment_options', $client_payment_options);
        
        
     }

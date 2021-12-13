@@ -26,6 +26,12 @@ class SmsProviderSeeder extends Seeder
                 'keyword' => 'mTalkz',
                 'status' => '1'
             ),
+            array(
+                'id' => 3,
+                'provider' => 'Mazinhost Service',
+                'keyword' => 'mazinhost',
+                'status' => '1'
+            ),
         ); 
         \DB::table('sms_providers')->insert($maps);
     }

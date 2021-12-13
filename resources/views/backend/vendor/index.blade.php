@@ -90,7 +90,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-12 col-lg-12 tab-product vendor-products pt-0">
+        <div class="col-sm-12 col-lg-12 tab-product vendor-products pt-0 invisible">
             <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="active-vendor" data-toggle="tab" href="#active_vendor" role="tab" aria-selected="false" data-rel="vendor_active_datatable" data-status="1">

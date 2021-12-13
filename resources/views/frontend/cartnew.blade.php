@@ -198,6 +198,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </div>
                         </div>
                     <% } %>
+                    <% if( (vendor_product.product_out_of_stock == 1 ) ) { %>
+                        <div class="col-12">
+                            <div class="text-danger" style="font-size:12px;">
+                                <i class="fa fa-exclamation-circle"></i>{{__("This Product is out of stock")}}
+                            </div>
+                        </div>
+                    <% } %>
                 </div>
 
                 <hr>
@@ -238,7 +245,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.product_total_amount) %></p>
                         </div>
                     </div>
-                   
+
                 </div>
             </div>
         </div>
@@ -533,8 +540,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <div class="inner_spacing px-0">
                                         <div class="product-description">
                                             <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="card_title mb-1 ellips"><%= product.translation_title %></h6>                                                                                    
-                                                <!--<span class="rating-number">2.0</span>-->                                
+                                                <h6 class="card_title mb-1 ellips"><%= product.translation_title %></h6>
+                                                <!--<span class="rating-number">2.0</span>-->
                                             </div>
                                             <p><%= product.vendor_name %></p>
                                             <p class="border-bottom pb-1">In <%= product.category_name %></p>
@@ -584,8 +591,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <div class="inner_spacing px-0">
                                         <div class="product-description">
                                             <div class="d-flex align-items-center justify-content-between">
-                                                <h6 class="card_title mb-1 ellips"><%= product.translation_title %></h6>                                                                                    
-                                                <!--<span class="rating-number">2.0</span>-->                                
+                                                <h6 class="card_title mb-1 ellips"><%= product.translation_title %></h6>
+                                                <!--<span class="rating-number">2.0</span>-->
                                             </div>
                                             <!-- <h3 class="m-0"><%= product.translation_title %></h3> -->
                                             <p><%= product.vendor_name %></p>

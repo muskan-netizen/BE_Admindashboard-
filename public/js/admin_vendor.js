@@ -118,6 +118,9 @@ $(document).ready(function() {
                 buttons: [],
                 ajax: {
                   url: base_url+'/client/vendor/filterdata',
+                  complete: function(){
+                    $('.vendor-products').removeClass('invisible');
+                  },
                   data: function (d) {
                     d.status = status;
                     d.search = $('input[type="search"]').val();

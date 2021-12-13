@@ -13,7 +13,7 @@ do{
 } while(!empty($subParent));
 $breadcrumb = '<li class="breadcrumb-item align-items-center"><a href="'.route("userHome").'">'. __("Home") .'</a></li>'.$breadcrumb;
 @endphp
-<div class="breadcrumb-section bg-transparent pt-0">
+<div class="breadcrumb-section bg-transparent">
     <div class="container">
         <div class="row">
             <div class="col-sm-12">

@@ -600,6 +600,7 @@ class CartController extends FrontController
             $pickup_delay_date = 0;
             $dropoff_delay_date = 0;
             $total_service_fee = 0;
+            $product_out_of_stock = 0;
             foreach ($cartData as $ven_key => $vendorData) {
                 $is_promo_code_available = 0;
                 $vendor_products_total_amount = $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
@@ -636,6 +637,18 @@ class CartController extends FrontController
                 }
 
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
+
+
+
+                    if($prod->product->sell_when_out_of_stock == 0){
+                        $quantity_check = productvariantQuantity($prod->variant_id);
+                        if($quantity_check < $prod->quantity ){
+                            $delivery_status = 0;
+                            $product_out_of_stock = 1;
+                        }
+                    }
+                    $prod->product_out_of_stock =  $product_out_of_stock;
+
                     if($cart_dinein_table_id > 0){
                         $prod->update(['vendor_dinein_table_id' => $cart_dinein_table_id]);
                     }
@@ -731,6 +744,7 @@ class CartController extends FrontController
                             $q->where('language_id', $langId);
                         }])->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating')
                         ->where('url_slug', $prod->product->url_slug)
+                        ->where('is_live', 1)
                         ->first();
                     $doller_compare = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
                     $up_prods = $this->metaProduct($langId, $doller_compare, 'upSell', $product->upSell);
@@ -746,7 +760,7 @@ class CartController extends FrontController
                     if (isset($vendorData->coupon->promo)) {
                         if ($vendorData->coupon->promo->promo_type_id == 2) {
                             $total_discount_percent = $vendorData->coupon->promo->amount;
-                            $payable_amount -= $total_discount_percent; 
+                            $payable_amount -= $total_discount_percent;
                             $coupon_amount_used = $total_discount_percent;
                         } else {
                             $gross_amount = number_format(($payable_amount - $taxable_amount), 2, '.', '');
@@ -1304,7 +1318,7 @@ class CartController extends FrontController
             CartAddon::where('cart_id',$request->cart_id)->where('cart_product_id',$request->cart_product_id)->where('addon_id',$addon_ids[0])->delete();
             else
             CartAddon::where('cart_id',$request->cart_id)->where('cart_product_id',$request->cart_product_id)->delete();
-                   
+
                     if (count($addon_options) > 0) {
                         $saveAddons = array();
                         foreach ($addon_options as $key => $opts) {

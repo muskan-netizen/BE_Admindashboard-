@@ -30,7 +30,7 @@ trait GCashpaymentManager{
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
       CURLOPT_CUSTOMREQUEST => 'POST',
       CURLOPT_POSTFIELDS => array(
-      'x-public-key' => ' pk_test_6816779fa0fbfa26805b7cd798cc31da',
+      'x-public-key' => $this->public_key,
       'amount' => '100',
       'description' => 'Payment for services rendered',
       'customername' => Auth::user()->name??'',
@@ -43,30 +43,11 @@ trait GCashpaymentManager{
       'redirectsuccessurl' => 'https://sales.alerthire.com',
       'redirectfailurl' => 'https://sales.alerthire.com',
       'returnUrl' => 'https://sales.alerthire.com'
-      ),
+      )));
 
 
     $response = curl_exec($curl);
     curl_close($curl);
     return json_decode($response);
-  }
-
-  public function createLink($data)
-  {
-    $endpoint="/paymentLinks";
-    $request = [
-      "reference" => rand(100000,999999),
-      "amount"=> [
-        "value"=> 4200,
-        "currency"=> "EUR"
-      ],
-      "shopperReference"=> "eryetrgfggfhfgh",
-      "description"=> "Blue Bag - ModelM671",
-      "countryCode"=> "NL",
-      "merchantAccount"=> $this->merchant_account,
-      "shopperLocale"=> "nl-NL"
-    ];
-    $response=$this->postCurl($endpoint,$request);
-    return $response;
   }
 }

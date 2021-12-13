@@ -25,6 +25,7 @@ class OrderController extends BaseController
 {
 
     use ApiResponser;
+    use \App\Http\Traits\OrderTrait;
     /**
      * Display a listing of the resource.
      *
@@ -413,6 +414,9 @@ class OrderController extends BaseController
                 if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
                     $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                     $response = Http::get($dispatch_traking_url);
+                }
+                if($request->status_option_id == 2){
+                    $this->ProductVariantStoke($request->order_id);
                 }
                 DB::commit();
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
