@@ -22,7 +22,7 @@
     </div>
     @forelse($listData as $key => $data)
     <section class="scrolling_section" id="{{$data->category->slug}}">
-        <h2 class="category-head mt-0 mb-3">{{$data->category->translation_one->name}} ({{$data->products_count}})</h2>
+        <h2 class="category-head mt-0 mb-3">{{$data->category->translation_title}} ({{$data->products_count}})</h2>
         @if(!empty($data->products))
             @forelse($data->products as $prod)
             <div class="row cart-box-outer product_row classes_wrapper no-gutters mb-3" data-p_sku="{{ $prod->sku }}" data-slug="{{ $prod->url_slug }}">

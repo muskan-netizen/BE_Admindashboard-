@@ -280,7 +280,7 @@
                                                                     <img alt="{{ $product->id }}" class="rounded-circle"
                                                                         src="{{ $product->media[0]->image->path['proxy_url'] . '30/30' . $product->media[0]->image->path['image_path'] }}">
                                                                 @else
-                                                                    {{ $product->sku }}
+                                                                    {{-- {{ $product->sku }} --}}
                                                                 @endif
                                                             </td>
                                                             <td> <a href="{{ route('product.edit', $product->id) }}"

@@ -78,7 +78,8 @@
 </style>
 @endsection
 @section('content')
-<div class="container-fluid"><a href="{{route('vendor.edit')}}">{{ $product->vendor->name}} </a>
+<div class="container-fluid">
+   
     <div class="row"> 
            
         <div class="col-8 d-flex align-items-center">
@@ -97,6 +98,7 @@
             <button type="button" class="btn btn-info waves-effect waves-light text-sm-right saveProduct"> {{ __("Submit") }}</button>
         </div>
     </div>
+    <a href="{{route('vendor.catalogs',$product->vendor_id)}}">{{ $product->vendor->name}} </a>
     <div class="row mb-2">
         <div class="col-sm-12">
             <div class="text-sm-left">

@@ -22,9 +22,7 @@
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcherOnDemand" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (On Demand Services)") }} </button>
             @endif
             </div>
-            @if($client_preferences->need_laundry_service == 1 && in_array($client_preferences->business_type, ['laundry']))
-            <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcherLaundry" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (Laundry Services)") }} </button>
-            @endif
+           
             @endif
         </div>
     </div>
