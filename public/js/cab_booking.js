@@ -383,9 +383,6 @@ $(document).ready(function () {
                         }
                        // $('.cab-booking-main-loader').hide();
                     }
-                },
-                complete:function(data){
-                    $('.cab-booking-main-loader').hide();
                 }
             });
         }
@@ -431,6 +428,9 @@ $(document).ready(function () {
                         $("#search_product_main_div ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
                     }
                 }
+            },
+            complete:function(data){
+                $('.cab-booking-main-loader').hide();
             }
         });
     });

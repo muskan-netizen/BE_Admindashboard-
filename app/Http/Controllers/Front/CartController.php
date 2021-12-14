@@ -8,7 +8,7 @@ use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,CartManager};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\PromoCodeController;
@@ -16,7 +16,7 @@ use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCur
 
 class CartController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser,CartManager;
 
     private function randomString()
     {
@@ -758,21 +758,32 @@ class CartController extends FrontController
                 }
                 if ($vendorData->coupon) {
                     if (isset($vendorData->coupon->promo)) {
-                        if ($vendorData->coupon->promo->promo_type_id == 2) {
-                            $total_discount_percent = $vendorData->coupon->promo->amount;
-                            $payable_amount -= $total_discount_percent;
-                            $coupon_amount_used = $total_discount_percent;
-                        } else {
-                            $gross_amount = number_format(($payable_amount - $taxable_amount), 2, '.', '');
-                            $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
-                            $payable_amount -= $percentage_amount;
-                            $coupon_amount_used = $percentage_amount;
+                        if($vendorData->coupon->promo->minimum_spend <= $payable_amount)
+                        {
+                            if ($vendorData->coupon->promo->promo_type_id == 2) {
+                                $total_discount_percent = $vendorData->coupon->promo->amount;
+
+                                $payable_amount -= $total_discount_percent;
+                                $coupon_amount_used = $total_discount_percent;
+                            } else {
+                                $gross_amount = number_format(($payable_amount - $taxable_amount), 2, '.', '');
+                                $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
+                                $payable_amount -= $percentage_amount;
+                                $coupon_amount_used = $percentage_amount;
+                            }
+                        }else{
+                            
+                            $cart->coupon()->delete();
+                            $vendorData->coupon()->delete();
+                            unset($vendorData->coupon);
                         }
+
                     }
                 }
                 if (in_array(1, $subscription_features)) {
                     $subscription_discount = $subscription_discount + $delivery_fee_charges;
                 }
+                $subtotal_amount = $payable_amount;
                 $payable_amount = $payable_amount + $deliver_charge;
                 //Start applying service fee on vendor products total
                 $vendor_service_fee_percentage_amount = 0;
@@ -790,6 +801,7 @@ class CartController extends FrontController
                 $vendorData->discount_percent = number_format($discount_percent, 2, '.', '');
                 $vendorData->taxable_amount = number_format($taxable_amount, 2, '.', '');
                 $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount), 2, '.', '');
+                $vendorData->product_sub_total_amount = number_format($subtotal_amount, 2, '.', '');
                 $vendorData->isDeliverable = 1;
                 $vendorData->is_vendor_closed = $is_vendor_closed;
                 // if (!empty($subscription_features)) {
@@ -1036,7 +1048,7 @@ class CartController extends FrontController
 
         }
 
-         $cartProduct->quantity = $request->quantity;
+        $cartProduct->quantity = $request->quantity;
         $cartProduct->save();
 
         return response()->json("Successfully Updated");

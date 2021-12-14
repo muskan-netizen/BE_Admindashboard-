@@ -77,9 +77,10 @@ class CategoryController extends BaseController
 
     public function listData($langId, $category_id, $type = '', $limit = 12, $userid, $product_list, $mod_type, $mode_of_service = null)
     {
+        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->where('id', '>', 0)->first();
+        
         if ($type == 'vendor' && $product_list == 'false') {
             $user = Auth::user();
-            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $vendor_ids = [];
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
             foreach ($vendor_categories as $vendor_category) {
@@ -217,13 +218,23 @@ class CategoryController extends BaseController
             return $products;
         } elseif ($type == 'Pickup/Delivery' || $type == 'pickup/delivery') {
             $vendor_ids = [];
+            $user = Auth::user();
+            $pickup_latitude = $user->latitude ? $user->latitude : '';
+            $pickup_longitude = $user->longitude ? $user->longitude : '';
+            
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
             foreach ($vendor_categories as $vendor_category) {
                 if (!in_array($vendor_category->vendor_id, $vendor_ids)) {
                     $vendor_ids[] = $vendor_category->vendor_id;
                 }
             }
-            $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')->where('status', '!=', $this->field_status)->whereIn('id', $vendor_ids)->with('slot', 'products')->paginate($limit);
+            $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
+            
+            $vendorData = $vendorData->whereHas('serviceArea', function($query) use($pickup_latitude, $pickup_longitude){
+                $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
+            });
+            
+            $vendorData = $vendorData->where('status', 1)->whereIn('id', $vendor_ids)->with('slot', 'products')->paginate($limit);
             // $avgRating = $vendorData->products->avg('averageRating');
             // $vendorData->avgRating = "fmwjkenf";
             foreach ($vendorData as $vendor) {

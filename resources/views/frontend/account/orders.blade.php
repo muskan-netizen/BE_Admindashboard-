@@ -487,9 +487,7 @@
                                                                                 class="grand_total d-flex align-items-center justify-content-between">
                                                                                 <label
                                                                                     class="m-0">{{ __('Total Payable') }}</label>
-                                                                                <span>{{ Session::get('currencySymbol') }}@money($order->payable_amount
-                                                                                    - $order->total_discount_calculate *
-                                                                                    $clientCurrency->doller_compare)</span>
+                                                                                <span>{{ Session::get('currencySymbol') }}@money($order->payable_amount)</span>
                                                                             </li>
                                                                         </ul>
                                                                     </div>

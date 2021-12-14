@@ -953,5 +953,7 @@
    "Email Or Phone Number" : "Correo electrónico o número de teléfono",
    "Forgot" : "Olvidó",
    "CONTINUE" : "SEGUIR",
-   "Delivering To" : "Tu ubicación"
+   "Your Location" : "Tu ubicación",
+   "Request a ride now" : "Solicite un viaje ahora"
+
 }

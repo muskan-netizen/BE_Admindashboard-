@@ -722,7 +722,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="card-box mb-0">
-                        <h1>Request a ride now</h1>
+                        <h1>{{__('Request a ride now')}}</h1>
                         <form action="" class="cab-booking-form">
 
                             <div class="cab-input">

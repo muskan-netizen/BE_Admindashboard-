@@ -50,11 +50,11 @@ class PickupDeliveryController extends FrontController{
         }
         $vendors = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')
         ->with('slot')->withAvg('product', 'averageRating');
-        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-            $vendors = $vendors->whereHas('serviceArea', function($query) use($pickup_latitude, $pickup_longitude){
-                $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
-            });
-        }
+        
+        $vendors = $vendors->whereHas('serviceArea', function($query) use($pickup_latitude, $pickup_longitude){
+            $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
+        });
+        
         $vendors = $vendors->whereIn('id', $vendor_ids)
         ->where('delivery', 1)
         ->where('status', 1)
