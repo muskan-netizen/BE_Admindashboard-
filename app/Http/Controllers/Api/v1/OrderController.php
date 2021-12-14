@@ -1222,6 +1222,13 @@ class OrderController extends BaseController
                     $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                     $response = Http::get($dispatch_traking_url);
                 }
+
+                if ($request->order_status_option_id == 2) {
+                    $order_dispatch = $this->checkIfanyProductLastMileon($request);
+                    if ($order_dispatch && $order_dispatch == 1)
+                        $stats = $this->insertInVendorOrderDispatchStatus($request);
+                }
+
                 DB::commit();
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
                 $code = $request->header('code');
