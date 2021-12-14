@@ -104,7 +104,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     @if( (Session::get('preferences')))
                                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
                                             <div class="location-bar d-flex d-sm-none align-items-center justify-content-start mb-2 my-lg-0" href="#edit-address" data-toggle="modal">
-                                                <div class="map-icon mr-1"><span>{{__('Your Location')}}</span> <i class="fa fa-map-marker" aria-hidden="true"></i></div>
+                                                <div class="map-icon mr-1"><span>{{__('Delivering To')}}</span> <i class="fa fa-map-marker" aria-hidden="true"></i></div>
                                                 <div class="homepage-address text-left">
                                                     <h2><span data-placement="top">{{session('selectedAddress')}}</span></h2>
                                                 </div>
