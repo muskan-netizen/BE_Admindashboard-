@@ -512,7 +512,8 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                             <img src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt="">
                                         </div>
                                         @endif
-                                        {{$cate['name']}}</a>
+                                        {{$cate['name']}}
+                                    </a>
                                     @if(!empty($cate['children']))
                                         <ul>
                                             @foreach($cate['children'] as $childs)

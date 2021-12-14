@@ -33,14 +33,32 @@ class PickupDeliveryController extends FrontController{
     }
 
     public function postVendorListByCategoryId(Request $request, $domain = '',$category_id = 0){
+        $preferences = ClientPreference::select('is_hyperlocal')->where('id', '>', 0)->first();
         $vendor_ids = [];
+        $pickup_latitude = '';
+        $pickup_longitude = '';
+        $locations = $request->has('locations') ? json_decode($request->get('locations')) : [];
+        if(count($locations) > 0){
+            $pickup_latitude = $locations[0] ? $locations[0]->latitude : '';
+            $pickup_longitude = $locations[0] ? $locations[0]->longitude : '';
+        }
         $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
         foreach ($vendor_categories as $vendor_category) {
            if(!in_array($vendor_category->vendor_id, $vendor_ids)){
                 $vendor_ids[] = $vendor_category->vendor_id;
            }
         }
-        $vendors = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')->where('delivery', 1)->where('status', '!=', 2)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->get();
+        $vendors = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')
+        ->with('slot')->withAvg('product', 'averageRating');
+        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
+            $vendors = $vendors->whereHas('serviceArea', function($query) use($pickup_latitude, $pickup_longitude){
+                $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
+            });
+        }
+        $vendors = $vendors->whereIn('id', $vendor_ids)
+        ->where('delivery', 1)
+        ->where('status', 1)
+        ->get();
         foreach ($vendors as $vendor) {
             $vendor->is_show_category = ($vendor->vendor_templete_id == 1) ? 0 : 1;
             unset($vendor->products);

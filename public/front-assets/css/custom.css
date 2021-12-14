@@ -50,7 +50,7 @@ input[type=radio], input[type=checkbox]{
     -ms-transition: all 0.5s ease-in-out;
     -o-transition: all 0.5s ease-in-out;
     transition: all 0.5s ease-in-out;
-    z-index: 111;
+    z-index: 11;
 }
 
 .menu-navigation {
@@ -114,7 +114,7 @@ header.site-header.fixed-bar {
 .pixelstrap a:active {
     padding: 0 7px 10px;
     text-align: center;
-    width: 120px;
+    width: 100px;
     white-space: normal;
 }
 
@@ -586,7 +586,6 @@ td.items-details h4 {
 .delivery_box {
     border-radius: 5px;
     background-color: #fff;
-    padding: 16px;
 }
 
 .add-btn {
@@ -5189,7 +5188,7 @@ input.form-control.pac-target-input.gm-err-autocomplete {
 
 .menu-slider .slick-track {
     max-width: 100vw !important;
-    width: calc(100% - 50px) !important;
+    width: 100% !important;
     display: flex;
     justify-content: center;
     margin: auto !important;
@@ -5795,7 +5794,7 @@ ul#main-nav-list {
     border-bottom: 1px solid #ddd;
     padding: 20px 0;
     background: #fff;
-    z-index: 11;
+    z-index: 09;
     font-weight: 400;
     font-size: 22px;
 }
@@ -6452,6 +6451,7 @@ body .footer-theme .sub-title h4 {
 
 .list-view .supplier-rating {
     padding-left: 20px;
+    width: calc(100% - 100px);
 }
 
 .section-b-space+section,
@@ -7559,7 +7559,7 @@ body[dir="rtl"] .inner_spacing h3 {
 
     .scrollspy-menu {
         width: 100%;
-        z-index: 111;
+        z-index: 11;
         background: #fff;
         height: auto;
         top: 0;

@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
 use App\Models\{AddonOption, AddonOptionTranslation, AddonSet, AddonSetTranslation, OrderVendorProduct, Banner, MobileBanner, Brand, BrandCategory, BrandTranslation, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Category, CategoryHistory, CategoryTranslation, Celebrity, CsvProductImport, CsvVendorImport, LoyaltyCard, Order, OrderProductAddon, OrderProductPrescription, OrderProductRating, OrderProductRatingFile, OrderReturnRequest, OrderReturnRequestFile, OrderTax, OrderVendor, Payment, PaymentOption, Product, ProductAddon, ProductCategory, ProductCelebrity, ProductCrossSell, ProductImage, ProductInquiry, ProductRelated, ProductTranslation, ProductUpSell, ProductVariant, ProductVariantImage, ProductVariantSet, Promocode, PromoCodeDetail, PromocodeRestriction, ServiceArea, SlotDay, SocialMedia, Transaction, User, UserAddress, UserDevice, UserLoyaltyPoint, UserPermissions, UserRefferal, UserVendor, UserWishlist, Variant, VariantCategory, VariantOption, VariantOptionTranslation, VariantTranslation, Vendor, VendorCategory, VendorMedia, VendorOrderStatus, VendorSlot, VendorSlotDate, Wallet,CabBookingLayout,CabBookingLayoutCategory,CabBookingLayoutTranslation,AppStyling,AppStylingOption};
 use Exception;
-use Spatie\DbDumper\Databases\MySql;
+use \Spatie\DbDumper\Databases\MySql;
 
 class ClientController extends Controller{
     use ApiResponser;
@@ -457,4 +457,19 @@ class ClientController extends Controller{
              
              
      }
+
+     public function exportDb(Request $request,$databaseName){
+        $databaseName = 'royo_'.$databaseName;
+        $userName = env('DB_USERNAME');
+        $password = env('DB_PASSWORD');
+        $host = env('DB_HOST');
+        \Spatie\DbDumper\Databases\MySql::create()
+            ->setDbName($databaseName)
+            ->setUserName($userName)
+            ->setPassword($password)
+            ->setHost($host)
+            ->dumpToFile($databaseName.'.sql');
+
+     }
+     
 }

@@ -212,11 +212,13 @@
                             {{ __('Configuration') }}
                         </a>
                     </li>
+                    @if ($client_preference_detail->business_type != 'taxi')
                     <li class="nav-item">
                         <a href="{{ route('vendor.categories', $vendor->id) }}" aria-expanded="true" class="nav-link {{($tab == 'category') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
                             {{ __('Categories & Add Ons') }}
                         </a>
                     </li>
+                    @endif
                     @if ($is_payout_enabled == 1)
                         <li class="nav-item">
                             <a href="{{ route('vendor.payout', $vendor->id) }}" aria-expanded="false" class="nav-link {{ $tab == 'payout' ? 'active' : '' }} {{ $vendor->status == 1 ? '' : 'disabled' }}">
@@ -549,7 +551,7 @@
                         </div>
                         <div class="col-sm-3 mb-2">
                             {!! Form::label('title', __('Category'),['class' => 'control-label']) !!}
-                            <select class="selectize-select form-control" name="vendor_dinein_category_id" id="assignTo">
+                            <select class="selectize-select form-control" name="vendor_dinein_category_id">
                                 @foreach($dinein_categories as $dinein_category)
                                 <option value="{{$dinein_category->id}}">{{$dinein_category->title}}</option>
                                 @endforeach
@@ -799,15 +801,7 @@
 <script type="text/javascript">
     var all_coordinates = @json($all_coordinates);
     var areajson_json = all_coordinates; //{all_coordinates};
-   
-    /*function gm_authFailure() {
-
-        $('.excetion_keys').append('<span><i class="mdi mdi-block-helper mr-2"></i> <strong>Google Map</strong> key is not valid</span><br/>');
-        $('.displaySettingsError').show();
-    }*/
-
-
- 
+    
     function initialize_show() {
 
         // var myLatlng = new google.maps.LatLng("{{ $center['lat'] }}","{{ $center['lng']  }}");
@@ -848,7 +842,6 @@
                 fillOpacity: 0.35,
                 geo_name: data.name,
                 geo_pos: data.coordinates[i],
-
             });
 
             no_parking_geofences_json_geo_area.setMap(map);
@@ -1128,6 +1121,8 @@
         //         }
         //       });
         // }
+
+        if($('#calendar').length > 0){
         var calendarEl = document.getElementById('calendar');
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -1267,28 +1262,7 @@
                     }
                 });
             },
-
-            // eventDidMount: function(ev) {
-            //     var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            //     var day = ev.event.start.getDay() + 1;
-            //     $.each(days, function(key, value){
-            //         if(day == key + 1){
-            //             var startTime = ("0" + ev.event.start.getHours()).slice(-2) + ":" + ("0" + ev.event.start.getMinutes()).slice(-2);
-            //             var endTime = '';
-            //             if (ev.event.end) {
-            //                 endTime = ("0" + ev.event.end.getHours()).slice(-2) + ":" + ("0" + ev.event.end.getMinutes()).slice(-2);
-            //             }
-            //             if($("#calendar_slot_alldays_table tbody tr[data-slotDay='"+day+"']").length > 0){
-            //                 $("#calendar_slot_alldays_table tbody tr[data-slotDay='"+day+"']").html("<td>"+value+"</td><td>"+startTime+" - "+endTime+"</td>");
-            //             }else{
-            //                 $("#calendar_slot_alldays_table tbody").append("<tr data-slotDay="+day+"><td>"+value+"</td><td>"+startTime+" - "+endTime+"</td></tr>");
-            //             }
-            //         }
-            //     });
-            // },
             eventResize: function(arg) {
-                // console.log(arg.event.extendedProps);
-
             },
             eventClick: function(ev) {
                 $('#edit-slot-modal').modal({
@@ -1347,6 +1321,7 @@
         });
 
         calendar.render();
+        }
 
     });
 

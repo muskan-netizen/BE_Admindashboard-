@@ -127,7 +127,7 @@
                     </div>
                 </div>
                 <div class="table-responsive style-4">
-                    <div class="cab-button d-flex flex-nowrap align-items-center py-2" id="vendor_main_div"></div>
+                    <div class="cab-button d-flex flex-nowrap align-items-center py-2 pl-2" id="vendor_main_div"></div>
                 </div>
                 <div class="vehical-container style-4" id="search_product_main_div"></div>
             </div>
@@ -544,6 +544,7 @@ var no_coupon_available_message = "{{__('No Other Coupons Available.')}}";
 var order_tracking_details_url = "{{url('looking/order-tracking-details')}}";
 var cab_booking_promo_code_remove_url = "{{url('looking/promo-code/remove')}}";
 var apply_cab_booking_promocode_coupon_url = "{{ route('verify.cab.booking.promo-code') }}";
+var no_result_message = "{{ __('No result found. Please try a new search') }}";
 
 /// ************* product order form **************///////
 $('body').on('click', '.clproduct_order_form', function (event) {

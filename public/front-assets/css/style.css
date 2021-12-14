@@ -9,7 +9,7 @@
     font-style: normal;
     font-display: block;
   }
-  
+
   [class^="icon-"], [class*=" icon-"] {
     /* use !important to prevent issues with browser extensions that change fonts */
     font-family: 'icomoon' !important;
@@ -19,7 +19,7 @@
     font-variant: normal;
     text-transform: none;
     line-height: 1;
-    
+
     /* Enable Ligatures ================ */
     letter-spacing: 0;
     -webkit-font-feature-settings: "liga";
@@ -29,12 +29,15 @@
     font-feature-settings: "liga";
     -webkit-font-variant-ligatures: discretionary-ligatures;
     font-variant-ligatures: discretionary-ligatures;
-  
+
     /* Better Font Rendering =========== */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
+  .age-restriction img.blur-up.lazyloaded {
+    width: 150px;
+    margin: 30px 0 10px;
+}
   .icon-moon:before {
     content: "\e908";
   }
@@ -73,7 +76,7 @@
   .icon-clock:before {
     content: "\e94e";
   }
-  
+
 
 
 @charset "UTF-8";
@@ -584,7 +587,8 @@ label {
 ==========================**/
 section,
 .section-t-space {
-    padding-top: 40px;
+    padding-top: 0 !important;
+    padding-bottom: 40px;
 }
 
 .section-b-space {
@@ -6121,7 +6125,7 @@ button.btn.btn-outline:active {
 }
 
 /*=====================
-    Demo CSS 
+    Demo CSS
 ==========================*/
 .full-scroll-menu {
     position: fixed;
@@ -29055,11 +29059,11 @@ body[dir=rtl] .slick-slide {
 
     section,
     .section-t-space {
-        padding-top: 30px;
+    padding-bottom: 40px;
     }
 
     .section-b-space {
-        padding-bottom: 60px;
+        padding-bottom: 40px;
     }
 
     .portfolio-padding {
@@ -30030,7 +30034,7 @@ body[dir=rtl] .slick-slide {
 
     section,
     .section-t-space {
-        padding-top: 30px;
+    padding-bottom: 30px;
     }
 
     .section-b-space {
@@ -30997,7 +31001,7 @@ body[dir=rtl] .slick-slide {
     }
 
     .collection .section-t-space {
-        padding-top: 30px;
+        padding-bottom: 30px;
     }
 
     .collection .partition-collection>div:nth-last-child(1) {
@@ -31940,7 +31944,7 @@ body[dir=rtl] .slick-slide {
 
     section,
     .section-t-space {
-        padding-top: 40px;
+        padding-bottom: 40px;
     }
 
     .section-b-space {
@@ -33551,7 +33555,7 @@ body[dir=rtl] .slick-slide {
 
     section,
     .section-t-space {
-        padding-top: 30px;
+        padding-bottom: 30px;
     }
 
     header.left-header .top-header {

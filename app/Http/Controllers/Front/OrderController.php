@@ -60,7 +60,7 @@ class OrderController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function orders(Request $request, $domain = '')
-    {
+    { 
         $user = Auth::user();
         $currency_id = Session::get('customerCurrency');
 

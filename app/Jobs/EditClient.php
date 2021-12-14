@@ -42,15 +42,16 @@ class EditClient implements ShouldQueue
 
         $cli_code = $client->code;
         $saveData = array(
-            'name'              =>  $client->name,
-            'email'             =>  $client->email,
-            'phone_number'      =>  $client->phone_number,
-            'password'          =>  $client->password,
-            'encpass'           =>  $client->encpass,
+        //    'name'              =>  $client->name,
+        //    'email'             =>  $client->email,
+        //    'phone_number'      =>  $client->phone_number,
+        //    'password'          =>  $client->password,
+        //    'encpass'           =>  $client->encpass,
             'custom_domain'     =>  $client->custom_domain,
-            'logo'              =>  $client->logo,
-            'company_name'      =>  $client->company_name,
-            'company_address'   =>  $client->company_address,
+            'sub_domain'     =>  $client->sub_domain,
+        //    'logo'              =>  $client->logo,
+        //    'company_name'      =>  $client->company_name,
+        //    'company_address'   =>  $client->company_address,
 
         );
 

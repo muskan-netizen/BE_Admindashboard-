@@ -47,7 +47,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 </header>
 <script type="text/template" id="address_template">
     <div class="col-md-12">
-        <div class="delivery_box px-0">
+        <div class="delivery_box p-0 mb-3">
             <label class="radio m-0"><%= address.address %> <%= address.city %><%= address.state %> <%= address.pincode %>
                 <input type="radio" checked="checked" name="address_id" value="<%= address.id %>">
                 <span class="checkround"></span>

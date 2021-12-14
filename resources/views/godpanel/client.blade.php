@@ -70,7 +70,9 @@
                                         <a class="btn btn-primary-outlineaction-icon delete-client p-0" data-client_id="{{ $client->id }}" data-url="{{ URL::to('godpanel/delete/client/'.$client->id) }}">
                                             <i class="mdi mdi-delete"></i>
                                         </a>
+                                        <a href="{{route('client.exportdb',$client->database_name)}}">Db</a>
                                     </td>
+                                  
                                 </tr>
                                 @endforeach
                             </tbody>

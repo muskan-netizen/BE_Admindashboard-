@@ -25,6 +25,8 @@ class ProductsImport implements ToCollection{
         $error = array();
         $variant_exist = 0;
         foreach ($rows as $row) {
+             print_r($row);
+            exit();
             $checker = 0;
             if ($row[0] != "Handle") { //header of excel check              
 
@@ -200,6 +202,14 @@ class ProductsImport implements ToCollection{
                         }
                     }
                 }
+                if ($row[11] != "") {
+                    $proVariant = ProductVariant::where('sku', $row[11])->first();
+                    if ($proVariant) {
+                        $error[] = "Row " . $i . " : Variant Sku already exist";
+                        $checker = 1;
+                    }
+                }
+
 
                 if($row[23] != ""){
                     $brand = Brand::where('title', "LIKE", $row[23])->first();

@@ -17,6 +17,8 @@ Route::group(['prefix' => '/godpanel'], function () {
 		
 		Route::post('migrateDefaultData/{id}', 'Godpanel\ClientController@migrateDefaultData')->name('client.migrateDefaultData');
 		Route::post('singleVendorSetting/{id}', 'Godpanel\ClientController@singleVendorSetting')->name('client.update_single_vendor');
+
+		Route::get('exportDb/{dbname}', 'Godpanel\ClientController@exportDb')->name('client.exportdb');
 		
 	});
 });

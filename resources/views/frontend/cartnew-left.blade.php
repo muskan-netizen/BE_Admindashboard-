@@ -55,7 +55,7 @@
     <div class="row mb-4" id="address_template_main_div">
         @forelse($addresses as $k => $address)
         <div class="col-md-12">
-            <div class="delivery_box px-0">
+            <div class="delivery_box p-0 mb-3">
                 <label class="radio m-0">{{ ($address->house_number ?? false) ? $address->house_number."," : '' }} {{$address->address}}, {{$address->state}} {{$address->pincode}}
                     @if($address->is_primary)
                     <input type="radio" name="address_id" value="{{$address->id}}" checked="checked">

@@ -164,7 +164,6 @@ border-radius: 0;
 	border: 2px solid #ddd;
     border-radius: 5px;
 }
-
 .vendor-products .card {
 margin-top: -60px;
 background: transparent;
@@ -457,6 +456,7 @@ width: auto;
 input#is_hyperlocal {
 display: none !important;
 }
+
 .sub-header {
 margin-bottom: 16px;
 }
@@ -618,9 +618,8 @@ padding: 10px;
 .dataTables_scrollHead {
     height: 63px;
 }
-
 .dataTables_scrollBody {
-    height: 400px;
+    height: 450px;
 }
 .card_outer {
 height: calc(100vh - 234px);
@@ -643,6 +642,13 @@ margin: 0 0 20px;
 #edit-category-form .modal-lg {
 max-width: 70%;
 }
+}
+
+@media (min-width: 1300px) (max-width: 1400px) {
+    #cardCollpase4 svg {
+        padding-left: 0;
+        margin-left: -36px;
+    }
 }
 @media (max-width: 1366px) {
 #map-canvas {

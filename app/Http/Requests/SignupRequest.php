@@ -36,6 +36,7 @@ class SignupRequest extends FormRequest{
         if($preferences->verify_email == 1){
             $rules['email'] = 'required|email|unique:users';
         }
+        
         if($preferences->verify_phone == 1){
             $rules['phone_number'] = 'required|string|min:8|max:15|unique:users';
         }

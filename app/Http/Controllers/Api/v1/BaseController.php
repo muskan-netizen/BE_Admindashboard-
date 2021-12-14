@@ -186,7 +186,7 @@ class BaseController extends Controller{
                 $value->variant_multiplier = $multiplier ? $multiplier : 1;
                 $value->variant_price = (!empty($value->variant->first())) ? number_format(($value->variant->first()->price * $multiplier),2,'.','') : 0;
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
-                $value->category_name = $value->category->categoryDetail->translation->first()->name;
+                $value->category_name = $value->category->categoryDetail->translation->first()->name??null;
                 // foreach ($value->variant as $k => $v) {
                 //     $value->variant[$k]->multiplier = $multiplier;
                 // }

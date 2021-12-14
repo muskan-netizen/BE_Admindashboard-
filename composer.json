@@ -59,7 +59,7 @@
         "shippo/shippo-php": "^1.5",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "socialiteproviders/apple": "^5.0",
-        "spatie/db-dumper": "^2.21.1",
+        "spatie/db-dumper": "^2.21",
         "spatie/geocoder": "^3.10",
         "spatie/laravel-webhook-client": "^2.7",
         "spatie/laravel-webhook-server": "^2.0",

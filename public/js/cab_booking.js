@@ -197,6 +197,7 @@ $(document).ready(function () {
         let random_id = Date.now();
 
         var destination_location_names = $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
+            $(this).hide();
             if(this.value == ''){
                 return "empty";
             }
@@ -378,10 +379,13 @@ $(document).ready(function () {
                                 $('.vendor-list').first().trigger('click');
                             }
                         }else{
-                            $("#vendor_main_div").html('<p class="text-center my-3">{{ __("No result found. Please try a new search") }}</p>').show();
+                            $("#vendor_main_div").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
                         }
                        // $('.cab-booking-main-loader').hide();
                     }
+                },
+                complete:function(data){
+                    $('.cab-booking-main-loader').hide();
                 }
             });
         }
@@ -424,7 +428,7 @@ $(document).ready(function () {
                         let products_template = _.template($('#products_template').html());
                         $("#search_product_main_div").append(products_template(productData)).show();
                     }else{
-                        $("#search_product_main_div ").html('<p class="text-center my-3">{{ __("No result found. Please try a new search") }}</p>').show();
+                        $("#search_product_main_div ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
                     }
                 }
             }
@@ -557,13 +561,13 @@ $(document).ready(function () {
                         $('.address-form').addClass('d-none');
                         $('.cab-detail-box').removeClass('d-none');
                         if(response.data.faqlist > 0){
-                            console.log('innset');
+                            // console.log('innset');
                         }
                         let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                         $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
                         getDistance();
                     }else{
-                        $("#cab_detail_box ").html('<p class="text-center my-3">{{ __("No result found. Please try a new search") }}</p>').show();
+                        $("#cab_detail_box ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
                     }
                 }
             }
@@ -575,6 +579,9 @@ $(document).ready(function () {
         $(".check-dropoff-secpond").css("display", "none");
         $('.check-pickup').attr("style", "display: block !important");
         $('.check-dropoff').attr("style", "display: none !important");
+        $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
+            $(this).hide();
+        }).get();
     });
 
     $(document).on("click","#get-current-location",function() {
@@ -661,10 +668,7 @@ $(document).ready(function () {
         $('#destination_location_add_temp').attr("style", "display: none !important");
 
         $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
-            if(this.value == ''){
-                var inputId = this.id;
-                $("#"+inputId).remove();
-            }
+            $(this).hide();
         }).get();
 
     });

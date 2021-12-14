@@ -18,7 +18,7 @@ $breadcrumb = '<li class="breadcrumb-item align-items-center"><a href="'.route("
         <div class="row">
             <div class="col-sm-12">
                 <nav aria-label="breadcrumb" class="theme-breadcrumb">
-                    <ol class="breadcrumb p-0">
+                    <ol class="breadcrumb p-0 mb-3">
                         {!! $breadcrumb !!}
                     </ol>
                 </nav>

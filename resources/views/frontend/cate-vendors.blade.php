@@ -38,13 +38,13 @@
                         @if(!empty($category->image))
                         <div class="common-banner"><img alt="" src="{{$category->image['proxy_url'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
-                            
+
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
                             {{-- @if(!empty($category->childs) && count($category->childs) > 0)
                                 <div class="row">
                                     <div class="col-12">
-                                        
+
                                         <div class="slide-6 no-arrow">
                                             @foreach($category->childs->toArray() as $cate)
                                             <div class="category-block">
@@ -70,7 +70,7 @@
                 <div class="collection-filter col-lg-3">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
-                            <span>{{__('New Product')}}</span>  
+                            <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span>
@@ -78,7 +78,7 @@
                         <div class="offer-slider">
                             @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
-                                    
+
                                 <div>
                                     @foreach($newProds as $new)
                                         <?php $imagePath = '';
@@ -94,13 +94,13 @@
                                                     <!--<span>5-10 min</span>-->
                                                 </div>
                                                 <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
-                                            </div>    
+                                            </div>
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing px-0">
                                                     <div class="product-description">
                                                         <div class="d-flex align-items-center justify-content-between">
-                                                            <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>                                                                                    
-                                                            <!--<span class="rating-number">2.0</span>-->                                
+                                                            <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
+                                                            <!--<span class="rating-number">2.0</span>-->
                                                         </div>
                                                         <!-- <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3> -->
                                                         <p>{{$new['vendor']['name']}}</p>
@@ -123,14 +123,14 @@
                                                                     @endif
                                                                 @endif
                                                             @endif   -->
-                                                        </div>                       
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </a>
                                         @endforeach
                                     </div>
-                                    
+
                                 @endforeach
                             @endif
                         </div>
@@ -142,7 +142,7 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="collection-product-wrapper">
-                                    <div class="product-top-filter mb-4">
+                                    <div class="product-top-filter mb-0">
                                         <div class="row">
                                             <div class="col-xl-12">
                                                 <div class="filter-main-btn">
@@ -172,9 +172,9 @@
                                                     {{-- <div class="product-page-per-view">
                                                         <?php $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 8; ?>
                                                         <select class="customerPaginate">
-                                                            <option value="8" @if($pagiNate == 8) selected @endif>Show 8 
+                                                            <option value="8" @if($pagiNate == 8) selected @endif>Show 8
                                                             </option>
-                                                            <option value="12" @if($pagiNate == 12) selected @endif>Show 12 
+                                                            <option value="12" @if($pagiNate == 12) selected @endif>Show 12
                                                             </option>
                                                             <option value="24" @if($pagiNate == 24) selected @endif>Show 24
                                                             </option>
@@ -191,7 +191,7 @@
                                             <div class="row margin-res">
                                             @if($listData->isNotEmpty())
                                                 @foreach($listData as $key => $data)
-                                                    @php 
+                                                    @php
                                                     $imagePath = $data->logo['proxy_url'] .'300/300'. $data->logo['image_path'];
                                                     $imagePath2 = $data->banner['proxy_url'] .'300/300'. $data->banner['image_path'];
                                                     if(empty($data->vendor_templete_id) || ($data->vendor_templete_id == 1)){
@@ -204,47 +204,55 @@
                                                     }
                                                     @endphp
                                                     <div class="col-xl-3 col-6 col-grid-box mt-3">
-                                                        
-                                                        <a class="suppliers-box d-block w-100 px-2" href="{{$vendor_url}}">
-                                                            <div class="suppliers-img-outer">
-                                                                <img class="img-fluid mx-auto" src="{{$imagePath}}" alt="">
+                                                        <div class="product-card-box position-relative">
+                                                            <div class="add-to-fav">
+                                                                <input id="fav_pro_one" type="checkbox">
+                                                                <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
                                                             </div>
-                                                            <div class="supplier-rating">
-                                                                <h6 class="mb-1">{{$data->name}}</h6>
-                                                                <p title="{{$data->categoriesList}}" class="vendor-cate border-bottom pb-1 mb-1 ellips">{{$data->categoriesList}}</p>
-                                                                <div class="product-timing">
-                                                                    <small title="{{$data->address}}" class="ellips d-block"><span class="icon-location2"></span> {{$data->address}}</small>
-                                                                    @if(isset($data->timeofLineOfSightDistance))
-                                                                        <ul class="timing-box mb-1">
-                                                                            <li>
-                                                                                <small class="d-block"><span class="icon-location2"></span> {{$data->lineOfSightDistance}}</small>
-                                                                            </li>
-                                                                            <li>
-                                                                                <small class="d-block mx-1"><span class="icon-clock"></span> {{$data->timeofLineOfSightDistance}} min</small>
-                                                                            </li>
-                                                                        </ul>
-                                                                    @endif
+                                                            <a class="suppliers-box d-block" href="{{$vendor_url}}">
+                                                                <div class="suppliers-img-outer">
+                                                                    <img class="img-fluid mx-auto" src="{{$imagePath}}" alt="">
                                                                 </div>
-                                                                @if($client_preference_detail)
-                                                                    @if($client_preference_detail->rating_check == 1)
-                                                                        @if($data->vendorRating > 0)
-                                                                            <ul class="custom-rating m-0 p-0">
-                                                                                <?php
-                                                                                for($i=0; $i < 5; $i++){
-                                                                                    if($i <= $data->vendorRating){
-                                                                                        $starFillClass = 'fa-star';
-                                                                                    }else{
-                                                                                        $starFillClass = 'fa-star-o';
-                                                                                    }
-                                                                                ?>
-                                                                                    <li><i class="fa {{ $starFillClass }}" aria-hidden="true"></i></li>
-                                                                                <?php } ?>
+                                                                <div class="supplier-rating">
+                                                                    <div class="d-flex align-items-center justify-content-between">
+                                                                        <h6 class="mb-1 ellips">{{$data->name}}</h6>
+                                                                    </div>
+                                                                    <p title="{{$data->categoriesList}}" class="vendor-cate border-bottom pb-1 mb-1 ellips">{{$data->categoriesList}}</p>
+                                                                    <!-- <h6 class="mb-1">{{$data->name}}</h6> -->
+                                                                    <div class="product-timing">
+                                                                        <small title="{{$data->address}}" class="ellips d-block"><span class="icon-location2"></span> {{$data->address}}</small>
+                                                                        @if(isset($data->timeofLineOfSightDistance))
+                                                                            <ul class="timing-box mb-1">
+                                                                                <li>
+                                                                                    <small class="d-block"><span class="icon-location2"></span> {{$data->lineOfSightDistance}}</small>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <small class="d-block mx-1"><span class="icon-clock"></span> {{$data->timeofLineOfSightDistance}} min</small>
+                                                                                </li>
                                                                             </ul>
                                                                         @endif
+                                                                    </div>
+                                                                    @if($client_preference_detail)
+                                                                        @if($client_preference_detail->rating_check == 1)
+                                                                            @if($data->vendorRating > 0)
+                                                                                <ul class="custom-rating m-0 p-0">
+                                                                                    <?php
+                                                                                    for($i=0; $i < 5; $i++){
+                                                                                        if($i <= $data->vendorRating){
+                                                                                            $starFillClass = 'fa-star';
+                                                                                        }else{
+                                                                                            $starFillClass = 'fa-star-o';
+                                                                                        }
+                                                                                    ?>
+                                                                                    <li><i class="fa {{ $starFillClass }}" aria-hidden="true"></i></li>
+                                                                                    <?php } ?>
+                                                                                </ul>
+                                                                            @endif
+                                                                        @endif
                                                                     @endif
-                                                                @endif
-                                                            </div>
-                                                        </a>
+                                                                </div>
+                                                            </a>
+                                                        </div>
 
                                                         {{-- <div class="product-box">
                                                             <div class="img-wrapper">
@@ -334,7 +342,7 @@
             data: {
                 "_token": "{{ csrf_token() }}",
                 "brands": brands,
-                "variants": variants, 
+                "variants": variants,
                 "options": options,
                 "range": range
             },
