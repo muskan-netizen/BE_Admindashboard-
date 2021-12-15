@@ -16,6 +16,7 @@ function pr($var) {
   	echo '<pre>';
 	print_r($var);
   	echo '</pre>';
+    exit();
 }
 function http_check($url) {
     $return = $url;

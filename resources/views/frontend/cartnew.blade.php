@@ -170,17 +170,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 </div>
                             </div>
                             <% _.each(vendor_product.addon, function(addon, ad){%>
-                            <div class="row">
-                                <div class="col-md-3 col-sm-4 items-details text-left">
-                                    <p class="p-0 m-0"><%= addon.option.title %></p>
+                            <% if(addon.option){%>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-4 items-details text-left">
+                                        <p class="p-0 m-0"><%= addon.option.title %></p>
+                                    </div>
+                                    <div class="col-md-2 col-sm-4 text-center">
+                                        <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.price_in_cart) %></div>
+                                    </div>
+                                    <div class="col-md-7 col-sm-4 text-right">
+                                        <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
+                                    </div>
                                 </div>
-                                <div class="col-md-2 col-sm-4 text-center">
-                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.price_in_cart) %></div>
-                                </div>
-                                <div class="col-md-7 col-sm-4 text-right">
-                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(addon.option.quantity_price) %></div>
-                                </div>
-                            </div>
+                            <% } %>
                             <% }); %>
                         <% } %>
                     </div>

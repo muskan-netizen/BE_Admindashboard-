@@ -237,9 +237,9 @@
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                         @if($product->inquiry_only == 0)
                                             <h3 id="productPriceValue" class="mb-md-3">
-                                                <b class="mr-1">{{Session::get('currencySymbol').(number_format($product->variant[0]->price * $product->variant[0]->multiplier,2))}}</b>
+                                                <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{(number_format($product->variant[0]->price * $product->variant[0]->multiplier,2))}}</span></b>
                                                 @if($product->variant[0]->compare_at_price > 0 )
-                                                    <span class="org_price">{{Session::get('currencySymbol').(number_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier,2))}}</span>
+                                                    <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{(number_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier,2))}}</span></span>
                                                 @endif
                                             </h3>
                                         @endif
@@ -339,7 +339,7 @@
                                                     <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
                                                         @foreach($addon->setoptions as $k => $option)
                                                         <div class="checkbox checkbox-success form-check-inline mb-1">
-                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
+                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price}}" data-fixed_price="{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2)}}" data-original_price="{{number_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier,2)}}">
                                                             <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').$option->price.')' }}">
                                                                 {{$option->title .' ('.Session::get('currencySymbol').$option->price.')' }}</label>
                                                         </div>
@@ -579,9 +579,9 @@
     <input type="hidden" name="variant_id" id="prod_variant_id" value="<%= variant.id %>">
     <% if(variant.product.inquiry_only == 0) { %>
         <h3 id="productPriceValue" class="mb-md-3">
-            <b class="mr-1"><%= variant.productPrice %></b>
+            <b class="mr-1"><span class="product_fixed_price">{{Session::get('currencySymbol')}}<%= variant.productPrice %></span></b>
             <% if(variant.compare_at_price > 0 ) { %>
-                <span class="org_price">{{Session::get('currencySymbol')}}<%= variant.compare_at_price %></span>
+                <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price"><%= variant.compare_at_price %></span></span>
             <% } %>
         </h3>
     <% } %>
@@ -851,6 +851,10 @@
     var product_id = "{{ $product->id }}";
     var add_to_cart_url = "{{ route('addToCart') }}";
     $('.changeVariant').click(function() {
+        updatePrice();
+    });
+    function updatePrice()
+    {
         var variants = [];
         var options = [];
         $('.changeVariant').each(function() {
@@ -875,12 +879,15 @@
                 }
             },
             success: function(response) {
+                console.log(response);
                 if(response.status == 'Success'){
                     $("#variant_response span").html('');
                     if(response.variant != ''){
                         $('#product_variant_wrapper').html('');
                         let variant_template = _.template($('#variant_template').html());
-                        $("#product_variant_wrapper").append(variant_template({variant:response.variant}));
+                        response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(2);
+                        response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(2);
+                        $("#product_variant_wrapper").append(variant_template({variant:response.variant})); 
 
                         $('#product_variant_quantity_wrapper').html('');
                         let variant_quantity_template = _.template($('#variant_quantity_template').html());
@@ -912,7 +919,18 @@
 
             },
         });
-    });
+    }
+    function checkAddOnPrice()
+    {
+        price  = 0;
+        $('.productDetailAddonOption').each(function(){
+            if($(this).prop('checked') == true){
+                var cp = $(this).data('price');
+                price = price + parseFloat(cp);
+            }
+        });
+        return price;
+    }
 </script>
 <script>
     var addonids = [];
@@ -934,6 +952,12 @@
                     addonids.splice(addonids.indexOf(addonId), 1);
                     addonoptids.splice(addonoptids.indexOf(addonOptId), 1);
                 }
+                updatePrice();
+                // addOnPrice = parseFloat(checkAddOnPrice());
+                // org_price = parseFloat($(this).data('original_price')) + addOnPrice;
+                // fixed_price = parseFloat($(this).data('fixed_price')) + addOnPrice;
+                // $('.product_fixed_price').html(fixed_price.toFixed(2));
+                // $('.product_original_price').html(org_price.toFixed(2));
             }
         });
     });

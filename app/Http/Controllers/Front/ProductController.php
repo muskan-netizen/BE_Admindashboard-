@@ -328,7 +328,8 @@ class ProductController extends FrontController{
                 ->whereIn('id', $pv_ids)->get();
             if ($variantData) {
                 foreach($variantData as $variant){
-                    $variant->productPrice = Session::get('currencySymbol') . number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');
+                    $variant->productPrice =  number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');
+                    // $variant->productPrice = Session::get('currencySymbol') . number_format(($variant->price * $clientCurrency->doller_compare), 2, '.', '');
                     // $sets[] = $availableSet->toArray();
                     // foreach($availableSet->groupBy('product_variant_id') as $avSets){
                     //     $variant_type_id = array();
@@ -370,6 +371,7 @@ class ProductController extends FrontController{
                 }
                 return response()->json(array('status' => 'Success', 'variant' => $variantData, 'availableSets' => $availableSets->variantSet));
             }
+
         }
         return response()->json(array('status' => 'Error', 'message' => 'This option is currenty not available', 'availableSets' => $availableSets->variantSet));
     }

@@ -688,18 +688,20 @@ class CartController extends FrontController
                     $prod->taxdata = $taxData;
                     if($prod->addon->isNotEmpty()){
                         foreach ($prod->addon as $ck => $addons) {
-                            $opt_price_in_currency = $addons->option->price;
-                            $opt_price_in_doller_compare = $addons->option->price;
-                            if($customerCurrency){
-                                $opt_price_in_currency = $addons->option->price / $divider;
-                                $opt_price_in_doller_compare = $opt_price_in_currency * $customerCurrency->doller_compare;
+                            if(isset($addons->option)){
+                                $opt_price_in_currency = $addons->option->price;
+                                $opt_price_in_doller_compare = $addons->option->price;
+                                if($customerCurrency){
+                                    $opt_price_in_currency = $addons->option->price / $divider;
+                                    $opt_price_in_doller_compare = $opt_price_in_currency * $customerCurrency->doller_compare;
+                                }
+                                $opt_quantity_price = number_format($opt_price_in_doller_compare * $prod->quantity, 2, '.', '');
+                                $addons->option->price_in_cart = $addons->option->price;
+                                $addons->option->price = number_format($opt_price_in_currency, 2, '.', '');
+                                $addons->option->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
+                                $addons->option->quantity_price = $opt_quantity_price;
+                                $payable_amount = $payable_amount + $opt_quantity_price;
                             }
-                            $opt_quantity_price = number_format($opt_price_in_doller_compare * $prod->quantity, 2, '.', '');
-                            $addons->option->price_in_cart = $addons->option->price;
-                            $addons->option->price = number_format($opt_price_in_currency, 2, '.', '');
-                            $addons->option->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
-                            $addons->option->quantity_price = $opt_quantity_price;
-                            $payable_amount = $payable_amount + $opt_quantity_price;
                         }
                     }
                     if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
