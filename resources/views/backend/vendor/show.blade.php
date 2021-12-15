@@ -305,7 +305,7 @@
 
                         @include('backend.vendor.vendorSubscriptions')
 
-                        @if(session('preferences.is_hyperlocal') == 1)
+                        @if((session('preferences.is_hyperlocal') == 1) || ($client_preference_detail->business_type == 'taxi'))
                         <div class="card-box">
                             <div class="row">
                                 <div class="col-md-12">
@@ -1085,7 +1085,7 @@
             });
         }
     }
-    if (is_hyperlocal) {
+    if ((is_hyperlocal) || (business_type == 'taxi')) {
         google.maps.event.addDomListener(window, 'load', initialize);
         google.maps.event.addDomListener(window, 'load', initialize_show);
         google.maps.event.addDomListener(window, 'load', initialize_edit);
