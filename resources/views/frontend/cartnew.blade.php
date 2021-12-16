@@ -221,7 +221,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <% if(product.coupon) { %>
                                         <%= product.coupon.promo.name %>
                                     <% }else{ %>
-                                        <a href="javascript:void(0)" class="promo_code_list_btn ml-1" data-vendor_id="<%= product.vendor.id %>" data-cart_id="<%= cart_details.id %>" data-amount="<%= product.product_total_amount %>">{{__('Select a promo code')}}</a>
+                                        <a href="javascript:void(0)" class="promo_code_list_btn ml-1" data-vendor_id="<%= product.vendor.id %>" data-cart_id="<%= cart_details.id %>" data-amount="<%= product.product_sub_total_amount  %>">{{__('Select a promo code')}}</a>
                                     <% } %>
                                 </label>
                             </div>
@@ -884,7 +884,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         @endif
 
                         <div class="divider-line mb-2"></div>
-                        <p class="new-user mb-0">New to Royo? <a href="{{route('customer.register')}}">Create an
+                        <p class="new-user mb-0">New to {{getClientDetail()->company_name}}? <a href="{{route('customer.register')}}">Create an
                                 account</a></p>
                     </div>
                     {{-- <div class="login-with-mail">

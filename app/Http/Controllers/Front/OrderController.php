@@ -861,6 +861,7 @@ class OrderController extends FrontController
                     } else {
                         $gross_amount = number_format(($payable_amount - $taxable_amount), 2);
                         $percentage_amount = ($gross_amount * $vendor_cart_product->coupon->promo->amount / 100);
+                        $total_discount += $percentage_amount;
                         $vendor_payable_amount -= $percentage_amount;
                         $vendor_discount_amount += $percentage_amount;
                     }

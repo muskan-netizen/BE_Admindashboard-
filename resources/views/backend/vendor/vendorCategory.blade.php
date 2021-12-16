@@ -79,16 +79,20 @@
                             {{ __("Catalog") }}
                         </a>
                     </li>
+                    @if(($client_preference_detail->business_type != 'taxi') || (($client_preference_detail->business_type == 'taxi') && ($client_preference_detail->pickup_delivery_service_area == 1)))
                     <li class="nav-item">
                         <a href="{{ route('vendor.show', $vendor->id) }}" aria-expanded="false" class="nav-link {{($tab == 'configuration') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
                             {{ __("Configuration") }}
                         </a>
                     </li>
+                    @endif
+                    @if ($client_preference_detail->business_type != 'taxi')
                     <li class="nav-item">
                         <a href="{{ route('vendor.categories', $vendor->id) }}" aria-expanded="true" class="nav-link {{($tab == 'category') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
                             {{ __("Categories & Add Ons") }}
                         </a>
                     </li>
+                    @endif
                     @if ($is_payout_enabled == 1)
                         <li class="nav-item">
                             <a href="{{ route('vendor.payout', $vendor->id) }}" aria-expanded="false" class="nav-link {{ $tab == 'payout' ? 'active' : '' }} {{ $vendor->status == 1 ? '' : 'disabled' }}">
@@ -163,7 +167,7 @@
                                                                 <td>{{$set->min_select}} - {{$set->max_select}}</td>
                                                                 <td>
                                                                     @foreach($set->option as $opt)
-                                                                    <span>{{$opt->title}} - ${{$opt->price}}</span><br />
+                                                                    <span>{{$opt->title}} - {{$clientCurrency->currency->symbol}}{{$opt->price}}</span><br />
                                                                     <span></span>
                                                                     @endforeach
                                                                 </td>
@@ -240,7 +244,7 @@
                                 <div class="col-md-12" style="overflow-x: auto;">
                                     <table class="table table-borderless mb-0 optionTableAdd" id="banner-datatable">
                                         <tr class="trForClone">
-                                            <th>{{ __("Price") }}($)</th>
+                                            <th>{{ __("Price") }}({{$clientCurrency->currency->symbol}})</th> 
                                             @foreach($languages as $langs)
                                             <th>{{$langs->language->name}}</th>
                                             @endforeach

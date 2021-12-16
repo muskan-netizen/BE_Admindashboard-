@@ -35,6 +35,13 @@ class ReviewController extends BaseController
 
                     return $btn;
                 })
+                ->addColumn('view_rating', function ($row) {
+
+                    $view_url  =   route('review.show', [$row->sku]);
+                    $btn  = '<div class="form-ul"><div class="inner-div"><a href="'.$view_url.'" class="action-icon editIconBtn"><i class="mdi mdi-eye" aria-hidden="true"></i></a>';
+
+                    return $btn;
+                })
                 ->addColumn('product_name', function ($row) {
 
                     $view_url    =  route('review.show', [$row->sku]);
@@ -43,7 +50,7 @@ class ReviewController extends BaseController
                    // $btn  = $row->translation_one->title;
                     return $btn;
                 })
-                ->rawColumns(['action','product_name'])
+                ->rawColumns(['action','view_rating','product_name'])
                 ->make(true);
         }
         return view('backend.review.index');

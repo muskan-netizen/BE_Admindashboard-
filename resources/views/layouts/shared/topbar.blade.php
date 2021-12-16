@@ -169,10 +169,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <h6 class="text-overflow m-0">Welcome !</h6>
                     </div> -->
 
-                    <a href="{{route('userHome')}}" class="dropdown-item notify-item">
+                    {{--<a href="{{route('userHome')}}" class="dropdown-item notify-item">
                         <i class="fe-globe"></i>
                         <span>{{ __("Website") }}</span>
-                    </a>
+                    </a> --}}
                     @if(Auth::user()->is_superadmin == 1)
                     <a href="{{route('client.profile')}}" class="dropdown-item notify-item">
                         <i class="fe-user"></i>

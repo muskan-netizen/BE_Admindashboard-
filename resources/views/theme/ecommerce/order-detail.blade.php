@@ -139,7 +139,7 @@
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="header-title mb-3">Shipping Information</h4>
+                        <h4 class="header-title mb-3">Delivery Information</h4>
 
                         <h5 class="font-family-primary font-weight-semibold">Brent Jones</h5>
                         

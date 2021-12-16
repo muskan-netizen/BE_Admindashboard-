@@ -361,13 +361,15 @@ class OrderController extends BaseController
             $vendor_order_status_created_dates[$vendor_order_status->order_status_option_id] = $vendor_order_status->created_at;
             $vendor_order_status_option_ids[] = $vendor_order_status->order_status_option_id;
         }
+
+        $vendor_data = Vendor::where('id',$vendor_id)->first();
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id, 'order' => $order,
             'vendor_order_statuses' => $vendor_order_statuses,
             'vendor_order_status_option_ids' => $vendor_order_status_option_ids,
             'order_status_options' => $order_status_options,
             'dispatcher_status_options' => $dispatcher_status_options,
-            'vendor_order_status_created_dates' => $vendor_order_status_created_dates, 'clientCurrency' => $clientCurrency
+            'vendor_order_status_created_dates' => $vendor_order_status_created_dates, 'clientCurrency' => $clientCurrency,'vendor_data' => $vendor_data
         ]);
     }
 
@@ -662,6 +664,7 @@ class OrderController extends BaseController
             }
             return 2;
         } catch (\Exception $e) {
+            Log::info($e->getMessage());
             return 2;
             return response()->json([
                 'status' => 'error',
@@ -1079,6 +1082,57 @@ class OrderController extends BaseController
 
                 curl_close($ch);
             }
+        }
+    }
+
+
+
+    /**
+     * Change the status of order
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function createDispatchRequest(Request $request, $domain = '')
+    {
+
+        DB::beginTransaction();
+        $client_preferences = ClientPreference::first();
+        try {
+            $timezone = Auth::user()->timezone;
+             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
+             $vendor_dispatch_status = VendorOrderDispatcherStatus::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
+            
+            if ($currentOrderStatus->order_status_option_id == 3) { //if order rejected
+                return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
+            }
+
+            if (isset($vendor_dispatch_status) && !empty($vendor_dispatch_status)) { //if alredery dispatch request done
+                return response()->json(['status' => 'error', 'message' => __('Order has already been generated in dispatcher')]);
+            }
+
+          
+            if (!$vendor_dispatch_status) {
+                $order_dispatch = $this->checkIfanyProductLastMileon($request);
+                if ($order_dispatch && $order_dispatch == 1)
+                $stats = $this->insertInVendorOrderDispatchStatus($request);
+                DB::commit();
+                return response()->json([
+                    'status' => 'success',
+                     'message' => __('Dispatch Request Created.')
+                ]);
+            }else{
+                return response()->json([
+                    'status' => 'error',
+                     'message' => __('Try again later.')
+                ]);
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
         }
     }
 }

@@ -43,7 +43,8 @@
                                         <th>{{ __('Product Name') }}</th>
                                         <th>{{ __('Average Rating') }}</th>
                                         <th>{{ __('Total Reviews') }}</th>
-                                        <th>{{ __('Action') }}</th>
+                                        <th>{{ __('View Reviews')}}</th>
+                                        <th>{{ __('Edit Product') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody id="review_table_tbody_list">
@@ -120,8 +121,12 @@
                             orderable: false,
                             searchable: false,
                         },
-
-
+                        {
+                            data: 'view_rating',
+                            name: 'view_rating',
+                            orderable: false,
+                            searchable: false
+                        },
                         {
                             data: 'action',
                             name: 'action',

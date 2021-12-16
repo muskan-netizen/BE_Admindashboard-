@@ -55,21 +55,28 @@
    <body>
       <section class="wrapper">
          <div class="container" style="background: rgb(48 143 228 / 26%);">
-        {!! $mailData['email_template_content'] !!}
-        <table class="main-bg-light text-center top-0" align="center" border="0" cellpadding="0" cellspacing="0" style="width:100%; background-color:#fff; padding: 0 15px;">
-            <tr>
-                <td>
-                    @php
-                        $currYear = \Carbon\Carbon::now()->year;
-                        $prevYear = $currYear - 1;
-                        $currYear = substr($currYear, -2);
-                    @endphp
-                    <p>&copy; {{$prevYear}}-{{$currYear}} | All rights reserved</p>
-                    
-                </td>
-            </tr>
-        </table>
-    </div>
-</body>
+            <table style="width: 100%;background-color: #fff;padding: 50px 0 0;">
+               
+               <thead>
+                  <tr>
+                     <th style="text-align: center;padding: 0 0 40px;">
+                        <img src="https://imgproxy.royoorders.com/insecure/fit/150/92/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/Clientlogo/612e24163debe.png" alt="">
+                     </th>
+                  </tr>
+                  <tr>
+                     <th colspan="2" style="text-align: center;">
+                       <h1 style="color: rgba(0,0,0,0.66);font-family: &quot;Times New Roman&quot;;font-size: 28px;font-weight: bold;letter-spacing: 0;line-height: 32px;">Thanks for your order</h1>
+                       <p style="color: rgba(0,0,0,0.66);font-size: 15px;letter-spacing: 0;line-height: 25px;width: 80%;margin: 30px auto 10px;"><span style="display: block;">Hi Andrew,</span> we have received your order and we working on it now.
+                        We'll email you an update as soon as your order is processed.</p>
+                        </th>
+                     </tr>
+               </thead>
+               
 
+
+
+            </table>
+         </div>
+      </section>
+   </body>
 </html>

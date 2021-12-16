@@ -639,7 +639,7 @@ class OrderController extends BaseController
                 'task' => $tasks
             ];
 
-
+            Log::info($postdata);
             $client = new GCLIENT([
                 'headers' => [
                     'personaltoken' => $dispatch_domain->delivery_service_key,

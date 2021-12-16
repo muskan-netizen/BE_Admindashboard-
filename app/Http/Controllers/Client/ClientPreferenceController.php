@@ -201,6 +201,7 @@ class ClientPreferenceController extends BaseController{
             $preference->off_scheduling_at_cart = ($request->has('off_scheduling_at_cart') && $request->off_scheduling_at_cart == 'on') ? 1 : 0;
             $preference->isolate_single_vendor_order = ($request->has('isolate_single_vendor_order') && $request->isolate_single_vendor_order == 'on') ? 1 : 0;
             $preference->gifting = ($request->has('gifting') && $request->gifting == 'on') ? 1 : 0;
+            $preference->pickup_delivery_service_area = ($request->has('pickup_delivery_service_area') && $request->pickup_delivery_service_area == 'on') ? 1 : 0;
         }
         if($request->has('distance_to_time_calc_config') && $request->distance_to_time_calc_config == '1'){
             $preference->distance_unit_for_time = (($request->has('distance_unit_for_time')) && ($request->distance_unit_for_time != '')) ? $request->distance_unit_for_time : 'kilometer';

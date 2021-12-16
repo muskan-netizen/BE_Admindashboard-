@@ -58,24 +58,20 @@
              </tr>
             
             @if($order->total_delivery_fee > 0)
-
             <tr>
                 <td style="text-align: left;"><b>{{__('Delivery Charge')}}:</b></td>
                 <td></td>
                 <td style="text-align: right;">{{$currencySymbol . number_format($order->total_delivery_fee, 2, '.', '')}}</td>
-             </tr>
-
+            </tr>
             @endif
             @if($order->tip_amount > 0)
-
             <tr>
                 <td style="text-align: left;"><b>{{__('Tip')}}:</b></td>
                 <td></td>
                 <td style="text-align: right;">{{$currencySymbol . number_format($order->tip_amount, 2, '.', '')}}</td>
-             </tr>
-
-           
+            </tr>  
             @endif
+            
             @if($order->subscription_discount > 0)
 
             <tr>
@@ -92,7 +88,7 @@
                 <td></td>
                 <td style="text-align: right;">{{$currencySymbol . number_format($order->loyalty_amount_saved, 2, '.', '')}}</td>
              </tr>
-
+ 
             @endif
             @if($order->wallet_amount_used > 0)
 

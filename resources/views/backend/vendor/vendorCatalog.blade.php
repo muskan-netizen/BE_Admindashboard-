@@ -127,13 +127,14 @@
                                 {{ __('Catalog') }}
                             </a>
                         </li>
-                        
+                        @if(($client_preference_detail->business_type != 'taxi') || (($client_preference_detail->business_type == 'taxi') && ($client_preference_detail->pickup_delivery_service_area == 1)))
                         <li class="nav-item">
                             <a href="{{ route('vendor.show', $vendor->id) }}" aria-expanded="false"
                                 class="nav-link {{ $tab == 'configuration' ? 'active' : '' }} {{ $vendor->status == 1 ? '' : 'disabled' }}">
                                 {{ __('Configuration') }}
                             </a>
                         </li>
+                        @endif
                         @if ($client_preference_detail->business_type != 'taxi')
                             <li class="nav-item">
                                 <a href="{{ route('vendor.categories', $vendor->id) }}" aria-expanded="true"

@@ -201,6 +201,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('order/update-product-return-client', 'Client\OrderController@updateProductReturn')->name('update.order.return.client');
         Route::get('order/{order_id}/{vendor_id}', 'Client\OrderController@getOrderDetail')->name('order.show.detail');
         Route::post('order/updateStatus', 'Client\OrderController@changeStatus')->name('order.changeStatus');
+        Route::post('order/create-dispatch-request', 'Client\OrderController@createDispatchRequest')->name('create.dispatch.request'); # create dispatch request 
         Route::resource('customer', 'Client\UserController')->middleware('onlysuperadmin');
         Route::get('customer/account/{user}/{action}', 'Client\UserController@deleteCustomer')->name('customer.account.action');
         Route::get('customer/edit/{id}', 'Client\UserController@newEdit')->name('customer.new.edit');

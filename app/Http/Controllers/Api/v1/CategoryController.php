@@ -77,7 +77,7 @@ class CategoryController extends BaseController
 
     public function listData($langId, $category_id, $type = '', $limit = 12, $userid, $product_list, $mod_type, $mode_of_service = null)
     {
-        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->where('id', '>', 0)->first();
+        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
         
         if ($type == 'vendor' && $product_list == 'false') {
             $user = Auth::user();
@@ -229,11 +229,11 @@ class CategoryController extends BaseController
                 }
             }
             $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
-            
-            // $vendorData = $vendorData->whereHas('serviceArea', function($query) use($pickup_latitude, $pickup_longitude){
-            //     $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
-            // });
-            
+            if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
+                $vendorData = $vendorData->whereHas('serviceArea', function($query) use($pickup_latitude, $pickup_longitude){
+                    $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
+                });
+            }            
             $vendorData = $vendorData->where('status', 1)->whereIn('id', $vendor_ids)->with('slot', 'products')->paginate($limit);
             // $avgRating = $vendorData->products->avg('averageRating');
             // $vendorData->avgRating = "fmwjkenf";

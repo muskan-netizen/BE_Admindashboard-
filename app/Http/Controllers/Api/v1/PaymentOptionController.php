@@ -28,7 +28,7 @@ class PaymentOptionController extends BaseController{
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
-                $option->title = 'Credit/Debit Card (Stripe)';
+                $option->title = __('Credit/Debit Card (Stripe)'); 
             }
             $option->title = __($option->title);
         }

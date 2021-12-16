@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Config;
 use DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use App\Jobs\{ProcessClientDatabase, EditClient};
+use App\Jobs\{ProcessClientDatabase, EditClient,ClientDatabaseToDevMaster};
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Session;
@@ -459,16 +459,38 @@ class ClientController extends Controller{
      }
 
      public function exportDb(Request $request,$databaseName){
-        $databaseName = 'royo_'.$databaseName;
-        $userName = env('DB_USERNAME');
-        $password = env('DB_PASSWORD');
-        $host = env('DB_HOST');
-        \Spatie\DbDumper\Databases\MySql::create()
-            ->setDbName($databaseName)
-            ->setUserName($userName)
-            ->setPassword($password)
-            ->setHost($host)
-            ->dumpToFile($databaseName.'.sql');
+
+        $client = Client::where('database_name',$databaseName)->first();
+
+        if($client){
+
+            $check_if_already = Client::on('dev')->where(['database_name' => $client->database_name])->count();
+            if($check_if_already == 0)
+            $create_db = $this->dispatchNow(new ClientDatabaseToDevMaster($client->id));
+            else
+            dd($databaseName);
+
+        // $databaseNameSet = 'royo_'.$databaseName;
+        // $userName = $client->database_username;
+        // $password = $client->database_password;
+        // $host = $client->database_host;
+        // \Spatie\DbDumper\Databases\MySql::create()
+        //     ->setDbName($databaseNameSet)
+        //     ->setUserName($userName)
+        //     ->setPassword($password)
+        //     ->setHost($host)
+        //     ->dumpToFile($databaseName.'.sql');
+
+
+
+
+
+             
+        }
+
+
+
+        
 
      }
      

@@ -120,8 +120,8 @@
     "Cancels On": "Annuler le",
     "Cart": "Panier",
     "Cash Collected": "Cash collecté",
-    "Cash On Delivery": "Payer à la li vraison",
-    "Cash on Delivery": "Payer à la li vraison",
+    "Cash On Delivery": "Payer à la livraison",
+    "Cash on Delivery": "Payer à la livraison",
     "Catalog": "Catalogue",
     "Categories & Add Ons": "Catégories et modules complémentaires",
     "Categories": "Catégories",
@@ -661,7 +661,7 @@
     "Set As Primary": "Définir comme principale",
     "Share It": "Partagez-le",
     "Shipping Address": "Adresse de livraison",
-    "Shipping Information": "Informations sur la livraison",
+    "Delivery Information": "Informations sur la livraison",
     "Shopping Cart": "Panier",
     "Short Code": "Petit code",
     "Short Description": "Brève description",
@@ -951,5 +951,6 @@
     "The merchant shipped the wrong item" : "Le marchand a expédié le mauvais article",
     "Purchase arrived too late" : "Achat arrivé trop tard",
     "Customer doesn't need it anymore" : "Le client n'en a plus besoin",
-    "The product was damaged or defective" : "Le produit était endommagé ou défectueux"
+    "The product was damaged or defective" : "Le produit était endommagé ou défectueux",
+    "Credit/Debit Card (Stripe)" : "Payer par carte"
 }

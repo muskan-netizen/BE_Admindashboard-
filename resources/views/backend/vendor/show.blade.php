@@ -207,11 +207,13 @@
                             {{ __('Catalog') }}
                         </a>
                     </li>
+                    @if(($client_preference_detail->business_type != 'taxi') || (($client_preference_detail->business_type == 'taxi') && ($client_preference_detail->pickup_delivery_service_area == 1)))
                     <li class="nav-item">
                         <a href="{{ route('vendor.show', $vendor->id) }}" aria-expanded="false" class="nav-link {{($tab == 'configuration') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
                             {{ __('Configuration') }}
                         </a>
                     </li>
+                    @endif
                     @if ($client_preference_detail->business_type != 'taxi')
                     <li class="nav-item">
                         <a href="{{ route('vendor.categories', $vendor->id) }}" aria-expanded="true" class="nav-link {{($tab == 'category') ? 'active' : '' }} {{$vendor->status == 1 ? '' : 'disabled'}}">
@@ -732,6 +734,7 @@
 <script src="{{asset('assets/js/calendar_main-5.9.js')}}"></script>
 <script src="{{ asset('assets/js/pages/jquery.cookie.js') }}"></script>
 <script>
+    var pickup_delivery_service_area = "{{ isset($client_preference_detail->pickup_delivery_service_area) ? $client_preference_detail->pickup_delivery_service_area : 0 }}"
     $( document ).ready(function() {
         $(".base_url").html(base_url);
     }); 
@@ -1085,7 +1088,7 @@
             });
         }
     }
-    if ((is_hyperlocal) || (business_type == 'taxi')) {
+    if ((is_hyperlocal) || (pickup_delivery_service_area == 1)) {
         google.maps.event.addDomListener(window, 'load', initialize);
         google.maps.event.addDomListener(window, 'load', initialize_show);
         google.maps.event.addDomListener(window, 'load', initialize_edit);

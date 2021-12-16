@@ -43,7 +43,7 @@ class Client extends Authenticatable
     */
     public function preferences()
     {
-      return $this->hasOne('App\Models\ClientPreference', 'client_code', 'code')->select('business_type','theme_admin', 'client_code', 'distance_unit', 'currency_id', 'dinein_check', 'takeaway_check', 'delivery_check', 'date_format', 'time_format', 'fb_login', 'twitter_login', 'google_login', 'apple_login', 'map_provider', 'app_template_id', 'is_hyperlocal', 'verify_email', 'verify_phone', 'primary_color', 'secondary_color', 'map_key', 'pharmacy_check','celebrity_check','enquire_mode','subscription_mode','site_top_header_color', 'tip_before_order', 'tip_after_order', 'off_scheduling_at_cart','delay_order','product_order_form', 'gifting');
+      return $this->hasOne('App\Models\ClientPreference', 'client_code', 'code')->select('business_type','theme_admin', 'client_code', 'distance_unit', 'currency_id', 'dinein_check', 'takeaway_check', 'delivery_check', 'date_format', 'time_format', 'fb_login', 'twitter_login', 'google_login', 'apple_login', 'map_provider', 'app_template_id', 'is_hyperlocal', 'verify_email', 'verify_phone', 'primary_color', 'secondary_color', 'map_key', 'pharmacy_check','celebrity_check','enquire_mode','subscription_mode','site_top_header_color', 'tip_before_order', 'tip_after_order', 'off_scheduling_at_cart','delay_order','product_order_form', 'gifting', 'pickup_delivery_service_area', 'customer_support', 'customer_support_key', 'customer_support_application_id','android_app_link','ios_link'); 
     }
 
     public function getEncpassAttribute($value)
