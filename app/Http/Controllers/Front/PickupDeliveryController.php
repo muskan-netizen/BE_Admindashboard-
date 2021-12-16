@@ -33,7 +33,7 @@ class PickupDeliveryController extends FrontController{
     }
 
     public function postVendorListByCategoryId(Request $request, $domain = '',$category_id = 0){
-        $preferences = ClientPreference::select('is_hyperlocal')->where('id', '>', 0)->first();
+        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
         $vendor_ids = [];
         $pickup_latitude = '';
         $pickup_longitude = '';
@@ -51,10 +51,14 @@ class PickupDeliveryController extends FrontController{
         $vendors = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')
         ->with('slot')->withAvg('product', 'averageRating');
         
-        $vendors = $vendors->whereHas('serviceArea', function($query) use($pickup_latitude, $pickup_longitude){
-            $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
-        });
+       
         
+        if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
+            $vendors = $vendors->whereHas('serviceArea', function($query) use($pickup_latitude, $pickup_longitude){
+                $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
+            });
+        }
+
         $vendors = $vendors->whereIn('id', $vendor_ids)
         ->where('delivery', 1)
         ->where('status', 1)
