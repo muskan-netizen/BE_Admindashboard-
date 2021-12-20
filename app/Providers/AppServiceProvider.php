@@ -73,7 +73,6 @@ class AppServiceProvider extends ServiceProvider
         view()->share('last_mile_common_set', $last_mile_common_set);
        
         view()->share('favicon', $favicon_url);
-        view()->share('favicon', $favicon_url);
         view()->share('client_head', $client_head);
         view()->share('mod_count', $count);
         view()->share('social_media_details', $social_media_details);

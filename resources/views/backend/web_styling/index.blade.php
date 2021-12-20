@@ -5,7 +5,7 @@
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.css">
 @endsection
 @section('content')
-
+<div class="web-style">
 <div class="row">
     <div class="col-12">
         <div class="col-sm-8">
@@ -30,6 +30,31 @@
 
 <form id="favicon-form" method="post" enctype="multipart/form-data">
     <div class="row">
+        <div class="col-md-6 col-xl-3">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="header-title">{{ __("Home Page Style") }}</h4>
+                    <div class="row">
+                        @foreach($homepage_style_options as $homepage_style)
+                        <div class="col-sm-6">
+                            <div class="card mb-0">
+                                <div class="card-body p-2">
+                                    <div class="row">
+                                        <div class="col-sm-12 custom-control custom-radio radio_new p-0">
+                                            <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
+                                            <label class="custom-control-label" for="{{$homepage_style->id}}">
+                                                <img class="card-img-top img-fluid" src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="col-md-6 col-xl-3">
             <div class="card card-box">
                 <div class="row">
@@ -57,7 +82,20 @@
                     </div>
                 </div>
             </div>
-
+        </div>
+        <div class="col-md-6 col-xl-3">
+            @if($client_preference_detail->business_type != 'taxi')
+                <div class="card card-box">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
+                        <div class="mb-0">
+                            <input type="checkbox" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box1" data-color="#43bee1" {{$client_preferences->age_restriction == 1 ? 'checked' : ''}}>
+                        </div>
+                    </div>
+                    <label for="">{{ __('Title') }}</label>
+                    <input type="text" class="form-control" id="age_restriction_title" name="age_restriction_title" value="{{ old('age_restriction_title', $client_preferences->age_restriction_title ?? '')}}">
+                </div>
+            @endif
             <div class="card card-box">
                 <ul class="pl-0 mb-0">
                     <li class="d-flex flex-column justify-content-start mt-2">
@@ -84,21 +122,7 @@
                     </li>
                 </ul>
             </div>
-        </div>      
-        @if($client_preference_detail->business_type != 'taxi')
-        <div class="col-md-6 col-xl-3">
-            <div class="card card-box">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
-                    <div class="mb-0">
-                        <input type="checkbox" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box1" data-color="#43bee1" {{$client_preferences->age_restriction == 1 ? 'checked' : ''}}>
-                    </div>
-                </div>
-                <label for="">{{ __('Title') }}</label>
-                <input type="text" class="form-control" id="age_restriction_title" name="age_restriction_title" value="{{ old('age_restriction_title', $client_preferences->age_restriction_title ?? '')}}">
-            </div>
         </div>
-        @endif
 
         <div class="col-md-6 col-xl-3">
             <div class="card card-box">
@@ -111,18 +135,18 @@
                                 <input type="checkbox" id="show_wishlist" data-plugin="switchery" name="show_wishlist" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_wishlist == 1 ? 'checked' : ''}}>
                             </div>
                         </li>
-                   <li class="d-flex align-items-center justify-content-between mt-2">
-                        <h4 class="header-title mb-2">{{ __("Show Ratings") }}</h4>
-                        <div class="mb-0">
-                            <input type="checkbox" id="rating_enable" data-plugin="switchery" name="rating_enable" class="chk_box2" data-color="#43bee1" {{$client_preferences->rating_check == 1 ? 'checked' : ''}}>
-                        </div>
-                    </li>
-                     <li class="d-flex align-items-center justify-content-between mt-2">
-                        <h4 class="header-title mb-2">{{ __("Show Cart Icon") }}</h4>
-                        <div class="mb-0">
-                            <input type="checkbox" id="cart_enable" data-plugin="switchery" name="cart_enable" class="chk_box1" data-color="#43bee1" {{$client_preferences->cart_enable == 1 ? 'checked' : ''}}>
-                        </div>
-                    </li>
+                        <li class="d-flex align-items-center justify-content-between mt-2">
+                            <h4 class="header-title mb-2">{{ __("Show Ratings") }}</h4>
+                            <div class="mb-0">
+                                <input type="checkbox" id="rating_enable" data-plugin="switchery" name="rating_enable" class="chk_box2" data-color="#43bee1" {{$client_preferences->rating_check == 1 ? 'checked' : ''}}>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mt-2">
+                            <h4 class="header-title mb-2">{{ __("Show Cart Icon") }}</h4>
+                            <div class="mb-0">
+                                <input type="checkbox" id="cart_enable" data-plugin="switchery" name="cart_enable" class="chk_box1" data-color="#43bee1" {{$client_preferences->cart_enable == 1 ? 'checked' : ''}}>
+                            </div>
+                        </li>
                     @endif
 
                     <li class="d-flex align-items-center justify-content-between mt-2">
@@ -156,44 +180,15 @@
                 </ul>
             </div>
         </div>
-    </div>   
-
-  
-</form>
-
-
-<div class="row">
-    <div class="col-xl-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="header-title">{{ __("Home Page Style") }}</h4>
-                <div class="row">
-                    @foreach($homepage_style_options as $homepage_style)
-                    <div class="col-sm-6 col-md-4 col-lg-3">
-                        <div class="card mb-0">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-sm-12 custom-control custom-radio radio_new p-0">
-                                        <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
-                                        <label class="custom-control-label" for="{{$homepage_style->id}}">
-                                            <img class="card-img-top img-fluid" src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap">
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
     </div>
-</div>
+
+
+</form>
 
 <!-- cab booking template -->
 <form id="favicon-form-pickup" method="post" enctype="multipart/form-data">
 <div class="row" >
-    <div class="col-xl-8"   ondrop="drop(event)" ondragover="allowDrop(event)">
+    <div class="col-xl-6" ondrop="drop(event)" ondragover="allowDrop(event)">
         <div class="card-box home-options-list">
             <div class="row mb-2">
                 <div class="col-sm-8">
@@ -217,7 +212,7 @@
                         <a herf="#" class="dd-handle dd3-handle d-block mr-auto">
                             {{$home_page_label->title}}
                         </a>
-                         
+
                         <div class="language-inputs style-4">
                             <div class="row no-gutters flex-nowrap align-items-center my-2">
                                 @foreach($langs as $lang)
@@ -225,7 +220,7 @@
                                 $exist = 0;
                                 $value = '';
                                 @endphp
-                                <div class="col-2 pl-1">
+                                <div class="col-3 pl-1">
                                     <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="home_labels[]">
                                     <input class="form-control" type="hidden" value="{{$lang->langId}}" name="languages[]">
                                     @foreach($home_page_label->translations as $translation)
@@ -239,26 +234,26 @@
                                     <input class="form-control" value="{{$exist == 1 ? $value : '' }}" type="text" name="names[]" placeholder="{{ $lang->langName }}">
                                 </div>
                                 @endforeach
-                                  
-                                    
-                                    
+
                             </div>
                         </div>
+
                         @if($home_page_label->slug == 'pickup_delivery')
-                        <div class="col-2 pl-1">
-                             <select class="form-control select2-multiple" required id="categories" name="categories[{{$key}}][check]" data-toggle="select2"  data-placeholder="Choose ...">
-                            
-                             {{-- <select class="form-control w-100">  --}}
-                                 @foreach ($all_pickup_category as $category)
-                                 <option value="{{$category->id}}" 
-                                    @if(isset($home_page_label->pickupCategories->first()->categoryDetail) && !empty($home_page_label->pickupCategories->first()) && $home_page_label->pickupCategories->first()->categoryDetail->id == $category->id)
-                                     selected="selected"
-                                    @endif>{{$category->translation_one->name??''}}
-                                 </option>
-                                 @endforeach
-                             </select>
-                         </div>
-                         @endif  
+                            <div class="col-2 pl-1">
+                                <select class="form-control select2-multiple" required id="categories" name="categories[{{$key}}][check]" data-toggle="select2"  data-placeholder="Choose ...">
+
+                                {{-- <select class="form-control w-100">  --}}
+                                    @foreach ($all_pickup_category as $category)
+                                    <option value="{{$category->id}}"
+                                        @if(isset($home_page_label->pickupCategories->first()->categoryDetail) && !empty($home_page_label->pickupCategories->first()) && $home_page_label->pickupCategories->first()->categoryDetail->id == $category->id)
+                                        selected="selected"
+                                        @endif>{{$category->translation_one->name??''}}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+
 
                          @if($home_page_label->slug == 'pickup_delivery')
                         <a class="action-icon openBannerModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
@@ -273,14 +268,14 @@
 
                         <div class="mb-0 ml-1">
                             <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="pickup_labels[]">
-                                 
+
                             <input type="checkbox" {{$home_page_label->is_active == 1 ? 'checked' : ''}} id="{{$home_page_label->slug}}" data-plugin="switchery" name="is_active[{{$key}}][check]" class="chk_box2" data-color="#43bee1">
                         </div>
-                        
+
                         <a class="action-icon deletePickupSectionx" href="{{route('pickup.delete.section', $home_page_label->id)}}" onclick="return confirm('Are you sure you want to delete this section?');"  dataid="{{$home_page_label->id}}" href="javascript:void(0);">
                             <i class="mdi mdi-delete"></i>
                         </a>
-                       
+
                     </li>
                     @endforeach
                 </ol>
@@ -288,7 +283,7 @@
         </div>
     </div>
 
-    <div class="col-xl-4">
+    <div class="col-xl-6">
         <div class="card-box home-options-list">
             <div class="row mb-2">
                 <div class="col-sm-8">
@@ -297,7 +292,7 @@
                         {{ __('Drag & drop to home page sections') }}
                     </p>
                 </div>
-              
+
             </div>
 
             <div class="custom-dd-empty dd" id="homepage_datatablex">
@@ -309,7 +304,7 @@
 
                             @php
                                 $vendorLable = getNomenclatureName('Vendors', true);
-                                $vendorLable = ($vendorLable === 'Vendors') ? __('Vendors') : $vendorLable; 
+                                $vendorLable = ($vendorLable === 'Vendors') ? __('Vendors') : $vendorLable;
                             @endphp
 
                             {{ $vendorLable }}
@@ -317,9 +312,9 @@
                             {{$home_page_label->title}}
                             @endif
                         </a>
-                       
-                       
-                       
+
+
+
                     </li>
                     @endforeach
                 </ol>
@@ -343,10 +338,10 @@
                 </button>
             </div>
             <div class="modal-body py-0 px-2" id="edit_dynamic_html_desc">
-                
-              
-            
-            </div>        
+
+
+
+            </div>
         </div>
     </div>
 </div>
@@ -364,7 +359,7 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body" id="editCardBox">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">{{ __("Submit") }}</button>
@@ -378,7 +373,7 @@
 
 <!-- end cab booking template -->
 
-
+</div>
 
 @endsection
 
@@ -392,19 +387,19 @@
         console.log('allowDrop');
        ev.preventDefault();
     }
-    
+
     function drag(ev) {
         console.log('drag');
       var attod =   $(ev.target).attr('data-row-id');
       ev.dataTransfer.setData("row_id", attod);
     }
-    
+
     function drop(ev) {
       console.log('drop');
       ev.preventDefault();
       var row_id = ev.dataTransfer.getData("row_id");
 
-      submitDataWithNewSection(row_id); 
+      submitDataWithNewSection(row_id);
       console.log(row_id);
       //ev.target.appendChild(document.getElementById(row-id));
     }
@@ -445,12 +440,12 @@ $(document).on('click','.edit_dynamic_page',function(){
         var id = $(this).data('row-id');
         $.get('/client/web-styling/get-html-data-in-modal?id=' + id, function(markup)
         {
-            $('#edit_dynamic_html').modal('show'); 
+            $('#edit_dynamic_html').modal('show');
             $('#edit_dynamic_html_desc').html(markup);
             $('#layout_id').val(id);
         });
 
-}); 
+});
 
 
 $(document).on('click', '.deletePickupSection', function() {
@@ -470,7 +465,7 @@ $(document).on('click', '.deletePickupSection', function() {
     $(document).ready(function() {
         var color1 = new jscolor('#primary_color_option', options);
     });
-    
+
     $(document).ready(function() {
         var color1 = new jscolor('#site_top_header_color', options);
     });
@@ -532,7 +527,7 @@ $(document).on('click', '.deletePickupSection', function() {
             }
         });
 
-        
+
         $.ajax({
             type: "post",
             url: data_uri,
@@ -595,7 +590,7 @@ $(document).on('click', '.deletePickupSection', function() {
             }
         });
 
-        
+
         $.ajax({
             type: "post",
             url: data_uri,
@@ -635,7 +630,7 @@ $(document).on('click', '.deletePickupSection', function() {
                 post_order_ids.push($(this).data("row-id"));
             });
             saveOrderPickup(post_order_ids);
-            
+
         }
     });
 
@@ -713,7 +708,7 @@ $(document).on('click', '.deletePickupSection', function() {
 
     /////////// ************* edit banner image ***************************
     $(".openBannerModal").click(function (e) {
-        
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -722,9 +717,9 @@ $(document).on('click', '.deletePickupSection', function() {
         e.preventDefault();
 
         var uri = "{{route('get-image-data-in-modal')}}";
-       
+
         var uid = $(this).attr('userId');
-       
+
 
         $.ajax({
             type: "get",
@@ -741,7 +736,7 @@ $(document).on('click', '.deletePickupSection', function() {
                         backdrop: 'static',
                         keyboard: false
                     });
-                    
+
                 }
                 // var now = new Date();
                 // runPicker();
@@ -758,7 +753,7 @@ $(document).on('click', '.deletePickupSection', function() {
 
 
 
-    $(document).on('click', '.submitEditForm', function(e) { 
+    $(document).on('click', '.submitEditForm', function(e) {
         e.preventDefault();
         var form =  document.getElementById('save_edit_banner_form');
         var formData = new FormData(form);
@@ -773,7 +768,7 @@ $(document).on('click', '.deletePickupSection', function() {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
         });
-     
+
         $.ajax({
             type: "post",
             headers: {
@@ -790,7 +785,7 @@ $(document).on('click', '.deletePickupSection', function() {
                 console.log("----",response);
                 if (response.status == 'success') {
                     $(".modal .close").click();
-                    location.reload(); 
+                    location.reload();
                 } else {
                     $(".show_all_error.invalid-feedback").show();
                     $(".show_all_error.invalid-feedback").text(response.message);

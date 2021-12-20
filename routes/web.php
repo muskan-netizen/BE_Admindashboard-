@@ -55,3 +55,5 @@ Route::get('/switch/admin/language',function(Request $request){
     }
     return redirect()->back();
 });
+
+Route::get('/share','HomeController@share')->name('share_link');

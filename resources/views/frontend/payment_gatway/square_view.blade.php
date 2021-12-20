@@ -1,7 +1,7 @@
 <html>
 
 <head>
-  <title>My Payment Flow</title>
+  <title>{{__('My Payment Flow')}}</title>
   <!-- link to the Square web payment SDK library -->
   <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/font-awesome.min.css')}}">
@@ -53,17 +53,17 @@
           <div id="apple-pay-button" alt="apple-pay" type="button"></div>
           <div id="google-pay-button" alt="google-pay" type="button"></div>
           <div class="border">
-            <span>OR</span>
+            <span>{{__('OR')}}</span>
           </div>
           <div id="ach-wrapper">
-            <label for="ach-account-holder-name">Full Name</label>
-            <input id="ach-account-holder-name" type="text" placeholder="Jane Doe" name="ach-account-holder-name" autocomplete="name" /><span id="ach-message"></span><button id="ach-button" type="button">Pay with Bank Account</button>
+            <label for="ach-account-holder-name">{{__('Full Name')}}</label>
+            <input id="ach-account-holder-name" type="text" placeholder="Jane Doe" name="ach-account-holder-name" autocomplete="name" /><span id="ach-message"></span><button id="ach-button" type="button">{{__('Pay with Bank Account')}}</button>
 
             <div class="border">
-              <span>OR</span>
+              <span>{{__('OR')}}</span>
             </div>
           </div>
-          <div id="card-container"></div><button id="card-button" type="button">Pay with Card</button>
+          <div id="card-container"></div><button id="card-button" type="button">{{__('Pay with Card')}}</button>
           <span id="payment-flow-message"></span>
         </div>
         @forelse($data as $key=>$value)

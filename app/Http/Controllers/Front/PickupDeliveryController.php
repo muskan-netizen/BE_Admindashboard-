@@ -115,7 +115,7 @@ class PickupDeliveryController extends FrontController{
     }
     # get all vehicles category by vendor
 
-    public function productsByVendorInPickupDelivery(Request $request, $domain = '',$vid = 0){
+    public function productsByVendorInPickupDelivery(Request $request, $domain = '',$vid = 0, $cid = 0){
         try {
             if($vid == 0){
                 return response()->json(['error' => 'No record found.'], 404);
@@ -147,8 +147,11 @@ class PickupDeliveryController extends FrontController{
                         $qryd->where('type_id', 7);   # check only products get of pickup
                     })
                     ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags')
-                    ->where('products.vendor_id', $vid)
-                    ->where('products.is_live', 1)->distinct()->get();
+                    ->where('products.vendor_id', $vid);
+                    if($cid > 0){
+                        $products = $products->where('products.category_id', $cid);
+                    }
+                    $products = $products->where('products.is_live', 1)->distinct()->get();
 
              if(!empty($products)){
                 foreach ($products as $key => $product) {

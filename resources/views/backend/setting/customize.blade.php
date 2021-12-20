@@ -175,7 +175,7 @@
                                 @foreach($preference->currency as $ac)
                                 <div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-{{$ac->currency->id}}">
                                     <label class="primaryCurText">1 {{$preference->primary->currency->iso_code}} {{!empty($preference->primary->currency->symbol) ? $preference->primary->currency->symbol : ''}} = </label>
-                                    <input class="form-control w-50 d-inline-block" type="number" value="{{$ac->doller_compare}}" step=".01" name="multiply_by[]" min="0.01"> {{$ac->currency->iso_code}} {{!empty($ac->currency->symbol) ? $ac->currency->symbol : ''}}
+                                    <input class="form-control w-50 d-inline-block" type="number" value="{{$ac->doller_compare}}" step=".0001" name="multiply_by[]" min="0.0001"> {{$ac->currency->iso_code}} {{!empty($ac->currency->symbol) ? $ac->currency->symbol : ''}}
                                     <input type="hidden" name="cuid[]" class="curr_id" value="{{ $ac->currency->id }}">
                                 </div>
                                 @endforeach
@@ -198,8 +198,8 @@
                     <p class="sub-header">
                         {{ __("Update custom domain here.") }}
                     </p>
-                    <label for="custom_domain">*{{__("Make sure you already pointed to IP")}} ({{\env('IP')}}) {{__("from your domain.")}}</label> 
-                      
+                    <label for="custom_domain">*{{__("Make sure you already pointed to IP")}} ({{\env('IP')}}) {{__("from your domain.")}}</label>
+
                     <div class="row mb-2">
                         <div class="col-sm-12">
                             <div class="form-group mb-3">
@@ -210,7 +210,7 @@
                                     <input type="text" name="custom_domain" id="custom_domain" placeholder="" class="form-control" value="{{ old('custom_domain', $preference->domain->custom_domain ?? '')}}">
                                 </div>
 
-                               
+
                                 @if($errors->has('custom_domain'))
                                 <span class="text-danger" role="alert">
                                     <strong>{{ $errors->first('custom_domain') }}</strong>

@@ -335,7 +335,7 @@ INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active
 (5, 'Best Sellers', 'best_sellers', 5, 0, NULL, '2021-09-29 06:30:05'),
 (6, 'Brands', 'brands', 6, 0, NULL, '2021-09-29 06:30:05'),
 (7, 'Pickup Delivery', 'pickup_delivery', 7, 1, '2021-09-29 06:29:56', '2021-09-29 06:29:56'),
-(8, 'Dynamic Page', 'dynamic_page', 8, 1, '2021-10-14 01:05:38', '2021-10-14 01:05:38');
+(8, 'Dynamic HTML', 'dynamic_page', 8, 1, '2021-10-14 01:05:38', '2021-10-14 01:05:38');
 
 INSERT INTO `cab_booking_layout_categories` (`id`, `cab_booking_layout_id`, `category_id`, `created_at`, `updated_at`) VALUES
 (2, 7, 14, '2021-09-29 06:30:05', '2021-09-29 06:30:05');

@@ -318,6 +318,22 @@
     var update_address_url = "{{ route('address.update', ':id') }}";
     var delete_address_url = "{{ route('deleteAddress', ':id') }}";
     var verify_information_url = "{{ route('verifyInformation', Auth::user()->id) }}";
+
+    var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
+    var longitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
+
+    if(!latitude){
+        @if(!empty($client_preference_detail->Default_latitude))
+            latitude = "{{$client_preference_detail->Default_latitude}}";
+        @endif
+    }
+
+    if(!longitude){
+        @if(!empty($client_preference_detail->Default_longitude))
+            longitude = "{{$client_preference_detail->Default_longitude}}";
+        @endif
+    }
+
     var ajaxCall = 'ToCancelPrevReq';
     $('.verifyEmail').click(function(){
         verifyUser('email');
@@ -432,8 +448,17 @@
     $(document).on('click', '.showMapHeader', function(){
         var lats = document.getElementById('latitude').value;
         var lngs = document.getElementById('longitude').value;
+        if(lats==''){
+            lats=latitude;
+        }
+        if(lngs==''){
+            lngs=longitude;
+        }
 
         var myLatlng = new google.maps.LatLng(lats, lngs);
+
+        var infowindow = new google.maps.InfoWindow();
+        var geocoder = new google.maps.Geocoder();
         var mapProp = {
             center:myLatlng,
             zoom:13,
@@ -447,15 +472,34 @@
             draggable:true
         });
         // marker drag event
-        google.maps.event.addListener(marker,'drag',function(event) {
-            document.getElementById('latitude').value = event.latLng.lat();
-            document.getElementById('longitude').value = event.latLng.lng();
-        });
-        //marker drag event end
-        google.maps.event.addListener(marker,'dragend',function(event) {
-            document.getElementById('latitude').value = event.latLng.lat();
-            document.getElementById('longitude').value = event.latLng.lng();
-        });
+        google.maps.event.addListener(marker, 'dragend', function() {
+                    geocoder.geocode({
+                    'latLng': marker.getPosition()
+                    }, function(results, status) {
+
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        if (results[0]) {
+                             document.getElementById('latitude').value = marker.getPosition().lat();
+                             document.getElementById('longitude').value = marker.getPosition().lng();
+                             document.getElementById('address').value= results[0].formatted_address;
+
+                            infowindow.setContent(results[0].formatted_address);
+
+                            infowindow.open(map, marker);
+                        }
+                    }
+                    });
+                });
+
+        // google.maps.event.addListener(marker,'drag',function(event) {
+        //     document.getElementById('latitude').value = event.latLng.lat();
+        //     document.getElementById('longitude').value = event.latLng.lng();
+        // });
+        // //marker drag event end
+        // google.maps.event.addListener(marker,'dragend',function(event) {
+        //     document.getElementById('latitude').value = event.latLng.lat();
+        //     document.getElementById('longitude').value = event.latLng.lng();
+        // });
         $('#pick_address').modal('show');
 
     });
@@ -463,6 +507,7 @@
     function initialize() {
       var input = document.getElementById('address');
       var autocomplete = new google.maps.places.Autocomplete(input);
+
       google.maps.event.addListener(autocomplete, 'place_changed', function () {
         var place = autocomplete.getPlace();
         // console.log(place);

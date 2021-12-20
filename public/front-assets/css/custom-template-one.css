@@ -18,7 +18,7 @@ h1 span {
 h2 {
     font-size: 34px;
     color: #222222;
-    text-transform: uppercase;
+    text-transform: none !important;
     font-weight: 700;
     line-height: 1;
     letter-spacing: 0.02em;
@@ -125,15 +125,15 @@ h6 {
 
 .navigation-tab-item .nav-link {
     color: rgba(0, 0, 0, 0.39);
-    font-weight: 400;
-    padding: 5px 0;
+    font-weight: 600;
+    padding: 4px 0 6px;
     text-align: center;
     line-height: 18px;
 }
 
 .navigation-tab-item .nav-link.active {
     color:  #fff;
-    font-weight: 400;
+    font-weight: 600;
     background-color: transparent;
 }
 
@@ -209,11 +209,14 @@ h6 {
 .img-outer-box {
     height: 100px;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: top;
 }
 
 .img-outer-box img {
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     width: 100%;
     object-position: center;
     border-radius: 10px;
@@ -243,6 +246,12 @@ h6 {
 .suppliers-box {
     width: 100%;
     margin: auto;
+}
+
+.product-image img {
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
 }
 
 .rating-box {
@@ -422,7 +431,6 @@ h6 {
     object-fit: cover;
 }
 
-
 .brand-box h6 {
     position: absolute;
     left: 0;
@@ -464,6 +472,13 @@ h6 {
     letter-spacing: 0;
     line-height: 23px;
     width: calc(100% - 40px);
+    display: block;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: break-spaces;
 }
 
 .supplier-rating p {
@@ -661,15 +676,9 @@ footer ul.social-links li a i,
     font-size: 14px;
 }
 
-
 .mail-icon .img-fluid {
     width: 40%;
     margin: auto;
-}
-
-
-.cab-banner-area{
-    margin-bottom: 0;
 }
 
 
@@ -886,10 +895,6 @@ body[dir="rtl"] #social-links li:last-child {
 }
 
 @media (min-width: 991px) {
-    .cab-banner-area {
-        margin-bottom: -40px;
-    }
-
     .home-banner-slider .slick-list {
         border-radius: 4px;
         overflow: hidden;
@@ -1044,7 +1049,9 @@ body[dir="rtl"] #social-links li:last-child {
 }
 
 @media (max-width: 767px) {
-
+    .product-image {
+        min-height: 130px;
+    }
     .home-banner-slider .slick-prev,
     .home-banner-slider .slick-next {
         height: 30px;
@@ -1136,7 +1143,11 @@ body[dir="rtl"] #social-links li:last-child {
     header.site-header.fixed-bar {
         top: 0;
     }
-
+    .pixelstrap .nav-cate-img {
+        height: 50px;
+        width: 50px;
+        margin: 0 auto 5px;
+    }
     .top-header.site-topbar {
         padding: 10px 0 0 0;
         background: transparent;
@@ -1156,10 +1167,10 @@ body[dir="rtl"] #social-links li:last-child {
     }
 
     .location-bar {
-        width: calc(100% - 2%);
+        width: 100%;
     }
 
     .homepage-address {
-        width: calc(100% - 160px);
+        width: calc(100% - 120px);
     }
 }

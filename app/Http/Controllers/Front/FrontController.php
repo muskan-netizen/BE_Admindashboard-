@@ -652,20 +652,25 @@ class FrontController extends Controller
         // }
         // // $time = convertDateTimeInTimeZone($datetime, Auth::user()->timezone, $format);
         // $time = Carbon::parse($datetime)->format($format);
+        
+
 
         if(isset($user) && !empty($user))
         $user =  $user;
         else
         $user = Auth::user();
+        
         $timezone = $user->timezone;
         $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
         $date_format = $preferences->date_format;
         $time_format = $preferences->time_format;
 
         if($scheduleTime != ''){
-            $datetime = dateTimeInUserTimeZone($scheduleTime, $timezone);
+            $datetime = Carbon::parse($scheduleTime)->addMinutes($minutes);
+            $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         }else{
-            $datetime = dateTimeInUserTimeZone($order_vendor_created_at, $timezone);
+            $datetime = Carbon::parse($order_vendor_created_at)->addMinutes($minutes);
+            $datetime = dateTimeInUserTimeZone($datetime, $timezone);
         }
         if(Carbon::parse($datetime)->isToday()){
             if($time_format == '12'){

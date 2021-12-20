@@ -338,7 +338,7 @@
                 <div class="modal-body" id="AddRejectBox">
                     <p id="error-case" style="color:red;"></p>
                     <label style="font-size:medium;">Enter reason for rejecting the order.</label>
-                    <textarea class="reject_reason" data-name="reject_reason" name="reject_reason" id="" cols="107" rows="10"></textarea>
+                    <textarea class="reject_reason w-100" data-name="reject_reason" name="reject_reason" id="" cols="107" rows="10"></textarea>
 
                 </div>
                 <div class="modal-footer">

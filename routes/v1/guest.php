@@ -34,6 +34,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('cart/product/lastAdded', 'Api\v1\CartController@getLastAddedProductVariant');
 	    Route::post('cart/product/variant/different-addons', 'Api\v1\CartController@getProductVariantWithDifferentAddons');
+
+        Route::post('promo-code-open/list', 'Api\v1\PickupDeliveryController@postPromoCodeListOpen');
+
+          
     });
     Route::group(['middleware' => ['dbCheck','systemAuth', 'apilogger']], function() {
         Route::get('cart/empty', 'Api\v1\CartController@emptyCart');

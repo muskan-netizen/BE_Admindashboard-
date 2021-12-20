@@ -80,7 +80,7 @@
 
     <div class="row main-customer-page">
         <div class="col-12">
-            <div class="card-box">
+            <div class="card-box set-height">
                 <div class="row mb-2">
                     <div class="col-sm-12">
                         <div class="text-sm-left">

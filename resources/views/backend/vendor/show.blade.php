@@ -144,7 +144,7 @@
 @endsection
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid vendor-show-page">
 
     <!-- start page title -->
     <div class="row">
@@ -483,7 +483,7 @@
                                                                 <a href="javascript:void(0);" class="text-body font-weight-semibold">{{$vendor_table->table_number}}</a>
                                                             </td>
                                                             <td class="table-user">
-                                                                <a href="javascript:void(0);" class="text-body font-weight-semibold">{{$vendor_table->category->title}}</a>
+                                                                <a href="javascript:void(0);" class="text-body font-weight-semibold">{{$vendor_table->category->title??null}}</a>
                                                             </td>
                                                             <td class="table-user">
                                                             {{ QrCode::size(100)->generate($vendor_table->qr_url); }}

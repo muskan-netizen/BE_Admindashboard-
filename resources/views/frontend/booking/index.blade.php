@@ -138,6 +138,7 @@
             <% }); %>
         </script>
         <script type="text/template" id="products_template">
+            <% if(results != ''){ %>
             <% _.each(results, function(result, key){%>
                 <a class="vehical-view-box row align-items-center no-gutters px-2 my-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
                     <div class="col-3 vehicle-icon">
@@ -156,6 +157,11 @@
                 </a>
                 <hr class="m-0">
             <% }); %>
+            <% }else{ %>
+                <div class="col-12 vehicle-details">
+                    {{ __('No result found. Please try a new search') }}
+                </div>
+            <% } %>
         </script>
         <script type="text/template" id="scheduleTime_template">
             <div class="scheduleTime">

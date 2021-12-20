@@ -409,6 +409,9 @@ class HomeController extends BaseController
             $page = $request->has('page') ? $request->page : 1;
             $action = $request->has('type') && $request->type ? $request->type : null;
             $types = ['delivery', "dine_in", "takeaway"];
+            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
+            $latitude = $request->latitude;
+            $longitude = $request->longitude;
 
             if (!in_array($action, $types)) {
                 return response()->json(['error' => 'Type is incorrect.'], 404);
@@ -449,6 +452,12 @@ class HomeController extends BaseController
                 }
 
                 $vendors = Vendor::select('id', 'name  as dataname', 'logo', 'slug', 'address')->where($action, 1);
+                if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                    $vendors = $vendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
+                        $query->select('vendor_id')
+                        ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
+                    });
+                }
                 $vendors = $vendors->where(function ($q) use ($keyword) {
                     $q->where('name', 'LIKE', "%$keyword%")->orWhere('address', 'LIKE', '%' . $keyword . '%');
                 })->where('status', 1)->paginate($limit, $page);
@@ -491,11 +500,11 @@ class HomeController extends BaseController
                     ->where(function ($q) use ($keyword) {
                         $q->where('products.sku', ' LIKE', '%' . $keyword . '%')
                             ->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')
-                            ->orWhere('pt.title', 'LIKE', '%' . $keyword . '%')
-                            ->orWhere('pt.body_html', 'LIKE', '%' . $keyword . '%')
-                            ->orWhere('pt.meta_title', 'LIKE', '%' . $keyword . '%')
-                            ->orWhere('pt.meta_keyword', 'LIKE', '%' . $keyword . '%')
-                            ->orWhere('pt.meta_description', 'LIKE', '%' . $keyword . '%');
+                            ->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
+                            // ->orWhere('pt.body_html', 'LIKE', '%' . $keyword . '%')
+                            // ->orWhere('pt.meta_title', 'LIKE', '%' . $keyword . '%')
+                            // ->orWhere('pt.meta_keyword', 'LIKE', '%' . $keyword . '%')
+                            // ->orWhere('pt.meta_description', 'LIKE', '%' . $keyword . '%');
                     });
                 if ($for == 'category') {
                     $prodIds = array();

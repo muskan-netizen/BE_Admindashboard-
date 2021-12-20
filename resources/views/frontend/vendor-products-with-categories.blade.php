@@ -744,7 +744,7 @@
                                                 <span>£ 10.50</span>
                                             </div> -->
 
-                    <div class="show-div shopping-cart flex-fill" id="header_cart_main_ul_ondemand"></div>
+                    <div class="show-div shopping-cart flex-fill w-100" id="header_cart_main_ul_ondemand"></div>
                 </div>
             </div>
         </div>

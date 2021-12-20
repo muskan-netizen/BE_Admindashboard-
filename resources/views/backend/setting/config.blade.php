@@ -677,7 +677,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </form>
       </div>
       <div class="col-xl-3 mb-3">
-         <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}"> 
+         <form class="h-100" method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             @csrf
             <div class="card-box h-100 h-100">
                <h4 class="header-title text-uppercase">{{ __("SMS Configuration") }}</h4>
@@ -1014,59 +1014,56 @@ $sms_crendential = json_decode($preference->sms_credentials);
             <input type="hidden" name="verify_config" id="verify_config" value="1">
             @csrf
                <div class="row">
-                  <div class="col-xl-12">
-                     <!-- <div class="page-title-box">
-                        <h4 class="page-title text-uppercase">User Authentication</h4>
-                     </div> -->
-                     <div class="card-box">
+                  <div class="col-md-6 mb-3">
+                     <div class="card-box h-100 mb-0">
                         <h4 class="header-title text-uppercase">{{ __("User Authentication") }}</h4>
                         <div class="row align-items-center">
-                           <div class="col-sm-5">
-                              <div class="form-group mb-md-0 switchery-demo">
+                           <div class="col-sm-12">
+                              <div class="form-group switchery-demo">
                                  <label for="verify_email" class="mr-3 mb-0">{{ __("Verify Email") }}</label>
                                  <input type="checkbox" data-plugin="switchery" name="verify_email" id="verify_email" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_email == '1')) checked='checked' @endif>
                               </div>
                            </div>
-                           <div class="col-sm-5">
-                              <div class="form-group mb-md-0">
+                           <div class="col-sm-12">
+                              <div class="form-group">
                                  <label for="verify_phone" class="mr-3 mb-0">{{ __("Verify Phone") }}</label>
                                  <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif>
                               </div>
                            </div>
-                           <div class="col-sm-2">
-                              <div class="form-group mb-0 text-md-right">
-                                 <button class="btn btn-info d-block ml-auto" type="submit"> {{ __("Save") }} </button>
+                           <div class="col-sm-12 mt-4">
+                              <div class="form-group mb-0">
+                                 <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                               </div>
                            </div>
                         </div>
                      </div>
                   </div>
                   @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
-                  <div class="col-xl-12 mb-3">
-                     <div class="card-box mb-0">
+                  <div class="col-md-6 mb-3">
+                     <div class="card-box h-100 mb-0">
                         <h4 class="header-title text-uppercase">{{ __("Vendor") }}</h4>
                         <div class="row align-items-center">
-                           <div class="col-md-3">
-                              <div class="form-group mb-md-0">
+                           <div class="col-md-12">
+                              <div class="form-group">
                                  <label for="dinein_check" class="mr-3 mb-0">{{ __("Dine In") }}</label>
                                  <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
-                           <div class="col-md-3">
-                              <div class="form-group mb-md-0">
+                           <div class="col-md-12">
+                              <div class="form-group">
                                  <label for="delivery_check" class="mr-3 mb-0">{{ __("Delivery") }}</label>
                                  <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
-                           <div class="col-md-3">
-                              <div class="form-group mb-md-0">
+                           <div class="col-md-12">
+                              <div class="form-group">
                                  <label for="takeaway_check" class="mr-3 mb-0">{{ __("Takeaway") }}</label>
                                  <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
-                           <div class="col-md-3">
-                              <div class="form-group mb-0 text-md-right">
-                                 <button class="btn btn-info d-block ml-md-auto" type="submit"> {{ __("Save") }} </button>
+                           <div class="col-md-12">
+                              <div class="form-group mb-0">
+                                 <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                               </div>
                            </div>
                         </div>
@@ -1077,7 +1074,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </form>
 
          <div class="card-box">
-            <h4 class="header-title text-uppercase mb-3">{{ __("Custom Mods") }}</h4>
+            <h4 class="header-title text-uppercase mb-2">{{ __("Custom Mods") }}</h4>
             <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
                <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
                @csrf

@@ -154,10 +154,11 @@
     <% }); %>
 </script>
 
+
 <script type="text/template" id="products_template">
     <% _.each(products, function(product, k){ %>
         <div class="product-card-box position-relative">
-            <div class="add-to-fav">
+            <div class="add-to-fav 12">
                 <input id="fav_pro_one" type="checkbox">
                 <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
             </div>
@@ -173,7 +174,13 @@
                         <div class="product-description">
                             <div class="d-flex align-items-center justify-content-between">
                                 <h6 class="card_title mb-1 ellips"><%= product.title %></h6>
-                                <!--<span class="rating-number">2.0</span>-->
+                                @if($client_preference_detail)
+                                    @if($client_preference_detail->rating_check == 1)
+                                        <% if(product.averageRating > 0){%>
+                                            <span class="rating-number"><%= product.averageRating %></span>
+                                        <% } %>
+                                    @endif
+                                @endif
                             </div>
                             <p><%= product.vendor_name %></p>
                             <p class="border-bottom pb-1">In <%= product.category %></p>
@@ -181,17 +188,6 @@
                                 <b><% if(product.inquiry_only == 0) { %>
                                     <%= product.price %>
                                 <% } %></b>
-
-                                <!-- @if($client_preference_detail)
-                                    @if($client_preference_detail->rating_check == 1)
-                                        <% if(product.averageRating > 0){%>
-                                            <div class="rating-box">
-                                                <i class="fa fa-star" aria-hidden="true"></i>
-                                                <span><%= product.averageRating %></span>
-                                            </div>
-                                        <% } %>
-                                    @endif
-                                @endif   -->
                             </div>
                         </div>
                     </div>
@@ -305,7 +301,7 @@
                     </div>
                     <div class="col-7 col-sm-4">
                         <ul class="product_list d-flex align-items-center p-0 flex-wrap m-0">
-                        <% _.each(vendor.products, function(product, k){ %>
+                            <% _.each(vendor.products, function(product, k){ %>
                                 <% if(vendor.vendor_id == product.vendor_id){ %>
                                     <li class="text-center">
                                         <img class="blur-up lazyload" src="<%= product.image_url %>" alt="">
@@ -352,80 +348,196 @@
     <% }); %>
 </script>
 
-    <section class="section-b-space p-t-0 pt-3 pt-md-5 ratio_asos shimmer_effect">
-        <div class="container">
+    <section class="section-b-space p-t-0 pt-4 ratio_asos shimmer_effect">
+        <div class="container mb-5">
+            <div class="row">
+                <div class="col-12 cards">
+                    <h2 class="h2-heading loading"></h2>
+                </div>
+            </div>
             <div class="grid-row grid-4-4">
                 <div class="cards">
                     <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_content loading"></div>
-                    <div class="card_description loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
                 </div>
                 <div class="cards">
                     <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_content loading"></div>
-                    <div class="card_description loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
                 </div>
                 <div class="cards">
                     <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_content loading"></div>
-                    <div class="card_description loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
                 </div>
                 <div class="cards">
                     <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_content loading"></div>
-                    <div class="card_description loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
                 </div>
                 <div class="cards">
                     <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_content loading"></div>
-                    <div class="card_description loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
+                </div>
+            </div>
+        </div>
+        <div class="container mb-5">
+            <div class="row">
+                <div class="col-12 cards">
+                    <h2 class="h2-heading loading" style="width: 150px;"></h2>
+                </div>
+            </div>
+            <div class="grid-row grid-4-4">
+                <div class="cards">
+                    <div class="card_image loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
                 </div>
                 <div class="cards">
                     <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_content loading"></div>
-                    <div class="card_description loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
                 </div>
                 <div class="cards">
                     <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_content loading"></div>
-                    <div class="card_description loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
                 </div>
                 <div class="cards">
                     <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_content loading"></div>
-                    <div class="card_description loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
                 </div>
                 <div class="cards">
                     <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_content loading"></div>
-                    <div class="card_description loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
+                </div>
+            </div>
+        </div>
+        <div class="container mb-5">
+            <div class="row">
+                <div class="col-12 cards">
+                    <h2 class="h2-heading loading" style="width: 200px"></h2>
+                </div>
+            </div>
+            <div class="grid-row grid-4-4">
+                <div class="cards">
+                    <div class="card_image loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
                 </div>
                 <div class="cards">
                     <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_content loading"></div>
-                    <div class="card_description loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
                 </div>
                 <div class="cards">
                     <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_content loading"></div>
-                    <div class="card_description loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
                 </div>
                 <div class="cards">
                     <div class="card_image loading"></div>
-                    <div class="card_title loading"></div>
-                    <div class="card_content loading"></div>
-                    <div class="card_description loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
+                </div>
+                <div class="cards">
+                    <div class="card_image loading"></div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="card_title loading"></div>
+                        <div class="card_icon loading"></div>
+                    </div>
+                    <div class="card_content loading mt-0 w-75"></div>
+                    <div class="card_content loading mt-0 w-50"></div>
+                    <div class="card_line loading"></div>
+                    <div class="card_price loading"></div>
                 </div>
             </div>
         </div>
@@ -460,7 +572,7 @@
         </section>
         @elseif($homePageLabel->slug == 'vendors')
         <section class="suppliers-section">
-        <div class="container">
+        <div class="container mb-0">
             <div class="row">
                 <div class="col-12 top-heading d-flex align-items-center justify-content-between  mb-2">
                     <h2 class="h2-heading">{{ (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true) }}</h2>
@@ -468,8 +580,6 @@
                 </div>
                 <div class="col-12">
                     <div class="suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-
-
                     </div>
                 </div>
             </div>

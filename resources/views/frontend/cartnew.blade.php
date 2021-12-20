@@ -6,7 +6,6 @@
 <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/flatpickr/flatpickr.min.css')}}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
-<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <style type="text/css">
     .swal2-title {
         margin: 0px;
@@ -1023,7 +1022,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @section('script')
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
 </script>
-<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
 
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
@@ -1067,10 +1065,32 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var my_orders_url = "{{route('user.orders')}}";
     var validate_promocode_coupon_url = "{{ route('verify.promocode.validate_code') }}";
 
+    var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
+    var longitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
+
+    if(!latitude){
+        @if(!empty($client_preference_detail->Default_latitude))
+            latitude = "{{$client_preference_detail->Default_latitude}}";
+        @endif
+    }
+
+    if(!longitude){
+        @if(!empty($client_preference_detail->Default_longitude))
+            longitude = "{{$client_preference_detail->Default_longitude}}";
+        @endif
+    }
+
     $(document).on('click', '.showMapHeader', function() {
         var lats = document.getElementById('latitude').value;
         var lngs = document.getElementById('longitude').value;
-
+        if(lats==''){
+            lats=latitude;
+        }
+        if(lngs==''){
+            lngs=longitude;
+        }
+        var infowindow = new google.maps.InfoWindow();
+        var geocoder = new google.maps.Geocoder();
         var myLatlng = new google.maps.LatLng(lats, lngs);
         var mapProp = {
             center: myLatlng,
@@ -1078,6 +1098,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             mapTypeId: google.maps.MapTypeId.ROADMAP
 
         };
+        //address
         var map = new google.maps.Map(document.getElementById("pick-address-map"), mapProp);
         var marker = new google.maps.Marker({
             position: myLatlng,
@@ -1085,15 +1106,33 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             draggable: true
         });
         // marker drag event
-        google.maps.event.addListener(marker, 'drag', function(event) {
-            document.getElementById('latitude').value = event.latLng.lat();
-            document.getElementById('longitude').value = event.latLng.lng();
+        google.maps.event.addListener(marker, 'dragend', function() {
+            geocoder.geocode({
+            'latLng': marker.getPosition()
+            }, function(results, status) {
+
+            if (status == google.maps.GeocoderStatus.OK) {
+                if (results[0]) {
+                        document.getElementById('latitude').value = marker.getPosition().lat();
+                        document.getElementById('longitude').value = marker.getPosition().lng();
+                        document.getElementById('address').value= results[0].formatted_address;
+
+                    infowindow.setContent(results[0].formatted_address);
+
+                    infowindow.open(map, marker);
+                }
+            }
+            });
         });
-        //marker drag event end
-        google.maps.event.addListener(marker, 'dragend', function(event) {
-            document.getElementById('latitude').value = event.latLng.lat();
-            document.getElementById('longitude').value = event.latLng.lng();
-        });
+        // google.maps.event.addListener(marker, 'drag', function(event) {
+        //     document.getElementById('latitude').value = event.latLng.lat();
+        //     document.getElementById('longitude').value = event.latLng.lng();
+        // });
+        // //marker drag event end
+        // google.maps.event.addListener(marker, 'dragend', function(event) {
+        //     document.getElementById('latitude').value = event.latLng.lat();
+        //     document.getElementById('longitude').value = event.latLng.lng();
+        // });
         $('#pick_address').modal('show');
     });
 

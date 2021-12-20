@@ -4,10 +4,10 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->get();
 @endphp
 <footer class="footer-light">
-    <section class="section-b-space light-layout py-4">
+    <section class="section-b-space light-layout py-xl-4 pt-4 pb-0">
         <div class="container">
             <div class="row footer-theme partition-f">
-                <div class="col-lg-2 col-md-6 d-flex align-items-center justify-content-center justify-content-md-start">
+                <div class="col-lg-2 d-flex align-items-center justify-content-center justify-content-md-start">
                     <div class="footer-logo mb-0">
                         <a href="{{ route('userHome') }}">
                             <img class="img-fluid blur-up lazyload" src="{{$urlImg}}">
@@ -15,9 +15,9 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     </div>
                 </div>
                 @if(count($pages))
-                <div class="col-lg-3 col-md-6 pl-lg-5">
+                <div class="col-lg-3 col-md-4 pl-lg-5">
                     <div class="sub-title">
-                        <div class="footer-title mt-0">
+                        <div class="footer-title mt-0 text-center text-md-left">
                             <h4 class="mt-0">{{ __('Links') }}</h4>
                         </div>
                         <div class="footer-contant">
@@ -54,9 +54,9 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </div>
                 @endif
                 @if(count($social_media_details))
-                <div class="col-lg-4 col-md-6 pl-lg-5">
+                <div class="col-lg-4 col-md-4 pl-lg-5">
                     <div class="sub-title">
-                        <div class="footer-title mt-0">
+                    <div class="footer-title mt-0 text-center text-md-left">
                             <h4 class="mt-0">{{ __('Connect') }}</h4>
                         </div>
                         <div class="footer-contant">
@@ -77,9 +77,9 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </div>
                 @endif
                 @if($client_preference_detail->show_contact_us == 1)
-                <div class="col-lg-3 col-md-6 mb-md-0 mb-3">
+                <div class="col-lg-3 col-md-4 mb-md-0 mb-3">
                     <div class="sub-title">
-                        <div class="footer-title mt-0">
+                        <div class="footer-title mt-0 text-center text-md-left">
                             <h4 class="mt-0">{{ __('Contact Us') }}</h4>
                         </div>
                         <div class="footer-contant">

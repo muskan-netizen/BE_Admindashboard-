@@ -92,6 +92,9 @@
     var client_company_name = "{{getClientDetail()->company_name}}";
     var client_logo_url = "{{getClientDetail()->logo_image_url}}";
 
+// is restricted
+    var is_age_restricted ="{{$client_preference_detail->age_restriction}}";
+
 
     // if((home_page_url != window.location.href) && (home_page_url2 != window.location.href)){
     //     $('.vendor_mods').hide();}

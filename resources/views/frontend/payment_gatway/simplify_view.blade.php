@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="_token" content="{{ csrf_token() }}">
-    <title>Payment Checkout</title>
+    <title>{{__('Payment Checkout')}}</title>
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/font-awesome.min.css')}}">
     <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
@@ -116,15 +116,15 @@
             <form id="simplify-payment-form" action="{{route('payment.simplify.createPayment')}}" method="POST">
                 <!-- The $10 amount is set on the server side -->
                 <div class="form-group">
-                    <label>Credit Card Number: </label>
+                    <label>{{__('Credit Card Number')}}: </label>
                     <input class="form-control" id="cc-number" type="text" maxlength="20" autocomplete="off" value="" autofocus />
                 </div>
                 <div class="form-group">
-                    <label>CVC: </label>
+                    <label>{{__('CVC')}}: </label>
                     <input class="form-control" id="cc-cvc" type="text" maxlength="4" autocomplete="off" value=""/>
                 </div>
                 <div class="form-group">
-                    <label>Expiry Date: </label>
+                    <label>{{__('Expiry Date')}}: </label>
                     <div class="row align-items-center">
                         <div class="col-sm-6">
                             <select class="form-control" id="cc-exp-month">
@@ -156,7 +156,7 @@
                 @empty
                 @endforelse
                 @csrf
-                <button id="process-payment-btn" class="btn btn-solid w-100 mt-4" type="submit">Process Payment</button>
+                <button id="process-payment-btn" class="btn btn-solid w-100 mt-4" type="submit">{{__('Process Payment')}}</button>
             </form>
         </div>
     </div>

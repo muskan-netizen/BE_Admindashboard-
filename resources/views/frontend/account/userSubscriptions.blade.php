@@ -328,7 +328,6 @@
 
 @section('script')
 <script src="https://js.stripe.com/v3/"></script>
-<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <script type="text/javascript">
     var subscription_payment_options_url = "{{route('user.subscription.plan.select', ':id')}}";
     var user_subscription_purchase_url = "{{route('user.subscription.plan.purchase', ':id')}}";

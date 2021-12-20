@@ -25,7 +25,7 @@ class PickupDeliveryController extends BaseController{
 
     # get all vehicles category by vendor
 
-    public function productsByVendorInPickupDelivery(Request $request, $vid = 0){
+    public function productsByVendorInPickupDelivery(Request $request, $vid = 0, $cid = 0){
         try {
             if($vid == 0){
                 return response()->json(['error' => __('No record found.')], 404);
@@ -59,8 +59,11 @@ class PickupDeliveryController extends BaseController{
                                     ->where('vendor_id', $vid)->where('status', 0);
                     })
                     ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags')
-                    ->where('products.vendor_id', $vid)
-                    ->where('products.is_live', 1)->distinct()->paginate($paginate); 
+                    ->where('products.vendor_id', $vid);
+                    if($cid > 0){
+                        $products = $products->where('products.category_id', $cid);
+                    }
+                    $products = $products->where('products.is_live', 1)->distinct()->paginate($paginate); 
                    
             if(!empty($products)){
                 foreach ($products as $key => $product) {
@@ -560,10 +563,7 @@ class PickupDeliveryController extends BaseController{
             $cart_products = Product::with(['variant' => function($q){
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                         }])->where('vendor_id', $request->vendor_id)->where('id', $request->product_id)->get();
-            //$total_minimum_spend = 0;
-            // foreach ($cart_products as $cart_product) {
-            //     $total_minimum_spend += $cart_product->variant->first() ? $cart_product->variant->first()->price * 1 : 0;
-            // }
+            
             $total_minimum_spend = $request->amount??0;
             if($product_ids){
                 $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
@@ -717,6 +717,32 @@ class PickupDeliveryController extends BaseController{
             return $data;
         }
        
+    }
+
+
+
+
+     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function postPromoCodeListOpen(Request $request){
+        try {
+            $promo_codes = new \Illuminate\Database\Eloquent\Collection;
+           
+            $now = Carbon::now()->toDateTimeString();
+            $promo_code_details = PromoCodeDetail::pluck('promocode_id');
+                if($promo_code_details->count() > 0){
+                    $promo_codes = Promocode::whereIn('id', $promo_code_details->toArray())->whereDate('expiry_date', '>=', $now)->where('is_deleted', 0)->get();
+                    
+                }
+           
+            
+            return $this->successResponse($promo_codes, '', 200);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
     }
 
 }

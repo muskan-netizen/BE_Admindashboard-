@@ -41,7 +41,7 @@ class EmailTemplateSeeder extends Seeder{
                 'label' => 'Orders',
                 'subject' => 'Orders',
                 'tags' => '{customer_name}, {description}, {products}, {order_id}, {address}', 
-                'content'=>'<table style="width: 100%; background-color:#fff;">
+                'content'=>'<table style="width: 100%;background-color: #fff;padding: 50px 0 0;">
                 <thead>
                     <tr>
                        <th colspan="2" style="text-align: center;">
@@ -53,34 +53,13 @@ class EmailTemplateSeeder extends Seeder{
                  </thead>
                 <tbody>
                     <tr>
-                        <td colspan="2">
+                        <td colspan="2" style="padding-left: 0;padding-right: 0;">
                             <table style="width:100%; border: 1px solid rgb(221 221 221 / 41%);">
-                                <thead>
-                                    <tr>
-                                        <th colspan="2" style="border-bottom: 1px solid rgb(221 221 221 / 41%);">
-                                            <h3 style="font-weight: 700;">Items Ordered</h3>
-                                        </th>
-                                    </tr>
-                                </thead>
                                 <tbody>
-                                    <tr style="vertical-align: top;">
-                                        <td
-                                            style="border-bottom: 1px solid rgb(221 221 221 / 41%);border-right: 1px solid rgb(221 221 221 / 41%);width: 50%;">
-                                            <p style="margin-bottom: 5px;"><b>Shipping Address:</b></p>
-                                            <p>{address}</p>
-                                        </td>
-                                    </tr>
-                                    <tr>
+                                      <tr>
                                         <td colspan="2" style="padding: 0;">
                                             <table style="width:100%;">
                                                 <tbody> {products} </tbody>
-                                                <tfoot>
-                                                    <tr>
-                                                        <td colspan="2"
-                                                            style="background-color: #8142ff;color: #fff; border-top: 1px solid rgb(221 221 221 / 41%);text-align: center;">
-                                                            <b>Powered By Royo</b> </td>
-                                                    </tr>
-                                                </tfoot>
                                             </table>
                                         </td>
                                     </tr>

@@ -37,6 +37,7 @@
          }
          table th,table td{
             padding: 10px 30px;
+            border: 0 !important;
          }
          ul {
             margin: 0;padding: 0;
@@ -54,7 +55,7 @@
    </head>
    <body>
       <section class="wrapper">
-         <div class="container" style="background: rgb(48 143 228 / 26%);">
+         <div class="container" style="background: #308fe442;">
         {!! $mailData['email_template_content'] !!}
         <table class="main-bg-light text-center top-0" align="center" border="0" cellpadding="0" cellspacing="0" style="width:100%; background-color:#fff; padding: 0 15px;">
             <tr>

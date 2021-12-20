@@ -16,7 +16,7 @@ class HomePageLabelSeeder extends Seeder
     public function run()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');  
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $already = HomePageLabel::where('slug', 'vendors')->count();
 
@@ -37,7 +37,7 @@ class HomePageLabelSeeder extends Seeder
             'order_by' => 2,
         ]);
 
-        
+
 
         $already = HomePageLabel::where('slug', 'new_products')->count();
 
@@ -49,7 +49,7 @@ class HomePageLabelSeeder extends Seeder
                 'order_by' => 3,
             ]);
         }
-      
+
 
         $already = HomePageLabel::where('slug', 'on_sale')->count();
 
@@ -60,7 +60,7 @@ class HomePageLabelSeeder extends Seeder
             'order_by' => 4,
         ]);
 
-       
+
 
         $already = HomePageLabel::where('slug', 'best_sellers')->count();
 
@@ -90,14 +90,14 @@ class HomePageLabelSeeder extends Seeder
                 'order_by' => 7,
                 'is_active' => 0
             ]);
-         
+
         }
 
         $already = HomePageLabel::where('slug', 'dynamic_page')->count();
 
         if($already == 0)
         $home_page = HomePageLabel::insertGetId([
-            'title' => 'Dynamic Page',
+            'title' => 'Dynamic HTML',
             'slug' => 'dynamic_page',
             'order_by' => 8,
         ]);
@@ -120,7 +120,7 @@ class HomePageLabelSeeder extends Seeder
             'slug' => 'recent_orders',
             'order_by' => 10,
         ]);
-           
-       
+
+
     }
 }

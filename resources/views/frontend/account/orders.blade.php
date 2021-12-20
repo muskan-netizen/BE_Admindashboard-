@@ -188,8 +188,7 @@
                                                                     {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
                                                                 </div>
                                                                 <div class="col-md-3">
-                                                                    <a class="text-capitalize"
-                                                                        href="#">{{ $order->user->name }}</a>
+                                                                    <a class="text-capitalize">{{ $order->user->name }}</a>
                                                                 </div>
                                                                 @if ($client_preference_detail->business_type != 'taxi')
                                                                     <div class="col-md-3">
@@ -235,7 +234,7 @@
                                                                                             }
                                                                                         @endphp
                                                                                         <span
-                                                                                            class="badge badge-info ml-2 my-1">{{ $luxury_option_name }}</span>
+                                                                                            class="badge badge-info ml-2 my-1">{{ __($luxury_option_name) }}</span>
                                                                                     @endif
                                                                                     @if (!empty($order->scheduled_date_time))
                                                                                         <span
@@ -243,8 +242,8 @@
                                                                                         <span
                                                                                             class="ml-2">{{ dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) }}</span>
                                                                                     @elseif(!empty($vendor->ETA))
-                                                                                        <span class="ml-2">Your
-                                                                                            order will arrive by
+                                                                                        <span class="ml-2">{{__('Your
+                                                                                            order will arrive by')}}
                                                                                             {{ $vendor->ETA }}</span>
                                                                                     @endif
                                                                                     @if ($order->is_gift == '1')
@@ -535,8 +534,7 @@
                                                                     {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
                                                                 </div>
                                                                 <div class="col-md-3">
-                                                                    <a class="text-capitalize"
-                                                                        href="#">{{ $order->user->name }}</a>
+                                                                    <a class="text-capitalize">{{ $order->user->name }}</a>
                                                                 </div>
                                                                 @if ($client_preference_detail->business_type != 'taxi')
                                                                     <div class="col-md-3">
@@ -954,8 +952,7 @@
                                                                         {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
                                                                     </div>
                                                                     <div class="col-md-3">
-                                                                        <a class="text-capitalize"
-                                                                            href="#">{{ $order->user->name }}</a>
+                                                                        <a class="text-capitalize">{{ $order->user->name }}</a>
                                                                     </div>
                                                                     @if ($client_preference_detail->business_type != 'taxi')
                                                                         <div class="col-md-3">
@@ -1248,8 +1245,7 @@
                                                                     {{ dateTimeInUserTimeZone($order->created_at, $timezone) }}
                                                                 </div>
                                                                 <div class="col-md-3">
-                                                                    <a class="text-capitalize"
-                                                                        href="#">{{ $order->user->name }}</a>
+                                                                    <a class="text-capitalize">{{ $order->user->name }}</a>
                                                                 </div>
                                                                 @if ($client_preference_detail->business_type != 'taxi')
                                                                     <div class="col-md-3">
@@ -1578,7 +1574,6 @@
 @section('script')
     <script src="{{ asset('js/tip_after_order.js') }}"></script>
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
     <script src="{{ asset('js/payment.js') }}"></script>
     <script type="text/javascript">
         $(document).delegate(".topup_wallet_btn_tip", "click", function() {

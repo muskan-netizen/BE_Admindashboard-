@@ -12,16 +12,22 @@
             @if(Auth::user()->is_superadmin == 1)
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light" id="block_btn" data-vendor_id="{{$vendor->id}}" data-status="{{$vendor->status == 2  ? '1' : '2'}}">{{$vendor->status == 2 ? 'Unblock' : 'Block'}}</button>
             @endif
+
+            @if($vendor_for_pickup_delivery > 0)  
             <div class="for_pickup_delivery_service_only">
-            @if($client_preferences->need_dispacher_ride == 1 && !in_array($client_preferences->business_type, ['laundry']))
+            @if($client_preferences->need_dispacher_ride == 1)
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcher" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (Pickup & Delivery)") }} </button>
             @endif
             </div>
+            @endif
+
+            @if($vendor_for_ondemand > 0)  
             <div class="for_on_demand_service_only">
-            @if($client_preferences->need_dispacher_home_other_service == 1 && !in_array($client_preferences->business_type, ['laundry','taxi']))
+            @if($client_preferences->need_dispacher_home_other_service == 1)
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcherOnDemand" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (On Demand Services)") }} </button>
             @endif
             </div>
+            @endif
            
             @endif
         </div>

@@ -353,10 +353,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </ul>
                         </div>
 
-                        <ul id="main-menu" class="sm pixelstrap sm-horizontal">
-                            <!-- <li>
-                                <div class="mobile-back text-end">{{__('Back')}}<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
-                            </li> -->
+                        <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
                             @foreach($navCategories as $cate)
                                 @if($cate['name'])
                                 <li>

@@ -42,7 +42,7 @@ class ClientDatabaseToDevMaster implements ShouldQueue
            
         try {
            
-            $schemaName = 'royo_' . $client['database_name'] ?: config("database.connections.mysql.database");
+            $schemaName = 'ab_royo_' . $client['database_name'] ?: config("database.connections.mysql.database");
 
                 $database_host = !empty($client['database_host']) ? $client['database_host'] : env('DB_HOST_DEV', 'royoorders-2-db-development-cluster.cvgfslznkneq.us-west-2.rds.amazonaws.com');
                 $database_port = !empty($client['database_port']) ? $client['database_port'] : env('DB_PORT_DEV', '3306');
@@ -64,9 +64,15 @@ class ClientDatabaseToDevMaster implements ShouldQueue
                 'engine' => null
                 ];
 
-                $query = "CREATE DATABASE $schemaName;";
-
-                DB::connection('dev')->statement($query);
+                $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
+                $db = DB::select($query, [$schemaName]);
+                if ($db) {
+                    dd('exist');
+                }else{
+                    $query = "CREATE DATABASE $schemaName;";
+                    DB::connection('dev')->statement($query);
+                }
+                
                 dd($schemaName) ;
                 
            

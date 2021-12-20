@@ -255,6 +255,7 @@ $(document).ready(function () {
                 var perm = "?" + (queryString != '' ? queryString : '') + "&destination_location_"+random_id+"=" + destination_location  + "&destination_location_latitude_"+random_id+"=" + destinationLocationLatitude + "&destination_location_longitude_"+random_id+"=" + destinationLocationLongitude;
                 window.history.replaceState(null, null, perm);
             }
+
         });
       }
     }
@@ -372,6 +373,7 @@ $(document).ready(function () {
                         if(response.data.length != 0){
                             let vendors_template = _.template($('#vendors_template').html());
                             $("#vendor_main_div").append(vendors_template({results: response.data})).show();
+                            console.log(response.data.length);
                             if(response.data.length == 1){
                                 $('.vendor-list').trigger('click');
                                 $('.table-responsive').remove();
@@ -411,7 +413,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             data: {locations:locations},
-            url: get_vehicle_list+'/'+vendor_id,
+            url: get_vehicle_list+'/'+vendor_id+'/'+category_id,
             success: function(response) {
                 if(response.status == 'Success'){
                     $('.cab-booking-main-loader').hide();

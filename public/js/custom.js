@@ -171,8 +171,8 @@ window.initializeSlider = function initializeSlider() {
         responsive: [
             { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 3 } },
             { breakpoint: 991, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 2,centerMode: true, } },
-            { breakpoint: 767, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2,centerMode: true, } },
-            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1,centerMode: true, } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1,centerMode: true, } },
+            // { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1,centerMode: true, } },
         ],
     });
     $(".recent-orders").slick({
@@ -318,6 +318,9 @@ window.initializeSlider = function initializeSlider() {
         $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
     }
 }
+
+
+
 
 $(document).ready(function() {
 
@@ -1660,6 +1663,8 @@ $(document).ready(function() {
     }
 
     function displayMapLocation(latitude, longitude, elementID) {
+
+        // Commented By Sujata
         var geocoder;
         geocoder = new google.maps.Geocoder();
         var latlng = new google.maps.LatLng(latitude, longitude);
@@ -1673,6 +1678,9 @@ $(document).ready(function() {
             map: map,
             position: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
         });
+        // End Comment
+
+
         // geocoder.geocode(
         //     { 'latLng': latlng },
         //     function (results, status) {

@@ -22,11 +22,11 @@
     <div class="row">
         <div class="col-lg-12 col-xl-6">
             <div class="row">
-                <div class="col-lg-4">
-                    <div class="card">
+                <div class="col-lg-4 mb-3">
+                    <div class="card mb-0 h-100">
                         <div class="card-body">
                             <h4 class="header-title">{{ __("Font Styles") }}</h4>
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label class="form-label">{{ __("Selecting regular font") }}</label>
                                 <select class="form-control" name="fonts" onchange="submitRegularFontForm()" id="save_regular_fonts">
                                     @foreach($regular_font_options as $regular_font)
@@ -34,7 +34,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label class="form-label">{{ __("Selecting medium font") }}</label>
                                 <select class="form-control" name="fonts" onchange="submitMediumFontForm()" id="save_medium_fonts">
                                     @foreach($medium_font_options as $medium_font)
@@ -42,7 +42,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="mb-0">
+                            <div class="mb-3">
                                 <label class="form-label">{{ __("Selecting bold font") }}</label>
                                 <select class="form-control" name="fonts" onchange="submitBoldFontForm()" id="save_bold_fonts">
                                     @foreach($bold_font_options as $bold_font)
@@ -50,11 +50,17 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="mb-0">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h4 class="header-title mb-0">{{ __("Signup Tagline") }}</h4>
+                                </div>
+                                <input type="text" class="form-control" data-id="{{ $signup_tag_line_text->id??'' }}" id="signup_tagline" name="signup_tagline" value="{{ $signup_tag_line_text->name??'' }}">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
-                    <div class="card">
+                <div class="col-lg-4 mb-3">
+                    <div class="card mb-0 h-100">
                         <div class="card-body">
                             <h4 class="header-title">{{ __("Color Picker") }}</h4>
                             <div class="form-group mb-3">
@@ -72,15 +78,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
-                    <div class="card">
+                <div class="col-lg-4 mb-3">
+                    <div class="card mb-0 h-100 last-child">
                         <div class="card-body">
                             <h4 class="header-title mb-2">{{ __("Tab Bar Style") }}</h4>
                             <div class="row">
                                 @foreach($tab_style_options as $tab_style)
                                 <div class="col-12">
-                                    <div class="card mb-0">
-                                        <div class="card-body px-2 pt-0">
+                                    <div class="card mb-3 shadow-none bg-tranparent">
+                                        <div class="card-body px-2 py-0">
                                             <div class="row">
                                                 <div class="col-sm-12 custom-control custom-radio radio_new p-0">
                                                     <input type="radio" {{$tab_style->is_selected == 1 ? 'checked' : ''}} onchange="submitTabBarForm(this.id)" value="{{$tab_style->id}}" id="{{$tab_style->id}}" name="tab_bars" class="custom-control-input tab_bar_options" }}>
@@ -97,66 +103,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
-                    <div class="card card-box">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <h4 class="header-title mb-0">{{ __("Signup Tagline") }}</h4>
-                        </div>
-                        <input type="text" class="form-control" data-id="{{ $signup_tag_line_text->id??'' }}" id="signup_tagline" name="signup_tagline" value="{{ $signup_tag_line_text->name??'' }}">
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <form action="{{ route('styling.addTutorials') }}" method="post" enctype="multipart/form-data">
-                        @csrf
-                        <div class="card card-box">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h4 class="header-title mb-0">{{ __('Upload Tutorials') }}</h4>
-                            </div>
-                            <input type="file" accept="image/*" data-plugins="dropify" name="file_name" class="dropify" data-default-file="" />
-                            {{-- <label class="logo-size text-right w-100">{{ __("Logo Size") }} 170x96</label> --}}
-                            <button type="submit" class="btn btn-info waves-effect waves-light mt-1">Submit</button>
-                        </div>
-                    </form>
-                </div>
             </div>
         </div>
-    </div>
-
-    @if(!empty($dynamicTutorials) && count($dynamicTutorials)>0)
-    <div class="row">
-        <div class="col-xl-6">
-            <div class="card">
-                <div class="card-body" id="homepage_tutorial_dropzone">
-                    <h4 class="header-title">{{ __("Tutorial images") }}</h4>
-                    <div class="row tutorial_main_div">
-                        @foreach($dynamicTutorials as $dynamicTutorial)
-                            <div class="col-sm-6 col-md-4 col-lg-3 tutorial_inner_div" data-id="{{$dynamicTutorial->id}}" data-sort="{{$dynamicTutorial->sort}}">
-                                <div class="card mb-0">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-sm-12 custom-control custom-radio radio_new p-0">
-                                                <label class="custom-control-label" for="">
-                                                    <img class="card-img-top img-fluid" src="{{$dynamicTutorial->file_name['proxy_url'] . '215/400' . $dynamicTutorial->file_name['image_path']}}" alt="Image">
-                                                </label>
-                                                <form action="{{ route('styling.deleteTutorials',$dynamicTutorial->id) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger waves-effect waves-light mt-1" onclick="return confirm('Are you sure? You want to delete this tutorial.')" >Delete</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
-
-    <div class="row">
         <div class="col-xl-6">
             <div class="card">
                 <div class="card-body">
@@ -183,7 +131,58 @@
             </div>
         </div>
     </div>
-    
+
+
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-body" id="homepage_tutorial_dropzone">
+                    <h4 class="header-title mb-0">{{ __("Tutorial images") }}</h4>
+                    <div class="row tutorial_main_div">
+                        <div class="col-sm-6 col-md-4 col-lg-3 tutorial_inner_div mt-3">
+                            <form class="h-100" action="{{ route('styling.addTutorials') }}" method="post" enctype="multipart/form-data">
+                                @csrf
+                                <div class="card card-box h-100 px-2">
+                                    <!-- <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h4 class="header-title mb-0">{{ __('Upload Images') }}</h4>
+                                    </div> -->
+                                    <input type="file" accept="image/*" data-plugins="dropify" name="file_name" class="dropify" data-default-file="" />
+                                    {{-- <label class="logo-size text-right w-100">{{ __("Logo Size") }} 170x96</label> --}}
+                                    <button type="submit" class="btn btn-info waves-effect waves-light mt-2">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                        @if(!empty($dynamicTutorials) && count($dynamicTutorials)>0)
+                            @foreach($dynamicTutorials as $dynamicTutorial)
+                                <div class="col-sm-6 col-md-4 col-lg-3 tutorial_inner_div mt-3" data-id="{{$dynamicTutorial->id}}" data-sort="{{$dynamicTutorial->sort}}">
+                                    <div class="card mb-0">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-sm-12 custom-control custom-radio radio_new p-0">
+                                                    <label class="custom-control-label" for="">
+                                                        <img class="card-img-top img-fluid" src="{{$dynamicTutorial->file_name['proxy_url'] . '215/400' . $dynamicTutorial->file_name['image_path']}}" alt="Image">
+                                                    </label>
+                                                    <form action="{{ route('styling.deleteTutorials',$dynamicTutorial->id) }}" method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <div class="remove-button">
+                                                            <button type="submit" class="btn btn-danger waves-effect waves-light mt-1" onclick="return confirm('Are you sure? You want to delete this tutorial.')" ><b>Remove</b></button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>
 
 @endsection

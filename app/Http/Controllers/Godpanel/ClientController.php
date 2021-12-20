@@ -481,17 +481,8 @@ class ClientController extends Controller{
         //     ->setHost($host)
         //     ->dumpToFile($databaseName.'.sql');
 
-
-
-
-
-             
         }
 
-
-
-        
-
-     }
+    }
      
 }

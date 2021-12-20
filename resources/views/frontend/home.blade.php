@@ -101,7 +101,7 @@
 
 @if(count($banners))
 <section class="p-0 small-slider">
-    <div class="slide-1 home-slider">
+    <div class="slide-1 home-slider mb-md-4 mb-4">
         @foreach($banners as $banner)
         @php
         $url = '';

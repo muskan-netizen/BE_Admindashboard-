@@ -24,7 +24,7 @@
 @endsection
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid profile-page">
 
     <div class="row">
         <div class="col-12">
@@ -50,7 +50,7 @@
     </div>
     <div class="row">
         @if(Auth::user()->is_superadmin == 1)
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <h4 class="header-title">{{ __("Organization details") }}</h4>
@@ -72,7 +72,7 @@
                                         <div class="form-group">
                                         <p class="sub-header">{{ __("Short Code") }} </p>
                                             <h1 class="control-label">{{Auth::user()->code}}</h1>
-                                        </div> 
+                                        </div>
                                     </div>
                                     <div class="col-md-6 mb-2">
                                         @if(isset($client_preference_detail->ios_link) && !empty($client_preference_detail->ios_link))
@@ -88,7 +88,7 @@
                                         @endif
 
                                     </div>
-                                </div>                              
+                                </div>
                             </div>
                         </div>
                         <div class=" row">
@@ -168,7 +168,7 @@
                                 </div>
                             </div>
 
-                
+
                             <div class="col-md-6">
                                 <div class="form-group mb-3" id="timezoneInput">
                                     <label for="timezone">{{ __("TIMEZONE") }}</label>
@@ -198,11 +198,11 @@
             </div>
         </div>
         @endif
-        
-      
+
+
     </div>
 
-    
+
 
 </div> <!-- container -->
 @endsection
@@ -240,5 +240,5 @@
     });
 </script>
 @endsection
-    
+
 

@@ -221,6 +221,8 @@ class CategoryController extends BaseController
             $user = Auth::user();
             $pickup_latitude = $user->latitude ? $user->latitude : '';
             $pickup_longitude = $user->longitude ? $user->longitude : '';
+
+            // return $user; 
             
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
             foreach ($vendor_categories as $vendor_category) {

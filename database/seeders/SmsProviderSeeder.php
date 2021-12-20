@@ -1,7 +1,8 @@
 <?php
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
-use App\Model\SmsProvider;
+use App\Models\SmsProvider;
+use DB;
 
 class SmsProviderSeeder extends Seeder
 {
@@ -43,9 +44,10 @@ class SmsProviderSeeder extends Seeder
             DB::table('sms_providers')->insert($maps);
         }else{
             foreach($maps as $map){
-                $sms = SmsProvider::create([
+                $sms = SmsProvider::updateOrCreate([
+                    'keyword' => $map['keyword']
+                ],[
                     'provider' => $map['provider'],
-                    'keyword' => $map['keyword'],
                     'status' => $map['status'],
                 ]);
             }
