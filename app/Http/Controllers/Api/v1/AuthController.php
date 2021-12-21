@@ -598,7 +598,7 @@ class AuthController extends BaseController
                     return response()->json($errors, 422);
                 }
             }
-            $client = Client::select('id', 'name', 'email', 'phone_number', 'logo', 'sub_domain')->where('id', '>', 0)->first();
+            $client = Client::select('id', 'name', 'email', 'phone_number', 'logo', 'sub_domain','custom_domain')->where('id', '>', 0)->first();
             $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
             if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
                 $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
@@ -610,8 +610,14 @@ class AuthController extends BaseController
                 $email_template = EmailTemplate::where('id', 3)->first();
                 if ($email_template) {
                     $email_template_content = $email_template->content;
+
+                    if (isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
+                    $web_url = "https://" . $client->custom_domain;
+                    else
+                    $web_url = "https://" . $client->sub_domain . env('SUBMAINDOMAIN');
+
                     // $email_template_content = str_ireplace("{reset_link}", url('/reset-password/' . $token), $email_template_content);
-                    $email_template_content = str_ireplace("{reset_link}", "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/reset-password/" . $token, $email_template_content);
+                    $email_template_content = str_ireplace("{reset_link}", "https://" . $web_url . env('SUBMAINDOMAIN') . "/reset-password/" . $token, $email_template_content);
                 }
                 $data = [
                     'token' => $token,
