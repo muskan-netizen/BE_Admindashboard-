@@ -63,7 +63,7 @@ class CMSPageController extends BaseController
         })->first();
 
         $data['page_detail'] = $page_detail;
-
+        $page_detail->primary = $page_detail->translation;
         if ($page_detail->translation->type_of_form != 2) {
             $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
             $data['vendor_registration_documents'] = $vendor_registration_documents;
