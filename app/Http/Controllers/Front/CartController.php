@@ -760,7 +760,7 @@ class CartController extends FrontController
                 }
                 if ($vendorData->coupon) {
                     if (isset($vendorData->coupon->promo)) {
-                        if($vendorData->coupon->promo->minimum_spend <= $payable_amount)
+                        if($vendorData->coupon->promo->minimum_spend <= $payable_amount && $vendorData->coupon->promo->maximum_spend >= $payable_amount)
                         {
                             if ($vendorData->coupon->promo->promo_type_id == 2) {
                                 $total_discount_percent = $vendorData->coupon->promo->amount;
@@ -774,7 +774,7 @@ class CartController extends FrontController
                                 $coupon_amount_used = $percentage_amount;
                             }
                         }else{
-                            
+
                             $cart->coupon()->delete();
                             $vendorData->coupon()->delete();
                             unset($vendorData->coupon);
