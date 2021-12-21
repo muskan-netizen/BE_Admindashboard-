@@ -50,7 +50,10 @@ class CMSPageController extends BaseController
         $data['privacy_policy'] = $server_url . 'page/privacy-policy';
 
         $user = Auth::user();
-        $langId = $user->language;
+      //  $langId = $user->language;
+
+        $langId = ($request->hasHeader('language')) ? $request->header('language') : 1;
+
         $client_preferences = ClientPreference::first();
         
         $page_detail = Page::with(['translation' => function ($q) use($langId,$page_id) {
