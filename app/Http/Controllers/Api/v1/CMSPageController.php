@@ -55,7 +55,7 @@ class CMSPageController extends BaseController
         
         $page_detail = Page::with(['translations' => function ($q) use($langId) {
             $q->where('language_id', $langId);
-        }])->whereHas('translations' , function ($q) use($langId) {
+        }])->whereHas('translations' , function ($q) use($langId,$page_id) {
             $q->where('language_id', $langId)->where('id', $page_id);
         })->first();
 
