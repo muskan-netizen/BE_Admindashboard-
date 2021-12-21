@@ -25,10 +25,10 @@ class Brand extends Model
 
         return $this->hasOne('App\Models\BrandTranslation')->select('brand_id', 'title')->where('language_id', $langset);
     }
-   
+
 
   	public function english(){
-  		return $this->hasMany('App\Models\BrandTranslation')->where('language_id', 1); 
+  		return $this->hasMany('App\Models\BrandTranslation')->where('language_id', 1);
   	}
 
   	public function bc(){
@@ -37,14 +37,14 @@ class Brand extends Model
 
     public function getImageAttribute($value)
     {
-     
+
       $values = array();
       $img = 'default/default_image.png';
       if(!empty($value)){
         $img = $value;
       }
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
       $values['image_fit'] = \Config::get('app.FIT_URl');
 
       //$values['small'] = url('showImage/small/' . $img);
@@ -59,7 +59,7 @@ class Brand extends Model
         $img = $value;
       }
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
       $values['image_fit'] = \Config::get('app.FIT_URl');
 
       //$values['small'] = url('showImage/small/' . $img);
@@ -67,6 +67,6 @@ class Brand extends Model
     }
 
     public function products(){
-       return $this->hasMany('App\Models\Product', 'brand_id', 'id'); 
+       return $this->hasMany('App\Models\Product', 'brand_id', 'id');
     }
 }

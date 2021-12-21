@@ -17,14 +17,14 @@ class VendorDocs extends Model{
       if (!empty($this->file_name)) {
         $img = $this->file_name;
         $values['proxy_url'] = \Config::get('app.IMG_URL1');
-        $values['image_path'] = \Config::get('app.IMG_URL2') . '/' . \Storage::disk('s3')->url($img);
+        $values['image_path'] = \Config::get('app.IMG_URL2') . '/' . \Storage::disk('s3')->url($img).'@webp';
         $values['image_fit'] = \Config::get('app.FIT_URl');
         $values['storage_url'] = \Storage::disk('s3')->url($img);
       }
       return $values;
     }
-    
+
     public function vendor_registration_document(){
-        return $this->hasOne('App\Models\VendorRegistrationDocument', 'id', 'vendor_registration_document_id'); 
+        return $this->hasOne('App\Models\VendorRegistrationDocument', 'id', 'vendor_registration_document_id');
     }
 }

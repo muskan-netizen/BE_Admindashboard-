@@ -20,7 +20,7 @@ class CabBookingLayout extends Model
 
     public function pickupCategories(){
         return $this->hasMany('App\Models\CabBookingLayoutCategory')->whereHas('categoryDetail',function($q){$q->where('deleted_at',null);});
-       
+
     }
 
     public function getImageAttribute($value)
@@ -33,7 +33,7 @@ class CabBookingLayout extends Model
         return $value;
       }
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
       $values['image_fit'] = \Config::get('app.FIT_URl');
 
       return $values;

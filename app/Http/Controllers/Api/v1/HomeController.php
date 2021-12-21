@@ -33,7 +33,7 @@ class HomeController extends BaseController
             $homeData = array();
             $client_language = ClientLanguage::select('language_id')->where(['is_primary' => 1, 'is_active' => 1])->first();
             $langId = ($request->hasHeader('language') && !empty($request->header('language'))) ? $request->header('language') : (($client_language) ? $client_language->language_id : 1);
-            $homeData['profile'] = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('country_id', 'company_name', 'code', 'sub_domain', 'logo', 'company_address', 'phone_number', 'email')->first();
+            $homeData['profile'] = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('country_id', 'company_name', 'code', 'sub_domain', 'logo', 'company_address', 'phone_number', 'email','custom_domain')->first();
             $app_styling_detail = AppStyling::getSelectedData();
             foreach ($app_styling_detail as $app_styling) {
                 $key = $app_styling['key'];
@@ -147,6 +147,13 @@ class HomeController extends BaseController
                     }
                 }
             }
+
+            if (isset($homeData['profile']->custom_domain) && !empty($homeData['profile']->custom_domain) && $homeData['profile']->custom_domain != $homeData['profile']->sub_domain)
+                $domain_link = "https://" . $homeData['profile']->custom_domain;
+            else
+                $domain_link = "https://" . $homeData['profile']->sub_domain . env('SUBMAINDOMAIN');
+
+            $homeData['domain_link'] = $domain_link ;
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

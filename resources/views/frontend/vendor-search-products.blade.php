@@ -27,9 +27,11 @@
             @forelse($data->products as $prod)
             <div class="row cart-box-outer product_row classes_wrapper no-gutters mb-3" data-p_sku="{{ $prod->sku }}" data-slug="{{ $prod->url_slug }}">
                 <div class="col-2">
-                    <div class="class_img product_image">
-                        <img src="{{ $prod->product_image }}" alt="{{ $prod->translation_title }}">
-                    </div>
+                    <a  target="_blank" href="{{route('productDetail',$prod->url_slug)}}">
+                        <div class="class_img product_image">
+                            <img src="{{ $prod->product_image }}" alt="{{ $prod->translation_title }}">
+                        </div>
+                    </a>
                 </div>
                 <div class="col-10">
                     <div class="row price_head pl-3 pl-sm-2">

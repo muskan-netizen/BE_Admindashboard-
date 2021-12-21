@@ -14,8 +14,8 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <!-- <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a> -->
                     <div class="footer-contant">
                         <div class="store-btn mb-3 d-flex align-items-center">
-                            <a class="mt-2 mr-2" href="#"><img src="{{asset('front-assets/images/app-store.svg')}}" alt=""></a>
-                            <a class="mt-2" href="#"><img src="{{asset('front-assets/images/google-play.svg')}}" alt=""></a>
+                            <a class="mt-2 mr-2" href="{{$client_preference_detail->ios_link??'#'}}"  target="_blank"><img src="{{asset('front-assets/images/app-store.svg')}}" alt=""></a>
+                            <a class="mt-2" href="{{$client_preference_detail->android_app_link??'#'}}"  target="_blank"><img src="{{asset('front-assets/images/google-play.svg')}}" alt=""></a>
                         </div>
                     </div>
                 </div>

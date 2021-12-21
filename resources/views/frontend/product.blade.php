@@ -136,7 +136,7 @@
                                                     'image' => (object)[
                                                         'path' => [
                                                             'image_fit' => \Config::get('app.FIT_URl'),
-                                                            'image_path' => \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png')
+                                                            'image_path' => \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png').'@webp'
                                                         ]
                                                     ]
                                                 ];
@@ -562,8 +562,8 @@
         <!--<div class="swiper-container gallery-top">
             <div class="swiper-wrapper">
                 <div class="swiper-slide easyzoom easyzoom--overlay">
-                    <a href="{{ \Config::get('app.IMG_URL1') .'600/800'. \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png') }}">
-                    <img src="{{ \Config::get('app.IMG_URL1') .'600/800'. \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png') }}" alt="">
+                    <a href="{{ \Config::get('app.IMG_URL1') .'600/800'. \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png').'@webp' }}">
+                    <img src="{{ \Config::get('app.IMG_URL1') .'600/800'. \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png').'@webp' }}" alt="">
                     </a>
                 </div>
             </div>
@@ -572,7 +572,7 @@
         </div>-->
         <!--<div class="product-slick" style="min-height: 200px; display: table; width: 100%;">
             <div class="image_mask" style="vertical-align: middle; display: table-cell; text-align: center">
-                <img class="img-fluid blur-up lazyload" src="{{ \Config::get('app.IMG_URL1') .'600/800'. \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png') }}">
+                <img class="img-fluid blur-up lazyload" src="{{ \Config::get('app.IMG_URL1') .'600/800'. \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png').'@webp' }}">
             </div>
         </div>-->
     <% } %>
@@ -889,7 +889,7 @@
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(2);
                         response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(2);
-                        $("#product_variant_wrapper").append(variant_template({variant:response.variant})); 
+                        $("#product_variant_wrapper").append(variant_template({variant:response.variant}));
 
                         $('#product_variant_quantity_wrapper').html('');
                         let variant_quantity_template = _.template($('#variant_quantity_template').html());

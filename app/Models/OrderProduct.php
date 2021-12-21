@@ -17,13 +17,13 @@ class OrderProduct extends Model{
       return $this->hasOne('App\Models\CartCoupon', 'vendor_id', 'vendor_id')->select("cart_id", "coupon_id", 'vendor_id');
     }
     public function addon(){
-       return $this->hasMany('App\Models\OrderProductAddon', 'order_product_id', 'id'); 
+       return $this->hasMany('App\Models\OrderProductAddon', 'order_product_id', 'id');
     }
     public function product(){
       return $this->belongsTo('App\Models\Product')->select('id', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id', 'category_id');
     }
      public function variant(){
-      return $this->hasMany('App\Models\ProductVariant','product_id', 'product_id')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id')->where('status', 1); 
+      return $this->hasMany('App\Models\ProductVariant','product_id', 'product_id')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id')->where('status', 1);
     }
     public function pvariant(){
       return $this->belongsTo('App\Models\ProductVariant', 'variant_id', 'id')->select('id', 'sku', 'product_id', 'title', 'price', 'tax_category_id', 'barcode');
@@ -38,10 +38,10 @@ class OrderProduct extends Model{
       return $this->hasMany(OrderProduct::class, 'vendor_id', 'vendor_id')->orderBy('order_vendor_products.created_at', 'asc')->orderBy('order_vendor_products.vendor_id', 'asc');
     }
     public function translation(){
-      return $this->hasOne('App\Models\ProductTranslation','product_id', 'product_id'); 
+      return $this->hasOne('App\Models\ProductTranslation','product_id', 'product_id');
     }
     public function prescription(){
-	    return $this->hasMany('App\Models\OrderProductPrescription' , 'product_id', 'product_id'); 
+	    return $this->hasMany('App\Models\OrderProductPrescription' , 'product_id', 'product_id');
 	  }
     public function productRating(){
       return $this->hasOne('App\Models\OrderProductRating', 'order_vendor_product_id', 'id');
@@ -59,7 +59,7 @@ class OrderProduct extends Model{
         $img = $value;
       }
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }

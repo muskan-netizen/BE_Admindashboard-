@@ -24,7 +24,7 @@ class UserhomeController extends FrontController
     use ApiResponser;
     private $field_status = 2;
 
-    
+
     public function setTheme(Request $request)
     {
         if ($request->theme_color == "dark") {
@@ -37,7 +37,7 @@ class UserhomeController extends FrontController
     {
         $client_preferences = ClientPreference::first();
         return response()->json(['success' => true, 'client_preferences' => $client_preferences]);
-        
+
     }
 
     public function getLastMileTeams()
@@ -129,7 +129,7 @@ class UserhomeController extends FrontController
         $last_mile_teams = [];
 
         $tag = [];
-        
+
         $showTag = implode(',', $tag);
         $driver_registration_documents = json_decode($this->driverDocuments());
         return view('frontend.driver-registration', compact('page_detail', 'navCategories', 'user', 'showTag', 'driver_registration_documents'));
@@ -285,10 +285,10 @@ class UserhomeController extends FrontController
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
 
-       
+
         $currency_id = $this->setCurrencyInSesion();
 
-        
+
         $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
             $q->where('language_id', $language_id);
         }])->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->get();
@@ -461,7 +461,7 @@ class UserhomeController extends FrontController
         $home_page_labels = HomePageLabel::with('translations')->get();
 
         $activeOrders = [];
-        
+
         $user = Auth::user();
 
         if ($user) {
@@ -614,7 +614,7 @@ class UserhomeController extends FrontController
     }
 
 
-    /////    new home page 
+    /////    new home page
     public function indexTemplateOne(Request $request)
     {
         try {
@@ -671,7 +671,7 @@ class UserhomeController extends FrontController
                 $q->where('language_id', $langId);
             }])->where('is_active', 1)->orderBy('order_by')->get();
 
-           
+
             return view('frontend.home-template-one')->with(['home' => $home, 'count' => $count, 'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
         } catch (Exception $e) {
             pr($e->getCode());

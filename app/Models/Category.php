@@ -8,16 +8,16 @@ use Auth;
 class Category extends Model
 {
   use SoftDeletes;
-  
+
     protected $fillable = ['slug','icon', 'image', 'is_visible', 'status', 'position', 'is_core', 'can_add_products', 'parent_id', 'vendor_id', 'client_code', 'display_mode', 'type_id','warning_page_id', 'template_type_id', 'warning_page_design'];
     public $timestamps = true;
 
     public function translation(){
-      return $this->hasMany('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->join('languages', 'category_translations.language_id', 'languages.id')->select('category_translations.*', 'languages.id as langId', 'languages.name as langName', 'cl.is_primary')->where('cl.is_active', 1)->orderBy('cl.is_primary', 'desc'); 
+      return $this->hasMany('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->join('languages', 'category_translations.language_id', 'languages.id')->select('category_translations.*', 'languages.id as langId', 'languages.name as langName', 'cl.is_primary')->where('cl.is_active', 1)->orderBy('cl.is_primary', 'desc');
     }
-    
+
     public function translation_one(){
-     
+
         $primary = ClientLanguage::orderBy('is_primary','desc')->first();
         if(isset($primary) && !empty($primary))
         {
@@ -25,11 +25,11 @@ class Category extends Model
         }else{
           $langset = 1;
         }
-        
-        return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset); 
-      
-     
-       
+
+        return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset);
+
+
+
     }
 
     public function english(){
@@ -40,9 +40,9 @@ class Category extends Model
       }else{
         $langset = 1;
       }
-       return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset); 
+       return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset);
     }
-    
+
     public function primary(){
 
       $langData = $this->hasOne('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->select('category_translations.category_id', 'category_translations.name', 'category_translations.language_id')->where('cl.is_primary', 1);
@@ -73,7 +73,7 @@ class Category extends Model
         return $this->hasMany(Product::class, 'category_id', 'id');
     }
     public function type(){
-      return $this->belongsTo('App\Models\Type')->select('id', 'title'); 
+      return $this->belongsTo('App\Models\Type')->select('id', 'title');
     }
 
     public function categoryTag()
@@ -89,7 +89,7 @@ class Category extends Model
         $img = $value;
       }
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }
@@ -102,13 +102,13 @@ class Category extends Model
         $img = $value;
       }
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }
 
     public function parent(){
-      return $this->belongsTo('App\Models\Category','parent_id','id'); 
+      return $this->belongsTo('App\Models\Category','parent_id','id');
    }
 
   public function allParentsAccount()
@@ -119,12 +119,12 @@ class Category extends Model
 
 
   public function translationSet(){
-    return $this->hasMany('App\Models\Category_translation'); 
+    return $this->hasMany('App\Models\Category_translation');
   }
 
 
   public function translationSetUnique(){
-    return $this->hasMany('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->join('languages', 'category_translations.language_id', 'languages.id')->select('category_translations.*', 'languages.id as langId', 'languages.name as langName', 'cl.is_primary')->where('cl.is_active', 1)->groupBy('category_translations.language_id')->orderBy('cl.is_primary', 'desc'); 
+    return $this->hasMany('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->join('languages', 'category_translations.language_id', 'languages.id')->select('category_translations.*', 'languages.id as langId', 'languages.name as langName', 'cl.is_primary')->where('cl.is_active', 1)->groupBy('category_translations.language_id')->orderBy('cl.is_primary', 'desc');
   }
 
 }

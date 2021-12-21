@@ -236,7 +236,9 @@ class ProductsImport implements ToCollection{
                 }
                 if (!empty($data)) {
                     foreach ($data as $da) {
-
+                       // array_map("utf8_encode", $da);
+                        $da[2] = str_replace("","’",$da[2]);
+                       // pr($da);
                         if (!Product::where('sku', $da[0])->exists()) {
 
                             if($da[23] != ""){

@@ -44,16 +44,16 @@ class User extends Authenticatable implements Wallet, WalletFloat
     ];
 
     public function getLoyaltyNameAttribute(){
-        $count_loyalty_points_earned = $this->hasMany('App\Models\Order', 'user_id', 'id')->sum('loyalty_points_earned'); 
+        $count_loyalty_points_earned = $this->hasMany('App\Models\Order', 'user_id', 'id')->sum('loyalty_points_earned');
         $loyalty_name = LoyaltyCard::getLoyaltyName($count_loyalty_points_earned);
-        
+
         $data['loyalty_name'] = $loyalty_name;
         $data['count_loyalty_points_earned'] = $count_loyalty_points_earned;
-        return $data;  
-    } 
+        return $data;
+    }
 
     public function country(){
-       return $this->belongsTo('App\Models\Country')->select('id', 'code', 'name','phonecode'); 
+       return $this->belongsTo('App\Models\Country')->select('id', 'code', 'name','phonecode');
     }
 
     public function sendPasswordResetNotification($token)
@@ -62,15 +62,15 @@ class User extends Authenticatable implements Wallet, WalletFloat
     }
 
     public function address(){
-       return $this->hasMany('App\Models\UserAddress'); 
+       return $this->hasMany('App\Models\UserAddress');
     }
 
     public function role(){
-       return $this->belongsTo('App\Models\Role')->select('id', 'role'); 
+       return $this->belongsTo('App\Models\Role')->select('id', 'role');
     }
-   
+
     public function device(){
-       return $this->hasMany('App\Models\UserDevice'); 
+       return $this->hasMany('App\Models\UserDevice');
     }
     /*
     bucketname:- royoorders2.0-assets
@@ -78,7 +78,7 @@ class User extends Authenticatable implements Wallet, WalletFloat
         IAM user:-royoorders2.0S3Access
         Access key ID:- AKIAUDRAUVRKEJPQVO4C
         Secret access key :- 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
-             
+
     */
 
     public function getImageAttribute($value)
@@ -89,7 +89,7 @@ class User extends Authenticatable implements Wallet, WalletFloat
         $img = $value;
       }
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
       $values['image_fit'] = \Config::get('app.FIT_URl');
       $values['original'] = $value;
 
@@ -112,12 +112,12 @@ class User extends Authenticatable implements Wallet, WalletFloat
     }
 
     public function orders(){
-       return $this->hasMany('App\Models\Order', 'user_id', 'id')->select('id', 'user_id'); 
+       return $this->hasMany('App\Models\Order', 'user_id', 'id')->select('id', 'user_id');
     }
 
     public function activeOrders(){
        return $this->hasMany('App\Models\Order', 'user_id', 'id')->select('id', 'user_id')
-              ->where('is_deleted', '!=', 1); 
+              ->where('is_deleted', '!=', 1);
     }
 
     /**
@@ -130,7 +130,7 @@ class User extends Authenticatable implements Wallet, WalletFloat
 
 
     public function getCodeAttribute($value)
-    { 
+    {
      $value = Client::first();
      return $value->code;
     }
@@ -139,13 +139,13 @@ class User extends Authenticatable implements Wallet, WalletFloat
         return $this->hasMany('App\Models\Order', 'user_id', 'id')->select('id', 'user_id')
                ->where('is_deleted', '!=', 1)->whereHas('orderStatusVendor', function($query){
                    $query->whereIn('order_status_option_id',[2,4,5]);
-               }); 
+               });
     }
 
     public function loyaltyCard(){
-        $count_loyalty_points_earned = $this->hasMany('App\Models\Order', 'user_id', 'id')->sum('loyalty_points_earned'); 
+        $count_loyalty_points_earned = $this->hasMany('App\Models\Order', 'user_id', 'id')->sum('loyalty_points_earned');
         //Order::where('user_id',$this->id)->sum('loyalty_points_earned');
-        
+
         print_r(LoyaltyCard::getLoyaltyName($count_loyalty_points_earned));
         exit();
         //return $count_loyalty_points_earned;

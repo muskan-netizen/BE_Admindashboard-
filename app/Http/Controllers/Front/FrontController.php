@@ -173,7 +173,7 @@ class FrontController extends Controller
         $proxy_url = \Config::get('app.IMG_URL1');
         $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
         $image_fit = \Config::get('app.FIT_URl');
-        $default_url = $image_fit .'300/300'. $image_path;
+        $default_url = $image_fit .'300/300'. $image_path.'@webp';
         return $default_url;
     }
 
@@ -652,14 +652,14 @@ class FrontController extends Controller
         // }
         // // $time = convertDateTimeInTimeZone($datetime, Auth::user()->timezone, $format);
         // $time = Carbon::parse($datetime)->format($format);
-        
+
 
 
         if(isset($user) && !empty($user))
         $user =  $user;
         else
         $user = Auth::user();
-        
+
         $timezone = $user->timezone;
         $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
         $date_format = $preferences->date_format;
@@ -694,7 +694,7 @@ class FrontController extends Controller
 //         echo "<pre>";
 // print_r($data->toArray());
 // exit();
-      
+
         if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
                 $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
                 $client_name = $client->name;
@@ -723,6 +723,6 @@ class FrontController extends Controller
                     return response()->json(['data' => $e->getMessage()]);
                 }
             }
-       
+
     }
 }

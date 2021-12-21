@@ -227,6 +227,10 @@
                                     </div>
                                     <div class="col-6 d-flex align-items-center justify-content-end mb-3">
 
+                                            <!-- <div class="vendor-search">
+                                                <input class="form-control" type="search" placeholder="Product Search">
+                                            </div> -->
+
                                             <a class="btn btn-info  waves-effect waves-light text-sm-right action_product_button" dataid="0"
                                                 id="action_product_button" href="javascript:void(0);"
                                                 style="display: none;"><i class="mdi mdi-plus-circle mr-1"></i>

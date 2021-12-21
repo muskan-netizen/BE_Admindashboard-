@@ -13,9 +13,9 @@ class SubscriptionPlansVendor extends Model
     protected $table = "subscription_plans_vendor";
 
     public function features(){
-        return $this->hasMany('App\Models\SubscriptionPlanFeaturesVendor', 'subscription_plan_id', 'id')->select('id','subscription_plan_id', 'feature_id'); 
+        return $this->hasMany('App\Models\SubscriptionPlanFeaturesVendor', 'subscription_plan_id', 'id')->select('id','subscription_plan_id', 'feature_id');
     }
-  
+
     public function getImageAttribute($value)
     {
         $values = array();
@@ -24,10 +24,10 @@ class SubscriptionPlansVendor extends Model
           $img = $value;
         }
         $values['proxy_url'] = \Config::get('app.IMG_URL1');
-        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
         $values['image_fit'] = \Config::get('app.FIT_URl');
         $values['original'] = $value;
-  
+
         return $values;
     }
 }

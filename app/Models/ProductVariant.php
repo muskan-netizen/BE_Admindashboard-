@@ -19,7 +19,7 @@ class ProductVariant extends Model
         $img = $value;
       }
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
     }
@@ -27,7 +27,7 @@ class ProductVariant extends Model
 	    return $this->hasMany('App\Models\ProductVariantSet')
 	    		->join('variant_options as opt', 'opt.id', 'product_variant_sets.variant_option_id')
 	    		->join('variants as vari', 'vari.id', 'opt.variant_id')
-	    		->select('product_variant_sets.product_variant_id', 'product_variant_sets.variant_option_id', 'opt.title', 'opt.hexacode', 'vari.type', 'vari.id'); 
+	    		->select('product_variant_sets.product_variant_id', 'product_variant_sets.variant_option_id', 'opt.title', 'opt.hexacode', 'vari.type', 'vari.id');
 	}
 
 	public function vimageall(){
@@ -45,14 +45,14 @@ class ProductVariant extends Model
 	}
 
 	public function vset(){
-	    return $this->hasMany('App\Models\ProductVariantSet')->select('product_variant_id','variant_option_id','product_id','variant_type_id'); 
+	    return $this->hasMany('App\Models\ProductVariantSet')->select('product_variant_id','variant_option_id','product_id','variant_type_id');
 	}
 
 	public function translation($langId = 0){
         return $this->hasMany('App\Models\ProductTranslation', 'product_id', 'product_id');
     }
 	public function translation_one($langId = 0){
-        return $this->hasOne('App\Models\ProductTranslation', 'product_id', 'product_id'); 
+        return $this->hasOne('App\Models\ProductTranslation', 'product_id', 'product_id');
     }
     public function optionData() {
 	    return $this->belongsTo('App\Models\VariantOption', 'variant_option_id', 'id');
@@ -66,11 +66,11 @@ class ProductVariant extends Model
         return $this->belongsTo('App\Models\Product', 'product_id', 'id')->select('id', 'sku', 'title', 'averageRating', 'inquiry_only', 'vendor_id');
     }
     public function wishlist(){
-       return $this->hasOne('App\Models\UserWishlist', 'product_id', 'product_id')->select('product_id', 'user_id'); 
+       return $this->hasOne('App\Models\UserWishlist', 'product_id', 'product_id')->select('product_id', 'user_id');
     }
 
     public function checkIfInCart()
-    { 
+    {
         $user = Auth::user();
         if ($user) {
             $column = 'user_id';
@@ -86,7 +86,7 @@ class ProductVariant extends Model
     }
 
     public function checkIfInCartApp()
-    { 
+    {
         $user = Auth::user();
         if ($user->id && $user->id > 0) {
             $column = 'user_id';

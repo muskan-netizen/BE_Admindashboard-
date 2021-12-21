@@ -162,6 +162,8 @@
     </div>
     <!--end default --> 
 
+    <a href="{{route('client.exportdb',$client->database_name)}}">Migrate</a>
+
 </div>
 @endsection
 @section('script')

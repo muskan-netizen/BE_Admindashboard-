@@ -17,7 +17,7 @@ class Celebrity extends Model
         $img = $value;
       }
       $values['proxy_url'] = \Config::get('app.IMG_URL1');
-      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img);
+      $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
       $values['image_fit'] = \Config::get('app.FIT_URl');
 
       return $values;
@@ -29,7 +29,7 @@ class Celebrity extends Model
     }
 
     public function products(){
-      return $this->hasMany('App\Models\ProductCelebrity','celebrity_id', 'id'); 
+      return $this->hasMany('App\Models\ProductCelebrity','celebrity_id', 'id');
     }
 
     public function country()

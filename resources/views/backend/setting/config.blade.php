@@ -377,7 +377,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                               </span>
                               @endif
                            </div>
-      
+
                            <div class="form-group mt-3 mb-0">
                               <label for="customer_support_key">{{ __("API Key") }}</label>
                               <input type="text" name="customer_support_key" id="customer_support_key" placeholder="Please enter key" class="form-control" value="{{ old('customer_support_key', $preference->customer_support_key ?? '')}}">
@@ -387,7 +387,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                               </span>
                               @endif
                            </div>
-      
+
                            <div class="form-group mt-3 mb-0">
                               <label for="customer_support_application_id">{{ __("Application ID") }}</label>
                               <input type="text" name="customer_support_application_id" id="customer_support_application_id" placeholder="Please enter application ID" class="form-control" value="{{ old('customer_support_application_id', $preference->customer_support_application_id ?? '')}}">
@@ -397,7 +397,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                               </span>
                               @endif
                            </div>
-      
+
                         </div>
                      </div>
                   </div>
@@ -642,7 +642,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                </p>
                <div class="row">
                   <div class="col-12">
-                     <div class="form-group mb-3">
+                     <div class="form-group mb-2">
                         <label for="currency">{{ __("MAP PROVIDER") }}</label>
                         <select class="form-control" id="map_provider" name="map_provider">
                            @foreach($mapTypes as $map)
@@ -657,7 +657,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   <div class="col-12">
-                     <div class="form-group mb-3">
+                     <div class="form-group mb-2">
                         <label for="map_key">{{ __("API KEY") }}</label>
                         <input type="password" name="map_key" id="map_key" placeholder="" class="form-control" value="{{ old('map_key', $preference->map_key ?? '')}}">
                         @if($errors->has('map_key'))
@@ -667,7 +667,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         @endif
                      </div>
                   </div>
-                  <div class="col-md-2">
+                  <div class="col-md-2 mt-3">
                      <div class="form-group mb-0 text-center">
                         <button class="btn btn-info btn-block" type="submit"> {{ __("Save") }} </button>
                      </div>
@@ -684,7 +684,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                <p class="sub-header">{{ __("View and update your SMS Gateway and it's API keys.") }}</p>
                <div class="row mb-0">
                   <div class="col-12">
-                     <div class="form-group mb-3">
+                     <div class="form-group mb-2">
                         <label for="sms_provider">{{ __("SMS PROVIDER") }}</label>
                         <select class="form-control" id="sms_provider" name="sms_provider" onchange="toggle_smsFields(this)">
                            @foreach($smsTypes as $sms)
@@ -702,7 +702,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <!-- For twillio -->
                   <div class="sms_fields row mx-0" id="twilio_fields" style="display : {{$preference->sms_provider == 1 ? 'flex' : 'none'}};">
                      <div class="col-12">
-                        <div class="form-group mb-3">
+                        <div class="form-group mb-2">
                            <label for="sms_from">{{ __("SMS From") }}</label>
                            <input type="text" name="sms_from" id="sms_from" placeholder="" class="form-control" value="{{ old('sms_from', $preference->sms_from ?? '')}}">
                            @if($errors->has('sms_from'))
@@ -713,7 +713,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </div>
                      </div>
                      <div class="col-12">
-                        <div class="form-group mb-3">
+                        <div class="form-group mb-2">
                            <label for="sms_key">{{ __("API KEY") }}</label>
                            <input type="text" name="sms_key" id="sms_key" placeholder="" class="form-control" value="{{ old('sms_key', $preference->sms_key ?? '')}}">
                            @if($errors->has('sms_key'))
@@ -724,7 +724,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </div>
                      </div>
                      <div class="col-12">
-                        <div class="form-group mb-3">
+                        <div class="form-group mb-2">
                            <label for="sms_secret">{{ __("API Secret") }}</label>
                            <input type="password" name="sms_secret" id="sms_secret" placeholder="" class="form-control" value="{{ old('sms_secret', $preference->sms_secret ?? '')}}">
                            @if($errors->has('sms_secret'))
@@ -740,7 +740,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <!-- For mTalkz -->
                   <div class="row sms_fields mx-0" id="mTalkz_fields" style="display : {{$preference->sms_provider == 2 ? 'flex' : 'none'}};">
                      <div class="col-12">
-                        <div class="form-group mb-3">
+                        <div class="form-group mb-2">
                            <label for="mtalkz_api_key">{{ __("API Key") }}</label>
                            <input type="text" name="mtalkz_api_key" id="mtalkz_api_key" placeholder="" class="form-control" value="{{ old('mtalkz_api_key', $sms_crendential->api_key ?? '')}}">
                            @if($errors->has('mtalkz_api_key'))
@@ -751,7 +751,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </div>
                      </div>
                      <div class="col-12">
-                        <div class="form-group mb-3">
+                        <div class="form-group mb-2">
                            <label for="mtalkz_sender_id">{{ __("Sender ID") }}</label>
                            <input type="text" name="mtalkz_sender_id" id="mtalkz_sender_id" placeholder="" class="form-control" value="{{ old('mtalkz_sender_id', $sms_crendential->sender_id ?? '')}}">
                            @if($errors->has('mtalkz_sender_id'))
@@ -766,7 +766,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <!-- For mTalkz -->
                   <div class="row sms_fields mx-0" id="mazinhost_fields" style="display : {{$preference->sms_provider == 3 ? 'flex' : 'none'}};">
                      <div class="col-12">
-                        <div class="form-group mb-3">
+                        <div class="form-group mb-2">
                            <label for="mazinhost_api_key">{{ __("API Key") }}</label>
                            <input type="text" name="mazinhost_api_key" id="mazinhost_api_key" placeholder="" class="form-control" value="{{ old('mazinhost_api_key', $sms_crendential->api_key ?? '')}}">
                            @if($errors->has('mazinhost_api_key'))
@@ -777,7 +777,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </div>
                      </div>
                      <div class="col-12">
-                        <div class="form-group mb-3">
+                        <div class="form-group mb-2">
                            <label for="mazinhost_sender_id">{{ __("Sender ID") }}</label>
                            <input type="text" name="mazinhost_sender_id" id="mazinhost_sender_id" placeholder="" class="form-control" value="{{ old('mazinhost_sender_id', $sms_crendential->sender_id ?? '')}}">
                            @if($errors->has('mazinhost_sender_id'))
@@ -788,7 +788,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </div>
                      </div>
                   </div>
-                  <div class="col-md-2">
+                  <div class="col-md-2 mt-3">
                      <div class="form-group mb-0 text-center">
                         <button class="btn btn-info btn-block" type="submit"> {{ __("Save") }} </button>
                      </div>
@@ -805,7 +805,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                <p class="sub-header"> {{ __("View and update your SMTP credentials.") }}</p>
                <div class="row">
                   <div class="col-md-6">
-                     <div class="form-group mb-3">
+                     <div class="form-group mb-2">
                         <label for="mail_type">{{ __("Mail Type") }}</label>
                         <input type="text" name="mail_type" id="mail_type" placeholder="SMTP" class="form-control" value="{{ old('mail_type', $preference->mail_type ?? '')}}">
                         @if($errors->has('mail_type'))
@@ -816,7 +816,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   <div class="col-md-6">
-                     <div class="form-group mb-3">
+                     <div class="form-group mb-2">
                         <label for="mail_driver">{{ __("Mail Driver") }}</label>
                         <input type="text" name="mail_driver" id="mail_driver" placeholder="" class="form-control" value="{{ old('mail_driver', $preference->mail_driver ?? '')}}">
                         @if($errors->has('mail_driver'))
@@ -827,7 +827,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   <div class="col-md-6">
-                     <div class="form-group mb-3">
+                     <div class="form-group mb-2">
                         <label for="mail_host">{{ __("Mail Host") }}</label>
                         <input type="text" name="mail_host" id="mail_host" placeholder="SMTP" class="form-control" value="{{ old('mail_host', $preference->mail_host ?? '')}}">
                         @if($errors->has('mail_host'))
@@ -838,7 +838,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   <div class="col-md-6">
-                     <div class="form-group mb-3">
+                     <div class="form-group mb-2">
                         <label for="mail_port">{{ __("Mail Port") }}</label>
                         <input type="text" name="mail_port" id="mail_port" placeholder="" class="form-control" value="{{ old('mail_port', $preference->mail_port ?? '')}}">
                         @if($errors->has('mail_port'))
@@ -849,7 +849,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   <div class="col-md-6">
-                     <div class="form-group mb-3">
+                     <div class="form-group mb-2">
                         <label for="mail_username">{{ __("Mail Username") }}</label>
                         <input type="text" name="mail_username" id="mail_username" placeholder="username" class="form-control" value="{{ old('mail_username', $preference->mail_username ?? '')}}">
                         @if($errors->has('mail_username'))
@@ -860,7 +860,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   <div class="col-md-6">
-                     <div class="form-group mb-3">
+                     <div class="form-group mb-2">
                         <label for="mail_password">{{ __("Mail Password") }}</label>
                         <input type="password" name="mail_password" id="mail_password" placeholder="" class="form-control" value="{{ old('mail_password', $preference->mail_password ?? '')}}">
                         @if($errors->has('mail_password'))
@@ -871,7 +871,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   <div class="col-md-6">
-                     <div class="form-group mb-3">
+                     <div class="form-group mb-2">
                         <label for="mail_encryption">{{ __("Mail Encryption") }}</label>
                         <input type="text" name="mail_encryption" id="mail_encryption" placeholder="username" class="form-control" value="{{ old('mail_encryption', $preference->mail_encryption ?? '')}}">
                         @if($errors->has('mail_encryption'))
@@ -882,7 +882,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                   <div class="col-md-6">
-                     <div class="form-group mb-3">
+                     <div class="form-group mb-2">
                         <label for="mail_from">{{ __("Mail From") }}</label>
                         <input type="text" name="mail_from" id="mail_from" placeholder="service@xyz.com" class="form-control" value="{{ old('mail_from', $preference->mail_from ?? '')}}">
                         @if($errors->has('mail_from'))
@@ -893,7 +893,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
                </div>
-               <div class="row mb-2">
+               <div class="row mb-2 mt-3">
                   <div class="col-md-2">
                      <div class="form-group mb-0 text-center">
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
@@ -1172,60 +1172,59 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
    <div class="row">
       <div class="col-xl-6">
-         <div class="row">
-            <div class="col-lg-12">
-               <div class="card-box pb-2">
-                  <div class="d-flex align-items-center justify-content-between">
-                     <h4 class="header-title text-uppercase m-0">{{ __("Vendor Registration Documents") }}</h4>
-                     <a class="btn btn-info d-block" id="add_vendor_registration_document_modal_btn">
-                        <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
-                     </a>
-                  </div>
-                  <div class="table-responsive mt-3 mb-1">
-                     <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
-                        <thead>
-                           <tr>
-                              <th>{{ __("Name") }}</th>
-                              <th>{{ __("Type") }}</th>
-                              <th>{{ __("Is Required?") }}</th>
-                              <th>{{ __("Action") }}</th>
-                           </tr>
-                        </thead>
-                        <tbody id="post_list">
-                           @forelse($vendor_registration_documents as $vendor_registration_document)
-                           <tr>
-                              <td>
-                                 <a class="edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">
-                                    {{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}
+         <div class="card-box pb-2">
+            <div class="d-flex align-items-center justify-content-between">
+               <h4 class="header-title text-uppercase m-0">{{ __("Vendor Registration Documents") }}</h4>
+               <a class="btn btn-info d-block" id="add_vendor_registration_document_modal_btn">
+                  <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+               </a>
+            </div>
+            <div class="table-responsive mt-3 mb-1">
+               <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                  <thead>
+                     <tr>
+                        <th>{{ __("Name") }}</th>
+                        <th>{{ __("Type") }}</th>
+                        <th>{{ __("Is Required?") }}</th>
+                        <th>{{ __("Action") }}</th>
+                     </tr>
+                  </thead>
+                  <tbody id="post_list">
+                     @forelse($vendor_registration_documents as $vendor_registration_document)
+                     <tr>
+                        <td>
+                           <a class="edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">
+                              {{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}
+                           </a>
+                        </td>
+                        <td>{{$vendor_registration_document->file_type}}</td>
+                        <td>{{ ($vendor_registration_document->is_required == 1)?__('Yes'):__('No') }}</td>
+                        <td>
+                           <div>
+                              <div class="inner-div" style="float: left;">
+                                 <a class="action-icon edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">
+                                    <i class="mdi mdi-square-edit-outline"></i>
                                  </a>
-                              </td>
-                              <td>{{$vendor_registration_document->file_type}}</td>
-                              <td>{{ ($vendor_registration_document->is_required == 1)?__('Yes'):__('No') }}</td>
-                              <td>
-                                 <div>
-                                    <div class="inner-div" style="float: left;">
-                                       <a class="action-icon edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">
-                                          <i class="mdi mdi-square-edit-outline"></i>
-                                       </a>
-                                    </div>
-                                    <div class="inner-div">
-                                       <button type="button" class="btn btn-primary-outline action-icon delete_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}">
-                                          <i class="mdi mdi-delete"></i>
-                                       </button>
-                                    </div>
-                                 </div>
-                              </td>
-                           </tr>
-                           @empty
-                           <tr align="center">
-                              <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
-                           </tr>
-                           @endforelse
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-
+                              </div>
+                              <div class="inner-div">
+                                 <button type="button" class="btn btn-primary-outline action-icon delete_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}">
+                                    <i class="mdi mdi-delete"></i>
+                                 </button>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     @empty
+                     <tr align="center">
+                        <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                     </tr>
+                     @endforelse
+                  </tbody>
+               </table>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-lg-6">
                <div class="card-box pb-2">
                   <div class="table-responsive mb-1">
                      <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
@@ -1237,11 +1236,11 @@ $sms_crendential = json_decode($preference->sms_credentials);
                               <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                            </div>
                            <div class="row mt-2">
-                              <div class="col-xl-6">
+                              <div class="col-12 mb-2">
                                  <label class="primaryCurText">{{__('Android App Link')}}</label>
                                  <input class="form-control" type="text" id="android_app_link" name="android_app_link" value="{{ old('android_app_link', $preference->android_app_link  ?? '')}}">
                               </div>
-                              <div class="col-xl-6">
+                              <div class="col-12">
                                  <label class="primaryCurText">{{__('IOS App Link')}}</label>
                                  <input class="form-control" type="text" id="ios_link" name="ios_link" value="{{ old('ios_link', $preference->ios_link  ?? '')}}" >
                               </div>
@@ -1250,6 +1249,8 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </form>
                   </div>
                </div>
+            </div>
+            <div class="col-lg-6">
 
                <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                   <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
@@ -1260,7 +1261,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                      </div>
                      <div class="row mt-2">
-                        <div class="col-xl-6">
+                        <div class="col-12 mb-2">
                            <label class="primaryCurText">{{__('Distance Unit')}}</label>
                            <select class="form-control" id="distance_unit_for_time" name="distance_unit_for_time">
                               <option value="">{{__('Select unit')}}</option>
@@ -1268,7 +1269,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                               <option value="mile" @if((isset($preference) && $preference->distance_unit_for_time == 'mile')) selected @endif>{{__('Mile')}}</option>
                            </select>
                         </div>
-                        <div class="col-xl-6">
+                        <div class="col-12">
                            <label class="primaryCurText">{{__('Distance to Time Multiplier (Per 1 distance unit)')}}</label>
                            <input class="form-control" type="number" id="distance_to_time_multiplier" name="distance_to_time_multiplier" value="{{ old('distance_to_time_multiplier', $preference->distance_to_time_multiplier  ?? '')}}" min="0">
                         </div>

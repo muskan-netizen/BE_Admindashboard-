@@ -963,10 +963,6 @@ body[dir="rtl"] #social-links li:last-child {
         top: 0;
     }
 
-    .navbar-brand .img-fluid {
-        max-width: initial;
-    }
-
     .store-btn a {
         display: block;
     }
@@ -1079,10 +1075,6 @@ body[dir="rtl"] #social-links li:last-child {
         right: -35px;
     }
 
-    .navbar-brand .img-fluid {
-        max-width: initial;
-    }
-
     .location-bar {
         width: 58%;
     }
@@ -1095,13 +1087,10 @@ body[dir="rtl"] #social-links li:last-child {
         margin: auto;
     }
 
-    .map-icon {
-        margin-left: auto;
-    }
-
     .h2-heading {
         font-size: 20px;
         line-height: 28px;
+        margin-bottom: 0;
     }
 
     .see-all-btn {

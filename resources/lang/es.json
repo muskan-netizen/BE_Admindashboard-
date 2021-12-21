@@ -945,7 +945,6 @@
    "Pickup" : "Levantar",
    "Amount Paid" : "Cantidad pagada",
    "ETA" : "HPI",
-   "Status" : "Estado",
    "You Have Arrived At your Destination" : "Ha llegado a su destino",
    " My Wishlist" : "mi lista de deseos",
    "Your Refrral Code" : "Su código de referencia",
@@ -1000,7 +999,7 @@
    "Schedule for Later": "Reservar",
    "Email or Phone Number": "email o número de teléfono",
    "CONTINUE": "CONTINUAR",
-   "Incorrect Password": "Contraseña incorrecta", 
+   "Incorrect Password": "Contraseña incorrecta",
    "My Rides": "Mis paseos",
    "Your Referral Code": "Su código de referencia",
    "Rides": "Paseos",
@@ -1012,8 +1011,8 @@
    "Total Discount": "Descuento total",
    "Comment/Schedule Information": "Información de comentario / programación",
    "No Records Found": "No se encontraron registros",
-   "Import Vendedore": "Importar Vendedores", 
-   "Status": "Estado",
+   "Import Vendedore": "Importar Vendedores",
+
    "Add Vendors": "añadir Vendedores",
    "Total Loyalty Card Spent": "Total tarjetas de fidelización gastadas",
    "Payout Requests": "Solicitudes de pago",
@@ -1041,6 +1040,7 @@
    "Where can we pick you up?": "¿Dónde te podemos recoger?",
    "Add A Pick-Up Location": "Agregar un lugar de recogida",
    "Allow Location Access": "Permitir acceso a la ubicación",
-   "Your Current Location": "Su ubicación actual"
+   "Your Current Location": "Su ubicación actual",
+   "Delivering to" : "Entregando a"
 
 }

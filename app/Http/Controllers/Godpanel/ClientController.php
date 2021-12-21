@@ -460,27 +460,88 @@ class ClientController extends Controller{
 
      public function exportDb(Request $request,$databaseName){
 
-        $client = Client::where('database_name',$databaseName)->first();
-
+        $client = Client::where('database_name',$databaseName)->first(['name', 'email', 'password', 'phone_number', 'database_host','database_path', 'database_name', 'database_username', 'database_password', 'logo', 'company_name', 'company_address', 'custom_domain', 'status', 'code', 'country_id', 'sub_domain'])->toarray();
+        $check_if_already = 0;
+        $request->dump_into = 'DEV';
+        $data = $request->all();
         if($client){
+            
+            $check_if_already = Client::on($request->dump_into)->where(['database_name' => $client['database_name']])->where(['sub_domain' => $client['sub_domain']])->count();
+            if($check_if_already == 0){
+                $clientData = array();
+                try {
 
-            $check_if_already = Client::on('dev')->where(['database_name' => $client->database_name])->count();
-            if($check_if_already == 0)
-            $create_db = $this->dispatchNow(new ClientDatabaseToDevMaster($client->id));
-            else
-            dd($databaseName);
+                    $databaseNameSet = 'royo_'.$client['database_name'];
+                    $db_name_set = $databaseNameSet.'.sql';
+                    \Spatie\DbDumper\Databases\MySql::create()
+                        ->setDbName($databaseNameSet)
+                        ->setUserName($client['database_username'])
+                        ->setPassword($client['database_password'])
+                        ->setHost($client['database_host'])
+                        ->dumpToFile($db_name_set);
+                    
 
-        // $databaseNameSet = 'royo_'.$databaseName;
-        // $userName = $client->database_username;
-        // $password = $client->database_password;
-        // $host = $client->database_host;
-        // \Spatie\DbDumper\Databases\MySql::create()
-        //     ->setDbName($databaseNameSet)
-        //     ->setUserName($userName)
-        //     ->setPassword($password)
-        //     ->setHost($host)
-        //     ->dumpToFile($databaseName.'.sql');
+                    ///////// ********** create database **************//////////
+                    $dumpinto = $request->dump_into;
+                    $schemaName = 'royo_' . $client['database_name'] ?: config("database.connections.mysql.database");
+                  
+                    $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
+                        $db = DB::connection($dumpinto)->select($query, [$schemaName]);
+                        if ($db) {
+                            return redirect()->route('client.index')->with('error', 'Database already exist');
+                        }else{
+                            $query = "CREATE DATABASE $schemaName;";
+                            DB::connection($dumpinto)->statement($query);
+                        }
+                    ///////// ********** end create database **************//////////
 
+                   
+                  
+                        $database_host_dev = env('DB_HOST_'.$dumpinto, '');
+                        $database_port_dev = env('DB_PORT_'.$dumpinto, '3306');
+                        $database_username_dev = env('DB_USERNAME_'.$dumpinto, '');
+                        $database_password_dev =  env('DB_PASSWORD_'.$dumpinto, '');
+        
+                        $default = [
+                        'driver' => env('DB_CONNECTION_'.$dumpinto, 'mysql'),
+                        'host' => $database_host_dev,
+                        'port' => $database_port_dev,
+                        'database' => $schemaName,
+                        'username' => $database_username_dev,
+                        'password' => $database_password_dev,
+                        'charset' => 'utf8mb4',
+                        'collation' => 'utf8mb4_unicode_ci',
+                        'prefix' => '',
+                        'prefix_indexes' => true,
+                        'strict' => false,
+                        'engine' => null
+                        ];
+        
+                        
+                        $setconnschemaName = 'merge_'.$schemaName;
+                        Config::set("database.connections.$setconnschemaName", $default);
+                        config(["database.connections.mysql.database" => $setconnschemaName]);
+                        DB::connection($setconnschemaName)->beginTransaction();
+                        DB::connection($setconnschemaName)->unprepared(file_get_contents((asset($db_name_set))));
+                        DB::connection($setconnschemaName)->commit();
+                   //     DB::connection($setconnschemaName)->table('clients')->update(['database_host' => $database_host_dev]);
+                        dd($database_host_dev);
+                      
+                //    DB::connection($dumpinto)->table('clients')->insert($clientData);
+                //    DB::connection($dumpinto)->table('clients')->where('database_name',$client['database_name'])->update(['database_host' => $database_host_dev]);
+                  
+                    DB::disconnect($setconnschemaName);
+                    return redirect()->route('client.index')->with('success', 'Client Migrated!');
+                } catch (Exception $ex) {
+                    return redirect()->route('client.index')->with('error', $ex->getMessage());
+                  
+                }
+            }
+            else{
+                return redirect()->route('client.index')->with('error', 'This client is already exist!!');
+            }
+        }else{
+            return redirect()->route('client.index')->with('error', 'This client not exist!!');
         }
 
     }

@@ -352,7 +352,7 @@ class ProductController extends FrontController{
                     }
                     if(empty($image_path)){
                         $image_fit = \Config::get('app.FIT_URl');
-                        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
+                        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png').'@webp';
                     }
                     $variantData['image_fit'] = $image_fit;
                     $variantData['image_path'] = $image_path;

@@ -30,32 +30,6 @@ $(document).ready(function () {
                 $('#age_restriction').modal({backdrop: 'static', keyboard: false});
             }
         }
-
-
-        // Commented By Sujata
-            // $.ajax({
-            //     url: client_preferences_url,
-            //     type: "POST",
-            //     success: function (response) {
-            //         if ($.cookie("age_restriction") != 1) {
-            //             if (response.age_restriction == 1) {
-            //                 $('#age_restriction').modal({backdrop: 'static', keyboard: false});
-            //             }
-            //         }
-            //         // if (response.delivery_check == 1) {
-            //         //     getHomePage("", "", "delivery");
-            //         // }
-            //         // else if (response.dinein_check == 1) {
-            //         //     getHomePage("", "", "dine_in");
-            //         // }
-            //         // else {
-            //         //     getHomePage("", "", "takeaway");
-            //         // }
-            //     },
-            // });
-        // End Comment
-
-        // });
     }
     else{
         $(".shimmer_effect").hide();
@@ -271,20 +245,6 @@ $(document).ready(function () {
             }
         });
     }
-
-    /*$("#dinein_tab").click(function () {
-        var url = "dine_in";
-        getHomePage("", "", url);
-    });
-
-    $("#delivery_tab").click(function () {
-        getHomePage();
-    });
-
-    $("#takeaway_tab").click(function () {
-        var url = "takeaway";
-        getHomePage("", "", url);
-    });*/
 
     function getHomePage(latitude, longitude, vtype = "") {
         if(vtype != ''){

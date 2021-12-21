@@ -81,7 +81,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-        'dev' => [
+        'DEV' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL_DEV'),
             'host' => env('DB_HOST_DEV', '127.0.0.1'),
@@ -96,6 +96,35 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            'dump' => [
+                'dump_binary_path' => 'D:\xampp\mysql\bin', // only the path, so without `mysqldump` or `pg_dump`
+                'use_single_transaction',
+                'timeout' => 60 * 5, // 5 minute timeout
+            ], 
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+        'STAGING' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL_STAGING'),
+            'host' => env('DB_HOST_STAGING', '127.0.0.1'),
+            'port' => env('DB_PORT_STAGING', '3306'),
+            'database' => env('DB_DATABASE_STAGING', 'forge'),
+            'username' => env('DB_USERNAME_STAGING', 'forge'),
+            'password' => env('DB_PASSWORD_STAGING', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'dump' => [
+                'dump_binary_path' => 'D:\xampp\mysql\bin', // only the path, so without `mysqldump` or `pg_dump`
+                'use_single_transaction',
+                'timeout' => 60 * 5, // 5 minute timeout
+            ],
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],

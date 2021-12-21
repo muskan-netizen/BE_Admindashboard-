@@ -14,7 +14,7 @@
 
     .grid-row.grid-4-4 {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         grid-gap: 20px;
     }
 
@@ -31,7 +31,7 @@
     .shimmer_effect .card_title.loading {
         width: 50%;
         height: 1rem;
-        margin: 1rem;
+        margin: 1rem 0;
         border-radius: 3px;
         position: relative;
     }
@@ -42,8 +42,8 @@
     }
 
     .shimmer_effect .card_description.loading {
-        height: 3rem;
-        margin: 1rem;
+        height: 1rem;
+        margin: 1rem 0;
         border-radius: 3px;
     }
 
@@ -168,7 +168,7 @@
 <script type="text/template" id="banner_template">
     <% _.each(brands, function(brand, k){%>
         <a class="barnd-img-outer" href="<%= brand.redirect_url %>">
-            <img src="<%= brand.image.image_fit %>500/500<%= brand.image.image_path %>" alt="">
+            <img class="blur-up lazyloaded" src="<%= brand.image.image_fit %>500/500<%= brand.image.image_path %>" alt="">
         </a>
     <% }); %>
 </script>
@@ -179,7 +179,7 @@
             <a class="card scale-effect text-center" href="{{route('productDetail')}}/<%= product.url_slug %>">
                 <label class="product-tag"><%= type %></label>
                 <div class="product-image">
-                    <img src="<%= product.image_url %>" alt="">
+                    <img class="blur-up lazyloaded" src="<%= product.image_url %>" alt="">
                 </div>
                 <div class="media-body align-self-center">
                     <div class="inner_spacing px-0">

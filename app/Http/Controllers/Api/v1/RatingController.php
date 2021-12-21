@@ -17,7 +17,7 @@ use GuzzleHttp\Client as GCLIENT;
 use App\Http\Requests\Web\CheckImageRequest;
 
 class RatingController extends BaseController{
-	
+
     use ApiResponser;
     /**
      * update order product rating
@@ -44,24 +44,24 @@ class RatingController extends BaseController{
                     $img->order_product_rating_id = $ratings->id;
                     $img->file = $storage;
                     $img->save();
-                   
+
                     }
                 }
                 $this->updateaverageRating($request->product_id);
-                if(isset($request->remove_files) && is_array($request->remove_files))    # send index array of deleted images 
+                if(isset($request->remove_files) && is_array($request->remove_files))    # send index array of deleted images
                 $removefiles = OrderProductRatingFile::where('order_product_rating_id',$ratings->id)->whereIn('id',$request->remove_files)->delete();
 
                 if(isset($request->rating_for_dispatch) && !empty($request->rating_for_dispatch))
                 {
                     $staus = $this->setRatingOnDispatch($request);
-                } 
-       
+                }
+
             }
             if(isset($ratings)) {
                 return $this->successResponse($ratings,'Rating Submitted.');
             }
             return $this->errorResponse('Invalid order', 404);
-            
+
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
@@ -87,7 +87,7 @@ class RatingController extends BaseController{
 
      */
     public function uploadFile(CheckImageRequest $request){
-        try {   
+        try {
                   $code = Client::orderBy('id','asc')->value('code');
                   $files_set = [];
                   $folder = '/'.$code.$request->folder ??'';
@@ -99,21 +99,21 @@ class RatingController extends BaseController{
                        $files_set[$key]['ids'] = uniqid();
                        $proxy_url = env('IMG_URL1');
                        $image_path = env('IMG_URL2').'/'.\Storage::disk('s3')->url($storage);
-                       $files_set[$key]['img_path'] = $proxy_url.'300/300'.$image_path;
+                       $files_set[$key]['img_path'] = $proxy_url.'300/300'.$image_path.'@webp';
                        }
                    }
-                 
+
                 if(isset($files_set)) {
                    return $this->successResponse($files_set,'Files Submitted.');
                }
                return $this->errorResponse('Invalid data', 200);
-               
+
            } catch (Exception $e) {
                return $this->errorResponse($e->getMessage(), 400);
            }
        }
 
-        # set rating at dispatch panel 
+        # set rating at dispatch panel
     public function setRatingOnDispatch($request)
     {
         try {
@@ -124,14 +124,14 @@ class RatingController extends BaseController{
                                 'rating' => $request->rating??'',
                                 'review' => $request->review??''];
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
-                $url = $dispatch_domain->pickup_delivery_service_key_url;                      
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/update-order-feedback',
                     ['form_params' => ($postdata)]
                 );
-                
-                $response = json_decode($res->getBody(), true); 
+
+                $response = json_decode($res->getBody(), true);
                 if($response && $response['message'] == 'success'){
-                   
+
                 }
             }
         }catch(\Exception $e){

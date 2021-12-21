@@ -99,7 +99,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <div class="col-lg-12">
                             <div class="row mobile-header align-items-center my-sm-2">
                                 <div class="col-12 col-sm-4 d-sm-flex align-items-center justify-content-sm-between">
-                                    <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-block" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
+                                    <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                                     <div class="d-flex justify-content-center">
                                     @if( (Session::get('preferences')))
                                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
