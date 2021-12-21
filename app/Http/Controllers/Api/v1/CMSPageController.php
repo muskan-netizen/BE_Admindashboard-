@@ -31,7 +31,7 @@ class CMSPageController extends BaseController
             ->where(['page_translations.language_id' => $locallanguage, 'page_translations.is_published' => 1])
             ->orderBy('pages.id', 'Desc')
             ->get([
-                'id',
+                'page_translations.id',
                 'pages.slug',
                 'page_translations.title',
             ]);
