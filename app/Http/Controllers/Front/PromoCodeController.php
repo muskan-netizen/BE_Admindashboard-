@@ -36,10 +36,13 @@ class PromoCodeController extends Controller{
             if(!$vendor){
                 return response()->json(['error' => 'Invalid vendor id.'], 404);
             }
-            $userOrder = auth()->user()->orders->first()->toArray();
-            if($userOrder){
-                $firstOrderCheck = 1;
+            if( Auth::user()){
+                $userOrder = auth()->user()->orders->first()->toArray();
+                if($userOrder){
+                    $firstOrderCheck = 1;
+                }
             }
+
             //pr($firstOrderCheck);
             // $order_vendor_coupon_list = OrderVendor::whereNotNull('coupon_id')->where('user_id', $user->id)->get([DB::raw('coupon_id'),  DB::raw('sum(coupon_id) as total')]);
             $now = Carbon::now()->toDateTimeString();
