@@ -49,12 +49,12 @@ class UserSubscriptionController extends BaseController
         }
         return response()->json(["status"=>"Success", "data"=>['all_plans'=>$sub_plans, 'subscription'=>$active_subscription, "clientCurrency"=>$clientCurrency]]);
     }
-    
+
     /**
      * select user subscription.
      * Required Params-
      *  slug
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function selectSubscriptionPlan(Request $request, $slug = '')
@@ -96,6 +96,9 @@ class UserSubscriptionController extends BaseController
                     if($payment_option->code == 'stripe'){
                         $payment_option->title = 'Credit/Debit Card (Stripe)';
                     }
+                    if($payment_option->code == 'mobbex'){
+                        $payment_option->title = __('Mobbex');
+                    }
                     $payment_option->title = __($payment_option->title);
                     unset($payment_option->credentials);
                 }
@@ -114,7 +117,7 @@ class UserSubscriptionController extends BaseController
      * check if user has any active subscription.
      * Required Params-
      *  slug
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function checkActiveSubscriptionPlan($slug = '')
@@ -144,7 +147,7 @@ class UserSubscriptionController extends BaseController
      *  payment_option_id
      *  transaction_id
      *  amount
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function purchaseSubscriptionPlan(Request $request, $slug = '')
@@ -246,7 +249,7 @@ class UserSubscriptionController extends BaseController
      * cancel user subscription.
      * Required Params-
      *  slug
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function cancelSubscriptionPlan($slug = '')

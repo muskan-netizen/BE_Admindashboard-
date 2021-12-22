@@ -38,7 +38,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 @endif
                                 @else
                                 <li>
-                                    <a href="{{route('extrapage',['slug' => $page->slug])}}">
+                                    <a href="{{route('extrapage',['slug' => $page->slug])}}"  target="_blank">
                                         @if(isset($page->translations) && $page->translations->first()->title != null)
                                         {{ $page->translations->first()->title ?? ''}}
                                         @else

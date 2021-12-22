@@ -28,7 +28,10 @@ class PaymentOptionController extends BaseController{
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
-                $option->title = __('Credit/Debit Card (Stripe)'); 
+                $option->title = __('Credit/Debit Card (Stripe)');
+            }
+            if($option->code == 'mobbex'){
+                $option->title = __('Mobbex');
             }
             $option->title = __($option->title);
         }
@@ -211,7 +214,7 @@ class PaymentOptionController extends BaseController{
                                                         'shortcode' => $dispatch_domain->delivery_service_key_code,
                                                         'content-type' => 'application/json']
                                                             ]);
-                            $url = $dispatch_domain->delivery_service_key_url;                      
+                            $url = $dispatch_domain->delivery_service_key_url;
                             $res = $client->post($url.'/api/get-delivery-fee',
                                 ['form_params' => ($postdata)]
                             );
@@ -221,10 +224,10 @@ class PaymentOptionController extends BaseController{
                             }
                     }
                 }
-            }    
+            }
             catch(\Exception $e){}
     }
-    # check if last mile delivery on 
+    # check if last mile delivery on
     public function checkIfLastMileOn(){
         $preference = ClientPreference::first();
         if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
@@ -371,10 +374,10 @@ class PaymentOptionController extends BaseController{
                                 $final_coupon_discount_amount = $coupon_discount_amount * $clientCurrency->doller_compare;
                                 $total_discount += $final_coupon_discount_amount;
                                 $vendor_payable_amount -=$final_coupon_discount_amount;
-                                $vendor_discount_amount +=$final_coupon_discount_amount; 
-                            }   
+                                $vendor_discount_amount +=$final_coupon_discount_amount;
+                            }
                         }
-                        
+
                         $order_vendor->coupon_id = $coupon_id;
                         $order_vendor->coupon_code = $coupon_name;
                         $order_vendor->order_status_option_id = 1;
@@ -434,7 +437,7 @@ class PaymentOptionController extends BaseController{
                 }else{
                     return $this->errorResponse(['error' => __('Empty cart.')], 404);
                 }
-        
+
             }
             catch (Exception $e) {
             DB::rollback();

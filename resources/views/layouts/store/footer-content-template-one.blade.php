@@ -45,7 +45,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 @endif
                                 @else
                                 <li>
-                                    <a href="{{route('extrapage',['slug' => $page->slug])}}">
+                                    <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
                                         @if(isset($page->translations) && $page->translations->first()->title != null)
                                         {{ $page->translations->first()->title ?? ''}}
                                         @else
@@ -106,8 +106,8 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         </div>
                         <div class="footer-contant">
                             <div class="store-btn mb-3 d-none d-md-block">
-                                <a href="#"><img src="{{asset('front-assets/images/app-store.svg')}}" alt=""></a>
-                                <a class="ml-xl-2 mt-2 mt-xl-0" href="#"><img src="{{asset('front-assets/images/google-play.svg')}}" alt=""></a>
+                                <a href="{{$client_preference_detail->ios_link??'#'}}" target="_blank"><img src="{{asset('front-assets/images/app-store.svg')}}" alt=""></a>
+                                <a class="ml-xl-2 mt-2 mt-xl-0" href="{{$client_preference_detail->android_app_link??'#'}}" target="_blank"><img src="{{asset('front-assets/images/google-play.svg')}}" alt=""></a>
                             </div>
 
                             @if(count($social_media_details))

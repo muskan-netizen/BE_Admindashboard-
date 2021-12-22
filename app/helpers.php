@@ -163,3 +163,13 @@ function productvariantQuantity($variantId ,$type=1){
     }
     return "variant not found";
 }
+function checkImageExtension($image)
+{
+    $ch =  substr($image, strpos($image, ".") + 1);
+    $ex = "@webp";
+    if($ch == 'svg')
+    {
+        $ex = "";
+    }
+    return $ex;
+}

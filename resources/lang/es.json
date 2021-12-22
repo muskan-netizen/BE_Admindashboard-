@@ -105,7 +105,7 @@
    "DeliveryFee": " Gastos de envío",
    "Wallet": " Monedero",
    "Loyalty": " Fidelidad",
-   "Cash On Delivery": " Pago en metálico",
+   "Cash On Delivery": " Efectivo",
    "Total Payable": " Total a pagar",
    "Summary": " Resumen",
    "Shipping Address": " Dirección de envío",
@@ -1041,6 +1041,7 @@
    "Add A Pick-Up Location": "Agregar un lugar de recogida",
    "Allow Location Access": "Permitir acceso a la ubicación",
    "Your Current Location": "Su ubicación actual",
-   "Delivering to" : "Entregando a"
+   "Delivering to" : "Entregando a",
+   "Mobbex" : "Tarjeta de Débito o Crédito"
 
 }

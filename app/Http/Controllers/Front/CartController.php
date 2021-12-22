@@ -759,7 +759,17 @@ class CartController extends FrontController
                     }
                 }
                 if ($vendorData->coupon) {
+                    //pr($vendorData->coupon->promo);
+
                     if (isset($vendorData->coupon->promo)) {
+                        if($vendorData->coupon->promo->first_order_only==1){
+                            $userOrder = auth()->user()->orders->first();
+                            if($userOrder){
+                                $cart->coupon()->delete();
+                                $vendorData->coupon()->delete();
+                                unset($vendorData->coupon);
+                            }
+                        }
                         if($vendorData->coupon->promo->minimum_spend <= $payable_amount && $vendorData->coupon->promo->maximum_spend >= $payable_amount)
                         {
                             if ($vendorData->coupon->promo->promo_type_id == 2) {
@@ -781,6 +791,7 @@ class CartController extends FrontController
                         }
 
                     }
+
                 }
                 if (in_array(1, $subscription_features)) {
                     $subscription_discount = $subscription_discount + $delivery_fee_charges;

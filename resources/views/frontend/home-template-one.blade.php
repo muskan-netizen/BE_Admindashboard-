@@ -257,9 +257,9 @@
                     <div class="progress-order font-12">
                     <% if(order.scheduled_date_time){ %>
                             <span class="badge badge-success ml-2">Scheduled</span>
-                            <span class="ml-2">Your order will arrive by <%= order.converted_scheduled_date_time %></span>
+                            <span class="ml-2">{{__('Your order will arrive by')}} <%= order.converted_scheduled_date_time %></span>
                         <% } else { %>
-                            <span class="ml-2">Your order will arrive by <%= vendor.ETA %></span>
+                            <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
                         <% } %>
                     </div>
                 <% } %>

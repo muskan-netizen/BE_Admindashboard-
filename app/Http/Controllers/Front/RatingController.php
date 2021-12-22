@@ -133,7 +133,8 @@ class RatingController extends FrontController{
                     $files_set[$key]['name'] = $storage;
                     $files_set[$key]['ids'] = uniqid();
                     $proxy_url = env('IMG_URL1');
-                    $image_path = env('IMG_URL2').'/'.\Storage::disk('s3')->url($storage).'@webp';
+                    $ex = checkImageExtension($storage);
+                    $image_path = env('IMG_URL2').'/'.\Storage::disk('s3')->url($storage).$ex;
                     $files_set[$key]['img_path'] = $proxy_url.'300/300'.$image_path;
                     }
                 }

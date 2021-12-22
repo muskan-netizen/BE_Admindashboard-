@@ -68,6 +68,8 @@
                                 <div class="row  <%= ve ==0 ? 'mt-0' : 'mt-2'%>" id="single-order-div<%= k %><%= ve %>">
                                     <div class="col-12 order-hover-btn">
 
+                                      
+
                                         <div id="update-single-status">
                                             <% if(vendor.order_status_option_id == 1) { %>
                                                 <button class="update-status btn-info" data-full_div="#full-order-div<%= k %>"  data-single_div="#single-order-div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Accept') }}</button>
@@ -110,7 +112,22 @@
                                                         <span class="badge badge-success ml-2">Scheduled</span>
                                                         <span class="ml-2"><%= order.scheduled_date_time %></span>
                                                     <% } %>
+
+
+                                                    <% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){ %>
+                                                        <% if(order.scheduled_date_time){ %>
+                                                               <span class="badge badge-success ml-2">Scheduled</span>
+                                                               <span class="ml-2">{{__('Your order will arrive by')}} <%= order.converted_scheduled_date_time %></span>
+                                                           <% } else { %>
+                                                               <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
+                                                           <% } %>
+                                                   <% } %>
+                                                   
                                                 </div>
+
+                                               
+
+
                                             </div>
                                             <% } %>
                                             <span class="left_arrow pulse">

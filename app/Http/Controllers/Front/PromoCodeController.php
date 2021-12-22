@@ -26,6 +26,7 @@ class PromoCodeController extends Controller{
             $user = Auth::user();
             $promo_codes = new \Illuminate\Database\Eloquent\Collection;
             $vendor_id = $request->vendor_id;
+            $firstOrderCheck = 0;
             $total_minimum_spend = $request->amount;
             $validator = $this->validatePromoCodeList($request);
             if($validator->fails()){
@@ -35,18 +36,26 @@ class PromoCodeController extends Controller{
             if(!$vendor){
                 return response()->json(['error' => 'Invalid vendor id.'], 404);
             }
+            $userOrder = auth()->user()->orders->first()->toArray();
+            if($userOrder){
+                $firstOrderCheck = 1;
+            }
+            //pr($firstOrderCheck);
             // $order_vendor_coupon_list = OrderVendor::whereNotNull('coupon_id')->where('user_id', $user->id)->get([DB::raw('coupon_id'),  DB::raw('sum(coupon_id) as total')]);
             $now = Carbon::now()->toDateTimeString();
             $product_ids = Product::where('vendor_id', $request->vendor_id)->pluck("id");
             if ($product_ids) {
                 $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
-                $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details) {
+                $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details,$firstOrderCheck) {
                     $query->where(function ($query2) use ($promo_code_details) {
                         $query2->where('restriction_type', 1);
                         if (!empty($promo_code_details->toArray())) {
                             $query2->whereNotIn('id', $promo_code_details->toArray());
                         }
                     });
+                    if($firstOrderCheck){
+                        $query->where('first_order_only', 0);
+                    }
                     $query->orWhere(function ($query1) use ($promo_code_details) {
                         $query1->where('restriction_type', 0);
                         if (!empty($promo_code_details->toArray())) {
@@ -58,7 +67,7 @@ class PromoCodeController extends Controller{
                 })->where('is_deleted', 0)->where(['promo_visibility' => 'public'])->get();
                 $promo_codes = $promo_codes->merge($result1);
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
-                $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details) {
+                $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details,$firstOrderCheck) {
                     $query->where(function ($query2) use ($vendor_promo_code_details) {
                         $query2->where('restriction_type', 1);
                         if (!empty($vendor_promo_code_details->toArray())) {
@@ -73,6 +82,9 @@ class PromoCodeController extends Controller{
                             $query1->where('id', 0);
                         }
                     });
+                    if($firstOrderCheck){
+                        $query->where('first_order_only', 0);
+                    }
                 })->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->where(['promo_visibility' => 'public'])->get();
                 $promo_codes = $promo_codes->merge($result2);
             }
@@ -123,7 +135,7 @@ class PromoCodeController extends Controller{
                 if($orders_count > 0){
                     return $this->errorResponse('Coupon Code apply only first order.', 422);
                 }
-            } 
+            }
 
             $cart_coupon = new CartCoupon();
             $cart_coupon->cart_id = $request->cart_id;
@@ -135,7 +147,7 @@ class PromoCodeController extends Controller{
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-    
+
     public function postRemovePromoCode(Request $request){
         try {
             $cart_detail = Cart::where('id', $request->cart_id)->first();
@@ -158,7 +170,7 @@ class PromoCodeController extends Controller{
             'vendor_id' => 'required',
         ]);
     }
-    
+
     public function validatePromoCode(){
         return Validator::make(request()->all(), [
             'cart_id' => 'required',

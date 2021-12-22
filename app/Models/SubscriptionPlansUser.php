@@ -23,8 +23,9 @@ class SubscriptionPlansUser extends Model
         if(!empty($value)){
           $img = $value;
         }
+        $ex = checkImageExtension($img);
         $values['proxy_url'] = \Config::get('app.IMG_URL1');
-        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
+        $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
         $values['image_fit'] = \Config::get('app.FIT_URl');
         $values['original'] = $value;
 

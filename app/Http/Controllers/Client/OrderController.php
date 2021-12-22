@@ -20,7 +20,7 @@ use App\Models\Transaction;
 use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\ApiResponser;
 use Log;
-
+use Carbon\Carbon;
 class OrderController extends BaseController
 {
 
@@ -252,6 +252,15 @@ class OrderController extends BaseController
                     $product_total_count += $product->quantity * $product->price;
                     $product->image_path  = $product->media->first() ? $product->media->first()->image->path : '';
                 }
+
+                if ($vendor->delivery_fee > 0) {
+                    $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
+                    $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
+                    $ETA = $order_pre_time + $user_to_vendor_time;
+                    // $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : convertDateTimeInTimeZone($vendor->created_at, $user->timezone, 'h:i A');
+                    $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : dateTimeInUserTimeZone($vendor->created_at, $user->timezone);
+                }
+
                 $vendor->product_total_count = $product_total_count;
                 $vendor->final_amount = $vendor->taxable_amount + $product_total_count;
             }
@@ -1134,5 +1143,40 @@ class OrderController extends BaseController
                 'message' => $e->getMessage()
             ]);
         }
+    }
+
+
+
+    public function formattedOrderETA($minutes, $order_vendor_created_at, $scheduleTime='', $user=''){
+        $d = floor ($minutes / 1440);
+        $h = floor (($minutes - $d * 1440) / 60);
+        $m = $minutes - ($d * 1440) - ($h * 60);
+      
+        if(isset($user) && !empty($user))
+        $user =  $user;
+        else
+        $user = Auth::user();
+        
+        $timezone = $user->timezone;
+        $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
+        $date_format = $preferences->date_format;
+        $time_format = $preferences->time_format;
+
+        if($scheduleTime != ''){
+            $datetime = Carbon::parse($scheduleTime)->addMinutes($minutes);
+            $datetime = dateTimeInUserTimeZone($datetime, $timezone);
+        }else{
+            $datetime = Carbon::parse($order_vendor_created_at)->addMinutes($minutes);
+            $datetime = dateTimeInUserTimeZone($datetime, $timezone);
+        }
+        if(Carbon::parse($datetime)->isToday()){
+            if($time_format == '12'){
+                $time_format = 'hh:mm A';
+            }else{
+                $time_format = 'HH:mm';
+            }
+            $datetime = Carbon::parse($datetime)->isoFormat($time_format);
+        }
+        return $datetime;
     }
 }
