@@ -23,11 +23,34 @@ trait smsManager{
 
     public function mazinhost($to,$message,$crendentials)
     {
-        $api_url = " https://mazinhost.com/smsv1/sms/api";
-        $to_number = substr($to, 1);
-        $endpoint = $api_url.'?action=send-sms&apikey='.$crendentials->api_key.'&to='.$to_number.'&from='.$crendentials->sender_id.'&message='.$message.'&format=json';
-        $response=$this->getGuzzle($endpoint);
+        $curl = curl_init();
+
+        $from = $crendentials->sender_id;
+
+
+
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => "https://mazinhost.com/smsv1/sms/api",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => "action=send-sms&api_key=$crendentials->api_key&to=$to&from=$from&sms=$message",
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
         return $response;
+
+        // $api_url = " https://mazinhost.com/smsv1/sms/api";
+        // $to_number = substr($to, 1);
+        // $endpoint = $api_url.'?action=send-sms&api_key='.$crendentials->api_key.'&to='.$to_number.'&from='.$crendentials->sender_id.'&sms='.$message;
+        // $response=$this->getGuzzle($endpoint);
+        //return $endpoint;
     }
 
     private function postCurl($data,$token=null):object{
@@ -45,7 +68,7 @@ trait smsManager{
             echo 'Error:' . curl_error($ch);
         }
         curl_close($ch);
-        return json_decode($result); 
+        return json_decode($result);
     }
     private function getCurl($endpoint):object{
         $ch = curl_init();
@@ -69,6 +92,7 @@ trait smsManager{
     }
     public function getGuzzle($endpoint)
     {
+       // pr($endpoint);
         try{
             $client = new \GuzzleHttp\Client();
             $res = $client->get($endpoint);

@@ -1134,6 +1134,14 @@ class OrderController extends BaseController
                         $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
                         $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
                     }
+
+                    // dispatch status 
+                    $vendor->vendor_dispatcher_status = VendorOrderDispatcherStatus::whereNotIn('dispatcher_status_option_id',[2])
+                    ->select('*','dispatcher_status_option_id as status_data')->where('order_id', $order_id)
+                    ->where('vendor_id', $vendor->vendor->id)
+                    ->get();
+                    $vendor->vendor_dispatcher_status_count = 6;
+                    $vendor->dispatcher_status_icons = [asset('assets/icons/driver_1_1.png'),asset('assets/icons/driver_2_1.png'),asset('assets/icons/driver_3_1.png'),asset('assets/icons/driver_4_1.png'),asset('assets/icons/driver_4_2.png'),asset('assets/icons/driver_5_1.png')];
                 }
                 if (!empty($order->scheduled_date_time)) {
                     $order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);

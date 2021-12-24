@@ -104,7 +104,7 @@
                                                         </div>
                                                         <!-- <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3> -->
                                                         <p>{{$new['vendor']['name']}}</p>
-                                                        <p class="pb-1">In {{$new['category_name']}}</p>
+                                                        <p class="pb-1">{{__('In')}} {{$new['category_name']}}</p>
                                                         <div class="d-flex align-items-center justify-content-between">
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)

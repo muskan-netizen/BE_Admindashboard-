@@ -262,7 +262,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::get('details/{id?}', 'Front\BookingController@bookingDetails')->name('front.booking.details');
 		Route::post('orderPlaceDetails/{id}', 'Front\BookingController@orderPlaceDetails')->name('front.booking.orderplacedetails');
 
-
+		Route::get('payment/options', 'Front\PickupDeliveryController@getPaymentOptions');
 		Route::post('create-order', 'Front\PickupDeliveryController@createOrder');
 		Route::post('cart/updateQuantity', 'Front\CartController@updateQuantity');
 		Route::post('promo-code/list', 'Front\PickupDeliveryController@postPromoCodeList');

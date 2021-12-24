@@ -283,7 +283,7 @@
                                                                                                         alt="">
                                                                                                 @endif
                                                                                                 <label
-                                                                                                    class="m-0 in-progress">{{ ucfirst($vendor->order_status) }}</label>
+                                                                                                    class="m-0 in-progress">{{__( ucfirst( $vendor->order_status)) }}</label>
                                                                                             </li>
                                                                                         @endif
 
@@ -295,7 +295,7 @@
                                                                                         @endif
                                                                                         <h6 class="m-0">
                                                                                             <label class="rating-star cancel_order"  data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
-                                                                                                Cancel Order
+                                                                                                {{ __('Cancel Order') }}
                                                                                             </label>
                                                                                         </h6>
 
@@ -577,7 +577,7 @@
                                                                                                 <img src="{{ asset('assets/images/driver_icon.svg') }}"
                                                                                                     alt="">
                                                                                                 <label
-                                                                                                    class="m-0 in-progress">{{ ucfirst($vendor->order_status) }}</label>
+                                                                                                    class="m-0 in-progress">{{ __(ucfirst($vendor->order_status)) }}</label>
                                                                                             </li>
                                                                                         @endif
 
@@ -1291,7 +1291,7 @@
                                                                                             }
                                                                                         @endphp
                                                                                         <span
-                                                                                            class="badge badge-info ml-2 my-1">{{ $luxury_option_name }}</span>
+                                                                                            class="badge badge-info ml-2 my-1">{{ __($luxury_option_name) }}</span>
                                                                                     @endif
 
                                                                                     @if ($order->is_gift == '1')
@@ -1314,7 +1314,7 @@
                                                                                     <ul class="status_box mt-1 pl-0">
                                                                                         @if (!empty($vendor->order_status))
                                                                                             <li>
-                                                                                                <label class="m-0 in-progress">{{ ucfirst($vendor->order_status) }} </label>
+                                                                                                <label class="m-0 in-progress">{{ __(ucfirst($vendor->order_status)) }} </label>
                                                                                                 <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
                                                                                             </li>
                                                                                         @endif
@@ -1679,8 +1679,8 @@
                 }
             }
         });
-   
-    ///// cancel order start 
+
+    ///// cancel order start
     $('body').on('click', '.cancel_order', function (event) {
         event.preventDefault();
         var id = $(this).data('id');
@@ -1691,7 +1691,7 @@
             $('#cancel-order-form-modal').html(markup);
         });
     });
-    ////////// cancel order end 
-    
+    ////////// cancel order end
+
 </script>
 @endsection

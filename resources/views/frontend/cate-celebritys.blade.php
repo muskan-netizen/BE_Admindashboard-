@@ -60,7 +60,7 @@
                 <div class="collection-filter col-lg-3">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
-                            <span>{{__('New Product')}}</span>  
+                            <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span>
@@ -81,17 +81,17 @@
                                                     <!--<span>5-10 min</span>-->
                                                 </div>
                                                 <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
-                                            </div>    
+                                            </div>
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing px-0">
                                                     <div class="product-description">
                                                         <div class="d-flex align-items-center justify-content-between">
-                                                            <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>                                                                                    
-                                                            <!--<span class="rating-number">2.0</span>-->                                
+                                                            <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
+                                                            <!--<span class="rating-number">2.0</span>-->
                                                         </div>
                                                         <!-- <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3> -->
                                                         <p>{{$new['vendor']['name']}}</p>
-                                                        <p class="pb-1">In {{$new['category_name']}}</p>
+                                                        <p class="pb-1">{{__('In')}} {{$new['category_name']}}</p>
                                                         <div class="d-flex align-items-center justify-content-between">
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
@@ -110,7 +110,7 @@
                                                                     @endif
                                                                 @endif
                                                             @endif   -->
-                                                        </div>                       
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -178,9 +178,9 @@
                                                         <?php $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 8; ?>
                                                         <select class="customerPaginate">
 
-                                                            <option value="8" @if($pagiNate == 8) selected @endif>Show 8 
+                                                            <option value="8" @if($pagiNate == 8) selected @endif>Show 8
                                                             </option>
-                                                            <option value="12" @if($pagiNate == 12) selected @endif>Show 12 
+                                                            <option value="12" @if($pagiNate == 12) selected @endif>Show 12
                                                             </option>
                                                             <option value="24" @if($pagiNate == 24) selected @endif>Show 24
                                                             </option>

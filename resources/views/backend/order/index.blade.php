@@ -68,7 +68,7 @@
                                 <div class="row  <%= ve ==0 ? 'mt-0' : 'mt-2'%>" id="single-order-div<%= k %><%= ve %>">
                                     <div class="col-12 order-hover-btn">
 
-                                      
+
 
                                         <div id="update-single-status">
                                             <% if(vendor.order_status_option_id == 1) { %>
@@ -122,10 +122,10 @@
                                                                <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
                                                            <% } %>
                                                    <% } %>
-                                                   
+
                                                 </div>
 
-                                               
+
 
 
                                             </div>
@@ -354,7 +354,7 @@
                 @csrf
                 <div class="modal-body" id="AddRejectBox">
                     <p id="error-case" style="color:red;"></p>
-                    <label style="font-size:medium;">Enter reason for rejecting the order.</label>
+                    <label style="font-size:medium;">{{ __("Enter reason for rejecting the order.") }}</label>
                     <textarea class="reject_reason w-100" data-name="reject_reason" name="reject_reason" id="" cols="107" rows="10"></textarea>
 
                 </div>

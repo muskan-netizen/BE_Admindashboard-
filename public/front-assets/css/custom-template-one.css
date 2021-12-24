@@ -682,7 +682,12 @@ footer ul.social-links li a i,
 }
 
 
-
+.grayscale-image{
+    filter: grayscale(100%) !important;
+    -webkit-filter: grayscale(100%) !important;
+    transition: filter 600ms ease !important;
+    -webkit-transition: -webkit-filter 600ms ease !important;
+}
 
 
 
@@ -1162,4 +1167,6 @@ body[dir="rtl"] #social-links li:last-child {
     .homepage-address {
         width: calc(100% - 120px);
     }
+    
+   
 }

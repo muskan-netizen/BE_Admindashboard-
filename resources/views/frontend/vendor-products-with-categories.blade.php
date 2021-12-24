@@ -508,7 +508,7 @@
                                                                   <img src="{{ $prod->product_image }}" alt="{{ $prod->translation_title }}">
                                                                 </div>
                                                               </a>
-                                                                
+
                                                             </div>
                                                             <div class="col-10">
                                                                 <div class="row price_head pl-2">
@@ -578,7 +578,7 @@
                                                                 data-vendor_id="{{ $vendor_id }}"
                                                                 data-product_id="{{ $product_id }}"
                                                                 data-addon="{{ $isAddonExist }}"
-                                                                href="javascript:void(0)">Add</a>
+                                                                href="javascript:void(0)">{{__('Add')}}</a>
                                                             <div class="number"
                                                                 id="show_plus_minus{{ $cartProductId }}">
                                                                 <span
@@ -622,7 +622,7 @@
                                                                     data-vendor_id="{{ $data->vendor_id }}"
                                                                     data-product_id="{{ $data->id }}"
                                                                     data-addon="{{ $isAddonExist }}"
-                                                                    href="javascript:void(0)">Add</a>
+                                                                    href="javascript:void(0)">{{__('Add')}}</a>
                                                                 <div class="number" style="display:none;"
                                                                     id="ashow_plus_minus{{ $data->id }}">
                                                                     <span class="minus qty-minus-product"
@@ -714,7 +714,7 @@
         <div class="col-12 col-lg-3 d-lg-inline-block d-none">
             <div class="card-box p-0 cart-main-box">
                 <div class="p-2 d-flex align-items-center justify-content-between border-bottom">
-                    <h4 class="right-card-title">Cart</h4>
+                    <h4 class="right-card-title">{{__('Cart')}}</h4>
                 </div>
                 <div class="cart-main-box-inside d-flex align-items-center">
                     <div class="spinner-box">
@@ -911,7 +911,7 @@
                 %>
                 <% if(variant.check_if_in_cart != '') { %>
                     <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>
-                    <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href<%= variant.check_if_in_cart.id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" href="javascript:void(0)">Add</a>
+                    <a class="add-cart-btn add_vendor_product" style="display:none;" id="add_button_href<%= variant.check_if_in_cart.id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" href="javascript:void(0)">{{__('Add')}}</a>
                     <div class="number" id="show_plus_minus<%= variant.check_if_in_cart.id %>">
                         <span class="minus qty-minus-product <% if(is_customizable){ %> remove-customize <% } %>"  data-parent_div_id="show_plus_minus<%= variant.check_if_in_cart.id %>" data-id="<%= variant.check_if_in_cart.id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.check_if_in_cart.vendor_id %>" data-product_id="<%= variant.product_id %>" data-cart="<%= variant.check_if_in_cart.cart_id %>">
                             <i class="fa fa-minus" aria-hidden="true"></i>
@@ -923,7 +923,7 @@
                     </div>
                 <% }else{ %>
                     <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a>
-                    <a class="add-cart-btn add_vendor_product" id="aadd_button_href<%= variant.product_id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.product.vendor_id %>" data-product_id="<%= variant.product_id %>" data-addon="<%= variant.isAddonExist %>" href="javascript:void(0)">Add</a>
+                    <a class="add-cart-btn add_vendor_product" id="aadd_button_href<%= variant.product_id %>" data-variant_id="<%= variant.id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= variant.product.vendor_id %>" data-product_id="<%= variant.product_id %>" data-addon="<%= variant.isAddonExist %>" href="javascript:void(0)">{{__('Add')}}</a>
                     <div class="number" style="display:none;" id="ashow_plus_minus<%= variant.product_id %>">
                         <span class="minus qty-minus-product"  data-parent_div_id="show_plus_minus<%= variant.product_id %>" readonly data-id="<%= variant.product_id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
                             <i class="fa fa-minus" aria-hidden="true"></i>
@@ -1015,7 +1015,7 @@
                         </span>
                     </div>
                     <input type="hidden" id="addonVariantPriceVal" value="<%= addOnData.variant_price %>">
-                    <a class="btn btn-solid add-cart-btn flex-fill add_vendor_addon_product" id="add_vendor_addon_product" href="javascript:void(0)" data-variant_id="<%= addOnData.variant[0].id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= addOnData.vendor_id %>" data-product_id="<%= addOnData.id %>">Add {{ Session::get('currencySymbol') }}<span class="addon_variant_price"><%= addOnData.variant_price %></span></a>
+                    <a class="btn btn-solid add-cart-btn flex-fill add_vendor_addon_product" id="add_vendor_addon_product" href="javascript:void(0)" data-variant_id="<%= addOnData.variant[0].id %>" data-add_to_cart_url="{{ route('addToCart') }}" data-vendor_id="<%= addOnData.vendor_id %>" data-product_id="<%= addOnData.id %>">{{__("Add")}} {{ Session::get('currencySymbol') }}<span class="addon_variant_price"><%= addOnData.variant_price %></span></a>
                 </div>
             <% } %>
         </script>

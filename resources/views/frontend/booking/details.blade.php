@@ -167,7 +167,7 @@
                     <div class="col-6 mb-2">Order ID</div>
                     <div class="col-6 mb-2 text-right" id=""><%= result.order_number %></div>
                     <div class="col-6 mb-2" >Amount Paid</div>
-                    <div class="col-6 mb-2 text-right">$<%= result.payable_amount %></div>
+                    <div class="col-6 mb-2 text-right">{{Session::get('currencySymbol')}}<%= result.payable_amount %></div>
                     <div class="col-6 mb-2">Status</div>
                     <div class="col-6 mb-2 text-right" id="dispatcher_status_show"></div>
                 </div>

@@ -244,7 +244,7 @@ class OrderController extends BaseController
             foreach ($order->vendors as $vendor) {
                 $vendor->vendor_detail_url = route('order.show.detail', [$order->id, $vendor->vendor_id]);
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
-                $vendor->order_status = $vendor_order_status ? $vendor_order_status->OrderStatusOption->title : '';
+                $vendor->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
                 $vendor->vendor_name = $vendor ? $vendor->vendor->name : '';
                 $product_total_count = 0;
@@ -275,7 +275,7 @@ class OrderController extends BaseController
                     $luxury_option_name = 'Delivery';
                 }
             }
-            $order->luxury_option_name = $luxury_option_name;
+            $order->luxury_option_name = __($luxury_option_name);
             if ($order->vendors->count() == 0) {
                 $orders->forget($key);
             }
@@ -1111,7 +1111,7 @@ class OrderController extends BaseController
             $timezone = Auth::user()->timezone;
              $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
              $vendor_dispatch_status = VendorOrderDispatcherStatus::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
-            
+
             if ($currentOrderStatus->order_status_option_id == 3) { //if order rejected
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
             }
@@ -1120,7 +1120,7 @@ class OrderController extends BaseController
                 return response()->json(['status' => 'error', 'message' => __('Order has already been generated in dispatcher')]);
             }
 
-          
+
             if (!$vendor_dispatch_status) {
                 $order_dispatch = $this->checkIfanyProductLastMileon($request);
                 if ($order_dispatch && $order_dispatch == 1)
@@ -1151,12 +1151,12 @@ class OrderController extends BaseController
         $d = floor ($minutes / 1440);
         $h = floor (($minutes - $d * 1440) / 60);
         $m = $minutes - ($d * 1440) - ($h * 60);
-      
+
         if(isset($user) && !empty($user))
         $user =  $user;
         else
         $user = Auth::user();
-        
+
         $timezone = $user->timezone;
         $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
         $date_format = $preferences->date_format;

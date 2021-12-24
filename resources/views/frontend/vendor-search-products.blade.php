@@ -99,7 +99,7 @@
                                             data-vendor_id="{{$vendor_id}}"
                                             data-product_id="{{$product_id}}"
                                             data-addon="{{$isAddonExist}}"
-                                            href="javascript:void(0)">Add</a>
+                                            href="javascript:void(0)">{{__('Add')}}</a>
                                         <div class="number" id="show_plus_minus{{$cartProductId}}">
                                             <span class="minus qty-minus-product {{$productVariantInCartWithDifferentAddons ? 'remove-customize' : ''}}"
                                                 data-variant_id="{{$productVariantIdInCart}}"
@@ -134,7 +134,7 @@
                                             data-vendor_id="{{$data->vendor_id}}"
                                             data-product_id="{{$data->id}}"
                                             data-addon="{{$isAddonExist}}"
-                                            href="javascript:void(0)">Add</a>
+                                            href="javascript:void(0)">{{__('Add')}}</a>
                                         <div class="number" style="display:none;" id="ashow_plus_minus{{$data->id}}">
                                             <span class="minus qty-minus-product"
                                                 data-parent_div_id="show_plus_minus{{$data->id}}"

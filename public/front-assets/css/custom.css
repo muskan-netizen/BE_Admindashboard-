@@ -1411,7 +1411,12 @@ body.dark .inner_spacing {
     background: transparent;
 }
 
-
+.grayscale-image{
+    filter: grayscale(100%) !important;
+    -webkit-filter: grayscale(100%) !important;
+    transition: filter 600ms ease !important;
+    -webkit-transition: -webkit-filter 600ms ease !important;
+}
 /* Spinner End */
 
 .btn-solid {
@@ -5018,6 +5023,7 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     color: #fff;
     padding: 1px 15px;
     font-size: 12px;
+    z-index: 1;
 }
 
 #brand_main_div a {
@@ -8165,4 +8171,5 @@ body[dir="rtl"] .inner_spacing h3 {
     .suppliers-img-outer {
         height: 100px !important;
     }
+  
 }

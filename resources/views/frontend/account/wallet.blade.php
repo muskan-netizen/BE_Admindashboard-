@@ -136,7 +136,7 @@ $timezone = Auth::user()->timezone;
                                         $amount = ($ut->amount / 100) * $clientCurrency->doller_compare;
                                         @endphp
                                           <tr>
-                                              <td>{{dateTimeInUserTimeZone($ut->created_at, $timezone)}}</td>
+                                              <td> {{dateTimeInUserTimeZone($ut->created_at, $timezone)}}</td>
                                               <td  class="name_">{!!$reason[0]!!}</td>
                                               <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}@money(sprintf("%.2f",$amount))</b></td>
                                           </tr>
@@ -243,7 +243,7 @@ $timezone = Auth::user()->timezone;
         <% _.each(payment_options, function(payment_option, k){%>
             <% if( (payment_option.slug != 'cash_on_delivery') && (payment_option.slug != 'loyalty_points') ) { %>
                 <label class="radio mt-2">
-                    <%= payment_option.title %> 
+                    <%= payment_option.title %>
                     <input type="radio" name="wallet_payment_method" id="radio-<%= payment_option.slug %>" value="<%= payment_option.slug %>" data-payment_option_id="<%= payment_option.id %>">
                     <span class="checkround"></span>
                 </label>
@@ -349,7 +349,7 @@ $timezone = Auth::user()->timezone;
             // Create a new dropin form instance
 
             var yoco_amount_payable = $("input[name='wallet_amount']").val();
-     
+
             inline = sdk.inline({
                 layout: 'field',
                 amountInCents:  yoco_amount_payable*100,

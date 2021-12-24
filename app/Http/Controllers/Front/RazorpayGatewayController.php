@@ -80,7 +80,7 @@ class RazorpayGatewayController extends FrontController
                 $returnUrl = route('user.wallet');
             }
             $orderData = [
-                'amount'          => (int)$amount/100,
+                'amount'          => $amount/100,
                 'currency'        => 'INR'
             ];
             $payment = $this->api->payment->fetch($request->razorpay_payment_id);
@@ -107,12 +107,13 @@ class RazorpayGatewayController extends FrontController
                 $order->save();
                 $payment_exists = Payment::where('transaction_id', $transactionId)->first();
                 if (!$payment_exists) {
-                    Payment::insert([
-                        'date' => date('Y-m-d'),
-                        'order_id' => $order->id,
-                        'transaction_id' => $transactionId,
-                        'balance_transaction' => (int)$amount,
-                    ]);
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->order_id = $order->id;
+                    $payment->transaction_id = $transactionId;
+                    $payment->balance_transaction = $amount;
+                    $payment->type = 'cart';
+                    $payment->save();
 
                     // Auto accept order
                     $orderController = new OrderController();
@@ -151,8 +152,23 @@ class RazorpayGatewayController extends FrontController
                 $returnUrl = route('user.wallet');
                 return $returnUrl.$returnUrlParams;
             }
-        }elseif($request->payment_from == 'wallet')
-        {
+        }elseif($request->payment_from == 'pickup_delivery'){
+            $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $request->order_number)->first();
+            if ($order) {
+                $order->payment_status = 1;
+                $order->save();
+                $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                if (!$payment_exists) {
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->order_id = $order->id;
+                    $payment->transaction_id = $transactionId;
+                    $payment->balance_transaction = $amount;
+                    $payment->type = 'pickup delivery';
+                    $payment->save();
+                }
+            }
+        }elseif($request->payment_from == 'wallet'){
             $request->request->add(['wallet_amount' => $amount, 'transaction_id' => $transactionId]);
             $walletController = new WalletController();
             $walletController->creditWallet($request);

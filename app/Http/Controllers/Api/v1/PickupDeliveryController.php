@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Validator;
@@ -286,10 +286,12 @@ class PickupDeliveryController extends BaseController{
                     }
                 }
 
-                if($request->payment_option_id == 2)
-                $payment_option = 1;
-                else
-                $payment_option = 1;
+                if($request->payment_option_id == 2){
+                    $payment_option = 1;
+                }
+                else{
+                    $payment_option = $request->payment_option_id;
+                }
 
                 $order = new Order;
                 $order->user_id = $user->id;
@@ -420,7 +422,20 @@ class PickupDeliveryController extends BaseController{
                 $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved;
                 $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                 $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
+                if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {
+                    $order->payment_status = 1;
+                }
                 $order->save();
+
+                if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->order_id = $order->id;
+                    $payment->transaction_id = $request->transaction_id;
+                    $payment->balance_transaction = $order->payable_amount;
+                    $payment->type = 'pickup/delivery';
+                    $payment->save();
+                }
             }
 
                         $data = [];

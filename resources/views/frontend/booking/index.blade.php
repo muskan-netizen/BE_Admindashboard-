@@ -229,7 +229,7 @@
             <span id="show_error_of_booking" class="error"></span>
                   
             <div class="payment-promo-container p-2">
-                <h4 class="d-flex align-items-center justify-content-between mb-2"  data-toggle="modal" data-target="#payment_modal">
+                <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
                     <span id="payment_type">
                         <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
                     </span>
@@ -244,6 +244,51 @@
                     </div>-->
                 </div>
             </div>
+        </script>
+
+        <script type="text/template" id="payment_methods_template">
+            <% if(payment_options != '') { %>
+                <form method="POST" id="cab_payment_method_form">
+                    @csrf
+                    @method('POST')
+                    <% _.each(payment_options, function(payment_option, k){%>
+                        <div>
+                            <label class="radio mt-2">
+                                <span><%= payment_option.title %></span>
+                                <input type="radio" class="select_cab_payment_method" name="select_cab_payment_method" id="radio-<%= payment_option.slug %>" value="<%= payment_option.id %>" data-payment_method="<%= payment_option.id %>">
+                                <span class="checkround"></span>
+                            </label>
+                            <% if(payment_option.slug == 'stripe') { %>
+                                <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper d-none">
+                                    <div class="form-control">
+                                        <label class="d-flex flex-row pt-1 pb-1 mb-0">
+                                            <div id="stripe-card-element"></div>
+                                        </label>
+                                    </div>
+                                    <span class="error text-danger" id="stripe_card_error"></span>
+                                </div>
+                            <% } %>
+                            <% if(payment_option.slug == 'yoco') { %>
+                                <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper d-none">
+                                    <div class="form-control">
+                                        <div id="yoco-card-frame">
+                                        <!-- Yoco Inline form will be added here -->
+                                        </div>
+                                    </div>
+                                    <span class="error text-danger" id="yoco_card_error"></span>
+                                </div>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                    {{-- <div>
+                        <label class="radio mt-2">
+                            <span>{{__('Wallet/Card')}}</span>
+                            <input type="radio" class="select_cab_payment_method" name="select_cab_payment_method" id="radio-wallet" value="2" data-payment_method="2">
+                            <span class="checkround"></span>
+                        </label>
+                    </div> --}}
+                </form>
+            <% } %>
         </script>
 
         <script type="text/template" id="cab_booking_promo_code_template">
@@ -329,12 +374,10 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body p-0">
-                <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="1"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Cash')}}</span></h4>
-                <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="2"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Wallet/Card')}}</span></h4>
-               
-                {{-- <h4 class="payment-button"  data-toggle="modal" data-target="#select_payment_option" aria-label="Close">Select Payment Method</h4> --}}
-            </div>        
+            <div class="modal-body">
+                {{-- <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="1"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Cash')}}</span></h4>
+                <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="2"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Wallet/Card')}}</span></h4> --}}
+            </div>
         </div>
     </div>
 </div>
@@ -542,6 +585,7 @@ var routeset = "{{route('pickup-delivery-route',':category_id')}}";
 var autocomplete_urls = routeset.replace(":category_id", category_id);
 var wallet_balance = {{ $wallet_balance}}
 var get_product_detail = "{{url('looking/product-detail')}}";
+var get_payment_options = "{{url('looking/payment/options')}}";
 var promo_code_list_url = "{{route('verify.promocode.list')}}";
 var get_vehicle_list = "{{url('looking/get-list-of-vehicles')}}";
 var cab_booking_create_order = "{{url('looking/create-order')}}";

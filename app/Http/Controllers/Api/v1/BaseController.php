@@ -34,6 +34,10 @@ class BaseController extends Controller{
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
                 $send = $this->mTalkz_sms($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mazinhost_sms($to,$body,$crendentials);
             }else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -82,7 +86,7 @@ class BaseController extends Controller{
                         $this->getChildCategoriesForVendor($child->id, $langId, $vid);
                     }
                 }
-                
+
                 $vendorCategory = VendorCategory::with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
                 }])->where('vendor_id', $vid)->where('category_id', $cate->id)->where('status', 1)->first();
@@ -99,14 +103,14 @@ class BaseController extends Controller{
         $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id', 'celebrity_check')->first();
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
                     ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')->distinct('categories.slug');
-        
+
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
         $celebrity_check = 0;
         if ($preferences) {
             if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
                 $celebrity_check = 1;
-                $include_categories[] = 5; // type 5 for celebrity 
+                $include_categories[] = 5; // type 5 for celebrity
             }
             if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
                 $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
@@ -304,7 +308,7 @@ class BaseController extends Controller{
             "registration_ids" => $firebaseToken,
             "notification" => [
                 "title" => $request->title,
-                "body" => $request->body,  
+                "body" => $request->body,
             ]
         ];
         $dataString = json_encode($data);
@@ -465,7 +469,7 @@ class BaseController extends Controller{
           $dist = rad2deg($dist);
           $miles = $dist * 60 * 1.1515;
           $unit = strtolower($unit);
-      
+
           if ($unit == "kilometer") {
             return ($miles * 1.609344);
           } else if ($unit == "nautical mile") {
@@ -495,14 +499,14 @@ class BaseController extends Controller{
         // }
         // // $time = convertDateTimeInTimeZone($datetime, Auth::user()->timezone, $format);
         // $time = Carbon::parse($datetime)->format($format);
-        
+
 
 
         if(isset($user) && !empty($user))
         $user =  $user;
         else
         $user = Auth::user();
-        
+
         $timezone = $user->timezone;
         $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
         $date_format = $preferences->date_format;

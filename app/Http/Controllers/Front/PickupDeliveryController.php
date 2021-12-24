@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail, VendorCategory,VendorOrderDispatcherStatus,ProductFaq,ClientLanguage, Payment, PaymentOption};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -21,13 +21,30 @@ use Log,DateTime,DateTimeZone;
 class PickupDeliveryController extends FrontController{
 
     use ApiResponser;
+
+    public function getPaymentOptions(Request $request, $domain = '')
+    {
+        $code = array('cod', 'razorpay');
+        $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'title', 'off_site']);
+        foreach($payment_options as $option){
+            if($option->code == 'stripe'){
+                $option->title = __('Credit/Debit Card (Stripe)');
+            }
+            if($option->code == 'mobbex'){
+                $option->title = __('Mobbex');
+            }
+            $option->title = __($option->title);
+        }
+        return $this->successResponse($payment_options, '', 201);
+    }
+
     public function getOrderTrackingDetails(Request $request, $domain = ''){
 
-        $order = OrderVendor::where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
+        $order = OrderVendor::where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first();
         $response = Http::get($request->new_dispatch_traking_url);
-        if($response->status() == 200){
+        if($response->status() == 200 && isset($order) && !empty($order)){
            $response = $response->json();
-           $response['order_details'] = $order;
+           $response['order_details'] = $order->toArray();
            return $this->successResponse($response);
         }
     }
@@ -367,10 +384,12 @@ class PickupDeliveryController extends FrontController{
                     }
                 }
 
-                if($request->payment_option_id == 2)
-                $payment_option = 1;
-                else
-                $payment_option = 1;
+                if($request->payment_option_id == 2){
+                    $payment_option = 1;
+                }
+                else{
+                    $payment_option = $request->payment_option_id;
+                }
 
                 $order = new Order;
                 $order->user_id = $user->id;
@@ -501,7 +520,20 @@ class PickupDeliveryController extends FrontController{
                 $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved;
                 $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                 $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
+                if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {
+                    $order->payment_status = 1;
+                }
                 $order->save();
+
+                if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->order_id = $order->id;
+                    $payment->transaction_id = $request->transaction_id;
+                    $payment->balance_transaction = $order->payable_amount;
+                    $payment->type = 'pickup/delivery';
+                    $payment->save();
+                }
             }
             $order['route'] = route('front.booking.details',$order->order_number);
             $data = [];

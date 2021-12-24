@@ -1,11 +1,30 @@
    ////////   **************  cab details page  *****************  ////////
 
+   $(document).delegate(".cab_payment_method_selection", "click", function(){
+        $.ajax({
+            type: "GET",
+            dataType: 'json',
+            url: get_payment_options,
+            success: function(response) {
+                if(response.status == 'Success'){
+                    $("#payment_modal .modal-body").html('');
+                    let payment_methods_template = _.template($('#payment_methods_template').html());
+                    $("#payment_modal .modal-body").append(payment_methods_template({payment_options: response.data}));
+                    var selected = $('#pickup_now').attr("data-payment_method");
+                    $("#payment_modal .select_cab_payment_method[value='"+selected+"']").prop("checked", true);
+                }
+            }
+        });
+   });
+
    $(document).on("click", ".select_cab_payment_method",function() {
        var payment_method = $(this).attr('data-payment_method');
-       if(payment_method == 2)
-       $('#payment_type').html('<i class="fa fa-money" aria-hidden="true"></i> Wallet');
-       else
-       $('#payment_type').html('<i class="fa fa-money" aria-hidden="true"></i> Cash');
+    //    if(payment_method == 2)
+    //    $('#payment_type').html('<i class="fa fa-money" aria-hidden="true"></i> Wallet');
+    //    else
+    //    $('#payment_type').html('<i class="fa fa-money" aria-hidden="true"></i> Cash');
+        var label = $(this).closest('label').find('span:first-child').text();
+       $('#payment_type').html('<i class="fa fa-money" aria-hidden="true"></i> '+label);
 
        $('#pickup_now').attr("data-payment_method",payment_method);
        $('#pickup_later').attr("data-payment_method",payment_method);
@@ -151,19 +170,20 @@ $(document).ready(function () {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
                 if(response.status == '200'){
-                    window.location.replace(response.data.route);
-                    $('#cab_detail_box').html('');
-                    // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
-                    //     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                    //      } };
-
-                    var orderSuccessData = _.extend({ Helper: NumberFormatHelper },{result: response.data, product_image: product_image});
-
-                    let order_success_template = _.template($('#order_success_template').html());
-                    $("#cab_detail_box").append(order_success_template(orderSuccessData)).show();
-                    setInterval(function(){
-                        getDriverDetails(response.data.dispatch_traking_url)
-                    },3000);
+                    if((payment_option_id == 1) || (payment_option_id == 2)){
+                        window.location.replace(response.data.route);
+                        
+                        // $('#cab_detail_box').html('');
+                        // var orderSuccessData = _.extend({ Helper: NumberFormatHelper },{result: response.data, product_image: product_image});
+                        // let order_success_template = _.template($('#order_success_template').html());
+                        // $("#cab_detail_box").append(order_success_template(orderSuccessData)).show();
+                        // setInterval(function(){
+                        //     getDriverDetails(response.data.dispatch_traking_url)
+                        // },3000);
+                    }
+                    else if(payment_option_id == 10){
+                        paymentViaRazorpay('', response.data, 'pickup_delivery');
+                    }
                 }else{
                     $('#show_error_of_booking').html(response.message);
                 }
@@ -174,7 +194,7 @@ $(document).ready(function () {
 
 
 
-    function getDriverDetails(dispatch_traking_url) {
+    window.getDriverDetails = function getDriverDetails(dispatch_traking_url) {
         var new_dispatch_traking_url = dispatch_traking_url.replace('/order/','/order-details/')
         $.ajax({
             type:"POST",

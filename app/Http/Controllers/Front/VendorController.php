@@ -75,7 +75,7 @@ class VendorController extends FrontController
         $vendor = Vendor::with('slot.day', 'slotDate')
             ->select('id','email', 'name', 'slug', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot')->where('slug', $slug)->where('status', 1)->firstOrFail();
         $vendor->is_vendor_closed = 0;
-        if($vendor->show_slot == 0){
+        if($vendor->show_slot == 0){ 
             if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
                 $vendor->is_vendor_closed = 1;
             }else{

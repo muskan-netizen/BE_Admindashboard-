@@ -493,6 +493,7 @@ $(document).ready(function() {
         let tipElement = $("#cart_tip_amount");
         let cartElement = $("input[name='cart_total_payable_amount']");
         let cart_id = $("#cart_total_payable_amount").data("cart_id");
+        let cabElement = $("#pickup_now");
 
         let walletElement = $("input[name='wallet_amount']");
         let ajaxData = {};
@@ -501,8 +502,12 @@ $(document).ready(function() {
             tip = tipElement.val();
             ajaxData.tip = tip;
             ajaxData.address_id = address_id;
-            ajaxData.payment_form = 'cart';
+            ajaxData.payment_from = 'cart';
             ajaxData.cart_id = cart_id;
+            ajaxData.order_number = order.order_number;
+        } else if (cabElement.length > 0) {
+            total_amount = cabElement.data('amount');
+            ajaxData.payment_from = 'pickup_delivery';
             ajaxData.order_number = order.order_number;
         } else if (walletElement.length > 0) {
             total_amount = walletElement.val();
@@ -519,12 +524,13 @@ $(document).ready(function() {
             // );
         }
         ajaxData.amount = total_amount;
-        ajaxData.payment_from = 'cart';
+        // ajaxData.payment_from = 'cart';
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
         $.ajax({
             type: "POST",
             dataType: 'json',
+            async: false,
             url: payment_razorpay_url,
             data: ajaxData,
             success: function(response) {
@@ -534,7 +540,7 @@ $(document).ready(function() {
                     razorpay_options.order_id = response.data.order_id;
                     razorpay_options.currency = response.data.currency;
                     $('#proceed_to_pay_modal').modal('hide');
-                    razourPayView(response.data);
+                    razourPayView(response.data, order);
                     // window.location.href = response.data;
                 } else {
                     if (cartElement.length > 0) {
@@ -559,17 +565,22 @@ $(document).ready(function() {
         });
     }
 
-    window.razourPayCompletePayment = function razourPayCompletePayment(data, response) {
+    window.razorPayCompletePayment = function razorPayCompletePayment(data, response, order='') {
         data.razorpay_payment_id = response.razorpay_payment_id;
         $.ajax({
             type: "POST",
             dataType: 'json',
+            async: false,
             url: razorpay_complete_payment_url,
             data: data,
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 if (response.status == "Success") {
-                    window.location.href = response.data;
+                    if(data.payment_from == 'pickup_delivery'){
+                        window.location.replace(order.route);
+                    }else{
+                        window.location.href = response.data;
+                    }
                 } else {
                    
                 }
@@ -580,10 +591,10 @@ $(document).ready(function() {
         });
     }
      // RazourPay payment gateway
-    window.razourPayView = function razourPayView(data) {
+    window.razourPayView = function razourPayView(data, order='') {
         razorpay_options.handler = function (response){
             startLoader('body','We are processing your transaction...');
-            razourPayCompletePayment(data,response);
+            razorPayCompletePayment(data,response, order);
             // alert(response.razorpay_payment_id);
             // alert(response.razorpay_order_id);
             // alert(response.razorpay_signature);

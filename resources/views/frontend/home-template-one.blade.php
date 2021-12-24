@@ -86,7 +86,11 @@
         <div class="product-card-box position-relative">
             <a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%= vendor.slug %>">
                 <div class="suppliers-img-outer position-relative">
-                    <img class="fluid-img mx-auto blur-up lazyload" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
+                    <% if(vendor.is_vendor_closed == 1){%>
+                    <img class="fluid-img mx-auto blur-up lazyload grayscale-image" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
+                    <% }else { %> 
+                        <img class="fluid-img mx-auto blur-up lazyload" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">   
+                    <%  } %>     
                     <% if(vendor.timeofLineOfSightDistance != undefined){ %>
                         <div class="pref-timing">
                             <span><%= vendor.timeofLineOfSightDistance %> min</span>
@@ -183,7 +187,7 @@
                                 @endif
                             </div>
                             <p><%= product.vendor_name %></p>
-                            <p class="border-bottom pb-1">In <%= product.category %></p>
+                            <p class="border-bottom pb-1">{{__('In')}} <%= product.category %></p>
                             <div class="d-flex align-items-center justify-content-between">
                                 <b><% if(product.inquiry_only == 0) { %>
                                     <%= product.price %>
@@ -203,7 +207,11 @@
         <div>
             <a class="suppliers-box d-block mx-2" href="{{route('vendorDetail')}}/<%= vendor.slug %>">
                 <div class="suppliers-img-outer">
-                    <img class="fluid-img mx-auto blur-up lazyload" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
+                    <% if(vendor.is_vendor_closed == 1){%>
+                    <img class="fluid-img mx-auto blur-up lazyload grayscale-image" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
+                    <% }else { %> 
+                    <img class="fluid-img mx-auto blur-up lazyload" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">   
+                    <%  } %> 
                     <div class="pref-timing">
                         <span>35 min</span>
                     </div>

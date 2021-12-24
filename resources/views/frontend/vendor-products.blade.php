@@ -95,7 +95,7 @@
                                         @if($vendor->desc)
                                             <div class="col-md-12 text-center">
                                                 <p>{{$vendor->desc}}</p>
-                                            </div>                                                  
+                                            </div>
                                         @endif
                                     </div>
                                 </form>
@@ -177,7 +177,7 @@
                     </div>
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
-                            <span>{{__('New Product')}}</span>  
+                            <span>{{__('New Product')}}</span>
                             <!-- <span class="filter-back d-lg-none d-inline-block">
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span> -->
@@ -185,7 +185,7 @@
                             <div class="offer-slider">
                                 @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
-                                
+
                                     @foreach($newProds as $new)
                                     <div>
                                     <?php /*$imagePath = '';
@@ -201,13 +201,13 @@
                                                 <!--<span>5-10 min</span>-->
                                             </div>
                                             <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
-                                        </div>    
+                                        </div>
                                         <div class="media-body align-self-center">
                                             <div class="inner_spacing px-0">
                                                 <div class="product-description">
                                                     <div class="d-flex align-items-center justify-content-between">
-                                                        <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>                                                                                    
-                                                        <!--<span class="rating-number">2.0</span>-->                                
+                                                        <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
+                                                        <!--<span class="rating-number">2.0</span>-->
                                                     </div>
                                                     <!-- <h3 class="m-0">{{ $new['translation_title'] }}</h3> -->
                                                     <p>{{$new['vendor']['name']}}</p>
@@ -230,11 +230,11 @@
                                                                 @endif
                                                             @endif
                                                         @endif   -->
-                                                    </div>                       
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </a>                             
+                                    </a>
                                 </div>
                                 @endforeach
                             @endforeach
@@ -270,7 +270,7 @@
                                                             <li><img src="{{asset('front-assets/images/icon/4.png')}}" alt="" class="product-4-layout-view"></li>
                                                             <li><img src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
                                                         </ul>
-                                                    </div> --}} 
+                                                    </div> --}}
                                                     {{--<div class="product-page-per-view">
                                                         <?php $pnum = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 8; ?>
                                                         <select class="customerPaginate">
@@ -312,26 +312,26 @@
                                                             <div class="media-body align-self-center">
                                                                 <div class="inner_spacing w-100">
                                                                 <div class="d-flex align-items-center justify-content-between">
-                                                                    <h6 class="card_title mb-1 ellips">{{ $data->translation_title }}</h6>   
+                                                                    <h6 class="card_title mb-1 ellips">{{ $data->translation_title }}</h6>
                                                                         @if($client_preference_detail)
-                                                                            @if($client_preference_detail->rating_check == 1)  
+                                                                            @if($client_preference_detail->rating_check == 1)
                                                                                 @if($data->averageRating > 0)
                                                                                     <span class="rating-number">{{ number_format($data->averageRating, 1, '.', '') }}</span>
                                                                                 @endif
                                                                             @endif
-                                                                        @endif                               
+                                                                        @endif
                                                                     </div>
                                                                     <!-- <h3>{{ $data->translation_title }}</h3> -->
                                                                     <p>{{$data->description}}</p>
                                                                     <!-- <p class="border-bottom pb-1 mb-1">In {{$data->category_name}}</p> -->
-                                                                    <p>In {{$data->category_name}}</p>
+                                                                    <p>{{__('In')}} {{$data->category_name}}</p>
 
                                                                     <!-- <div class="d-flex align-items-center justify-content-between">
                                                                         @if($data['inquiry_only'] == 0)
                                                                             <h4 class="mt-0">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
                                                                         @endif
                                                                         @if($client_preference_detail)
-                                                                            @if($client_preference_detail->rating_check == 1)  
+                                                                            @if($client_preference_detail->rating_check == 1)
                                                                                 @if($data->averageRating > 0)
                                                                                     <span class="rating">{{ number_format($data->averageRating, 1, '.', '') }} <i class="fa fa-star text-white p-0"></i></span>
                                                                                 @endif

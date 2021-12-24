@@ -137,7 +137,12 @@
             <div class="img-wrapper">
                 <div class="front">
                     <a href="{{route('vendorDetail')}}/<%= vendor.slug %>">
-                        <img class="img-fluid blur-up lazyload m-auto bg-img" alt="" src="<%= vendor.logo.proxy_url %>200/200<%= vendor.logo['image_path'] %>">
+                        <% if(vendor.is_vendor_closed == 1){%>
+                            <img class="img-fluid blur-up lazyload m-auto bg-img grayscale-image" alt="xx" src="<%= vendor.logo.proxy_url %>200/200<%= vendor.logo['image_path'] %>">
+                            <% }else { %>  
+                                <img class="img-fluid blur-up lazyload m-auto bg-img" alt="xx" src="<%= vendor.logo.proxy_url %>200/200<%= vendor.logo['image_path'] %>">
+                            <%  } %> 
+                        
                     </a>
                 </div>
             </div>
@@ -177,7 +182,7 @@
     <% _.each(products, function(product, k){ %>
         <div>
             <a class="card scale-effect text-center" href="{{route('productDetail')}}/<%= product.url_slug %>">
-                <label class="product-tag"><%= type %></label>
+                <label class="product-tag"><% if(product.tag_title != 0) { %><%= product.tag_title %><% } else { %><%= type %><% } %></label>
                 <div class="product-image">
                     <img class="blur-up lazyloaded" src="<%= product.image_url %>" alt="">
                 </div>
@@ -212,7 +217,11 @@
             <div class="img-wrapper">
                 <div class="front">
                     <a href="{{route('vendorDetail')}}/<%= vendor.slug %>">
-                        <img class="img-fluid blur-up lazyload m-auto bg-img" alt="" src="<%= vendor.logo.proxy_url %>200/200<%= vendor.logo['image_path'] %>">
+                        <% if(vendor.is_vendor_closed == 1){%>
+                        <img class="img-fluid blur-up lazyload m-auto bg-img grayscale-image" alt="" src="<%= vendor.logo.proxy_url %>200/200<%= vendor.logo['image_path'] %>">
+                        <% }else { %>  
+                            <img class="img-fluid blur-up lazyload m-auto bg-img" alt="" src="<%= vendor.logo.proxy_url %>200/200<%= vendor.logo['image_path'] %>">
+                        <%  } %> 
                     </a>
                 </div>
             </div>

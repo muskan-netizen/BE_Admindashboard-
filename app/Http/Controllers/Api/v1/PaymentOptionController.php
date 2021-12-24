@@ -22,7 +22,11 @@ class PaymentOptionController extends BaseController{
     public function getPaymentOptions(Request $request, $page = ''){
         if($page == 'wallet'){
             $code = array('paypal', 'stripe', 'yoco', 'paylink','razorpay','simplify','square');
-        }else{
+        }
+        elseif($page == 'pickup_delivery'){
+            $code = array('cod', 'razorpay');
+        }
+        else{
             $code = array('cod', 'paypal', 'payfast', 'stripe', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square');
         }
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'title', 'off_site']);

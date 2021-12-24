@@ -65,7 +65,7 @@
                 <div class="collection-filter col-lg-3">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
-                            <span>{{__('New Product')}}</span>  
+                            <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span>
@@ -79,7 +79,7 @@
                                         foreach ($new['media'] as $k => $v) {
                                             $imagePath = $v['image']['path']['proxy_url'].'300/300'.$v['image']['path']['image_path'];
                                         } ?>
-                                        
+
                                         <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', $new['url_slug'])}}">
                                             <div class="img-outer-box position-relative">
                                                 <img src="{{$imagePath}}" alt="">
@@ -87,17 +87,17 @@
                                                     <!--<span>5-10 min</span>-->
                                                 </div>
                                                 <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
-                                            </div>    
+                                            </div>
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing px-0">
                                                     <div class="product-description">
                                                         <div class="d-flex align-items-center justify-content-between">
-                                                            <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>                                                                                    
-                                                            <!--<span class="rating-number">2.0</span>-->                                
+                                                            <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
+                                                            <!--<span class="rating-number">2.0</span>-->
                                                         </div>
                                                         <!-- <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3> -->
                                                         <p>{{$new['vendor']['name']}}</p>
-                                                        <p class="pb-1">In {{$new['category_name']}}</p>
+                                                        <p class="pb-1">{{__('In')}} {{$new['category_name']}}</p>
                                                         <div class="d-flex align-items-center justify-content-between">
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
@@ -116,7 +116,7 @@
                                                                     @endif
                                                                 @endif
                                                             @endif   -->
-                                                        </div>                       
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -136,7 +136,7 @@
                                                         {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}} </h4>
                                                     @endif
                                                     @if($client_preference_detail)
-                                                        @if($client_preference_detail->rating_check == 1)  
+                                                        @if($client_preference_detail->rating_check == 1)
                                                             @if($new['averageRating'] > 0)
                                                                 <span class="rating">{{ $new['averageRating'] }} <i class="fa fa-star text-white p-0"></i></span>
                                                             @endif
@@ -184,9 +184,9 @@
                                                         <?php $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 8; ?>
                                                         <select class="customerPaginate">
 
-                                                            <option value="8" @if($pagiNate == 8) selected @endif>Show 8 
+                                                            <option value="8" @if($pagiNate == 8) selected @endif>Show 8
                                                             </option>
-                                                            <option value="12" @if($pagiNate == 12) selected @endif>Show 12 
+                                                            <option value="12" @if($pagiNate == 12) selected @endif>Show 12
                                                             </option>
                                                             <option value="24" @if($pagiNate == 24) selected @endif>Show 24
                                                             </option>
@@ -205,7 +205,7 @@
                                                     @foreach($category->childs->toArray() as $cate)
                                                     <div class="col-xl-3 col-6 col-grid-box mt-3">
                                                         <a href="{{route('categoryDetail', $cate['slug'])}}"  class="product-box scale-effect mt-3">
-                                                            <div class="product-image p-0"><img width="100%" alt="" src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>                                                        
+                                                            <div class="product-image p-0"><img width="100%" alt="" src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>
                                                             <div class="media-body align-self-center">
                                                                 <div class="inner_spacing w-100">
                                                                     <h3 class="d-flex align-items-center justify-content-between">

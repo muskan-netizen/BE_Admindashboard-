@@ -160,22 +160,19 @@ window.initializeSlider = function initializeSlider() {
         ]
     });
     $(".product-4").slick({
-        arrows: false,
         dots: false,
         infinite: true,
+        dots: false,
         speed: 300,
-        centerMode: false,
-        centerPadding: '60px',
-        mobileFirst:true,
         slidesToShow: 5,
-        slidesToScroll: 5,
+        slidesToScroll: 4,
         responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 3 } },
-            { breakpoint: 991, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 2,centerMode: true, } },
-            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1,centerMode: true, } }
-            // { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1,centerMode: true, } },
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
+    
     $(".recent-orders").slick({
         arrows: false,
         dots: false,
