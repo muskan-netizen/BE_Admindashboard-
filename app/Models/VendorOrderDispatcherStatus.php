@@ -52,7 +52,7 @@ class VendorOrderDispatcherStatus extends Model
                 $status_data['driver_status'] = __('Driver waiting for your order');
             } else {
                 $status_data['icon'] = asset('assets/icons/driver_4_2.png');
-                $status_data['driver_status'] = __('Driver arrived at your home location');
+                $status_data['driver_status'] = __('Driver arrived at your location');
             }
         break;
         case 5:
