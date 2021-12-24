@@ -213,6 +213,8 @@ class VendorController extends BaseController
         $vendor->website = $request->website;
         $vendor->phone_no = $request->phone_no;
         $vendor->slug = Str::slug($request->name, "-");
+        if(Vendor::where('slug',$vendor->slug)->count() > 0)
+        $vendor->slug = Str::slug($request->name, "-").rand(10,100);
         $vendor->save();
 
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
@@ -269,7 +271,7 @@ class VendorController extends BaseController
     {
         $rules = array(
             'address' => 'required',
-            'name' => 'required|string|max:150|unique:vendors,name,' . $id,
+        //    'name' => 'required|string|max:150|unique:vendors,name,' . $id,
         );
         //dd($request->all());
         $validation  = Validator::make($request->all(), $rules)->validate();
