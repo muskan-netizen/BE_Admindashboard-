@@ -26,8 +26,7 @@ trait smsManager{
         $curl = curl_init();
 
         $from = $crendentials->sender_id;
-
-
+        $to = substr($to, 1);
 
         curl_setopt_array($curl, array(
         CURLOPT_URL => "https://mazinhost.com/smsv1/sms/api",

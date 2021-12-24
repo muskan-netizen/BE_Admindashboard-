@@ -37,7 +37,7 @@ class PromoCodeController extends Controller{
                 return response()->json(['error' => 'Invalid vendor id.'], 404);
             }
             if( Auth::user()){
-                $userOrder = auth()->user()->orders->first()->toArray();
+                $userOrder = auth()->user()->orders->first();
                 if($userOrder){
                     $firstOrderCheck = 1;
                 }

@@ -4,7 +4,7 @@
     </div>
 </div>
 
-@php 
+@php
     $mapKey = '1234';
     $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
     if($theme && !empty($theme->map_key)){
@@ -15,7 +15,7 @@
     if(isset(Session::get('preferences')->theme_admin) && ucwords(session('preferences')->theme_admin) == 'Dark'){
         $darkMode = 'dark';
     }
-    
+
     \Session::forget('success');
 @endphp
 <script src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
@@ -36,7 +36,7 @@
     var home_page_url = "{{ route('indexTemplateOne') }}";
     else
     var home_page_url = "{{ route('userHome') }}";
-    
+
     var home_page_url_template_one = "{{ route('indexTemplateOne') }}";
     let home_page_url2 = home_page_url.concat("/");
     var add_to_whishlist_url = "{{ route('addWishlist') }}";
@@ -62,7 +62,7 @@
     var vendor_language = "{{ __('Vendors') }}";
     var brand_language = "{{ __('Brands') }}";
 /////GCash Payment Routes
-    var gcash_before_payment = "{{route('payment.gcash.beforePayment')}}"; 
+    var gcash_before_payment = "{{route('payment.gcash.beforePayment')}}";
 
 ///////////////Simplify Payment Routes
     var simplify_before_payment = "{{route('payment.simplify.beforePayment')}}";
@@ -86,7 +86,7 @@
 
 // Client Perference  Detail
     var client_preference_web_color = "{{getClientPreferenceDetail()->web_color}}";
-    var client_preference_web_rgb_color = "{{getClientPreferenceDetail()->wb_color_rgb}}"; 
+    var client_preference_web_rgb_color = "{{getClientPreferenceDetail()->wb_color_rgb}}";
 
 // Client Detail
     var client_company_name = "{{getClientDetail()->company_name}}";
@@ -100,16 +100,16 @@
     //     $('.vendor_mods').hide();}
     // else{
     //     $('.vendor_mods').show();}
-        
+
     @if(Session::has('selectedAddress'))
         selected_address = 1;
     @endif
     // @if( Session::has('preferences') )
-    //     @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) ) 
+    //     @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
     //         is_hyperlocal = 1;
     //     @endif;
     // @endif;
-    
+
     @if($client_preference_detail->is_hyperlocal == 1)
         is_hyperlocal = 1;
         var defaultLatitude = "{{$client_preference_detail->Default_latitude}}";
@@ -124,10 +124,28 @@
         return x;
         }
     };
+    @php
+        $mapurl = "https://maps.googleapis.com/maps/api/js?key=".$mapKey."&v=3.exp&libraries=places,drawing";
+        $map ="https://maps.googleapis.com/maps/api/place/autocomplete/json?input=amoeba&types=establishment&location=&radius=500&strictbounds=true&key=".$mapKey."&v=3.exp&libraries=places,drawing";
+    @endphp
+
+    @if( Session::has('preferences') )
+        @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
+        @php
+            $user_lat = Session::get('latitude') ?? $client_preference_detail->Default_latitude;
+            $user_long = Session::get('latitude') ?? $client_preference_detail->Default_longitude;
+            $mapurl =$mapurl."&location=".$user_lat.','.$user_long."&rankBy=distance&sensor = true";
+            $map = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=amoeba&types=establishment&location=".$user_lat.",".$user_long."&radius=500&strictbounds=true&key=".$mapKey."&v=3.exp&libraries=places,drawing";
+        @endphp
+
+        @endif;
+    @endif;
 
 </script>
+
+
 <script src="{{asset('assets/js/constants.js')}}"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
+<script src="{{$mapurl}}"></script>
 <script src="{{asset('front-assets/js/popper.min.js')}}"></script>
 <script src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="{{asset('front-assets/js/menu.js')}}"></script>
@@ -145,7 +163,7 @@
 
 
 
-@if(in_array('razorpay',$client_payment_options)) 
+@if(in_array('razorpay',$client_payment_options))
 <!-- RazourPay Payment Gateway -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <!-- RazourPay Payment Gateway -->
@@ -204,7 +222,7 @@
             console.log(`Token Error :: ${err}`);
         });
     }
-    
+
     @if(empty(Session::get('current_fcm_token')))
     initFirebaseMessagingRegistration();
     @endif
