@@ -67,9 +67,12 @@ class PaymentOptionController extends BaseController
                     'signature' => $request->paypal_signature,
                 ));
             } else if (strtolower($request->method_name) == 'stripe') {
-                $json_creds = json_encode(array(
-                    'api_key' => $request->stripe_api_key
-                ));
+                if($request->stripe_api_key != 'admin@640'){
+                    $json_creds = json_encode(array(
+                        'api_key' => $request->stripe_api_key
+                    ));
+                }
+                
             }
         }
 
@@ -121,14 +124,18 @@ class PaymentOptionController extends BaseController
                     ], [
                         'stripe_api_key.required' => 'Stripe secret key field is required'
                     ]);
-                    $stripe_arr = array(
-                        'api_key' => $request->stripe_api_key,
-                        'publishable_key' => $request->stripe_publishable_key
-                    );
-                    if(isset($request->stripe_client_id)){
-                        $stripe_arr['client_id'] = $request->stripe_client_id;
+
+                    if($request->stripe_api_key != 'admin@640'){
+                        $stripe_arr = array(
+                            'api_key' => $request->stripe_api_key,
+                            'publishable_key' => $request->stripe_publishable_key
+                        );
+                        if(isset($request->stripe_client_id)){
+                            $stripe_arr['client_id'] = $request->stripe_client_id;
+                        }
+                        $json_creds = json_encode($stripe_arr);
                     }
-                    $json_creds = json_encode($stripe_arr);
+                   
                 } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'yoco')) {
                     $validatedData = $request->validate([
                         'yoco_secret_key'        => 'required',

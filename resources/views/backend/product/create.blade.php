@@ -156,7 +156,7 @@
                             {!! Form::label('title', __('Cost Price'), ['class' => 'control-label']) !!}
                             {!! Form::text('cost_price', null, ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
-                        
+
                     </div>
                     <div class="row mb-2">
                         {!! Form::label('title', __('Track Inventory'),['class' => 'control-label col-sm-4']) !!}
@@ -179,7 +179,7 @@
                 </div>
 
                 <div class="card-box">
-                    
+
                     <div class="row mb-2 bg-light">
                         <div class="col-8" style="margin:auto;">
                             <h5 class="text-uppercase mt-0 bg-light p-2">{{ __("Variant Information") }}</h5>
@@ -193,9 +193,9 @@
                         <div id="variantAjaxDiv" class="col-12 mb-2" ></div>
 
                         <div id="variantRowDiv" class="col-12"></div>
-                        
+
                     </div>
-                </div>                
+                </div>
 
             </div> <!-- end col -->
 
@@ -209,10 +209,12 @@
                         <div class="col-sm-4">
                             <input type="checkbox" bid="" id="is_new" data-plugin="switchery" name="is_new" class="chk_box" data-color="#43bee1">
                         </div>
-                        {!! Form::label('title', __('Featured'),['class' => 'control-label col-sm-2']) !!}
-                        <div class="col-sm-4">
-                            <input type="checkbox" bid="" id="is_featured" data-plugin="switchery" name="is_featured" class="chk_box" data-color="#43bee1">
-                        </div>
+                        @if(Auth::user()->is_superadmin == 1)
+                            {!! Form::label('title', __('Featured'),['class' => 'control-label col-sm-2']) !!}
+                            <div class="col-sm-4">
+                                <input type="checkbox" bid="" id="is_featured" data-plugin="switchery" name="is_featured" class="chk_box" data-color="#43bee1">
+                            </div>
+                        @endif
                     </div>
 
                     <div class="row mb-2">
@@ -292,7 +294,7 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div> 
+                    </div>
                     <div class="row mb-2">
                         <div class="col-12">
                             {!! Form::label('title', __('Up Sell Products'),['class' => 'control-label']) !!}
@@ -485,7 +487,7 @@
                 var_ids.push($this.attr('varid'));
             }
         });
-        
+
         $.ajax({
             type: "post",
             url: "{{route('product.makeRows')}}",
@@ -514,7 +516,7 @@
     });
 
     function readURL(input, forv) {
-        
+
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = function(e) {

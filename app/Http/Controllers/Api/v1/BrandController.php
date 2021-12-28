@@ -76,7 +76,7 @@ class BrandController extends BaseController
                         $q->where('language_id', $langId);
                     }
                 ])
-                ->select('id', 'sku', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'brand_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'category_id')
+                ->select('id', 'sku', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'brand_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'category_id','minimum_order_count','batch_count')
                 ->where('brand_id', $brandId)
                 ->where('is_live', 1)->paginate($paginate);
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
@@ -237,7 +237,7 @@ class BrandController extends BaseController
                             if(!empty($order_type) && $order_type == 'high_to_low'){
                                 $q->orderBy('price', 'desc');
                             }
-                    }])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating')
+                    }])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count')
                     ->where('brand_id', $brandId)
                     ->where('is_live', 1)
                     ->whereIn('id', function($qr) use($startRange, $endRange){ 

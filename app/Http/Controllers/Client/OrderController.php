@@ -606,7 +606,13 @@ class OrderController extends BaseController
             if (!empty($dispatch_domain->last_mile_team))
                 $team_tag = $dispatch_domain->last_mile_team;
 
-
+                if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
+                    $task_type = 'schedule';
+                    $schedule_time = $order->scheduled_date_time ?? null;
+                } else {
+                    $task_type = 'now';
+                }
+ 
             $tasks[] = array(
                 'task_type_id' => 1,
                 'latitude' => $vendor_details->latitude ?? '',
@@ -641,7 +647,8 @@ class OrderController extends BaseController
                 'recipient_email' => $customer->email ?? null,
                 'task_description' => "Order From :" . $vendor_details->name,
                 'allocation_type' => 'a',
-                'task_type' => 'now',
+                'task_type' => $task_type,
+                'schedule_time' => $schedule_time ?? null,
                 'cash_to_be_collected' => $payable_amount ?? 0.00,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
@@ -1178,5 +1185,104 @@ class OrderController extends BaseController
             $datetime = Carbon::parse($datetime)->isoFormat($time_format);
         }
         return $datetime;
+    }
+
+
+    /**
+     * edit the order.
+     *
+     * @param  \App\Models\Order  $order
+     * @return \Illuminate\Http\Response
+     */
+
+    public function getOrderDetailEdit($domain = '', $order_id, $vendor_id)
+    {
+        $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+        $vendor_order_status_option_ids = [];
+        $vendor_order_status_created_dates = [];
+        $order = Order::with(array(
+            'vendors' => function ($query) use ($vendor_id) {
+                $query->where('vendor_id', $vendor_id);
+            },
+            'vendors.products.prescription' => function ($query) use ($vendor_id, $order_id) {
+                $query->where('vendor_id', $vendor_id)->where('order_id', $order_id);
+            },
+            'vendors.products' => function ($query) use ($vendor_id) {
+                $query->where('vendor_id', $vendor_id);
+            },
+            'vendors.products.addon',
+            'vendors.products.addon.set',
+            'vendors.products.addon.option',
+            'vendors.products.addon.option.translation' => function ($q) use ($langId) {
+                $q->select('addon_option_translations.id', 'addon_option_translations.addon_opt_id', 'addon_option_translations.title', 'addon_option_translations.language_id');
+                $q->where('addon_option_translations.language_id', $langId);
+                $q->groupBy('addon_option_translations.addon_opt_id', 'addon_option_translations.language_id');
+            },
+            'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                $qry->where('language_id', $langId);
+            },
+            'vendors.dineInTable.category'
+        ))->findOrFail($order_id);
+        foreach ($order->vendors as $key => $vendor) {
+            foreach ($vendor->products as $key => $product) {
+                $product->image_path  = $product->media->first() ? $product->media->first()->image->path : '';
+                $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
+                $total_amount = $product->quantity * $product->price;
+                foreach ($product->addon as $ck => $addons) {
+                    $opt_price_in_currency = $addons->option->price;
+                    $opt_price_in_doller_compare = $addons->option->price;
+                    if ($clientCurrency) {
+                        $opt_price_in_currency = $addons->option->price / $divider;
+                        $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                    }
+                    $opt_quantity_price = number_format($opt_price_in_doller_compare * $product->quantity, 2, '.', '');
+                    $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
+                    $addons->option->price_in_cart = $addons->option->price;
+                    $addons->option->price = number_format($opt_price_in_currency, 2, '.', '');
+                    $addons->option->multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
+                    $addons->option->quantity_price = $opt_quantity_price;
+                    $total_amount = $total_amount + $opt_quantity_price;
+                }
+                $product->total_amount = $total_amount;
+            }
+            if ($vendor->dineInTable) {
+                $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
+            }
+        }
+        // dd($order->toArray());
+        $luxury_option_name = '';
+        if ($order->luxury_option_id > 0) {
+            $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+            if ($luxury_option->title == 'takeaway') {
+                $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
+            } elseif ($luxury_option->title == 'dine_in') {
+                $luxury_option_name = 'Dine-In';
+            } else {
+                $luxury_option_name = 'Delivery';
+            }
+        }
+        $order->luxury_option_name = $luxury_option_name;
+        $order_status_options = OrderStatusOption::where('type', 1)->get();
+        $dispatcher_status_options = DispatcherStatusOption::with(['vendorOrderDispatcherStatus' => function ($q) use ($order_id, $vendor_id) {
+            $q->where(['order_id' => $order_id, 'vendor_id' => $vendor_id]);
+        }])->get();
+        $vendor_order_statuses = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->get();
+        foreach ($vendor_order_statuses as $vendor_order_status) {
+            $vendor_order_status_created_dates[$vendor_order_status->order_status_option_id] = $vendor_order_status->created_at;
+            $vendor_order_status_option_ids[] = $vendor_order_status->order_status_option_id;
+        }
+
+        $vendor_data = Vendor::where('id',$vendor_id)->first();
+        return view('backend.order.edit')->with([
+            'vendor_id' => $vendor_id, 'order' => $order,
+            'vendor_order_statuses' => $vendor_order_statuses,
+            'vendor_order_status_option_ids' => $vendor_order_status_option_ids,
+            'order_status_options' => $order_status_options,
+            'dispatcher_status_options' => $dispatcher_status_options,
+            'vendor_order_status_created_dates' => $vendor_order_status_created_dates, 'clientCurrency' => $clientCurrency,'vendor_data' => $vendor_data
+        ]);
     }
 }

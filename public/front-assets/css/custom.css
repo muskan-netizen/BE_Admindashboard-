@@ -5150,6 +5150,13 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     align-items: center;
     padding: 0 15px;
 }
+.step-indicator-order {
+    margin-top: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 15px 17px 2px;
+    margin-bottom:15px;
+}
 
 .step {
     display: flex;
@@ -5172,9 +5179,32 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     font-size: 20px;
 }
 
+.step-indicator .step-icon-order {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    background: #c2c2c2;
+    font-size: 10px;
+    text-align: center;
+    color: #ffffff;
+    position: relative;
+    line-height: 24px;
+    font-size: 20px;
+}
+.step-indicator .step-icon-order img{
+    height: 30px;
+    width: 30px;
+}
+
 .step.active .step-icon {
     background: var(--theme-deafult);
 }
+
+
+.step.active .step-icon-order-fill {
+    background: var(--theme-deafult);
+}
+
 
 .step p {
     text-align: center;
@@ -5182,6 +5212,15 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     bottom: -40px;
     color: #c2c2c2;
     font-size: 14px;
+    font-weight: 400;
+    width: 100px;
+}
+.step-order p {
+    text-align: center;
+    position: absolute;
+    bottom: -40px;
+    color: #c2c2c2;
+    font-size: 9px;
     font-weight: 400;
     width: 100px;
 }
@@ -5280,6 +5319,10 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     .step p {
         font-size: 11px;
         bottom: -40px;
+    }
+    .step-order p {
+        font-size: 9px;
+        bottom: -20px;
     }
 }
 
@@ -7337,6 +7380,12 @@ body[dir="rtl"] .inner_spacing h3 {
     .step-indicator .step-icon {
         height: 30px;
         width: 30px;
+        line-height: 30px;
+        font-size: 14px;
+    }
+    .step-indicator .step-icon-order {
+        height: 20px;
+        width: 20px;
         line-height: 30px;
         font-size: 14px;
     }

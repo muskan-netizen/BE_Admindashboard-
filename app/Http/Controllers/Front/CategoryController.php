@@ -281,7 +281,7 @@ class CategoryController extends FrontController{
                         'variant' => function($q) use($langId,$column,$value){
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','id');
                             $q->groupBy('product_id');
-                        },'variant.checkIfInCart'])->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only')->where('products.is_live', 1)->where('category_id', $category_id);
+                        },'variant.checkIfInCart'])->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only','products.minimum_order_count','products.batch_count')->where('products.is_live', 1)->where('category_id', $category_id);
             if(count($vendors) > 0){
                 $products = $products->whereIn('products.vendor_id', $vendors);
             }
@@ -374,7 +374,7 @@ class CategoryController extends FrontController{
                 $q->groupBy('product_id');
             },
         ])
-        ->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only')
+        ->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only','minimum_order_count','batch_count')
         ->where('is_live', 1)->where('category_id', $category->id)->where('vendor_id', $vendor->id)->paginate($pagiNate);
         if(!empty($products)){
             foreach ($products as $key => $value) {

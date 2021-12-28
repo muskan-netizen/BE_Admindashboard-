@@ -107,7 +107,7 @@ class ProductController extends FrontController{
                 $query->where('user_wishlists.user_id', $user->id);
             });
         }
-        $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock' )
+        $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count' )
             ->where('url_slug', $url_slug)
             ->where('is_live', 1)
             ->firstOrFail();

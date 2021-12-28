@@ -9,10 +9,11 @@ use App\Models\ClientLanguage;
 use App\Models\PageTranslation;
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Client\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class PageController extends Controller{
+class PageController extends BaseController{
     use ApiResponser;
     /**
      * Display a listing of the resource.
@@ -21,12 +22,13 @@ class PageController extends Controller{
      */
     public function index(){
         $client_lang = ClientLanguage::where('is_primary', 1)->first();
-        $pages = Page::with('primary')->latest('id')->get();
+        $pages = Page::with('primary')->orderBy('order_by','ASC')->get();
         $client_languages = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
             ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.is_primary')
             ->where('client_languages.client_code', Auth::user()->code)
             ->where('client_languages.is_active', 1)
             ->orderBy('client_languages.is_primary', 'desc')->get();
+
         return view('backend.cms.page.index', compact('client_languages', 'pages'));
     }
 
@@ -123,5 +125,20 @@ class PageController extends Controller{
         } catch (Exception $e) {
             DB::rollback();
         }
+    }
+    public function saveOrderOfPage(Request $request)
+    {
+        foreach ($request->order as $key => $value) {
+            $page = Page::where('id', $value)->first();
+            if($page){
+                $page->order_by = $key + 1;
+                $page->save();
+            }
+
+        }
+        return response()->json([
+            'status'=>__('success'),
+            'message' => __('Page order updated Successfully!'),
+        ]);
     }
 }

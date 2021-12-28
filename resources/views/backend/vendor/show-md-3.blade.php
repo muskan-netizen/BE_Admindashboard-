@@ -13,7 +13,7 @@
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light" id="block_btn" data-vendor_id="{{$vendor->id}}" data-status="{{$vendor->status == 2  ? '1' : '2'}}">{{$vendor->status == 2 ? 'Unblock' : 'Block'}}</button>
             @endif
 
-            @if($vendor_for_pickup_delivery > 0)  
+            @if($vendor_for_pickup_delivery > 0)
             <div class="for_pickup_delivery_service_only">
             @if($client_preferences->need_dispacher_ride == 1)
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcher" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (Pickup & Delivery)") }} </button>
@@ -21,14 +21,14 @@
             </div>
             @endif
 
-            @if($vendor_for_ondemand > 0)  
+            @if($vendor_for_ondemand > 0)
             <div class="for_on_demand_service_only">
             @if($client_preferences->need_dispacher_home_other_service == 1)
             <button type="button" class="btn btn-danger btn-sm waves-effect mb-2 waves-light openConfirmDispatcherOnDemand" data-id="{{ $vendor->id }}"> {{ __("Login Into Dispatcher (On Demand Services)") }} </button>
             @endif
             </div>
             @endif
-           
+
             @endif
         </div>
     </div>
@@ -99,10 +99,7 @@
                         </div>
                     </div>
                     @endif
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        {!! Form::label('title', __('Show Profile Details'),['class' => 'control-label']) !!}
-                        <input type="checkbox" data-plugin="switchery" name="is_show_vendor_details" class="form-control" data-color="#43bee1" @if($vendor->is_show_vendor_details == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
-                    </div>
+
                     <!-- <div class="col-md-12">
                         <div class="form-group" id="order_min_amountInput">
                             {!! Form::label('title', 'Order Min Amount',['class' => 'control-label']) !!}
@@ -143,7 +140,33 @@
         </div>
     </div>
 </div> --}}
+
+
 @if(Auth::user()->is_superadmin == 1)
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Profile") }} ({{ __("Visible For Admin") }})</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Show Profile Details'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="is_show_vendor_details" class="form-control" data-color="#43bee1" @if($vendor->is_show_vendor_details == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -201,7 +224,7 @@
                 <div class="col-md-12">
                     <h4 class="mb-2"> <span class="">{{ __("Category Setup") }}</span> ({{ __("Visible For Admin") }})</h4>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
     <div class="row">
@@ -213,7 +236,7 @@
         <div class="col-md-6 mb-3">
             {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
         </div>
-        
+
         <div class="col-md-6 mb-3">
             <select class="selectize-select form-control assignToSelect" id="assignTo" {{$vendor->status == 1 ? '' : 'disabled'}}>
                 @foreach($templetes as $templete)
@@ -229,7 +252,7 @@
                     @forelse($builds as $build)
                     @if($build['translation_one'])
                     <li class="dd-item dd3-item" data-category_id="{{$build['id']}}">
-                        <div class="dd3-content"> 
+                        <div class="dd3-content">
                             <img class="rounded-circle mr-1" src="{{$build['icon']['proxy_url']}}30/30{{$build['icon']['image_path']}}"> {{$build['translation_one']['name']}}
                             <span class="inner-div text-right">
                                 <a class="action-icon" data-id="3" href="javascript:void(0)">
@@ -240,7 +263,7 @@
                                     @endif
                                     <input type="hidden" value="{{ $build['id'] }}">
                                 </a>
-                            </span> 
+                            </span>
                         </div>
                         @if(isset($build['children']))
                             <x-category :categories="$build['children']" :vendorcategory="$VendorCategory" :vendor="$vendor"/>
@@ -267,7 +290,7 @@
     <h4 class="header-title mb-0 mt-2 d-inline-block align-middle">{{ __('Users') }}</h4>
     <h4 class="header-title mb-0 float-right"><a class="btn addUsersBtn" dataid="0" href="javascript:void(0);"><i class="mdi mdi-plus-circle mr-1" ></i> {{ __("Add Users") }}
     </a></h4>
-    
+
     <div class="inbox-widget mt-3" data-simplebar style="max-height: 350px;">
         @foreach($vendor->permissionToUser as $users)
         <div class="inbox-item pb-0">
@@ -283,11 +306,11 @@
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-primary-outline" onclick="return confirm('Are you sure ?');"> <i class="mdi mdi-delete"></i></button>
-        
+
                     </form>
             @endif
         </div>
-       
+
         @endforeach
     </div>
 </div>
@@ -299,7 +322,7 @@
 
                 @php
                 $vendors = getNomenclatureName('vendors', false);
-                $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ; 
+                $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ;
                 @endphp
 
                 <h4 class="modal-title">{{ __("Edit") }} {{ $newvendors }}</h4>
@@ -311,7 +334,7 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body" id="editCardBox">
-                   
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">{{ __("Submit") }}</button>
@@ -345,7 +368,7 @@
                                     </div>
                                 </div>
 
-                              
+
                             </div>
                         </div>
                     </div>
@@ -361,13 +384,13 @@
 </div>
 
 <script type="text/javascript">
-    
+
 $('.addUsersBtn').click(function() {
         $('#add-user-permission').modal({
             keyboard: false
         });
     });
-    
+
 
     $( document ).ready(function() {
 
@@ -376,8 +399,8 @@ $('.addUsersBtn').click(function() {
             'X-CSRF-TOKEN': $('input[name="_token"]').val()
         }
     });
-// search users for set permission 
-$('#id_search_user_for_permission').keyup(function(){ 
+// search users for set permission
+$('#id_search_user_for_permission').keyup(function(){
     var query = $(this).val();
     var vendor_id = $('#set-vendor_id').val();
     if(query != '')
@@ -388,23 +411,23 @@ $('#id_search_user_for_permission').keyup(function(){
       method:"POST",
       data:{query:query, _token:_token, vendor_id:vendor_id},
       success:function(data){
-       $('#userList').fadeIn();  
+       $('#userList').fadeIn();
        $('#userList').html(data);
       }
      });
     }
 });
 
-$(document).on('click', 'li', function(){  
-    $('#id_search_user_for_permission').val($(this).text());  
+$(document).on('click', 'li', function(){
+    $('#id_search_user_for_permission').val($(this).text());
     $('#cusid').val($(this).attr('data-id'));
-    $('#userList').fadeOut();  
-});  
+    $('#userList').fadeOut();
+});
 
 
-// submit permission for user 
+// submit permission for user
 $('#add_user_permission_vendor').submit(function(e) {
-            
+
             e.preventDefault();
 
             var formData = new FormData(this);
@@ -458,7 +481,7 @@ $('#add_user_permission_vendor').submit(function(e) {
                     }
                 }
             });
-        }       
+        }
     });
     $(document).on('change', '.can_add_category1', function(){
         var vendor_id = "{{$vendor->id}}";
@@ -537,7 +560,7 @@ $("input[name='auto_accept_order']").change(function() {
     if($(this).prop('checked')){
         $("#auto_reject_timeInput").css("display", "none");
     } else {
-        $("#auto_reject_timeInput").css("display", "block"); 
+        $("#auto_reject_timeInput").css("display", "block");
     }
 })
 </script>

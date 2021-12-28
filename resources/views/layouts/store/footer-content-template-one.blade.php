@@ -1,7 +1,7 @@
 @php
 $clientData = \App\Models\Client::where('id', '>', 0)->first();
 $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'];
-$pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->get();
+$pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 @endphp
 <footer class="footer-light">
     <section class="section-b-space light-layout pt-3 pb-0">
@@ -59,20 +59,23 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-7 pl-lg-4">
-                    <div class="sub-title">
-                        <div class="footer-title mt-0">
-                            <h4 class="mt-0">{{ __('Contact Us') }}</h4>
+                {{-- Contact Us details --}}
+                    @if($client_preference_detail->show_contact_us == 1)
+                        <div class="col-lg-3 col-md-6 col-7 pl-lg-4">
+                            <div class="sub-title">
+                                <div class="footer-title mt-0">
+                                    <h4 class="mt-0">{{ __('Contact Us') }}</h4>
+                                </div>
+                                <div class="footer-contant">
+                                    <ul class="contact-list">
+                                        <li class="pl-0"><i class="icon-location"></i> <span>{{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}</span></li>
+                                        <li class="pl-0"><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}"><span>{{$clientData ? $clientData->phone_number : '123-456-7898'}}</span></a></li>
+                                        <li class="pl-0"><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}"><span>{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</span></a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                        <div class="footer-contant">
-                            <ul class="contact-list">
-                                <li class="pl-0"><i class="icon-location"></i> <span>{{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}</span></li>
-                                <li class="pl-0"><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}"><span>{{$clientData ? $clientData->phone_number : '123-456-7898'}}</span></a></li>
-                                <li class="pl-0"><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}"><span>{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</span></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                    @endif
                 @endif
 
                 @if(count($social_media_details))
@@ -98,7 +101,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     </div>
                 </div>
                 @endif
-                @if($client_preference_detail->show_contact_us == 1)
+
                 <div class="col-lg-3 col-md-6 col-5 pl-xl-3 mobile-border">
                     <div class="sub-title">
                         <div class="footer-title mt-0 d-none d-md-block">
@@ -128,7 +131,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         </div>
                     </div>
                 </div>
-                @endif
+
 
                 @if($client_preference_detail->show_payment_icons == 1)
                 <div class="col-lg-3 col-md-6 col-7 payment-card mobile-border">

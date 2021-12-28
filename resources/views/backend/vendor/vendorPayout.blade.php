@@ -242,7 +242,9 @@
                                         @if($is_stripe_connected == 1)
                                             <h5><i class="fa fa-check text-success mr-2"></i><b>Connected to Stripe</b></h5>
                                         @else
-                                            <button type="button" class="btn btn-info waves-effect text-sm-right" onclick="location.href='{{$stripe_connect_url}}'">{{ __("Connect to Stripe") }}</button>
+                                            @if($is_stripe_payout_enabled == 1)
+                                                <button type="button" class="btn btn-info waves-effect text-sm-right" onclick="location.href='{{$stripe_connect_url}}'">{{ __("Connect to Stripe") }}</button>
+                                            @endif
                                         @endif
                                         <button type="button" class="btn btn-info waves-effect text-sm-right ml-2" data-toggle="modal" data-target="#pay-receive-modal">{{ __("Payout") }}</button>
                                     </div>
@@ -711,38 +713,6 @@
             }
             return true;
         }
-
-        function payoutViaStripe(amount, payment_option_id) {
-            let ajaxData = {};
-            ajaxData.amount = amount;
-            ajaxData.payment_option_id = payment_option_id;
-            $.ajax({
-                type: "POST",
-                dataType: 'json',
-                url: "{{route('vendor.payout.stripe', $vendor->id)}}",
-                data: ajaxData,
-                success: function(resp) {
-                    if (resp.status == 'Success') {
-
-                    } else {
-                        $("#payout_response .alert").html(resp.message).show();
-                        setTimeout(function(){
-                            $("#payout_response .alert").hide();
-                        },5000);
-                        return false;
-                    }
-                },
-                error: function(error) {
-                    var response = $.parseJSON(error.responseText);
-                    $("#payout_response .alert").html(response.message).show();
-                    setTimeout(function(){
-                        $("#payout_response .alert").hide();
-                    },5000);
-                    return false;
-                }
-            });
-        }
-
 
 
         $.ajaxSetup({

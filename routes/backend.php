@@ -32,7 +32,7 @@ Route::get('admin/wrong/url', 'Auth\LoginController@wrongurl')->name('wrong.clie
 // ADMIN LANGUAGE SWITCH
 Route::group(['middleware' => 'adminLanguageSwitch'], function () {
     Route::group(['middleware' => ['ClientAuth', 'database'], 'prefix' => '/client'], function () {
-        
+
         Route::any('/logout', 'Auth\LoginController@logout')->name('client.logout');
         Route::get('profile', 'Client\UserController@profile')->name('client.profile');
         Route::get('dashboard', 'Client\DashBoardController@index')->name('client.dashboard');
@@ -46,6 +46,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('cms/page/update', [PageController::class, 'update'])->name('cms.page.update');
         Route::post('cms/page/create', [PageController::class, 'store'])->name('cms.page.create');
         Route::post('cms/page/delete', [PageController::class, 'destroy'])->name('cms.page.delete');
+        Route::post('cms/page/ordering',[PageController::class, 'saveOrderOfPage'])->name('cms.page.saveOrderOfPage');
         Route::get('cms/emails', [EmailController::class, 'index'])->name('cms.emails');
         Route::get('cms/emails/{id}', [EmailController::class, 'show'])->name('cms.emails.show');
         Route::post('cms/emails/update', [EmailController::class, 'update'])->name('cms.emails.update');
@@ -135,7 +136,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/registration/document/delete', [VendorRegistrationDocumentController::class, 'destroy'])->name('vendor.registration.document.delete');
 
         Route::resource('tag', 'Client\TagController');
-        
+
         Route::get('tag/edit', [TagController::class, 'show'])->name('tag.edit');
         Route::post('tag/create', [TagController::class, 'store'])->name('tag.create');
         Route::post('tag/update', [TagController::class, 'update'])->name('tag.update');
@@ -200,8 +201,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('order/return-modal/get-return-product-modal', 'Client\OrderController@getReturnProductModal')->name('get-return-product-modal');
         Route::post('order/update-product-return-client', 'Client\OrderController@updateProductReturn')->name('update.order.return.client');
         Route::get('order/{order_id}/{vendor_id}', 'Client\OrderController@getOrderDetail')->name('order.show.detail');
+        Route::get('order-edit/{order_id}/{vendor_id}', 'Client\OrderController@getOrderDetailEdit')->name('order.edit.detail');
         Route::post('order/updateStatus', 'Client\OrderController@changeStatus')->name('order.changeStatus');
-        Route::post('order/create-dispatch-request', 'Client\OrderController@createDispatchRequest')->name('create.dispatch.request'); # create dispatch request 
+        Route::post('order/create-dispatch-request', 'Client\OrderController@createDispatchRequest')->name('create.dispatch.request'); # create dispatch request
         Route::resource('customer', 'Client\UserController')->middleware('onlysuperadmin');
         Route::get('customer/account/{user}/{action}', 'Client\UserController@deleteCustomer')->name('customer.account.action');
         Route::get('customer/edit/{id}', 'Client\UserController@newEdit')->name('customer.new.edit');
@@ -270,7 +272,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('/admin/signup', 'Client\AdminSignUpController@index')->name('admin.signup');
         Route::post('save_fcm_token', 'Client\UserController@save_fcm')->name('client.save_fcm');
 
-        // pickup & delivery 
+        // pickup & delivery
         Route::group(['prefix' => 'vendor/dispatcher'], function () {
             Route::post('updateCreateVendorInDispatch', 'Client\VendorController@updateCreateVendorInDispatch')->name('update.Create.Vendor.In.Dispatch');
             Route::post('updateCreateVendorInDispatchOnDemand', 'Client\VendorController@updateCreateVendorInDispatchOnDemand')->name('update.Create.Vendor.In.Dispatch.OnDemand');

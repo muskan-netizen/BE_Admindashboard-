@@ -154,12 +154,12 @@ $(document).ready(function () {
             sample_array.longitude = destination_location_longitudes[index];
             tasks.push(sample_array);
         });
-        let amount = $(this).data('amount');
-        let product_image = $(this).data('image');
-        let vendor_id = $(this).data('vendor_id');
-        let coupon_id = $(this).data('coupon_id');
-        let product_id = $(this).data('product_id');
-        let payment_option_id = $(this).data('payment_method');
+        let amount = $(this).attr('data-amount');
+        let product_image = $(this).attr('data-image');
+        let vendor_id = $(this).attr('data-vendor_id');
+        let coupon_id = $(this).attr('data-coupon_id');
+        let product_id = $(this).attr('data-product_id');
+        let payment_option_id = $(this).attr('data-payment_method');
 
         $.ajax({
             type: "POST",

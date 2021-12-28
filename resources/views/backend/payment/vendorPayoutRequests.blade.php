@@ -209,7 +209,7 @@
                     {data: 'type', name: 'type', orderable: false, searchable: false},
                     {data: 'status', class:'text-center', name: 'status', orderable: false, searchable: false, "mRender":function(data, type, full){
                         if(full.status == 'Pending'){
-                            return "<button class='btn btn-sm btn-info payout_btn' data-id='"+full.id+"'>Payout</button>";
+                            return "<button class='btn btn-sm btn-info payout_btn' data-id='"+full.id+"' data-payout_method='"+full.payout_option_id+"' data-vendor='"+full.vendor_id+"'>Payout</button>";
                         }else{
                             return full.status;
                         }
@@ -222,12 +222,50 @@
             var vendor = $(this).closest('tr').find('td:nth-child(2)').text();
             var amount = $(this).closest('tr').find('td:nth-child(4)').text();
             var dataid = $(this).attr('data-id');
-            $("#payout_form_final").attr('action', "{{url('client/account/vendor/payout/request/complete')}}"+'/'+dataid);
-            $("#payout-confirm-modal #payout-vendor").text(vendor);
+            var vendor_id = $(this).attr('data-vendor');
+            var payout_method = $(this).attr('data-payout_method');
+            $("#payout-confirm-modal #payout-vendor").html('<b>'+vendor+'</b>');
             $("#payout-confirm-modal #payout-amount-final").text('{{$currency_symbol}}' + amount);
             $("#payout-confirm-modal #payout_amount").val(amount);
             $("#payout-confirm-modal").modal('show');
+            if(payout_method == 1){
+                $("#payout_form_final").attr('action', "{{url('client/account/vendor/payout/request/complete')}}"+'/'+dataid);
+            }
+            else if(payout_method == 2){
+                $("#payout_form_final").attr('action', "{{url('client/vendor/payout/stripe')}}"+'/'+vendor_id);
+            }
         });
+
+        // function payoutViaStripe(amount, payment_option_id) {
+        //     let ajaxData = {};
+        //     ajaxData.amount = amount;
+        //     ajaxData.payment_option_id = payment_option_id;
+        //     $.ajax({
+        //         type: "POST",
+        //         dataType: 'json',
+        //         url: "{{route('vendor.payout.stripe', 2)}}",
+        //         data: ajaxData,
+        //         success: function(resp) {
+        //             if (resp.status == 'Success') {
+
+        //             } else {
+        //                 $("#payout_response .alert").html(resp.message).show();
+        //                 setTimeout(function(){
+        //                     $("#payout_response .alert").hide();
+        //                 },5000);
+        //                 return false;
+        //             }
+        //         },
+        //         error: function(error) {
+        //             var response = $.parseJSON(error.responseText);
+        //             $("#payout_response .alert").html(response.message).show();
+        //             setTimeout(function(){
+        //                 $("#payout_response .alert").hide();
+        //             },5000);
+        //             return false;
+        //         }
+        //     });
+        // }
     });
 </script>
 @endsection

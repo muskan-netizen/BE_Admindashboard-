@@ -29,7 +29,8 @@ class CMSPageController extends BaseController
             $join->on('pages.id', '=', 'page_translations.page_id');
         })
             ->where(['page_translations.language_id' => $locallanguage, 'page_translations.is_published' => 1])
-            ->orderBy('pages.id', 'Desc')
+           // ->orderBy('pages.id', 'Desc')
+            ->orderBy('pages.order_by','ASC')
             ->get([
                 'page_translations.id',
                 'pages.slug',
@@ -55,7 +56,7 @@ class CMSPageController extends BaseController
         $langId = ($request->hasHeader('language')) ? $request->header('language') : 1;
 
         $client_preferences = ClientPreference::first();
-        
+
         $page_detail = Page::with(['translations' => function ($q) use($langId,$page_id) {
             $q->where('language_id', $langId)->where('id', $page_id);
         },'translation' => function ($q) use($langId,$page_id) {
@@ -71,7 +72,7 @@ class CMSPageController extends BaseController
         if ($page_detail->translation->type_of_form != 2) {
             $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
             $data['vendor_registration_documents'] = $vendor_registration_documents;
-        } 
+        }
         else {
             $driver_types = array(
                 ['name' => 'type', 'title' => 'Employee', 'value' => 'Employee'],
@@ -95,7 +96,7 @@ class CMSPageController extends BaseController
             $data['teams'] = $driverDocs['all_teams'];
             $data['tags'] = $driverDocs['agent_tags'];
         }
-        
+
         return $this->successResponse($data, '', 200);
     }
 }

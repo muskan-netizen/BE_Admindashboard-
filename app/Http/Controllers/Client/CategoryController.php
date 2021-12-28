@@ -55,7 +55,7 @@ class CategoryController extends BaseController
             ->where('client_languages.is_active', 1)
             ->orderBy('client_languages.is_primary', 'desc')->get();
 
-        
+
         return view('backend.catalog.index')->with(['categories' => $categories, 'html' => $tree,  'languages' => $langs, 'variants' => $variants, 'brands' => $brands, 'build' => $build]);
     }
 
@@ -88,8 +88,8 @@ class CategoryController extends BaseController
             $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
         }
 
-        
-       
+
+
         $parCategory = Category::with('translation_one')->select('id', 'slug')->where('deleted_at', NULL)->whereIn('type_id', ['1', '3', '6', '8','9'])->where('is_core', 1)->where('status', 1)->get();
         $vendor_list = Vendor::select('id', 'name')->where('status', '!=', $this->blocking)->get();
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
@@ -203,7 +203,7 @@ class CategoryController extends BaseController
         $dispatcher_warning_page_options = DispatcherWarningPage::where('status', 1)->get();
         $dispatcher_template_type_options = DispatcherTemplateTypeOption::where('status', 1)->get();
 
-       
+
         $returnHTML = view('backend.catalog.edit-category')->with(['typeArray' => $type, 'category' => $category,  'languages' => $langs, 'is_vendor' => $is_vendor, 'parCategory' => $parCategory, 'langIds' => $langIds, 'existlangs' => $existlangs, 'tagList' => $tagList, 'dispatcher_warning_page_options' => $dispatcher_warning_page_options, 'dispatcher_template_type_options' => $dispatcher_template_type_options, 'preference' => $preference])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
     }
@@ -392,7 +392,7 @@ class CategoryController extends BaseController
         return $ids;
     }
 
-    # get dispatcher tags from dispatcher panel  
+    # get dispatcher tags from dispatcher panel
     public function getDispatcherTags()
     {
         try {
@@ -415,7 +415,7 @@ class CategoryController extends BaseController
         } catch (\Exception $e) {
         }
     }
-    # check if last mile delivery on 
+    # check if last mile delivery on
     public function checkIfPickupDeliveryOn()
     {
         $preference = ClientPreference::first();

@@ -171,7 +171,7 @@ class BaseController extends Controller{
                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                 $q->groupBy('product_id');
             },
-        ])->select('id', 'sku', 'averageRating', 'url_slug', 'is_new', 'is_featured', 'vendor_id', 'inquiry_only')
+        ])->select('id', 'sku', 'averageRating', 'url_slug', 'is_new', 'is_featured', 'vendor_id', 'inquiry_only','minimum_order_count','batch_count')
         ->whereIn('id', $productIds);
         $products = $products->get();
         if(!empty($products)){

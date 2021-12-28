@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['title' => 'Order Detail'])
+@extends('layouts.vertical', ['title' => 'Order Edit'])
 @section('css')
 <!-- <style>
 td { white-space:pre-line; word-break:break-all}
@@ -13,164 +13,14 @@ $timezone = Auth::user()->timezone;
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">{{ __("Order Detail") }}</h4>
+                    <h4 class="page-title">{{ __("Order Edit") }}</h4>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-4 mb-3">
                 <div class="card mb-0 h-100">
-                    <div class="card-body">
-                        <h4 class="header-title mb-3">{{__('Track Order')}}</h4>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="mb-4">
-                                    <h5 class="mt-0">{{__('Order ID')}}:</h5>
-                                    <p>#{{$order->order_number}}</p>
-                                </div>
-                            </div>
-                             @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2))
-                             <div class='inner-div d-inline-block' style="float: right;">
-                                <form method='POST' action='"+full.destroy_url+"'>
-                                   
-                                        <button type='button' class='btn btn-danger' id="create_dispatch_request"  data-order_vendor_id="{{$order->vendors->first()->id}}">{{__('Create Dispatch Request')}}</i>
-                                        </button>
-                                   
-                                </form>
-                             </div>
-                            @endif    
-
-                            @if(isset($order->vendors) && isset($order->vendors->first()->dispatch_traking_url) && $order->vendors->first()->dispatch_traking_url !=null)
-                            <div class="col-lg-6">
-                                <div class="mb-4">
-                                    <h5 class="mt-0">{{ __("Tracking ID") }}:</h5>
-                                    <p>
-                                        @php
-                                        $track = explode('/',$order->vendors->first()->dispatch_traking_url);
-                                        $track_code = end($track);
-                                        @endphp
-                                        <a href="{{$order->vendors->first()->dispatch_traking_url}}" target="_blank">#{{ $track_code }}</a>
-                                    </p>
-                                </div>
-                            </div>
-                            @endif
-                        </div>
-                        <div class="row track-order-list">
-                            <div class="col-lg-6">
-                                <!-- <button type="button" class="btn btn-danger waves-effect waves-light">
-                                    <i class="mdi mdi-close"></i>
-                                 </button> -->
-                                <ul class="list-unstyled" id="order_statuses">
-                                    @php
-                                    if($order->vendors->first()->order_status_option_id == 2)
-                                    $open_option = ['4'];
-                                    elseif ($order->vendors->first()->order_status_option_id == 3)
-                                    $open_option = ['0'];
-                                    elseif ($order->vendors->first()->order_status_option_id == 1)
-                                    $open_option = ['2','3'];
-                                    else
-                                    $open_option = [$order->vendors->first()->order_status_option_id + 1];
-                                    @endphp
-
-                                    <!-- List of completed order status -->
-                                    @foreach ($vendor_order_statuses as $key => $vendor_order_status)
-                                        @php
-                                            $order_status = $order_status_options->where('id', $vendor_order_status->order_status_option_id)->pluck('title')->first();
-                                            $glow = '';
-                                            if( $key < count($vendor_order_statuses)-1 ){
-                                                $glow = 'completed';
-                                            }
-                                            $date = isset($vendor_order_status_created_dates[$vendor_order_status->order_status_option_id]) ? $vendor_order_status_created_dates[$vendor_order_status->order_status_option_id] : '';
-                                        @endphp
-
-                                        <li class="{{$glow}} disabled" data-status_option_id="{{$vendor_order_status->order_status_option_id}}" data-order_vendor_id="{{$vendor_order_status->vendor_id}}">
-                                            @if( ($vendor_order_status->order_status_option_id == 5) && (($order->luxury_option_id == 2) || ($order->luxury_option_id == 3)) )
-                                                <h5 class="mt-0 mb-1">{{__('Order Prepared')}}</h5>
-                                            @else
-                                                <h5 class="mt-0 mb-1">{{$order_status}}</h5>
-                                            @endif
-                                            <p class="text-muted" id="text_muted_{{$vendor_order_status->order_status_option_id}}">
-                                                @if($date)
-                                                    <small class="text-muted">{{dateTimeInUserTimeZone($date, $timezone)}}</small>
-                                                @endif
-                                            </p>
-                                        </li>
-                                    @endforeach
-
-                                    <!-- List of incomplete order status if order is not rejected -->
-                                    
-                                    @if(!in_array(3, $vendor_order_status_option_ids))
-                                        @foreach($order_status_options as $order_status_option)
-                                            @if(!in_array($order_status_option->id, $vendor_order_status_option_ids))
-                                                @php
-                                                    $class = in_array($order_status_option->id, $vendor_order_status_option_ids) ? 'disabled': '';
-                                                    if($order_status_option->id == $order->vendors->first()->order_status_option_id)
-                                                        $glow = '';
-                                                    else
-                                                        $glow = 'completed';
-                                                        $date = isset($vendor_order_status_created_dates[$order_status_option->id]) ? $vendor_order_status_created_dates[$order_status_option->id] : '';
-                                                @endphp
-                                                @if (in_array(3, $vendor_order_status_option_ids) && $order_status_option->id == 2)
-                                                    @continue
-                                                @endif
-                                                @if (in_array(2, $vendor_order_status_option_ids) && $order_status_option->id == 3)
-                                                    @continue
-                                                @endif
-
-                                                <li class="{{$class}} {{$glow}}  @if(in_array($order_status_option->id, $open_option))open-for-update-status @else disabled @endif" data-status_option_id="{{$order_status_option->id}}" data-order_vendor_id="{{$order_status_option->order_vendor_id}}">
-                                                    @if( ($order_status_option->id == 5) && (($order->luxury_option_id == 2) || ($order->luxury_option_id == 3)) )
-                                                        <h5 class="mt-0 mb-1">{{__('Order Prepared')}}</h5>
-                                                    @else
-                                                        <h5 class="mt-0 mb-1">{{$order_status_option->title}}</h5>
-                                                    @endif
-                                                    <p class="text-muted" id="text_muted_{{$order_status_option->id}}">
-                                                        @if($date)
-                                                            <small class="text-muted">{{dateTimeInUserTimeZone($date, $timezone)}}</small>
-                                                        @endif
-                                                    </p>
-                                                </li>
-                                                @if (in_array(3, $vendor_order_status_option_ids) && $order_status_option->id == 3)
-                                                    @break
-                                                @endif
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                </ul>
-                            </div>
-
-                           
-
-                            @if(isset($order->vendors) && isset($order->vendors->first()->dispatch_traking_url) && $order->vendors->first()->dispatch_traking_url !=null)
-                            <div class="col-lg-6">
-                                <ul class="list-unstyled remove-curser">
-                                    @foreach($dispatcher_status_options as $dispatcher_status_option)
-                                    @php
-                                    if($dispatcher_status_option->vendorOrderDispatcherStatus && $dispatcher_status_option->id == $dispatcher_status_option->vendorOrderDispatcherStatus->dispatcher_status_option_id??'')
-                                    $class = 'disabled';
-
-                                    if($dispatcher_status_option->id == $order->vendors->first()->dispatcher_status_option_id)
-                                    $glow = '';
-                                    else
-                                    $glow = 'completed';
-
-                                    $date = isset($dispatcher_status_option->vendorOrderDispatcherStatus) ? $dispatcher_status_option->vendorOrderDispatcherStatus->created_at : '';
-                                    @endphp
-                                    <li class="{{$class}} {{$glow}}" data-status_option_id="{{$dispatcher_status_option->id}}">
-                                        <h5 class="mt-0 mb-1">{{$dispatcher_status_option->title}}</h5>
-                                        <p class="text-muted" id="dispatch_text_muted_{{$dispatcher_status_option->id}}">
-                                            @if($date)
-                                            <small class="text-muted">{{dateTimeInUserTimeZone($date, $timezone)}}</small>
-                                            @endif
-                                        </p>
-                                    </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                            @endif
-
-
-                        </div>
-                    </div>
+                   
                 </div>
             </div>
             <div class="col-lg-8 mb-3">
@@ -188,7 +38,7 @@ $timezone = Auth::user()->timezone;
                                 <span class="badge badge-info mr-2">{{$order->luxury_option_name}}</span>
                             @endif
                             {{ __("Items from Order") }} #{{$order->order_number}}
-                            {{-- <a href="{{ route('order.edit.detail',[$order->id,$order->vendors->first()->vendor_id])}}">{{__('Edit Order')}}</a> --}}
+                            <a href="{{ route('order.show.detail',[$order->id,$order->vendors->first()->vendor_id])}}">{{__('Show Order')}}</a>
                         </h4>
                         @if($order->luxury_option_id == 2)
                             @foreach($order->vendors as $vendor)
@@ -243,7 +93,17 @@ $timezone = Auth::user()->timezone;
                                         <td>
                                             <img src="{{@$product->image_path['proxy_url'].'32/32'.@$product->image_path['image_path']}}" alt="product-img" height="32">
                                         </td>
-                                        <td>{{ $product->quantity }}</td>
+                                        <td>
+                                            <div class="number d-flex justify-content-md-center">
+                                                <div class="counter-container d-flex align-items-center">
+                                                    <div id="field1">
+                                                        <button type="button" id="sub" class="sub">-</button>
+                                                        <input type="number" id="1" value="{{ $product->quantity }}" min="1" max="500" />
+                                                        <button type="button" id="add" class="add">+</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
                                         <td>
                                             {{$clientCurrency->currency->symbol}}@money($product->price)
                                             @if($product->addon->isNotEmpty())
@@ -412,6 +272,19 @@ $timezone = Auth::user()->timezone;
 @endsection
 @section('script')
 <script>
+    // quantity plus minus 
+    $('.add').click(function () {
+		if ($(this).prev().val() < 500) {
+    	$(this).prev().val(+$(this).prev().val() + 1);
+		}
+    });
+
+    $('.sub').click(function () {
+            if ($(this).next().val() > 0) {
+            if ($(this).next().val() > 0) $(this).next().val(+$(this).next().val() - 1);
+            }
+    });
+
     $("#order_statuses li").click(function() {
         if (confirm("Are you Sure?")) {
             let that = $(this);

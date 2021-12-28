@@ -32,7 +32,7 @@ class CustomerAuthController extends FrontController
     private $folderName = '/vendor/extra_docs';
 
     public function __construct(Request $request)
-    {   
+    {
         $code = Client::orderBy('id','asc')->value('code');
         $this->folderName = '/'.$code.'/vendor/extra_docs';
     }
@@ -53,12 +53,12 @@ class CustomerAuthController extends FrontController
     }
 
     public function sendNotification(){
-        // $token = ["fXC1tzHiywg:APA91bGj3YXxPXuiBjCSAhlt0leikG2eq2gIJm3EFtSjkfp4c6akzpeDOqq2XfvUxxX99i36aCPf8gFsJIZrU7Ywcx6ZCIMh9vAPJctpxyU0_pagKF-wgVURZ2Z6C6XMaWAFZCDlas3L"];  
-        $token = ["SYyGlsuFhM:APA91bHT-EWdEXBqn9hqpTLObtI8VNf49QTatYDSFaYeI4OZG6vGrxKyfPZUe2b8h0KMhwS-pZCC1stmHlqCqMKdLD5baCjnCusdHZys9Z31gpykmUg2fS5PwmcfAYHB11EAZi_dHHqq"];  
+        // $token = ["fXC1tzHiywg:APA91bGj3YXxPXuiBjCSAhlt0leikG2eq2gIJm3EFtSjkfp4c6akzpeDOqq2XfvUxxX99i36aCPf8gFsJIZrU7Ywcx6ZCIMh9vAPJctpxyU0_pagKF-wgVURZ2Z6C6XMaWAFZCDlas3L"];
+        $token = ["SYyGlsuFhM:APA91bHT-EWdEXBqn9hqpTLObtI8VNf49QTatYDSFaYeI4OZG6vGrxKyfPZUe2b8h0KMhwS-pZCC1stmHlqCqMKdLD5baCjnCusdHZys9Z31gpykmUg2fS5PwmcfAYHB11EAZi_dHHqq"];
        //previous
     //    $from = 'AAAA-gxQcf4:APA91bF2-7wHcDDUpdnOAjPkRECMcMqZyto1g3CloNTSvp4tvaM6yX2H1H3FFWQj3mHE_t0LkKKu5M_ASTjIaKvvuLDTrXe9eO7Xi7k8YbH6M355gz7x0GTbK7E9F7I7CAQS3AILs4J_';
         $from = 'AAAA8Aea-wU:APA91bEKYAjmXEjMg4u-fdxZuDtmwtM_rdkJ8d06mQfGtAiZnZIBYrH5LvYLTWh9VJjMD3pAHaJzjbvL-ckV43xJBHXrLxBvop0SAOwUSQ6Un7_OAEmuzbrHbjBpq045nyWYz4d5zP6b';
-        
+
         $notification_content = NotificationTemplate::where('id', 3)->first();
         if($notification_content){
             $headers = [
@@ -73,7 +73,7 @@ class CustomerAuthController extends FrontController
                 ]
             ];
             $dataString = $data;
-    
+
             $ch = curl_init();
             curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
             curl_setopt( $ch,CURLOPT_POST, true );
@@ -101,7 +101,7 @@ class CustomerAuthController extends FrontController
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
 
-       
+
         if (!Session::get('referrer')) {
             return view('frontend.account.registernew')->with(['navCategories' => $navCategories]);
         } else {
@@ -262,16 +262,17 @@ class CustomerAuthController extends FrontController
                 Auth::login($user);
                 $this->checkCookies($user->id);
                 Session::forget('referrer');
-                $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 
-                        'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 
-                        'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 
+                $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
+                        'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from',
+                        'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider',
                         'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
-                if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
+                if(!empty($prefer->sms_provider) ){
                     $response['send_otp'] = 1;
                     $to = '+'.$user->dial_code.$user->phone_number;
                     $provider = $prefer->sms_provider;
                     $body = "Dear ".ucwords($user->name).", Please enter OTP ".$phoneCode." to verify your account.";
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
+
                 }
                 if(!empty($prefer->mail_driver) && !empty($prefer->mail_host) && !empty($prefer->mail_port) && !empty($prefer->mail_port) && !empty($prefer->mail_password) && !empty($prefer->mail_encryption)){
                     $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
@@ -375,7 +376,7 @@ class CustomerAuthController extends FrontController
     public function loginViaUsername(Request $request, $domain = ''){
         try{
             $errors = array();
-            
+
             $phone_regex = '/^[0-9\-\(\)\/\+\s]*$/';
             $email_regex = '/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/';
             $username = $request->username;
@@ -387,7 +388,7 @@ class CustomerAuthController extends FrontController
                     'dialCode'  => 'required',
                     'countryData'  => 'required'
                 ]);
-    
+
                 if($validator->fails()){
                     foreach($validator->errors()->toArray() as $error_key => $error_value){
                         $errors['error'] = __($error_value[0]);
@@ -403,7 +404,7 @@ class CustomerAuthController extends FrontController
                 $phoneCode = mt_rand(100000, 999999);
                 $sendTime = Carbon::now()->addMinutes(10)->toDateTimeString();
                 $request->request->add(['is_phone'=>1, 'phone_number'=>$phone_number, 'phoneCode'=>$phoneCode, 'sendTime'=>$sendTime, 'codeSent'=>0]);
-                
+
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
                 if(!$user){
                     // $errors['error'] = __('Your phone number is not registered');
@@ -420,7 +421,7 @@ class CustomerAuthController extends FrontController
                     $user->save();
                 }
 
-                $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 
+                $prefer = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',
                             'mail_password', 'mail_encryption', 'mail_from', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
 
                 if($dialCode == "971"){
@@ -430,7 +431,7 @@ class CustomerAuthController extends FrontController
                 }
                 $provider = $prefer->sms_provider;
                 $body = "Please enter OTP ".$phoneCode." to verify your account.";
-                if(!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)){
+                if(!empty($provider) ){
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                     if($send){
                         $request->request->add(['codeSent' => 1]);
@@ -450,7 +451,7 @@ class CustomerAuthController extends FrontController
                 $validator = Validator::make($request->all(), [
                     'username'  => 'required'
                 ]);
-    
+
                 if($validator->fails()){
                     foreach($validator->errors()->toArray() as $error_key => $error_value){
                         $errors['error'] = __($error_value[0]);
@@ -491,7 +492,7 @@ class CustomerAuthController extends FrontController
                             }
                             $unique_identifier_cart->delete();
                         }
-                    } else { 
+                    } else {
                         Cart::where('unique_identifier', session()->get('_token'))->update(['user_id' => $userid, 'created_by' => $userid, 'unique_identifier' => '']);
                     }
                     $message = 'Logged in successfully';
@@ -521,7 +522,7 @@ class CustomerAuthController extends FrontController
             }
         }
         catch(\Exception $ex){
-            return $this->errorResponse($ex->getMessage(), $ex->getCode()); 
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
         }
     }
 
@@ -541,7 +542,7 @@ class CustomerAuthController extends FrontController
             }
             $currentTime = Carbon::now()->toDateTimeString();
             $message = 'Account verified successfully.';
-            
+
             if($user->phone_token != $request->verifyToken){
                 return $this->errorResponse(__('OTP is not valid'), 404);
             }
@@ -550,9 +551,9 @@ class CustomerAuthController extends FrontController
             }
             $request->request->add(['phone_number'=>$phone_number]);
             return $this->proceedToPhoneLogin($request);
-        } 
+        }
         catch (Exception $ex) {
-            return $this->errorResponse($ex->getMessage(), $ex->getCode()); 
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
         }
     }
 
@@ -835,7 +836,7 @@ class CustomerAuthController extends FrontController
                 dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
                 dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
             }catch(Exception $e) {
-                
+
             }
             DB::commit();
             return response()->json([
@@ -859,6 +860,6 @@ class CustomerAuthController extends FrontController
         return redirect()->route('customer.login');
     }
 
-    
+
 }
 

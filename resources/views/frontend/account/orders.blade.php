@@ -217,11 +217,9 @@
                                                                         @php
                                                                             $product_total_count = $product_subtotal_amount = $product_taxable_amount = 0;
                                                                         @endphp
-                                                                        <div
-                                                                            class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0">
+                                                                        <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0">
                                                                             @if ($vendor->delivery_fee > 0 || !empty($order->scheduled_date_time) || $order->luxury_option_id > 0)
-                                                                                <div
-                                                                                    class="progress-order font-12  d-flex align-items-center justify-content-between pr-2">
+                                                                                <div class="progress-order font-12  d-flex align-items-center justify-content-between pr-2">
                                                                                     @if ($order->luxury_option_id > 0)
                                                                                         @php
                                                                                             $luxury_option = \App\Models\LuxuryOption::where('id', $order->luxury_option_id)->first();
@@ -385,11 +383,51 @@
                                                                                                 *
                                                                                                 $clientCurrency->doller_compare)</span>
                                                                                         </li>
+                                                                                       
+                                                                                       
+                                                                                      
+
                                                                                     </ul>
                                                                                 </div>
-                                                                            </div>
+                                                                            </div>  
+                                                                            @if(count($vendor['vendor_dispatcher_status']))
+                                                                                        <div class="step-indicator step-indicator-order">
+                                                                                           
+                                                                                                @foreach ($vendor->dispatcher_status_icons as $key => $icons)
+                                                                                                    @if(isset($vendor['vendor_dispatcher_status'][$key]) && !empty($vendor['vendor_dispatcher_status'][$key]))
+                                                                                                    <div class="step step{{$key+1}} active">
+                                                                                                        <div class="step-icon-order step-icon-order-fill"><img src="{{@$vendor->vendor_dispatcher_status[$key]->status_data['icon']}}"></div>
+                                                                                                        
+                                                                                                    </div>
+                                                                                                    
+                                                                                                   
+                                                                                                    <div class="indicator-line active"></div>
+                                                                                                    
+                                                                                                    @if(count($vendor['vendor_dispatcher_status']) == $key+1)
+                                                                                                        <p>{{@$vendor->vendor_dispatcher_status[$key]->status_data['driver_status']}}</p>
+                                                                                                    @endif
+                                                                                                    @if($key < count($vendor->dispatcher_status_icons)-1)
+                                                                                                    <div class="indicator-line active"></div>
+                                                                                                    @endif
+                                                                                                    @else
+                                                                                                    <div class="step step{{$key+1}} @if(app('request')->input('step') >= '1' || empty(app('request')->input('step'))) active @endif">
+                                                                                                        <div class="step-icon-order"><img src="{{$icons}}"></div>
+                                                                                                        <p></p>
+                                                                                                    </div>
+                                                                                                    @if($key < count($vendor->dispatcher_status_icons)-1)
+                                                                                                    <div class="indicator-line"></div>
+                                                                                                    @endif
+                                                                                                    @endif   
+                                                                                                @endforeach
+                                                                                           
+                                                                                        </div>
+                                                                                        @endif
+                                                                                           
+                                                                        
                                                                         </div>
+                                                                        
                                                                     @endforeach
+                                                                    
                                                                 </div>
                                                                 <div class="col-md-3 mb-3 pl-lg-0">
                                                                     <div class="card-box p-2 mb-0 h-100">

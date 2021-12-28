@@ -1158,6 +1158,12 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         <label for="gifting" class="mr-2 mb-0">{{__('Pickup Delivery Service Area')}}</label>
                         <input type="checkbox" data-plugin="switchery" name="pickup_delivery_service_area" id="pickup_delivery_service_area" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->pickup_delivery_service_area == '1')) checked='checked' @endif>
                      </div>
+                  </div> 
+                  <div class="col-md-4">
+                     <div class="form-group mb-3">
+                        <label for="gifting" class="mr-2 mb-0">{{__('Minumum Order/Batch')}}</label>
+                        <input type="checkbox" data-plugin="switchery" name="minimum_order_batch" id="minimum_order_batch" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->minimum_order_batch == '1')) checked='checked' @endif>
+                     </div>
                   </div>
                   <div class="col-md-12">
                      <div class="form-group mb-0 text-md-left">

@@ -175,6 +175,11 @@ class HomeController extends BaseController
             $latitude = $request->latitude;
             $longitude = $request->longitude;
             $paginate = $request->has('limit') ? $request->limit : 12;
+            //filter
+            $venderFilterClose   = $request->has('close_vendor') && $request->close_vendor ? $request->close_vendor : null;
+            $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
+            $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
+
             $type = 'delivery';
             if ($request->has('type')) {
                 if (empty($request->type)) {
@@ -198,8 +203,13 @@ class HomeController extends BaseController
                 $vendorData = $vendorData->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
                         cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
                         sin( radians(' . $latitude . ') ) *
-                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
+                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating')->orderBy('vendorToUserDistance', 'ASC');
                 $vendorData = $vendorData->whereIn('id', $ses_vendors);
+            }
+
+            //filter on ratings
+            if($venderFilterbest && ($venderFilterbest == 1) ){
+                $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get();
 
@@ -241,7 +251,18 @@ class HomeController extends BaseController
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                     $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences);
                 }
+
             }
+            //filter vendor
+            if($venderFilterClose && ($venderFilterClose == 1) ){
+                $vendorData =   $vendorData->where('is_vendor_closed',1)->values();
+            }
+            if($venderFilterOpen && ($venderFilterOpen == 1) ){
+                $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
+            }
+
+            //pr($vendorData);
+
             // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
             //     $vendorData = $vendorData->sortBy('lineOfSightDistance')->values()->all();
             // }
@@ -408,6 +429,7 @@ class HomeController extends BaseController
 
     public function globalSearch(Request $request, $for = 'all', $dataId = 0)
     {
+       // return 1;
         try {
             $keyword = $request->keyword;
             $langId = Auth::user()->language;
@@ -420,10 +442,11 @@ class HomeController extends BaseController
             $latitude = $request->latitude;
             $longitude = $request->longitude;
 
+
             if (!in_array($action, $types)) {
                 return response()->json(['error' => 'Type is incorrect.'], 404);
             }
-
+            $allowed_vendors = $this->getServiceAreaVendors($latitude, $longitude, $action);
             $response = array();
             if ($for == 'all') {
                 $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
@@ -465,9 +488,12 @@ class HomeController extends BaseController
                         ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                     });
                 }
+
                 $vendors = $vendors->where(function ($q) use ($keyword) {
                     $q->where('name', 'LIKE', "%$keyword%")->orWhere('address', 'LIKE', '%' . $keyword . '%');
                 })->where('status', 1)->paginate($limit, $page);
+
+
                 foreach ($vendors as $vendor) {
                     $vendor->response_type = 'vendor';
                     $vendor->image_url = $vendor->logo['proxy_url'] . '80/80' . $vendor->logo['image_path'];
@@ -490,7 +516,9 @@ class HomeController extends BaseController
                     })
                     ->where(function ($q) use ($keyword) {
                         $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
-                    })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->paginate($limit, $page);
+                    })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')
+                    ->whereIn('vendor_id', $allowed_vendors)
+                    ->paginate($limit, $page);
                 foreach ($products as $product) {
                     $product->response_type = 'product';
                     $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';

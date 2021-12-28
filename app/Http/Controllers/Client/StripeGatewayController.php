@@ -156,7 +156,7 @@ class StripeGatewayController extends BaseController{
             $connected_account = VendorConnectedAccount::where('vendor_id', $id)->first();
             if($connected_account && (!empty($connected_account->account_id))){
 
-                // $stripe = new \Stripe\StripeClient($this->payout_secret_key);
+                $stripe = new \Stripe\StripeClient($this->payout_secret_key);
                 // $payment_intent = $stripe->paymentIntents->create([
                 //     'payment_method_types' => ['card'],
                 //     'amount' => $request->amount * 100,
@@ -167,13 +167,15 @@ class StripeGatewayController extends BaseController{
                 // ]);
                 // $charge_id = $payment_intent->id;
 
-                // $response = $stripe->transfers->create([
-                //     'amount' => $request->amount * 100,
-                //     'currency' => 'INR', //$this->currency
-                //     // 'source_transaction' => $charge_id,
-                //     'destination' => $connected_account->account_id,
-                //     'transfer_group' => $charge_id,
-                // ]);
+                $response = $stripe->transfers->create([
+                    'amount' => $request->amount * 100,
+                    'currency' => 'INR', //$this->currency
+                    // 'source_transaction' => $charge_id,
+                    'destination' => $connected_account->account_id,
+                    // 'transfer_group' => $charge_id,
+                ]);
+
+                return $this->errorResponse('You are not connected to stripe', 400);
 
             }else{
                 return $this->errorResponse('You are not connected to stripe', 400);
