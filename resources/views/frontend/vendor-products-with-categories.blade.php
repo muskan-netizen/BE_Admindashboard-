@@ -517,6 +517,7 @@
                                                                             class="d-flex align-items-start justify-content-between">
                                                                             <h5 class="mt-0">
                                                                                 {{ $prod->translation_title }}
+                                                                                
                                                                             </h5>
                                                                             <div class="product_variant_quantity_wrapper">
                                                                                 @php
@@ -532,6 +533,8 @@
                                                                                     $variant_price = 0;
                                                                                     $variant_quantity = $prod->variant_quantity;
                                                                                     $isAddonExist = 0;
+                                                                                    $minimum_order_count = $data->minimum_order_count;
+                                                                                    $batch_count = $data->batch_count;
                                                                                     if (count($data->addOn) > 0) {
                                                                                         $isAddonExist = 1;
                                                                                     }
@@ -548,6 +551,7 @@
                                                                                             $variant_quantity = 0;
                                                                                             $vendor_id = $data->vendor_id;
                                                                                             $product_id = $data->id;
+                                                                                            $batch_count = $data->batch_count;
                                                                                             $variant_price = $var->price * $data->variant_multiplier;
                                                                                             if (count($var->checkIfInCart) > 1) {
                                                                                                 $productVariantInCartWithDifferentAddons = 1;
@@ -578,6 +582,8 @@
                                                                 data-vendor_id="{{ $vendor_id }}"
                                                                 data-product_id="{{ $product_id }}"
                                                                 data-addon="{{ $isAddonExist }}"
+                                                                data-minimum_order_count="{{ $minimum_order_count }}"
+                                                                data-batch_count="{{ $batch_count }}"
                                                                 href="javascript:void(0)">{{__('Add')}}</a>
                                                             <div class="number"
                                                                 id="show_plus_minus{{ $cartProductId }}">
@@ -590,7 +596,9 @@
                                                                     data-vendor_id="{{ $vendor_id }}"
                                                                     data-product_id="{{ $product_id }}"
                                                                     data-cart="{{ $cart_id }}"
-                                                                    data-addon="{{ $isAddonExist }}">
+                                                                    data-addon="{{ $isAddonExist }}"
+                                                                    data-minimum_order_count="{{ $minimum_order_count }}"
+                                                                    data-batch_count="{{ $batch_count }}">
                                                                     <i class="fa fa-minus" aria-hidden="true"></i>
                                                                 </span>
                                                                 <input
@@ -607,7 +615,8 @@
                                                                     data-vendor_id="{{ $vendor_id }}"
                                                                     data-product_id="{{ $product_id }}"
                                                                     data-cart="{{ $cart_id }}"
-                                                                    data-addon="{{ $isAddonExist }}">
+                                                                    data-addon="{{ $isAddonExist }}"
+                                                                    data-batch_count="{{$batch_count}}">
                                                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                                                 </span>
                                                             </div>
@@ -622,6 +631,8 @@
                                                                     data-vendor_id="{{ $data->vendor_id }}"
                                                                     data-product_id="{{ $data->id }}"
                                                                     data-addon="{{ $isAddonExist }}"
+                                                                    data-batch_count="{{ $batch_count }}"
+                                                                    data-minimum_order_count="{{ $minimum_order_count }}"
                                                                     href="javascript:void(0)">{{__('Add')}}</a>
                                                                 <div class="number" style="display:none;"
                                                                     id="ashow_plus_minus{{ $data->id }}">
@@ -629,7 +640,7 @@
                                                                         data-parent_div_id="show_plus_minus{{ $data->id }}"
                                                                         data-id="{{ $data->id }}"
                                                                         data-base_price="{{ $data->variant_price * $data->variant_multiplier }}"
-                                                                        data-vendor_id="{{ $data->vendor_id }}">
+                                                                        data-vendor_id="{{ $data->vendor_id }}" data-batch_count="{{ $batch_count }}"  data-minimum_order_count="{{ $minimum_order_count }}">
                                                                         <i class="fa fa-minus" aria-hidden="true"></i>
                                                                     </span>
                                                                     <input
@@ -639,7 +650,7 @@
                                                                         class="input-number input_qty" step="0.01">
                                                                     <span class="plus qty-plus-product" data-id=""
                                                                         data-base_price="{{ $data->variant_price * $data->variant_multiplier }}"
-                                                                        data-vendor_id="{{ $data->vendor_id }}">
+                                                                        data-vendor_id="{{ $data->vendor_id }}" data-batch_count="{{ $batch_count }}" data-minimum_order_count="{{ $minimum_order_count }}">
                                                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                                                     </span>
                                                                 </div>
@@ -659,6 +670,12 @@
                                         <i class="fa fa-star" aria-hidden="true"></i>
                                     </div>
                                 @endif
+
+                                @if($prod->minimum_order_count > 0)
+                                {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $prod->minimum_order_count }} </p>
+                                <p class="mb-1 product_price">   {{__('Batch') }} : {{ $prod->batch_count }} </p> --}}
+                                @endif
+
                                 <p class="mb-1 product_price">
                                     {{ Session::get('currencySymbol') . number_format($prod->variant_price * $prod->variant_multiplier, 2, '.', '') }}
                                     @if ($prod->variant[0]->compare_at_price > 0)

@@ -175,7 +175,7 @@ class ProductController extends BaseController
             ->where('client_languages.is_active', 1)
             ->orderBy('client_languages.is_primary', 'desc')->get();
 
-
+      
         $productVariants = Variant::with('option', 'varcategory.cate.primary')
             ->select('variants.*')
             ->join('variant_categories', 'variant_categories.variant_id', 'variants.id')

@@ -624,7 +624,7 @@ class VendorController extends BaseController
         $client_preferences = ClientPreference::first();
         $woocommerce_detail = Woocommerce::first();
 
-        $client = Client::orderBy('id','asc')->first();
+        $client = Client::with('country')->orderBy('id','asc')->first();
         if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
         $sku_url =  ($client->custom_domain);
         else
@@ -694,8 +694,6 @@ class VendorController extends BaseController
             $client_id = (isset($creds_arr->client_id)) ? $creds_arr->client_id : '';
             $is_stripe_payout_enabled = 1;
         }
-        // $test_mode = (isset($paylink_creds->test_mode) && ($paylink_creds->test_mode == '1')) ? true : false;
-        // $client = Session::has('client_config') ? Session::get('client_config')->code : '';
 
         $payout_options = PayoutOption::where('status', 1)->get();
 
@@ -705,11 +703,20 @@ class VendorController extends BaseController
             $is_stripe_connected = 1;
         }
         $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/";
-        $stripe_redirect_url = $server_url."client/verify/oauth/token/stripe";
 
         if((!empty($payout_creds->credentials)) && ($client_id != '')){
+            $stripe_redirect_url = $server_url."client/verify/oauth/token/stripe";
             $stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$id.'&client_id='.$client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
         }
+
+        // $ex_countries = ['INDIA'];
+        
+        // if((!empty($payout_creds->credentials)) && ($client_id != '') && (!in_array($client->country->name, $ex_countries))){
+        //     $stripe_redirect_url = 'http://local.myorder.com/client/verify/oauth/token/stripe'; //$server_url."client/verify/oauth/token/stripe";
+        //     $stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$id.'&client_id='.$client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
+        // }else{
+        //     $stripe_connect_url = route('create.custom.connected-account.stripe', $id);
+        // }
 
         $taxCate = TaxCategory::all();
         $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();

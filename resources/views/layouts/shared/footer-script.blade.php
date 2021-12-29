@@ -42,14 +42,14 @@ if (Session::has('toaster')) {
     let is_hyperlocal = 0;
     var business_type = '';
     @if(Session::has('preferences'))
-        @if((isset(Session::get('preferences')['is_hyperlocal'])) && (Session::get('preferences')['is_hyperlocal'] == 1))
+        @if((isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1))
             is_hyperlocal = 1;
-        @endif;
+        @endif
 
         @if((isset($client_preference_detail->business_type)) && ($client_preference_detail->business_type != ''))
             business_type = "{{$client_preference_detail->business_type}}";
         @endif
-    @endif;
+    @endif
     var base_url = "{{ url('/')}}";
 
     function gm_authFailure() {
@@ -159,7 +159,7 @@ if (Session::has('toaster')) {
         });
     }
 </script>
-@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
+@if(Session::has('preferences') && !empty(Session::get('preferences')->fcm_api_key))
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
     var firebaseConfig = {

@@ -345,8 +345,10 @@ $(document).ready(function () {
                             }
                             if (vendors.length > 0) {
                                 $('#our_vendor_main_div').removeClass('d-none');
+                                $(".no-store-wrapper").hide();
                             } else {
                                 $('#our_vendor_main_div').addClass('d-none');
+                                $(".no-store-wrapper").show();
                             }
                             if (response.data.active_orders.length > 0) {
                                 $('.render_full_recent_orders').removeClass('d-none');

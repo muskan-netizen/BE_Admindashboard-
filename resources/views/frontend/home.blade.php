@@ -63,7 +63,9 @@
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
         animation: loading 0.8s infinite;
     }
-
+    .no-store-wrapper{
+        display: none;
+    }
     @keyframes loading {
         100% {
             transform: translateX(100%);
@@ -83,21 +85,6 @@
     @endif
 </header>
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
-
-<section class="no-store-wrapper mb-3" style="display:none">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <img class="no-store-image w-100 mt-2 mb-2" src="{{ asset('images/no-stores.svg') }}" style="max-height: 250px;">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12 text-center mt-2">
-                <h4>{{__('There are no stores available in your area currently.')}}</h4>
-            </div>
-        </div>
-    </div>
-</section>
 
 @if(count($banners))
 <section class="p-0 small-slider">
@@ -139,10 +126,10 @@
                     <a href="{{route('vendorDetail')}}/<%= vendor.slug %>">
                         <% if(vendor.is_vendor_closed == 1){%>
                             <img class="img-fluid blur-up lazyload m-auto bg-img grayscale-image" alt="xx" src="<%= vendor.logo.proxy_url %>200/200<%= vendor.logo['image_path'] %>">
-                            <% }else { %>  
+                            <% }else { %>
                                 <img class="img-fluid blur-up lazyload m-auto bg-img" alt="xx" src="<%= vendor.logo.proxy_url %>200/200<%= vendor.logo['image_path'] %>">
-                            <%  } %> 
-                        
+                            <%  } %>
+
                     </a>
                 </div>
             </div>
@@ -162,7 +149,7 @@
                 <% if(vendor.timeofLineOfSightDistance != undefined){ %>
                     <h6 class="d-flex justify-content-between">
                         <small><i class="fa fa-map-marker"></i> <%= vendor.lineOfSightDistance %></small>
-                        <small><i class="fa fa-clock"></i> <%= vendor.timeofLineOfSightDistance %>min</small>
+                        <small><i class="fa fa-clock"></i> <%= vendor.timeofLineOfSightDistance %></small>
                     </h6>
                 <% } %>
             </div>
@@ -219,9 +206,9 @@
                     <a href="{{route('vendorDetail')}}/<%= vendor.slug %>">
                         <% if(vendor.is_vendor_closed == 1){%>
                         <img class="img-fluid blur-up lazyload m-auto bg-img grayscale-image" alt="" src="<%= vendor.logo.proxy_url %>200/200<%= vendor.logo['image_path'] %>">
-                        <% }else { %>  
+                        <% }else { %>
                             <img class="img-fluid blur-up lazyload m-auto bg-img" alt="" src="<%= vendor.logo.proxy_url %>200/200<%= vendor.logo['image_path'] %>">
-                        <%  } %> 
+                        <%  } %>
                     </a>
                 </div>
             </div>
@@ -241,7 +228,7 @@
                 <% if(vendor.timeofLineOfSightDistance != undefined){ %>
                     <h6 class="d-flex justify-content-between">
                         <small><i class="fa fa-map-marker"></i> <%= vendor.lineOfSightDistance %>km</small>
-                        <small><i class="fa fa-clock"></i> <%= vendor.timeofLineOfSightDistance %>min</small>
+                        <small><i class="fa fa-clock"></i> <%= vendor.timeofLineOfSightDistance %></small>
                     </h6>
                 <% } %>
             </div>
@@ -426,6 +413,20 @@
         </div>
         @endif
         @endforeach
+    </div>
+</section>
+<section class="no-store-wrapper mb-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <img class="no-store-image w-100 mt-2 mb-2" src="{{ asset('images/no-stores.svg') }}" style="max-height: 250px;">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 text-center mt-2">
+                <h4>{{__('There are no stores available in your area currently.')}}</h4>
+            </div>
+        </div>
     </div>
 </section>
 <div class="modal fade" id="age_restriction" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

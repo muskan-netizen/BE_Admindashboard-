@@ -180,10 +180,68 @@
                 </ul>
             </div>
         </div>
+
+
     </div>
 
 
 </form>
+<div class="col-lg-3 col-md-6 mb-3">
+    <form method="POST" action="{{route('web.styling.update_contact_up')}}">
+        @csrf
+        <div class="row h-100">
+        <div class="col-12">
+            <div class="card-box h-100">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title mb-0">{{ __("Contact Us") }}</h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                    <div class="row">
+                        <div class="col-12 mt-3 ">
+                            <div class="row">
+                                <div class="col-12">
+                                <div class="form-group mb-0">
+                                    <label for="contact_address">{{ __("Company Address") }}</label>
+                                    <div class="input-group">
+                                        <input type="text" name="contact_address" id="contact_address"  class="form-control" value="{{ old('contact_address', $clientContact->contact_address ?? '')}}">
+                                    </div>
+                                    @if($errors->has('contact_address'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('contact_address') }}</strong>
+                                    </span>
+                                    @endif
+                                </div>
+                                <div class="form-group mt-3 mb-0">
+                                    <label for="contact_phone_number">{{ __("Contact Number") }}</label>
+                                    <input type="text" name="contact_phone_number" id="contact_phone_number" placeholder="" class="form-control" value="{{ old('contact_phone_number', $clientContact->contact_phone_number ?? '')}}">
+                                    @if($errors->has('contact_phone_number'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('contact_phone_number') }}</strong>
+                                    </span>
+                                    @endif
+                                </div>
+                                <div class="form-group mt-3 mb-0">
+                                    <label for="contact_email">{{ __("Contact Email") }}</label>
+                                    <input type="text" name="contact_email" id="contact_email" placeholder="" class="form-control" value="{{ old('contact_email', $clientContact->contact_email ?? '')}}">
+                                    @if($errors->has('contact_email'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('contact_email') }}</strong>
+                                    </span>
+                                    @endif
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </form>
+</div>
 
 <!-- cab booking template -->
 <form id="favicon-form-pickup" method="post" enctype="multipart/form-data">

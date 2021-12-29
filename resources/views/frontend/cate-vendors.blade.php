@@ -227,7 +227,7 @@
                                                                                     <small class="d-block"><span class="icon-location2"></span> {{$data->lineOfSightDistance}}</small>
                                                                                 </li>
                                                                                 <li>
-                                                                                    <small class="d-block mx-1"><span class="icon-clock"></span> {{$data->timeofLineOfSightDistance}} min</small>
+                                                                                    <small class="d-block mx-1"><span class="icon-clock"></span> {{$data->timeofLineOfSightDistance}}</small>
                                                                                 </li>
                                                                             </ul>
                                                                         @endif

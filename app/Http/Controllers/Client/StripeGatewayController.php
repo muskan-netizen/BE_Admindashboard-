@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Client;
 use Auth;
 use Session;
 use Redirect;
+use Carbon\Carbon;
 use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use Omnipay\Common\CreditCard;
-use App\Models\{PaymentOption, Client, ClientCurrency, SubscriptionPlansVendor, PayoutOption, UserVendor, VendorConnectedAccount};
+use App\Models\{PaymentOption, Client, ClientCurrency, SubscriptionPlansVendor, PayoutOption, UserVendor, Vendor, VendorConnectedAccount};
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
 use App\Http\Controllers\Client\BaseController;
@@ -97,6 +98,101 @@ class StripeGatewayController extends BaseController{
         }
     }
 
+    public function createCustomConnectedAccount(request $request, $domain='', $vid=0)
+    {
+        try{
+            $user = Auth::user();
+            if($vid > 0){
+                $checkIfExists = VendorConnectedAccount::where('vendor_id', $vid)->first();
+                if($checkIfExists){
+                    $msg = __('You are already connected to stripe');
+                    $toaster = $this->errorToaster('Error', $msg);
+                }
+                else{
+                    $client = Client::with('country')->orderBy('id','asc')->first();
+                    $vendor = Vendor::where("id", $vid)->where('status', 1)->first();
+                    $stripe = new \Stripe\StripeClient($this->payout_secret_key);
+                    $response = $stripe->accounts->create([
+                        'country' => $client->country->code,
+                        'type' => 'custom',
+                        'email' => $vendor->email,
+                        'capabilities' => [
+                            'card_payments' => ['requested' => true],
+                            'transfers' => ['requested' => true],
+                        ],
+                        // 'tos_acceptance' => [
+                        //     'date' => Carbon::now()->timestamp,
+                        //     'ip' => getUserIP()
+                        // ]
+                    ]);
+
+                    $connectedAccountRetrieve = $stripe->accounts->retrieve(
+                        $response->id,
+                        []
+                    );
+
+                    $stripe->accounts->update(
+                        $response->id,
+                        [
+                            'tos_acceptance' => [
+                                'date' => Carbon::now()->timestamp,
+                                'ip' => getUserIP()
+                            ],
+                            'business_type' => 'individual',
+                            'business_profile' => [
+                                // 'mcc' => null,
+                                'name' => $vendor->name,
+                                // 'support_address' => null,
+                                'support_email' => $vendor->email,
+                                'support_phone' => $vendor->phone_no,
+                                'support_url' => $vendor->website,
+                            ],
+                            'individual'=> [
+                                'first_name'=> $user->name,
+                                'last_name'=> $user->name,
+                                'dob' => [
+                                  'day'=> 1,
+                                  'month'=> 10,
+                                  'year'=> 1990
+                                ],
+                                'email'=> $user->email,
+                                'phone'=> $user->phone_number,
+                                'address' => [
+                                   'city'=> 'city',
+                                   'country'=> 'IN',
+                                   'line1'=> '1',
+                                   'line2'=> 'Street Rd',
+                                   'postal_code'=> 'XXX XXX'
+                                ]       
+                            ],
+                        ]
+                    );
+
+                    // Access the connected account id in the response
+                    $connected_account_id = $response->id;
+                    $connectdAccount = new VendorConnectedAccount();
+                    $connectdAccount->user_id = $user->id;
+                    $connectdAccount->vendor_id = $vid;
+                    $connectdAccount->account_id = $connected_account_id;
+                    $connectdAccount->payment_option_id = 2;
+                    $connectdAccount->status = 1;
+                    $connectdAccount->save();
+
+                    $msg = __('Stripe connect has been enabled successfully');
+                    $toaster = $this->successToaster(__('Success'), $msg);
+                }
+            }else{
+                $msg = __('Invalid Data');
+                $toaster = $this->errorToaster(__('Errors'), $msg);
+            }
+        }
+        catch(Exception $ex){
+            $toaster = $this->errorToaster(__('Errors'), $ex->getMessage());
+        }
+
+        return Redirect::To(route('vendor.payout', $vid))->with('toaster', $toaster);
+    }
+
     public function verifyOAuthToken(request $request)
     {
         try{
@@ -104,7 +200,7 @@ class StripeGatewayController extends BaseController{
             $vendor = $request->state;
             if($request->has('code')){
                 $code = $request->code;
-                $checkIfExists = VendorConnectedAccount::where('user_id', $user->id)->where('vendor_id', $vendor)->first();
+                $checkIfExists = VendorConnectedAccount::where('vendor_id', $vendor)->first();
                 if($vendor > 0){
                     if($checkIfExists){
                         $msg = __('You are already connected to stripe');

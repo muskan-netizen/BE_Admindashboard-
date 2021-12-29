@@ -190,7 +190,7 @@ class VendorController extends BaseController{
                              'tags.tag.translations' => function ($q) use ($langId) {
                                 $q->where('language_id', $langId);
                             }
-                        ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+                        ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only','minimum_order_count','batch_count');
                     $products = $products->where('is_live', 1)->where('category_id', $category->category_id)->where('vendor_id', $vid)->get();
                     
                     if(!empty($products)){
@@ -226,6 +226,7 @@ class VendorController extends BaseController{
                             $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
                             $value->variant_id = ($value->variant->isNotEmpty()) ? $value->variant->first()->id : 0;
                             $value->variant_quantity = ($value->variant->isNotEmpty()) ? $value->variant->first()->quantity : 0;
+                            $value->minimum_order_count = ($value->minimum_order_count) ? $value->minimum_order_count : 0;
                             foreach ($value->variant as $k => $v) {
                                 $value->variant[$k]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                             }

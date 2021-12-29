@@ -215,7 +215,13 @@ class BaseController extends Controller{
             $distance_to_time_multiplier = (!empty($preferences->distance_to_time_multiplier)) ? $preferences->distance_to_time_multiplier : 2;
             $distance = $this->calulateDistanceLineOfSight($lat1, $long1, $lat2, $long2, $distance_unit);
             $vendor->lineOfSightDistance = number_format($distance, 1, '.', '') .' '. $unit_abbreviation;
-            $vendor->timeofLineOfSightDistance = number_format(floatval($vendor->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', ''); // distance is multiplied by distance time multiplier to calculate travel time
+            $pretime =  number_format(floatval($vendor->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', ''); // distance is multiplied by distance time multiplier to calculate travel time
+            // if($pretime >= 60){
+            //     $vendor->timeofLineOfSightDistance =  $this->vendorTime($pretime) . '-' . $this->vendorTime((intval($pretime) + 5)).' '. __('hour');
+            // }else{
+            //     $vendor->timeofLineOfSightDistance = $pretime . '-' . (intval($pretime) + 5).' '. __('min');
+            // }
+            $vendor->timeofLineOfSightDistance = $pretime ;
         }
         return $vendor;
     }
@@ -227,7 +233,13 @@ class BaseController extends Controller{
             $distance_to_time_multiplier = ($preferences->distance_to_time_multiplier > 0) ? $preferences->distance_to_time_multiplier : 2;
             $distance = $vendor->vendorToUserDistance;
             $vendor->lineOfSightDistance = number_format($distance, 1, '.', '') .' '. $unit_abbreviation;
-            $vendor->timeofLineOfSightDistance = number_format(floatval($vendor->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', ''); // distance is multiplied by distance time multiplier to calculate travel time
+            $pretime = number_format(floatval($vendor->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', ''); // distance is multiplied by distance time multiplier to calculate travel time
+            // if($pretime >= 60){
+            //     $vendor->timeofLineOfSightDistance =  $this->vendorTime($pretime) . '-' . $this->vendorTime((intval($pretime) + 5)).' '. __('hour');
+            // }else{
+            //     $vendor->timeofLineOfSightDistance = $pretime . '-' . (intval($pretime) + 5).' '. __('min');
+            // }
+            $vendor->timeofLineOfSightDistance =  $pretime;
             // $pretime = $this->getEvenOddTime($vendor->timeofLineOfSightDistance);
             // $vendor->timeofLineOfSightDistance = $pretime . '-' . (intval($pretime) + 5);
         }
@@ -588,6 +600,11 @@ class BaseController extends Controller{
             $data['message'] =  $e->getMessage();
             return $data;
         }
+    }
+    public function vendorTime($minutes){
+        $hours = intdiv($minutes, 60).':'. ($minutes % 60);
+
+        return $hours;
     }
 
 }

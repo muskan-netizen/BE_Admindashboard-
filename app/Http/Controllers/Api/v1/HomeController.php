@@ -447,6 +447,7 @@ class HomeController extends BaseController
                 return response()->json(['error' => 'Type is incorrect.'], 404);
             }
             $allowed_vendors = $this->getServiceAreaVendors($latitude, $longitude, $action);
+
             $response = array();
             if ($for == 'all') {
                 $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
@@ -489,6 +490,7 @@ class HomeController extends BaseController
                     });
                 }
 
+
                 $vendors = $vendors->where(function ($q) use ($keyword) {
                     $q->where('name', 'LIKE', "%$keyword%")->orWhere('address', 'LIKE', '%' . $keyword . '%');
                 })->where('status', 1)->paginate($limit, $page);
@@ -506,6 +508,7 @@ class HomeController extends BaseController
                 //     $vendor->response_type = 'vendor';
                 //     // $response[] = $vendor;
                 // }
+               // pr($vendorids);
                 $products = Product::with(['category.categoryDetail.translation' => function ($q) use ($langId) {
                     $q->where('category_translations.language_id', $langId);
                 }, 'media'])->join('product_translations as pt', 'pt.product_id', 'products.id')
@@ -514,6 +517,7 @@ class HomeController extends BaseController
                     ->whereHas('vendor', function ($query) use ($action) {
                         $query->where($action, 1);
                     })
+
                     ->where(function ($q) use ($keyword) {
                         $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
                     })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')
@@ -557,7 +561,10 @@ class HomeController extends BaseController
                 if ($for == 'brand') {
                     $products = $products->where('products.brand_id', $dataId);
                 }
-                $products = $products->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->paginate($limit, $page);
+                $products = $products->where('products.is_live', 1)
+                            ->whereIn('vendor_id', $allowed_vendors)
+                            ->whereNull('deleted_at')->groupBy('products.id')
+                            ->paginate($limit, $page);
                 foreach ($products as $product) {
                     $product->response_type = 'product';
                     $response[] = $product;

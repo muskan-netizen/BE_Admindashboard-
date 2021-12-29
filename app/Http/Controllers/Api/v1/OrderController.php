@@ -408,7 +408,6 @@ class OrderController extends BaseController
                         $this->sendSuccessEmail($request, $order, $vendor_id);
                     }
                     $this->sendSuccessEmail($request, $order);
-                    $this->sendSuccessSMS($request, $order);
                     $ex_gateways = [6, 7, 8, 9, 10, 11, 12, 13]; // if mobbex, payfast, yoco, razorpay, gcash, simplify, square
                     if (!in_array($request->payment_option_id, $ex_gateways)) {
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
@@ -471,7 +470,8 @@ class OrderController extends BaseController
                     }
 
                     DB::commit();
-
+                    $this->sendSuccessSMS($request, $order);
+                 
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
                 }
             } else {
@@ -902,7 +902,7 @@ class OrderController extends BaseController
                 }
                 $provider = $prefer->sms_provider;
                 $body = "Hi " . $user->name . ", Your order of amount " . $currSymbol . $order->payable_amount . " for order number " . $order->order_number . " has been placed successfully.";
-                if (!empty($prefer->sms_key) && !empty($prefer->sms_secret) && !empty($prefer->sms_from)) {
+                if (!empty($prefer->sms_provider)) {
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
                 }
             }

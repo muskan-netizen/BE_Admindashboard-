@@ -248,6 +248,10 @@
                                         @if(!empty($product->variantSet))
                                             @php
                                                 $selectedVariant = isset($product->variant[0]) ? $product->variant[0]->id : 0;
+                                                if($product->minimum_order_count > 0)
+                                                $product->minimum_order_count = $product->minimum_order_count;
+                                                else
+                                                $product->minimum_order_count = 1;
                                             @endphp
                                             @foreach($product->variantSet as $key => $variant)
                                                 @if($variant->type == 1 || $variant->type == 2)
@@ -290,15 +294,19 @@
                                                 @endif
                                             </h6>
                                             @if($product->variant[0]->quantity > 0 || $product->sell_when_out_of_stock == 1)
+                                            @if($product->minimum_order_count > 1)
+                                            {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $product->minimum_order_count }} </p>
+                                            <p class="mb-1 product_price">   {{__('Batch') }} : {{ $product->batch_count }} </p> --}}
+                                            @endif
                                             <div class="qty-box mb-3">
                                                 <div class="input-group">
                                                     <span class="input-group-prepend">
-                                                        <button type="button" class="btn quantity-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
+                                                        <button type="button" class="btn quantity-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-angle-left"></i>
                                                         </button>
                                                     </span>
-                                                    <input type="text" name="quantity" id="quantity" class="form-control input-qty-number quantity_count" value="1">
+                                                    <input type="text" name="quantity" id="quantity" class="form-control input-qty-number quantity_count" value="{{$product->minimum_order_count??1}}" data-minimum_order_count={{$product->minimum_order_count}}>
                                                     <span class="input-group-prepend quant-plus">
-                                                        <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="">
+                                                        <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}>
                                                             <i class="ti-angle-right"></i>
                                                         </button>
                                                     </span>

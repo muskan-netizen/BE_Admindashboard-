@@ -40,7 +40,7 @@
                                             <small class="d-block"><img class="d-inline-block mr-1" src="{{ asset('front-assets/images/distance.png') }}" alt=""> {{$vendor->lineOfSightDistance}}</small>
                                         </li>
                                         <li>
-                                            <small class="d-block mx-1"><i class="fa fa-clock-o"></i> {{$vendor->timeofLineOfSightDistance}} min</small>
+                                            <small class="d-block mx-1"><i class="fa fa-clock-o"></i> {{$vendor->timeofLineOfSightDistance}}</small>
                                         </li>
                                     </ul>
                                 @endif
@@ -50,7 +50,7 @@
                                     @if($vendor->vendorRating > 0)
                                         <ul class="custom-rating m-0 p-0">
                                             @for($i=0; $i < 5; $i++)
-                                                @php 
+                                                @php
                                                 if($i <= $vendor->vendorRating){
                                                     $starFillClass = 'fa-star';
                                                 }else{

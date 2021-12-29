@@ -17,7 +17,7 @@ class Alterclientpreftableminuimunorder extends Migration
             $table->tinyInteger('minimum_order_batch')->nullable()->default(0)->comment('0-No, 1-Yes');
         });
         Schema::table('products', function (Blueprint $table) {
-            $table->Integer('minimum_order_count')->default(0);
+            $table->Integer('minimum_order_count')->default(1);
             $table->Integer('batch_count')->default(1);
         });
     }

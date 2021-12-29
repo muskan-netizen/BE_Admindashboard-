@@ -105,7 +105,7 @@ class CelebrityController extends BaseController
                 ->whereHas('celebrities', function($q) use($cid){
                     $q->where('celebrity_id', $cid);
                 })
-                ->select('id', 'sku', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'brand_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'category_id')
+                ->select('id', 'sku', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'brand_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'category_id','minimum_order_count','batch_count')
                 //, 'pc.celebrity_id')
                 // ->where('pc.celebrity_id', $cid)
                 ->where('is_live', 1)

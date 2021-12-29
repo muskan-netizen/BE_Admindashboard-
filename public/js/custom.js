@@ -2171,12 +2171,25 @@ $(document).ready(function() {
         let cart_id = $(this).attr("data-cart");
         let product_id = $(this).attr("data-product_id");
         let variant_id = $(this).attr("data-variant_id");
+        let minimum_order_count = $(this).attr("data-minimum_order_count");
+        let batch_count = $(this).attr("data-batch_count");
+        if(batch_count > 0)
+        batch_count = batch_count;
+        else
+        batch_count = 1;
+
+        if(minimum_order_count > 0)
+        batch_count = batch_count;
+        else
+        batch_count = 1;
+        
         let qty = $(this).next().val();
+        let decrevalue = parseInt(qty)-parseInt(batch_count);
         if(!$.hasAjaxRunning()){
             if (qty > 1) {
                 if( $(this).hasClass('remove-customize') && $(this).hasClass('m-open') ){
                     $(this).find('.fa').removeClass("fa-minus").addClass("fa-spinner fa-pulse");
-                    updateProductQuantity(product_id, cartproduct_id, --qty, base_price, this);
+                    updateProductQuantity(product_id, cartproduct_id, decrevalue, base_price, this);
                 }
                 else if( $(this).hasClass('remove-customize') && !$(this).hasClass('m-open') ){
                     $('#customize_repeated_item_modal').modal('show');
@@ -2184,8 +2197,8 @@ $(document).ready(function() {
                 }
                 else{
                     $(this).find('.fa').removeClass("fa-minus").addClass("fa-spinner fa-pulse");
-                    $('#quantity_ondemand_' + cartproduct_id).val(--qty);
-                    updateProductQuantity(product_id, cartproduct_id, qty, base_price, this);
+                    $('#quantity_ondemand_' + cartproduct_id).val(decrevalue);
+                    updateProductQuantity(product_id, cartproduct_id, decrevalue, base_price, this);
                 }
             } else {
                 // alert('remove this product');
@@ -2202,21 +2215,28 @@ $(document).ready(function() {
         let cartproduct_id = $(this).attr("data-id");
         let cart_id = $(this).attr("data-cart");
         let product_id = $(this).attr("data-product_id");
+        let minimum_order_count = $(this).attr("data-minimum_order_count");
+        let batch_count = $(this).attr("data-batch_count");
+        if(batch_count > 0)
+        batch_count = batch_count;
+        else
+        batch_count = 1;
         // let variant_id = $(this).attr("data-variant_id");
         // let vendor_id = $(this).attr("data-vendor_id");
         let addon = $(this).attr("data-addon");
         let qty = $(this).prev().val();
+        let increvalue = parseInt(qty)+parseInt(batch_count);
         if(!$.hasAjaxRunning()){
             if( $(this).hasClass('repeat-customize') && $(this).hasClass('m-open') ){
                 $(this).find('.fa').removeClass("fa-plus").addClass("fa-spinner fa-pulse");
-                updateProductQuantity(product_id, cartproduct_id, ++qty, base_price, this);
+                updateProductQuantity(product_id, cartproduct_id, increvalue, base_price, this);
             }
             else if($(this).hasClass('repeat-customize') && !$(this).hasClass('m-open') ){
                 getLastAddedProductVariant(this, cart_id, product_id, addon);
             }else{
-                $(this).prev().val(++qty);
+                $(this).prev().val(increvalue);
                 $(this).find('.fa').removeClass("fa-plus").addClass("fa-spinner fa-pulse");
-                updateProductQuantity(product_id, cartproduct_id, qty, base_price, this);
+                updateProductQuantity(product_id, cartproduct_id, increvalue, base_price, this);
             }
         }
     });
@@ -2785,25 +2805,54 @@ $(document).ready(function() {
     $(document).delegate('.quantity-right-plus', 'click', function() {
         var quan = parseInt($('.quantity_count').val());
         var str = $('#instock').val();
+        var batch_count = $(this).data("batch_count");
         // var res = parseInt(str.substring(10, str.length - 1));
-        if ((quan + 1) > str) {
+        if(batch_count > 0)
+        batch_count = batch_count;
+        else
+        batch_count = 1;
+
+        if ((quan + batch_count) > str) {
             alert("Quantity is not available in stock");
             $('.quantity_count').val(str);
         } else {
             var s = $(".qty-box .input-qty-number"),
                 i = parseInt(s.val(), 10);
-            isNaN(i) || s.val(i + 1);
+            isNaN(i) || s.val(i + batch_count);
         }
     });
     $(document).delegate(".quantity-left-minus", "click", function() {
+
+        var batch_count = $(this).data("batch_count");
+        if(batch_count >0)
+        batch_count = batch_count;
+        else
+        batch_count = 1;
+
+        var minimum_order_count = $(this).data("minimum_order_count");
+        if(minimum_order_count > 0)
+        minimum_order_count = minimum_order_count;
+        else
+        minimum_order_count = 1;
+        // var res = parseInt(str.substring(10, str.length - 1));
+       
+
+        console.log(minimum_order_count);
+
         var s = $(".qty-box .input-qty-number"),
             i = parseInt(s.val(), 10);
-        !isNaN(i) && i > 1 && s.val(i - 1);
+
+        if (i - batch_count < minimum_order_count) {
+                alert("Minimum Quantity count is " + minimum_order_count);
+                return false;
+        }    
+        !isNaN(i) && i > 1 && s.val(i - batch_count);
     });
     $(document).delegate('.quantity_count', 'change', function() {
         var quan = $(this).val();
         var str = $('#instock').val();
-        // var res = parseInt(str.substring(10, str.length - 1));
+      
+
         if (quan > str) {
             alert("Quantity is not available in stock");
             $('.quantity_count').val(str);
