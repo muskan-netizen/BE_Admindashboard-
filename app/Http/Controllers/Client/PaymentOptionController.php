@@ -29,7 +29,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme');
         $payout_codes = array('cash', 'stripe');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -232,6 +232,18 @@ class PaymentOptionController extends BaseController
                         'site_code' => $request->ozow_site_code,
                         'private_key' => $request->ozow_private_key,
                         'api_key' => $request->ozow_api_key,
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'pagarme')) {
+                    $validatedData = $request->validate([
+                        'pagarme_api_key' => 'required',
+                        'pagarme_secret_key' => 'required',
+                        'pagarme_multiplier' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'api_key' => $request->pagarme_api_key,
+                        'secret_key' => $request->pagarme_secret_key,
+                        'multiplier' => $request->pagarme_multiplier,
                     ));
                 }
             }

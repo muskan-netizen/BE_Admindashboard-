@@ -136,12 +136,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </div>
                             <div class="col-8 col-md-4 text-md-center order-3 order-md-2">
                                 <div class="number d-flex justify-content-md-center">
-                                    <div class="counter-container d-flex align-items-center">
-                                        <span class="minus qty-minus" data-id="<%= vendor_product.id %>" data-base_price=" <%= vendor_product.pvariant.price %>" data-vendor_id="<%= vendor_product.vendor_id %>">
+                                    <div class="counter-container d-flex align-items-center"> 
+                                        <span class="minus qty-minus" data-minimum_order_count="<%= vendor_product.product.minimum_order_count %>"
+                                        data-batch_count="<%= vendor_product.product.batch_count %>" data-id="<%= vendor_product.id %>" data-base_price=" <%= vendor_product.pvariant.price %>" data-vendor_id="<%= vendor_product.vendor_id %>">
                                             <i class="fa fa-minus" aria-hidden="true"></i>
                                         </span>
-                                        <input placeholder="1" type="text" value="<%= vendor_product.quantity %>" class="input-number" step="0.01" id="quantity_<%= vendor_product.id %>" readonly>
-                                        <span class="plus qty-plus" data-id="<%= vendor_product.id %>" data-base_price=" <%= vendor_product.pvariant.price %>">
+                                        <input placeholder="1" type="text" data-minimum_order_count="<%= vendor_product.product.minimum_order_count %>"
+                                        data-batch_count="<%= vendor_product.product.batch_count %>" value="<%= vendor_product.quantity %>" class="input-number" step="0.01" id="quantity_<%= vendor_product.id %>" readonly>
+                                        <span class="plus qty-plus" data-minimum_order_count="<%= vendor_product.minimum_order_count %>"
+                                            data-batch_count="<%= vendor_product.product.batch_count %>" data-id="<%= vendor_product.id %>" data-base_price=" <%= vendor_product.pvariant.price %>">
                                             <i class="fa fa-plus" aria-hidden="true"></i>
                                         </span>
                                     </div>

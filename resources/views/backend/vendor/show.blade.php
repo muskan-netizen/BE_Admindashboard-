@@ -806,7 +806,7 @@
     var areajson_json = all_coordinates; //{all_coordinates};
     
     function initialize_show() {
-
+       
         // var myLatlng = new google.maps.LatLng("{{ $center['lat'] }}","{{ $center['lng']  }}");
         //console.log(myLatlng);
         var latitude = parseFloat("{{ $vendor['latitude'] }}");
@@ -1088,7 +1088,7 @@
             });
         }
     }
-    if ((is_hyperlocal) || (pickup_delivery_service_area == 1)) {
+    if ((is_hyperlocal) || (pickup_delivery_service_area == 1)) { 
         google.maps.event.addDomListener(window, 'load', initialize);
         google.maps.event.addDomListener(window, 'load', initialize_show);
         google.maps.event.addDomListener(window, 'load', initialize_edit);
@@ -1281,9 +1281,10 @@
                 document.getElementById('edit_type_id').value = ev.event.extendedProps.type_id;
 
                 // Delete Slot Form
-                document.getElementById('deleteSlotDayid').value = ev.event.extendedProps.type_id;
+                document.getElementById('deleteSlotDayid').value = ev.event.extendedProps.type_id; 
                 document.getElementById('deleteSlotId').value = ev.event.extendedProps.slot_id;
                 document.getElementById('deleteSlotType').value = ev.event.extendedProps.type;
+                document.getElementById('deleteSlotTypeOld').value = ev.event.extendedProps.type;
                 
                 if(ev.event.extendedProps.type == 'date'){
                     $("#edit_slotDate").prop("checked", true);
@@ -1352,9 +1353,10 @@
 
     $(document).on('change', '.slotTypeEdit', function() {
         var val = $(this).val();
+        $('#edit-slot-modal #deleteSlotType').val(val);
         if (val == 'day') {
             $('.modal .weekDaysEdit').show();
-            $('.modal .forDateEdit').hide();
+            $('.modal .forDateEdit').hide(); 
         } else if (val == 'date') {
             $('.modal .weekDaysEdit').hide();
             $('.modal .forDateEdit').show();
@@ -1362,6 +1364,8 @@
     });
 
     $(document).on('click', '#deleteSlotBtn', function() {
+        var date = $('#edit_slot_date').val();
+        $('#edit-slot-modal #deleteSlotDate').val(date);
         if (confirm("Are you sure? You want to delete this slot.")) {
             $('#deleteSlotForm').submit();
         }

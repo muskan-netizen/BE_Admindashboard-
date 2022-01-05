@@ -646,7 +646,7 @@
                                                                     <input
                                                                         style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;"
                                                                         id="quantity_ondemand_d{{ $data->id }}"
-                                                                        readonly placeholder="1" type="text" value="1"
+                                                                        readonly placeholder="{{ $minimum_order_count }}" type="text" value="{{ $minimum_order_count }}"
                                                                         class="input-number input_qty" step="0.01">
                                                                     <span class="plus qty-plus-product" data-id=""
                                                                         data-base_price="{{ $data->variant_price * $data->variant_multiplier }}"
@@ -945,7 +945,7 @@
                         <span class="minus qty-minus-product"  data-parent_div_id="show_plus_minus<%= variant.product_id %>" readonly data-id="<%= variant.product_id %>" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
                             <i class="fa fa-minus" aria-hidden="true"></i>
                         </span>
-                        <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d<%= variant.product_id %>" readonly placeholder="1" type="text" value="1" class="input-number input_qty" step="0.01">
+                        <input style="text-align:center;width: 80px;margin:auto;height: 24px;padding-bottom: 3px;" id="quantity_ondemand_d<%= variant.product_id %>" readonly placeholder="1" type="text" value="2" class="input-number input_qty" step="0.01">
                         <span class="plus qty-plus-product"  data-id="" data-base_price="<%= variant.price * variant.variant_multiplier %>" data-vendor_id="<%= variant.product.vendor_id %>">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </span>

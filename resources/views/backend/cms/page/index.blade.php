@@ -103,7 +103,6 @@
                                     <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">Copied</span>
                                 </label>
                                 @endif
-
                             </div>
                             <span class="text-danger error-text updatetitleError"></span>
                         </div>
@@ -168,21 +167,54 @@
                             <textarea class="form-control" id="edit_description" rows="9" name="meta_description" cols="100"></textarea>
                             <span class="text-danger error-text updatedescrpitionError"></span>
                         </div>
+                        <div class="col-md-12 d-none" id="faqSection">
+                            <div class="card">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h4>{{ __("Faq's") }}</h4>
+
+                                    </div>
+                                    <div class="faq_section" id ="faq_show_section"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script type="text/template" id="faq_template">
+    <div class ="option_section" id ="option_section_<%= id %>" data-section_number="<%= id %>">
+        <div class="form-group">
+            <label for="option_title_<%= id %>">{{__('Question')}}</label>
+            <input type="hidden" name="question_id[]"  id="option_id<%= id %>" data-id ="<%= id %>" value ="<%= data?data.id:'' %>">
+
+            <input type="text" name="question[]" class="form-control option_title" requrid id="question<%= id %>" placeholder="{{__('Enter question')}}" data-id ="<%= id %>" value ="<%= data?data.question:'' %>">
+        </div>
+        <div class="form-group">
+            <label for="answer<%= id %>">{{__('Answer')}}</label>
+            <input type="text" name="answer[]" class="form-control answer" requrid id="answer<%= id %>" placeholder="{{__('Enter Answer')}}" data-id ="<%= id %>" value ="<%= data?data.answer:'' %>">
+        </div>
+        <button type="button" class="btn btn-primary add_more_button mb-3" id ="add_button_<%= id %>" data-id ="<%= id %>" style=" margin-top: 17px;"> + {{__('Add Question')}}</button>
+        <% if(id > 1) { %>
+        <button type="button" class="btn btn-danger remove_more_button mb-3" id ="remove_button_<%= id %>" data-id ="<%= id %>" style=" margin-top: 17px;"> - {{__('Remove Question')}}</button>
+        <% } %>
+    </div>
+    </script>
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script src="{{ asset('assets/ck_editor/samples/js/sample.js')}}"></script>
+<script src="{{ asset('front-assets/js/underscore.min.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+
+
          $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
+
         setTimeout(function(){
             $('li.page-detail:first').trigger('click');
         }, 500);
@@ -193,8 +225,9 @@
             let page_id = $('#edit_page_content #page_id').val();
             $('#text_body_'+page_id).trigger('click');
         });
-        $(document).on("click",".page-detail",function() {
 
+        $(document).on("click",".page-detail",function() {
+            var section_id = 0
             // $('#edit_page_content #edit_description').val('');
             // $('#edit_page_content #edit_description').summernote('destroy');
             let url = $(this).data('show_url');
@@ -208,6 +241,28 @@
                 if(response.data){
                     $('#edit_page_content #page_id').val(response.data.id);
                     if(response.data.translation){
+                        if(response.data.translation.type_of_form==3){
+                            console.log("language change");
+                            $('.option_section').remove();
+                            $("#faqSection").removeClass("d-none");
+
+                            var faqs = response.data.faqs;
+                            var faq_section_temp    = $('#faq_template').html();
+                            var modified_temp         = _.template(faq_section_temp);
+                            var section_id = 0
+                            $(faqs).each(function(index, value) {
+                                section_id                = parseInt(section_id);
+                                section_id                = section_id +1;
+                                $('#faq_show_section').append(modified_temp({ id:section_id,data:value}));
+                                $('.add_more_button').hide();
+                                $('#add_button_'+section_id).show();
+
+                            });
+                            addFaqSectionTemplate(section_id);
+                        }else{
+                            $('.option_section').remove();
+                            $("#faqSection").addClass("d-none");
+                        }
                         $('#edit_page_content #edit_title').val(response.data.translation.title);
                         $("#edit_page_content #published").val(response.data.translation.is_published);
                         $('#edit_page_content #edit_meta_title').val(response.data.translation.meta_title);
@@ -218,7 +273,18 @@
                         $('#edit_page_content #edit_meta_description').val(response.data.translation.meta_description);
                         $("#update_page_btn").html('Update');
                         // $('#edit_page_content #edit_description').summernote({'height':450});
+
                     }else{
+                      $('.option_section').remove();
+                      var selectedid = $('#type_of_form').val();
+                        if(selectedid==3){
+                            $("#faqSection").removeClass("d-none");
+                            var classoption_section = $('#faqSection').find('.option_section');
+
+                            if(classoption_section.length==0){
+                                addFaqSectionTemplate(0);
+                            }
+                        }
                       $(':input:text').val('');
                       $('textarea').val('');
                     }
@@ -241,26 +307,37 @@
             CKEDITOR.instances.edit_description.setData("");
             $('#edit_page_content #edit_meta_keyword').val('');
             $('#edit_page_content #edit_meta_description').val('');
+            $("#faqSection").addClass("d-none");
+            $('.option_section').remove();
+
         });
         $(document).on("click",".delete-page",function() {
             var page_id = $(this).data('page_id');
             let destroy_url = "{{route('cms.page.delete')}}";
-            if (confirm('Are you sure?')) {
-                $.ajax({
-                    type: "POST",
-                    dataType: 'json',
-                    url: destroy_url,
-                    data: {page_id: page_id},
-                    success: function(response) {
-                        if (response.status == "Success") {
-                            $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                            setTimeout(function() {
-                                location.reload()
-                            }, 2000);
+            Swal.fire({
+                title: "{{__('Are you Sure?')}}",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Ok',
+            }).then((result) => {
+                if(result.value)
+                {
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: destroy_url,
+                        data: {page_id: page_id},
+                        success: function(response) {
+                            if (response.status == "Success") {
+                                $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                                setTimeout(function() {
+                                    location.reload()
+                                }, 2000);
+                            }
                         }
-                    }
-                });
-            }
+                    });
+                }
+            });
         });
         $(document).on("click","#update_page_btn",function() {
             var update_url = "{{route('cms.page.update')}}";
@@ -276,8 +353,12 @@
             // let edit_description = $('#edit_page_content #edit_description').val();
             let edit_description = CKEDITOR.instances.edit_description.getData();
             let edit_meta_keyword = $('#edit_page_content #edit_meta_keyword').val();
+            let question = $("input[name='question[]']").map(function(){return $(this).val();}).get();
+            let answer = $("input[name='answer[]']").map(function(){return $(this).val();}).get();
+            let question_old_ids = $("input[name='question_id[]']").map(function(){return $(this).val();}).get();
+
             let edit_meta_description = $('#edit_page_content #edit_meta_description').val();
-            var data = { page_id: page_id, is_published: is_published, edit_title: edit_title,edit_meta_title:edit_meta_title, edit_description:edit_description, edit_meta_keyword:edit_meta_keyword, edit_meta_description:edit_meta_description,language_id:language_id,type_of_form:type_of_form};
+            var data = { page_id: page_id,question_old_ids:question_old_ids,answer: answer,question: question, is_published: is_published, edit_title: edit_title,edit_meta_title:edit_meta_title, edit_description:edit_description, edit_meta_keyword:edit_meta_keyword, edit_meta_description:edit_meta_description,language_id:language_id,type_of_form:type_of_form};
             $.post(update_url, data, function(response) {
               $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
               $('#text_body_'+response.data.id).html(response.data.title);
@@ -298,7 +379,7 @@
                     post_order_ids.push($(this).data("row-id"));
                 });
                 console.log(post_order_ids);
-             saveOrderPickup(post_order_ids);
+                saveOrderPickup(post_order_ids);
 
             }
         });
@@ -322,8 +403,52 @@
                 },
             });
         }
+        $(document).on('change','#type_of_form',function(){
+            var selectedid = $(this).val();
+            if(selectedid==3){
+                $("#faqSection").removeClass("d-none");
+                var classoption_section = $('#faqSection').find('.option_section');
+                console.log(classoption_section);
+                if(classoption_section.length==0){
+                    addFaqSectionTemplate(0);
+                }
+            }else{
+                $("#faqSection").addClass("d-none");
+            }
 
-
+        });
+        $(document).on('click','.add_more_button',function(){
+            var main_id = $(this).data('id');
+            addFaqSectionTemplate(main_id);
+            console.log($('.add_more_button').length);
+        });
+        // var section_id = $("#faqSection .option_section").last().data('section_number');
+        // console.log(section_id);
+        //addFaqSectionTemplate(section_id);
+        function addFaqSectionTemplate(section_id){
+            section_id                = parseInt(section_id);
+            section_id                = section_id +1;
+            var data                  = '';
+            //console.log(section_id);
+            var price_section_temp    = $('#faq_template').html();
+            var modified_temp         = _.template(price_section_temp);
+            var result_html           = modified_temp({id:section_id,data:data});
+            $("#faq_show_section").append(result_html);
+            $('.add_more_button').hide();
+            $('#add_button_'+section_id).show();
+        }
+        $(document).on('click','.remove_more_button',function(){
+            var main_id =$(this).data('id');
+            removeFaqSectionTemplate(main_id);
+            $('.add_more_button').each(function(key,value){
+                if(key == ($('.add_more_button').length-1)){
+                    $('#add_button_'+$(this).data('id')).show();
+                }
+            });
+        });
+        function removeFaqSectionTemplate(div_id){
+            $('#option_section_'+div_id).remove();
+        }
     });
 </script>
 <script>

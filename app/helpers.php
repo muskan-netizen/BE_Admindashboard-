@@ -173,6 +173,16 @@ function checkImageExtension($image)
     }
     return $ex;
 }
+function getDefaultImagePath()
+{
+    $values = array();
+    $img = 'default/default_image.png';
+    $values['proxy_url'] = \Config::get('app.IMG_URL1');
+    $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).'@webp';
+    $values['image_fit'] = \Config::get('app.FIT_URl');
+    return $values;
+}
+
 
 function getUserIP() {
     $ipaddress = '';

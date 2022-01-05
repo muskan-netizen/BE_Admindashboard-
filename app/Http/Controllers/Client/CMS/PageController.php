@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\ClientLanguage;
 use App\Models\PageTranslation;
+use App\Models\FaqTranslations;
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Client\BaseController;
@@ -43,7 +44,15 @@ class PageController extends BaseController{
             'edit_title' => 'required',
             'edit_description' => 'required',
         );
+        // if($request->type_of_form == 3){
+        //     $rules = array(
+        //         'edit_title' => 'required',
+        //         'edit_description' => 'required',
+        //         'question' => "required|array"
+        //     );
+        // }
         $validation  = Validator::make($request->all(), $rules)->validate();
+
         $page = new Page();
         $page->slug = Str::slug($request->edit_title, '-');
         $page->save();
@@ -58,6 +67,21 @@ class PageController extends BaseController{
         $page_translation->meta_description = $request->edit_meta_description;
         $page_translation->type_of_form = $request->type_of_form;
         $page_translation->save();
+        if($request->type_of_form == 3 && $request->has('question')){
+            foreach($request->question as $key=>$value){
+                $faq = [
+                    'page_id'       => $page_translation->page_id,
+                    'language_id'   => $request->language_id,
+                    'question'      => $value,
+                    'answer'        => $request->answer[$key],
+                ];
+                $faqs = FaqTranslations::updateOrCreate(
+                    ['question' => $value, 'answer' => $request->answer[$key],'page_id' => $page_translation->page_id ],
+                    $faq
+                );
+            }
+        }
+
         return $this->successResponse($page_translation, 'Page Data Saved Successfully.');
     }
 
@@ -71,7 +95,11 @@ class PageController extends BaseController{
         $language_id = $request->language_id;
         $page =  Page::with(array('translation' => function($query) use($language_id) {
             $query->where('language_id', $language_id);
-        }))->where('id', $id)->first();
+        },'faqs' => function($query) use($language_id) {
+            $query->where('language_id', $language_id);
+        }
+        ))->where('id', $id)->first();
+        //pr($page->toArray());
         return $this->successResponse($page);
     }
 
@@ -83,6 +111,7 @@ class PageController extends BaseController{
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $domain = ''){
+       // pr( $request->all());
         $rules = array(
             'edit_title' => 'required',
             'edit_description' => 'required',
@@ -105,6 +134,30 @@ class PageController extends BaseController{
         $page_translation->meta_description = $request->edit_meta_description;
         $page_translation->type_of_form = $request->type_of_form;
         $page_translation->save();
+        //pr($page_translation->toArray());
+        if($request->type_of_form == 3){
+            //delete faq
+           $delete_question_ids = $request->question_old_ids;
+           if($request->question_old_ids)
+           FaqTranslations::whereNotIn('id',$delete_question_ids)->where(['page_id' => $page_translation->page_id])->delete();
+
+            foreach($request->question as $key=>$value){
+                if(!empty($value) && !empty($request->answer[$key])){
+                    $faq = [
+                        'page_id'       => $page_translation->page_id,
+                        'language_id'   => $request->language_id,
+                        'question'      => $value,
+                        'answer'        => $request->answer[$key],
+                    ];
+
+                    $faqs = FaqTranslations::updateOrCreate(
+                        ['page_id' => $page_translation->page_id ,'id'=> $request->question_old_ids[$key] ],
+                        $faq
+                    );
+                }
+
+            }
+        }
         return $this->successResponse($page_translation, 'Page Updated Successfully.');
     }
 

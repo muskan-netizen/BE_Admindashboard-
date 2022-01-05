@@ -179,6 +179,7 @@ class HomeController extends BaseController
             $venderFilterClose   = $request->has('close_vendor') && $request->close_vendor ? $request->close_vendor : null;
             $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
             $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
+            $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
 
             $type = 'delivery';
             if ($request->has('type')) {
@@ -203,8 +204,12 @@ class HomeController extends BaseController
                 $vendorData = $vendorData->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
                         cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
                         sin( radians(' . $latitude . ') ) *
-                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating')->orderBy('vendorToUserDistance', 'ASC');
+                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
                 $vendorData = $vendorData->whereIn('id', $ses_vendors);
+                if($venderFilternear && ($venderFilternear == 1) ){
+                    //->orderBy('vendorToUserDistance', 'ASC')
+                    $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
+                }
             }
 
             //filter on ratings

@@ -339,6 +339,12 @@ $timezone = Auth::user()->timezone;
                 error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 let error_messages = response.message;
+                // Swal.fire({
+                //    title: "Error!",
+                //    text: response.message,
+                //    icon: "error",
+                //    button: "OK",
+                // });
                 alert(error_messages);
                 location.reload();
                 }

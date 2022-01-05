@@ -250,7 +250,7 @@ class OrderController extends BaseController
                 $product_total_count = 0;
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
-                    $product->image_path  = $product->media->first() ? $product->media->first()->image->path : '';
+                    $product->image_path  = $product->media->first() ? $product->media->first()->image->path : getDefaultImagePath();
                 }
 
                 if ($vendor->delivery_fee > 0) {

@@ -79,6 +79,7 @@
                 $merchant_key = (isset($creds->merchant_key)) ? $creds->merchant_key : '';
                 $passphrase = (isset($creds->passphrase)) ? $creds->passphrase : '';
                 $merchant_account = (isset($creds->merchant_account)) ? $creds->merchant_account : '';
+                $multiplier = (isset($creds->multiplier)) ? $creds->multiplier : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -348,6 +349,35 @@
                                 <div class="form-group mb-2">
                                     <label for="ozow_api_key" class="mr-3">{{ __("Api Key") }}</label>
                                     <input type="text" name="ozow_api_key" id="ozow_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'pagarme') )
+                    <div class="mt-2" id="pagarme_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pagarme_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="pagarme_api_key" id="pagarme_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pagarme_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="pagarme_secret_key" id="pagarme_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pagarme_multiplier" class="mr-3">{{ __("Multiplier") }}</label>
+                                    <input type="number" name="pagarme_multiplier" id="pagarme_multiplier" class="form-control" value="{{$multiplier}}" step="0.01" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

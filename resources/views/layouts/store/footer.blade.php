@@ -3,6 +3,8 @@
         <i class="fa fa-angle-double-up"></i>
     </div>
 </div>
+<div class="d-none" id ="nearmap">
+</div>
 
 @php
     $mapKey = '1234';
@@ -76,6 +78,11 @@
     var ozow_before_payment = "{{route('payment.ozow.beforePayment')}}";
     var ozow_create_payment = "{{route('payment.ozow.createPayment')}}";
 
+/////////////Pagarme Payment Routes
+    var pagarme_before_payment = "{{route('payment.pagarme.beforePayment')}}";
+    var pagarme_create_payment = "{{route('payment.pagarme.createPayment')}}";
+
+
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";
     var logged_in_user_email = "{{Auth::user()->email??''}}";
@@ -94,8 +101,28 @@
 
 // is restricted
     var is_age_restricted ="{{$client_preference_detail->age_restriction}}";
+    //user lat long
 
+    var userLatitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
+    var userLongitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
 
+    if(!userLatitude){
+        @if(!empty($client_preference_detail->Default_latitude))
+        userLatitude = "{{$client_preference_detail->Default_latitude}}";
+        @endif
+    }
+    if(!userLatitude ){
+        userLatitude = "30.7333";
+    }
+
+    if(!userLongitude){
+        @if(!empty($client_preference_detail->Default_longitude))
+             userLongitude = "{{$client_preference_detail->Default_longitude}}";
+        @endif
+    }
+    if(!userLatitude ){
+        userLatitude = "76.7794";
+    }
     // if((home_page_url != window.location.href) && (home_page_url2 != window.location.href)){
     //     $('.vendor_mods').hide();}
     // else{
@@ -126,26 +153,25 @@
     };
     @php
         $mapurl = "https://maps.googleapis.com/maps/api/js?key=".$mapKey."&v=3.exp&libraries=places,drawing";
-        $map ="https://maps.googleapis.com/maps/api/place/autocomplete/json?input=amoeba&types=establishment&location=&radius=500&strictbounds=true&key=".$mapKey."&v=3.exp&libraries=places,drawing";
     @endphp
-
-    @if( Session::has('preferences') )
-        @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
-        @php
-            $user_lat = Session::get('latitude') ?? $client_preference_detail->Default_latitude;
-            $user_long = Session::get('latitude') ?? $client_preference_detail->Default_longitude;
-            $mapurl =$mapurl."&location=".$user_lat.','.$user_long."&rankBy=distance&sensor = true";
-            $map = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=amoeba&types=establishment&location=".$user_lat.",".$user_long."&radius=500&strictbounds=true&key=".$mapKey."&v=3.exp&libraries=places,drawing";
-        @endphp
-
-        @endif;
-    @endif;
 
 </script>
 
 
 <script src="{{asset('assets/js/constants.js')}}"></script>
 <script src="{{$mapurl}}"></script>
+
+<script>
+      var bindLatlng = new google.maps.LatLng(userLatitude, userLongitude);
+      var bindmapProp = {
+            center:bindLatlng,
+            zoom:13,
+            mapTypeId:google.maps.MapTypeId.ROADMAP
+
+        };
+    var bindMap=new google.maps.Map(document.getElementById("nearmap"), bindmapProp);
+</script>
+
 <script src="{{asset('front-assets/js/popper.min.js')}}"></script>
 <script src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="{{asset('front-assets/js/menu.js')}}"></script>

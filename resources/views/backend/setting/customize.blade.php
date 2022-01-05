@@ -477,24 +477,32 @@
         });
         $(document).on("click", ".delete_social_media_option_btn", function() {
             var social_media_detail_id = $(this).data('social_media_detail_id');
-            if (confirm('Are you sure?')) {
-                $.ajax({
-                    type: "POST",
-                    dataType: 'json',
-                    url: "{{ route('social.media.delete') }}",
-                    data: {
-                        social_media_detail_id: social_media_detail_id
-                    },
-                    success: function(response) {
-                        if (response.status == "Success") {
-                            $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                            setTimeout(function() {
-                                location.reload()
-                            }, 2000);
+            Swal.fire({
+                title: "{{__('Are you Sure?')}}",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Ok',
+            }).then((result) => {
+                if(result.value)
+                {
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: "{{ route('social.media.delete') }}",
+                        data: {
+                            social_media_detail_id: social_media_detail_id
+                        },
+                        success: function(response) {
+                            if (response.status == "Success") {
+                                $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                                setTimeout(function() {
+                                    location.reload()
+                                }, 2000);
+                            }
                         }
-                    }
-                });
-            }
+                    });
+                }
+            });
         });
         $(document).on("click", ".edit_social_media_option_btn", function() {
             let social_media_detail_id = $(this).data('social_media_detail_id');

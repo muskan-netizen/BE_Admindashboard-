@@ -130,7 +130,12 @@
             contentType: false,
             processData: false,
             success: function(response) {
-                console.log(response);
+                // Swal.fire({
+                //    title: "Success!",
+                //    text: "Sent Successfully.",
+                //    icon: "success",
+                //    button: "OK",
+                // });
                 alert("Sent Successfully");
                 window.location.href = "{{route('user.profile')}}";
             },

@@ -199,6 +199,7 @@ return [
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
         Spatie\Geocoder\GeocoderServiceProvider::class,
         Jackiedo\Timezonelist\TimezonelistServiceProvider::class,
+        // HTMLMin\HTMLMin\HTMLMinServiceProvider::class,
     ],
 
     /*
@@ -259,6 +260,7 @@ return [
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
         'Share' => Jorenvh\Share\ShareFacade::class,
+        // 'HTMLMin' => HTMLMin\HTMLMin\Facades\HTMLMin::class,
     ],
 
 ];

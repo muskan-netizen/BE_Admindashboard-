@@ -9,7 +9,7 @@ class CabBookingLayout extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title','slug','order_by','is_active','image'];
+    protected $fillable = ['title','slug','order_by','is_active','image','for_no_product_found_html'];
 
 
     public function translations(){

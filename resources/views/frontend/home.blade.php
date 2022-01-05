@@ -417,6 +417,11 @@
 </section>
 <section class="no-store-wrapper mb-3">
     <div class="container">
+        @if(count($for_no_product_found_html))     
+        @foreach($for_no_product_found_html as $key => $homePageLabel)
+            @include('frontend.included_files.dynamic_page')
+        @endforeach
+       @else 
         <div class="row">
             <div class="col-12">
                 <img class="no-store-image w-100 mt-2 mb-2" src="{{ asset('images/no-stores.svg') }}" style="max-height: 250px;">
@@ -427,6 +432,7 @@
                 <h4>{{__('There are no stores available in your area currently.')}}</h4>
             </div>
         </div>
+        @endif
     </div>
 </section>
 <div class="modal fade" id="age_restriction" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

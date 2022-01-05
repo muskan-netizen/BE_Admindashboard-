@@ -78,7 +78,7 @@ class CategoryController extends BaseController
     public function listData($langId, $category_id, $type = '', $limit = 12, $userid, $product_list, $mod_type, $mode_of_service = null)
     {
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
-        
+
         if ($type == 'vendor' && $product_list == 'false') {
             $user = Auth::user();
             $vendor_ids = [];
@@ -137,7 +137,7 @@ class CategoryController extends BaseController
                     }
                 }
                 $vendor->categoriesList = $categoriesList;
-                
+
                 // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($user->latitude) && ($user->longitude)) {
                 //     $vendor = $this->getVendorDistanceWithTime($user->latitude, $user->longitude, $vendor, $preferences);
                 // }
@@ -222,8 +222,8 @@ class CategoryController extends BaseController
             $pickup_latitude = $user->latitude ? $user->latitude : '';
             $pickup_longitude = $user->longitude ? $user->longitude : '';
 
-            // return $user; 
-            
+            // return $user;
+
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
             foreach ($vendor_categories as $vendor_category) {
                 if (!in_array($vendor_category->vendor_id, $vendor_ids)) {
@@ -235,7 +235,7 @@ class CategoryController extends BaseController
                 $vendorData = $vendorData->whereHas('serviceArea', function($query) use($pickup_latitude, $pickup_longitude){
                     $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
                 });
-            }            
+            }
             $vendorData = $vendorData->where('status', 1)->whereIn('id', $vendor_ids)->with('slot', 'products')->paginate($limit);
             // $avgRating = $vendorData->products->avg('averageRating');
             // $vendorData->avgRating = "fmwjkenf";
@@ -392,6 +392,7 @@ class CategoryController extends BaseController
      */
     public function categoryFilters(Request $request, $cid = 0)
     {
+       // pr($request->all());
         try {
             if ($cid == 0 || $cid < 0) {
                 return response()->json(['error' => 'No record found.'], 404);
@@ -445,41 +446,60 @@ class CategoryController extends BaseController
                 'category.categoryDetail', 'media.image',
                 'translation' => function ($q) use ($langId) {
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                    $q->groupBy('language_id','product_id');
                 },
-                'variant' => function ($q) use ($langId, $variantIds) {
-                    $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                'variant' => function ($q) use ($langId, $variantIds,$order_type) {
+                    $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','price');
                     if (!empty($variantIds)) {
                         $q->whereIn('id', $variantIds);
                     }
-                    if (!empty($order_type) && $order_type == 'low_to_high') {
-                        $q->orderBy('price', 'asc');
-                    }
-                    if (!empty($order_type) && $order_type == 'high_to_low') {
-                        $q->orderBy('price', 'desc');
-                    }
+                    // if (!empty($order_type) && $order_type == 'low_to_high') {
+                    //     $q->orderBy('price', 'asc');
+                    // }
+                    // if (!empty($order_type) && $order_type == 'high_to_low') {
+                    //     $q->orderBy('price', 'desc');
+                    // }
+
                     $q->groupBy('product_id');
                 },
-            ])->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
-                ->where('category_id', $cid)
+            ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
+                ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
+                ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
+                ->where('products.category_id', $cid)
                 ->where('products.is_live', 1)
-                ->whereIn('id', function ($qr) use ($startRange, $endRange) {
-                    $qr->select('product_id')->from('product_variants')
-                        ->where('price',  '>=', $startRange)
-                        ->where('price',  '<=', $endRange);
+                ->whereIn('products.id', function ($qr) use ($startRange, $endRange) {
+                $qr->select('product_id')->from('product_variants')
+                ->where('price', '>=', $startRange)
+                ->where('price', '<=', $endRange);
                 });
 
             if (!empty($productIds)) {
-                $products = $products->whereIn('id', $productIds);
+            $products = $products->whereIn('id', $productIds);
             }
 
             if ($request->has('brands') && !empty($request->brands)) {
-                $products = $products->whereIn('products.brand_id', $request->brands);
+            $products = $products->whereIn('products.brand_id', $request->brands);
             }
             if (!empty($order_type) && $request->order_type == 'rating') {
-                $products = $products->orderBy('averageRating', 'desc');
+            $products = $products->orderBy('product_variants.averageRating', 'desc');
+            }
+            if (!empty($order_type) && $order_type == 'low_to_high') {
+            $products = $products->orderBy('product_variants.price', 'asc');
+            }
+            if (!empty($order_type) && $order_type == 'high_to_low') {
+            $products = $products->orderBy('product_variants.price', 'desc');
+            }
+            if (!empty($order_type) && $order_type == 'a_to_z') {
+                $products = $products->orderBy('product_translations.title', 'asc');
+            }
+            if (!empty($order_type) && $order_type == 'z_to_a') {
+                $products = $products->orderBy('product_translations.title', 'desc');
+            }
+            if (!empty($order_type) && $order_type == 'newly_added') {
+                $products = $products->orderBy('products.id', 'desc');
             }
             $paginate = $request->has('limit') ? $request->limit : 12;
-
+            $products = $products->groupBy('id');
             $products = $products->paginate($paginate);
 
             if (!empty($products)) {

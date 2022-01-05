@@ -334,6 +334,7 @@ class WebStylingController extends BaseController{
 
 
         }
+       
         foreach ($request->pickup_labels as $key => $value) {
 
             if(isset($request->is_active[$key]) && !empty($request->is_active[$key]))
@@ -341,9 +342,15 @@ class WebStylingController extends BaseController{
             else
             $is_cc =  0;
 
+            if(isset($request->for_no_product_found_html[$key]) && !empty($request->for_no_product_found_html[$key]))
+            $for_no_product_found_html =  1;
+            else
+            $for_no_product_found_html =  0;
+
             $is_active = CabBookingLayout::where('id', $request->pickup_labels[$key])->first();
             if($is_active){
                 $is_active->is_active = $is_cc;
+                $is_active->for_no_product_found_html = $for_no_product_found_html;
                 $is_active->save();
             }
 

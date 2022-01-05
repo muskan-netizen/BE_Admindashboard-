@@ -18,6 +18,7 @@ if (Session::has('toaster')) {
 <script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
 <script src="{{asset('assets/libs/bootstrap-select/bootstrap-select.min.js')}}"></script>
 <script src="{{asset('assets/libs/bootstrap-touchspin/bootstrap-touchspin.min.js')}}"></script>
+<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script src="{{asset('assets/libs/bootstrap-maxlength/bootstrap-maxlength.min.js')}}"></script>
 <script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
 <script src="{{asset('front-assets/js/underscore.min.js')}}"></script>
@@ -41,8 +42,9 @@ if (Session::has('toaster')) {
     let stripe_publishable_key = "{{ $stripe_publishable_key }}";
     let is_hyperlocal = 0;
     var business_type = '';
-    @if(Session::has('preferences'))
-        @if((isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1))
+    
+    @if($client_preference_detail)
+        @if((isset($client_preference_detail->is_hyperlocal)) && ($client_preference_detail->is_hyperlocal == 1))
             is_hyperlocal = 1;
         @endif
 

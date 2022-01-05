@@ -1752,25 +1752,32 @@ $sms_crendential = json_decode($preference->sms_credentials);
 
       $(document).on("click", ".delete_vendor_registration_document_btn", function() {
          var vendor_registration_document_id = $(this).data('vendor_registration_document_id');
-         if (confirm('Are you sure?')) {
-            $.ajax({
-               type: "POST",
-               dataType: 'json',
-               url: "{{ route('vendor.registration.document.delete') }}",
-               data: {
-                  _token: "{{ csrf_token() }}",
-                  vendor_registration_document_id: vendor_registration_document_id
-               },
-               success: function(response) {
-                  if (response.status == "Success") {
-                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                     setTimeout(function() {
-                        location.reload()
-                     }, 2000);
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+         }).then((result) => {
+            if (result.value) {
+               $.ajax({
+                  type: "POST",
+                  dataType: 'json',
+                  url: "{{ route('vendor.registration.document.delete') }}",
+                  data: {
+                     _token: "{{ csrf_token() }}",
+                     vendor_registration_document_id: vendor_registration_document_id
+                  },
+                  success: function(response) {
+                     if (response.status == "Success") {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function() {
+                           location.reload()
+                        }, 2000);
+                     }
                   }
-               }
-            });
-         }
+               });
+            }
+         });
       });
       $(document).on('click', '.submitSaveVendorRegistrationDocument', function(e) {
          var vendor_registration_document_id = $("#add_vendor_registration_document_modal input[name=vendor_registration_document_id]").val();
@@ -1834,25 +1841,33 @@ $sms_crendential = json_decode($preference->sms_credentials);
       ///   product tag ////
       $(document).on("click", ".delete_product_tag_btn", function() {
          var tag_id = $(this).data('tag_id');
-         if (confirm('Are you sure?')) {
-            $.ajax({
-               type: "POST",
-               dataType: 'json',
-               url: "{{ route('tag.delete') }}",
-               data: {
-                  _token: "{{ csrf_token() }}",
-                  tag_id: tag_id
-               },
-               success: function(response) {
-                  if (response.status == "Success") {
-                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                     setTimeout(function() {
-                        location.reload()
-                     }, 2000);
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+          }).then((result) => {
+            if(result.value)
+            {
+               $.ajax({
+                  type: "POST",
+                  dataType: 'json',
+                  url: "{{ route('tag.delete') }}",
+                  data: {
+                     _token: "{{ csrf_token() }}",
+                     tag_id: tag_id
+                  },
+                  success: function(response) {
+                     if (response.status == "Success") {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function() {
+                           location.reload()
+                        }, 2000);
+                     }
                   }
-               }
-            });
-         }
+               });
+            }
+         });
       });
       $(document).on('click', '.submitSaveProductTag', function(e) {
          var tag_id = $("#add_product_tag_modal input[name=tag_id]").val();
@@ -1915,25 +1930,33 @@ $sms_crendential = json_decode($preference->sms_credentials);
       });
       $(document).on("click", ".delete_driver_registration_document_btn", function() {
          var driver_registration_document_id = $(this).data('driver_registration_document_id');
-         if (confirm('Are you sure?')) {
-            $.ajax({
-               type: "POST",
-               dataType: 'json',
-               url: "{{ route('driver.registration.document.delete') }}",
-               data: {
-                  _token: "{{ csrf_token() }}",
-                  driver_registration_document_id: driver_registration_document_id
-               },
-               success: function(response) {
-                  if (response.status == "Success") {
-                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                     setTimeout(function() {
-                        location.reload()
-                     }, 2000);
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+         }).then((result) => {
+            if(result.value)
+            {
+               $.ajax({
+                  type: "POST",
+                  dataType: 'json',
+                  url: "{{ route('driver.registration.document.delete') }}",
+                  data: {
+                     _token: "{{ csrf_token() }}",
+                     driver_registration_document_id: driver_registration_document_id
+                  },
+                  success: function(response) {
+                     if (response.status == "Success") {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function() {
+                           location.reload()
+                        }, 2000);
+                     }
                   }
-               }
-            });
-         }
+               });
+            }
+         });
       });
       $(document).on('click', '.submitSaveDriverRegistrationDocument', function(e) {
          var driver_registration_document_id = $("#add_driver_registration_document_modal input[name=driver_registration_document_id]").val();
@@ -1991,51 +2014,75 @@ $sms_crendential = json_decode($preference->sms_credentials);
          });
       });
       $('.cleanSoftDeleted').click(function(e) {
-         if (confirm('Are you Sure?')) {
-            e.preventDefault();
-            $.ajax({
-               url: "{{ route('config.cleanSoftDeleted') }}",
-               type: "POST",
-               data: {
-                  "_token": "{{ csrf_token() }}"
-               },
-               success: function(response) {
-                  $.NotificationApp.send("Success", "Deleted Successfully", "top-right", "#5ba035", "success");
-               },
-            });
-         }
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+         }).then((result) => {
+            if(result.value)
+            {
+               e.preventDefault();
+               $.ajax({
+                  url: "{{ route('config.cleanSoftDeleted') }}",
+                  type: "POST",
+                  data: {
+                     "_token": "{{ csrf_token() }}"
+                  },
+                  success: function(response) {
+                     $.NotificationApp.send("Success", "Deleted Successfully", "top-right", "#5ba035", "success");
+                  },
+               });
+            }
+         });
       });
 
       $('.importDemoContent').click(function(e) {
-         if (confirm('Are you Sure you want to hard delete?')) {
-            e.preventDefault();
-            $.ajax({
-               url: "{{ route('config.importDemoContent') }}",
-               type: "POST",
-               data: {
-                  "_token": "{{ csrf_token() }}"
-               },
-               success: function(response) {
-                  $.NotificationApp.send("Success", "Deleted Successfully", "top-right", "#5ba035", "success");
-               },
-            });
-         }
+         Swal.fire({
+            title: "{{__('Are you Sure you want to hard delete?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+         }).then((result) => {
+            if(result.value)
+            {
+               e.preventDefault();
+               $.ajax({
+                  url: "{{ route('config.importDemoContent') }}",
+                  type: "POST",
+                  data: {
+                     "_token": "{{ csrf_token() }}"
+                  },
+                  success: function(response) {
+                     $.NotificationApp.send("Success", "Deleted Successfully", "top-right", "#5ba035", "success");
+                  },
+               });
+            }
+         });
       });
 
       $('.hardDeleteEverything').click(function(e) {
-         if (confirm('Are you Sure you want to proceed?')) {
-            e.preventDefault();
-            $.ajax({
-               url: "{{ route('config.hardDeleteEverything') }}",
-               type: "POST",
-               data: {
-                  "_token": "{{ csrf_token() }}"
-               },
-               success: function(response) {
-                  $.NotificationApp.send("Success", "Deleted Successfully", "top-right", "#5ba035", "success");
-               },
-            });
-         }
+         Swal.fire({
+            title: "{{__('Are you Sure you want to proceed?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+         }).then((result) => {
+            if(result.value)
+            {
+               e.preventDefault();
+               $.ajax({
+                  url: "{{ route('config.hardDeleteEverything') }}",
+                  type: "POST",
+                  data: {
+                     "_token": "{{ csrf_token() }}"
+                  },
+                  success: function(response) {
+                     $.NotificationApp.send("Success", "Deleted Successfully", "top-right", "#5ba035", "success");
+                  },
+               });
+            }
+         });
       });
 
       function generateRandomString(length) {
@@ -2284,7 +2331,12 @@ $sms_crendential = json_decode($preference->sms_credentials);
          var takeaway_checked = $("#takeaway_check").is(":checked");
          var dinein_checked = $("#dinein_check").is(":checked");
          if (dinein_checked == false && takeaway_checked == false && delivery_checked == false) {
-            alert("One option must be enables");
+            Swal.fire({
+               title: "Warning!",
+               text: "One option must be enables",
+               icon: "warning",
+               button: "OK",
+            });
             $("#" + id).trigger('click');
          }
       }

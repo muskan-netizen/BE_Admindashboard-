@@ -246,7 +246,7 @@
 <!-- cab booking template -->
 <form id="favicon-form-pickup" method="post" enctype="multipart/form-data">
 <div class="row" >
-    <div class="col-xl-6" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <div class="col-xl-9" ondrop="drop(event)" ondragover="allowDrop(event)">
         <div class="card-box home-options-list">
             <div class="row mb-2">
                 <div class="col-sm-8">
@@ -323,7 +323,12 @@
                             <i class="mdi mdi-pencil"></i>
                         </a>
                         @endif
-
+                        @if($home_page_label->slug == 'dynamic_page')
+                        <input type="checkbox" name="for_no_product_found_html[{{$key}}]" {{$home_page_label->for_no_product_found_html == 1 ? 'checked' : ''}} >{{__('For No Records')}}
+                        @else
+                        <input type="hidden" name="for_no_product_found_html[{{$key}}]">
+                        @endif
+                        
                         <div class="mb-0 ml-1">
                             <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="pickup_labels[]">
 
@@ -341,7 +346,7 @@
         </div>
     </div>
 
-    <div class="col-xl-6">
+    <div class="col-xl-3">
         <div class="card-box home-options-list">
             <div class="row mb-2">
                 <div class="col-sm-8">

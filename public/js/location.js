@@ -566,6 +566,7 @@ function initMap() {
         marker.setVisible(isEdit);
 
         const autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.bindTo('bounds', bindMap);
         autocomplete.key = fieldKey;
         autocompletes.push({ input: input, map: map, marker: marker, autocomplete: autocomplete });
     }
@@ -631,6 +632,8 @@ $(document).on("input",".edit-other-stop",function() {
   function initializeNewCabHome(random_id,rel) {
     var input = document.getElementById(random_id);
     var autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.bindTo('bounds', bindMap);
+
     google.maps.event.addListener(autocomplete, 'place_changed', function () {
       var place = autocomplete.getPlace();
       document.getElementById(random_id+'_latitude_home').value = place.geometry.location.lat();

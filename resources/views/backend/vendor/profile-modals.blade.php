@@ -143,6 +143,8 @@
                         <input type="hidden" name="slot_day_id" id="deleteSlotDayid" value="" >
                         <input type="hidden" name="slot_id" id="deleteSlotId" value="" >
                         <input type="hidden" name="slot_type" id="deleteSlotType" value="" >
+                        <input type="hidden" name="old_slot_type" id="deleteSlotTypeOld" value="" >
+                        <input type="hidden" name="slot_date" id="deleteSlotDate" value="" >
                        <button type="button" class="btn btn-primary-outline action-icon" style="display: none;"></button> 
                     </div>
                 </form>

@@ -319,20 +319,7 @@
     var delete_address_url = "{{ route('deleteAddress', ':id') }}";
     var verify_information_url = "{{ route('verifyInformation', Auth::user()->id) }}";
 
-    var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
-    var longitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
 
-    if(!latitude){
-        @if(!empty($client_preference_detail->Default_latitude))
-            latitude = "{{$client_preference_detail->Default_latitude}}";
-        @endif
-    }
-
-    if(!longitude){
-        @if(!empty($client_preference_detail->Default_longitude))
-            longitude = "{{$client_preference_detail->Default_longitude}}";
-        @endif
-    }
 
     var ajaxCall = 'ToCancelPrevReq';
     $('.verifyEmail').click(function(){
@@ -398,6 +385,7 @@
             }
         });
     }
+
     /*$(document).on("click","#update_address",function() {
         let city = $('#add_new_address_form #city').val();
         let state = $('#add_new_address_form #state').val();
@@ -503,76 +491,63 @@
         $('#pick_address').modal('show');
 
     });
-    function find_closest_marker( event ) {
-    var lat = event.latLng.lat();
-    var lng = event.latLng.lng();
-    var R = 63; // radius of earth in km
-    var distances = [];
-    var closest = -1;
-    for( i=0;i<map.markers.length; i++ ) {
-        var mlat = map.markers[i].position.lat();
-        var mlng = map.markers[i].position.lng();
-        var dLat  = rad(mlat - lat);
-        var dLong = rad(mlng - lng);
-        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(rad(lat)) * Math.cos(rad(lat)) * Math.sin(dLong/2) * Math.sin(dLong/2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        var d = R * c;
-        distances[i] = d;
-        if ( closest == -1 || d < distances[closest] ) {
-            closest = i;
-        }
-    }
 
-    alert(map.markers[closest].title);
-}
 
     function initialize() {
-      var input = document.getElementById('address');
-      var autocomplete = new google.maps.places.Autocomplete(input,find_closest_marker);
 
+        // var myLatlng = new google.maps.LatLng(userLatitude, userLongitude);
+        // var mapProp = {
+        //     center:myLatlng,
+        //     zoom:13,
+        //     mapTypeId:google.maps.MapTypeId.ROADMAP
 
-      google.maps.event.addListener(autocomplete, 'place_changed', function () {
-        var place = autocomplete.getPlace();
-        // console.log(place);
-        document.getElementById('longitude').value = place.geometry.location.lng();
-        document.getElementById('latitude').value = place.geometry.location.lat();
-        for(let i=1; i < place.address_components.length; i++){
-            let mapAddress = place.address_components[i];
-            if(mapAddress.long_name !=''){
-                let streetAddress = '';
-                if (mapAddress.types[0] =="street_number") {
-                    streetAddress += mapAddress.long_name;
-                }
-                if (mapAddress.types[0] =="route") {
-                    streetAddress += mapAddress.short_name;
-                }
-                if($('#street').length > 0){
-                    document.getElementById('street').value = streetAddress;
-                }
-                if (mapAddress.types[0] =="locality") {
-                    document.getElementById('city').value = mapAddress.long_name;
-                }
-                if(mapAddress.types[0] =="administrative_area_level_1"){
-                    document.getElementById('state').value = mapAddress.long_name;
-                }
-                if(mapAddress.types[0] =="postal_code"){
-                    document.getElementById('pincode').value = mapAddress.long_name;
-                }else{
-                    document.getElementById('pincode').value = '';
-                }
-                if(mapAddress.types[0] == "country"){
-                    var country = document.getElementById('country');
-                    for (let i = 0; i < country.options.length; i++) {
-                        if (country.options[i].text.toUpperCase() == mapAddress.long_name.toUpperCase()) {
-                            country.value = country.options[i].value;
-                            break;
+        // };
+        // var addressMap=new google.maps.Map(document.getElementById("pick-address-map"), mapProp);
+        var input = document.getElementById('address');
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.bindTo('bounds', bindMap);
+
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            var place = autocomplete.getPlace();
+            // console.log(place);
+            document.getElementById('longitude').value = place.geometry.location.lng();
+            document.getElementById('latitude').value = place.geometry.location.lat();
+            for(let i=1; i < place.address_components.length; i++){
+                let mapAddress = place.address_components[i];
+                if(mapAddress.long_name !=''){
+                    let streetAddress = '';
+                    if (mapAddress.types[0] =="street_number") {
+                        streetAddress += mapAddress.long_name;
+                    }
+                    if (mapAddress.types[0] =="route") {
+                        streetAddress += mapAddress.short_name;
+                    }
+                    if($('#street').length > 0){
+                        document.getElementById('street').value = streetAddress;
+                    }
+                    if (mapAddress.types[0] =="locality") {
+                        document.getElementById('city').value = mapAddress.long_name;
+                    }
+                    if(mapAddress.types[0] =="administrative_area_level_1"){
+                        document.getElementById('state').value = mapAddress.long_name;
+                    }
+                    if(mapAddress.types[0] =="postal_code"){
+                        document.getElementById('pincode').value = mapAddress.long_name;
+                    }else{
+                        document.getElementById('pincode').value = '';
+                    }
+                    if(mapAddress.types[0] == "country"){
+                        var country = document.getElementById('country');
+                        for (let i = 0; i < country.options.length; i++) {
+                            if (country.options[i].text.toUpperCase() == mapAddress.long_name.toUpperCase()) {
+                                country.value = country.options[i].value;
+                                break;
+                            }
                         }
                     }
                 }
             }
-        }
-      });
+        });
     }
 </script>
 @endsection

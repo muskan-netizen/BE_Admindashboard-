@@ -597,51 +597,57 @@
             if (status_option_id == 3) {
                 return openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id);
             } else {
-                if (confirm("{{__('Are you Sure?')}}")) {
-                    $.ajax({
-                        url: "{{ route('order.changeStatus') }}",
-                        type: "POST",
-                        data: {
-                            order_id: order_id,
-                            vendor_id: vendor_id,
-                            "_token": "{{ csrf_token() }}",
-                            status_option_id: status_option_id,
-                            order_vendor_id: order_vendor_id,
-                        },
-                        success: function(response) {
+                Swal.fire({
+                  title: "{{__('Are you Sure?')}}",
+                  icon: 'info',
+                  showCancelButton: true,
+                  confirmButtonText: 'Ok',
+                }).then((result) => {
+                    if (result.value) {
+                        $.ajax({
+                            url: "{{ route('order.changeStatus') }}",
+                            type: "POST",
+                            data: {
+                                order_id: order_id,
+                                vendor_id: vendor_id,
+                                "_token": "{{ csrf_token() }}",
+                                status_option_id: status_option_id,
+                                order_vendor_id: order_vendor_id,
+                            },
+                            success: function(response) {
 
-                            if (status_option_id == 4 || status_option_id == 5) {
-                                if (status_option_id == 4){
-                                    if((luxury_option == 2) || (luxury_option == 3)){
-                                        var next_status = "{{ __('Order Prepared') }}";
+                                if (status_option_id == 4 || status_option_id == 5) {
+                                    if (status_option_id == 4){
+                                        if((luxury_option == 2) || (luxury_option == 3)){
+                                            var next_status = "{{ __('Order Prepared') }}";
+                                        }else{
+                                            var next_status = "{{ __('Out For Delivery') }}";
+                                        }
                                     }else{
-                                        var next_status = "{{ __('Out For Delivery') }}";
+                                        var next_status = "{{ __('Delivered') }}";
                                     }
-                                }else{
-                                    var next_status = "{{ __('Delivered') }}";
-                                }
-                                that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
-                                return false;
-                            } else {
-
-                                if (count == 0) {
-                                    $(full_div).slideUp(1000, function() {
-                                        $(this).remove();
-                                    });
-
+                                    that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
+                                    return false;
                                 } else {
-                                    $(single_div).slideUp(1000, function() {
-                                        $(this).remove();
-                                    });
 
+                                    if (count == 0) {
+                                        $(full_div).slideUp(1000, function() {
+                                            $(this).remove();
+                                        });
+
+                                    } else {
+                                        $(single_div).slideUp(1000, function() {
+                                            $(this).remove();
+                                        });
+
+                                    }
                                 }
-                            }
-                            if (status_option_id == 2)
-                                $.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");
-                            // location.reload();
-                        },
-                    });
-                }
+                                if (status_option_id == 2)
+                                    $.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");
+                            },
+                        });
+                    }
+                });
             }
         });
     });

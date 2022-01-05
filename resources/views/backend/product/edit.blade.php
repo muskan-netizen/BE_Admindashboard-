@@ -1024,7 +1024,13 @@
         var psku = $('#sku').val();
         var pid = "{{$product->id}}";
         if (psku.trim() == '') {
-            alert('Enter Product sku.');
+            Swal.fire({
+               title: "Warning!",
+               text: "Enter Product sku.",
+               icon: "warning",
+               button: "OK",
+            });
+            // alert('Enter Product sku.');
             return false;
         }
         var vids = [];
@@ -1054,7 +1060,13 @@
             dataType: 'json',
             success: function(resp) {
                 if (resp.success == 'false') {
-                    alert(resp.msg);
+                    Swal.fire({
+                       title: "Error!",
+                       text: resp.msg,
+                       icon: "error",
+                       button: "OK",
+                    });
+                    // alert(resp.msg);
                     $('#variantRowDiv').html('');
                 } else {
                     $('#variantRowDiv').html(resp.html);
@@ -1085,7 +1097,13 @@
         var fileType = file['type'];
         var validImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
         if (!validImageTypes.includes(fileType)) {
-            alert('select only images');
+            Swal.fire({
+                title: "Warning!",
+                text: "Select only images",
+                icon: "warning",
+                button: "OK",
+            });
+            // alert('select only images');
         } else {
 
             var form = document.getElementById('modalImageForm');
@@ -1221,7 +1239,13 @@
                 if (resp.success != 'false') {
                     $('#upload-media').modal('hide');
                 } else {
-                    alert(resp.msg);
+                    Swal.fire({
+                       title: "Error!",
+                       text: resp.msg,
+                       icon: "error",
+                       button: "OK",
+                    });
+                    // alert(resp.msg);
                     $('#upload-media').modal('hide');
                 }
             },
