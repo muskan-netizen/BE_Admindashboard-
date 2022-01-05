@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet};
+use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet,CabBookingLayout};
 
 class VendorController extends FrontController
 {
