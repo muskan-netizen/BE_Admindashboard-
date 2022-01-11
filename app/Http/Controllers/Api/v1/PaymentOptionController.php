@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
-use App\Http\Controllers\Api\v1\{BaseController, StripeGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController};
+use App\Http\Controllers\Api\v1\{BaseController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController};
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, User, Payment, Transaction};
@@ -21,13 +21,13 @@ class PaymentOptionController extends BaseController{
 
     public function getPaymentOptions(Request $request, $page = ''){
         if($page == 'wallet'){
-            $code = array('paypal', 'stripe', 'yoco', 'paylink','razorpay','simplify','square','pagarme');
+            $code = array('paypal', 'stripe', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout');
         }
         elseif($page == 'pickup_delivery'){
             $code = array('cod', 'razorpay');
         }
         else{
-            $code = array('cod', 'paypal', 'payfast', 'stripe', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme');
+            $code = array('cod', 'paypal', 'payfast', 'stripe', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout');
         }
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'title', 'off_site']);
         foreach($payment_options as $option){
@@ -69,6 +69,11 @@ class PaymentOptionController extends BaseController{
         return $gateway->stripePurchase($request);
     }
 
+    public function postPaymentVia_paystack(Request $request){
+        $gateway = new PaystackGatewayController();
+        return $gateway->paystackPurchase($request);
+    }
+
     public function postPaymentVia_payfast(Request $request){
         $gateway = new PayfastGatewayController();
         return $gateway->payfastPurchase($request);
@@ -105,6 +110,11 @@ class PaymentOptionController extends BaseController{
     public function postPaymentVia_pagarme(Request $request){
         $gateway = new PagarmeGatewayController();
         return $gateway->pagarmePurchase($request);
+    }
+
+    public function postPaymentVia_checkout(Request $request){
+        $gateway = new CheckoutGatewayController();
+        return $gateway->checkoutPurchase($request);
     }
 
     public function postPaymentVia_paypal(Request $request){

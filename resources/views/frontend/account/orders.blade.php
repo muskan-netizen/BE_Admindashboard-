@@ -1638,7 +1638,6 @@
 
 @endsection
 @section('script')
-    <script src="{{ asset('js/tip_after_order.js') }}"></script>
     @if(in_array('razorpay',$client_payment_options)) 
     <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
     @endif
@@ -1647,7 +1646,18 @@
     @endif
     @if(in_array('yoco',$client_payment_options)) 
     <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
+    <script>
+        // Replace the supplied `publicKey` with your own.
+        // Ensure that in production you use a production public_key.
+        var sdk = new window.YocoSDK({
+            publicKey: yoco_public_key
+        });
+    </script>
     @endif 
+    @if(in_array('checkout',$client_payment_options)) 
+    <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
+    @endif 
+    <script src="{{ asset('js/tip_after_order.js') }}"></script>
     <script src="{{ asset('js/payment.js') }}"></script>
     <script type="text/javascript">
         $(document).delegate(".topup_wallet_btn_tip", "click", function() {
@@ -1681,6 +1691,7 @@
         var payment_stripe_url = "{{ route('payment.stripe') }}";
         var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";
         var payment_yoco_url = "{{ route('payment.yocoPurchase') }}";
+        var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
         var payment_paylink_url = "{{ route('payment.paylinkPurchase') }}";
         var wallet_payment_options_url = "{{ route('wallet.payment.option.list') }}";
         var payment_success_paypal_url = "{{ route('payment.paypalCompletePurchase') }}";

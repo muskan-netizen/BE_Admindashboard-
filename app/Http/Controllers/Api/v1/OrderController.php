@@ -408,7 +408,7 @@ class OrderController extends BaseController
                         $this->sendSuccessEmail($request, $order, $vendor_id);
                     }
                     $this->sendSuccessEmail($request, $order);
-                    $ex_gateways = [6, 7, 8, 9, 10, 11, 12, 13]; // if mobbex, payfast, yoco, razorpay, gcash, simplify, square
+                    $ex_gateways = [6, 7, 8, 9, 10, 11, 12, 13, 17]; // if mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
                     if (!in_array($request->payment_option_id, $ex_gateways)) {
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();
@@ -1263,7 +1263,7 @@ class OrderController extends BaseController
         }
     }
 
-    public function sendOrderPushNotificationVendors($user_ids, $orderData, $header_code)
+    public function sendOrderPushNotificationVendors($user_ids, $orderData, $header_code='')
     {
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
@@ -1272,6 +1272,9 @@ class OrderController extends BaseController
             $from = $client_preferences->fcm_server_key;
             $notification_content = NotificationTemplate::where('id', 4)->first();
             if ($notification_content) {
+                if($header_code == ''){
+                    $header_code = Client::orderBy('id', 'asc')->first()->code;
+                }
                 $code = $header_code;
                 $client = Client::where('code', $code)->first();
                 $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";

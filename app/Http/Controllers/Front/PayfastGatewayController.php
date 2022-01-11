@@ -182,6 +182,7 @@ class PayfastGatewayController extends FrontController
 
     public function payfastNotifyApp(Request $request, $domain = '')
     {
+        \Log::info($request->all());
         // Notify PayFast that information has been received
         header( 'HTTP/1.0 200 OK' );
         flush();
@@ -214,6 +215,7 @@ class PayfastGatewayController extends FrontController
                                 'order_id' => $order->id,
                                 'transaction_id' => $transactionId,
                                 'balance_transaction' => $pfData->amount_gross,
+                                'type' => 'cart'
                             ]);
 
                             // Auto accept order
@@ -248,14 +250,14 @@ class PayfastGatewayController extends FrontController
                     }
                 }
             }
-            // elseif($pfData->custom_str2 == 'wallet'){
-            //     $pfData->request->add([
-            //         'wallet_amount' => $pfData->amount_gross
-            //     ]);
-            //     $wallet = new WalletController();
-            //     $creditWallet = $wallet->creditWallet($pfData);
-            //     $response = $creditWallet->getData();
-            // }
+            elseif($pfData->custom_str1 == 'wallet'){
+                $pfData->request->add([
+                    'wallet_amount' => $pfData->amount_gross
+                ]);
+                $wallet = new WalletController();
+                $creditWallet = $wallet->creditWallet($pfData);
+                $response = $creditWallet->getData();
+            }
 
             if($response->status == 'Success'){
             //    $this->successMail();

@@ -4232,6 +4232,7 @@ input.form-control.pac-target-input.gm-err-autocomplete {
 .vendors section:last-child {
     margin: 0 auto;
 }
+
 @media screen and (max-width: 500px) {
     .step p {
         font-size: 11px;

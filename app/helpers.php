@@ -78,6 +78,14 @@ function generateOrderNo($length = 8){
     } while (!empty(\DB::table('orders')->where('order_number', $number)->first(['order_number'])) );
     return $number;
 }
+function generateWalletTransactionReference($length = 8){
+    $number = '';
+    do {
+        $number = 'txn_' . md5(uniqid(rand(), true));
+    } 
+    while (!empty(\DB::table('transactions')->where('meta', 'Like', '%'. $number .'%')->first(['meta'])) );
+    return $number;
+}
 function getNomenclatureName($searchTerm, $plural = true){
     $result = Nomenclature::with(['translations' => function($q) {
                 $q->where('language_id', session()->get('customerLanguage'));

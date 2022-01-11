@@ -74,7 +74,16 @@
                         </div>
                         <span class="error text-danger" id="yoco_card_error"></span>
                     </div>
-                <% } %>
+                  <% } %>
+                  <% if(payment_option.slug == 'checkout') { %>
+                    <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper d-none">
+                        <div class="form-control card-frame">
+                            <!-- form will be added here -->
+                        </div>
+                        <span class="error text-danger" id="checkout_card_error"></span>
+                    </div>
+                  <% } %>
+
               <% } %>
           <% }); %>
       <% } %>

@@ -383,6 +383,25 @@
                         </div>
                     </div>
                     @endif
+
+                    @if ( (strtolower($opt->code) == 'checkout') )
+                    <div class="mt-2" id="checkout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="checkout_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="checkout_secret_key" id="checkout_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="checkout_public_key" class="mr-3">{{ __("Public Key") }}</label>
+                                    <input type="password" name="checkout_public_key" id="checkout_public_key" class="form-control" value="{{$public_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
             @endforeach

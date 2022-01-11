@@ -591,7 +591,7 @@ class FrontController extends Controller
             $pretime = $this->getEvenOddTime($vendor->timeofLineOfSightDistance);
            // $vendor->timeofLineOfSightDistance = $pretime . '-' . (intval($pretime) + 5);
             if($pretime >= 60){
-                $vendor->timeofLineOfSightDistance =  $this->vendorTime($pretime) . '-' . $this->vendorTime((intval($pretime) + 5)).' '. __('hour');
+                $vendor->timeofLineOfSightDistance =  '~ '.$this->vendorTime($pretime) .' '. __('hour');
             }else{
                 $vendor->timeofLineOfSightDistance = $pretime . '-' . (intval($pretime) + 5).' '. __('min');
             }
@@ -621,7 +621,7 @@ class FrontController extends Controller
                 $pretime = $this->getEvenOddTime($vendor->timeofLineOfSightDistance);
                 if($pretime >= 60){
 
-                    $vendor->timeofLineOfSightDistance =  $this->vendorTime($pretime) . '-' . $this->vendorTime((intval($pretime) + 5)).' '. __('hour');
+                    $vendor->timeofLineOfSightDistance =  '~ '.$this->vendorTime($pretime) .' '. __('hour');
                 }else{
                     $vendor->timeofLineOfSightDistance = $pretime . '-' . (intval($pretime) + 5).' '. __('min');
                 }

@@ -125,12 +125,12 @@ class WalletController extends FrontController
     public function walletTransferUserVerify(Request $request, $domain = ''){
         try{
             $username = $request->username;
-            $user_exists = User::where(function($q) use($username){
+            $user_exists = User::select('image', 'name')->where(function($q) use($username){
                 $q->where('email', $username)->orWhereRaw("CONCAT(`dial_code`, `phone_number`) = ?", $username);
             })
             ->where('status', 1)->first();
             if($user_exists){
-                return $this->successResponse('', __('User is verified'), 201);
+                return $this->successResponse($user_exists, __('User is verified'), 201);
             }else{
                 return $this->errorResponse('User does not exist', 422);   
             }
@@ -159,12 +159,14 @@ class WalletController extends FrontController
                 return $this->errorResponse(__('Insufficient funds in wallet'), 422);
             }
             
+            $transaction_reference = generateWalletTransactionReference();
+            
             $second_user = User::where(function($q) use($username){
                 $q->where('email', $username)->orWhereRaw("CONCAT(`dial_code`, `phone_number`) = ?", $username);
             })
             ->where('status', 1)->first();
             if($second_user){
-                $first_user->transfer($second_user, $transfer_amount, ['Wallet has been <b>Debited</b> by transfer']);
+                $first_user->transferFloat($second_user, $transfer_amount, ['Wallet has been transferred with reference <b>'.$transaction_reference.'</b>']);
                 $message = __('Amount has been transferred successfully');
                 Session::put('success', $message);
                 return $this->successResponse('', $message, 201);

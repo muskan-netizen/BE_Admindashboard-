@@ -22,9 +22,9 @@
                                     <label>{{ __('Upload Logo') }}</label>
                                     <input type="file" accept="image/*" data-plugins="dropify" name="logo" class="dropify" data-default-file="" />
                                     <label class="logo-size text-right w-100">{{ __('Logo Size') }} 170x96</label>
-                                </div> 
-                                <div class="col-md-6">     
-                                    <label>{{ __('Upload banner image') }}</label>            
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{{ __('Upload banner image') }}</label>
                                     <input type="file" accept="image/*" data-plugins="dropify" name="banner" class="dropify" data-default-file="" />
                                     <label class="logo-size text-right w-100">{{ __("Image Size") }} 830x200</label>
                                 </div>
@@ -32,7 +32,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group" id="nameInput">
-                                        {!! Form::label('title', __('Name'),['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                                         {!! Form::text('name', null, ['class'=>'form-control']) !!}
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
@@ -41,7 +41,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group" id="descInput">
-                                        {!! Form::label('title', __('Description'),['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
                                         {!! Form::textarea('desc', null, ['class' => 'form-control', 'rows' => '3']) !!}
                                     </div>
                                 </div>
@@ -69,7 +69,7 @@
                             <div class="row" id="add">
                                 <div class="col-md-4">
                                     <div class="form-group mb-3" id="addressInput">
-                                        {!! Form::label('title', __('Address'),['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('Address'),['class' => 'control-label']) !!}
                                         <div class="input-group">
                                             <input type="text" name="address" id="add-address" placeholder="Delhi, India" class="form-control">
                                             <div class="input-group-append">
@@ -81,10 +81,10 @@
                                         </span>
                                     </div>
                                 </div>
-                            
+
                                 <div class="col-md-4">
                                     <div class="form-group mb-3" id="latitudeInput">
-                                        {!! Form::label('title', __('latitude'),['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('latitude'),['class' => 'control-label']) !!}
                                         <input type="text" name="latitude" id="add_latitude" placeholder="24.9876755" class="form-control" value="">
                                         @if($errors->has('latitude'))
                                         <span class="text-danger" role="alert">
@@ -95,7 +95,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group mb-3" id="longitudeInput">
-                                        {!! Form::label('title', __('longitude'),['class' => 'control-label']) !!} 
+                                        {!! Form::label('title', __('longitude'),['class' => 'control-label']) !!}
                                         <input type="text" name="longitude" id="add_longitude" placeholder="11.9871371723" class="form-control" value="">
                                         @if($errors->has('longitude'))
                                         <span class="text-danger" role="alert">
@@ -117,7 +117,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                             @if($client_preferences->dinein_check == 1)
-                                                {!! Form::label('title', getNomenclatureName('Dine-In', true),['class' => 'control-label']) !!} 
+                                                {!! Form::label('title', getNomenclatureName('Dine-In', true),['class' => 'control-label']) !!}
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" name="dine_in" class="form-control validity" data-color="#43bee1" checked='checked'>
                                                 </div>
@@ -127,7 +127,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                             @if($client_preferences->takeaway_check == 1)
-                                                {!! Form::label('title', getNomenclatureName('Takeaway', true),['class' => 'control-label']) !!} 
+                                                {!! Form::label('title', getNomenclatureName('Takeaway', true),['class' => 'control-label']) !!}
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" name="takeaway" class="form-control validity" data-color="#43bee1" checked='checked'>
                                                 </div>
@@ -137,7 +137,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                             @if($client_preferences->delivery_check == 1)
-                                                {!! Form::label('title', getNomenclatureName('Delivery', true) ,['class' => 'control-label']) !!} 
+                                                {!! Form::label('title', getNomenclatureName('Delivery', true) ,['class' => 'control-label']) !!}
                                                 <div class="mt-md-1">
                                                     <input type="checkbox" data-plugin="switchery" name="delivery" class="form-control validity" data-color="#43bee1" checked='checked'>
                                                 </div>
@@ -150,23 +150,36 @@
                             <div class="row">
                                 @foreach($vendor_registration_documents as $vendor_registration_document)
                                     @if(isset($vendor_registration_document->primary) && !empty($vendor_registration_document->primary))
-                                    <div class="col-md-6" >
-                                        <div class="form-group" id="{{$vendor_registration_document->primary->slug??''}}Input">
-                                            <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
-                                            @if(strtolower($vendor_registration_document->file_type) == 'text')
-                                                <input id="input_file_logo_{{$vendor_registration_document->id}}" type="text" name="{{$vendor_registration_document->primary->slug}}" class="form-control">
-                                            @else
-                                                @if(strtolower($vendor_registration_document->file_type) == 'image')
-                                                <input type="file" accept="image/*" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug}}" class="dropify" data-default-file="" />
-                                                @else
-                                                <input type="file" accept=".pdf" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug}}" class="dropify" data-default-file="" />
-                                                @endif
-                                            @endif
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong></strong>
-                                            </span>
-                                        </div>
-                                    </div>
+                                        @if(strtolower($vendor_registration_document->file_type) == 'selector')
+                                            <div class="col-md-6 mb-3" id="{{$vendor_registration_document->primary->slug??''}}Input">
+                                                <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
+                                                <select class="form-control {{ (!empty($vendor_registration_document->is_required))?'required':''}}" name="{{$vendor_registration_document->primary->slug}}"  id="input_file_selector_{{$vendor_registration_document->id}}">
+                                                    <option value="" >{{__('Please Select '). ($vendor_registration_document->primary ? $vendor_registration_document->primary->name : '') }}</option>
+                                                    @foreach ($vendor_registration_document->options as $key =>$value )
+                                                        <option value="{{$value->id}}">{{$value->translation? $value->translation->name: ""}}</option>
+                                                    @endforeach
+                                                </select>
+                                                <span class="invalid-feedback" id="{{$vendor_registration_document->primary->slug}}_error"><strong></strong></span>
+                                            </div>
+                                        @else
+                                            <div class="col-md-6" >
+                                                <div class="form-group" id="{{$vendor_registration_document->primary->slug??''}}Input">
+                                                    <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
+                                                    @if(strtolower($vendor_registration_document->file_type) == 'text')
+                                                        <input id="input_file_logo_{{$vendor_registration_document->id}}" type="text" name="{{$vendor_registration_document->primary->slug}}" class="form-control">
+                                                    @else
+                                                        @if(strtolower($vendor_registration_document->file_type) == 'image')
+                                                        <input type="file" accept="image/*" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug}}" class="dropify" data-default-file="" />
+                                                        @else
+                                                        <input type="file" accept=".pdf" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug}}" class="dropify" data-default-file="" />
+                                                        @endif
+                                                    @endif
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong></strong>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @endif
                                     @endif
                                  @endforeach
                             </div>
@@ -196,7 +209,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="row mb-2">
-                                <div class="col-md-12">            
+                                <div class="col-md-12">
                                     <input type="file" accept=".csv" onchange="submitImportForm()" data-plugins="dropify" name="vendor_csv" class="dropify" data-default-file="" required/>
                                     <p class="text-muted text-center mt-2 mb-0">{{ __("Upload") }} {{ $vendor }} CSV</p>
                                 </div>
@@ -259,7 +272,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body p-4">
-                
+
                 <div class="row">
                     <form id="task_form" action="#" method="POST" style="width: 100%">
                         <div class="col-md-12">
@@ -290,7 +303,7 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body" id="editCardBox">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light submitDispatcherForm">{{ __("Submit") }}</button>

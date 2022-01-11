@@ -19,7 +19,7 @@ class VendorController extends BaseController{
     use ApiResponser;
     private $field_status = 2;
     private $folderName = '/vendor/extra_docs';
- 
+
     public function postVendorCategoryList(Request $request){
         try {
             $vendor_ids = [];
@@ -97,7 +97,7 @@ class VendorController extends BaseController{
                     }
                 }
             }
-            
+
             $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
             $vendor->is_show_products_with_category = ($vendor->vendor_templete_id == 5) ? 1 : 0;
             $categoriesList = '';
@@ -105,7 +105,7 @@ class VendorController extends BaseController{
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
             }
-            
+
             $code = $request->header('code');
             $client = Client::where('code',$code)->first();
             $vendor->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/vendor/".$vendor->slug;
@@ -117,17 +117,17 @@ class VendorController extends BaseController{
                             ->join('variant_translations as vt','vt.variant_id','vr.id')
                             ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
                             ->where('vt.language_id', $langId)
-                            ->whereIn('product_id', function($qry) use($vid){ 
+                            ->whereIn('product_id', function($qry) use($vid){
                             $qry->select('id')->from('products')
                                 ->where('vendor_id', $vid);
                             })
                         ->groupBy('product_variant_sets.variant_type_id')->get();
                     // ->join('product_categories as pc', 'pc.product_id', 'products.id')
-                    // ->whereNotIn('pc.category_id', function($qr) use($vid){ 
+                    // ->whereNotIn('pc.category_id', function($qr) use($vid){
                     //             $qr->select('category_id')->from('vendor_categories')
                     //                 ->where('vendor_id', $vid)->where('status', 0);
                     // })
-            
+
             if($vendor->vendor_templete_id == 5){
                 $vendor_categories = VendorCategory::with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
@@ -149,7 +149,7 @@ class VendorController extends BaseController{
                     // });
                     $vendor_categories = $vendor_categories->where('status', 1)->get();
                 // }
-                
+
                 foreach($vendor_categories as $ckey => $category) {
                     if ($category->category) {
 
@@ -158,9 +158,9 @@ class VendorController extends BaseController{
                          if($cckey != $vendor_categories->count() - 1){
                             $categoriesList = $categoriesList . ', ';
                         }
-                        
+
                     }
-                    
+
 
                     $products = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
                                 $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
@@ -192,7 +192,7 @@ class VendorController extends BaseController{
                             }
                         ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only','minimum_order_count','batch_count');
                     $products = $products->where('is_live', 1)->where('category_id', $category->category_id)->where('vendor_id', $vid)->get();
-                    
+
                     if(!empty($products)){
                         foreach ($products as $key => $value) {
                             foreach ($value->addOn as $key => $val) {
@@ -205,7 +205,7 @@ class VendorController extends BaseController{
                                     $v->multiplier = $clientCurrency->doller_compare;
                                 }
                             }
-    
+
                             $p_id = $value->id;
                             $variantData = $value->with(['variantSet' => function ($z) use ($langId, $p_id) {
                                 $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
@@ -250,7 +250,7 @@ class VendorController extends BaseController{
                 $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
                 }])->where('vendor_id', $vendor->id)->where('status', 1)->get();
-                
+
                 foreach($vendorCategories as $key => $category){
                     if($category->category){
                         $categoriesList = $categoriesList . ($category->category->translation->first()->name ?? '');
@@ -380,7 +380,7 @@ class VendorController extends BaseController{
                 $langId = $user->language;
                 $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
                 $categoriesList = '';
-            
+
                 if ($vendor->vendor_templete_id == 5) {
                     $vid = $vendor->id;
                     $vendor_categories = VendorCategory::with(['category.translation' => function ($q) use ($langId) {
@@ -403,7 +403,7 @@ class VendorController extends BaseController{
                         // });
                         $vendor_categories = $vendor_categories->where('status', 1)->get();
                     }
-                
+
                     foreach ($vendor_categories as $ckey => $category) {
                         if ($category->category) {
                             $cckey = 0;
@@ -440,7 +440,7 @@ class VendorController extends BaseController{
                             },'variant.checkIfInCartApp', 'checkIfInCartApp',
                         ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
                         $products = $products->where('is_live', 1)->where('category_id', $category->category_id)->where('vendor_id', $vid)->get();
-                    
+
                         if (!empty($products)) {
                             foreach ($products as $key => $value) {
                                 foreach ($value->addOn as $key => $val) {
@@ -453,7 +453,7 @@ class VendorController extends BaseController{
                                         $v->multiplier = $clientCurrency->doller_compare;
                                     }
                                 }
-    
+
                                 $p_id = $value->id;
                                 $variantData = $value->with(['variantSet' => function ($z) use ($langId, $p_id) {
                                     $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
@@ -497,7 +497,7 @@ class VendorController extends BaseController{
                     $vendorCategories = VendorCategory::with(['category.translation' => function ($q) use ($langId) {
                         $q->where('category_translations.language_id', $langId);
                     }])->where('vendor_id', $vendor->id)->where('status', 1)->get();
-                
+
                     foreach ($vendorCategories as $key => $category) {
                         if ($category->category) {
                             $categoriesList = $categoriesList . ($category->category->translation->first()->name ?? '');
@@ -564,7 +564,7 @@ class VendorController extends BaseController{
                             ->where('pvs.product_id', $p_id)
                             ->where('vt.language_id', $langId);
                             }])->where('id', $p_id)->first();
-                            
+
                             $product->variantSet = $variantData->variantSet;
                             $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                             $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
@@ -595,7 +595,7 @@ class VendorController extends BaseController{
                 })
                 ->groupBy('product_variant_sets.variant_type_id')->get();
                 }
-            
+
                 $vendor->categoriesList = $categoriesList;
                 $response['vendor'] = $vendor;
                 $response['products'] = ($vendor->vendor_templete_id != 5) ? $products : [];
@@ -943,7 +943,7 @@ class VendorController extends BaseController{
             if ($vendor_registration_documents->count() > 0) {
                 foreach ($vendor_registration_documents as $vendor_registration_document) {
                     $doc_name = str_replace(" ", "_", $vendor_registration_document->primary->slug);
-                    if ($vendor_registration_document->file_type != "Text") {
+                    if ($vendor_registration_document->file_type != "Text" && $vendor_registration_document->file_type != "selector") {
                         if ($request->hasFile($doc_name)) {
                             $vendor_docs =  new VendorDocs();
                             $vendor_docs->vendor_id = $vendor->id;
@@ -1020,7 +1020,7 @@ class VendorController extends BaseController{
                 dispatch(new \App\Jobs\sendVendorRegistrationEmail($email_data))->onQueue('verify_email');
                 dispatch(new \App\Jobs\sendVendorRegistrationEmail($admin_email_data))->onQueue('verify_email');
             }catch(Exception $e) {
-                
+
             }
             DB::commit();
             return $this->successResponse('', 'Vendor Registration Created Successfully!', 200);

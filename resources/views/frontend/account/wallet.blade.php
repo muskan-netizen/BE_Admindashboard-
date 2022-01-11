@@ -61,6 +61,9 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
     .box-info table tr:first-child td {
         padding-top: .85rem;
     }
+    #wallet_transfer_error_msg{
+        display: none;
+    }
 </style>
 <section class="section-b-space">
     <div class="container">
@@ -240,7 +243,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
 </div>
 <div class="modal fade" id="transfer_wallet" tabindex="-1" aria-labelledby="transfer_walletLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
+      <div class="modal-content" style="max-width: 400px;">
         <div class="modal-header border-bottom">
           <h5 class="modal-title text-17 mb-0 mt-0" id="transfer_walletLabel">{{__('Transfer Funds')}}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -272,7 +275,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
               </div>
               <div class="form-group" id="wallet_transfer_userInput">
                 <label for="wallet_transfer_user">{{__('Transfer to')}}</label>
-                <input class="form-control" name="wallet_transfer_user" id="wallet_transfer_user" type="text" placeholder="{{__('Enter Email or Phone Number')}}">
+                <input class="form-control" name="wallet_transfer_user" id="wallet_transfer_user" type="text" placeholder="{{__('Enter Email or Phone Number with Country Code')}}">
                 <span class="invalid-feedback" role="alert">
                     <strong></strong>
                 </span>
@@ -280,7 +283,10 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                     <strong></strong>
                 </span>
               </div>
-              <span class="error-msg mt-2"></span>
+              <div class="form-group" id="user_profile">
+                
+              </div>
+              <span class="error-msg pl-0" id="wallet_transfer_error_msg"></span>
               @endif
           </div>
           <div class="modal-footer d-block text-center">
@@ -297,6 +303,16 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
       </div>
     </div>
 </div>
+<script type="text/template" id="user_profile_template">
+    <% if(profile != '') { %>
+        <label>
+            <span class="update_pic">
+                <img class="rounded-circle" src="<%= profile.image['image_fit'] %>100/100<%= profile.image['image_path'] %>" alt="" width="40" height="40">
+            </span>
+            <span class="ml-1"><b><%= profile.name %></b></span>
+        </label>
+    <% } %>
+</script>
 <script type="text/template" id="payment_method_template">
     <% if(payment_options == '') { %>
         <h6>{{__('Payment Options Not Avaialable')}}</h6>
@@ -330,6 +346,14 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                         <span class="error text-danger" id="yoco_card_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'checkout') { %>
+                    <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper d-none">
+                        <div class="form-control card-frame">
+                            <!-- form will be added here -->
+                        </div>
+                        <span class="error text-danger" id="checkout_card_error"></span>
+                    </div>
+                <% } %>
             <% } %>
         <% }); %>
     <% } %>
@@ -344,6 +368,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
 @endif
 @if(in_array('yoco',$client_payment_options)) 
 <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
+<script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
 <script type="text/javascript">
     var sdk = new window.YocoSDK({
         publicKey: yoco_public_key
@@ -358,6 +383,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
+    var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
     var payment_success_paylink_url = "{{route('payment.paylinkReturn')}}";
@@ -434,6 +460,12 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
         } else {
             $("#wallet_payment_methods .yoco_element_wrapper").addClass('d-none');
         }
+        if (method == 'checkout') {
+            $("#wallet_payment_methods .checkout_element_wrapper").removeClass('d-none');
+            Frames.init(checkout_public_key);
+        } else {
+            $("#wallet_payment_methods .checkout_element_wrapper").addClass('d-none');
+        }
     });
 
     $(document).on('blur', '#wallet_transfer_user', function() {
@@ -456,14 +488,19 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                     if(response.status == 'Success'){
                         $("#wallet_transfer_userInput input").removeClass("is-invalid").addClass('valid');
                         $("#wallet_transfer_userInput span.invalid-feedback").children("strong").text('');
-                        $("#wallet_transfer_userInput span.valid-feedback").children("strong").text(response.message);
+                        // $("#wallet_transfer_userInput span.valid-feedback").children("strong").text(response.message);
                         $("#wallet_transfer_userInput span.invalid-feedback").hide();
-                        $("#wallet_transfer_userInput span.valid-feedback").show();
+                        // $("#wallet_transfer_userInput span.valid-feedback").show();
+
+                        $("#user_profile").html('');
+                        let user_profile_template = _.template($('#user_profile_template').html());
+                        $("#user_profile").append(user_profile_template({ profile: response.data}));
                     }
                 },
                 error: function(response) {
                     let error = response.responseJSON;
                     if (response.status === 422) {
+                        $("#user_profile").html('');
                         $("#wallet_transfer_userInput input").removeClass("valid").addClass("is-invalid");
                         $("#wallet_transfer_userInput span.invalid-feedback").children("strong").text(error.message);
                         $("#wallet_transfer_userInput span.invalid-feedback").show();
@@ -492,7 +529,12 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
         }
     });
 
+    $(document).on('focus', '#wallet_transfer_form input', function(){
+        $("#wallet_transfer_error_msg").text('').hide();
+    });
+
     $(document).on('click', '.transfer_wallet_confirm', function() {
+        var _that = $(this);
         var amount = $("#wallet_transfer_amount").val();
         var username = $("#wallet_transfer_user").val();
         if((amount != '') && (username != '')){
@@ -524,14 +566,14 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                 },
                 success: function(response) {
                     if(response.status == 'Success'){
-                        $(this).find(".error-msg").text('');
+                        $("#wallet_transfer_error_msg").text('').hide();
                         window.location.reload();
                     }
                 },
                 error: function(response) {
                     let error = response.responseJSON;
                     if (response.status === 422) {
-                        $(this).find(".error-msg").text(error.message);
+                        $("#wallet_transfer_error_msg").text(error.message).show();
                     }
                 },
             });

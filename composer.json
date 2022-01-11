@@ -16,6 +16,7 @@
         "artisangang/jwt": "^0.2.0",
         "awt/apilogger": "@dev",
         "bavix/laravel-wallet": "^6.1",
+        "checkout/checkout-sdk-php": "^1.0",
         "darvinstudio/omnipay-telr": "^1.0",
         "dg/mysql-dump": "^1.5",
         "doctrine/dbal": "^3.1",

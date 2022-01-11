@@ -29,7 +29,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout');
         $payout_codes = array('cash', 'stripe');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -244,6 +244,16 @@ class PaymentOptionController extends BaseController
                         'api_key' => $request->pagarme_api_key,
                         'secret_key' => $request->pagarme_secret_key,
                         'multiplier' => $request->pagarme_multiplier,
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'checkout')) {
+                    $validatedData = $request->validate([
+                        'checkout_secret_key' => 'required',
+                        'checkout_public_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'secret_key' => $request->checkout_secret_key,
+                        'public_key' => $request->checkout_public_key
                     ));
                 }
             }

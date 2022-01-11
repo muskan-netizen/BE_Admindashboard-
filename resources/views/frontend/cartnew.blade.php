@@ -769,9 +769,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <h6>{{__('Payment Options Not Avaialable')}}</h6>
     <% }else{ %>
         <div class="modal-body pb-0">
-            <div class="payment_response">
-                <div class="alert p-0 m-0" role="alert"></div>
-            </div>
             <h5 class="text-17 mb-2">{{__('Debit From')}}</h5>
             <form method="POST" id="cart_payment_form">
                 @csrf
@@ -803,8 +800,19 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <span class="error text-danger" id="yoco_card_error"></span>
                             </div>
                         <% } %>
+                        <% if(payment_option.slug == 'checkout') { %>
+                            <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper d-none">
+                                <div class="form-control card-frame">
+                                    <!-- form will be added here -->
+                                </div>
+                                <span class="error text-danger" id="checkout_card_error"></span>
+                            </div>
+                        <% } %>
                     </div>
                 <% }); %>
+                <div class="payment_response">
+                    <div class="alert p-0 m-0" role="alert"></div>
+                </div>
             </form>
         </div>
         <div class="modal-footer d-block text-center">
@@ -1099,6 +1107,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 @section('script')
 <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous">
 </script>
+
+<script>
+    // Replace the supplied `publicKey` with your own.
+    // Ensure that in production you use a production public_key.
 @if(in_array('razorpay',$client_payment_options)) 
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
@@ -1113,6 +1125,9 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     });
     var inline='';
 </script>
+@endif 
+@if(in_array('checkout',$client_payment_options)) 
+<script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
 @endif 
 
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
@@ -1134,6 +1149,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
+    var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";
@@ -1263,6 +1279,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             inline.mount('#yoco-card-frame');
         } else {
             $("#cart_payment_form .yoco_element_wrapper").addClass('d-none');
+        }
+
+        if (method.replace('radio-', '') == 'checkout') {
+            $("#cart_payment_form .checkout_element_wrapper").removeClass('d-none');
+            Frames.init(checkout_public_key);
+        } else {
+            $("#cart_payment_form .checkout_element_wrapper").addClass('d-none');
         }
     });
 

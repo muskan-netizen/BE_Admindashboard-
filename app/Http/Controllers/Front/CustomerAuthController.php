@@ -759,7 +759,7 @@ class CustomerAuthController extends FrontController
             if ($vendor_registration_documents->count() > 0) {
                 foreach ($vendor_registration_documents as $vendor_registration_document) {
                     $doc_name = str_replace(" ", "_", $vendor_registration_document->primary->slug);
-                    if ($vendor_registration_document->file_type != "Text") {
+                    if ($vendor_registration_document->file_type != "Text" && $vendor_registration_document->file_type != "selector") {
                         if ($request->hasFile($doc_name)) {
                             $vendor_docs =  new VendorDocs();
                             $vendor_docs->vendor_id = $vendor->id;

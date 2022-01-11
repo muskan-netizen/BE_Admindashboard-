@@ -319,6 +319,14 @@
                         <span class="error text-danger" id="yoco_card_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'checkout') { %>
+                    <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper d-none">
+                        <div class="form-control card-frame">
+                            <!-- form will be added here -->
+                        </div>
+                        <span class="error text-danger" id="checkout_card_error"></span>
+                    </div>
+                <% } %>
             <% } %>
         <% }); %>
     <% } %>
@@ -342,6 +350,9 @@
     var inline='';
 </script>
 @endif 
+@if(in_array('checkout',$client_payment_options)) 
+<script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
+@endif 
 <script type="text/javascript">
     var subscription_payment_options_url = "{{route('user.subscription.plan.select', ':id')}}";
     var user_subscription_purchase_url = "{{route('user.subscription.plan.purchase', ':id')}}";
@@ -349,17 +360,18 @@
     var payment_stripe_url = "{{route('user.subscription.payment.stripe')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
+    var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
     
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
-        var method = $(this).data("payment_option_id");
-        if(method == 4){
+        var method = $(this).val();
+        if(method == 'stripe'){
             $("#subscription_payment_methods .stripe_element_wrapper").removeClass('d-none');
         }else{
             $("#subscription_payment_methods .stripe_element_wrapper").addClass('d-none');
         }
-        if (method == 8) {
+        if (method == 'yoco') {
             $("#subscription_payment_methods .yoco_element_wrapper").removeClass('d-none');
             // Create a new dropin form instance
 
@@ -373,6 +385,12 @@
             inline.mount('#yoco-card-frame');
         } else {
             $("#subscription_payment_methods .yoco_element_wrapper").addClass('d-none');
+        }
+        if (method == 'checkout') {
+            $("#subscription_payment_methods .checkout_element_wrapper").removeClass('d-none');
+            Frames.init(checkout_public_key);
+        } else {
+            $("#subscription_payment_methods .checkout_element_wrapper").addClass('d-none');
         }
     });
 

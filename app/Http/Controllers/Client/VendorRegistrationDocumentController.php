@@ -8,15 +8,24 @@ use App\Http\Traits\ApiResponser;
 use App\Models\VendorRegistrationDocument;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\VendorRegistrationDocumentTranslation;
+use App\Models\VendorRegistrationSelectOption;
+use App\Models\VendorRegistrationSelectOptionTranslations;
 
 class VendorRegistrationDocumentController extends BaseController{
     use ApiResponser;
     public function store(Request $request){
+
         try {
+
             $this->validate($request, [
               'name.0' => 'required|string|max:60',
               'file_type' => 'required',
             ],['name.0' => 'The default language name field is required.']);
+            if($request->file_type=="Selecter"){
+                $this->validate($request, [
+                    'option_name.0.0' => 'required|string|max:60',
+                  ],['option_name.0.0' => 'The default Option name field is required.']);
+            }
             DB::beginTransaction();
             $vendor_registration_document = new VendorRegistrationDocument();
             $vendor_registration_document->file_type = $request->file_type;
@@ -33,6 +42,29 @@ class VendorRegistrationDocumentController extends BaseController{
                     $VendorRegistrationDocumentTranslation->save();
                 }
             }
+            if($request->has('option_name')){
+                foreach($request->option_name as $key =>$value){
+
+                    if(isset($value[0]) && !empty($value[0])){
+                        $option  = new VendorRegistrationSelectOption();
+                        $option->vendor_registration_documents_id = $vendor_registration_document->id;
+                        $option->save();
+
+                        foreach($request->language_id as $lang_key =>$lang_value){
+                            if(isset($value[$lang_key]) && !empty($value[$lang_key])){
+                                $optionTrabslation  = new VendorRegistrationSelectOptionTranslations();
+                                $optionTrabslation->vendor_registration_select_option_id =$option->id ;
+                                $optionTrabslation->language_id = $lang_value;
+                                $optionTrabslation->name =$value[$lang_key] ;
+                                $optionTrabslation->save();
+                            }
+                        }
+                    }
+
+
+                }
+            }
+
             DB::commit();
             return $this->successResponse($vendor_registration_document, 'Vendor Registration Document Added Successfully.');
         } catch (Exception $e) {
@@ -49,7 +81,13 @@ class VendorRegistrationDocumentController extends BaseController{
      */
     public function show(Request $request){
         try {
+            $language_id = $request->language_id;
             $vendor_registration_document = VendorRegistrationDocument::with(['translations'])->where(['id' => $request->vendor_registration_document_id])->firstOrFail();
+            if($vendor_registration_document->file_type == 'selector'){
+                $vendor_registration_document->options = VendorRegistrationSelectOption::with(['translations'])
+                                                            ->where(['vendor_registration_documents_id' => $request->vendor_registration_document_id])
+                                                            ->get();
+            }
             return $this->successResponse($vendor_registration_document, '');
         } catch (Exception $e) {
             return $this->errorResponse([], $e->getMessage());
@@ -66,6 +104,7 @@ class VendorRegistrationDocumentController extends BaseController{
      */
     public function update(Request $request, VendorRegistrationDocument $vendorRegistrationDocument){
          try {
+
             $this->validate($request, [
               'name.0' => 'required|string|max:60',
               'file_type' => 'required',
@@ -88,6 +127,38 @@ class VendorRegistrationDocumentController extends BaseController{
                     $VendorRegistrationDocumentTranslation->save();
                 }
             }
+            $delete_option = [];
+
+            if($request->has('option_name')){
+                foreach($request->option_name as $key =>$value){
+                    if(isset($value[0]) && !empty($value[0])){
+                        $data = [
+                            'vendor_registration_documents_id'       =>$vendor_registration_document->id
+                        ];
+                        $option = VendorRegistrationSelectOption::updateOrCreate(
+                            ['id' => $request->option_id[$key][0] ],
+                            $data
+                        );
+                        $delete_option[] =$option->id;
+                        foreach($request->language_id as $lang_key =>$lang_value){
+                            if(isset($value[$lang_key]) && !empty($value[$lang_key])){
+                                $translationData = [
+                                    'name' => $value[$lang_key]
+                                ];
+                                $optionTrabslation = VendorRegistrationSelectOptionTranslations::updateOrCreate(
+                                    ['vendor_registration_select_option_id' => $option->id,'language_id'=>  $lang_value],
+                                    $translationData
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+
+            VendorRegistrationSelectOption::whereNotIn('id',$delete_option)
+                                            ->where('vendor_registration_documents_id', $vendor_registration_document_id)
+                                            ->delete();
+
             DB::commit();
             return $this->successResponse($vendor_registration_document, 'Vendor Registration Document Updated Successfully.');
         } catch (Exception $e) {

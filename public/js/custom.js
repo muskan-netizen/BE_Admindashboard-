@@ -582,7 +582,7 @@ $(document).ready(function() {
         // var subscription_id = $('#subscription_payment_form #subscription_id').val();
         var payment_option_id = selected_option.data("payment_option_id");
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
-            $('#subscription_payment').modal('hide');
+            // $('#subscription_payment').modal('hide');
             if (payment_option_id == 4) {
                 stripe.createToken(card).then(function(result) {
                     if (result.error) {
@@ -625,6 +625,8 @@ $(document).ready(function() {
                 paymentViaOzow('', '');
             }else if (payment_option_id == 15) {
                 paymentViaPagarme('', '');
+            }else if (payment_option_id == 17) {
+                paymentViaCheckout('', '');
             }
         } else {
             _this.attr("disabled", false);
@@ -1406,6 +1408,14 @@ $(document).ready(function() {
                 return false;
             }
         }
+        else if (payment_option_id == 17) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaCheckout(address_id, order);
+            } else {
+                return false;
+            }
+        }
     });
 
 
@@ -1530,7 +1540,7 @@ $(document).ready(function() {
 
         $(".topup_wallet_confirm").attr("disabled", true);
 
-        $('#topup_wallet').modal('hide');
+        // $('#topup_wallet').modal('hide');
 
         if (payment_option_id == 4) {
             stripe.createToken(card).then(function(result) {
@@ -1574,6 +1584,8 @@ $(document).ready(function() {
             paymentViaOzow('', '');
         }else if (payment_option_id == 15) {
             paymentViaPagarme('', '');
+        }else if (payment_option_id == 17) {
+            paymentViaCheckout('', '');
         }
     });
     $(document).on("click", ".remove_promo_code_btn", function() {
