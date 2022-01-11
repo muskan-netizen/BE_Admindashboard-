@@ -36,7 +36,7 @@
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
                         @if(!empty($category->image))
-                            <div class="common-banner"><img alt="" src="{{$category->image['image_fit'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                            <div class="common-banner"><img alt="" class="blur-up lazyload" data-src="{{$category->image['image_fit'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
@@ -48,7 +48,7 @@
                                             @foreach($category->childs->toArray() as $cate)
                                             <div class="category-block">
                                                 <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                    <div class="category-image"><img alt="" src="{{$cate['icon']['image_fit'] . '300/300' . $cate['icon']['image_path']}}" ></div>
+                                                    <div class="category-image"><img alt="" class="blur-up lazyload" data-src="{{$cate['icon']['image_fit'] . '300/300' . $cate['icon']['image_path']}}" ></div>
                                                 </a>
                                                 <div class="category-details">
                                                     <a href="{{route('categoryDetail', $cate['slug'])}}">
@@ -144,7 +144,7 @@
 
                                         <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', $new['url_slug'])}}">
                                             <div class="img-outer-box position-relative">
-                                                <img src="{{$new['image_url']}}" alt="">
+                                                <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
                                                 <div class="pref-timing">
                                                     <!--<span>5-10 min</span>-->
                                                 </div>
@@ -184,7 +184,7 @@
                                             </div>
                                         </a>
                                         {{-- <div class="media">
-                                            <a href="{{route('productDetail', $new['url_slug'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt=""></a>
+                                            <a href="{{route('productDetail', $new['url_slug'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" data-src="{{$imagePath}}" alt=""></a>
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing">
                                                     <a href="{{route('productDetail', $new['url_slug'])}}">
@@ -242,10 +242,10 @@
                                                     </div>
                                                     {{-- <div class="collection-grid-view">
                                                         <ul>
-                                                            <li><img src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/3.png')}}" alt="" class="product-3-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/4.png')}}" alt="" class="product-4-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/3.png')}}" alt="" class="product-3-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/4.png')}}" alt="" class="product-4-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
                                                         </ul>
                                                     </div> --}}
                                                     {{-- <div class="product-page-per-view">
@@ -281,7 +281,7 @@
                                                 <div class="col-xl-3 col-6 col-grid-box mt-3">
                                                     <a href="{{route('productDetail', $data->url_slug)}}" class="product-box scale-effect mt-0">
                                                         <div class="product-image p-0">
-                                                            <img class="img-fluid blur-up lazyload" src="{{$data->image_url}}" alt="">
+                                                            <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                                                         </div>
                                                         <div class="media-body align-self-center">
                                                             <div class="inner_spacing w-100">

@@ -2,7 +2,7 @@
 @section('content')
 <section class="cab-booking pt-0 d-none">
         <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d4850.865733603189!2d76.82393041076074!3d30.716149768967526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1627015845978!5m2!1sen!2sin" width="100%" height="100vh" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-        
+
         <div class="booking-experience ds bc 12" style="top: 80px;">
             <div class="address-form">
 
@@ -114,16 +114,16 @@
                         <p class="ellips mb-0">Sector 14, BEL Colony, Budanpur, Panchkula, Haryana, India</p>
                     </a>
                 </div>
-                
+
                 <div class="cab-button d-none align-items-center py-2">
                     <a class="btn btn-solid ml-2" href="#">uber</a>
                     <a class="btn btn-solid ml-2" href="#">ola</a>
                 </div>
-                
+
                 <div class="vehical-container style-4 d-none">
                     <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
                         <div class="col-3 vehicle-icon">
-                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                            <img class="img-fluid blur-up lazyload" data-src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
                         </div>
                         <div class="col-9">
                             <div class="row no-gutters">
@@ -141,7 +141,7 @@
                     <hr class="m-0">
                     <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
                         <div class="col-3 vehicle-icon">
-                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                            <img class="img-fluid blur-up lazyload" data-src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
                         </div>
                         <div class="col-9">
                             <div class="row no-gutters">
@@ -159,7 +159,7 @@
                     <hr class="m-0">
                     <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
                         <div class="col-3 vehicle-icon">
-                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                            <img class="img-fluid blur-up lazyload" data-src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
                         </div>
                         <div class="col-9">
                             <div class="row no-gutters">
@@ -177,7 +177,7 @@
                     <hr class="m-0">
                     <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
                         <div class="col-3 vehicle-icon">
-                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                            <img class="img-fluid blur-up lazyload" data-src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
                         </div>
                         <div class="col-9">
                             <div class="row no-gutters">
@@ -195,7 +195,7 @@
                     <hr class="m-0">
                     <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
                         <div class="col-3 vehicle-icon">
-                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                            <img class="img-fluid blur-up lazyload" data-src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
                         </div>
                         <div class="col-9">
                             <div class="row no-gutters">
@@ -213,7 +213,7 @@
                     <hr class="m-0">
                     <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
                         <div class="col-3 vehicle-icon">
-                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                            <img class="img-fluid blur-up lazyload" data-src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
                         </div>
                         <div class="col-9">
                             <div class="row no-gutters">
@@ -231,7 +231,7 @@
                     <hr class="m-0">
                     <a class="vehical-view-box row align-items-center no-gutters px-2" href="#">
                         <div class="col-3 vehicle-icon">
-                            <img class="img-fluid" src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
+                            <img class="img-fluid blur-up lazyload" data-src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Select_v1.png" class="j0 i2">
                         </div>
                         <div class="col-9">
                             <div class="row no-gutters">
@@ -253,7 +253,7 @@
                         <div class="bg-white p-2">
                             <a href="#">✕</a>
                             <div class="w-100 h-100">
-                                <img src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/IntercityXL.png" alt="">
+                                <img class="blur-up lazyload" data-src="https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/IntercityXL.png" alt="">
                             </div>
                             <div class="cab-location-details">
                                 <h4 class="d-flex align-items-center justify-content-between"><b>XL Intercity</b> <b>₹3,206.50</b></h4>
@@ -276,7 +276,7 @@
                         </div>
                         <div class="coupon_box d-flex w-100 py-2 align-items-center">
                             <img src="http://local.myorder.com/assets/images/discount_icon.svg">
-                            <label class="mb-0 ml-1">                                
+                            <label class="mb-0 ml-1">
                                 <a href="javascript:void(0)" class="promo_code_list_btn ml-1" data-vendor_id="2" data-cart_id="4" data-amount="4.00">Select a promo code</a>
                             </label>
                         </div>
@@ -300,7 +300,7 @@
                                    </div>
                                    <div class="col-4">
                                        <div class="taxi-img">
-                                           <img src="https://staticimg.vicky.in/cache/images/cars/hyundai/santro/hyundai_santro_4-100x100.jpg" alt="">
+                                           <img class=" blur-up lazyload" data-src="https://staticimg.vicky.in/cache/images/cars/hyundai/santro/hyundai_santro_4-100x100.jpg" alt="">
                                        </div>
                                    </div>
                                </div>
@@ -321,17 +321,17 @@
                     <div class="payment-promo-container p-2">
                         <h4 class="d-flex align-items-center justify-content-between mb-2" data-toggle="modal" data-target="#payment_modal"><span><i class="fa fa-money" aria-hidden="true"></i> Cash</span> <i class="fa fa-angle-down" aria-hidden="true"></i></h4>
                         <button class="btn btn-solid w-100">Request XL Intercity</button>
-                    </div>                
-                </div> 
-                
+                    </div>
+                </div>
+
                 <div class="promo-box style-4 d-none">
                     <a class="d-block mt-2" href="#">✕</a>
                     <div class="row" id="promo_code_list_main_div">
-        
+
                         <div class="col-12 mt-2">
                             <div class="coupon-code mt-0">
                                 <div class="p-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
+                                    <img class=" blur-up lazyload" data-src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
                                     <h6 class="mt-0">Converse20</h6>
                                 </div>
                                 <hr class="m-0">
@@ -348,7 +348,7 @@
                         <div class="col-12 mt-2">
                             <div class="coupon-code mt-0">
                                 <div class="p-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
+                                    <img class=" blur-up lazyload" data-src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
                                     <h6 class="mt-0">Converse20</h6>
                                 </div>
                                 <hr class="m-0">
@@ -365,7 +365,7 @@
                         <div class="col-12 mt-2">
                             <div class="coupon-code mt-0">
                                 <div class="p-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
+                                    <img class=" blur-up lazyload" data-src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
                                     <h6 class="mt-0">Converse20</h6>
                                 </div>
                                 <hr class="m-0">
@@ -382,7 +382,7 @@
                         <div class="col-12 mt-2">
                             <div class="coupon-code mt-0">
                                 <div class="p-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
+                                    <img class=" blur-up lazyload" data-src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
                                     <h6 class="mt-0">Converse20</h6>
                                 </div>
                                 <hr class="m-0">
@@ -399,7 +399,7 @@
                         <div class="col-12 mt-2">
                             <div class="coupon-code mt-0">
                                 <div class="p-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
+                                    <img class=" blur-up lazyload" data-src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
                                     <h6 class="mt-0">Converse20</h6>
                                 </div>
                                 <hr class="m-0">
@@ -416,7 +416,7 @@
                         <div class="col-12 mt-2">
                             <div class="coupon-code mt-0">
                                 <div class="p-2">
-                                    <img src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
+                                    <img class=" blur-up lazyload" data-src="https://imgproxy.royoorders.com/insecure/fill/100/35/sm/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/promocode/jyevATxvaAFDVYlbg8QE2QBDBmuBYY6qrxuw8Rsl.png" alt="">
                                     <h6 class="mt-0">Converse20</h6>
                                 </div>
                                 <hr class="m-0">
@@ -431,7 +431,7 @@
                             </div>
                         </div>
 
-                    </div>    
+                    </div>
                 </div>
 
             </div>
@@ -565,7 +565,7 @@
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>
 
         <!-- Screen Number Four -->
         <div class="booking-experience ds bc" style="top: 80px; left:1500px">
@@ -582,11 +582,11 @@
                     <a class="add-more-location position-relative pl-2" href="javascript:void(0)">Add Destination</a>
                 </div>
 
-                <div class="location-container">                       
+                <div class="location-container">
                     <div class="cab-list-container style-4">
                         <div class="scheduled-ride">
                             <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="mx-2">Now</span> <i class="fa fa-angle-down" aria-hidden="true"></i></button>
-                        </div>    
+                        </div>
                         <div class="loader"></div>
                         <a class="select-location row align-items-center" href="#">
                             <div class="col-2 text-center pl-4">
@@ -729,7 +729,7 @@
                                 <div class="form-group mb-1 position-relative">
                                     <input class="form-control" type="text" placeholder="{{__('Enter pickup location')}}">
                                     <a class="location-btn" href="#">
-                                        <img src="{{asset('front-assets/images/arrow.svg')}}" alt="">
+                                        <img class=" blur-up lazyload" data-src="{{asset('front-assets/images/arrow.svg')}}" alt="">
                                     </a>
                                 </div>
                                 <div class="form-group mb-0">
@@ -771,12 +771,12 @@
 
         <!-- Royo Business Start From Here -->
         <section class="royo-rental p-0">
-            <div class="container">                
-               
+            <div class="container">
+
                 <div class="row align-items-center p-64">
                     <div class="col-sm-6">
                         <div class="cab-img-box">
-                            <img class="img-fluid" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_1116,h_744/v1624484990/assets/fa/f20c42-425a-4243-866b-b480d3bd68b4/original/gettyimages-1139275491-2048x2048_With-Mask.png" alt="">
+                            <img class="img-fluid blur-up lazyload" data-src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_1116,h_744/v1624484990/assets/fa/f20c42-425a-4243-866b-b480d3bd68b4/original/gettyimages-1139275491-2048x2048_With-Mask.png" alt="">
                         </div>
                     </div>
                     <div class="offset-md-1 col-sm-6 col-md-5 pl-lg-4">
@@ -793,7 +793,7 @@
                 <div class="row align-items-center p-64">
                     <div class="col-sm-6 order-md-1">
                         <div class="cab-img-box">
-                            <img class="img-fluid" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1623719981/assets/4d/b05e4c-7340-40c4-a3e9-da0de41f14fc/original/rentals-iindia.jpg" alt="">
+                            <img class="img-fluid blur-up lazyload" data-src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1623719981/assets/4d/b05e4c-7340-40c4-a3e9-da0de41f14fc/original/rentals-iindia.jpg" alt="">
                         </div>
                     </div>
                     <div class="col-sm-6 order-md-0">
@@ -806,7 +806,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </section>
 
@@ -822,7 +822,7 @@
                     <div class="col-md-6">
                         <div class="safety-box">
                             <div class="safety-img">
-                                <img class="img-fluid" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1613520218/assets/3e/e98625-31e6-4536-8646-976a1ee3f210/original/Safety_Home_Img2x.png" alt="">
+                                <img class="img-fluid blur-up lazyload" data-src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1613520218/assets/3e/e98625-31e6-4536-8646-976a1ee3f210/original/Safety_Home_Img2x.png" alt="">
                             </div>
                             <div class="safety-content">
                                 <h3 class="mt-0">Our commitment to your safety</h3>
@@ -843,7 +843,7 @@
                     <div class="col-md-6">
                         <div class="safety-box">
                             <div class="safety-img">
-                                <img class="img-fluid" src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1613520218/assets/3e/e98625-31e6-4536-8646-976a1ee3f210/original/Safety_Home_Img2x.png" alt="">
+                                <img class="img-fluid blur-up lazyload" data-src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1613520218/assets/3e/e98625-31e6-4536-8646-976a1ee3f210/original/Safety_Home_Img2x.png" alt="">
                             </div>
                             <div class="safety-content">
                                 <h3 class="mt-0">Setting 10,000+ cities in motion</h3>
@@ -864,7 +864,7 @@
 
     </div>
 
-    
+
 
 
     <script src="{{asset('front-assets/js/popper.min.js')}}"></script>
@@ -884,9 +884,9 @@
 
     <script src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
-    
+
     <script type="text/javascript">
-        
+
     </script>
 
     <script>
@@ -921,9 +921,9 @@
     banner.src = URL.createObjectURL(event.target.files[0]);
    };
 
-  
+
     </script>
 
-   
-    
+
+
 @endsection

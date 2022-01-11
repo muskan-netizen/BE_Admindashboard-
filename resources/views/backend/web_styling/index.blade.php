@@ -328,7 +328,7 @@
                         @else
                         <input type="hidden" name="for_no_product_found_html[{{$key}}]">
                         @endif
-                        
+
                         <div class="mb-0 ml-1">
                             <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="pickup_labels[]">
 

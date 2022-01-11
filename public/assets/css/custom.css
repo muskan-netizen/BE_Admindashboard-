@@ -2052,8 +2052,8 @@ label.logo-size {
 
 .dt-buttons.btn-group.flex-wrap {
     position: absolute;
-    right: 220px;
-    top: 20px;
+    right: 315px;
+    top: 24px;
 }
 
 .navbar-custom .app-search {
@@ -2425,11 +2425,11 @@ a:-webkit-any-link:focus-visible {
 }
 
 #update-single-status {
-    position: absolute;
+    /*position: absolute;*/
     bottom: 10px;
     z-index: 1;
     left: 20px;
-    opacity: 0;
+    /*opacity: 0;*/
     -webkit-transition: all 0.5s;
     -moz-transition: all 0.5s;
     transition: all 0.5s;

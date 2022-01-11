@@ -5,7 +5,7 @@
             @if(($data->variant)->isNotEmpty())
                 <?php /*$imagePath = $imagePath2 = '';
                 $mediaCount = count($data->media);
-                for ($i = 0; $i < $mediaCount && $i < 2; $i++) { 
+                for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
                     if($i == 0){
                         $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
                     }
@@ -14,7 +14,7 @@
                 <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-3">
                     <a href="{{route('productDetail', $data->url_slug)}}" class="common-product-box scale-effect mt-0">
                         <div class="img-outer-box position-relative">
-                            <img class="img-fluid blur-up lazyload" src="{{$data->image_url}}" alt="">
+                            <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                             <div class="pref-timing">
                                 <!--<span>5-10 min</span>-->
                             </div>
@@ -23,19 +23,19 @@
                         <div class="media-body align-self-center">
                             <div class="inner_spacing w-100">
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <h6 class="card_title mb-1 ellips">{{ $data->translation_title }}</h6>   
+                                    <h6 class="card_title mb-1 ellips">{{ $data->translation_title }}</h6>
                                     @if($client_preference_detail)
-                                        @if($client_preference_detail->rating_check == 1)  
+                                        @if($client_preference_detail->rating_check == 1)
                                             @if($data->averageRating > 0)
                                                 <span class="rating-number">{{ number_format($data->averageRating, 1, '.', '') }}</span>
                                             @endif
                                         @endif
-                                    @endif                               
+                                    @endif
                                 </div>
                                 <!-- <h3 class="d-flex align-items-center justify-content-between">
                                     <label class="mb-0">{{ $data->translation_title }}</label>
                                     @if($client_preference_detail)
-                                        @if($client_preference_detail->rating_check == 1)  
+                                        @if($client_preference_detail->rating_check == 1)
                                             @if($data->averageRating > 0)
                                                 <span class="rating">{{ number_format($data->averageRating, 1, '.', '') }} <i class="fa fa-star text-white p-0"></i></span>
                                             @endif

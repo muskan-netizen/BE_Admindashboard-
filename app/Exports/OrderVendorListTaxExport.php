@@ -43,35 +43,113 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
     }
 
     public function headings(): array{
-        return [
-            'Order Id',
-            'Date & Time',
-            'Customer Name',
-            'Vendor Name',
-            'Subtotal Amount',
-            'Promo Code Discount',
-            'Admin Commission [Fixed]',
-            'Admin Commission [%Age]',
-            'Final Amount',
-            'Payment Method',
-            'Order Status'
-        ];
+        if(Auth::user()->is_superadmin)
+        {
+            return [
+                'Customer ID',
+                'Order ID',
+                'Transaction ID',
+                'Date & Time',
+                'Customer Name',
+                'Vendor Name',
+                'Subtotal Amount',
+                'Tip',
+                'Promo Code Used',
+                'Promo Code Discount',
+                'Service Fee',
+                'Delivery Fee',
+                'Sales Tax',
+                'Store Earning',
+                'Admin Commission [Fixed]',
+                'Admin Commission [%Age]',
+                'Final Amount',
+                'Redeemed Loyality Points',
+                'Payment Method',
+                'Order Status',
+                'Delivery Mode',
+                'Pickup Address',
+                'Delivery Address'
+            ];
+        }else{
+            return [
+                'Customer ID',
+                'Order ID',
+                'Transaction ID',
+                'Date & Time',
+                'Customer Name',
+                'Vendor Name',
+                'Subtotal Amount',
+                'Promo Code Used',
+                'Promo Code Discount',
+                'Service Fee',
+                'Delivery Fee',
+                'Sales Tax',
+                'Store Earning',
+                'Admin Commission [Fixed]',
+                'Admin Commission [%Age]',
+                'Final Amount',
+                'Payment Method',
+                'Order Status',
+                'Delivery Mode',
+                'Delivery Address'
+            ];
+
+        }
     }
 
     public function map($order_vendors): array
     {
-        return [
-            $order_vendors->orderDetail ? $order_vendors->orderDetail->order_number : '',
-            $order_vendors->created_date,
-            $order_vendors->user_name,
-            $order_vendors->vendor ? $order_vendors->vendor->name : '',
-            number_format($order_vendors->subtotal_amount, 2),
-            number_format($order_vendors->discount_amount, 2),
-            number_format($order_vendors->admin_commission_fixed_amount),
-            number_format($order_vendors->admin_commission_fixed_amount),
-            number_format($order_vendors->payable_amount),
-            $order_vendors->orderDetail ? $order_vendors->orderDetail->paymentOption->title : '',
-            $order_vendors->order_status,
-        ];
+        if(Auth::user()->is_superadmin)
+        {
+            return [
+                $order_vendors->user_id,
+                $order_vendors->orderDetail ? $order_vendors->orderDetail->order_number : '',
+                $order_vendors->payment ? $order_vendors->payment->transaction_id : '',
+                $order_vendors->created_date,
+                $order_vendors->user_name,
+                $order_vendors->vendor ? $order_vendors->vendor->name : '',
+                number_format($order_vendors->subtotal_amount, 2),
+                number_format($order_vendors->orderDetail ? $order_vendors->orderDetail->tip_amount : 0, 2),
+                $order_vendors->coupon_code,
+                number_format($order_vendors->discount_amount, 2),
+                number_format($order_vendors->service_fee_percentage_amount,2),
+                number_format($order_vendors->delivery_fee,2),
+                number_format($order_vendors->taxable_amount,2),
+                number_format($order_vendors->payable_amount,2) - (number_format($order_vendors->admin_commission_percentage_amount,2) + number_format($order_vendors->admin_commission_fixed_amount,2)),
+                number_format($order_vendors->admin_commission_fixed_amount),
+                number_format($order_vendors->admin_commission_percentage_amount),
+                number_format($order_vendors->payable_amount),
+                $order_vendors->orderDetail ? $order_vendors->orderDetail->loyalty_points_used : '',
+                $order_vendors->orderDetail ? $order_vendors->orderDetail->paymentOption->title : '',
+                $order_vendors->order_status,
+                $order_vendors->orderDetail->shipping_delivery_type == 'L' ?'Lalamove' :'Dispatcher',
+                $order_vendors->orderDetail ? $order_vendors->orderDetail->address->house_number.', '.$order_vendors->orderDetail->address->address.', '.$order_vendors->orderDetail->address->city.', '.$order_vendors->orderDetail->address->state : '',
+                $order_vendors->vendor ? $order_vendors->vendor->address : '',
+            ];
+        }else{
+            return [
+                $order_vendors->user_id,
+                $order_vendors->orderDetail ? $order_vendors->orderDetail->order_number : '',
+                $order_vendors->payment ? $order_vendors->payment->transaction_id : '',
+                $order_vendors->created_date,
+                $order_vendors->user_name,
+                $order_vendors->vendor ? $order_vendors->vendor->name : '',
+                number_format($order_vendors->subtotal_amount, 2),
+                $order_vendors->coupon_code,
+                number_format($order_vendors->discount_amount, 2),
+                number_format($order_vendors->service_fee_percentage_amount,2),
+                number_format($order_vendors->delivery_fee,2),
+                number_format($order_vendors->taxable_amount,2),
+                number_format($order_vendors->payable_amount,2) - (number_format($order_vendors->admin_commission_percentage_amount,2) + number_format($order_vendors->admin_commission_fixed_amount,2)),
+                number_format($order_vendors->admin_commission_fixed_amount),
+                number_format($order_vendors->admin_commission_percentage_amount),
+                number_format($order_vendors->payable_amount),
+                $order_vendors->orderDetail ? $order_vendors->orderDetail->paymentOption->title : '',
+                $order_vendors->order_status,
+                $order_vendors->orderDetail->shipping_delivery_type == 'L' ?'Lalamove' :'Dispatcher',
+                $order_vendors->orderDetail ? $order_vendors->orderDetail->address->house_number.', '.$order_vendors->orderDetail->address->address.', '.$order_vendors->orderDetail->address->city.', '.$order_vendors->orderDetail->address->state : ''
+            ];
+
+        }
     }
 }

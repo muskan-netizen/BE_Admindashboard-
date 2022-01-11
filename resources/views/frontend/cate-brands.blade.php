@@ -36,7 +36,7 @@
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
                         @if(!empty($category->image))
-                        <div class="common-banner"><img alt="" src="{{$category->image['proxy_url'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                        <div class="common-banner"><img alt="" data-src="{{$category->image['proxy_url'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
                         @endif
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
@@ -65,7 +65,7 @@
 
                                         <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', $new['url_slug'])}}">
                                             <div class="img-outer-box position-relative">
-                                                <img src="{{$imagePath}}" alt="">
+                                                <img class="blur-up lazyload" data-src="{{$imagePath}}" alt="">
                                                 <div class="pref-timing">
                                                     <!--<span>5-10 min</span>-->
                                                 </div>
@@ -105,29 +105,6 @@
                                             </div>
                                         </a>
 
-                                        <!-- <div class="media">
-                                            <a href="{{route('productDetail', $new['url_slug'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt="" ></a>
-                                            <div class="media-body align-self-center">
-                                                <div class="inner_spacing">
-                                                    <a href="{{route('productDetail', $new['url_slug'])}}">
-                                                        <h3>{{ $new['translation_title'] }}</h3>
-                                                    </a>
-                                                    <h6 class="mt-0"><b>{{$new['vendor']['name']}}</b></h6>
-                                                    @if($new['inquiry_only'] == 0)
-                                                    <h4 class="mt-1">
-                                                        <//?php $multiply = $new['variant_multiplier']; ?>
-                                                        {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}} </h4>
-                                                    @endif
-                                                    @if($client_preference_detail)
-                                                        @if($client_preference_detail->rating_check == 1)
-                                                            @if($new['averageRating'] > 0)
-                                                                <span class="rating">{{ $new['averageRating'] }} <i class="fa fa-star text-white p-0"></i></span>
-                                                            @endif
-                                                        @endif
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div> -->
                                     @endforeach
                                     </div>
                                 @endforeach
@@ -161,10 +138,10 @@
                                                     </div>
                                                     {{-- <div class="collection-grid-view">
                                                         <ul>
-                                                            <li><img src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/3.png')}}" alt="" class="product-3-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/4.png')}}" alt="" class="product-4-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/3.png')}}" alt="" class="product-3-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/4.png')}}" alt="" class="product-4-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
                                                         </ul>
                                                     </div> --}}
                                                     {{-- <div class="product-page-per-view">
@@ -195,7 +172,7 @@
                                                             <div class="text-center">
                                                                 <a href="{{ $data->redirect_url }}">
                                                                     <?php //print_r($data->image);?>
-                                                                    <img src="{{ $data->image['image_fit'] }}150/150{{ $data->image['image_path'] }}" alt="">
+                                                                    <img class="blur-up lazyload" data-src="{{ $data->image['image_fit'] }}150/150{{ $data->image['image_path'] }}" alt="">
                                                                 </a>
                                                             </div>
                                                         </div>

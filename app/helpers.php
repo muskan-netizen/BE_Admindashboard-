@@ -182,6 +182,15 @@ function getDefaultImagePath()
     $values['image_fit'] = \Config::get('app.FIT_URl');
     return $values;
 }
+function getImageUrl($image,$dim)
+{
+    $server = env('APP_ENV', 'development');
+    if($server == 'local')
+    {
+        return $image;
+    }
+    return \Config::get('app.FIT_URl').$dim.\Config::get('app.IMG_URL2').'/'.$image.'@webp';
+}
 
 
 function getUserIP() {

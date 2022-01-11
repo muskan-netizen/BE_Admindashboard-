@@ -327,7 +327,21 @@
 @endsection
 
 @section('script')
+@if(in_array('razorpay',$client_payment_options)) 
+<script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
+@endif
+@if(in_array('stripe',$client_payment_options)) 
 <script src="https://js.stripe.com/v3/"></script>
+@endif
+@if(in_array('yoco',$client_payment_options)) 
+<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
+<script type="text/javascript">
+    var sdk = new window.YocoSDK({
+        publicKey: yoco_public_key
+    });
+    var inline='';
+</script>
+@endif 
 <script type="text/javascript">
     var subscription_payment_options_url = "{{route('user.subscription.plan.select', ':id')}}";
     var user_subscription_purchase_url = "{{route('user.subscription.plan.purchase', ':id')}}";
@@ -336,10 +350,7 @@
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
-    var sdk = new window.YocoSDK({
-        publicKey: yoco_public_key
-    });
-    var inline='';
+    
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).data("payment_option_id");

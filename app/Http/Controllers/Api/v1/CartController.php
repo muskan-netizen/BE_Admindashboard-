@@ -118,7 +118,7 @@ class CartController extends BaseController
 
             if ($product->category->categoryDetail->type_id == 8) {
             } else {
-                if (($product->sell_when_out_of_stock == 0 && $productVariant->quantity < $request->quantity)) {
+                if ( ($product->sell_when_out_of_stock == 0) && ($productVariant->quantity < $request->quantity) ) {
                     return $this->errorResponse('You Can not order more than ' . $productVariant->quantity . ' quantity.', 404);
                 }
             }
@@ -540,6 +540,7 @@ class CartController extends BaseController
             $pickup_delay_date = 0;
             $dropoff_delay_date = 0;
             $total_service_fee = 0;
+            $product_out_of_stock = 0;
             foreach ($cartData as $ven_key => $vendorData) {
                 $is_promo_code_available = 0;
                 $vendor_products_total_amount = $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
@@ -596,11 +597,11 @@ class CartController extends BaseController
                             $is_percent = 1;
                             $discount_percent = round($vendorData->coupon->promo->amount);
 
-                           
+
                         } else {
                             $discount_amount = $vendorData->coupon->promo->amount * $clientCurrency->doller_compare;
 
-                            
+
                         }
                         if ($vendorData->coupon->promo->restriction_on == 0) {
                             foreach ($vendorData->coupon->promo->details as $key => $value) {
@@ -613,6 +614,15 @@ class CartController extends BaseController
 
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
                     if(isset($prod->product) && !empty($prod->product)){
+
+                        if($prod->product->sell_when_out_of_stock == 0){
+                            $quantity_check = productvariantQuantity($prod->variant_id);
+                            if($quantity_check < $prod->quantity ){
+                                $delivery_status=0;
+                                $product_out_of_stock = 1;
+                            }
+                        }
+                        $prod->product_out_of_stock =  $product_out_of_stock;
 
                         $price_in_currency = $price_in_doller_compare = $pro_disc = $quantity_price = 0;
                         $variantsData = $taxData = $vendorAddons = array();
@@ -669,9 +679,9 @@ class CartController extends BaseController
                                     $variantsData['coupon_not_appiled'] = 1;
                                 }
 
-                                
+
                             }
-                           
+
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
@@ -744,7 +754,7 @@ class CartController extends BaseController
                         $prod->variants = $variantsData;
                         $prod->variant_options = $variant_options;
                         $prod->product_addons = $vendorAddons;
-                        
+
                         $product = Product::with([
                             'variant' => function ($sel) {
                                 $sel->groupBy('product_id');
@@ -783,8 +793,10 @@ class CartController extends BaseController
                     }
                 }
 
-                
-                
+
+
+
+
                 $deliver_charge = $deliver_charge * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
                 $vendorData->addonSum = $ttAddon;
@@ -846,6 +858,9 @@ class CartController extends BaseController
 
                 $order_sub_total = $order_sub_total + $vendor_products_total_amount;
 
+                if((float)($vendorData->vendor->order_min_amount) > $payable_amount){  # if any vendor total amount of order is less then minimum order amount
+                    $delivery_status = 0;
+                }
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
                 $promoCodeRequest->setMethod('POST');
@@ -1075,5 +1090,49 @@ class CartController extends BaseController
             DB::rollback();
             return response()->json(['status'=>'Error', 'message'=>$ex->getMessage()]);
         }
+    }
+
+    # repeat order vendor wise
+
+    public function repeatOrder($domain = '', Request $request){
+
+        $order_vendor_id = $request->order_vendor_id;
+        $cart_id = $request->cart_id;
+        $getallproduct = OrderProduct::where('order_vendor_id',$order_vendor_id)->get();
+
+        if(isset($cart_id) && !empty($cart_id)){
+            CartProduct::where('cart_id', $cart_id)->delete();
+            CartCoupon::where('cart_id', $cart_id)->delete();
+            CartAddon::where('cart_id', $cart_id)->delete();
+        }
+
+        foreach($getallproduct as $data){
+            $request->vendor_id = $data->vendor_id;
+            $request->sku = $data->product->sku;
+            $request->quantity = $data->quantity;
+            $request->product_variant_id = $data->variant_id;
+
+            if(isset($getallproduct->order) && !empty($getallproduct->order))
+            $type = LuxuryOption::where('id',$getallproduct->order->luxury_option_id)->value('title');
+
+
+            $request->type = $type ?? 'delivery';
+
+            $addonID = OrderProductAddon::where('order_product_id',$data->id)->pluck('addon_id');
+            $addonoptID = OrderProductAddon::where('order_product_id',$data->id)->pluck('option_id');
+
+            if(count($addonID))
+            $request->request->add(['addon_ids' => $addonID->toArray()]);
+
+            if(count($addonoptID))
+            $request->request->add(['addon_options' => $addonoptID->toArray()]);
+
+            $this->add($request);
+
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Order added to cart.']);
+
+
     }
 }

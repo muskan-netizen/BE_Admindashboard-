@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Models\UserPermissions;
 use App\Models\Timezone;
 use Illuminate\Support\Str;
+use App\Imports\CustomerImport;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use App\Notifications\PasswordReset;
@@ -26,7 +27,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
 use App\Models\UserDevice;
 use Session;
-use App\Models\{Payment, User, Client, Country, Currency, Language, UserVerification, Role, Transaction};
+use App\Models\{Payment, User, Client, Country, CsvCustomerImport, Currency, Language, UserVerification, Role, Transaction};
 
 class UserController extends BaseController
 {
@@ -216,6 +217,39 @@ class UserController extends BaseController
         $userCustomData = $this->userMetaData($user->id, 'web', 'web');
         return $user->id;
     }
+
+
+
+     /**
+     * Import Excel file for vendors
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function importCsv(Request $request)
+    {
+        if($request->has('vendor_csv')){
+            $csv_vendor_import = new CsvCustomerImport();
+            if($request->file('vendor_csv')) {
+                $fileName = time().'_'.$request->file('vendor_csv')->getClientOriginalName();
+                $filePath = $request->file('vendor_csv')->storeAs('csv_vendors', $fileName, 'public');
+                $csv_vendor_import->name = $fileName;
+                $csv_vendor_import->path = '/storage/' . $filePath;
+                $csv_vendor_import->status = 1;
+                $csv_vendor_import->save();
+            }
+            $data = Excel::import(new CustomerImport($csv_vendor_import->id), $request->file('vendor_csv'));
+            return response()->json([
+                'status' => 'success',
+                'message' => 'File Successfully Uploaded!'
+            ]);
+        }
+        return response()->json([
+            'status' => 'error',
+            'message' => 'File Upload Pending!'
+        ]);
+    }
+
 
 
     public function edit($domain = '', $id)

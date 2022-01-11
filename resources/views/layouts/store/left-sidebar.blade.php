@@ -34,11 +34,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <!-- Start Cab Booking Header From Here -->
         <div class="cab-booking-header">
             <div class="container">
-                <div class="row">
-                    <div class="col-2">
+                <div class="row align-items-center">
+                    <div class="col-3 col-md-2">
                         <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     </div>
-                    <div class="top-header bg-transparent col-10 d-flex align-items-center justify-content-end">
+                    <div class="col-9 col-md-10 top-header bg-transparent d-flex align-items-center justify-content-end">
                         <ul class="header-dropdown">
                             <li class="onhover-dropdown change-language">
                                 <a href="javascript:void(0)">{{session()->get('locale')}}
@@ -198,7 +198,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <div class="row mx-0">
                                 <% _.each(results, function(result, k){ %>
                                     <a class="col-12 text-center list-items pt-2" href="<%= result.redirect_url %>">
-                                    <img src="<%= result.image_url%>" alt="">
+                                    <img  class="blur-up lazyload" data-src="<%= result.image_url%>" alt="">
                                     <div class="result-item-name"><b><%= result.name %></b>
                                          <!-- <span>Dish</span>  -->
                                     </div>
@@ -236,11 +236,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                                 <li id="cart_product_<%= vendor_product.id %>" data-qty="<%= vendor_product.quantity %>">
                                                     <a class='media' href='<%= show_cart_url %>'>
                                                         <% if(vendor_product.pvariant.media_one) { %>
-                                                            <img class='mr-2' src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
+                                                            <img class='mr-2 blur-up lazyload' data-src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
                                                         <% }else if(vendor_product.pvariant.media_second){ %>
-                                                            <img class='mr-2' src="<%= vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_second.image.path.image_path %>">
+                                                            <img class='mr-2 blur-up lazyload' data-src="<%= vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_second.image.path.image_path %>">
                                                         <% }else{ %>
-                                                            <img class='mr-2' src="<%= vendor_product.image_url %>">
+                                                            <img class='mr-2 blur-up lazyload' data-src="<%= vendor_product.image_url %>">
                                                         <% } %>
                                                         <div class='media-body'>
                                                             <h4><%= vendor_product.product.translation_one ? vendor_product.product.translation_one.title :  vendor_product.product.sku %></h4>
@@ -359,7 +359,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <li>
                                     <a href="{{route('categoryDetail', $cate['slug'])}}">
                                         @if($client_preference_detail->show_icons == 1  && \Request::route()->getName() == 'userHome')
-                                        <img src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt="">
+                                        <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt="">
                                         @endif
                                         {{$cate['name']}}</a>
                                     @if(!empty($cate['children']))
@@ -397,7 +397,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <li>
             <a href="{{route('categoryDetail')}}/<%= category.slug %>">
                 @if($client_preference_detail->show_icons == 1  && \Request::route()->getName() == 'userHome')
-                    <img src="<%= category.icon.image_fit %>200/200<%= category.icon.image_path %>" alt="">
+                    <img class="blur-up lazyload" data-src="<%= category.icon.image_fit %>200/200<%= category.icon.image_path %>" alt="">
                 @endif
                 <%= category.name %>
             </a>

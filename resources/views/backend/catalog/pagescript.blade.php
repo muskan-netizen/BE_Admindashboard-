@@ -92,7 +92,7 @@
         var did = $(this).attr('dataid');
         $.ajax({
             type: "get",
-            url: "<?php echo url('client/variant'); ?>" + '/' + did + '/edit',
+            url: "{{url('client/variant')}}" + '/' + did + '/edit',
             data: '',
             dataType: 'json',
             beforeSend: function() {
@@ -162,9 +162,18 @@
 
     $(document).on('click', '.deleteVariant', function() {
         var did = $(this).attr('dataid');
-        if (confirm("Are you sure? You want to delete this variant.")) {
-            $('#varDeleteForm' + did).submit();
-        }
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete this variant.')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $('#varDeleteForm' + did).submit();
+            }
+        });
         return false;
     });
 
@@ -247,9 +256,18 @@
     });
     $(document).on('click', '.deleteBrand', function() {
         var did = $(this).attr('dataid');
-        if (confirm("Are you sure? You want to delete this brand.")) {
-            $('#brandDeleteForm' + did).submit();
-        }
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete this brand.')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $('#brandDeleteForm' + did).submit();
+            }
+        });
         return false;
     });
     $('.saveBrandOrder').on('click', function(e) {
@@ -271,7 +289,7 @@
         var did = $(this).attr('dataid');
         $.ajax({
             type: "get",
-            url: "<?php echo url('client/brand'); ?>" + '/' + did + '/edit',
+            url: "{{url('client/brand')}}" + '/' + did + '/edit',
             data: '',
             dataType: 'json',
             success: function(data) {

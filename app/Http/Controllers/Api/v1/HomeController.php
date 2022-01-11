@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial};
+use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot};
 
 class HomeController extends BaseController
 {
@@ -153,7 +153,9 @@ class HomeController extends BaseController
             else
                 $domain_link = "https://" . $homeData['profile']->sub_domain . env('SUBMAINDOMAIN');
 
-            $homeData['domain_link'] = $domain_link ;
+            
+            $homeData['domain_link'] = $domain_link;
+            
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -206,10 +208,10 @@ class HomeController extends BaseController
                         sin( radians(' . $latitude . ') ) *
                         sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
                 $vendorData = $vendorData->whereIn('id', $ses_vendors);
-                if($venderFilternear && ($venderFilternear == 1) ){
+                //if($venderFilternear && ($venderFilternear == 1) ){
                     //->orderBy('vendorToUserDistance', 'ASC')
                     $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
-                }
+                //}
             }
 
             //filter on ratings

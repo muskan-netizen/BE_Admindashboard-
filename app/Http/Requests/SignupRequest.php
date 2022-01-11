@@ -31,7 +31,9 @@ class SignupRequest extends FormRequest{
             'term_and_condition' => 'accepted',
             'refferal_code' => 'nullable|exists:user_refferals,refferal_code',
         ];
+
         $preferences = ClientPreference::first();
+
 
         if($preferences->verify_email == 1){
             $rules['email'] = 'required|email|unique:users';

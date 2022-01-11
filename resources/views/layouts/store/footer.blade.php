@@ -20,8 +20,8 @@
 
     \Session::forget('success');
 @endphp
-<script src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
-<script src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
 <script type="text/javascript">
     var is_hyperlocal = 0;
     var selected_address = 0;
@@ -158,8 +158,8 @@
 </script>
 
 
-<script src="{{asset('assets/js/constants.js')}}"></script>
-<script src="{{$mapurl}}"></script>
+<script type="text/javascript" src="{{asset('assets/js/constants.js')}}"></script>
+<script type="text/javascript" src="{{$mapurl}}"></script>
 
 <script>
       var bindLatlng = new google.maps.LatLng(userLatitude, userLongitude);
@@ -172,45 +172,37 @@
     var bindMap=new google.maps.Map(document.getElementById("nearmap"), bindmapProp);
 </script>
 
-<script src="{{asset('front-assets/js/popper.min.js')}}"></script>
-<script src="{{asset('front-assets/js/slick.js')}}"></script>
-<script src="{{asset('front-assets/js/menu.js')}}"></script>
-<script src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
-<script src="{{asset('front-assets/js/bootstrap.js')}}"></script>
-<script src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
-<script src="{{asset('front-assets/js/underscore.min.js')}}"></script>
-<script src="{{asset('front-assets/js/script.js')}}"></script>
-<script src="{{asset('js/custom.js')}}"></script>
-<script src="{{asset('js/location.js')}}"></script>
-<script src="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>
-<script src="{{asset('assets/libs/bootstrap-colorpicker/bootstrap-colorpicker.min.js')}}"></script>
-<script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
-<script src="{{asset('assets/libs/clockpicker/clockpicker.min.js')}}"></script>
-
-
-
-@if(in_array('razorpay',$client_payment_options))
-<!-- RazourPay Payment Gateway -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<!-- RazourPay Payment Gateway -->
-@endif
+<script type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/slick.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/location.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/libs/bootstrap-colorpicker/bootstrap-colorpicker.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/libs/clockpicker/clockpicker.min.js')}}"></script>
 
 
 
 <!--WaitMe Loader Script -->
-<script src="{{asset('js/waitMe.min.js')}}"></script>
-<script src="{{asset('js/developer.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/waitMe.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <!--WaitMe Loader Script -->
 
 <!-- SweetAlert Script -->
-<script src="{{asset('js/sweetalert2.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
 
-<script src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
+<script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 @if (Auth::check())
 @if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
-<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
     var firebaseConfig = {

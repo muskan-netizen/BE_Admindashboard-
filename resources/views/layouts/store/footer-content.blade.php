@@ -95,8 +95,8 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
             @endif
             <div class="col-lg-3 col-md-6 mb-md-0 mb-3 text-right d-none">
                 <div class="store-btn">
-                    <a href="{{$client_preference_detail->ios_link??'#'}}" target="_blank"><img src="{{asset('front-assets/images/app-store.svg')}}" alt=""></a>
-                    <a class="ml-2" href="{{$client_preference_detail->android_app_link??'#'}}" target="_blank"><img src="{{asset('front-assets/images/google-play.svg')}}" alt=""></a>
+                    <a href="{{$client_preference_detail->ios_link??'#'}}" target="_blank"><img src="{{ getImageUrl(asset('front-assets/images/app-store.svg'),'270/48') }}" alt=""></a>
+                    <a class="ml-2" href="{{$client_preference_detail->android_app_link??'#'}}" target="_blank"><img src="{{ getImageUrl(asset('front-assets/images/google-play.svg'),'270/48') }}" alt=""></a>
                 </div>
                 <ul class="social-links ml-md-auto mt-3">
                     @foreach($social_media_details as $social_media_detail)
@@ -125,19 +125,19 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <div class="payment-card-bottom">
                         <ul>
                             <li>
-                                <a href="#"><img src="{{asset('assets/images/visa.png')}}"></a>
+                                <a href="#"><img src="{{ getImageUrl(asset('assets/images/visa.png'),'26/26') }}"></a>
                             </li>
                             <li>
-                                <a href="#"><img src="{{asset('assets/images/mastercard.png')}}"></a>
+                                <a href="#"><img src="{{ getImageUrl(asset('assets/images/mastercard.png'),'26/26') }}"></a>
                             </li>
                             <li>
-                                <a href="#"><img src="{{asset('assets/images/paypal.png')}}"></a>
+                                <a href="#"><img src="{{ getImageUrl(asset('assets/images/paypal.png'),'26/26') }}"></a>
                             </li>
                             <li>
-                                <a href="#"><img src="{{asset('assets/images/american-express.png')}}"></a>
+                                <a href="#"><img src="{{ getImageUrl(asset('assets/images/american-express.png'),'26/26') }}"></a>
                             </li>
                             <li>
-                                <a href="#"><img src="{{asset('assets/images/discover.png')}}"></a>
+                                <a href="#"><img src="{{ getImageUrl(asset('assets/images/discover.png'),'26/26') }}"></a>
                             </li>
                         </ul>
                     </div>

@@ -13,7 +13,7 @@ class AlterCartAddonsTable extends Migration
      */
     public function up()
     {
-        Schema::table('cart_addons', function (Blueprint $table) {
+        Schema::table('cart_addons', function (Blueprint $table) { 
             $table->id()->first();
             $table->bigInteger('cart_id')->unsigned()->after('id');
         });

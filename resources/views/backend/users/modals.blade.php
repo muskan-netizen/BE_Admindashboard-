@@ -246,3 +246,52 @@
             </div>
         </div>
     </div>
+</div>
+
+    <div id="import-form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h4 class="modal-title">{{ __('Import Customers') }} </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <form method="post" enctype="multipart/form-data" id="save_imported_customer">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row">
+                        <div class="col-md-12 text-center">
+                                <a href="{{url('file-download'.'/sample_customer.csv')}}">{{ __("Download Sample file here!") }}</a>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row mb-2">
+                                    <div class="col-md-12">            
+                                        <input type="file" accept=".csv" onchange="submitImportUserForm()" data-plugins="dropify" name="vendor_csv" class="dropify" data-default-file="" required/>
+                                        <p class="text-muted text-center mt-2 mb-0">{{ __("Upload") }} CSV</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <table class="table table-centered table-nowrap table-striped" id="">
+                                <p id="p-message" style="color:red;"></p>
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>{{ __('File Name') }}</th>
+                                            <th colspan="2">{{ __('Status') }}</th>
+                                            <th>{{ __('Link') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="post_list">
+                                      
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+ 
+

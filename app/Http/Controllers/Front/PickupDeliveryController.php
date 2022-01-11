@@ -41,8 +41,11 @@ class PickupDeliveryController extends FrontController{
     public function getOrderTrackingDetails(Request $request, $domain = ''){
 
         $order = OrderVendor::where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first();
+       // pr($order->toArray());
         $response = Http::get($request->new_dispatch_traking_url);
         if($response->status() == 200 && isset($order) && !empty($order)){
+           $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
+           $order->dispatcher_status_type=  $type ?  $type->type :1;
            $response = $response->json();
            $response['order_details'] = $order->toArray();
            return $this->successResponse($response);
@@ -67,9 +70,9 @@ class PickupDeliveryController extends FrontController{
         }
         $vendors = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id')
         ->with('slot')->withAvg('product', 'averageRating');
-        
-       
-        
+
+
+
         if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
             $vendors = $vendors->whereHas('serviceArea', function($query) use($pickup_latitude, $pickup_longitude){
                 $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");

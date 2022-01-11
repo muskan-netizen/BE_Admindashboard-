@@ -129,7 +129,7 @@
                                                         <div class="inner-div" >
                                                             @if(Auth::user()->is_superadmin == 1)
                                                                 <a href="javascript:void(0)" class="action-icon editSubscriptionPlanBtn" data-id="{{$plan->slug}}"><i class="mdi mdi-square-edit-outline"></i></a>
-                                                                <a href="{{route('subscription.plan.delete.user', $plan->slug)}}" onclick="return confirm('Are you sure? You want to delete the subscription plan.')" class="action-icon"> <i class="mdi mdi-delete" title="Delete subscription plan"></i></a>
+                                                                <a href="{{route('subscription.plan.delete.user', $plan->slug)}}" onclick="return confirm('Are you sure? You want to delete the subscription plan.')" class="action-icon deleteSubscriptionPlanBtn"> <i class="mdi mdi-delete" title="Delete subscription plan"></i></a>
                                                             @endif
                                                         </div>
                                                     </div>

@@ -55,7 +55,7 @@
                     @if($url)
                     <a class="banner-img-outer" href="{{$url}}">
                         @endif
-                            <img class="blur-up lazyload" src="{{$banner->image['image_fit'] . '1370/300' . $banner->image['image_path']}}">
+                            <img class="blur-up lazyload" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
                         @if($url)
                     </a>
                     @endif
@@ -75,9 +75,9 @@
             <a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%= vendor.slug %>">
                 <div class="suppliers-img-outer position-relative">
                     <% if(vendor.is_vendor_closed == 1){%>
-                    <img class="fluid-img mx-auto blur-up lazyload grayscale-image" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
+                    <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
                     <% }else { %>
-                        <img class="fluid-img mx-auto blur-up lazyload" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
+                        <img class="fluid-img mx-auto blur-up lazyload" data-src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
                     <%  } %>
                     <% if(vendor.timeofLineOfSightDistance != undefined){ %>
                         <div class="pref-timing">
@@ -138,7 +138,7 @@
         <div>
             <a class="brand-box d-block black-box" href="<%= brand.redirect_url %>">
                 <div class="brand-ing">
-                    <img class="blur-up lazyload" src="<%= brand.image.image_fit %>260/260<%= brand.image.image_path %>" alt="">
+                    <img class="blur-up lazyload" data-src="<%= brand.image.image_fit %>260/260<%= brand.image.image_path %>" alt="">
                 </div>
                 <h6><%= brand.translation_title %></h6>
             </a>
@@ -156,7 +156,7 @@
             </div>
             <a class="common-product-box text-center" href="{{route('productDetail')}}/<%= product.url_slug %>">
                 <div class="img-outer-box position-relative">
-                    <img class="blur-up lazyload" src="<%= product.image_url %>" alt="">
+                    <img class="blur-up lazyload" data-src="<%= product.image_url %>" alt="">
                     <div class="pref-timing">
                         <!--<span>5-10 min</span>-->
                     </div>
@@ -196,9 +196,9 @@
             <a class="suppliers-box d-block mx-2" href="{{route('vendorDetail')}}/<%= vendor.slug %>">
                 <div class="suppliers-img-outer">
                     <% if(vendor.is_vendor_closed == 1){%>
-                    <img class="fluid-img mx-auto blur-up lazyload grayscale-image" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
+                    <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
                     <% }else { %>
-                    <img class="fluid-img mx-auto blur-up lazyload" src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
+                    <img class="fluid-img mx-auto blur-up lazyload" data-src="<%= vendor.logo.image_fit %>200/200<%= vendor.logo['image_path'] %>" alt="">
                     <%  } %>
                     <div class="pref-timing">
                         <span>35 min</span>
@@ -212,7 +212,7 @@
                         <% if(vendor.timeofLineOfSightDistance != undefined){ %>
                             <ul class="timing-box mb-1">
                                 <li>
-                                    <small class="d-block"><img class="d-inline-block mr-1 blur-up lazyload" src="{{ asset('front-assets/images/distance.png') }}" alt=""> <%= vendor.lineOfSightDistance %></small>
+                                    <small class="d-block"><img class="d-inline-block mr-1 blur-up lazyload" data-src="{{ asset('front-assets/images/distance.png') }}" alt=""> <%= vendor.lineOfSightDistance %></small>
                                 </li>
                                 <li>
                                     <small class="d-block mx-1"><i class="fa fa-clock-o"></i> <%= vendor.timeofLineOfSightDistance %></small>
@@ -251,12 +251,18 @@
             <div class="order_detail order_detail_data align-items-top pb-3 card-box no-gutters mb-0 mt-3">
                 <% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){ %>
                     <div class="progress-order font-12">
+                        <% if(order.scheduled_slot == null){ %>
                     <% if(order.scheduled_date_time){ %>
                             <span class="badge badge-success ml-2">Scheduled</span>
                             <span class="ml-2">{{__('Your order will arrive by')}} <%= order.converted_scheduled_date_time %></span>
                         <% } else { %>
                             <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
                         <% } %>
+                        <% }else{ %>
+                            <span class="badge badge-success ml-2">Scheduled</span>
+                            <span class="ml-2">{{__('Your order will arrive by')}} <%= order.converted_scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
+                        <% } %>
+
                     </div>
                 <% } %>
                 <span class="left_arrow pulse"></span>
@@ -267,20 +273,20 @@
                         <% if(vendor.order_status){ %>
                             <li>
                             <% if(vendor.order_status == 'placed'){ %>
-                                    <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
+                                    <img class="blur-up lazyload" data-src="{{ asset('assets/images/order-icon.svg') }}" alt="">
                             <% }else if(vendor.order_status == 'accepted'){ %>
-                                    <img src="{{ asset('assets/images/payment_icon.svg') }}" alt="">
+                                    <img class="blur-up lazyload" data-src="{{ asset('assets/images/payment_icon.svg') }}" alt="">
                             <% } else if(vendor.order_status == 'processing'){ %>
-                                    <img src="{{ asset('assets/images/customize_icon.svg') }}" alt="">
+                                    <img class="blur-up lazyload" data-src="{{ asset('assets/images/customize_icon.svg') }}" alt="">
                             <% } else if(vendor.order_status == 'out for delivery'){ %>
-                                    <img src="{{ asset('assets/images/driver_icon.svg') }}" alt="">
+                                    <img class="blur-up lazyload" data-src="{{ asset('assets/images/driver_icon.svg') }}" alt="">
                             <% } %>
                                 <label class="m-0 in-progress"><%= (vendor.order_status).charAt(0).toUpperCase() + (vendor.order_status).slice(1) %></label>
                             </li>
                         <% } %>
 
                         <% if(vendor.dispatch_traking_url){ %>
-                            <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
+                            <img class="blur-up lazyload" data-src="{{ asset('assets/images/order-icon.svg') }}" alt="">
                             <a href="{{route('front.booking.details')}}/<%= order.order_number %>" target="_blank">{{ __('Details') }}</a>
                         <% } %>
 
@@ -300,7 +306,7 @@
                             <% _.each(vendor.products, function(product, k){ %>
                                 <% if(vendor.vendor_id == product.vendor_id){ %>
                                     <li class="text-center">
-                                        <img class="blur-up lazyload" src="<%= product.image_url %>" alt="">
+                                        <img class="blur-up lazyload" data-src="<%= product.image_url %>" alt="">
                                         <span class="item_no position-absolute">x <%= product.quantity %></span>
                                         <label class="items_price">{{Session::get('currencySymbol')}}<%= product.price  * product.pricedoller_compare %></label>
                                     </li>
@@ -636,14 +642,14 @@
 </section>
 <section class="no-store-wrapper mb-3">
     <div class="container">
-       @if(count($for_no_product_found_html))     
+       @if(count($for_no_product_found_html))
         @foreach($for_no_product_found_html as $key => $homePageLabel)
             @include('frontend.included_files.dynamic_page')
         @endforeach
-       @else 
+       @else
         <div class="row">
             <div class="col-12">
-                <img class="no-store-image w-100 mt-2 mb-2" src="{{ asset('images/no-stores.svg') }}" style="max-height: 250px;">
+                <img class="no-store-image w-100 mt-2 mb-2 blur-up lazyload" data-src="{{ getImageUrl(asset('images/no-stores.svg'),'250/250') }}" style="max-height: 250px;">
             </div>
         </div>
         <div class="row">
@@ -658,7 +664,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body text-center">
-                <img class="blur-up lazyload" src="{{asset('assets/images/age-img.svg')}}" alt="">
+                <img class="blur-up lazyload" data-src="{{getImageUrl(asset('assets/images/age-img.svg'),'150/150')}}" alt="">
                 <p class="mb-0 mt-3">{{ $client_preference_detail ? $client_preference_detail->age_restriction_title : 'Are you 18 or older?' }}</p>
                 <p class="mb-0">Are you sure you want to continue?</p>
             </div>

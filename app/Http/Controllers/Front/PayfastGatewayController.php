@@ -124,7 +124,7 @@ class PayfastGatewayController extends FrontController
     {
         // Notify PayFast that information has been received
         //dd('sad');
-        \log::info($request->all());
+        \Log::info($request->all());
         header( 'HTTP/1.0 200 OK' );
         flush();
 

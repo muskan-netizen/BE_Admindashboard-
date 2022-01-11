@@ -410,7 +410,11 @@
                                                         {{-- <span data-toggle="tooltip" data-placement="right" title="Tooltip on right"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></span>
                                             <span class="tooltip-text d-none">Mon-Sun : 11am - 11pm</span> --}}
                                                         </span>
+                                                        
                                                     </li>
+                                                    @if($vendor->order_min_amount > 0)
+                                                    <span class="badge badge-danger">{{__('Minimum order value')}} {{ Session::get('currencySymbol') . number_format($vendor->order_min_amount, 2, '.', '') }}</span>
+                                                    @endif
                                                 </ul>
                                             </div>
                                         </div>
@@ -584,7 +588,7 @@
                                                                 data-addon="{{ $isAddonExist }}"
                                                                 data-minimum_order_count="{{ $minimum_order_count }}"
                                                                 data-batch_count="{{ $batch_count }}"
-                                                                href="javascript:void(0)">{{__('Add')}}</a>
+                                                                href="javascript:void(0)">{{__('Add')}} @if($minimum_order_count > 0) ({{$minimum_order_count}}) @endif</a>
                                                             <div class="number"
                                                                 id="show_plus_minus{{ $cartProductId }}">
                                                                 <span
@@ -633,7 +637,7 @@
                                                                     data-addon="{{ $isAddonExist }}"
                                                                     data-batch_count="{{ $batch_count }}"
                                                                     data-minimum_order_count="{{ $minimum_order_count }}"
-                                                                    href="javascript:void(0)">{{__('Add')}}</a>
+                                                                    href="javascript:void(0)">{{__('Add')}}@if($minimum_order_count > 1) ({{$minimum_order_count}}) @endif</a>
                                                                 <div class="number" style="display:none;"
                                                                     id="ashow_plus_minus{{ $data->id }}">
                                                                     <span class="minus qty-minus-product"

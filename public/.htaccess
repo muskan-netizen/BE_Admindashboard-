@@ -23,6 +23,8 @@
 <IfModule mod_expires.c>
   ExpiresActive On
 
+  ExpiresDefault "access plus 1 year"
+
  # Images
   ExpiresByType image/jpeg "access plus 1 year"
   ExpiresByType image/gif "access plus 1 year"
@@ -46,6 +48,7 @@
   # CSS, JavaScript
   ExpiresByType text/css "access plus 1 year"
   ExpiresByType text/javascript "access plus 1 year"
+  ExpiresByType text/template "access plus 1 year"
   ExpiresByType application/javascript "access plus 1 year"
 
   # Others

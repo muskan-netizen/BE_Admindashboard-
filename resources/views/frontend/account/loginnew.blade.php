@@ -21,26 +21,26 @@
             <div class="col-lg-6 mb-lg-0 mb-3 text-center border-right pb-4">
                 <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
                 @if(session('preferences'))
-                @if(session('preferences')->fb_login == 1 || session('preferences')->twitter_login == 1 || session('preferences')->google_login == 1 || session('preferences')->apple_login == 1)
+                @if(@session('preferences')->fb_login == 1 || @session('preferences')->twitter_login == 1 || @session('preferences')->google_login == 1 || @session('preferences')->apple_login == 1)
                 <ul class="social-links d-flex align-items-center mx-auto mb-4 mt-3">
-                    @if(session('preferences')->google_login == 1)
+                    @if(@session('preferences')->google_login == 1)
                     <li>
                         <a href="{{url('auth/google')}}">
                             <img src="{{asset('front-assets/images/google.svg')}}" alt="">
                         </a>
                     </li>
                     @endif
-                     @if(session('preferences')->fb_login == 1)
+                     @if(@session('preferences')->fb_login == 1)
                     <li>
                         <a href="{{url('auth/facebook')}}"><img src="{{asset('front-assets/images/facebook.svg')}}" alt=""></a>
                     </li>
                     @endif
-                    @if(session('preferences')->twitter_login)
+                    @if(@session('preferences')->twitter_login)
                     <li>
                         <a href="{{url('auth/twitter')}}"><img src="{{asset('front-assets/images/twitter.svg')}}" alt=""></a>
                     </li>
                     @endif
-                    @if(session('preferences')->apple_login == 1)
+                    @if(@session('preferences')->apple_login == 1)
                     <li>
                         <a href="javascript::void(0);">
                             <img src="{{asset('front-assets/images/apple.svg')}}">

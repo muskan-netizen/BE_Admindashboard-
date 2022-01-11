@@ -70,7 +70,7 @@ class FrontController extends Controller
         $status = $this->field_status;
         if ($preferences) {
             if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
-                $vendors = (Session::has('vendors')) ? Session::get('vendors') : array();
+                $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
                 $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
                     ->where(function ($q1) use ($vendors, $status, $lang_id) {
                         $q1->whereIn('vct.vendor_id', $vendors)

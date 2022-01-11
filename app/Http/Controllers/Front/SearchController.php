@@ -10,7 +10,7 @@ use App\Http\Controllers\Front\FrontController;
 use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, ClientCurrency, Category_translation, ProductTranslation};
 
 class SearchController extends FrontController{
-    use ApiResponser;
+    use ApiResponser; 
     public function postAutocompleteSearch(Request $request){
         $response = [];
         $keyword = $request->input('keyword');
@@ -69,8 +69,18 @@ class SearchController extends FrontController{
                         ->where('categories.is_visible', 1)
                         ->where('categories.status', '!=', 2)
                         ->where('categories.is_core', 1)
-                        ->where('cts.language_id', $language_id)
-                        ->where(function ($q) use ($keyword) {
+                        ->where('cts.language_id', $language_id);
+                          // if($preferences){
+                          //    $categories =  $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
+                          //                   ->where(function ($q1) use ($vendors, $status, $lang_id) {
+                          //                       $q1->whereIn('vct.vendor_id', $allowed_vendors)
+                          //                           ->where('vct.status', 1)
+                          //                           ->orWhere(function ($q2) {
+                          //                               $q2->whereIn('categories.type_id', [4,5,8]);
+                          //                           });
+                          //                   });
+                          //       }       
+                        $categories->where(function ($q) use ($keyword) {
                             $q->where('cts.name', ' LIKE', '%' . $keyword . '%')
                             ->orWhere('categories.slug', 'LIKE', '%' . $keyword . '%')
                             ->orWhere('cts.trans-slug', 'LIKE', '%' . $keyword . '%');
@@ -81,6 +91,7 @@ class SearchController extends FrontController{
             $image_url = $category->image['proxy_url'].'80/80'.$category->image['image_path'];
             $response[] = ['id' => $category->id, 'name' => $category->name, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }
+
         $products = Product::with('media')->join('product_translations as pt', 'pt.product_id', 'products.id')
         ->select('products.id', 'products.sku', 'products.url_slug', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
         ->where('pt.language_id', $language_id)

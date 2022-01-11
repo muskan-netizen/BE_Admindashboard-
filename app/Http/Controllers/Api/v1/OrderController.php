@@ -471,7 +471,7 @@ class OrderController extends BaseController
 
                     DB::commit();
                     $this->sendSuccessSMS($request, $order);
-                 
+
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
                 }
             } else {
@@ -1142,7 +1142,7 @@ class OrderController extends BaseController
                         $vendor->dineInTableCategory = $vendor->dineInTable->category->title; //$vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
                     }
 
-                    // dispatch status 
+                    // dispatch status
                     $vendor->vendor_dispatcher_status = VendorOrderDispatcherStatus::whereNotIn('dispatcher_status_option_id',[2])
                     ->select('*','dispatcher_status_option_id as status_data')->where('order_id', $order_id)
                     ->where('vendor_id', $vendor->vendor->id)
@@ -1426,9 +1426,12 @@ class OrderController extends BaseController
         $order_item_count = 0;
         $order->payment_option_title = $order->paymentOption->title;
         $order->item_count = $order_item_count;
+        $order->created_at = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+        $order->created = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+        $order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
         foreach ($order->products as $product) {
             $order_item_count += $product->quantity;
-        } 
+        }
         $order->item_count = $order_item_count;
         unset($order->products);
         unset($order->paymentOption);

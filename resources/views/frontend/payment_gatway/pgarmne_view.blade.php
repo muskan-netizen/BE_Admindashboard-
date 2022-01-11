@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/font-awesome.min.css')}}">
     <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
     <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
     <style>
         .spinner-overlay .page-spinner .circle-border {
             background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 33%, rgba(255, 255, 255, 1) 100%);
@@ -39,8 +40,18 @@
 </head>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript" src="{{asset('js/card.js')}}"></script>
+<script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+       @if(Auth::user() && !isset(Auth::user()->phone_number))
+        var input = document.querySelector("#phone");
+                window.intlTelInput(input, {
+                    separateDialCode: true,
+                    hiddenInput: "full_number",
+                    utilsScript: "{{asset('assets/js/utils.js')}}",
+                    initialCountry: "{{ Session::get('default_country_code','US') }}",
+                });
+        @endif
 
         number = document.querySelector('#cc-number');
         cvc = document.querySelector('#cc-cvc');
@@ -63,12 +74,13 @@
                     expYear: $("#cc-exp-year").val(),
                     "_token": "{{ csrf_token() }}",
                 },
-                success: function(response){
+                success: function(response){ 
                     if(response.status == 'Success')
                     {
                         console.log(response.data);
                         $('#cc-card_id').val(response.data);
-                        $('#pagarme-payment-form').submit();
+                        submitForm();
+                       
                     }else{
                       $('#pagarme-payment-form').after("<div class='error'>{{__('Invalid Card Details.')}}</div>");
                     } 
@@ -76,6 +88,10 @@
             });
         });
     });
+    function submitForm()
+    {
+         $('#pagarme-payment-form').submit();
+    }
 </script>
 <body>
 
@@ -90,6 +106,11 @@
 </div>
 
 <div class="container">
+    @if(\Session::has('error'))
+        <div class="alert alert-danger">
+            <span>{!! \Session::get('error') !!}</span>
+        </div>
+    @endif
     <div class="row">
         <div class="offset-lg-3 col-lg-6">
             <form id="pagarme-payment-form" action="{{route('payment.pagarme.createPayment')}}" method="POST">
@@ -97,6 +118,14 @@
                     <label>{{__('Card Holder Name')}}: </label>
                     <input class="form-control" id="cc-name" type="text" maxlength="20" autocomplete="off" name="holder_name" required autofocus />
                 </div>
+                @if(Auth::user() && !isset(Auth::user()->phone_number))
+                <div class="form-group">
+                    <label>{{__('Phone Number')}}: </label>
+                    <input type="tel" class="form-control phone @error('phone_number') is-invalid @enderror" id="phone" placeholder="Phone Number" name="phone_number" value="{{old('phone_number')}}" required="required" autofocus>
+                    <input type="hidden" id="countryData" name="countryData" value="us">
+                    <input type="hidden" id="dialCode" name="dialCode" value="91">
+                </div>
+                @endif
                 <div class="form-group">
                     <label>{{__('Card Number')}}: </label>
                     <input class="form-control" id="cc-number" type="text" maxlength="20" autocomplete="off" name="number" required autofocus />

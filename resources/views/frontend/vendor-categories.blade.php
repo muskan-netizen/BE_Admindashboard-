@@ -62,7 +62,7 @@
                                         @if($vendor->desc)
                                             <div class="col-md-12 text-center">
                                                 <p>{{$vendor->desc}}</p>
-                                            </div>                                                  
+                                            </div>
                                         @endif
                                     </div>
                                 </form>
@@ -76,7 +76,7 @@
                 <div class="collection-filter col-lg-3">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
-                            <span>{{__('New Product')}}</span>  
+                            <span>{{__('New Product')}}</span>
                             <span class="filter-back d-lg-none d-inline-block">
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span>
@@ -94,18 +94,18 @@
 
                                         <a class="common-product-box scale-effect border-bottom pb-2 mt-2 text-center" href="{{route('productDetail', $new['url_slug'])}}">
                                             <div class="img-outer-box position-relative">
-                                                <img src="{{$imagePath}}" alt="">
+                                                <img class="img-fluid blur-up lazyload" data-src="{{$imagePath}}" alt="">
                                                 <div class="pref-timing">
                                                     <!--<span>5-10 min</span>-->
                                                 </div>
                                                 <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
-                                            </div>    
+                                            </div>
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing px-0">
                                                     <div class="product-description">
                                                         <div class="d-flex align-items-center justify-content-between">
-                                                            <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>                                                                                    
-                                                            <!--<span class="rating-number">2.0</span>-->                                
+                                                            <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
+                                                            <!--<span class="rating-number">2.0</span>-->
                                                         </div>
                                                         <!-- <h3 class="m-0">{{ $new['translation_title'] }}</h3> -->
                                                         <p>{{$new['vendor']['name']}}</p>
@@ -128,7 +128,7 @@
                                                                     @endif
                                                                 @endif
                                                             @endif   -->
-                                                        </div>                       
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -201,9 +201,9 @@
                                                     {{-- <div class="product-page-per-view">
                                                         <?php $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 8; ?>
                                                         <select class="customerPaginate">
-                                                            <option value="8" @if($pagiNate == 8) selected @endif>Show 8 
+                                                            <option value="8" @if($pagiNate == 8) selected @endif>Show 8
                                                             </option>
-                                                            <option value="12" @if($pagiNate == 12) selected @endif>Show 12 
+                                                            <option value="12" @if($pagiNate == 12) selected @endif>Show 12
                                                             </option>
                                                             <option value="24" @if($pagiNate == 24) selected @endif>Show 24
                                                             </option>

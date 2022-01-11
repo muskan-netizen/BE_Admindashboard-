@@ -209,7 +209,7 @@ class SquareController extends FrontController
             }
             return $returnUrl;
         }
-        elseif($request->payment_form == 'wallet'){
+        elseif($request->payment_from == 'wallet'){
             if($request->come_from == 'app')
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=square&status=0';
@@ -218,7 +218,7 @@ class SquareController extends FrontController
             }
             return $returnUrl;
         }
-        elseif($request->payment_form == 'tip'){
+        elseif($request->payment_from == 'tip'){
             if($request->come_from == 'app')
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=square&status=0';
@@ -227,7 +227,7 @@ class SquareController extends FrontController
             }
             return $returnUrl;
         }
-        elseif($request->payment_form == 'subscription'){
+        elseif($request->payment_from == 'subscription'){
             if($request->come_from == 'app')
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=square&status=0';

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
+use App\Http\Controllers\Front\LalaMovesController;
 use App\Models\VendorOrderDispatcherStatus;
 use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency};
 use DB;
@@ -33,7 +34,6 @@ class OrderController extends BaseController
      */
     public function index()
     {
-
         $user = Auth::user();
         // $orders = Order::with(['vendors.products','orderStatusVendor', 'address','user'])->orderBy('id', 'DESC');
         // if (Auth::user()->is_superadmin == 0) {
@@ -414,13 +414,21 @@ class OrderController extends BaseController
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
                 }
+                $orderData = Order::find($request->order_id);
                 if ($request->status_option_id == 2) {
-                    $order_dispatch = $this->checkIfanyProductLastMileon($request);
-                    if ($order_dispatch && $order_dispatch == 1)
-                        $stats = $this->insertInVendorOrderDispatchStatus($request);
+                    //Check Order delivery type
+                    if ($orderData->shipping_delivery_type!='L') {
+                        //Create Shipping request for dispatcher
+                        $order_dispatch = $this->checkIfanyProductLastMileon($request);
+                        if ($order_dispatch && $order_dispatch == 1)
+                            $stats = $this->insertInVendorOrderDispatchStatus($request);
+                    
+                    }elseif($orderData->shipping_delivery_type=='L'){
+                        //Create Shipping place order request for Lalamove
+                        $order_lalamove = $this->placeOrderRequestlalamove($request);
+                    }
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason]);
-                $orderData = Order::find($request->order_id);
 
                 if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
                     $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
@@ -473,7 +481,7 @@ class OrderController extends BaseController
         foreach ($devices as $device) {
             $token[] = $device;
         }
-        $token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
+        //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
         // dd($token);
 
         $from = env('FIREBASE_SERVER_KEY');
@@ -506,6 +514,29 @@ class OrderController extends BaseController
         }
     }
     /// ******************  check If any Product Last Mile on   ************************ ///////////////
+
+    public function placeOrderRequestlalamove($request)
+    {
+       
+        $lala = new LalaMovesController();
+        //Create Shipping place order request for Lalamove
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            $order_lalamove = $lala->placeOrderToLalamove($request->vendor_id,$checkOrder->user_id,$checkOrder->id);
+            }
+
+            if ($order_lalamove->totalFee >0){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update(['web_hook_code' => $order_lalamove->orderRef]);
+            
+                return 1;
+            }
+
+        return 2;
+    }
+
+
     public function checkIfanyProductLastMileon($request)
     {
         $order_dispatchs = 2;
@@ -518,6 +549,9 @@ class OrderController extends BaseController
 
             if ($order_dispatchs && $order_dispatchs == 1)
                 return 1;
+
+
+            return 2;
         }
 
 
@@ -580,6 +614,7 @@ class OrderController extends BaseController
 
         return 2;
     }
+
     // place Request To Dispatch
     public function placeRequestToDispatch($order, $vendor, $dispatch_domain)
     {

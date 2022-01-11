@@ -1127,7 +1127,7 @@
 
         if($('#calendar').length > 0){
         var calendarEl = document.getElementById('calendar');
-
+            
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'timeGridWeek',
             headerToolbar: {
@@ -1155,7 +1155,6 @@
             nowIndicator: true,
             eventMaxStack: 1,
             select: function(arg) {
-
                 // calendar.addEvent({
                 //     title: '',
                 //     start: arg.start,
@@ -1172,15 +1171,14 @@
                 if (arg.allDay == true) {
                     document.getElementById('start_time').value = "00:00";
                     document.getElementById('end_time').value = "23:59";
-
                 } else {
                     var startTime = ("0" + arg.start.getHours()).slice(-2) + ":" + ("0" + arg.start.getMinutes()).slice(-2);
                     var EndTime = ("0" + arg.end.getHours()).slice(-2) + ":" + ("0" + arg.end.getMinutes()).slice(-2);
 
                     document.getElementById('start_time').value = startTime;
                     document.getElementById('end_time').value = EndTime;
-
                 }
+
 
                 $('#slot_date').flatpickr({
                     minDate: "today",

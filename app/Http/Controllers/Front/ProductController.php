@@ -52,13 +52,15 @@ class ProductController extends FrontController{
             });
         }
         $product_in_cart = $product_in_cart->first();
+        $is_available = true;
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if($product){
                 $productVendorId = $product->vendor_id;
                 if(Session::has('vendors')){
                     $vendors = Session::get('vendors');
                     if(!in_array($productVendorId, $vendors)){
-                        abort(404);
+                        $is_available = false;
+                        // abort(404);
                     }
                 }else{
                     // abort(404);
@@ -244,9 +246,8 @@ class ProductController extends FrontController{
             ->whatsapp();
             // ->reddit();
 
-            // dd($shareComponent);
             $category = $product->category->categoryDetail;
-            return view('frontend.product')->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart]);
+            return view('frontend.product')->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available]); 
 
         }
    }

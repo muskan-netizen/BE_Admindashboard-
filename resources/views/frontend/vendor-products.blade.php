@@ -63,7 +63,7 @@
                 <div class="col-12">
                     <div class="top-banner-wrapper mb-4">
                         @if(!empty($vendor->banner))
-                            <div class="common-banner text-center"><img alt="" src="{{$vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                            <div class="common-banner text-center"><img class="img-fluid blur-up lazyload" data-src="{{$vendor->banner['image_fit'] . '1920/1080' . $vendor->banner['image_path']}}" alt=""></div>
                         @endif
                         <div class="row mt-n4">
                             <div class="col-12">
@@ -73,7 +73,7 @@
                                             <div class="file file--upload">
                                                 <label>
                                                     <span class="update_pic border-0">
-                                                    <img src="{{$vendor->logo['image_fit'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
+                                                    <img class="img-fluid blur-up lazyload" data-src="{{$vendor->logo['image_fit'] . '1000/200' . $vendor->logo['image_path']}}" alt="">
                                                     </span>
                                                 </label>
                                             </div>
@@ -196,7 +196,7 @@
 
                                     <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', $new['url_slug'])}}">
                                         <div class="img-outer-box position-relative">
-                                            <img src="{{$new['image_url']}}" alt="">
+                                            <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
                                             <div class="pref-timing">
                                                 <!--<span>5-10 min</span>-->
                                             </div>
@@ -265,10 +265,10 @@
                                                     </div>
                                                     {{-- <div class="collection-grid-view">
                                                         <ul>
-                                                            <li><img src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/3.png')}}" alt="" class="product-3-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/4.png')}}" alt="" class="product-4-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/3.png')}}" alt="" class="product-3-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/4.png')}}" alt="" class="product-4-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
                                                         </ul>
                                                     </div> --}}
                                                     {{--<div class="product-page-per-view">
@@ -303,7 +303,7 @@
                                                     <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-4">
                                                         <a href="{{route('productDetail', $data->url_slug)}}" class="common-product-box scale-effect mt-0">
                                                             <div class="img-outer-box position-relative">
-                                                                <img class="img-fluid blur-up lazyload" src="{{$data->image_url}}" alt="">
+                                                                <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                                                                 <div class="pref-timing">
                                                                     <!--<span>5-10 min</span>-->
                                                                 </div>

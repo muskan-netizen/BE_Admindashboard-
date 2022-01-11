@@ -69,7 +69,7 @@
                 @csrf
                 <div class="row">
                     <div class="col-md-12">
-                        <h4 class="mb-2 "> <span class="">{{ __("Configuration") }}</span></h4>
+                        <h4 class="mb-2 "> <span class="">{{ __("Settings") }}</span></h4>
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -86,6 +86,12 @@
                         {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="show_slot" class="form-control" data-color="#43bee1" @if($vendor->show_slot == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        <div class="form-group">
+                             {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
+                        <input type="number"  name="slot_minutes" class="form-control"  value="{{$vendor->slot_minutes??0}}" min="0">
+                        </div>
+                    </div>
                     @endif
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
@@ -100,12 +106,36 @@
                     </div>
                     @endif
 
-                    <!-- <div class="col-md-12">
+                     <div class="col-md-12">
                         <div class="form-group" id="order_min_amountInput">
-                            {!! Form::label('title', 'Order Min Amount',['class' => 'control-label']) !!}
+                            {!! Form::label('title', 'Absolute Min Order Value [AMOV]',['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
-                    </div> -->
+                    </div> 
+
+
+                    @if($client_preference_detail->static_delivey_fee == 1)
+                    <div class="col-md-12">
+                        <div class="form-group" id="order_amount_for_delivery_feeInput">
+                            {!! Form::label('title', 'Min Order Value (with Delivery fee) [MOV]',['class' => 'control-label']) !!}
+                            <input class="form-control" onkeypress="return isNumberKey(event)" name="order_amount_for_delivery_fee" type="text" value="{{$vendor->order_amount_for_delivery_fee}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        </div>
+                    </div> 
+
+                    <div class="col-md-12">
+                        <div class="form-group" id="delivery_fee_minimumInput">
+                            {!! Form::label('title', 'Delivery Fee For Below MOV',['class' => 'control-label']) !!}
+                            <input class="form-control" onkeypress="return isNumberKey(event)" name="delivery_fee_minimum" type="text" value="{{$vendor->delivery_fee_minimum}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        </div>
+                    </div> 
+
+                    <div class="col-md-12">
+                        <div class="form-group" id="delivery_fee_maximumInput">
+                            {!! Form::label('title', 'Delivery Fee For Above MOV',['class' => 'control-label']) !!}
+                            <input class="form-control" onkeypress="return isNumberKey(event)" name="delivery_fee_maximum" type="text" value="{{$vendor->delivery_fee_maximum}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                        </div>
+                    </div> 
+                    @endif
                     <div class="col-12">
                         <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
                     </div>

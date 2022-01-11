@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, WalletController, FrontController};
-use Auth, Log, Redirect;
+use Auth, Log, Redirect, Session;
 use App\Models\{PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User,OrderProductAddon,OrderProduct,OrderProductPrescription,VendorOrderStatus,OrderVendor,OrderTax};
 
 class PagarmeController extends FrontController
@@ -26,12 +26,21 @@ class PagarmeController extends FrontController
     public function beforePayment(Request $request) 
     {
         $data = $request->all();
-        $data['come_from'] = 'app';
+        $request['come_from'] = 'app';
         if($request->isMethod('post'))
         {
-            $data['come_from'] = 'web';
+            $request['come_from'] = 'web';
+        }else{
+            $user = User::where('auth_token', $request->auth_token)->first();
+            Auth::login($user);
         }
-        return view('frontend.payment_gatway.pgarmne_view')->with(['data' => $data]);
+        if(count($data) > 0)
+        {
+            Session::put('pagarme_data',$request->all());
+        }else{
+            $data = Session::get('pagarme_data',$request->all());
+        }
+        return view('frontend.payment_gatway.pgarmne_view')->with(['data' => $request->all()]);
     }
     public function createPaymentCard(Request $request)
     {
@@ -46,58 +55,76 @@ class PagarmeController extends FrontController
     }
     public function createPayment(Request $request)
     {
-        if($request->come_from == "app")
-        {
-            $user = User::where('auth_token', $request->auth_token)->first();
-            Auth::login($user);
+        // dd($request->all());
+        try{
+            if($request->come_from == "app")
+            {
+                if(!Auth::user())
+                {
+                    $user = User::where('auth_token', $request->auth_token)->first();
+                    Auth::login($user);
+                }
+            }
+            $user = Auth::user();
+            $cart = Cart::where('status', '0')->where('user_id', $user->id)->first();
+            $amount = $this->getDollarCompareAmount($request->amount);
+            $request['card_number'] = str_replace(' ', '', $request->number);
+            $request['customer'] = $user;
+            if(isset($request->phone_number) && !is_null($request->phone_number))
+            {
+                $request['phone'] = '+'.$request->dialCode.$request->phone_number;
+            }else{
+                $request['phone'] = '+'.$user->dial_code.$user->phone_number;
+            }
+            $request['amount'] = $amount*100;
+            $request['items'] = [];
+            $data = $request->all();
+            if($request->payment_from == 'cart'){
+                $item['id'] = "1";
+                $item['title'] = "Cart Checkout";
+                $item['unit_price'] = $amount*100;
+                $item['quantity'] = 1;
+                $item['tangible'] = true;
+            }
+            elseif($request->payment_from == 'wallet'){
+                $item['id'] = "1";
+                $item['title'] = "Wallet Checkout";
+                $item['unit_price'] = $amount*100;
+                $item['quantity'] = 1;
+                $item['tangible'] = true;
+            }
+            elseif($request->payment_from == 'tip'){
+                $item['id'] = "1";
+                $item['title'] = "Tip Checkout";
+                $item['unit_price'] = $amount*100;
+                $item['quantity'] = 1;
+                $item['tangible'] = true;
+            }
+            elseif($request->payment_from == 'subscription'){
+                $item['id'] = "1";
+                $item['title'] = "Subscription Checkout";
+                $item['unit_price'] = $amount*100;
+                $item['quantity'] = 1;
+                $item['tangible'] = true;
+            }
+            array_push($data['items'],$item);
+            $payment = $this->create_transaction($data);
+            $request['amount'] = $amount;
+            if(!is_null($payment) && isset($payment->status) && $payment->status == 'paid')
+            {
+                $returnUrl = $this->sucessPayment($request,$payment);
+                return Redirect::to(url($returnUrl));
+            } else{
+                return Redirect::to(route('payment.pagarme.beforePayment',$request->all()))->with('error','Invalid Card Detail');
+                // return Redirect::back()->with('error','Invalid Card Detail');
+            }
+        }catch(Exception $ex){
+            Log::info('Controller Error');
+            Log::info($ex);
+            return Redirect::to(route('payment.pagarme.beforePayment'))->with('error','Invalid Card Details.');
         }
-    	$user = Auth::user();
-    	$cart = Cart::where('status', '0')->where('user_id', $user->id)->first();
-        $amount = $this->getDollarCompareAmount($request->amount);
-    	$request['card_number'] = str_replace(' ', '', $request->number);
-    	$request['customer'] = $user;
-    	$request['amount'] = $amount*100;
-    	$request['items'] = [];
-    	$data = $request->all();
-        if($request->payment_from == 'cart'){
-        	$item['id'] = "1";
-            $item['title'] = "Cart Checkout";
-            $item['unit_price'] = $amount*100;
-            $item['quantity'] = 1;
-            $item['tangible'] = true;
-        }
-        elseif($request->payment_from == 'wallet'){
-            $item['id'] = "1";
-        	$item['title'] = "Wallet Checkout";
-        	$item['unit_price'] = $amount*100;
-        	$item['quantity'] = 1;
-        	$item['tangible'] = true;
-        }
-        elseif($request->payment_from == 'tip'){
-            $item['id'] = "1";
-        	$item['title'] = "Tip Checkout";
-        	$item['unit_price'] = $amount*100;
-        	$item['quantity'] = 1;
-        	$item['tangible'] = true;
-        }
-        elseif($request->payment_from == 'subscription'){
-            $item['id'] = "1";
-        	$item['title'] = "Subscription Checkout";
-        	$item['unit_price'] = $amount*100;
-        	$item['quantity'] = 1;
-        	$item['tangible'] = true;
-        }
-        array_push($data['items'],$item);
-    	$payment = $this->create_transaction($data);
-    	$request['amount'] = $amount;
-    	if($payment->status == 'paid')
-    	{
-            $returnUrl = $this->sucessPayment($request,$payment);
-        } else{
-            $returnUrl = $this->failedPayment($request,$payment);
-        }
-        // dd($returnUrl);
-        return Redirect::to(url($returnUrl));
+        
+        
     }
     public function sucessPayment($request, $pamyent)
     {
@@ -189,57 +216,5 @@ class PagarmeController extends FrontController
             return $returnUrl;
         }
         return Redirect::to(route('order.return.success'));
-    }
-    public function failedPayment($request, $pamyent)
-    {
-    	if($request->payment_from == 'cart'){
-            $order_number = $request->order_number;
-            $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
-            $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-            foreach ($order_products as $order_prod) {
-                OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
-            }
-            OrderProduct::where('order_id', $order->id)->delete();
-            OrderProductPrescription::where('order_id', $order->id)->delete();
-            VendorOrderStatus::where('order_id', $order->id)->delete();
-            OrderVendor::where('order_id', $order->id)->delete();
-            OrderTax::where('order_id', $order->id)->delete();
-            Order::where('id', $order->id)->delete();
-            if($request->come_from == 'app')
-            {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=pagarme&status=0';
-            }else{
-                $returnUrl = route('showCart');
-            }
-            return $returnUrl;
-        }
-        elseif($request->payment_form == 'wallet'){
-            if($request->come_from == 'app')
-            {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=pagarme&status=0';
-            }else{
-                $returnUrl = route('user.wallet');
-            }
-            return $returnUrl;
-        }
-        elseif($request->payment_form == 'tip'){
-            if($request->come_from == 'app')
-            {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=pagarme&status=0';
-            }else{
-                $returnUrl = route('user.orders');
-            }
-            return $returnUrl;
-        }
-        elseif($request->payment_form == 'subscription'){
-            if($request->come_from == 'app')
-            {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=pagarme&status=0';
-            }else{
-                $returnUrl = route('user.subscription.plans');
-            }
-            return $returnUrl;
-        }
-        return route('order.return.success');
     }
 }

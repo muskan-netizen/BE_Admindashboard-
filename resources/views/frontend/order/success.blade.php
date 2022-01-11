@@ -35,7 +35,7 @@
                     <h3>{{__('Your Order Details')}}</h3>
                     @foreach($order->products as $product)
                         @php
-                            $image = $product->media ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
+                            $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
                         @endphp
 	                    <div class="row product-order-detail">
 	                        <div class="col-3">

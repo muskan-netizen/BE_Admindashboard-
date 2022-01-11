@@ -20,11 +20,11 @@
                             <div class="col-12">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <h3 class="d-inline-block"><b>{{ $subscription->plan->title }}</b></h3>
-                                    <span class="plan-price">${{ $subscription->subscription_amount }} / {{ $subscription->frequency }}</span>
+                                    <span class="plan-price">{{$clientCurrency->currency->symbol}}{{ $subscription->subscription_amount }} / {{ $subscription->frequency }}</span>
                                 </div>
                                 <p>{{ $subscription->plan->description }}</p>
                             </div>
-                            
+
                             <div class="col-sm-6 form-group mb-0">
                                 @if($subscription->status_id == 2)
                                     <b class="mr-2">
@@ -73,15 +73,15 @@
             </div>
         @endif
     </div>
-    
+
     @if($subscription_plans->isNotEmpty())
         @foreach($subscription_plans as $plan)
-            <div class="col-md-4 col-sm-6">
+            <div class="col-md-4 col-sm-6 mb-4">
                 <div class="pricingtable">
                     <div class="gold-icon position-relative">
                         <img src="{{ $plan->image['proxy_url'].'100/100'.$plan->image['image_path'] }}">
                         <div class="pricingtable-header position-absolute">
-                            <div class="price-value"> <b>${{ $plan->price }}</b> <span class="month">{{ $plan->frequency }}</span> </div>
+                            <div class="price-value"> <b>{{$clientCurrency->currency->symbol}}{{ $plan->price }}</b> <span class="month">{{ $plan->frequency }}</span> </div>
                         </div>
                     </div>
                     <div class="p-2">

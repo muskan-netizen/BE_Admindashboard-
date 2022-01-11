@@ -301,7 +301,7 @@
                                 </a>
                             </li>
                         @endif
-                         @if(in_array('shipping',$allowed))
+                         @if(in_array('shipping',$allowed) || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('shipoption.index')}}">
                                     <span class="icon-payment-options"></span>
@@ -309,6 +309,15 @@
                                 </a>
                             </li>
                         @endif
+
+                        @if(in_array('DeliveryOption',$allowed) || Auth::user()->is_superadmin == 1)
+                        <li>
+                            <a href="{{route('deliveryoption.index')}}">
+                                <span class="icon-payment-options"></span>
+                                <span> {{ __('Delivery Options') }} </span>
+                            </a>
+                        </li>
+                    @endif
                     </ul>
                 </li>
                 @endif

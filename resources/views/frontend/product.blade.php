@@ -158,7 +158,7 @@
                                                     @endphp
                                                     <div class="swiper-slide easyzoom easyzoom--overlay">
                                                         <a href="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}">
-                                                        <img src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
+                                                        <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'600/600'.$img->path['image_path']}}" alt="">
                                                         </a>
                                                     </div>
                                                 @endforeach
@@ -180,7 +180,7 @@
                                                         }
                                                     @endphp
                                                     <div class="swiper-slide">
-                                                        <img src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" alt="">
+                                                        <img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" alt="">
                                                     </div>
                                                     @endforeach
                                                 @endif
@@ -201,7 +201,7 @@
                                                             $img = $image->image;
                                                         }
                                                     @endphp
-                                            <li><img src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" /></li>
+                                            <li><img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" /></li>
                                         @endforeach
                                         @endif
                                         </ul>
@@ -221,7 +221,7 @@
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                     </h2>
                                     <h6 class="sold-by">
-                                        <b> <img src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
+                                        <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
                                     </h6>
                                     @if($client_preference_detail)
                                         @if($client_preference_detail->rating_check == 1)
@@ -284,7 +284,7 @@
                                         @if($product->inquiry_only == 0)
                                         <div class="product-description border-product pb-0">
                                             <h6 class="product-title mt-0">{{__('Quantity')}}:
-                                                @if(!$product->variant[0]->quantity > 0 && $product->sell_when_out_of_stock != 1)
+                                                @if($product->has_inventory && !$product->variant[0]->quantity > 0 && $product->sell_when_out_of_stock != 1)
                                                     <span id="outofstock" style="color: red;">{{ __('Out of Stock')}}</span>
                                                 @else
                                                 @php
@@ -293,7 +293,7 @@
                                                     <input type="hidden" id="instock" value="{{ ($product->variant[0]->quantity - $product_quantity_in_cart)}}">
                                                 @endif
                                             </h6>
-                                            @if($product->variant[0]->quantity > 0 || $product->sell_when_out_of_stock == 1)
+                                            @if(!$product->has_inventory || $product->variant[0]->quantity > 0 || $product->sell_when_out_of_stock == 1)
                                             @if($product->minimum_order_count > 1)
                                             {{-- <p class="mb-1 product_price">   {{__('Minimum Quantity') }} : {{ $product->minimum_order_count }} </p>
                                             <p class="mb-1 product_price">   {{__('Batch') }} : {{ $product->batch_count }} </p> --}}
@@ -400,8 +400,8 @@
                                     </div>
                                     @endif
                                     <div class="product-buttons">
-                                        @if($product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
-                                        @if($is_inwishlist_btn)
+                                        @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
+                                        @if($is_inwishlist_btn && $is_available)
                                         <button type="button" class="btn btn-solid addWishList" proSku="{{$product->sku}}">
                                             {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
                                         </button>
@@ -416,7 +416,9 @@
                                         $product_quantity_in_cart = $product_in_cart->quantity??0;
 
                                         @endphp
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ ($vendor_info->is_vendor_closed == 1 || ($product->variant[0]->quantity <= $product_quantity_in_cart)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                        @if($is_available)
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ ($vendor_info->is_vendor_closed == 1 || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                        @endif
                                             @if($vendor_info->is_vendor_closed == 1)
                                             <p class="text-danger">Vendor is not accepting orders right now.</p>
                                             @endif
@@ -495,7 +497,7 @@
                                                     @if(isset($rating->reviewFiles))
                                                     @foreach ($rating->reviewFiles as $files)
                                                     <a target="_blank" href="{{$files->file['image_fit'].'900/900'.$files->file['image_path']}}" class="col review-photo mt-2 lightBoxGallery" data-gallery="">
-                                                        <img src="{{$files->file['image_fit'].'300/300'.$files->file['image_path']}}">
+                                                        <img class="blur-up lazyload" data-src="{{$files->file['image_fit'].'300/300'.$files->file['image_path']}}">
                                                     </a>
                                                     @endforeach
                                                     @endif
@@ -525,7 +527,7 @@
                 <% _.each(variant.media, function(img, key){ %>
                     <div class="swiper-slide easyzoom easyzoom--overlay">
                         <a href="<%= img.pimage.image.path['image_fit'] %>600/600<%= img.pimage.image.path['image_path'] %>">
-                        <img src="<%= img.pimage.image.path['image_fit'] %>600/600<%= img.pimage.image.path['image_path'] %>" alt="">
+                        <img class="blur-up lazyload" data-src="<%= img.pimage.image.path['image_fit'] %>600/600<%= img.pimage.image.path['image_path'] %>" alt="">
                         </a>
                     </div>
                 <% }); %>
@@ -538,7 +540,7 @@
             <div class="swiper-wrapper">
                 <% _.each(variant.media, function(img, key){ %>
                     <div class="swiper-slide">
-                        <img src="<%= img.pimage.image.path['image_fit'] %>300/300<%= img.pimage.image.path['image_path'] %>" alt="">
+                        <img class="blur-up lazyload" data-src="<%= img.pimage.image.path['image_fit'] %>300/300<%= img.pimage.image.path['image_path'] %>" alt="">
                     </div>
                 <% }); %>
             </div>
@@ -549,7 +551,7 @@
                 <% _.each(variant.product.media, function(img, key){ %>
                     <div class="swiper-slide easyzoom easyzoom--overlay">
                         <a href="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>">
-                        <img src="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>" alt="">
+                        <img class="blur-up lazyload" data-src="<%= img.image.path['image_fit'] %>600/600<%= img.image.path['image_path'] %>" alt="">
                         </a>
                     </div>
                 <% }); %>
@@ -562,27 +564,11 @@
             <div class="swiper-wrapper">
                 <% _.each(variant.product.media, function(img, key){ %>
                     <div class="swiper-slide">
-                        <img src="<%= img.image.path['image_fit'] %>300/300<%= img.image.path['image_path'] %>" alt="">
+                        <img class="blur-up lazyload" data-src="<%= img.image.path['image_fit'] %>300/300<%= img.image.path['image_path'] %>" alt="">
                     </div>
                 <% }); %>
             </div>
         </div>
-        <!--<div class="swiper-container gallery-top">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide easyzoom easyzoom--overlay">
-                    <a href="{{ \Config::get('app.IMG_URL1') .'600/800'. \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png').'@webp' }}">
-                    <img src="{{ \Config::get('app.IMG_URL1') .'600/800'. \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png').'@webp' }}" alt="">
-                    </a>
-                </div>
-            </div>
-            <div class="swiper-button-next swiper-button-white"></div>
-            <div class="swiper-button-prev swiper-button-white"></div>
-        </div>-->
-        <!--<div class="product-slick" style="min-height: 200px; display: table; width: 100%;">
-            <div class="image_mask" style="vertical-align: middle; display: table-cell; text-align: center">
-                <img class="img-fluid blur-up lazyload" src="{{ \Config::get('app.IMG_URL1') .'600/800'. \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png').'@webp' }}">
-            </div>
-        </div>-->
     <% } %>
 </script>
 <script type="text/template" id="variant_template">
@@ -663,7 +649,7 @@
 				<a class="common-product-box scale-effect text-center"
 						href="{{route('productDetail')}}/{{ $related_product->url_slug }}">
 					<div class="img-outer-box position-relative">
-						<img src="{{ $related_product->image_url }}" alt="">
+						<img class="img-fluid blur-up lazyload" data-src="{{ $related_product->image_url }}" alt="">
 						<!-- <div class="pref-timing">
 							<span>5-10 min</span>
 						</div> -->
@@ -1094,7 +1080,7 @@
                             exzoom_img_ul.find("li:last").remove();
                         }
                         exzoom_img_ul.append('<li style="width: ' + boxWidth + 'px;">' +
-                            '<img src="' + url + '"></li>');
+                            '<img  class="img-fluid blur-up lazyload" data-src="' + url + '"></li>');
 
                         let image_prop = copute_image_prop(url, width, height);
                         previewImg(image_prop);
@@ -1174,7 +1160,7 @@
                         <span class='exzoom_zoom'></span>
                     </div>
                     <p class='exzoom_preview'>
-                        <img class='exzoom_preview_img' src='' />
+                        <img class='exzoom_preview_img blur-up lazyload' data-src='' />
                     </p>
                 `);
                 exzoom_zoom = exzoom_img_box.find(".exzoom_zoom");
@@ -1577,7 +1563,7 @@
                     res[8] = boxHeight * 2; //width
                     res[9] = boxHeight * 2; //height
                     exzoom_nav_inner.append(
-                        `<span><img src="${src}" width="${g.navWidth }" height="${g.navHeight }"/></span>`);
+                        `<span><img class="blur-up lazyload" data-src="${src}" width="${g.navWidth }" height="${g.navHeight }"/></span>`);
                 } else if (img_scale > 1) {
                     res[3] = boxHeight; //width
                     res[4] = boxHeight / img_scale;
@@ -1588,7 +1574,7 @@
                     res[9] = boxHeight * 2; //height
                     let top = (g.navHeight - (g.navWidth / img_scale)) / 2;
                     exzoom_nav_inner.append(
-                        `<span><img src="${src}" width="${g.navWidth }" style='top:${top}px;' /></span>`);
+                        `<span><img class="blur-up lazyload" data-src="${src}" width="${g.navWidth }" style='top:${top}px;' /></span>`);
                 } else if (img_scale < 1) {
                     res[3] = boxHeight * img_scale; //width
                     res[4] = boxHeight; //height
@@ -1599,7 +1585,7 @@
                     res[9] = boxHeight * 2 / img_scale;
                     let top = (g.navWidth - (g.navHeight * img_scale)) / 2;
                     exzoom_nav_inner.append(
-                        `<span><img src="${src}" height="${g.navHeight}" style="left:${top}px;"/></span>`);
+                        `<span><img class="blur-up lazyload" data-src="${src}" height="${g.navHeight}" style="left:${top}px;"/></span>`);
                 }
 
                 return res;

@@ -31,13 +31,21 @@ class WishlistController extends FrontController
             },
         ])->select( "id", "user_id", "product_id", "added_on")
         ->where('user_id', Auth::user()->id)->get();
+      //  pr($wishList->toArray());
         if(!empty($wishList)){
             foreach($wishList as $key => $wish){
-                $wish->product->translation_title = (!empty($wish->product->translation) && count($wish->product->translation) > 0) ? $wish->product->translation->first()->title : 'NA';
-                $wish->product->variant_price = (!empty($wish->product->variant) && count($wish->product->variant) > 0) ? ($wish->product->variant->first()->price * $clientCurrency->doller_compare) : 0;
-                $wish->product->variant_quantity = (!empty($wish->product->variant) && count($wish->product->variant) > 0) ? $wish->product->variant->first()->quantity : 0;
+                if(isset($wish->product)){
+                    $wish->product->translation_title = (!empty($wish->product->translation) && count($wish->product->translation) > 0) ? $wish->product->translation->first()->title : 'NA';
+                    $wish->product->variant_price = (!empty($wish->product->variant) && count($wish->product->variant) > 0) ? ($wish->product->variant->first()->price * $clientCurrency->doller_compare) : 0;
+                    $wish->product->variant_quantity = (!empty($wish->product->variant) && count($wish->product->variant) > 0) ? $wish->product->variant->first()->quantity : 0;
+                }else{
+                    unset($wishList[$key]);
+                }
+
+
             }
-            $wishList = $wishList->toArray();
+            // $wishList = $wishList->toArray();
+            // pr($wishList);
         }
        return view('frontend/account/wishlist')->with(['navCategories' => $navCategories, 'wishList' => $wishList, 'clientCurrency'=>$clientCurrency]);
     }
@@ -87,7 +95,7 @@ class WishlistController extends FrontController
         $wishlist->added_on = Carbon::now();
         $wishlist->save();
 
-        return redirect()->route('user.wishlists');   
+        return redirect()->route('user.wishlists');
      }
 
 }

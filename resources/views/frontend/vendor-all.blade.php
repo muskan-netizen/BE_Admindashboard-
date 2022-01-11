@@ -27,7 +27,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-2">
                     <a class="suppliers-box d-block px-2" href="{{route('vendorDetail', $vendor->slug)}}">
                         <div class="suppliers-img-outer">
-                            <img class="fluid-img mx-auto" src="{{$vendor->logo['image_fit']}}200/200{{$vendor->logo['image_path']}}" alt="">
+                            <img class="fluid-img mx-auto blur-up lazyload" data-src="{{$vendor->logo['image_fit']}}200/200{{$vendor->logo['image_path']}}" alt="">
                         </div>
                         <div class="supplier-rating">
                             <h6 class="mb-1 ellips">{{$vendor->name}}</h6>
@@ -37,7 +37,7 @@
                                 @if(isset($vendor->timeofLineOfSightDistance))
                                     <ul class="timing-box">
                                         <li>
-                                            <small class="d-block"><img class="d-inline-block mr-1" src="{{ asset('front-assets/images/distance.png') }}" alt=""> {{$vendor->lineOfSightDistance}}</small>
+                                            <small class="d-block"><img class="d-inline-block mr-1 blur-up lazyload" data-src="{{ asset('front-assets/images/distance.png') }}" alt=""> {{$vendor->lineOfSightDistance}}</small>
                                         </li>
                                         <li>
                                             <small class="d-block mx-1"><i class="fa fa-clock-o"></i> {{$vendor->timeofLineOfSightDistance}}</small>
@@ -72,7 +72,7 @@
                     <div class="img-wrapper">
                         <div class="front">
                             <a href="{{route('vendorDetail')}}/{{ $vendor->slug }}">
-                                <img class="img-fluid blur-up lazyloaded" src="{{ $vendor->logo['proxy_url'] .'200/200'. $vendor->logo['image_path'] }}" alt="">
+                                <img class="img-fluid blur-up lazyloaded" data-src="{{ $vendor->logo['proxy_url'] .'200/200'. $vendor->logo['image_path'] }}" alt="">
                             </a>
                         </div>
                     </div>
@@ -108,14 +108,14 @@
 @else
 <section class="no-store-wrapper mb-3">
     <div class="container">
-        @if(count($for_no_product_found_html))     
+        @if(count($for_no_product_found_html))
         @foreach($for_no_product_found_html as $key => $homePageLabel)
             @include('frontend.included_files.dynamic_page')
         @endforeach
-       @else 
+       @else
         <div class="row">
             <div class="col-12">
-                <img class="no-store-image w-100 mt-2 mb-2" src="{{ asset('images/no-stores.svg') }}" style="max-height: 250px;">
+                <img class="no-store-image w-100 mt-2 mb-2 blur-up lazyload" data-src="{{ asset('images/no-stores.svg') }}" style="max-height: 250px;">
             </div>
         </div>
         <div class="row">

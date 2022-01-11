@@ -1165,6 +1165,56 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         <input type="checkbox" data-plugin="switchery" name="minimum_order_batch" id="minimum_order_batch" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->minimum_order_batch == '1')) checked='checked' @endif>
                      </div>
                   </div>
+
+                  <div class="col-md-4">
+                     <div class="form-group mb-3">
+                        <label for="gifting" class="mr-2 mb-0">{{__('Static Delivery fee')}}</label>
+                        <input type="checkbox" data-plugin="switchery" name="static_delivey_fee" id="static_delivey_fee" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->static_delivey_fee == '1')) checked='checked' @endif>
+                     </div>
+                  </div>
+
+                  <div class="col-md-12">
+                     <div class="form-group mb-0 text-md-left">
+                        <button class="btn btn-info d-block" type="submit">{{ __("Save") }}</button>
+                     </div>
+                  </div>
+               </div>
+            </form>
+         </div>
+
+         <div class="card-box">
+            <h4 class="header-title text-uppercase mb-2">{{ __("Edit Order By") }}</h4>
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+               <input type="hidden" name="edit_order_modes" id="edit_order_modes" value="1">
+               @csrf
+
+               @php
+                   $vendormenu = getNomenclatureName('Vendors', true);
+                   $vendormenulabel = ($vendormenu=="Vendors")?__('Vendors'):$vendormenu;
+
+               @endphp
+
+               <div class="row align-items-center">
+                   <div class="col-md-4">
+                        <div class="form-group mb-3">
+                           <label for="is_edit_order_admin" class="mr-2 mb-0"> {{ __("Admin") }}</label>
+                           <input type="checkbox" data-plugin="switchery" name="is_edit_order_admin" id="is_edit_order_admin" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_edit_order_admin == '1')) checked='checked' @endif>
+                        </div>
+                     </div>
+                     <div class="col-md-4">
+                        <div class="form-group mb-3">
+                           <label for="is_edit_order_vendor" class="mr-2 mb-0">{{ $vendormenulabel }}</label>
+                           <input type="checkbox" data-plugin="switchery" name="is_edit_order_vendor" id="is_edit_order_vendor" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_edit_order_vendor == '1')) checked='checked' @endif>
+                        </div>
+                     </div> 
+                     <div class="col-md-4">
+                        <div class="form-group mb-3">
+                           <label for="is_edit_order_driver" class="mr-2 mb-0">{{ __("Driver") }}</label>
+                           <input type="checkbox" data-plugin="switchery" name="is_edit_order_driver" id="is_edit_order_driver" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_edit_order_driver == '1')) checked='checked' @endif>
+                        </div>
+                     </div>
+                 
+                 
                   <div class="col-md-12">
                      <div class="form-group mb-0 text-md-left">
                         <button class="btn btn-info d-block" type="submit">{{ __("Save") }}</button>
@@ -1383,6 +1433,70 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                </form>
             </div>
+
+
+            <div class="col-xl-6 mb-3">
+
+               <form method="POST" class="h-100" action="#">
+                  @csrf
+                  <div class="card-box product-tags mb-0 pb-1">
+                     <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title text-uppercase">{{ __('Create Slot')}}</h4>
+                        <a class="btn btn-info d-block" id="add_slot_modal_btn">
+                           <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+                        </a>
+                     </div>
+                     <div class="table-responsive mt-3 mb-1">
+                        <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                           <thead>
+                              <tr>
+                                 <th>{{ __("Name") }}</th>
+                                 <th>{{ __("Slot") }}</th>
+                                 <th>{{ __("Action") }}</th>
+                              </tr>
+                           </thead>
+                           <tbody id="post_list">
+                              @forelse($slots as $slot)
+                                 <tr>
+                                    <td>
+                                       <a class="edit_slot_btn" data-slot_id="{{$slot->id}}" href="javascript:void(0)">
+                                          {{$slot->name ? $slot->name : ''}}
+                                       </a>
+                                    </td>
+                                    <td>
+                                       <a class="edit_slot_btn" data-slot_id="{{$slot->id}}" href="javascript:void(0)">
+                                          {{@$slot->start_time.' - '.@$slot->end_time }}
+                                       </a>
+                                    </td>
+                                    <td>
+                                       <div>
+                                          <div class="inner-div" style="float: left;">
+                                             <a class="action-icon edit_slot_btn" data-slot_id="{{$slot->id}}" href="javascript:void(0)">
+                                                <i class="mdi mdi-square-edit-outline"></i>
+                                             </a>
+                                          </div>
+                                          <div class="inner-div">
+                                             <button type="button" class="btn btn-primary-outline action-icon delete_slot_btn" data-slot_id="{{$slot->id}}">
+                                                <i class="mdi mdi-delete"></i>
+                                             </button>
+                                          </div>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              @empty
+                                 <tr align="center">
+                                    <td colspan="4" style="padding: 20px 0">{{ __("Slot not found.") }}</td>
+                                 </tr>
+                              @endforelse
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+               </form>
+            </div>
+
+
+
          </div>
       </div>
    </div>
@@ -1733,6 +1847,58 @@ $sms_crendential = json_decode($preference->sms_credentials);
       </div>
    </div>
    <!-- end product tags -->
+
+   <!-- modal for slots -->
+   <div id="add_slot_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+         <div class="modal-content">
+            <div class="modal-header border-bottom">
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Slot") }}</h4>
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+               <form id="slotForm" method="POST" action="javascript:void(0)">
+                  @csrf
+                  <div id="save_product_tag">
+                     <input type="hidden" name="slot_id" value="">
+                     <div class="row">
+                       
+                     
+                        <div class="col-md-12 mb-2">
+                           <div class="row">
+                              <div class="col-md-4">
+                                 <div class="form-group position-relative">
+                                    <label for="">{{ __("Name") }}</label>
+                                    <input class="form-control" name="name" type="text" value="">
+                                 </div>
+                              </div>
+                              <div class="col-md-4">
+                                 <div class="form-group position-relative">
+                                    <label for="">{{ __("Start Time") }}</label>
+                                    <input class="form-control" name="start_time" type="time" value="">
+                                 </div>
+                              </div>
+                              <div class="col-md-4">
+                                 <div class="form-group position-relative">
+                                    <label for="">{{ __("End Time") }}</label>
+                                    <input class="form-control" name="end_time" type="time" value="">
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary submitSaveSlot">{{ __("Save") }}</button>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- end product Slot -->
+
    @endsection
    @section('script')
    <script type="text/javascript">
@@ -1748,6 +1914,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
          $('#add_product_tag_modal input[name=tag_id]').val("");
          $('#add_product_tag_modal').modal('show');
          $('#add_product_tag__modal #standard-modalLabel').html('Add Tag');
+      });
+
+      $('#add_slot_modal_btn').click(function(e) {
+         document.getElementById("slotForm").reset();
+         $('#add_slot_modal input[name=slot_id]').val("");
+         $('#add_slot_modal').modal('show');
+         $('#add_slot__modal #standard-modalLabel').html('Add Slot');
       });
 
       $(document).on("click", ".delete_vendor_registration_document_btn", function() {
@@ -1924,6 +2097,83 @@ $sms_crendential = json_decode($preference->sms_credentials);
          });
       });
       // end product tag ////
+
+      // Start Slot ////
+
+      $(document).on("click", ".delete_slot_btn", function() {
+         var tag_id = $(this).data('slot_id');
+         if (confirm('Are you sure?')) {
+            $.ajax({
+               type: "POST",
+               dataType: 'json',
+               url: "{{ route('slot.delete') }}",
+               data: {
+                  _token: "{{ csrf_token() }}",
+                  slot_id: tag_id
+               },
+               success: function(response) {
+                  if (response.status == "Success") {
+                     $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                     setTimeout(function() {
+                        location.reload()
+                     }, 2000);
+                  }
+               }
+            });
+         }
+      });
+
+      $(document).on('click', '.submitSaveSlot', function(e) {
+         var slot_id = $("#add_slot_modal input[name=slot_id]").val();
+         if (slot_id) {
+            var post_url = "{{ route('slot.update') }}";
+         } else {
+            var post_url = "{{ route('slot.create') }}";
+         }
+         $.ajax({
+            url: post_url,
+            method: 'POST',
+            data: $('#slotForm').serialize(),
+            success: function(response) {
+               if (response.status == 'Success') {
+                  $('#add_or_edit_social_media_modal').modal('hide');
+                  $.NotificationApp.send("Success", 'Slot Added Successfuly', "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send("Error", 'Something went wrong', "top-right", "#ab0535", "error");
+               }
+            }
+         });
+      });
+      $(document).on("click", ".edit_slot_btn", function() {
+         let slot_id = $(this).data('slot_id');
+         $('#add_slot_modal input[name=slot_id]').val(slot_id);
+         $.ajax({
+            method: 'GET',
+            data: {
+               slot_id: slot_id
+            },
+            url: "{{ route('slot.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                  $("#add_slot_modal input[name=slot_id]").val(response.data.id);
+                  $("#add_slot_modal input[name=name]").val(response.data.name);
+                  $("#add_slot_modal input[name=start_time]").val(response.data.start_time);
+                  $("#add_slot_modal input[name=end_time]").val(response.data.end_time);
+                  $('#add_slot_modal #standard-modalLabel').html('Update Slot');
+                  $('#add_slot_modal').modal('show');
+               }
+            },
+            error: function() {
+
+            }
+         });
+      });
+      // end Slot ////
+
+      
       $('#add_driver_registration_document_modal_btn').click(function(e) {
          $('#add_driver_registration_document_modal').modal('show');
          $('#add_driver_registration_document_modal #standard-modalLabel').html('Add Driver Registration Document');

@@ -168,6 +168,44 @@ class StripeGatewayController extends BaseController{
                         ]
                     );
 
+                    // $stripe->accounts->update(
+                    //     $response->id,
+                    //     [
+                    //         'tos_acceptance' => [
+                    //             'date' => Carbon::now()->timestamp,
+                    //             'ip' => getUserIP()
+                    //         ],
+                    //         'business_type' => 'company',
+                    //         'business_profile' => [
+                    //             'mcc' => 5814,
+                    //             'name' => $vendor->name,
+                    //             // 'support_address' => null,
+                    //             'support_email' => $vendor->email,
+                    //             'support_phone' => $vendor->phone_no,
+                    //             'support_url' => $vendor->website,
+                    //         ],
+                    //         'company'=> [
+                    //             'name'=> $vendor->name,
+                    //             'phone'=> $vendor->phone_no,
+                    //             'address' => [
+                    //                'city'=> 'city',
+                    //                'country'=> 'IN',
+                    //                'line1'=> '1',
+                    //                'line2'=> 'Street Rd',
+                    //                'postal_code'=> 'XXX XXX'
+                    //             ]       
+                    //         ],
+                    //     ]
+                    // );
+
+                    // $account_link = $stripe->accountLinks->create([
+                    //     'account' => $response->id,
+                    //     'refresh_url' => url('client/vendor/payout/'.$vid),
+                    //     'return_url' => url('client/vendor/payout/'.$vid),
+                    //     'type' => 'custom_account_verification',
+                    //     'collect' => 'eventually_due'
+                    // ]);
+
                     // Access the connected account id in the response
                     $connected_account_id = $response->id;
                     $connectdAccount = new VendorConnectedAccount();

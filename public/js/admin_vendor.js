@@ -83,20 +83,28 @@ $(document).ready(function() {
         $(document).on("click",".delete-vendor",function() {
             var destroy_url = $(this).data('destroy_url');
             var id = $(this).data('rel');
-            if (confirm('Are you sure?')) {
-              $.ajax({
-                type: "POST",
-                dataType: 'json',
-                url: destroy_url,
-                data:{'_method':'DELETE'},
-                success: function(response) {
-                    if (response.status == "Success") {
-                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                        window.location.reload();
-                    }
+            Swal.fire({
+                title: "Are you sure?",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Ok',
+            }).then((result) => {
+                if(result.value)
+                {
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: destroy_url,
+                        data:{'_method':'DELETE'},
+                        success: function(response) {
+                            if (response.status == "Success") {
+                                $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                                window.location.reload();
+                            }
+                        }
+                    });
                 }
             });
-            }
         });
         function initDataTable(table, status) {
             $('#'+table).DataTable({

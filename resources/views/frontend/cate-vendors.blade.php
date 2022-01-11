@@ -36,7 +36,7 @@
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
                         @if(!empty($category->image))
-                        <div class="common-banner"><img alt="" src="{{$category->image['proxy_url'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
+                        <div class="common-banner"><img class="img-fluid blur-up lazyload" data-src="{{$category->image['proxy_url'] . '1920/1080' . $category->image['image_path']}}" alt=""></div>
                         @endif
 
                         <div class="top-banner-content small-section">
@@ -49,7 +49,7 @@
                                             @foreach($category->childs->toArray() as $cate)
                                             <div class="category-block">
                                                 <a href="{{route('categoryDetail', $cate['slug'])}}">
-                                                    <div class="category-image"><img alt="" src="{{$cate['icon']['proxy_url'] . '100/80' . $cate['icon']['image_path']}}" ></div>
+                                                    <div class="category-image"><img alt="" class="blur-up lazyload" data-src="{{$cate['icon']['proxy_url'] . '100/80' . $cate['icon']['image_path']}}" ></div>
                                                 </a>
                                                 <div class="category-details">
                                                     <a href="{{route('categoryDetail', $cate['slug'])}}">
@@ -89,7 +89,7 @@
 
                                         <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', $new['url_slug'])}}">
                                             <div class="img-outer-box position-relative">
-                                                <img src="{{$imagePath}}" alt="">
+                                                <img  class="blur-up lazyload" data-src="{{$imagePath}}" alt="">
                                                 <div class="pref-timing">
                                                     <!--<span>5-10 min</span>-->
                                                 </div>
@@ -163,10 +163,10 @@
                                                     </div>
                                                     {{-- <div class="collection-grid-view">
                                                         <ul>
-                                                            <li><img src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/3.png')}}" alt="" class="product-3-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/4.png')}}" alt="" class="product-4-layout-view"></li>
-                                                            <li><img src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/2.png')}}" alt="" class="product-2-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/3.png')}}" alt="" class="product-3-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/4.png')}}" alt="" class="product-4-layout-view"></li>
+                                                            <li><img class="blur-up lazyload" data-src="{{asset('front-assets/images/icon/6.png')}}" alt="" class="product-6-layout-view"></li>
                                                         </ul>
                                                     </div> --}}
                                                     {{-- <div class="product-page-per-view">
@@ -211,7 +211,7 @@
                                                             </div>
                                                             <a class="suppliers-box d-block" href="{{$vendor_url}}">
                                                                 <div class="suppliers-img-outer">
-                                                                    <img class="img-fluid mx-auto" src="{{$imagePath}}" alt="">
+                                                                    <img class="img-fluid mx-auto blur-up lazyload" data-src="{{$imagePath}}" alt="">
                                                                 </div>
                                                                 <div class="supplier-rating">
                                                                     <div class="d-flex align-items-center justify-content-between">
@@ -257,7 +257,7 @@
                                                         {{-- <div class="product-box">
                                                             <div class="img-wrapper">
                                                                 <div class="front">
-                                                                    <a href="{{$vendor_url}}"><img class="img-fluid blur-up lazyload" alt="" src="{{$imagePath}}" width="300" height="300"></a>
+                                                                    <a href="{{$vendor_url}}"><img class="img-fluid blur-up lazyload" alt="" data-src="{{$imagePath}}" width="300" height="300"></a>
                                                                 </div>
                                                             </div>
                                                             <div class="product-detail">

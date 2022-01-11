@@ -9,6 +9,78 @@
         $('.selectize-select').selectize();
     });
 
+
+    $('.importUserModal').click(function(){
+        $('#import-form').modal('show');
+         $('.dropify').dropify();
+    });
+
+
+    function submitImportUserForm() {
+        var form = document.getElementById('save_imported_customer');
+        var formData = new FormData(form);
+        var data_uri = "{{route('customer.import')}}";
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: data_uri,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                location.reload();
+                if (response.status == 'success') {
+                    // $("#import-form").modal('hide');
+                    $('#p-message').empty();
+                    $('#p-message').append('Document uploaded Successfully!');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
+
+                } else {
+                    $('#p-message').empty();
+                    $('#p-message').append('Document uploading Failed!');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text(response.message);
+
+                }
+                return response;
+            },
+            beforeSend: function() {
+                $('#p-message').empty();
+                $('#p-message').append('Document uploading!');
+
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $('#p-message').empty();
+                $('#p-message').append('Document uploading!');
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+
+
+                $(".loader_box").hide();
+            }
+        });
+    }
+
+
+
     var userActive = $('.chk_box');
 
     // $(userActive).on("change" , function() {

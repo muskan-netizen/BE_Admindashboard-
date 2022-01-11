@@ -15,6 +15,28 @@ trait GCashpaymentManager{
     $this->api_url = "https://g.payx.ph";
   }
 
+  // public function createPaymentRequest($data)
+  // {
+  //   // Set your X-API-KEY with the API key from the Customer Area.
+  //   $client = new \Adyen\Client();
+  //   $client->setXApiKey($this->public_key);
+  //   $service = new \Adyen\Service\Checkout($client);
+     
+  //   $params = array(
+  //     "amount" => array(
+  //       "currency" => "PHP",
+  //       "value" => 1000
+  //     ),
+  //     "reference" => "YOUR_ORDER_NUMBER",
+  //     "paymentMethod" => array(
+  //       "type" => "gcash"
+  //     ),
+  //     "returnUrl" => "https://sales.alerthire.com",
+  //     "merchantAccount" => "YOUR_MERCHANT_ACCOUNT"
+  //   );
+  //   $result = $service->payments($params);
+  // }
+
 
 
   public function createPaymentRequest($data)

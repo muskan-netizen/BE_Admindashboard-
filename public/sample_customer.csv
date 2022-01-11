@@ -1,0 +1,4 @@
+Name,Phone Number,Email,Country,Email Verified(Y/N),Phone No Verified(Y/N)
+User 1,1234567890,user1@yopmail.com,India,Y,N
+User 2,1234567891,user2@yopmail.com,India,N,Y
+User 3,1234567892,user3@yopmail.com,India,Y,Y

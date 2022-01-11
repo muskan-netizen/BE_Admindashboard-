@@ -10,7 +10,9 @@
 @endsection
 @section('content')
 @php
-$timezone = Auth::user()->timezone;
+$user = Auth::user();
+$timezone = $user->timezone;
+$user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurrency->doller_compare) : 0;
 @endphp
 <header>
     <div class="mobile-fix-option"></div>
@@ -114,7 +116,7 @@ $timezone = Auth::user()->timezone;
                                     </div>
                                     <div class="col-md-6 text-md-right text-center">
                                         <button type="button" class="btn btn-solid" id="topup_wallet_btn" data-toggle="modal" data-target="#topup_wallet">{{__('Topup Wallet')}}</button>
-                                        <!-- <button type="button" class="btn btn-solid" data-toggle="modal" data-target="#add-money">{{__('Payout')}}</button> -->
+                                        <button type="button" class="btn btn-solid" id="transfer_wallet_btn" data-toggle="modal" data-target="#transfer_wallet">{{__('Transfer Funds')}}</button>
                                     </div>
                                 </div>
                             </div>
@@ -236,6 +238,65 @@ $timezone = Auth::user()->timezone;
     </div>
   </div>
 </div>
+<div class="modal fade" id="transfer_wallet" tabindex="-1" aria-labelledby="transfer_walletLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-bottom">
+          <h5 class="modal-title text-17 mb-0 mt-0" id="transfer_walletLabel">{{__('Transfer Funds')}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="" id="wallet_transfer_form">
+          @csrf
+          @method('POST')
+          <div class="modal-body pb-0">
+              <div class="form-group">
+                <h5 class="text-17 mb-2">{{__('Available Balance')}}</h5>
+              </div>  
+              <div class="form-group">
+                  <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">@money($user_wallet_balance)</span></div>
+              </div>
+              
+              @if($user_wallet_balance <= 0)
+                <div class="alert alert-danger">
+                    <span>{{ __('Insufficient funds in wallet') }}</span>
+                </div>
+              @else
+              <div class="form-group" id="wallet_transfer_amountInput">
+                <label for="wallet_transfer_amount">{{__('Amount to transfer')}}</label>
+                <input class="form-control" name="wallet_transfer_amount" id="wallet_transfer_amount" type="text" placeholder="{{__('Enter Amount')}}">
+                <span class="invalid-feedback" role="alert">
+                    <strong></strong>
+                </span>
+              </div>
+              <div class="form-group" id="wallet_transfer_userInput">
+                <label for="wallet_transfer_user">{{__('Transfer to')}}</label>
+                <input class="form-control" name="wallet_transfer_user" id="wallet_transfer_user" type="text" placeholder="{{__('Enter Email or Phone Number')}}">
+                <span class="invalid-feedback" role="alert">
+                    <strong></strong>
+                </span>
+                <span class="valid-feedback" role="alert">
+                    <strong></strong>
+                </span>
+              </div>
+              <span class="error-msg mt-2"></span>
+              @endif
+          </div>
+          <div class="modal-footer d-block text-center">
+              <div class="row">
+                  <div class="col-sm-12 p-0 d-flex justify-space-around">
+                    @if($user_wallet_balance > 0)
+                      <button type="button" class="btn btn-block btn-solid mr-1 mt-2 transfer_wallet_confirm">{{__('Confirm')}}</button>
+                      <button type="button" class="btn btn-block btn-solid ml-1 mt-2" data-dismiss="modal">{{__('Cancel')}}</button>
+                    @endif
+                  </div>
+              </div>
+          </div>
+        </form>
+      </div>
+    </div>
+</div>
 <script type="text/template" id="payment_method_template">
     <% if(payment_options == '') { %>
         <h6>{{__('Payment Options Not Avaialable')}}</h6>
@@ -275,7 +336,20 @@ $timezone = Auth::user()->timezone;
 </script>
 @endsection
 @section('script')
+@if(in_array('razorpay',$client_payment_options)) 
+<script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
+@endif
+@if(in_array('stripe',$client_payment_options)) 
 <script src="https://js.stripe.com/v3/"></script>
+@endif
+@if(in_array('yoco',$client_payment_options)) 
+<script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
+<script type="text/javascript">
+    var sdk = new window.YocoSDK({
+        publicKey: yoco_public_key
+    });
+</script>
+@endif 
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
     var credit_wallet_url = "{{route('user.creditWallet')}}";
@@ -292,10 +366,10 @@ $timezone = Auth::user()->timezone;
     var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
     var amount_required_error_msg = "{{__('Please enter amount.') }}";
     var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
+    var wallet_balance_insufficient_msg = "{{ __('Insufficient funds in wallet') }}";
+    var user_wallet_balance = parseFloat("{{ $user_wallet_balance }}");
 
-    var sdk = new window.YocoSDK({
-        publicKey: yoco_public_key
-    });
+    
     var inline='';
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
@@ -359,6 +433,110 @@ $timezone = Auth::user()->timezone;
             inline.mount('#yoco-card-frame');
         } else {
             $("#wallet_payment_methods .yoco_element_wrapper").addClass('d-none');
+        }
+    });
+
+    $(document).on('blur', '#wallet_transfer_user', function() {
+        var username = $(this).val();
+        if(username != ''){
+            ajaxCall = $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "{{ route('wallet.transfer.user.verify') }}",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "username": username,
+                },
+                beforeSend: function() {
+                    if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
+                        ajaxCall.abort();
+                    }
+                },
+                success: function(response) {
+                    if(response.status == 'Success'){
+                        $("#wallet_transfer_userInput input").removeClass("is-invalid").addClass('valid');
+                        $("#wallet_transfer_userInput span.invalid-feedback").children("strong").text('');
+                        $("#wallet_transfer_userInput span.valid-feedback").children("strong").text(response.message);
+                        $("#wallet_transfer_userInput span.invalid-feedback").hide();
+                        $("#wallet_transfer_userInput span.valid-feedback").show();
+                    }
+                },
+                error: function(response) {
+                    let error = response.responseJSON;
+                    if (response.status === 422) {
+                        $("#wallet_transfer_userInput input").removeClass("valid").addClass("is-invalid");
+                        $("#wallet_transfer_userInput span.invalid-feedback").children("strong").text(error.message);
+                        $("#wallet_transfer_userInput span.invalid-feedback").show();
+                        $("#wallet_transfer_userInput span.valid-feedback").hide();
+                    }
+                },
+            });
+        }
+    });
+
+    $(document).on('blur', '#wallet_transfer_amount', function() {
+        var amount = $(this).val();
+        if((amount <= 0) || (amount > user_wallet_balance)){
+            if(amount <= 0){
+                var msg = 'Invalid amount';
+            }else{
+                var msg = wallet_balance_insufficient_msg;
+            }
+            $("#wallet_transfer_amountInput input").removeClass("valid").addClass("is-invalid");
+            $("#wallet_transfer_amountInput span.invalid-feedback").children("strong").text(msg);
+            $("#wallet_transfer_amountInput span.invalid-feedback").show();
+        }else{
+            $("#wallet_transfer_amountInput input").removeClass("is-invalid").addClass('valid');
+            $("#wallet_transfer_amountInput span.invalid-feedback").children("strong").text('');
+            $("#wallet_transfer_amountInput span.invalid-feedback").hide();
+        }
+    });
+
+    $(document).on('click', '.transfer_wallet_confirm', function() {
+        var amount = $("#wallet_transfer_amount").val();
+        var username = $("#wallet_transfer_user").val();
+        if((amount != '') && (username != '')){
+            var is_valid = true;
+            $('#wallet_transfer_form input').each(function(index, el) {
+                if($(el).hasClass("is-invalid")){
+                    $(el).trigger('focus');
+                    is_valid = false;
+                    return false;
+                }
+            });
+            if(!is_valid){
+                return false;
+            }
+
+            ajaxCall = $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "{{ route('wallet.transfer.confirm') }}",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "username": username,
+                    "amount": amount
+                },
+                beforeSend: function() {
+                    if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
+                        ajaxCall.abort();
+                    }
+                },
+                success: function(response) {
+                    if(response.status == 'Success'){
+                        $(this).find(".error-msg").text('');
+                        window.location.reload();
+                    }
+                },
+                error: function(response) {
+                    let error = response.responseJSON;
+                    if (response.status === 422) {
+                        $(this).find(".error-msg").text(error.message);
+                    }
+                },
+            });
+        }else{
+            alert('All fields are required');
         }
     });
 </script>

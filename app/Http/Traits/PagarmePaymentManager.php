@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use App\Models\PaymentOption;
 use Log;
-trait PagarmePaymentManager{
+trait PagarmePaymentManager{ 
 
   private $api_key;
   private $secret_key;
@@ -37,43 +37,50 @@ trait PagarmePaymentManager{
   }
   public function create_transaction($data)
   {
-    $pagarme = $this->init();
-    $response = $pagarme->transactions()->create([
-      'amount' => $data['amount'],
-      'card_id' => $data['card_id'],
-      'payment_method' => 'credit_card',
-      'postback_url' => 'http://requestb.in/pkt7pgpk',
-      'async' => false,
-      'customer' => [
-        'external_id' => 'EXTERNALID'.$data['customer']->id,
-        'name' => $data['customer']->name, 
-        'email' => $data['customer']->email,
-        'type' => 'individual',
-          'country' => 'br',
-          'documents' => [
-            [
-              'type' => 'cpf',
-              'number' => '67415765095'
-            ]
-          ],
-          'phone_numbers' => [ '+'.$data['customer']->dial_code.$data['customer']->phone_number ]
-      ],
-      'billing' => [
-          'name' => $data['customer']->name,
-          'address' => [
+    try{
+      $pagarme = $this->init();
+      $response = $pagarme->transactions()->create([
+        'amount' => $data['amount'],
+        'card_id' => $data['card_id'],
+        'payment_method' => 'credit_card',
+        'postback_url' => 'http://requestb.in/pkt7pgpk',
+        'async' => false,
+        'customer' => [
+          'external_id' => 'EXTERNALID'.$data['customer']->id,
+          'name' => $data['customer']->name, 
+          'email' => $data['customer']->email,
+          'type' => 'individual',
             'country' => 'br',
-            'street' => 'Avenida Brigadeiro Faria Lima',
-            // 'street_number' => '1811',
-            'state' => 'sp',
-            'city' => 'Sao Paulo',
-            // 'neighborhood' => 'Jardim Paulistano',
-            'zipcode' => '01451001'
-          ]
-      ],
-      'items' => $data['items'],
-    ]);
-    // dd($transaction);
-    return $response;
+            'documents' => [
+              [
+                'type' => 'cpf',
+                'number' => '67415765095'
+              ]
+            ],
+            'phone_numbers' => [ $data['phone'] ]
+        ],
+        'billing' => [
+            'name' => $data['customer']->name,
+            'address' => [
+              'country' => 'br',
+              'street' => 'Avenida Brigadeiro Faria Lima',
+              // 'street_number' => '1811',
+              'state' => 'sp',
+              'city' => 'Sao Paulo',
+              // 'neighborhood' => 'Jardim Paulistano',
+              'zipcode' => '01451001'
+            ]
+        ],
+        'items' => $data['items'],
+      ]);
+      // dd($transaction);
+      return $response;
+    }catch(\Exception $ex){
+      Log::info('Trait Error');
+      Log::info($ex);
+      return null;
+    }
+    
   }
 
   public function create_payment_link($data)
