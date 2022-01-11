@@ -9,7 +9,7 @@ use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{PaymentOption, Client, ClientPreference, ClientCurrency};
+use App\Models\{PaymentOption, Cart, Client, ClientPreference, ClientCurrency, SubscriptionPlansUser};
 
 class PaystackGatewayController extends BaseController
 {
@@ -32,21 +32,64 @@ class PaystackGatewayController extends BaseController
 
     public function paystackPurchase(Request $request){
         try{
+            $rules = [
+                'amount'   => 'required',
+                'action'   => 'required'
+            ];
+
             $user = Auth::user();
             $amount = $this->getDollarCompareAmount($request->amount);
-            $returnUrlParams = '?amount='.$amount;
-            if($request->has('tip')){
-                $returnUrlParams = $returnUrlParams.'&tip='.$request->tip.'&gateway=paystack';
+
+            $request->request->add(['payment_form' => $request->action]);
+
+            $meta_data = array();
+            $reference_number = $description = $returnUrlParams = '';
+            $returnUrl = $request->serverUrl . 'payment/paystack/completePurchase/app?amount='.$amount.'&status=200&gateway=paystack&action='.$request->action;
+            $cancelUrl = $request->serverUrl . 'payment/gateway/returnResponse?status=0&gateway=paystack&action='.$request->action;
+
+            if($request->payment_form == 'cart'){
+                $description = 'Order Checkout';
+                $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                $request->request->add(['cart_id' => $cart->id]);
+                $meta_data['cart_id'] = $cart->id;
+                // $reference_number = $request->order_number;
+                $rules['order_number'] = 'required';
+                if($request->has('tip')){
+                    $returnUrlParams = $returnUrlParams.'&tip='.$request->tip;
+                }
             }
-            $returnUrlParams = $returnUrlParams.'&gateway=paystack';
+            elseif($request->payment_form == 'wallet'){
+                $description = 'Wallet Checkout';
+                $meta_data['user_id'] = $user->id;
+                // $reference_number = $user->id;
+            }
+            if($request->payment_form == 'tip'){
+                $description = 'Tip Checkout';
+                $meta_data['order_number'] = $request->order_number;
+                // $reference_number = $request->order_number;
+            }
+            elseif($request->payment_form == 'subscription'){
+                $description = 'Subscription Checkout';
+                $slug = $request->subscription_id;
+                $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
+                $meta_data['subscription_id'] = $subscription_plan->id;
+                // $reference_number = $request->subscription_id;
+                $rules['subscription_id'] = 'required';
+            }
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return $this->errorResponse(__($validator->errors()->first()), 422);
+            }
+
             $response = $this->gateway->purchase([
                 'amount' => $amount,
                 'currency' => 'ZAR',
                 'email' => $user->email,
-                'returnUrl' => url($request->returnUrl . $returnUrlParams),
-                'cancelUrl' => url($request->cancelUrl),
-                'metadata' => ['user_id' => $user->id],
-                'description' => 'This is a test purchase transaction.',
+                'returnUrl' => url($returnUrl . $returnUrlParams),
+                'cancelUrl' => url($cancelUrl),
+                'metadata' => $meta_data,
+                'description' => $description,
             ])->send();
             if ($response->isSuccessful()) {
                 return $this->successResponse($response->getData());

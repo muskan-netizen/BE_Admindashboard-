@@ -91,4 +91,29 @@ class PaystackGatewayController extends FrontController
             return $this->errorResponse('Transaction has been declined', 400);
         }
     }
+
+
+    public function paystackCompletePurchaseApp(Request $request)
+    {
+        // Once the transaction has been approved, we need to complete it.
+        if($request->has(['reference'])){
+            $amount = $this->getDollarCompareAmount($request->amount);
+            $transaction = $this->gateway->completePurchase(array(
+                'amount'                => $amount,
+                'transactionReference'  => $request->reference
+            ));
+            $response = $transaction->send();
+            if ($response->isSuccessful()){
+            //    $this->successMail();
+                // return $this->successResponse($response->getTransactionReference());
+                return view('frontend.account.gatewayReturnResponse')->with(['status'=>'200', 'transaction_id'=>$response->getTransactionReference(), 'action'=>$request->action]);
+            } else {
+                // $this->failMail();
+                return $this->errorResponse($response->getMessage(), 400);
+            }
+        } else {
+            // $this->failMail();
+            return $this->errorResponse('Transaction has been declined', 400);
+        }
+    }
 }

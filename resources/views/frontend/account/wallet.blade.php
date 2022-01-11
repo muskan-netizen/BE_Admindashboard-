@@ -149,6 +149,11 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                                     </tbody>
                                   </table>
                                 </div>
+                                <div class="pagination pagination-rounded justify-content-end mb-0">
+                                    @if(!empty($user_transactions))
+                                        {{ $user_transactions->links() }}
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>

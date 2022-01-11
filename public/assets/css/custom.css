@@ -1176,6 +1176,17 @@ label.file-input.uploadImages {
     vertical-align: baseline;
 }
 
+.time-sloat {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: green;
+    padding: 0 7px 3px;
+    font-size: 12px;
+    font-weight: 900;
+}
+
 td.lasttd.d-flex.align-items-center.justify-content-center {
     position: absolute;
     right: 15px;

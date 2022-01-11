@@ -14,7 +14,7 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\{BaseController, OrderController, WalletController};
 use App\Models\Client as CP;
-use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor};
+use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor, SubscriptionPlansUser};
 
 class PayfastGatewayController extends BaseController
 {
@@ -70,7 +70,7 @@ class PayfastGatewayController extends BaseController
             $reference_number = $description = '';
             $returnUrl = $request->serverUrl . 'payment/gateway/returnResponse?status=200&gateway=payfast';
             $cancelUrl = $request->serverUrl . 'payment/gateway/returnResponse?status=0&gateway=payfast';
-            $notifyUrl = 'https://a1f4-103-72-170-243.ngrok.io/payment/payfast/notify/app';
+            $notifyUrl = $request->serverUrl . 'payment/payfast/notify/app';
 
             $request_arr = array(
                 'merchant_id' => $this->gateway->getMerchantId(),
@@ -152,21 +152,12 @@ class PayfastGatewayController extends BaseController
                 return $this->errorResponse(__($validator->errors()->first()), 422);
             }
 
-            // $address_id = 0;
-            // $tip = 0;
-            // if($request->has('tip')){
-            //     $tip = $request->tip;
-            // }
-            // if( ($request->has('address_id')) && ($request->address_id > 0) ){
-            //     $address_id = $request->address_id;
-            // }
-
             // $request_arr = array(
             //     'merchant_id' => $this->gateway->getMerchantId(),
             //     'merchant_key' => $this->gateway->getMerchantKey(),
             //     'return_url' => url($request->serverUrl . 'payment/gateway/returnResponse?status=200&gateway=payfast&order='.$request->order_number),
             //     'cancel_url' => url($request->serverUrl . 'payment/gateway/returnResponse?status=0&gateway=payfast&order='.$request->order_number),
-            //     'notify_url' => url('https://a1f4-103-72-170-243.ngrok.io/payment/payfast/notify/app'),
+            //     'notify_url' => url($request->serverUrl . 'payment/payfast/notify/app'),
             //     'amount' => $amount,
             //     'item_name' => 'test item',
             //     'custom_int1' => $user->id, // user id

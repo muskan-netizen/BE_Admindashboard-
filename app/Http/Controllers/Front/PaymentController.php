@@ -10,8 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\{Order, User, Cart, ClientCurrency, CartProduct};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Front\FrontController;
-
+use App\Http\Controllers\Front\{FrontController, PaystackGatewayController};
 
 class PaymentController extends FrontController{
 
@@ -106,6 +105,11 @@ class PaymentController extends FrontController{
 
     public function getGatewayReturnResponse(Request $request)
     {
+        if(($request->has('gateway')) && ($request->gateway == 'paystack')){
+            $paystackController = new PaystackGatewayController();
+            $response = $paystackController->paystackCompletePurchase($request);
+        }
+
         return view('frontend.account.gatewayReturnResponse');
     }
 }

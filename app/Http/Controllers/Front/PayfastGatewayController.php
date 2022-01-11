@@ -12,7 +12,7 @@ use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Front\{FrontController, OrderController, WalletController};
+use App\Http\Controllers\Front\{FrontController, OrderController, WalletController, UserSubscriptionController};
 use App\Models\Client as CP;
 use App\Models\{PaymentOption, Client, ClientPreference, Order, OrderProduct, EmailTemplate, Cart, CartAddon, OrderProductPrescription, CartProduct, User, Product, OrderProductAddon, Payment, ClientCurrency, OrderVendor, UserAddress, Vendor, CartCoupon, CartProductPrescription, LoyaltyCard, NotificationTemplate, VendorOrderStatus,OrderTax, SubscriptionInvoicesUser, UserDevice, UserVendor};
 
@@ -210,13 +210,13 @@ class PayfastGatewayController extends FrontController
                         $order->save();
                         $payment_exists = Payment::where('transaction_id', $transactionId)->first();
                         if(!$payment_exists){
-                            Payment::insert([
-                                'date' => date('Y-m-d'),
-                                'order_id' => $order->id,
-                                'transaction_id' => $transactionId,
-                                'balance_transaction' => $pfData->amount_gross,
-                                'type' => 'cart'
-                            ]);
+                            $payment = new Payment();
+                            $payment->date = date('Y-m-d');
+                            $payment->order_id = $order->id;
+                            $payment->transaction_id = $transactionId;
+                            $payment->balance_transaction = $pfData->amount_gross;
+                            $payment->type = 'cart';
+                            $payment->save();
 
                             // Auto accept order
                             $orderController = new OrderController();
@@ -255,15 +255,33 @@ class PayfastGatewayController extends FrontController
                     'wallet_amount' => $pfData->amount_gross
                 ]);
                 $wallet = new WalletController();
-                $creditWallet = $wallet->creditWallet($pfData);
-                $response = $creditWallet->getData();
+                $res = $wallet->creditWallet($pfData);
+                $response = $res->getData();
+            }
+            elseif($pfData->custom_str1 == 'tip'){
+                $pfData->request->add([
+                    'tip_amount' => $pfData->amount_gross,
+                    'order_number' => $pfData->custom_str2
+                ]);
+                $orderController = new OrderController();
+                $res = $orderController->tipAfterOrder($pfData);
+                $response = $res->getData();
+            }
+            elseif($pfData->custom_str1 == 'subscription'){
+                $pfData->request->add([
+                    'amount' => $pfData->amount_gross,
+                    'payment_option_id' => 6
+                ]);
+                $subscriptionController = new UserSubscriptionController();
+                $res = $subscriptionController->purchaseSubscriptionPlan($pfData, '', $pfData->custom_str2);
+                $response = $res->getData();
             }
 
             if($response->status == 'Success'){
             //    $this->successMail();
                 return $this->successResponse($response->data, 'Payment completed successfully.', 200);
             }else{
-                $this->failMail();
+                // $this->failMail();
                 return $this->errorResponse($response->message, 400);
             }
         break;

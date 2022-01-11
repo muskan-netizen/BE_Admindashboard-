@@ -3,6 +3,7 @@ $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->fir
 $urlImg =  $clientData ? $clientData->logo['image_fit'].'150/92'.$clientData->logo['image_path'] : " ";
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
+$pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 @endphp
 
 
@@ -28,6 +29,40 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                     <div class="col-9 col-md-10 top-header bg-transparent d-flex align-items-center justify-content-end">
                         <ul class="header-dropdown">
+                            <li class="onhover-dropdown quick-links quick-links">
+
+                                <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
+                                </a>
+                                <ul class="onhover-show-div">
+
+
+                                    @foreach($pages as $page)
+                                        @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
+                                        @if(isset($last_mile_common_set) && $last_mile_common_set != false)
+                                        <li>
+                                            <a href="{{route('extrapage',['slug' => $page->slug])}}">
+                                                @if(isset($page->translations) && $page->translations->first()->title != null)
+                                                {{ $page->translations->first()->title ?? ''}}
+                                                @else
+                                                {{ $page->primary->title ?? ''}}
+                                                @endif
+                                            </a>
+                                        </li>
+                                        @endif
+                                        @else
+                                        <li>
+                                            <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
+                                                @if(isset($page->translations) && $page->translations->first()->title != null)
+                                                {{ $page->translations->first()->title ?? ''}}
+                                                @else
+                                                {{ $page->primary->title ?? ''}}
+                                                @endif
+                                            </a>
+                                        </li>
+                                        @endif
+                                        @endforeach
+                                </ul>
+                            </li>
                             <li class="onhover-dropdown change-language">
                                 <a href="javascript:void(0)">{{session()->get('locale')}}
                                 <span class="icon-ic_lang align-middle"></span>

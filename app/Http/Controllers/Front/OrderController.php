@@ -2182,7 +2182,12 @@ class OrderController extends FrontController
      */
     public function tipAfterOrder(Request $request, $domain = '')
     {
-        $user = Auth::user();
+        if( (isset($request->user_id)) && (!empty($request->user_id)) ){
+            $user = User::find($request->user_id);
+        }else{
+            $user = Auth::user();
+        }
+
         if ($user) {
             $order_number = $request->order_number;
             if ($order_number > 0) {

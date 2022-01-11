@@ -44,15 +44,15 @@ class ClientPreferenceController extends BaseController{
         $laundry_teams = [];
         # if last mile on
         if(isset($preference) && $preference->need_delivery_service == '1') {
-            $last_mile_teams = $this->getLastMileTeams(); 
-            
+            $last_mile_teams = $this->getLastMileTeams();
+
         }
         # if laundry on
         if(isset($preference) && $preference->need_laundry_service == '1') {
-            $laundry_teams = $this->getLaundryTeams(); 
-            
+            $laundry_teams = $this->getLaundryTeams();
+
         }
-        
+
         $tags = Tag::with('primary')->get();
         $slots = ClientSlot::get();
         return view('backend/setting/config')->with(['tags' => $tags,'slots'=>$slots,'laundry_teams' => $laundry_teams,'last_mile_teams' => $last_mile_teams,'client' => $client, 'preference' => $preference, 'mapTypes'=> $mapTypes, 'smsTypes' => $smsTypes, 'client_languages' => $client_languages, 'file_types' => $file_types, 'vendor_registration_documents' => $vendor_registration_documents, 'driver_registration_documents' => $driver_registration_documents, 'reffer_by' => $reffer_by, 'reffer_to' => $reffer_to, 'file_types_driver' => $file_types_driver]);
@@ -108,7 +108,7 @@ class ClientPreferenceController extends BaseController{
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $code){
-        
+
 
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
@@ -116,11 +116,11 @@ class ClientPreferenceController extends BaseController{
             $preference = new ClientPreference();
             $preference->client_code = $code;
         }
-        $keyShouldNot = array('last_mile_team','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes'); 
-   
+        $keyShouldNot = array('last_mile_team','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes');
+
         foreach ($request->all() as $key => $value) {
             if(!in_array($key, $keyShouldNot)){
-               $preference->{$key} = $value; 
+               $preference->{$key} = $value;
             }
         }
 
@@ -146,14 +146,14 @@ class ClientPreferenceController extends BaseController{
                     'sender_id' => $request->mazinhost_sender_id,
                 ];
             }
-            $preference->sms_credentials = json_encode($sms_credentials); 
+            $preference->sms_credentials = json_encode($sms_credentials);
         }
-        
+
         /* Hyperlocal update */
         if($request->has('hyperlocals') && $request->hyperlocals == '1'){
             $preference->is_hyperlocal = ($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on') ? 1 : 0;
-          
-          
+
+
             if($request->has('is_hyperlocal') && $request->is_hyperlocal == 'on'){
                 if( (!$request->has('Default_location_name')) || ($request->Default_location_name == '')
                     || (!$request->has('Default_latitude')) || ($request->Default_latitude == '')
@@ -165,17 +165,17 @@ class ClientPreferenceController extends BaseController{
                 $preference->Default_latitude = $request->Default_latitude;
                 $preference->Default_longitude = $request->Default_longitude;
             }
-           
+
         }
-        
-        // $preference->stripe_connect = ($request->has('stripe_connect') && $request->stripe_connect == 'on') ? 1 : 0; 
-        
-        /* social login update */        
+
+        // $preference->stripe_connect = ($request->has('stripe_connect') && $request->stripe_connect == 'on') ? 1 : 0;
+
+        /* social login update */
         if($request->has('social_login') && $request->social_login == '1'){
-            $preference->fb_login = ($request->has('fb_login') && $request->fb_login == 'on') ? 1 : 0; 
-            $preference->twitter_login = ($request->has('twitter_login') && $request->twitter_login == 'on') ? 1 : 0; 
-            $preference->google_login = ($request->has('google_login') && $request->google_login == 'on') ? 1 : 0; 
-            $preference->apple_login = ($request->has('apple_login') && $request->apple_login == 'on') ? 1 : 0; 
+            $preference->fb_login = ($request->has('fb_login') && $request->fb_login == 'on') ? 1 : 0;
+            $preference->twitter_login = ($request->has('twitter_login') && $request->twitter_login == 'on') ? 1 : 0;
+            $preference->google_login = ($request->has('google_login') && $request->google_login == 'on') ? 1 : 0;
+            $preference->apple_login = ($request->has('apple_login') && $request->apple_login == 'on') ? 1 : 0;
         }
         if($request->has('verify_config') && $request->verify_config == '1'){
             $preference->verify_email = ($request->has('verify_email') && $request->verify_email == 'on') ? 1 : 0;
@@ -204,6 +204,7 @@ class ClientPreferenceController extends BaseController{
             $preference->pickup_delivery_service_area = ($request->has('pickup_delivery_service_area') && $request->pickup_delivery_service_area == 'on') ? 1 : 0;
             $preference->minimum_order_batch = ($request->has('minimum_order_batch') && $request->minimum_order_batch == 'on') ? 1 : 0;
             $preference->static_delivey_fee = ($request->has('static_delivey_fee') && $request->static_delivey_fee == 'on') ? 1 : 0;
+            $preference->header_quick_link = ($request->has('header_quick_link') && $request->header_quick_link == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
@@ -257,17 +258,17 @@ class ClientPreferenceController extends BaseController{
             }
             $deactivateLanguages = ClientLanguage::where('client_code',Auth::user()->code)->whereNotIn('language_id', $exist_language_id)->where('is_primary', 0)->update(['is_active' => 0]);
         }
-        
+
         if($request->has('primary_currency')){
             $oldAdditional = ClientCurrency::where('currency_id', $request->primary_currency)
                         ->where('is_primary', 0)->delete();
-            $primaryCur = ClientCurrency::where('is_primary', 1)->update(['currency_id' => $request->primary_currency, 'doller_compare' => 1]); 
+            $primaryCur = ClientCurrency::where('is_primary', 1)->update(['currency_id' => $request->primary_currency, 'doller_compare' => 1]);
         }
         if($request->has('primary_currency') && !$request->has('currency_data')){
             $delete = ClientCurrency::where('client_code',Auth::user()->code)->where('is_primary', 0)->delete();
         }
         if($request->has('currency_data') && $request->has('multiply_by')){
-            $cur_multi = $exist_cid = array(); 
+            $cur_multi = $exist_cid = array();
             foreach ($request->currency_data as $key => $value) {
                 $exist_cid[] = $value;
                 $curr = ClientCurrency::where('currency_id', $value)->where('client_code',Auth::user()->code)->first();
@@ -281,7 +282,7 @@ class ClientPreferenceController extends BaseController{
                     ];
                 }else{
                     ClientCurrency::where('currency_id', $value)->where('client_code',Auth::user()->code)
-                                ->update(['doller_compare' => $multiplier]);                    
+                                ->update(['doller_compare' => $multiplier]);
                 }
             }
             ClientCurrency::insert($cur_multi);
@@ -292,25 +293,25 @@ class ClientPreferenceController extends BaseController{
         if($request->has('admin_email')){
             $preference->admin_email = $request->admin_email ;
         }
-       
+
         $preference->save();
 
-      
+
         $preferenceset = ClientPreference::where('client_code', Auth::user()->code)->first();
         if(isset($request->last_mile_submit_btn) && !empty($request->last_mile_submit_btn))
-        {  
-            if(isset($request->need_delivery_service) && !empty($request->need_delivery_service)){   
+        {
+            if(isset($request->need_delivery_service) && !empty($request->need_delivery_service)){
                 try {
                     $client = new GClient(['headers' => ['personaltoken' => $request->delivery_service_key,'shortcode' => $request->delivery_service_key_code,'content-type' => 'application/json']]);
-                    $url = $request->delivery_service_key_url;                                                   
+                    $url = $request->delivery_service_key_url;
                     $res = $client->post($url.'/api/check-dispatcher-keys');
                     $response = json_decode($res->getBody(), true);
                     if($response && $response['status'] == 400){
-                        return redirect()->route('configure.index')->with('error', 'Last Mile Delivery Keys incorrect !'); 
+                        return redirect()->route('configure.index')->with('error', 'Last Mile Delivery Keys incorrect !');
                     }
                 }catch(\Exception $e){
-                    return redirect()->route('configure.index')->with('error', 'Invalid Last Mile Delivery Dispatcher URL !'); 
-                }                           
+                    return redirect()->route('configure.index')->with('error', 'Invalid Last Mile Delivery Dispatcher URL !');
+                }
                 $preferenceset->need_delivery_service = ($request->has('need_delivery_service') && $request->need_delivery_service == 'on') ? 1 : 0;
                 $preferenceset->delivery_service_key_url = $request->delivery_service_key_url;
                 $preferenceset->delivery_service_key_code = $request->delivery_service_key_code;
@@ -322,19 +323,19 @@ class ClientPreferenceController extends BaseController{
         }
 
         if(isset($request->laundry_submit_btn) && !empty($request->laundry_submit_btn))
-        {  
-            if(isset($request->need_laundry_service) && !empty($request->need_laundry_service)){   
+        {
+            if(isset($request->need_laundry_service) && !empty($request->need_laundry_service)){
                 try {
                     $client = new GClient(['headers' => ['personaltoken' => $request->laundry_service_key,'shortcode' => $request->laundry_service_key_code,'content-type' => 'application/json']]);
-                    $url = $request->laundry_service_key_url;                                                   
+                    $url = $request->laundry_service_key_url;
                     $res = $client->post($url.'/api/check-dispatcher-keys');
                     $response = json_decode($res->getBody(), true);
                     if($response && $response['status'] == 400){
-                        return redirect()->route('configure.index')->with('error', 'laundry Keys incorrect !'); 
+                        return redirect()->route('configure.index')->with('error', 'laundry Keys incorrect !');
                     }
                 }catch(\Exception $e){
-                    return redirect()->route('configure.index')->with('error', 'Invalid laundry Dispatcher URL !'); 
-                }                           
+                    return redirect()->route('configure.index')->with('error', 'Invalid laundry Dispatcher URL !');
+                }
                 $preferenceset->need_laundry_service = ($request->has('need_laundry_service') && $request->need_laundry_service == 'on') ? 1 : 0;
                 $preferenceset->laundry_service_key_url = $request->laundry_service_key_url;
                 $preferenceset->laundry_service_key_code = $request->laundry_service_key_code;
@@ -345,7 +346,7 @@ class ClientPreferenceController extends BaseController{
                 $preferenceset->need_laundry_service =  ($request->has('need_laundry_service') && $request->need_laundry_service == 'on') ? 1 : 0;
             }
         }
-        
+
 
         if (isset($request->need_dispacher_ride_submit_btn) && !empty($request->need_dispacher_ride_submit_btn)) {
             if (isset($request->need_dispacher_ride) && !empty($request->need_dispacher_ride)) {
@@ -367,11 +368,11 @@ class ClientPreferenceController extends BaseController{
             } else {
                 $preferenceset->need_dispacher_ride = ($request->has('need_dispacher_ride') && $request->need_dispacher_ride == 'on') ? 1 : 0;
             }
-        } 
+        }
 
         if(isset($request->need_dispacher_home_other_service_submit_btn) && !empty($request->need_dispacher_home_other_service_submit_btn))
-        { 
-        
+        {
+
         if(isset($request->need_dispacher_home_other_service) && !empty($request->need_dispacher_home_other_service))
         {
             try {
@@ -379,15 +380,15 @@ class ClientPreferenceController extends BaseController{
                                                             'shortcode' => $request->dispacher_home_other_service_key_code,
                                                             'content-type' => 'application/json']
                                                                 ]);
-                $url = $request->dispacher_home_other_service_key_url;                                                   
+                $url = $request->dispacher_home_other_service_key_url;
                 $res = $client->post($url.'/api/check-dispatcher-keys');
                 $response = json_decode($res->getBody(), true);
                 if($response && $response['status'] == 400){
-                    return redirect()->route('configure.index')->with('error', 'On Demand Services Keys incorrect !'); 
+                    return redirect()->route('configure.index')->with('error', 'On Demand Services Keys incorrect !');
                 }
             }catch(\Exception $e){
-                    return redirect()->route('configure.index')->with('error', 'Invalid On Demand Services Dispatcher URL !'); 
-            } 
+                    return redirect()->route('configure.index')->with('error', 'Invalid On Demand Services Dispatcher URL !');
+            }
             $preferenceset->need_dispacher_home_other_service = ($request->has('need_dispacher_home_other_service') && $request->need_dispacher_home_other_service == 'on') ? 1 : 0;
             $preferenceset->dispacher_home_other_service_key_url = $request->dispacher_home_other_service_key_url;
             $preferenceset->dispacher_home_other_service_key_code = $request->dispacher_home_other_service_key_code;
@@ -395,10 +396,10 @@ class ClientPreferenceController extends BaseController{
         }else{
             $preferenceset->need_dispacher_home_other_service = ($request->has('need_dispacher_home_other_service') && $request->need_dispacher_home_other_service == 'on') ? 1 : 0;
         }
-        }   
+        }
 
         $preferenceset->save();
-     
+
 
         if($request->has('send_to') && $request->send_to == 'customize'){
             return redirect()->route('configure.customize')->with('success', 'Client customizations updated successfully!');
@@ -409,57 +410,57 @@ class ClientPreferenceController extends BaseController{
 
 
 
-     # get last mile teams 
+     # get last mile teams
      public function getLastMileTeams(){
-        try {   
+        try {
             $dispatch_domain = $this->checkIfLastMileOn();
                 if ($dispatch_domain && $dispatch_domain != false) {
 
                     $unique = Auth::user()->code;
-                   
+
                     $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key,
                                                         'shortcode' => $dispatch_domain->delivery_service_key_code,
                                                         'content-type' => 'application/json']
                                                             ]);
-                            $url = $dispatch_domain->delivery_service_key_url;                      
+                            $url = $dispatch_domain->delivery_service_key_url;
                             $res = $client->get($url.'/api/get-all-teams');
-                            $response = json_decode($res->getBody(), true); 
+                            $response = json_decode($res->getBody(), true);
                             if($response && $response['message'] == 'success'){
                                 return $response['teams'];
                             }
-                    
+
                 }
-            }    
+            }
             catch(\Exception $e){
-               
+
             }
     }
-    # get laundry teams 
+    # get laundry teams
     public function getLaundryTeams(){
-        try {   
+        try {
             $dispatch_domain = $this->checkIfLaundryOnCommon();
                 if ($dispatch_domain && $dispatch_domain != false) {
 
                     $unique = Auth::user()->code;
-                   
+
                     $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key,
                                                         'shortcode' => $dispatch_domain->laundry_service_key_code,
                                                         'content-type' => 'application/json']
                                                             ]);
-                            $url = $dispatch_domain->laundry_service_key_url;                      
+                            $url = $dispatch_domain->laundry_service_key_url;
                             $res = $client->get($url.'/api/get-all-teams');
-                            $response = json_decode($res->getBody(), true); 
+                            $response = json_decode($res->getBody(), true);
                             if($response && $response['message'] == 'success'){
                                 return $response['teams'];
                             }
-                    
+
                 }
-            }    
+            }
             catch(\Exception $e){
-               
+
             }
     }
-    # check if last mile delivery on 
+    # check if last mile delivery on
     public function checkIfLastMileOn(){
         $preference = ClientPreference::first();
         if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
@@ -483,13 +484,13 @@ class ClientPreferenceController extends BaseController{
           if ($request->custom_domain && $request->custom_domain != $client->custom_domain) {
             try {
                 $my_url =   $request->custom_domain;
-                
+
                 $data1 = [
                     'domain' => $my_url
                 ];
-                
+
                 $curl = curl_init();
-                
+
                 curl_setopt_array($curl, array(
                     CURLOPT_URL => "localhost:3000/add_subdomain",
                     CURLOPT_RETURNTRANSFER => true,
@@ -503,15 +504,15 @@ class ClientPreferenceController extends BaseController{
                        "content-type: application/json",
                     ),
                 ));
-                
+
                 $response = curl_exec($curl);
                 $err = curl_error($curl);
-                $res = json_decode($response); 
+                $res = json_decode($response);
                 if(isset($res->error) && $res->error->statusCode == 400){
                 $error = isset($res->error->customMessage)?$res->error->customMessage:'ERROR';
                 return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => $error]));
-                }	
- 		
+                }
+
                $exists = Client::on('god')->where('code',$id)->where('custom_domain', $request->custom_domain)->count();
                if ($exists) {
                    return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => 'Domain name "' . $request->custom_domain . '" is not available. Please select a different domain']));
@@ -526,8 +527,8 @@ class ClientPreferenceController extends BaseController{
             } catch (\Exception $e) {
                 return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => $e->getMessage()]));
             }
-          
-           
+
+
         }else{
             return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => 'Domain name "' . $request->custom_domain . '" is already pointed. Please select a different domain']));
         }
@@ -535,6 +536,6 @@ class ClientPreferenceController extends BaseController{
 
 
 
-       
+
     }
 }

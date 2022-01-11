@@ -142,10 +142,14 @@ class UserSubscriptionController extends FrontController
      */
     public function purchaseSubscriptionPlan(Request $request, $domain = '', $slug = '')
     {
-        $user = Auth::user();
+        if( (isset($request->user_id)) && (!empty($request->user_id)) ){
+            $user = User::find($request->user_id);
+        }else{
+            $user = Auth::user();
+        }
         $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
         $last_subscription = SubscriptionInvoicesUser::with(['plan', 'features.feature'])
-            ->where('user_id', Auth::user()->id)
+            ->where('user_id', $user->id)
             ->where('subscription_id', $subscription_plan->id)
             ->orderBy('end_date', 'desc')->first();
         if( ($user) && ($subscription_plan) ){

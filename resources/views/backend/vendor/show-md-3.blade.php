@@ -77,7 +77,10 @@
                     <div class="col-md-12">
                         <div class="form-group" id="order_pre_timeInput">
                             {!! Form::label('title', __('Order Prepare Time(In minutes)'),['class' => 'control-label']) !!}
-                            <input class="form-control" onkeypress="return isNumberKey(event)" name="order_pre_time" type="text" value="{{ ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0 }}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                            <div class="position-relative">
+                                <input class="form-control" onkeypress="return isNumberKey(event)" name="order_pre_time" id="Vendor_order_pre_time" type="text" value="{{ ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0 }}" {{$vendor->status == 1 ? '' : 'disabled'}}>
+                                <div class="time-sloat d-flex align-items-center"><span class=" d-none" ></span>  <span class="hrs d-none" >/{{__('Hours')}}</span><span class="min d-none">/{{__("Min")}}</span> </div>
+                            </div>
                         </div>
                     </div>
                     @endif
@@ -111,7 +114,7 @@
                             {!! Form::label('title', 'Absolute Min Order Value [AMOV]',['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{$vendor->order_min_amount}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
-                    </div> 
+                    </div>
 
 
                     @if($client_preference_detail->static_delivey_fee == 1)
@@ -120,21 +123,21 @@
                             {!! Form::label('title', 'Min Order Value (with Delivery fee) [MOV]',['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="order_amount_for_delivery_fee" type="text" value="{{$vendor->order_amount_for_delivery_fee}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
-                    </div> 
+                    </div>
 
                     <div class="col-md-12">
                         <div class="form-group" id="delivery_fee_minimumInput">
                             {!! Form::label('title', 'Delivery Fee For Below MOV',['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="delivery_fee_minimum" type="text" value="{{$vendor->delivery_fee_minimum}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
-                    </div> 
+                    </div>
 
                     <div class="col-md-12">
                         <div class="form-group" id="delivery_fee_maximumInput">
                             {!! Form::label('title', 'Delivery Fee For Above MOV',['class' => 'control-label']) !!}
                             <input class="form-control" onkeypress="return isNumberKey(event)" name="delivery_fee_maximum" type="text" value="{{$vendor->delivery_fee_maximum}}" {{$vendor->status == 1 ? '' : 'disabled'}}>
                         </div>
-                    </div> 
+                    </div>
                     @endif
                     <div class="col-12">
                         <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
