@@ -683,11 +683,11 @@ class CartController extends FrontController
             $d = 0;
             foreach ($cartData as $ven_key => $vendorData) {
                 $is_promo_code_available = 0;
-                $vendor_products_total_amount = $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = $delivery_fee_charges_static = 0.00;
+                $vendor_products_total_amount = $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = $delivery_fee_charges_static =  $deliver_charges_lalmove = 0.00;
                 $delivery_count = 0;
                 $delivery_count_lm = 0;
                 $coupon_amount_used = 0;
-
+         
                 if(Session::has('vendorTable')){
                     if((Session::has('vendorTableVendorId')) && (Session::get('vendorTableVendorId') == $vendorData->vendor_id)){
                         $cart_dinein_table_id = Session::get('vendorTable');
@@ -954,7 +954,7 @@ class CartController extends FrontController
                 
 
                 if(isset($deliveryCharges) && !empty($deliveryCharges)){
-                     CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $code]);
+                     CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $code??'D']);
                 }
                 
                
