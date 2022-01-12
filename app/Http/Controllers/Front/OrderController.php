@@ -773,8 +773,7 @@ class OrderController extends FrontController
                                 $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
                             }
 
-                           Log::info($deliver_fee_data);
-                           Log::info($vendor_cart_product);
+                          
 
                             if($deliver_fee_data)
                             $delivery_fee  = $deliver_fee_data->delivery_fee??0.00;
