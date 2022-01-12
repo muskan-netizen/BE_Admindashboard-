@@ -290,7 +290,7 @@ class OrderController extends BaseController
                                     $orderAddon->save();
                                 }
                                 if (($request->payment_option_id != 7) && ($request->payment_option_id != 6)) { // if not mobbex, payfast
-                                    CartAddon::where('cart_product_id', $vendor_cart_product->id)->delete();
+                            //        CartAddon::where('cart_product_id', $vendor_cart_product->id)->delete();
                                 }
                             }
                         }
@@ -854,9 +854,9 @@ class OrderController extends BaseController
                 if ($email_template) {
                     $email_template_content = $email_template->content;
                     if ($vendor_id == "") {
-                        $returnHTML = view('email.orderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol])->render();
+                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol])->render();
                     } else {
-                        $returnHTML = view('email.orderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
+                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
                     }
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);

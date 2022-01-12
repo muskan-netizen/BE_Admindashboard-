@@ -45,7 +45,7 @@ $timezone = Auth::user()->timezone;
             <tr>
                <td colspan="3" style="border-bottom: 1px solid #9797973b;padding: 3px 0 10px;"></td>
             </tr>  
-            @foreach($product['vendor_products'] as $vendor_product)
+            @foreach($product['vendor_products'] as $vendor_product) 
             <tr style="vertical-align: top;">
                <td style="width: 45%;padding: 15px 0 10px; ">
                   <div style="display: flex;">
@@ -54,6 +54,11 @@ $timezone = Auth::user()->timezone;
                      </div>
                      <div style="padding: 0 0 0 15px;">
                         <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{$vendor_product['product']['translation_one']['title']}}</h3>
+                        @if(count($vendor_product['addon']))
+                        @foreach ($vendor_product['addon'] as $addon)
+                        <p style="color: #777777;font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;">{{$addon['option']['title']??''}}</p>
+                        @endforeach
+                        @endif
                         {{-- <p style="color: #777777;font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;">Extra olives</p>
                         <p style="color: #777777;font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;">Extra cheese</p> --}}
                      </div>
@@ -66,6 +71,14 @@ $timezone = Auth::user()->timezone;
                </td>
                <td style="width: 35%;padding: 15px 0 10px;  text-align: right;">
                   <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{ $currencySymbol . number_format(($vendor_product['pvariant']['price']), 2, '.', '')}}</h3>
+                  @if(count($vendor_product['addon']))
+                  @foreach ($vendor_product['addon'] as $addon)
+                  @php
+                     $vendor_product['pvariant']['price'] = $vendor_product['pvariant']['price'] + $addon['option']['price_in_cart']
+                  @endphp
+                  <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{ $currencySymbol . number_format((@$addon['option']['quantity_price']), 2, '.', '')}}</h3>
+                  @endforeach
+                  @endif
                   {{-- <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p>
                   <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p> --}}
                   <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 5px 0 0;padding: 5px 0 0;color: #000000;display: inline-block;border-top: 1px solid #ddd;min-width: 80px;">{{ $currencySymbol . number_format(($vendor_product['pvariant']['price']*$vendor_product['quantity']), 2, '.', '')}}</h3>
@@ -103,6 +116,10 @@ $timezone = Auth::user()->timezone;
                 <td style="text-align: left;"><b>{{__('Tax')}}:</b></td>
                 <td style="text-align: right;">{{$currencySymbol . number_format($order->taxable_amount, 2, '.', '')}}</td>
              </tr>
+             <tr>
+               <td style="text-align: left;"><b>{{__('Delivery fee')}}:</b></td>
+               <td style="text-align: right;">{{$currencySymbol . number_format($order->total_delivery_fee, 2, '.', '')}}</td>
+            </tr>
              <tr>
                 <td style="text-align: left;"><b>{{__('Total')}}:</b></td>
                 <td style="text-align: right;"><b>{{$currencySymbol . number_format($order->payable_amount, 2, '.', '')}}</b></td>

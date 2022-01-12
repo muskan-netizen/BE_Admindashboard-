@@ -878,7 +878,7 @@ class OrderController extends FrontController
                             $orderAddon->order_product_id = $order_product->id;
                             $orderAddon->save();
                         }
-                        CartAddon::where('cart_product_id', $vendor_cart_product->id)->delete();
+                    //    CartAddon::where('cart_product_id', $vendor_cart_product->id)->delete();
                     }
                 }
                 $coupon_id = null;
