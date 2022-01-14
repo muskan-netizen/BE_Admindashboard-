@@ -408,8 +408,9 @@ class OrderController extends BaseController
                         $this->sendSuccessEmail($request, $order, $vendor_id);
                     }
                     $this->sendSuccessEmail($request, $order);
-                    $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
-                    if (!in_array($request->payment_option_id, $ex_gateways)) {
+                    $ex_gateways = [6, 7, 8, 9, 10, 11, 12, 13, 17]; // if mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
+                    if (!in_array($request->payment_option_id, $ex_gateways)) { 
+
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         CartProduct::where('cart_id', $cart->id)->delete();
@@ -882,6 +883,7 @@ class OrderController extends BaseController
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
+                Log::info($e->getMessage());
             }
         }
     }

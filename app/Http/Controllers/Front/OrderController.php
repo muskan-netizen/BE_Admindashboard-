@@ -978,7 +978,7 @@ class OrderController extends FrontController
                 $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                 $order->tip_amount = $tip_amount;
             }
-            $payable_amount = $payable_amount + $tip_amount;
+            $payable_amount = $payable_amount + $tip_amount + $total_service_fee;
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;
             $order->loyalty_points_used = $loyalty_points_used;
