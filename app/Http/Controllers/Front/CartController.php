@@ -1096,7 +1096,7 @@ class CartController extends FrontController
             $cart->loyalty_amount = number_format($loyalty_amount_saved, 2, '.', '');
             $cart->gross_amount = number_format(($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount), 2, '.', '');
             $cart->new_gross_amount = number_format(($total_payable_amount + $total_discount_amount), 2, '.', '');
-            $cart->total_payable_amount = number_format($total_payable_amount, 2, '.', '');
+            $cart->total_payable_amount = number_format($total_payable_amount+$total_service_fee, 2, '.', '');
             $cart->total_discount_amount = number_format($total_discount_amount, 2, '.', '');
             $cart->total_taxable_amount = number_format($total_taxable_amount, 2, '.', '');
             $cart->tip_5_percent = number_format((0.05 * $total_payable_amount), 2, '.', '');
