@@ -369,6 +369,8 @@ $viewSlot = array();
             if(isset($slott->dayOne->id))
             {   
                $slotss[] = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
+            }else{
+                $slotss[] = [];
             }
         }
 
