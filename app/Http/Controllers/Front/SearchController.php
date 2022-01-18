@@ -92,8 +92,8 @@ class SearchController extends FrontController{
             $response[] = ['id' => $category->id, 'name' => $category->name, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }
 
-        $products = Product::with(['media','vendor'])->join('product_translations as pt', 'pt.product_id', 'products.id')
-        // ->select('products.id', 'products.sku', 'products.url_slug', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description') 
+        $products = Product::with(['media','vendor'])->join('product_translations as pt', 'pt.product_id', 'products.id')->join('vendors', 'vendors.id','products.vendor_id')
+        ->select('products.id', 'products.sku', 'products.url_slug', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description','products.vendor_id','vendors.slug as vendor_slug') 
         ->where('pt.language_id', $language_id)
         ->where(function ($q) use ($keyword) {
             $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
@@ -103,7 +103,7 @@ class SearchController extends FrontController{
         //}
         $products = $products->whereNull('deleted_at')->groupBy('products.id')->get();
         foreach ($products as $product) {
-            $redirect_url = route('productDetail', [$product->vendor->slug, $product->url_slug]);
+            $redirect_url = route('productDetail', [$product->vendor_slug, $product->url_slug]);
             $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'].'80/80'.$product->media->first()->image->path['image_path'] : '';
             $response[] = ['id' => $product->id, 'name' => $product->dataname, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }
