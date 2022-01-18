@@ -371,12 +371,15 @@ $viewSlot = array();
             if(isset($slot->dayOne->id) && ($slot->dayOne->id > 0))
             {   
                $slotss[$k] = SplitTime($myDate,$slot->start_time,$slot->end_time,$duration,max($min));
+               echo '<pre>';
+                print_r($slotss);
+
             }else{
                 $slotss[$k] = [];
             }
 
         }
- dd($slotss);
+ dd('hi');
 
     $arr = array();
     $count = count($slotss);
