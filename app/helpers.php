@@ -368,7 +368,8 @@ $viewSlot = array();
     
 
         foreach($slots as $slot){
-            //  echo '=h-='.$slot->dayOne->id;
+    echo '<pre>';
+            print_r($slot);
             if(isset($slot->dayOne->id) && ($slot->dayOne->id > 0))
             {   
                $slotss[] = SplitTime($myDate,$slot->start_time,$slot->end_time,$duration,max($min));
@@ -377,7 +378,7 @@ $viewSlot = array();
             }
 
         }
-   // dd($slotss);
+    dd('testing');
 
     $arr = array();
     $count = count($slotss);
@@ -410,7 +411,7 @@ function findSlot($myDate = null,$vid,$type = 'delivery')
                 $myDate  = date('Y-m-d',strtotime('+1 day')); 
                 $slots = showSlot($myDate,$vid,'delivery');
             }
-            dd($slots);
+            //dd($slots);
             if(count((array)$slots) == 0){
                 $myDate  = date('Y-m-d',strtotime('+1 day')); 
                 $slots = showSlot($myDate,$vid,'delivery');
