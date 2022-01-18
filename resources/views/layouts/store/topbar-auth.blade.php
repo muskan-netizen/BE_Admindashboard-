@@ -39,7 +39,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     @if($client_preference_detail->header_quick_link == 1)
                     <li class="onhover-dropdown quick-links quick-links">
 
-                        <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
+                        <span class="quick-links ml-1 align-middle">{{ __('Register') }}</span>
                         </a>
                         <ul class="onhover-show-div">
 

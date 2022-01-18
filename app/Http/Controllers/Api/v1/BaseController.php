@@ -286,6 +286,14 @@ class BaseController extends Controller{
         return $vendors;
     }
 
+    public function loadDefaultImage(){
+        $proxy_url = \Config::get('app.IMG_URL1');
+        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
+        $image_fit = \Config::get('app.FIT_URl');
+        $default_url = $image_fit .'300/300'. $image_path.'@webp';
+        return $default_url;
+    }
+
     protected function contains($point, $polygon){
         if($polygon[0] != $polygon[count($polygon)-1]){
             $polygon[count($polygon)] = $polygon[0];

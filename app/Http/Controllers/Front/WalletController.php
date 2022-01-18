@@ -124,11 +124,12 @@ class WalletController extends FrontController
      */
     public function walletTransferUserVerify(Request $request, $domain = ''){
         try{
+            $user = Auth::user();
             $username = $request->username;
             $user_exists = User::select('image', 'name')->where(function($q) use($username){
                 $q->where('email', $username)->orWhereRaw("CONCAT(`dial_code`, `phone_number`) = ?", $username);
             })
-            ->where('status', 1)->first();
+            ->where('status', 1)->where('id', '!=', $user->id)->first();
             if($user_exists){
                 return $this->successResponse($user_exists, __('User is verified'), 201);
             }else{
@@ -164,7 +165,7 @@ class WalletController extends FrontController
             $second_user = User::where(function($q) use($username){
                 $q->where('email', $username)->orWhereRaw("CONCAT(`dial_code`, `phone_number`) = ?", $username);
             })
-            ->where('status', 1)->first();
+            ->where('status', 1)->where('id', '!=', $first_user->id)->first();
             if($second_user){
                 $first_user->transferFloat($second_user, $transfer_amount, ['Wallet has been transferred with reference <b>'.$transaction_reference.'</b>']);
                 $message = __('Amount has been transferred successfully');

@@ -31,7 +31,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <ul class="header-dropdown">
                             <li class="onhover-dropdown quick-links quick-links">
 
-                                <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
+                                <span class="quick-links ml-1 align-middle">{{ __('Register') }}</span>
                                 </a>
                                 <ul class="onhover-show-div">
 

@@ -1341,7 +1341,8 @@ h6 {
 }
 .edit_address .modal-content {
     border-radius: 12px;
-    overflow: hidden;
+    /*overflow: hidden;*/
+    overflow: visible!important;
 }
 .edit-close {
     top: 20px;
@@ -1833,8 +1834,13 @@ label {
 .map-icon .fa.fa-map-marker {
     color: var(--theme-deafult);
 }
+.delivery_address > .form-group{
+    position: relative;
+}
 .pac-container {
     z-index: 9999;
+    top: 72px!important;
+    left: 0px!important;
 }
 .down-icon .fa.fa-angle-down {
     color: var(--theme-deafult);
@@ -4693,6 +4699,9 @@ ul#main-nav-list {
     width: max-content;
     margin: 0 0 10px;
 }
+#continental .category-head{
+    top: 0;
+}
 .category-head {
     position: sticky;
     top: 122px;
@@ -6150,7 +6159,7 @@ body[dir="rtl"] .inner_spacing h3 {
         padding: 20px 0 0;
     }
     .scrolling_section .price_head h5 {
-        width: calc(100% - 115px);
+        width: calc(100% - 122px);
     }
     .cart-box-outer .number input {
         width: 50px !important;
@@ -6532,7 +6541,7 @@ body[dir="rtl"] .inner_spacing h3 {
         max-width: 80px;
     }
     .cart-box-outer .col-10 {
-        padding-left: 70px;
+        padding-left: 80px;
     }
     .mobile-setting .modal-dialog {
         max-width: 300px;

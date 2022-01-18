@@ -14,14 +14,14 @@ class VendorOrderDispatcherStatus extends Model
 
 
 
-
+    protected $appends = ['status_data'];
     public function getStatusDataAttribute()
     {
        $dispatcher_status_option = $this->attributes['dispatcher_status_option_id'];
        $type = $this->attributes['type'];
-        
+
        $status_data = [];
-       
+
        switch ($dispatcher_status_option) {
         case 1:
             if ($type == '1') {
@@ -70,6 +70,6 @@ class VendorOrderDispatcherStatus extends Model
        }
 
        return $status_data;
-      
+
     }
 }

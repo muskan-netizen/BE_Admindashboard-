@@ -1394,7 +1394,39 @@ class CartController extends FrontController
             $cart_details = $this->getCart($cart, $address_id,$request->code);
         }
         $client_preference_detail = ClientPreference::first();
+
+        // $vendors = $this->searchProductExpection($cart_details);
+        //  dd($vendors);
+
         return response()->json(['status' => 'success', 'cart_details' => $cart_details, 'client_preference_detail' => $client_preference_detail]);
+    }
+
+
+    public function searchProductExpection($cart_details){
+
+       $langId = Session::get('customerLanguage');
+
+        $all_vendors = array();
+        $keywords = array();
+            foreach($cart_details->products as $product)
+            {
+                foreach ($product['vendor_products'] as $vendor_product) {
+                    $keywords[] = isset($vendor_product['product']['translation_one']) ? $vendor_product['product']['translation_one']['title'] :  $vendor_product['product']['sku'];
+                }
+            }
+
+            $all_vendors = Vendor::OrderBy('id','desc')->with(['products.translation' => function($q) use($langId, $keywords){
+                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                }
+            ])->whereHas('products.translation',function($q) use($langId, $keywords){
+            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+            }
+            )->where('status',1)->get()->toArray();
+       
+
+            print_r("<pre>");
+            print_r($all_vendors);
+            return $all_vendors;
     }
 
 

@@ -105,11 +105,6 @@ class PaymentController extends FrontController{
 
     public function getGatewayReturnResponse(Request $request)
     {
-        if(($request->has('gateway')) && ($request->gateway == 'paystack')){
-            $paystackController = new PaystackGatewayController();
-            $response = $paystackController->paystackCompletePurchase($request);
-        }
-
         return view('frontend.account.gatewayReturnResponse');
     }
 }

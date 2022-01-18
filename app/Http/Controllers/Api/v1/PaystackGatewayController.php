@@ -15,6 +15,7 @@ class PaystackGatewayController extends BaseController
 {
     use ApiResponser;
     public $gateway;
+    public $currency;
 
     public function __construct()
     {
@@ -28,6 +29,9 @@ class PaystackGatewayController extends BaseController
         $this->gateway->setPublicKey($public_key);
         $this->gateway->setTestMode($testmode); //set it to 'false' when go live
         // dd($this->gateway);
+
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
     }
 
     public function paystackPurchase(Request $request){
@@ -71,7 +75,7 @@ class PaystackGatewayController extends BaseController
             elseif($request->payment_form == 'subscription'){
                 $description = 'Subscription Checkout';
                 $slug = $request->subscription_id;
-                $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
+                $subscription_plan = SubscriptionPlansUser::where('slug', $slug)->where('status', '1')->first();
                 $meta_data['subscription_id'] = $subscription_plan->id;
                 // $reference_number = $request->subscription_id;
                 $rules['subscription_id'] = 'required';
@@ -84,7 +88,7 @@ class PaystackGatewayController extends BaseController
 
             $response = $this->gateway->purchase([
                 'amount' => $amount,
-                'currency' => 'ZAR',
+                'currency' => 'ZAR', //$this->currency,
                 'email' => $user->email,
                 'returnUrl' => url($returnUrl . $returnUrlParams),
                 'cancelUrl' => url($cancelUrl),

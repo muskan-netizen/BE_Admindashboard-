@@ -577,7 +577,7 @@ function initMap() {
         const map = autocompletes[i].map;
         const marker = autocompletes[i].marker;
 
-        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {         
             marker.setVisible(false);
             const place = autocomplete.getPlace();
 
@@ -608,6 +608,9 @@ function initMap() {
 
         });
     }
+    setTimeout(function(){ 
+        $(".pac-container").appendTo(".delivery_address > .form-group");
+    }, 300);
 }
 
 function setLocationCoordinates(key, lat, lng) {

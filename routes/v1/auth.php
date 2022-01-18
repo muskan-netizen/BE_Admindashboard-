@@ -42,6 +42,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('update/profile', 'Api\v1\ProfileController@updateProfile');
         Route::get('myWallet', 'Api\v1\WalletController@getFindMyWalletDetails');
         Route::post('myWallet/credit', 'Api\v1\WalletController@creditMyWallet');
+        Route::post('wallet/transfer/user/verify', 'Api\v1\WalletController@walletTransferUserVerify');
+	    Route::post('wallet/transfer/confirm', 'Api\v1\WalletController@walletTransferConfirm');
         Route::post('store/revenue', 'Api\v1\StoreController@getMyStoreRevenueDetails');
         Route::post('changePassword', 'Api\v1\ProfileController@changePassword');
         Route::get('addressBook/{id?}', 'Api\v1\AddressController@getAddressList');

@@ -79,7 +79,7 @@
                             {!! Form::label('title', __('Order Prepare Time(In minutes)'),['class' => 'control-label']) !!}
                             <div class="position-relative">
                                 <input class="form-control" onkeypress="return isNumberKey(event)" name="order_pre_time" id="Vendor_order_pre_time" type="text" value="{{ ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0 }}" {{$vendor->status == 1 ? '' : 'disabled'}}>
-                                <div class="time-sloat d-flex align-items-center"><span class=" d-none" ></span>  <span class="hrs d-none" >/{{__('Hours')}}</span><span class="min d-none">/{{__("Min")}}</span> </div>
+                                <div class="time-sloat d-flex align-items-center"><span class="" id="Vendor_order_pre_time_show" ></span> </div>
                             </div>
                         </div>
                     </div>
@@ -419,82 +419,98 @@
 <script type="text/javascript">
 
 $('.addUsersBtn').click(function() {
-        $('#add-user-permission').modal({
-            keyboard: false
-        });
+    $('#add-user-permission').modal({
+        keyboard: false
     });
+});
 
 
-    $( document ).ready(function() {
-
+$( document ).ready(function() {
+    @if($client_preference_detail->business_type != 'taxi')
+        vendorOrderTime();
+    @endif
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('input[name="_token"]').val()
         }
     });
-// search users for set permission
-$('#id_search_user_for_permission').keyup(function(){
-    var query = $(this).val();
-    var vendor_id = $('#set-vendor_id').val();
-    if(query != '')
-    {
-     var _token = $('input[name="_token"]').val();
-     $.ajax({
-      url:"{{ route('searchUserForPermission') }}",
-      method:"POST",
-      data:{query:query, _token:_token, vendor_id:vendor_id},
-      success:function(data){
-       $('#userList').fadeIn();
-       $('#userList').html(data);
-      }
-     });
+    $(document).on('change', '#Vendor_order_pre_time', function(){
+        vendorOrderTime();
+    });
+    function vendorOrderTime(){
+       var min = $('#Vendor_order_pre_time').val();
+       //alert(min);
+       if(min >=60){
+            var hours = Math.floor(min / 60);
+            var minutes = min % 60;
+            var txt = '~ '+hours+':'+minutes+" {{__('Hours')}}";
+            $('#Vendor_order_pre_time_show').text(txt);
+       }else{
+            var txt = min+" {{__('Min')}}";
+            $('#Vendor_order_pre_time_show').text(txt);
+       }
     }
-});
-
-$(document).on('click', 'li', function(){
-    $('#id_search_user_for_permission').val($(this).text());
-    $('#cusid').val($(this).attr('data-id'));
-    $('#userList').fadeOut();
-});
-
-
-// submit permission for user
-$('#add_user_permission_vendor').submit(function(e) {
-
-            e.preventDefault();
-
-            var formData = new FormData(this);
+    // search users for set permission
+    $('#id_search_user_for_permission').keyup(function(){
+        var query = $(this).val();
+        var vendor_id = $('#set-vendor_id').val();
+        if(query != '')
+        {
+            var _token = $('input[name="_token"]').val();
             $.ajax({
-                type: 'POST',
-                url: "{{ route('permissionsForUserViaVendor') }}",
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                beforeSend: function() {
-                   $("#user_permission_form_button").html(
-                            '<i class="fa fa-spinner fa-spin fa-custom"></i> Loading').prop(
-                            'disabled', true);
-                },
-                success: (data) => {
-                    if (data.status == 'Success') {
-                       $("#user_permission_form_button").html('Submitted');
-                       location.reload();
-                    } else {
-                        $('#error-msg').text(data.message);
-                        $("#user_permission_form_button").html('Submit').prop('disabled',
-                            false);
-                    }
-                },
-                error: function(data) {
+            url:"{{ route('searchUserForPermission') }}",
+            method:"POST",
+            data:{query:query, _token:_token, vendor_id:vendor_id},
+            success:function(data){
+            $('#userList').fadeIn();
+            $('#userList').html(data);
+            }
+            });
+        }
+    });
+
+    $(document).on('click', 'li', function(){
+        $('#id_search_user_for_permission').val($(this).text());
+        $('#cusid').val($(this).attr('data-id'));
+        $('#userList').fadeOut();
+    });
+
+
+    // submit permission for user
+    $('#add_user_permission_vendor').submit(function(e) {
+
+        e.preventDefault();
+
+        var formData = new FormData(this);
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('permissionsForUserViaVendor') }}",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            beforeSend: function() {
+            $("#user_permission_form_button").html(
+                        '<i class="fa fa-spinner fa-spin fa-custom"></i> Loading').prop(
+                        'disabled', true);
+            },
+            success: (data) => {
+                if (data.status == 'Success') {
+                $("#user_permission_form_button").html('Submitted');
+                location.reload();
+                } else {
                     $('#error-msg').text(data.message);
                     $("#user_permission_form_button").html('Submit').prop('disabled',
                         false);
                 }
-            });
+            },
+            error: function(data) {
+                $('#error-msg').text(data.message);
+                $("#user_permission_form_button").html('Submit').prop('disabled',
+                    false);
+            }
         });
-
-
+    });
 
     $(document).on('click', '#approve_btn, #reject_btn, #block_btn', function(){
         var that  = $(this);
@@ -509,8 +525,8 @@ $('#add_user_permission_vendor').submit(function(e) {
                 data: { vendor_id: vendor_id , status:status},
                 success: function(data) {
                     if(data.status == 'success'){
-                       $.NotificationApp.send("Success", data.message, "top-right", "#5ba035", "success");
-                       window.location.href = "{{ route('vendor.index') }}";
+                    $.NotificationApp.send("Success", data.message, "top-right", "#5ba035", "success");
+                    window.location.href = "{{ route('vendor.index') }}";
                     }
                 }
             });
@@ -580,7 +596,7 @@ $('#add_user_permission_vendor').submit(function(e) {
                     $('#category_list').selectize()[0].selectize.destroy();
                     $.each(response.data.product_categories, function (key, value) {
                         if(value.category.type_id == 1){
-                           $('#category_list').append('<option value='+value.category_id+'>'+value.category.title+'</option>');
+                        $('#category_list').append('<option value='+value.category_id+'>'+value.category.title+'</option>');
                         }
                     });
                 }
@@ -589,11 +605,11 @@ $('#add_user_permission_vendor').submit(function(e) {
     });
 });
 
-$("input[name='auto_accept_order']").change(function() {
-    if($(this).prop('checked')){
-        $("#auto_reject_timeInput").css("display", "none");
-    } else {
-        $("#auto_reject_timeInput").css("display", "block");
-    }
-})
+    $("input[name='auto_accept_order']").change(function() {
+        if($(this).prop('checked')){
+            $("#auto_reject_timeInput").css("display", "none");
+        } else {
+            $("#auto_reject_timeInput").css("display", "block");
+        }
+    })
 </script>

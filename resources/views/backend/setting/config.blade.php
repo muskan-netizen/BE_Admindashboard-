@@ -1100,7 +1100,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                            <input type="checkbox" data-plugin="switchery" name="enquire_mode" id="	enquire_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->enquire_mode == '1')) checked='checked' @endif>
                         </div>
                      </div>
-                     @endif
+                    @endif
 
                   <div class="col-md-4">
                      <div class="form-group mb-3">

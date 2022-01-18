@@ -812,7 +812,7 @@ class CartController extends BaseController
                 $vendor_service_fee_percentage_amount = 0;
                 if($vendorData->vendor->service_fee_percent > 0){
                     $vendor_service_fee_percentage_amount = ($vendor_products_total_amount * $vendorData->vendor->service_fee_percent) / 100 ;
-                    // $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
+                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
                 }
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                 $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
@@ -920,7 +920,7 @@ class CartController extends BaseController
                 $cart->total_payable_amount = $cart->total_payable_amount - $wallet_amount_used;
                 $cart->wallet_amount_used = $wallet_amount_used;
             }
-        }
+        } 
         $cart->deliver_status = $delivery_status;
         $cart->loyalty_amount = $loyalty_amount_saved;
         $cart->tip = array(

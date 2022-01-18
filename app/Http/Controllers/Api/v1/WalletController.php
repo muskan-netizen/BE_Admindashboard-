@@ -58,4 +58,66 @@ class WalletController extends Controller{
             return $this->errorResponse('Invalid User', 402);
         }
     }
+
+    /**
+     * user verification for wallet transfer
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function walletTransferUserVerify(Request $request){
+        try{
+            $user = Auth::user();
+            $username = $request->username;
+            $user_exists = User::select('image', 'name')->where(function($q) use($username){
+                $q->where('email', $username)->orWhereRaw("CONCAT(`dial_code`, `phone_number`) = ?", $username);
+            })
+            ->where('status', 1)->where('id', '!=', $user->id)->first();
+            if($user_exists){
+                return $this->successResponse($user_exists, __('User is verified'), 201);
+            }else{
+                return $this->errorResponse('User does not exist', 422);   
+            }
+        }
+        catch(Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode);
+        }
+    }
+
+    /**
+     * transfer wallet balance to user
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function walletTransferConfirm(Request $request){
+        try{
+            $first_user = Auth::user();
+            $first_user_balance = $first_user->balanceFloat;
+            $username = $request->username;
+            $transfer_amount = $request->amount;
+
+            if($transfer_amount < 0){
+                return $this->errorResponse(__('Invalid Amount'), 422);
+            }
+            if($transfer_amount > $first_user_balance){
+                return $this->errorResponse(__('Insufficient funds in wallet'), 422);
+            }
+            
+            $transaction_reference = generateWalletTransactionReference();
+            
+            $second_user = User::where(function($q) use($username){
+                $q->where('email', $username)->orWhereRaw("CONCAT(`dial_code`, `phone_number`) = ?", $username);
+            })
+            ->where('status', 1)->where('id', '!=', $first_user->id)->first();
+            if($second_user){
+                $first_user->transferFloat($second_user, $transfer_amount, ['Wallet has been transferred with reference <b>'.$transaction_reference.'</b>']);
+                $message = __('Amount has been transferred successfully');
+                return $this->successResponse('', $message, 201);
+            }else{
+                return $this->errorResponse('User does not exist', 422);
+            }
+        }
+        catch(Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode);
+        }
+    }
 }

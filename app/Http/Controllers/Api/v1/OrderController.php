@@ -15,10 +15,12 @@ use Illuminate\Support\Facades\Validator;
 use Log;
 use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
 use App\Models\AutoRejectOrderCron;
+use App\Http\Traits\OrderTrait;
 
 class OrderController extends BaseController
 {
     use ApiResponser;
+    use OrderTrait;
     /**
      * Display a listing of the resource.
      *
@@ -408,8 +410,8 @@ class OrderController extends BaseController
                         $this->sendSuccessEmail($request, $order, $vendor_id);
                     }
                     $this->sendSuccessEmail($request, $order);
-                    $ex_gateways = [6, 7, 8, 9, 10, 11, 12, 13, 17]; // if mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
-                    if (!in_array($request->payment_option_id, $ex_gateways)) { 
+                    $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
+                    if (!in_array($request->payment_option_id, $ex_gateways)) {
 
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         CartCoupon::where('cart_id', $cart->id)->delete();
@@ -515,6 +517,7 @@ class OrderController extends BaseController
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
+                $this->ProductVariantStoke($order_id);
                 DB::commit();
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
             }
@@ -879,6 +882,11 @@ class OrderController extends BaseController
                 ];
                 if (!empty($data['admin_email'])) {
                     $email_data['admin_email'] = $data['admin_email'];
+                }
+                if ($vendor_id == "") {
+                    $email_data['send_to_cc'] = 1;
+                }else{
+                    $email_data['send_to_cc'] = 0;
                 }
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
@@ -1393,6 +1401,7 @@ class OrderController extends BaseController
 
     public function orderDetails_for_notification($order_id, $vendor_id = "")
     {
+
         $user = Auth::user();
         if ($user->is_superadmin != 1) {
             $userVendorPermissions = UserVendor::where(['user_id' => $user->id])->pluck('vendor_id')->toArray();
@@ -1431,9 +1440,22 @@ class OrderController extends BaseController
         $order_item_count = 0;
         $order->payment_option_title = $order->paymentOption->title;
         $order->item_count = $order_item_count;
-        $order->created_at = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+        //$order->created_at = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+       // $order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
         $order->created = dateTimeInUserTimeZone($order->created_at, $user->timezone);
-        $order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
+        $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
+        $luxury_option_name = '';
+        if ($order->luxury_option_id > 0) {
+            $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+            if ($luxury_option->title == 'takeaway') {
+                $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
+            } elseif ($luxury_option->title == 'dine_in') {
+                $luxury_option_name = 'Dine-In';
+            } else {
+                $luxury_option_name = 'Delivery';
+            }
+        }
+        $order->luxury_option_name = $luxury_option_name;
         foreach ($order->products as $product) {
             $order_item_count += $product->quantity;
         }

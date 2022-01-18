@@ -11,7 +11,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
-	
+
 
 	Route::get('dispatch-order-status-update-details/{id?}', 'Front\DispatcherController@dispatchOrderDetails')->name('dispatch-order-update-details'); // Order Status update Dispatch details
 
@@ -20,6 +20,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('demo/cabBooking', 'Front\CustomerAuthController@getDemoCabBookingPage');
 	Route::get('fcm', 'Front\CustomerAuthController@fcm');
 	Route::get('send-notification', 'Front\CustomerAuthController@sendNotification');
+    Route::get('vendor-notification', 'Front\DispatcherController@test');
 	Route::get('test/email', function () {
 		$send_mail = 'test@yopmail.com';
 		// App\Jobs\SendRefferalCodeEmailJob::dispatch($send_mail);
@@ -29,7 +30,7 @@ Route::group(['middleware' => ['domain']], function () {
 	});
 
 
-	
+
 
 	Route::get('payment/gateway/returnResponse', 'Front\PaymentController@getGatewayReturnResponse')->name('payment.gateway.return.response');
 
@@ -37,9 +38,9 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'order/lalamoves/quotation','Front\LalaMovesController@quotation')->name('order.lalamoves.quotation');
 
 	Route::match(['get','post'],'order/lalamoves/place-order','Front\LalaMovesController@placeOrder')->name('order.lalamoves.place_order');
-	
 
-	
+
+
 	////check Shiprocket
 	Route::get('carrier/test/shiprocket','ShiprocketController@checkShiprocket')->name('carrier.test.shiprocket');
 	Route::post('shiprocket_webhook','ShiprocketController@shiprocketWebhook')->name('carrier.webhook.shiprocket');
@@ -212,7 +213,7 @@ Route::group(['middleware' => ['domain']], function () {
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('user/orders', 'Front\OrderController@orders')->name('user.orders');
-	Route::post('user/orders/tip-after-order', 'Front\OrderController@tipAfterOrder')->name('user.tip_after_order'); 
+	Route::post('user/orders/tip-after-order', 'Front\OrderController@tipAfterOrder')->name('user.tip_after_order');
 	Route::post('user/store', 'Front\AddressController@store')->name('address.store');
 	Route::get('user/addAddress', 'Front\AddressController@add')->name('addNewAddress');
 	Route::get('user/address/{id}', 'Front\AddressController@address')->name('user.address');
@@ -263,12 +264,12 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('user/subscription/cancel/{slug}', 'Front\UserSubscriptionController@cancelSubscriptionPlan')->name('user.subscription.plan.cancel');
 	Route::get('user/subscription/checkActive/{slug}', 'Front\UserSubscriptionController@checkActiveSubscription')->name('user.subscription.plan.checkActive');
 	Route::post('user/save_fcm_token', 'Front\ProfileController@save_fcm')->name('user.save_fcm');
-	// Rating & review 
+	// Rating & review
 	Route::group(['prefix' => 'rating'], function () {
 		Route::post('update-product-rating', 'Front\RatingController@updateProductRating')->name('update.order.rating');
 		Route::get('get-product-rating', 'Front\RatingController@getProductRating')->name('get-product-rating-details');
 	});
-	// Return product 
+	// Return product
 	Route::group(['prefix' => 'return-order'], function () {
 		Route::get('get-order-data-in-model', 'Front\ReturnOrderController@getOrderDatainModel')->name('getOrderDatainModel');
 		Route::get('get-return-products', 'Front\ReturnOrderController@getReturnProducts')->name('get-return-products');
@@ -276,9 +277,9 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
 		Route::get('get-vendor-order-for-cancel', 'Front\ReturnOrderController@getVendorOrderForCancel')->name('get-vendor-order-for-cancel');
 		Route::post('vendor-order-for-cancel', 'Front\ReturnOrderController@vendorOrderForCancel')->name('order.cancel.customer');
-      
+
 	});
-	// Return product 
+	// Return product
 	Route::group(['prefix' => 'looking'], function () {
 		Route::get('/', 'Front\BookingController@index')->name('bookingIndex');
 		Route::get('details/{id?}', 'Front\BookingController@bookingDetails')->name('front.booking.details');

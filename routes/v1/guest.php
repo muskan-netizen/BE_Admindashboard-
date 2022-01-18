@@ -37,7 +37,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('promo-code-open/list', 'Api\v1\PickupDeliveryController@postPromoCodeListOpen');
 
-          
+        
+        //Routes for edit order
+        Route::post('edit-order/search/vendor/products', 'Api\v1\VendorController@vendorProductsSearchResultsForEditOrder');
     });
     Route::group(['middleware' => ['dbCheck','systemAuth', 'apilogger']], function() {
         Route::get('cart/empty', 'Api\v1\CartController@emptyCart');
