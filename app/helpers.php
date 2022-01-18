@@ -357,6 +357,8 @@ $viewSlot = array();
         return $q->where('day',$mytime)->where($type,'1');
     })
     ->get();
+    echo $slots[0]->dayOne->id;
+    dd($slots);
     $min[] = '';
     $cart = CartProduct::where('vendor_id',$vid)->get();
     foreach($cart as $product)
@@ -367,15 +369,17 @@ $viewSlot = array();
     if(isset($slots) && count($slots)>0){
     
 
-        foreach($slots as $k => $slot){
-           // if(isset($slot->dayOne->id) && ($slot->dayOne->id > 0))
-            //{   
+        foreach($slots as $slot){
+            //  echo '=h-='.$slot->dayOne->id;
+            if(isset($slot->dayOne->id) && ($slot->dayOne->id > 0))
+            {   
                $slotss[] = SplitTime($myDate,$slot->start_time,$slot->end_time,$duration,max($min));
-            // }else{
-            //    // $slotss[$k] = [];
-            // }
-        }
+            }else{
+                $slotss[] = [];
+            }
 
+        }
+   // dd($slotss);
 
     $arr = array();
     $count = count($slotss);
@@ -408,7 +412,7 @@ function findSlot($myDate = null,$vid,$type = 'delivery')
                 $myDate  = date('Y-m-d',strtotime('+1 day')); 
                 $slots = showSlot($myDate,$vid,'delivery');
             }
-            //dd($slots);
+            //dd($myDate);
             if(count((array)$slots) == 0){
                 $myDate  = date('Y-m-d',strtotime('+1 day')); 
                 $slots = showSlot($myDate,$vid,'delivery');
