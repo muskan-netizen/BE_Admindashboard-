@@ -300,7 +300,7 @@ function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 5)
     $user = Auth::user();
     $cr = Carbon::now()->addMinutes($delayMin);
     $now =  dateTimeInUserTimeZone24($cr, $user->timezone);
-    dd($user->timezone);
+   // dd($user->timezone);
     $nowT = Carbon::createFromFormat('Y-m-d H:i', $now)->timestamp;
    
 
