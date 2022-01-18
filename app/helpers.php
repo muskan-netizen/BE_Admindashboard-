@@ -367,12 +367,12 @@ $viewSlot = array();
     if(isset($slots) && count($slots)>0){
     
 
-        foreach($slots as $slot){
+        foreach($slots as $k => $slot){
             if(isset($slot->dayOne->id) && ($slot->dayOne->id > 0))
             {   
-               $slotss[] = SplitTime($myDate,$slot->start_time,$slot->end_time,$duration,max($min));
+               $slotss[$k] = SplitTime($myDate,$slot->start_time,$slot->end_time,$duration,max($min));
             }else{
-                $slotss[] = [];
+                $slotss[$k] = [];
             }
 
         }
