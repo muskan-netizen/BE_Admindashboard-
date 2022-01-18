@@ -357,8 +357,6 @@ $viewSlot = array();
         return $q->where('day',$mytime)->where($type,'1');
     })
     ->get();
-    echo $slots[0]->dayOne->id;
-    dd($slots);
     $min[] = '';
     $cart = CartProduct::where('vendor_id',$vid)->get();
     foreach($cart as $product)
@@ -368,22 +366,15 @@ $viewSlot = array();
 
     if(isset($slots) && count($slots)>0){
     
-
         foreach($slots as $slot){
-            //  echo '=h-='.$slot->dayOne->id;
-            if(isset($slot->dayOne->id) && ($slot->dayOne->id > 0))
+            if($slot->dayOne->id)
             {   
                $slotss[] = SplitTime($myDate,$slot->start_time,$slot->end_time,$duration,max($min));
-            }else{
-                $slotss[] = [];
             }
-
         }
-   // dd($slotss);
 
     $arr = array();
     $count = count($slotss);
-    //dd($slotss);
    // if($count>1){
         for($i=0;$i<$count;$i++){
             $arr = array_merge($arr,$slotss[$i]);
