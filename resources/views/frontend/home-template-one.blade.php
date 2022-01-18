@@ -147,7 +147,7 @@
 </script>
 
 
-<script type="text/template" id="products_template"> 
+<script type="text/template" id="products_template">
     <% _.each(products, function(product, k){ %>
         <div class="product-card-box position-relative">
             <div class="add-to-fav 12">
