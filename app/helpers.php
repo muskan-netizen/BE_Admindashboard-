@@ -180,7 +180,7 @@ function dateTimeInUserTimeZone24($date, $timezone, $showDate=true, $showTime=tr
         if($showSeconds){
             $secondsKey = ':ss';
         }
-    $timeFormat = ' HH:mm'.$secondsKey; 
+    $timeFormat = ' HH:mm:ss'.$secondsKey; 
     }
 
     $format = $dateFormat . $timeFormat;
@@ -296,23 +296,23 @@ function createSlug($str, $delimiter = '-'){
 
 function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 5)
 {
-     $Duration = (($Duration==0)?'60':$Duration);
-    // $user = Auth::user();
-    // $cr = Carbon::now()->addMinutes($delayMin);
-    // $now =  dateTimeInUserTimeZone24($cr, $user->timezone);
-    // $nowT = Carbon::createFromFormat('Y-m-d H:i', $now)->timestamp;
-    // $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
-    // $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
-    // $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
-    // if($nowT > $nowE)
-    // {
-    //     return [];
-    // }elseif($nowT>$nowS)
-    // {
-    //     $StartTime = date('H:i',strtotime($now));
-    // }else{
-    //     $StartTime = date('H:i',strtotime($nowA));
-    // }
+    $Duration = (($Duration==0)?'60':$Duration);
+    $user = Auth::user();
+    $cr = Carbon::now()->addMinutes($delayMin);
+    $now =  dateTimeInUserTimeZone24($cr, $user->timezone);
+    $nowT = Carbon::createFromFormat('Y-m-d H:i:s', $now)->timestamp;
+    $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
+    $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
+    $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
+    if($nowT > $nowE)
+    {
+        return [];
+    }elseif($nowT>$nowS)
+    {
+        $StartTime = date('H:i',strtotime($now));
+    }else{
+        $StartTime = date('H:i',strtotime($nowA));
+    }
 
 
     $ReturnArray = array ();
