@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, CartCoupon, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,CartDeliveryFee};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot};
 use Log;
 class CartController extends FrontController
 {
@@ -26,76 +26,6 @@ class CartController extends FrontController
             $random_string = substr(md5(microtime()), 0, 32);
         }
         return $random_string;
-    }
-
-    public function SplitTime($StartTime, $EndTime, $Duration="60"){
-        $ReturnArray = array ();
-        $StartTime    = strtotime ($StartTime); //Get Timestamp
-        $EndTime      = strtotime ($EndTime); //Get Timestamp
-       // echo ($StartTime .' - '.$EndTime);
-        //1641463200 - 1641484800
-        //1641484800 - 1641502800
-        $AddMins  = $Duration * 60;
-        $endtm = 0;
-        while ($StartTime <= $EndTime) 
-        {
-            $endtm = $StartTime + $AddMins;
-            if($endtm>$EndTime)
-            {
-             $endtm =  $EndTime;
-            }
-
-            $ReturnArray[] = date ("G:i", $StartTime).' - '.date ("G:i", $endtm);
-            $StartTime += $AddMins+60; 
-            $endtm = 0;
-        }
-        
-        return $ReturnArray;
-    }
-
-    public function showSlot($myDate = null,$vid,$type = 'delivery',$duration)
-    {
-    //type must be a : delivery , takeaway,dine_in
-    $client = Client::select('timezone')->first();
-    $viewSlot = array();
-       if(!empty($myDate))
-       {        $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
-       }else{ 
-        //$myDate  = date('Y-m-d',strtotime('+1 days')); 
-        $myDate  = date('Y-m-d'); 
-        $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
-        }
-        $mytime =$mytime->dayOfWeek+1;
-        $slots = VendorSlot::where('vendor_id',$vid)
-        ->whereHas('days',function($q)use($mytime,$type){
-            return $q->where('day',$mytime)->where($type,'1');
-        })
-        ->get();
-
-        if(isset($slots) && count($slots)>0){
-
-            foreach($slots as $slot){
-                if($slot->dayOne->id)
-                {   
-                   $slotss[] = $this->SplitTime($slot->start_time,$slot->end_time,$duration);
-                }
-            }
-        
-        $arr = array();
-        $count = count($slotss);
-        for($i=0;$i<$count;$i++){
-            $arr = array_merge($arr,$slotss[$i]);
-        }
-            
-            foreach($arr as $k=> $slt)
-            {
-                $sl = explode(' - ',$slt);
-                $viewSlot[$k]['name'] = date('h:i:A',strtotime($sl[0])).' - '.date('h:i:A',strtotime($sl[1]));
-                $viewSlot[$k]['value'] = $slt;
-            }
-        }
-        
-        return $viewSlot;
     }
 
     public function showCart(Request $request, $domain = '')
@@ -575,7 +505,7 @@ class CartController extends FrontController
      * Get Cart Items
      *
      */
-    public function getCart($cart, $address_id=0 , $code = null)
+    public function getCart($cart, $address_id=0 , $code = 'D')
     {
         $address = [];
         $cart_id = $cart->id;
@@ -664,13 +594,14 @@ class CartController extends FrontController
 
             $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
         }
-        $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = 0.00;
+        $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = $deliver_charges_lalmove = 0.00;
         if ($cartData) {
             $cart_dinein_table_id = NULL;
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             $vendor_details = [];
             $delivery_status = 1;
             $is_vendor_closed = 0;
+            $closed_store_order_scheduled = 0;
             $deliver_charge = 0;
             $deliveryCharges = 0;
             $delay_date = 0;
@@ -822,6 +753,8 @@ class CartController extends FrontController
                             }
                         $delivery_fee_charges = $deliver_charge;
                         $deliveryCharges = $delivery_fee_charges;
+                        
+                        
                         //Lalamove Delivery changes code
                         $lalamove = new LalaMovesController();
                         $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
@@ -838,6 +771,8 @@ class CartController extends FrontController
                             $deliveryCharges = $deliver_charges_lalmove;
                         }
 
+
+
                         # for static fees 
                         if($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0)
                         {
@@ -852,9 +787,10 @@ class CartController extends FrontController
                             $delivery_fee_charges_static =  $deliveryCharges;
                             $delivery_fee_charges =  $delivery_fee_charges_lalamove = $deliveryCharges;
 
-                        }
+                        }//End statis fe code
 
-                        }
+
+                        }//End Check last time stone 
 
 
                         
@@ -974,6 +910,8 @@ class CartController extends FrontController
                 $vendorData->isDeliverable = 1;
                 $vendorData->promo_free_deliver = $PromoFreeDeliver;
                 $vendorData->is_vendor_closed = $is_vendor_closed;
+                $vendorData->closed_store_order_scheduled = $product->vendor->closed_store_order_scheduled;
+                   // dd($product->vendor);
                 // if (!empty($subscription_features)) {
                 //     $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount - $subscription_discount), 2, '.', '');
                 // }
@@ -1075,22 +1013,48 @@ class CartController extends FrontController
             $scheduled = (object)array(
                 'scheduled_date_time'=>(($cart->scheduled_slot)?date('Y-m-d',strtotime($cart->scheduled_date_time)):$cart->scheduled_date_time),'slot'=>$cart->scheduled_slot,
             );
-
+            $cart->deliver_status = $delivery_status;
             $cart->vendorCnt = $cartData->count();
             $cart->scheduled = $scheduled;
+            $cart->schedule_type =  $cart->schedule_type;
+            $cart->closed_store_order_scheduled =  0;
             if($cart->vendorCnt==1){
                 $vendorId = $cartData[0]->vendor_id;
                 //type must be a : delivery , takeaway,dine_in
-                $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
-                $slots = (object)$this->showSlot('',$vendorId,'delivery',$duration->slot_minutes);
+                $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
+                $myDate  = date('Y-m-d'); 
+                if($cart->deliver_status == 0 && $duration->closed_store_order_scheduled == 1)
+                {
+                    $cart->deliver_status = $duration->closed_store_order_scheduled;
+                    $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled;
+                    $myDate  = date('Y-m-d',strtotime('+1 day')); 
+                    $cart->schedule_type =  'schedule';
+                    //$cart->closed_store_order_scheduled =  1;
+                }
+                $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
+                if(count((array)$slots) == 0){
+                    $myDate  = date('Y-m-d',strtotime('+1 day')); 
+                    $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
+                }
+                if(count((array)$slots) == 0){
+                    $myDate  = date('Y-m-d',strtotime('+1 day')); 
+                    $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
+                }
+
+                if(count((array)$slots) == 0){
+                    $myDate  = date('Y-m-d',strtotime('+3 day')); 
+                    $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
+                }
                 $cart->slots = $slots;
+                $cart->delaySlot = findSlot($myDate,$vendorId,'');
                 $cart->vendor_id =  $vendorId;
+
             }else{
                 $slots = [];
                 $cart->slots = [];
                 $cart->vendor_id =  0;
+                $cart->delaySlot = 'future date';
             }
-            $cart->schedule_type =  $cart->schedule_type;
             $cart->slotsCnt = count((array)$slots);
             $cart->total_service_fee = number_format($total_service_fee, 2, '.', '');
             $cart->loyalty_amount = number_format($loyalty_amount_saved, 2, '.', '');
@@ -1102,17 +1066,19 @@ class CartController extends FrontController
             $cart->tip_5_percent = number_format((0.05 * $total_payable_amount), 2, '.', '');
             $cart->tip_10_percent = number_format((0.1 * $total_payable_amount), 2, '.', '');
             $cart->tip_15_percent = number_format((0.15 * $total_payable_amount), 2, '.', '');
-            $cart->deliver_status = $delivery_status;
+          
+
             $cart->action = $action;
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect(); 
             
             if($cart->slotsCnt>0){
-                $cart->delay_date =  (($delay_date>0)?$delay_date:date('Y-m-d'));
+                $cart->delay_date =  $myDate;
             }else{
                 $cart->delay_date =  $delay_date??0;
             }
+
             
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
@@ -1132,9 +1098,8 @@ class CartController extends FrontController
         $option = "";
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
-        $slots = (object)$this->showSlot($request->date,$vendorId,'delivery',$duration->slot_minutes);
-        //dd($slots);
-        $option ="<option value=''>".__("Select Slots")."</option>";
+        $slots = (object)showSlot($request->date,$vendorId,'delivery',$duration->slot_minutes);
+        $option ="<option value=''>".__("Select Slot")."</option>";
         if(count((array)$slots)<=0){
             $message = 'Slot not found.';
             $status = 'error';
@@ -1558,12 +1523,13 @@ class CartController extends FrontController
                     $time = null;
                     $slot = null;
                 }
-                //dd($slot);
+                //dd($request->delivery_type);
 
                 $cart_detail = $cart_detail->update(['specific_instructions' => $request->specific_instructions??null,
                 'schedule_type' => $request->task_type,
                 'scheduled_date_time' => $time??null,
                 'scheduled_slot' => $slot??null,
+                //'shipping_delivery_type' => $request->delivery_type??'D',
                 'comment_for_pickup_driver' => $request->comment_for_pickup_driver??null,
                 'comment_for_dropoff_driver' => $request->comment_for_dropoff_driver??null,
                 'comment_for_vendor' => $request->comment_for_vendor??null,

@@ -123,5 +123,9 @@ class Client extends Authenticatable
     {
       return $this->belongsTo('App\Models\Country','country_id','id');
     }
+    public function getClient()
+    {
+      return self::latest()->first();
+    }
 
 }

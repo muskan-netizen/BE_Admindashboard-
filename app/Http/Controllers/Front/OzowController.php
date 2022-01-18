@@ -10,7 +10,7 @@ use App\Models\{PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, Cart
 
 class OzowController extends FrontController
 {
-    use \App\Http\Traits\OzowPaymentManager;
+    //use \App\Http\Traits\OzowPaymentManager;
 	use \App\Http\Traits\ApiResponser;
 
 	private $application_id;

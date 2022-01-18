@@ -16,4 +16,8 @@ class AddonOption extends Model
     {
         return $this->hasOne('App\Models\AddonOptionTranslation', 'addon_opt_id', 'id');
     }
+    public function translation_many()
+    {
+        return $this->hasMany('App\Models\AddonOptionTranslation', 'addon_opt_id', 'id');
+    }
 }

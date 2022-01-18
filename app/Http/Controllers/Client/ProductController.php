@@ -252,11 +252,16 @@ class ProductController extends BaseController
         $rule = array(
             'product_name' => 'required|string',
             'sku' => 'required|unique:products,sku,'.$product->id,
-            'url_slug' => 'required|unique:products,url_slug,'.$product->id,
+            'url_slug' => 'required',
         );
         $validation  = Validator::make($request->all(), $rule);
         if ($validation->fails()) {
             return redirect()->back()->withInput()->withErrors($validation);
+        }
+        $check_url_slug = Product::where('id','!=',$id)->where('vendor_id',$request->vendor_id)->where('url_slug',$request->url_slug)->first();
+        if(!is_null($check_url_slug))
+        {
+            return redirect()->back()->with('url_slug_error','The url slug has already been taken.');
         }
         $product_category = ProductCategory::where('product_id', $id)->where('category_id', $request->category_id)->first();
         if(!$product_category){

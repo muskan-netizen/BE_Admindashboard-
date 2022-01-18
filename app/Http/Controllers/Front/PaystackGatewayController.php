@@ -9,8 +9,8 @@ use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Front\FrontController;
-use App\Models\{PaymentOption, Client, ClientPreference, ClientCurrency};
+use App\Http\Controllers\Front\{FrontController, OrderController, WalletController, UserSubscriptionController};
+use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser};
 
 class PaystackGatewayController extends FrontController
 {
@@ -109,17 +109,98 @@ class PaystackGatewayController extends FrontController
             ));
             $response = $transaction->send();
             if ($response->isSuccessful()){
-            //    $this->successMail();
-                $url = 'payment/gateway/returnResponse?status=200&gateway=paystack&action='.$request->action.'&transaction_id='.$response->getTransactionReference();
+                $transactionId = $response->getTransactionReference();
+                $url = 'payment/gateway/returnResponse?status=200&gateway=paystack&action='.$request->action.'&transaction_id='.$transactionId;
+                if($request->action == 'cart'){
+                    $order_number = $request->order_number;
+                    $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                    if ($order) {
+                        $order->payment_status = 1;
+                        $order->save();
+                        $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                        if (!$payment_exists) {
+                            $payment = new Payment();
+                            $payment->date = date('Y-m-d');
+                            $payment->order_id = $order->id;
+                            $payment->transaction_id = $transactionId;
+                            $payment->balance_transaction = $request->amount;
+                            $payment->type = 'cart';
+                            $payment->save();
+
+                            // Auto accept order
+                            $orderController = new OrderController();
+                            $orderController->autoAcceptOrderIfOn($order->id);
+
+                            // Remove cart
+                            Cart::where('id', $request->cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                            CartAddon::where('cart_id', $request->cart_id)->delete();
+                            CartCoupon::where('cart_id', $request->cart_id)->delete();
+                            CartProduct::where('cart_id', $request->cart_id)->delete();
+                            CartProductPrescription::where('cart_id', $request->cart_id)->delete();
+
+                            // Send Notification
+                            if (!empty($order->vendors)) {
+                                foreach ($order->vendors as $vendor_value) {
+                                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                                    $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                                    $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                                }
+                            }
+                            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                            $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                            $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                        }
+                        $url = $url.'&order='.$order_number;
+                        // Send Email
+                        //   $this->successMail();
+                    }
+                } elseif($request->action == 'wallet'){
+                    $request->request->add(['wallet_amount'=>$request->amount, 'transaction_id' => $transactionId]);
+                    $walletController = new WalletController();
+                    $res = $walletController->creditWallet($request);
+                }
+                elseif($request->action == 'tip'){
+                    $request->request->add(['tip_amount' => $request->amount, 'transaction_id' => $transactionId]);
+                    $orderController = new OrderController();
+                    $res = $orderController->tipAfterOrder($request);
+                }
+                elseif($request->action == 'subscription'){
+                    $request->request->add(['payment_option_id' => 5, 'transaction_id' => $transactionId]);
+                    $subscriptionController = new UserSubscriptionController();
+                    $res = $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
+                }
                 return Redirect::to($url);
             } else {
                 // $this->failMail();
-                $url = 'payment/gateway/returnResponse?status=0&gateway=paystack&action='.$request->action;
+                $url = 'payment/paystack/cancelPurchase/app?status=0&gateway=paystack&action='.$request->action;
                 return Redirect::to($url);
             }
         } else {
             // $this->failMail();
             return $this->errorResponse('Transaction has been declined', 400);
         }
+    }
+
+    public function paystackCancelPurchaseApp(Request $request)
+    {
+        $url = 'payment/gateway/returnResponse?status=0&gateway=paystack&action='.$request->action;
+        // Once the transaction has been approved, we need to complete it.
+        if($request->has('status') && ($request->get('status') == '0') ){
+            if($request->action == 'cart'){
+                $order_number = $request->order_number;
+                $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+                $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                foreach ($order_products as $order_prod) {
+                    OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                }
+                OrderProduct::where('order_id', $order->id)->delete();
+                OrderProductPrescription::where('order_id', $order->id)->delete();
+                VendorOrderStatus::where('order_id', $order->id)->delete();
+                OrderVendor::where('order_id', $order->id)->delete();
+                OrderTax::where('order_id', $order->id)->delete();
+                Order::where('id', $order->id)->delete();
+            }
+        }
+        return Redirect::to($url);
     }
 }

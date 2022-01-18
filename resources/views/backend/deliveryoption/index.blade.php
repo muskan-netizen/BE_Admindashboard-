@@ -50,7 +50,7 @@
         
         <div class="row">
             @if($delOption)
-            <div class="col-md-4 mb-3">
+            <div class="col mb-3">
 
                 <input type="hidden" name="method_id" id="{{$delOption->id}}" value="{{base64_encode($delOption->id)}}">
                 <input type="hidden" name="method_name" id="{{$delOption->code}}" value="{{$delOption->code}}">
@@ -71,17 +71,16 @@
 
                 <div class="card-box h-100">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">{{$delOption->title}}</h4>
+                        <h3 class="mb-1">{{$delOption->title}}</h3>
                     </div>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-3">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
                                 <input type="checkbox"  data-title="{{$delOption->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($delOption->status == 1) checked @endif>
                             </div>
                         </div>
-                       
-                        <div class="col-6">
+                        <div class="col-3">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-3">{{ __('Sandbox') }}</label>
                                 <input type="checkbox"  data-title="{{$delOption->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($delOption->test_mode == 1) checked @endif>
@@ -89,25 +88,26 @@
                         </div>
                        
                     </div>
+                    <hr>
 
                     @if ( (strtolower($delOption->code) == 'lalamove'))
-                    <div id="lalamove_fields_wrapper" @if($delOption->status != 1) style="display:none" @endif>
+                    <div class="mt-3" id="lalamove_fields_wrapper" @if($delOption->status != 1) style="display:none" @endif>
                         <div class="row">
 
-                            <div class="col-12">
+                            <div class="col-md-3">
                                 <div class="form-group mb-0">
                                     <label for="lalamove_api_key" class="mr-3">{{ __("Api key") }}</label>
                                     <input type="text" name="api_key" id="lalamove_api_key" class="form-control" value="{{$api_key}}" @if($delOption->status == 1) required @endif>
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-md-3">
                                 <div class="form-group mb-0">
                                     <label for="lalamove_secret_key" class="mr-3">{{ __("Secret key") }}</label>
                                     <input type="text" name="secret_key" id="lalamove_secret_key" class="form-control" value="{{$secret_key}}" @if($delOption->status == 1) required @endif>
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <div class="col-md-3">
                                 <div class="form-group mb-0">
                                     <label for="lalamove_country_key class="mr-3">{{ __("Country") }}</label>
 
@@ -121,7 +121,7 @@
                             </div>
 
 
-                            <div class="col-12">
+                            <div class="col-md-3">
                                 <div class="form-group mb-0">
                                     <label for="lalamove_country_key class="mr-3">{{ __("Country Region") }}</label>
 
@@ -135,9 +135,9 @@
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <div class="col-md-3">
                                 <div class="form-group mb-0">
-                                    <label for="lalamove_locale_key class="mr-3">{{ __("Country Region") }}</label>
+                                    <label for="lalamove_locale_key class="mr-3">{{ __("Locale Region") }}</label>
 
                                     <select name="locale_key" class="form-control" id="lalamove_locale_key" @if($delOption->status == 1) required @endif>
                                     <option value="">{{ __("Please Select Locale Region") }}</option>    
@@ -149,9 +149,9 @@
                             </div>
 
 
-                            <div class="col-12">
+                            <div class="col-md-3">
                                 <div class="form-group mb-0">
-                                    <label for="lalamove_service_type class="mr-3">{{ __("Country Region") }}</label>
+                                    <label for="lalamove_service_type class="mr-3">{{ __("Service Type") }}</label>
 
                                     <select name="service_type" class="form-control" id="lalamove_service_type" @if($delOption->status == 1) required @endif>
                                     <option value="">{{ __("Please Select Service Type") }}</option>    
@@ -167,7 +167,8 @@
                             </div>
 
 
-                            <div class="col-12">
+                            <div class="col-12 mt-3">
+
                                 <h5 class="d-inline-block mt-3">
                                     <span>{{ __('Webhook Url') }} : </span>
                                     <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('webhook')}}</span></a>
@@ -180,42 +181,44 @@
                                 </sup>
                             </div>
 
-
-                            <div class="col-6 mt-4">
+                            
+                            <div class="col-md-12 ">
                                 <div class="form-group mb-0 switchery-demo">
                                     <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
                                     <input type="checkbox"  data-title="{{$delOption->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
                                 </div>
-                            </div>
+                        <hr/>
 
-                        <div id="lalamove_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif class="col-12">
-                            <div class="col-12">
+                            </div>
+                           
+                          
+                        <div class="row mt-3" id="lalamove_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
+                           
+                            <div class="col-md-4">
                                 <div class="form-group mb-0">
                                     <label for="lalamove_base_price" class="mr-3">{{ __("Base Price") }}</label>
                                     <input type="text" name="base_price" id="lalamove_base_price" class="form-control" value="{{@$base_price}}" >
                                 </div>  
                             </div>
 
-                            <div class="col-12">
+                            <div class="col-md-4">
                                 <div class="form-group mb-0">
                                     <label for="lalamove_distance" class="mr-3">{{ __("Distance") }}</label>
                                     <input type="text" name="distance" id="lalamove_distance" class="form-control" value="{{@$distance}}" >
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <div class="col-md-4">
                                 <div class="form-group mb-0">
                                     <label for="lalamove_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
                                     <input type="text" name="amount_per_km" id="lalamove_amount_per_km" class="form-control" value="{{@$amount_per_km}}" >
                                 </div>
                             </div>
-                        </div>
+                           
 
                         </div>
                     </div>
                     @endif
-
-
                 </div>
             </div>
             @endif
@@ -223,6 +226,154 @@
     </form>
 
 </div>
+
+
+<!--- ShipRocket Code -->
+
+@if($opt)
+<!-- Start Content-->
+<div class="container-fluid">
+
+
+    <form method="POST" id="payment_option_form" action="{{route('shipoption.updateAll')}}" >
+        @csrf
+        @method('POST')
+        <div class="row align-items-center">
+            <div class="col-sm-8">
+                <div class="text-sm-left">
+                    {{-- <div class="page-title-box">
+                        <h4 class="page-title">{{ __("Shipping Options") }}</h4>
+                    </div> --}}
+                </div>
+            </div>
+            <div class="col-sm-4 text-right">
+                <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+            </div>
+        </div>
+        <div class="row">
+          
+            <div class="col-12">
+
+                <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
+                <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
+
+                <?php
+                $creds = json_decode($opt->credentials);
+                $username = (isset($creds->username)) ? $creds->username : '';
+                $password = (isset($creds->password)) ? $creds->password : '';
+                
+
+                $base_price = (isset($creds->base_price)) ? $creds->base_price : '';
+                $distance = (isset($creds->distance)) ? $creds->distance : '';
+                $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '';
+                ?>
+
+                <div class="card-box h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h3 class="mb-1">{{$opt->title}}</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-3">{{ __("Enable") }}</label>
+                                <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="active[{{$opt->id}}]" class="chk_box all_select" data-color="#43bee1" @if($opt->status == 1) checked @endif>
+                            </div>
+                        </div>
+                        @if ( (strtolower($opt->code) == 'shiprocket'))
+                        <div class="col-3">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
+                                <input type="checkbox" data-id="{{$opt->id}}" data-title="{{$opt->code}}" data-plugin="switchery" name="sandbox[{{$opt->id}}]" class="chk_box" data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
+                    <hr>
+
+                    @if ( (strtolower($opt->code) == 'shiprocket') )
+                    <div id="shiprocket_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+
+                        <div class="col-12 mt-3">
+
+                            <h5 class="d-inline-block mt-3">
+                                <span>{{ __('Webhook Url') }} : </span>
+                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('carrier.webhook.shiprocket')}}</span></a>
+                            </h5>
+                            <sup class="position-relative">
+                                <a class="copy-icon ml-2" id="copy_icon2" data-urls="{{route('carrier.webhook.shiprocket')}}" style="cursor:pointer;">
+                                    <i class="fa fa-copy"></i>
+                                </a>
+                                <h6 id="copy_message2" class="copy-message mt-2"></h6>
+                            </sup>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group mb-0">
+                                    <label for="shiprocket_username" class="mr-3">{{ __("Email Address") }}</label>
+                                    <input type="email" name="shiprocket_username" id="shiprocket_username" class="form-control" value="{{$username}}" @if($opt->status == 1) required @endif autofill="off">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group mb-0">
+                                    <label for="shiprocket_password" class="mr-3">{{ __("Password") }}</label>
+                                    <input type="password" name="shiprocket_password" id="shiprocket_password" class="form-control" value="{{$password}}" @if($opt->status == 1) required @endif autofill="off">
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-12 ">
+                            <div class="form-group mt-2 switchery-demo">
+                                <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
+                                <input type="checkbox"  data-title="{{$opt->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
+                            </div>
+                    <hr/>
+
+                        </div>
+                       
+                      
+                    <div class="row mt-3" id="shiprocket_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
+                       
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="shiprocket_base_price" class="mr-3">{{ __("Base Price") }}</label>
+                                <input type="text" name="base_price" id="shiprocket_base_price" class="form-control" value="{{@$base_price}}" >
+                            </div>  
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="shiprocket_distance" class="mr-3">{{ __("Distance") }}</label>
+                                <input type="text" name="distance" id="shiprocket_distance" class="form-control" value="{{@$distance}}" >
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="shiprocket_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
+                                <input type="text" name="amount_per_km" id="shiprocket_amount_per_km" class="form-control" value="{{@$amount_per_km}}" >
+                            </div>
+                        </div>
+                       
+
+                    </div>
+
+
+                    </div>
+                    @endif
+
+
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+@endif
+
 
 @endsection
 
@@ -263,9 +414,11 @@
     });
 
 
+
     $("#copy_icon").click(function(){
         var temp = $("<input>");
         var url = $(this).data('url');
+       // alert(url);
         $("body").append(temp);
         temp.val(url).select();
         document.execCommand("copy");
@@ -273,6 +426,20 @@
         $("#copy_message").text("{{ __('URL Copied!') }}").show();
         setTimeout(function(){
             $("#copy_message").text('').hide();
+        }, 3000);
+    });
+
+    $("#copy_icon2").click(function(){
+        var temp = $("<input>");
+        var url = $(this).data('urls');
+        alert(url);
+        $("body").append(temp);
+        temp.val(url).select();
+        document.execCommand("copy");
+        temp.remove();
+        $("#copy_message2").text("{{ __('URL Copied!') }}").show();
+        setTimeout(function(){
+            $("#copy_message2").text('').hide();
         }, 3000);
     });
 

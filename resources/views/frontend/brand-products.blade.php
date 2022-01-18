@@ -140,7 +140,7 @@
                                             $imagePath = $v['image']['path']['image_fit'].'300/300'.$v['image']['path']['image_path'];
                                         }*/ ?>
 
-                                        <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', $new['url_slug'])}}">
+                                        <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                             <div class="img-outer-box position-relative">
                                                 <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
                                                 <div class="pref-timing">
@@ -182,10 +182,10 @@
                                         </a>
 
                                         {{-- <div class="media">
-                                            <a href="{{route('productDetail', $new['sku'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" data-src="{{$imagePath}}" alt="" ></a>
+                                            <a href="{{route('productDetail',[$new['vendor']['slug'],$new['sku']])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" data-src="{{$imagePath}}" alt="" ></a>
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing">
-                                                    <a href="{{route('productDetail', $new['url_slug'])}}">
+                                                    <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                                         <h3>{{ $new['translation_title'] }}</h3>
                                                     </a>
                                                     <h6 class="mt-0 mb-1"><b>{{$new['vendor']['name']}}</b></h6>
@@ -275,7 +275,7 @@
                                                     <div class="product-box scale-effect">
                                                         <div class="img-wrapper">
                                                             <div class="front">
-                                                                <a href="{{route('productDetail', $data->sku)}}"><img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt=""></a>
+                                                                <a href="{{route('productDetail', [$data->vendor->slug,$data->sku])}}"><img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt=""></a>
                                                             </div>
                                                             <div class="cart-info cart-wrap">
                                                                 <button data-toggle="modal" data-target="#addtocart" title="Add to cart"><i class="ti-shopping-cart"></i></button>
@@ -284,7 +284,7 @@
                                                         </div>
                                                         <div class="product-detail">
                                                             <div class="inner_spacing">
-                                                                <a href="{{route('productDetail', $data->sku)}}">
+                                                                <a href="{{route('productDetail', [$data->vendor->slug,$data->sku])}}">
                                                                     <h3>{{ $data->translation_title }}</h3>
                                                                 </a>
                                                                 <h6 class="mt-0"><b>{{$data->vendor->name}}</b></h6>

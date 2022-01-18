@@ -36,6 +36,18 @@ trait LalaMoves{
     $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
   }
 
+  public function configDetails()
+  {
+    $simp_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'lalamove')->where('status', 1)->first();
+    $creds_arr = json_decode($simp_creds->credentials);
+    $this->api_key = $creds_arr->api_key??'';
+    $this->secret_key = $creds_arr->secret_key ?? '';
+    $this->base_url = (($simp_creds->test_mode=='1')?'https://rest.sandbox.lalamove.com':'https://rest.lalamove.com'); //Live url - https://rest.lalamove.com
+    $this->region = $creds_arr->country_region ?? ''; // Malaysia regions ----  MY_JHB, MY_KUL, MY_NTL
+    $this->locale_key = $creds_arr->locale_key ?? ''; // Malaysia region locale type en_MY, ms_MY
+    $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
+  }
+
 
 
 
@@ -128,7 +140,6 @@ trait LalaMoves{
 
 
     $bodyArr = array(
-      //"scheduleAt"=> $data->schedule_time,
       'serviceType' => $this->service_type,
       'specialRequests' => [ ], //optional parameters "COD", "HELP_BUY", "LALABAG"
       'requesterContact' => $requesters,
@@ -149,15 +160,8 @@ trait LalaMoves{
   //Quotation Function Api
   public function getQuotations($data)
   {
-    $simp_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'lalamove')->where('status', 1)->first();
-    $creds_arr = json_decode($simp_creds->credentials);
-    $this->api_key = $creds_arr->api_key??'';
-    $this->secret_key = $creds_arr->secret_key ?? '';
-    $this->base_url = (($simp_creds->test_mode=='1')?'https://rest.sandbox.lalamove.com':'https://rest.lalamove.com'); //Live url - https://rest.lalamove.com
-    $this->region = $creds_arr->country_region ?? ''; // Malaysia regions ----  MY_JHB, MY_KUL, MY_NTL
-    $this->locale_key = $creds_arr->locale_key ?? ''; // Malaysia region locale type en_MY, ms_MY
-    $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
-
+    $this->configDetails();
+    
     $method = 'POST';
     $path = '/v2/quotations';
     $body = $this->getQuotationBody($data);
@@ -195,33 +199,6 @@ trait LalaMoves{
   //     "value": 16210
   //   }}';
   return array('code'=>$httpCode,'response'=>$response);
-
-//Responses
-//   200 Quotation Created
-// { 
-// "totalFee": "108000", 
-// "totalFeeCurrency": "THB",
-// "distance": {
-//   "text": "16.2 km",
-//   "value": 16210
-// }
-// }
-// 409 Stops and Deliveries mismatch, see DeliveryInfo
-// { "message": "ERR_DELIVERY_MISMATCH" }
-//   409 Not enough stops, number of stops should be between 2 and 16
-// { "message": "ERR_INSUFFICIENT_STOPS" }
-//   409 Reached maximum number of stops (including the pick-up point), should be between 2 and 17
-// { "message": "ERR_TOO_MANY_STOPS" }
-//   409 Invalid payment method
-// { "message": "ERR_INVALID_PAYMENT_METHOD" }
-//   409 Invalid locale, refer to Waypoint
-// { "message": "ERR_INVALID_LOCALE" }
-//   409 Invalid market, getting a quotation from a market not supported (by your credentials)
-// { "message": "ERR_INVALID_MARKET" }
-//   409 Invalid phone number, refer to Phone Validation
-// { "message": "ERR_INVALID_PHONE_NUMBER" }
-//   409 scheduleAt datetime is in the past
-
 }
 
 //Order Array Body
@@ -234,7 +211,7 @@ public function getOrderBody($data)
   
   $quotedTotalFee = array(
     'quotedTotalFee' => $quotedFee,
-    'sms' => false, //Send delivery updates via SMS to THE recipient, or the recipient of the LAST STOP for multi-stop orders once the order has been picked-up by the driver. default 'true'
+    'sms' => true, //Send delivery updates via SMS to THE recipient, or the recipient of the LAST STOP for multi-stop orders once the order has been picked-up by the driver. default 'true'
     'pod' => false, //Request driver to carry out "Proof Of Delivery" for all stops in the order. Default to false. See Proof Of Delivery for details.
   );
 
@@ -245,16 +222,7 @@ public function getOrderBody($data)
 
 public function placeOrders($data,$quotation)
 {
-
-  $simp_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'lalamove')->where('status', 1)->first();
-  $creds_arr = json_decode($simp_creds->credentials);
-  $this->api_key = $creds_arr->api_key??'';
-  $this->secret_key = $creds_arr->secret_key ?? '';
-  $this->base_url = (($simp_creds->test_mode=='1')?'https://rest.sandbox.lalamove.com':'https://rest.lalamove.com'); //Live url - https://rest.lalamove.com
-  $this->region = $creds_arr->country_region ?? ''; // Malaysia regions ----  MY_JHB, MY_KUL, MY_NTL
-  $this->locale_key = $creds_arr->locale_key ?? ''; // Malaysia region locale type en_MY, ms_MY
-  $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
-
+  $this->configDetails();
 
  $method = 'POST';
  $path = '/v2/orders';
@@ -335,17 +303,7 @@ return $response;
 
 public function orderDetails($orderReff)
   {
-
-    $simp_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'lalamove')->where('status', 1)->first();
-    $creds_arr = json_decode($simp_creds->credentials);
-    $this->api_key = $creds_arr->api_key??'';
-    $this->secret_key = $creds_arr->secret_key ?? '';
-    $this->base_url = (($simp_creds->test_mode=='1')?'https://rest.sandbox.lalamove.com':'https://rest.lalamove.com'); //Live url - https://rest.lalamove.com
-    $this->region = $creds_arr->country_region ?? ''; // Malaysia regions ----  MY_JHB, MY_KUL, MY_NTL
-    $this->locale_key = $creds_arr->locale_key ?? ''; // Malaysia region locale type en_MY, ms_MY
-    $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
-
-
+  $this->configDetails();
   $method = 'GET';
   $path = '/v2/orders/'.$orderReff;
   $token = $this->token($method,$path);
@@ -394,15 +352,7 @@ public function orderDetails($orderReff)
   public function orderDriverDetail($driverId)
   {
 
-    $simp_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'lalamove')->where('status', 1)->first();
-    $creds_arr = json_decode($simp_creds->credentials);
-    $this->api_key = $creds_arr->api_key??'';
-    $this->secret_key = $creds_arr->secret_key ?? '';
-    $this->base_url = (($simp_creds->test_mode=='1')?'https://rest.sandbox.lalamove.com':'https://rest.lalamove.com'); //Live url - https://rest.lalamove.com
-    $this->region = $creds_arr->country_region ?? ''; // Malaysia regions ----  MY_JHB, MY_KUL, MY_NTL
-    $this->locale_key = $creds_arr->locale_key ?? ''; // Malaysia region locale type en_MY, ms_MY
-    $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
-
+    $this->configDetails();
 
     $method = 'GET';
     $path = '/v2/orders/drivers/'.$driverId;
@@ -439,16 +389,7 @@ public function orderDetails($orderReff)
 
   public function orderCancel($orderReff)
   {
-
-    $simp_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'lalamove')->where('status', 1)->first();
-    $creds_arr = json_decode($simp_creds->credentials);
-    $this->api_key = $creds_arr->api_key??'';
-    $this->secret_key = $creds_arr->secret_key ?? '';
-    $this->base_url = (($simp_creds->test_mode=='1')?'https://rest.sandbox.lalamove.com':'https://rest.lalamove.com'); //Live url - https://rest.lalamove.com
-    $this->region = $creds_arr->country_region ?? ''; // Malaysia regions ----  MY_JHB, MY_KUL, MY_NTL
-    $this->locale_key = $creds_arr->locale_key ?? ''; // Malaysia region locale type en_MY, ms_MY
-    $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
-
+    $this->configDetails();
 
     $method = 'GET';
     $path = '/v2/orders/'.$orderReff.'/cancel';

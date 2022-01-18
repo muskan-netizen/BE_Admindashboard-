@@ -155,8 +155,6 @@ class HomeController extends BaseController
                 $domain_link = "https://" . $homeData['profile']->custom_domain;
             else
                 $domain_link = "https://" . $homeData['profile']->sub_domain . env('SUBMAINDOMAIN');
-
-            
             $homeData['domain_link'] = $domain_link;
             
             return $this->successResponse($homeData);

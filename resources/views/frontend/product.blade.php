@@ -417,10 +417,12 @@
 
                                         @endphp
                                         @if($is_available)
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ ($vendor_info->is_vendor_closed == 1 || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($vendor_info->closed_store_order_scheduled == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
                                         @endif
-                                            @if($vendor_info->is_vendor_closed == 1)
+                                            @if($vendor_info->is_vendor_closed == 1 && $vendor_info->closed_store_order_scheduled == 0)
                                             <p class="text-danger">Vendor is not accepting orders right now.</p>
+                                            @elseif($vendor_info->is_vendor_closed == 1 && $vendor_info->closed_store_order_scheduled == 1)
+                                            <p class="text-danger">We are not accepting orders right now. You can schedule this for {{findSlot('',$product->vendor_id,'')}}.</p>
                                             @endif
                                         @else
                                             <a href="#" data-toggle="modal" data-target="#inquiry_form" class="btn btn-solid inquiry_mode">{{ __('Inquire Now')}}</a>
@@ -647,7 +649,7 @@
             @forelse($product->related_products as $related_product)
             <div>
 				<a class="common-product-box scale-effect text-center"
-						href="{{route('productDetail')}}/{{ $related_product->url_slug }}">
+						href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
 					<div class="img-outer-box position-relative">
 						<img class="img-fluid blur-up lazyload" data-src="{{ $related_product->image_url }}" alt="">
 						<!-- <div class="pref-timing">

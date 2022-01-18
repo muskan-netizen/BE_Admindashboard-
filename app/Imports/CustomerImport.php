@@ -4,6 +4,7 @@ namespace App\Imports;
 use Illuminate\Support\Collection;
 use Spatie\Geocoder\Facades\Geocoder;
 use App\Models\{CsvCustomerImport, User};
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
 class CustomerImport implements ToCollection
@@ -20,21 +21,20 @@ class CustomerImport implements ToCollection
                 foreach ($rows as $row) {
                     $row = $row->toArray();
                     $checker = 0;
-                    if ($row[0] != ""){
+                    if ($row[0] == ""){
                             $error[] = "Row " . $i . " : Name cannot be empty";
                             $checker = 1;
                         }
-                        if($row[1] != ""){
-                            if(!is_numeric($row[8])) {
-                                $error[] = "Row " . $i . " : Phone no is required";
-                                $checker = 1;
+                        if($row[1] == "" && $row[2] == ""){
+                            if(!is_numeric($row[1])) {
+                               // $error[] = "Row " . $i . " : Phone no is required";
+                              //  $checker = 1;
                             }
+                            continue;
                         }
-                        if($row[2] != ""){
-                            if(!is_numeric($row[9])) {
-                                $error[] = "Row " . $i . " : E-Mail no is required";
-                                $checker = 1;
-                            }
+                        if($row[2] == ""){
+                                //$error[] = "Row " . $i . " : E-Mail no is required";
+                               // $checker = 1;
                         }
                         
                         if($checker == 0) {
@@ -50,11 +50,12 @@ class CustomerImport implements ToCollection
                            
                             $insert_vendor_details[] = array(
                                 'name' => $da[0],
-                                'phone_no' => ($da[1] == "") ? NULL : $da[1],
+                                'phone_number' => ($da[1] == "") ? NULL : $da[1],
                                 'email' => ($da[2] == "") ? NULL : $da[2],
-                                //'country' => ($da[2] == "") ? NULL : $da[2],
-                                'is_email_verified' => ($da[4] == "N") ? '0' : '1',
-                                'is_phone_verified' => ($da[5] == "N") ? '0' : '1',
+                                'password' => Hash::make('123456'),
+                                'is_email_verified' => ($row[2] == '') ? '0' : '1',
+                                'is_phone_verified' => ($row[1] == '') ? '0' : '1',
+                                'status'=>'1'
                             );
                         }
                     }

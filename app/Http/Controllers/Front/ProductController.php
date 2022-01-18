@@ -25,7 +25,7 @@ class ProductController extends FrontController{
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, $domain = '', $url_slug){
+    public function index(Request $request, $domain = '',$vendor,$url_slug){
         $user = Auth::user();
         $preferences = Session::get('preferences');
         $langId = Session::get('customerLanguage');
@@ -39,7 +39,10 @@ class ProductController extends FrontController{
         $curId = Session::get('customerCurrency');
 
         $navCategories = $this->categoryNav($langId);
-        $product = Product::select('id', 'vendor_id')->where('url_slug', $url_slug)->firstOrFail();
+        $product = Product::select('id', 'vendor_id')->where('url_slug', $url_slug)
+            ->whereHas('vendor',function($q) use($vendor){
+                $q->where('slug',$vendor);
+            })->firstOrFail();
         $product_in_cart = CartProduct::where(["product_id" => $product->id]);
         if ($user) {
              $product_in_cart = $product_in_cart->whereHas('cart', function($query) use($user){
@@ -67,6 +70,8 @@ class ProductController extends FrontController{
                 }
             }
         }
+
+
         $p_id = $product->id;
         $product = Product::with([
             'variant' => function ($sel) {
@@ -110,7 +115,9 @@ class ProductController extends FrontController{
             });
         }
         $product = $product->with('related')->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count' )
-            ->where('url_slug', $url_slug)
+            ->whereHas('vendor',function($q) use($vendor){
+                $q->where('slug',$vendor);
+            })->where('url_slug', $url_slug)
             ->where('is_live', 1)
             ->firstOrFail();
         $doller_compare = 1;
@@ -245,7 +252,8 @@ class ProductController extends FrontController{
             // ->telegram()
             ->whatsapp();
             // ->reddit();
-
+                // dd($vendor);
+               // dd($product->vendor_id);
             $category = $product->category->categoryDetail;
             return view('frontend.product')->with(['shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available]); 
 

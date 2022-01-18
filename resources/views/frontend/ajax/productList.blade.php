@@ -12,7 +12,7 @@
                     $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
                 }*/ ?>
                 <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-3">
-                    <a href="{{route('productDetail', $data->url_slug)}}" class="common-product-box scale-effect mt-0">
+                    <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="common-product-box scale-effect mt-0">
                         <div class="img-outer-box position-relative">
                             <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                             <div class="pref-timing">

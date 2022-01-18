@@ -265,7 +265,7 @@
                             <div class="col-md-12">
                                 <div class="row mb-2">
                                     <div class="col-md-12">            
-                                        <input type="file" accept=".csv" onchange="submitImportUserForm()" data-plugins="dropify" name="vendor_csv" class="dropify" data-default-file="" required/>
+                                        <input type="file" accept=".csv" onchange="submitImportUserForm()" data-plugins="dropify" name="customer_csv" class="dropify" data-default-file="" required/>
                                         <p class="text-muted text-center mt-2 mb-0">{{ __("Upload") }} CSV</p>
                                     </div>
                                 </div>
@@ -282,7 +282,33 @@
                                         </tr>
                                     </thead>
                                     <tbody id="post_list">
-                                      
+                                        @foreach($csvCustomers as $csv)
+                                        <tr data-row-id="{{$csv->id}}">
+                                            <td> {{ $loop->iteration }} </td>
+                                            <td> {{ $csv->name }} </td>
+                                            @if($csv->status == 1)
+                                            <td>{{ __('Pending') }}</td>
+                                            <td></td>
+                                            @elseif($csv->status == 2)
+                                            <td>{{ __('Success') }}</td>
+                                            <td></td>
+                                            @else
+                                            <td>{{ __('Errors') }}</td>
+                                            <td class="position-relative text-center">
+                                                <i class="mdi mdi-exclamation-thick"></i>
+                                                <ul class="tooltip_error">
+                                                    <?php $error_csv = json_decode($csv->error); ?>
+                                                    @foreach($error_csv as $err)
+                                                    <li>
+                                                       {{$err}}
+                                                    </li>
+                                                    @endforeach
+                                                </ul>
+                                            </td>
+                                            @endif
+                                            <td> <a href="{{ $csv->path }}">{{ __('Download') }}</a> </td>
+                                        </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>

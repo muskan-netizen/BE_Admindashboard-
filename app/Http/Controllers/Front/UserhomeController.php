@@ -255,7 +255,7 @@ class UserhomeController extends FrontController
 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
 
-            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
+            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get(); 
 
             // $last_mile = $this->checkIfLastMileDeliveryOn();
             if (isset($set_template)  && $set_template->template_id == 1)
@@ -499,6 +499,7 @@ class UserhomeController extends FrontController
                 'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
                 'inquiry_only' => $new_product_detail->inquiry_only,
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
+                'vendor' => $new_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (number_format($new_product_detail->variant->first()->price * $multiply, 2)),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
@@ -516,6 +517,7 @@ class UserhomeController extends FrontController
                 'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
                 'inquiry_only' => $feature_product_detail->inquiry_only,
                 'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
+                'vendor' => $feature_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (number_format($feature_product_detail->variant->first()->price * $multiply, 2)),
                 'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug
             );
@@ -533,6 +535,7 @@ class UserhomeController extends FrontController
                 'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),
                 'inquiry_only' => $on_sale_product_detail->inquiry_only,
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
+                'vendor' => $on_sale_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (number_format($on_sale_product_detail->variant->first()->price * $multiply, 2)),
                 'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug
             );

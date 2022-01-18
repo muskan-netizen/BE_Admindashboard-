@@ -141,10 +141,10 @@
                             } ?>
                             <div class="img-wrapper">
                                 <div class="front">
-                                    <a href="{{route('productDetail', $product->url_slug)}}"><img src="{{$imagePath}}" alt=""></a>
+                                    <a href="{{route('productDetail', [$product->vendor->slug,$product->url_slug])}}"><img src="{{$imagePath}}" alt=""></a>
                                 </div>
                                 <div class="back">
-                                    <a href="{{route('productDetail', $product->url_slug)}}"><img src="{{$imagePath}}" alt=""></a>
+                                    <a href="{{route('productDetail', [$product->vendor->slug,$product->url_slug])}}"><img src="{{$imagePath}}" alt=""></a>
                                 </div>
                             </div>
                         </div>

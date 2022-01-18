@@ -6,6 +6,7 @@ use Auth;
 use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
@@ -14,6 +15,7 @@ use App\Models\{Currency, Banner,Tag ,Category, Brand, Product, ProductCategory,
 
 class VendorController extends FrontController
 {
+    use ApiResponser;
     private $field_status = 2;
 
 
@@ -74,7 +76,7 @@ class VendorController extends FrontController
         $tag_id = $request->has('tag') && $request->tag ? $request->tag : null;
         $preferences = Session::get('preferences');
         $vendor = Vendor::with('slot.day', 'slotDate')
-            ->select('id','email', 'name', 'slug', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot')->where('slug', $slug)->where('status', 1)->firstOrFail();
+            ->select('id','email', 'name', 'slug', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled')->where('slug', $slug)->where('status', 1)->firstOrFail();
         $vendor->is_vendor_closed = 0;
         if($vendor->show_slot == 0){ 
             if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
@@ -173,9 +175,21 @@ class VendorController extends FrontController
                 // abort(404);
             }
         }
+
+        $is_vendor_closed = 0;
+        if($vendor->show_slot == 0){
+            if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
+                $is_vendor_closed = 1;
+            }else{
+                $is_vendor_closed = 0;
+            }
+        }
+
         $tags = Tag::with('primary')->get();
+        //dd($page);
+
         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
-        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
+        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed]);
     }
 
     /**
@@ -188,7 +202,7 @@ class VendorController extends FrontController
         // slug2 =>category slug
         $tag_id = $request->has('tag') && $request->tag ? $request->tag : null;
         $preferences = Session::get('preferences');
-        $vendor = Vendor::select('id','email', 'name', 'slug', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot')->where('slug', $slug1)->where('status', 1)->firstOrFail();
+        $vendor = Vendor::select('id','email', 'name', 'slug', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled')->where('slug', $slug1)->where('status', 1)->firstOrFail();
         $category = Category::select('id')->where('slug', $slug2)->firstOrFail();
         $vendor_categories = VendorCategory::where('vendor_id', $vendor->id)->where('category_id', $category->id)->where('status', 1)->first();
         $vendor->is_vendor_closed = 0;
@@ -763,5 +777,166 @@ class VendorController extends FrontController
     }
 
 
+    // product search for edit order
+    public function vendorProductsSearchResultsForEditOrder(Request $request)
+    {
+        $response = [];
+        // $tagId = $request->input('tag_id');
+        $keyword = $request->input('keyword');
+        $vid = $request->input('vendor');
+        // $vCat = $request->input('vendor_category');
+        // $langId = Session::get('customerLanguage');
+        // $preferences = Session::get('preferences');
 
+        // $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
+
+        $clientLanguage = ClientLanguage::where('is_primary', 1)->first();
+        $langId = $clientLanguage ? $clientLanguage->language_id : 1;
+
+        $vendor = Vendor::with('slot.day', 'slotDate')
+            ->select('id','email', 'name', 'show_slot')->where('id', $vid)->where('status', 1)->firstOrFail();
+        $vendor->is_vendor_closed = 0;
+        if($vendor->show_slot == 0){
+            if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
+                $vendor->is_vendor_closed = 1;
+            }else{
+                $vendor->is_vendor_closed = 0;
+                if($vendor->slotDate->isNotEmpty()){
+                    $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
+                    $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
+                }elseif($vendor->slot->isNotEmpty()){
+                    $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
+                    $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
+                }
+            }
+        }
+
+        // $vendorCategory = [];
+        // if($vCat != ''){
+        //     $category = Category::select('id')->where('slug', $vCat)->firstOrFail();
+        //     array_push($vendorCategory, $category->id);
+        //     $childs = $this->getChildCategoriesForVendor($category->id, $langId, $vid);
+        //     foreach($childs as $child){
+        //         array_push($vendorCategory, $child->category->id);
+        //     }
+        // }
+
+        $products = Product::with(['media.image',
+                'translation' => function($q) use($langId, $keyword){
+                    $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                    if($keyword){
+                        $q->where(function ($q1) use ($keyword) {
+                            $q1->where('title', 'LIKE', '%' . $keyword . '%')
+                            ->orWhere('body_html', 'LIKE', '%' . $keyword . '%');
+                        });
+                    }
+                    $q->groupBy('product_id');
+                },
+                'variant' => function($q) use($langId){
+                    $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price');
+                    // $q->groupBy('product_id');
+                },
+                'addOn' => function ($q1) use ($langId) {
+                    $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                    $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                    $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                    $q1->where('set.status', 1)->where('ast.language_id', $langId);
+                },
+                'addOn.setoptions' => function ($q2) use ($langId) {
+                    $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                    $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                    $q2->where('apt.language_id', $langId);
+                }
+            ])
+            ->select('id', 'sku', 'description', 'category_id', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+            if($keyword){
+                $products->where(function ($q) use ($keyword, $langId) {
+                    $q->where(function ($q1) use ($keyword) {
+                        $q1->where('sku', 'LIKE', '%' . $keyword . '%')
+                        ->orWhere('url_slug', 'LIKE', '%' . $keyword . '%')
+                        ->orWhere('title', 'LIKE', '%' . $keyword . '%');
+                    });
+                    $q->orWhereHas('translation', function ($q1) use ($keyword, $langId) {
+                        $q1->where(function ($q2) use ($keyword) {
+                            $q2->where('title', 'LIKE', '%' . $keyword . '%');
+                        });
+                    });
+                });                
+            }
+            // if($tagId){
+            //     $products->whereHas('tags',function($query) use ($tagId){
+            //         $query->whereIn('tag_id',$tagId);
+            //      });
+            // }
+        // if(count($vendorCategory) > 0){
+        //     $products = $products->whereIn('category_id', $vendorCategory);
+        // }
+        $products = $products->where('is_live', 1)->where('vendor_id', $vid)->get();
+
+        $vendor_categories = collect();
+        $category_list = [];
+        if($products->isNotEmpty()){
+            foreach($products as $k => $value) {
+                foreach ($value->addOn as $key => $val) {
+                    foreach ($val->setoptions as $k => $v) {
+                        if($v->price == 0){
+                            $v->is_free = true;
+                        }else{
+                            $v->is_free = false;
+                        }
+                        // $v->multiplier = $clientCurrency->doller_compare;
+                    }
+                }
+
+                $p_id = $value->id;
+                $variantData = $value->with(['variantSet' => function ($z) use ($langId, $p_id) {
+                    $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                    $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+                    $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                    $z->where('vt.language_id', $langId);
+                    $z->where('product_variant_sets.product_id', $p_id)->orderBy('product_variant_sets.variant_type_id', 'asc');
+                },'variantSet.option2'=> function ($zx) use ($langId, $p_id) {
+                    $zx->where('vt.language_id', $langId)
+                    ->where('product_variant_sets.product_id', $p_id);
+                }])->where('id', $p_id)->first();
+                $value->variantSet = $variantData->variantSet;
+                $value->product_image = ($value->media->isNotEmpty()) ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                $value->translation_title = ($value->translation->isNotEmpty()) ? $value->translation->first()->title : $value->sku;
+                $value->translation_description = ($value->translation->isNotEmpty()) ? strip_tags($value->translation->first()->body_html) : '';
+                // $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
+                $value->variant_quantity = ($value->variant->isNotEmpty()) ? $value->variant->first()->quantity : 0;
+
+                $cid = $value->category_id;
+
+                if(!in_array($cid, $category_list)){
+                    $category_list[] = $cid;
+                    $vendor_category = VendorCategory::with(['category.translation' => function($q) use($langId){
+                        $q->where('category_translations.language_id', $langId)->groupBy('category_translations.language_id');
+                    }]);
+                    
+                    $vendor_category = $vendor_category->where('status', 1)->where('vendor_id', $vid)->where('category_id', $cid)->first();
+                    if($vendor_categories){
+                        $vendorProducts = $products->where('category_id', $cid);
+                        if($vendor_category){
+                            $vendor_category->category->translation_title = $vendor_category->category->translation->first() ? $vendor_category->category->translation->first()->name : '';
+                            $vendor_category->products = array_values($vendorProducts->toArray());
+                            $vendor_category->products_count = $vendorProducts->count();
+                            $vendor_categories->push($vendor_category);
+                        }
+                    }
+                }
+            }
+        }
+        // $tags = Tag::with('primary')->get();
+        // dd($vendor_categories->toArray());
+
+        $listData = $vendor_categories;
+        $data['vendor'] = $vendor;
+        $data['listData'] = $listData;
+
+        // $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData])->render();
+        // return response()->json(array('status'=>'Success', 'html'=>$returnHTML));
+        return $this->successResponse($data, '', 200);
+    }
 }

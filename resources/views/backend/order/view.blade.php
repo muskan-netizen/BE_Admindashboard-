@@ -29,7 +29,7 @@ $timezone = Auth::user()->timezone;
                                     <p>#{{$order->order_number}}</p>
                                 </div>
                             </div>
-                             @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->shipping_delivery_type!='L')
+                             @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->shipping_delivery_type=='D')
                              <div class='inner-div d-inline-block' style="float: right;">
                                 <form method='POST' action='"+full.destroy_url+"'>
                                    
@@ -444,6 +444,7 @@ $timezone = Auth::user()->timezone;
                     order_vendor_id: order_vendor_id,
                 },
                 success: function(response) {
+                    console.log(response);
                     that.addClass("completed");
                     if (status_option_id == 2) {
                         that.next('li').remove();

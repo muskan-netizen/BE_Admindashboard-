@@ -184,13 +184,13 @@ class CheckoutGatewayController extends BaseController
                     $order->save();
                     $payment_exists = Payment::where('transaction_id', $transactionId)->first();
                     if (!$payment_exists) {
-                        Payment::insert([
-                            'date' => date('Y-m-d'),
-                            'order_id' => $order->id,
-                            'transaction_id' => $transactionId,
-                            'balance_transaction' => $request->amount,
-                            'type' => 'cart'
-                        ]);
+                        $payment = new Payment();
+                        $payment->date = date('Y-m-d');
+                        $payment->order_id = $order->id;
+                        $payment->transaction_id = $transactionId;
+                        $payment->balance_transaction = $request->amount;
+                        $payment->type = 'cart';
+                        $payment->save();
 
                         // Auto accept order
                         $orderController = new OrderController();

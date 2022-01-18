@@ -24,7 +24,7 @@ class Product extends Model{
     }
 
     public function vendor(){
-       return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status'); 
+       return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status','closed_store_order_scheduled'); 
     }
 
     public function related(){
@@ -127,14 +127,17 @@ class Product extends Model{
     public function tags(){
       return $this->hasMany('App\Models\ProductTag', 'product_id', 'id'); 
     }
+    public function all_tags(){
+      return $this->hasMany('App\Models\ProductTag', 'product_id', 'id'); 
+    }
 
-
+    
     public function getDelayHrsMinAttribute()
     {
        $delay_order_hrs = $this->attributes['delay_order_hrs'];
        $delay_order_min = $this->attributes['delay_order_min'];
 
-       if($delay_order_hrs > 0 || $delay_order_min > 0){
+       if(@$delay_order_hrs > 0 || @$delay_order_min > 0){
          $total_minutues = ($delay_order_hrs * 60) + $delay_order_min;
 
          $date = Carbon::now()
@@ -149,6 +152,7 @@ class Product extends Model{
        return 0;
       
     }
+
 
     public function getPickupDelayHrsMinAttribute()
     {
@@ -213,6 +217,14 @@ class Product extends Model{
         return $this->hasMany('App\Models\CartProduct', 'product_id', 'id')->whereHas('cart',function($qset)use($column,$value){
             $qset->where($column,$value);
         });
+    }
+    public function getByVendorId($vendor_id)
+    {
+      return self::where('vendor_id',$vendor_id)->with('addOn','category','celebrities','crossSell','media','related','all_tags','translation','upSell','variant','variantSets')->get();
+    }
+    public function getProductBySku($sku)
+    {
+      return self::where('sku',$sku)->first();
     }
     
 }

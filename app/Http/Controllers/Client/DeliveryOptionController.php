@@ -17,7 +17,11 @@ class DeliveryOptionController extends Controller
     {
         $shipping_codes = ['lalamove'];
         $delOption = ShippingOption::where('code', $shipping_codes)->first();
-        return view('backend/deliveryoption/index')->with(['delOption' => $delOption]);
+
+        $shipping_codes = ['shiprocket'];
+        $shipingOption = ShippingOption::whereIn('code', $shipping_codes)->first();
+
+        return view('backend/deliveryoption/index')->with(['delOption' => $delOption,'opt'=>$shipingOption]);
     }
 
 
@@ -92,8 +96,6 @@ class DeliveryOptionController extends Controller
 
         return redirect()->back()->with('toaster', $toaster);
     }
-
-
 
 
 }

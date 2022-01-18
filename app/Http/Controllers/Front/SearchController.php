@@ -103,7 +103,7 @@ class SearchController extends FrontController{
         //}
         $products = $products->whereNull('deleted_at')->groupBy('products.id')->get();
         foreach ($products as $product) {
-            $redirect_url = route('productDetail', $product->url_slug);
+            $redirect_url = route('productDetail', [$product->vendor->slug,$product->url_slug]);
             $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'].'80/80'.$product->media->first()->image->path['image_path'] : '';
             $response[] = ['id' => $product->id, 'name' => $product->dataname, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }
@@ -183,7 +183,7 @@ class SearchController extends FrontController{
                         $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
                     })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->get();
         foreach ($products as $product) {
-            $redirect_url = route('productDetail', $product->sku);
+            $redirect_url = route('productDetail', [$product->vendor->slug,$product->sku]);
             $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'].'300/300'.$product->media->first()->image->path['image_path'] : '';
             $response[] = ['id' => $product->id, 'name' => $product->dataname, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }

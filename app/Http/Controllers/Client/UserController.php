@@ -57,8 +57,8 @@ class UserController extends BaseController
                 $social_logins++;
             }
         }
-       
-        return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries]);
+        $csvCustomers = CsvCustomerImport::all();
+        return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries,'csvCustomers'=>$csvCustomers]);
     }
     public function getFilterData(Request $request)
     {
@@ -228,17 +228,17 @@ class UserController extends BaseController
      */
     public function importCsv(Request $request)
     {
-        if($request->has('vendor_csv')){
+        if($request->has('customer_csv')){
             $csv_vendor_import = new CsvCustomerImport();
-            if($request->file('vendor_csv')) {
-                $fileName = time().'_'.$request->file('vendor_csv')->getClientOriginalName();
-                $filePath = $request->file('vendor_csv')->storeAs('csv_vendors', $fileName, 'public');
+            if($request->file('customer_csv')) {
+                $fileName = time().'_'.$request->file('customer_csv')->getClientOriginalName();
+                $filePath = $request->file('customer_csv')->storeAs('csv_customers', $fileName, 'public');
                 $csv_vendor_import->name = $fileName;
                 $csv_vendor_import->path = '/storage/' . $filePath;
                 $csv_vendor_import->status = 1;
                 $csv_vendor_import->save();
             }
-            $data = Excel::import(new CustomerImport($csv_vendor_import->id), $request->file('vendor_csv'));
+            $data = Excel::import(new CustomerImport($csv_vendor_import->id), $request->file('customer_csv'));
             return response()->json([
                 'status' => 'success',
                 'message' => 'File Successfully Uploaded!'

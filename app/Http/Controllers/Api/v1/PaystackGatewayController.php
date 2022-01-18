@@ -49,14 +49,14 @@ class PaystackGatewayController extends BaseController
             $meta_data = array();
             $reference_number = $description = $returnUrlParams = '';
             $returnUrl = $request->serverUrl . 'payment/paystack/completePurchase/app?amount='.$amount.'&status=200&gateway=paystack&action='.$request->action;
-            $cancelUrl = $request->serverUrl . 'payment/gateway/returnResponse?status=0&gateway=paystack&action='.$request->action;
+            $cancelUrl = $request->serverUrl . 'payment/paystack/cancelPurchase/app?status=0&gateway=paystack&action='.$request->action;
 
             if($request->payment_form == 'cart'){
                 $description = 'Order Checkout';
                 $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
-                $request->request->add(['cart_id' => $cart->id]);
-                $meta_data['cart_id'] = $cart->id;
-                // $reference_number = $request->order_number;
+                $request->request->add(['cart_id' => $cart->id, 'order_number'=>$request->order_number]);
+                $meta_data['custom_fields']['cart_id'] = $cart->id;
+                $returnUrlParams = $returnUrlParams.'&user_id='.$user->id.'&cart_id='.$cart->id.'&order_number='.$request->order_number;
                 $rules['order_number'] = 'required';
                 if($request->has('tip')){
                     $returnUrlParams = $returnUrlParams.'&tip='.$request->tip;
@@ -64,20 +64,20 @@ class PaystackGatewayController extends BaseController
             }
             elseif($request->payment_form == 'wallet'){
                 $description = 'Wallet Checkout';
-                $meta_data['user_id'] = $user->id;
-                // $reference_number = $user->id;
+                $returnUrlParams = $returnUrlParams.'&user_id='.$user->id;
+                $meta_data['custom_fields']['user_id'] = $user->id;
             }
             if($request->payment_form == 'tip'){
                 $description = 'Tip Checkout';
-                $meta_data['order_number'] = $request->order_number;
-                // $reference_number = $request->order_number;
+                $returnUrlParams = $returnUrlParams.'&user_id='.$user->id.'&order_number='.$request->order_number;
+                $meta_data['custom_fields']['order_number'] = $request->order_number;
             }
             elseif($request->payment_form == 'subscription'){
                 $description = 'Subscription Checkout';
                 $slug = $request->subscription_id;
+                $returnUrlParams = $returnUrlParams.'&user_id='.$user->id.'&subscription_id='.$slug;
                 $subscription_plan = SubscriptionPlansUser::where('slug', $slug)->where('status', '1')->first();
-                $meta_data['subscription_id'] = $subscription_plan->id;
-                // $reference_number = $request->subscription_id;
+                $meta_data['custom_fields']['subscription_id'] = $subscription_plan->id;
                 $rules['subscription_id'] = 'required';
             }
 
@@ -86,12 +86,14 @@ class PaystackGatewayController extends BaseController
                 return $this->errorResponse(__($validator->errors()->first()), 422);
             }
 
+            $meta_data['cancel_action'] = url($cancelUrl . $returnUrlParams);
+
             $response = $this->gateway->purchase([
                 'amount' => $amount,
-                'currency' => 'ZAR', //$this->currency,
+                'currency' => $this->currency,
                 'email' => $user->email,
                 'returnUrl' => url($returnUrl . $returnUrlParams),
-                'cancelUrl' => url($cancelUrl),
+                // 'cancelUrl' => url($cancelUrl . $returnUrlParams),
                 'metadata' => $meta_data,
                 'description' => $description,
             ])->send();

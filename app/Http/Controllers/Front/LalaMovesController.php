@@ -64,40 +64,6 @@ class LalaMovesController extends Controller
     }
 
 
-    public function getBaseprice($distance)
-    {
-
-        $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code', 'lalamove')->where('status', 1)->first();
-        if($simp_creds && $simp_creds->credentials){
-              $creds_arr = json_decode($simp_creds->credentials);
-              $this->base_price = $creds_arr->base_price??'0';
-              if($this->base_price>0)
-              {
-                  $this->base_price = $creds_arr->base_price??'0';
-                  $this->distance = $creds_arr->distance??'0';
-                  $this->amount_per_km = $creds_arr->amount_per_km??'0';
-  
-              }
-              $this->lalamove_status = $simp_creds->status??'';
-          }
-
-          
-        $distance = ($distance - $this->distance);
-        if($distance < 1 && $this->base_price < 1)
-        {
-            return 0;    
-        }
-
-        $base_price = $this->base_price;
-        $amount_per_km = $this->amount_per_km;
-        $total = $base_price + ($distance * $amount_per_km);
-        return  $total;
-        
-       // + ($paid_duration * $pricingRule->duration_price);
-
-    }
-
-
     public function getDeliveryFeeLalamove($vendor_id)
     {
         try{    
@@ -131,7 +97,7 @@ class LalaMovesController extends Controller
                         $distance =  round($json->distance->value/1000);
                         if($this->base_price > 0)
                         {
-                            $actualAmount = $this->getBaseprice($distance);
+                            $actualAmount = getBaseprice($distance);
                          }else{
                             $actualAmount = $json->totalFee;
                         }
@@ -148,7 +114,7 @@ class LalaMovesController extends Controller
     }
     public function placeOrderToLalamove($vendor_id,$user_id,$order_id)
     {
-        $scheduledAt = '';
+        $scheduledAt = null;
         $order = Order::find($order_id);
         $customer = User::find($user_id);
         if(isset($order->scheduled_date_time) && $order->scheduled_date_time){
@@ -193,12 +159,22 @@ class LalaMovesController extends Controller
     	
     }
 
+    public function cancelOrderRequestlalamove($reffId)
+    {
+       $this->orderCancel($reffId);
+    }
+
     //for Developer use only
     public function placeOrderToLalamoveDev($vendor_id,$user_id,$order_id)
     {
         $order = Order::find($order_id);
         $customer = User::find($user_id);
-        //$cus_address = UserAddress::where('user_id', $customer->id)->orderBy('is_primary', 'desc')->first();
+        $scheduledAt = null;
+        if(isset($order->scheduled_date_time) && $order->scheduled_date_time){
+            $date = date('Y-m-d',strtotime($order->scheduled_date_time));
+            $time = date('H:i:s',strtotime($order->scheduled_date_time));
+            $scheduledAt = $date.'T'.$time.'Z';
+        }
         $cus_address = UserAddress::find($order->address_id);
                 if ($cus_address && $this->lalamove_status==1){
 
@@ -214,71 +190,29 @@ class LalaMovesController extends Controller
                         'drop_address' => $cus_address->address,
                         'user_name' => $customer->name,
                         'user_phone' => $customer->phone_number,
-                        'remarks' => 'Delivery vendor message remarks'
+                        'remarks' => 'Delivery vendor message remarks',
+                        'schedule_time' => $scheduledAt
                     );
-                   //print_r($data);
-               
-
+        
                 $quotation = $this->getQuotations($data);
-               // dd($quotation);die;
+            
                 $response = json_decode($quotation['response']);
                 if($quotation['code']=='200'){
                         $response = $this->placeOrders($data,$response);
-
                         if($response['code']=='200'){
                             $response = json_decode($response['response']);
                         }else{
-                            //$response = 2;
+                            $response = 2;
                         }
                 }else{
-                    //$response = 2;
-                }
-            }
-        dd($response);die;
-
-        return $response;
-    	
-    }
-
-
-    public function placeOrder($vendor_id)
-    {
-        $customer = User::find(Auth::id());
-        $cus_address = UserAddress::find('150');
-                if ($cus_address && $this->lalamove_status==1){
-                    //dd($vendor_id);
-                    $vendor_details = Vendor::find('16');
-                    $data = (object) array(
-                        'pick_lat' => $vendor_details->latitude,
-                        'pick_lng' => $vendor_details->longitude,
-                        'pick_address' => $vendor_details->address,
-                        'vendor_name' => $vendor_details->name,
-                        'vendor_contact' => $vendor_details->phone_no,
-                        'drop_lat' => $cus_address->latitude,
-                        'drop_lng' => $cus_address->longitude,
-                        'drop_address' => $cus_address->address,
-                        'user_name' => $customer->name,
-                        'user_phone' => $customer->phone_number,
-                        'remarks' => 'Delivery vendor message remarks',
-                    );
-
-                $quotation = $this->getQuotations($data);
-                $response = json_decode($quotation['response']);
-                if($quotation['code']=='200'){
-                        $response = $this->placeOrders($data,$response);
-                        if($quotation['code']=='200'){
-                            $response = json_decode($quotation['response']);
-                        }else{
-                            $response = json_decode($quotation['response']);
-                        }
-                }else{
-                    $response;
+                    $response = 2;
                 }
             }
 
         return $response;
     	
     }
+
 
     public function placeOrder2($vendor_id)
     {
@@ -288,26 +222,6 @@ class LalaMovesController extends Controller
 
     public function webhooks(Request $request)
     {
-        // $request = '{
-        //     "apiKey": "pk_test_11c917c792586a46bef122660d6e04b9",
-        //     "timestamp": 1640697361,
-        //     "signature": "92153b66e867160b139f1288c07170bf2e66851a7c77113f546cd3c143e5d349",
-        //     "eventId": "52C93E91-FD46-F542-67B1-225F324AD809",
-        //     "eventType": "ORDER_STATUS_CHANGED",
-        //     "data": {
-        //       "order": {
-        //         "id": "195610807268",
-        //         "city": "MY_KUL",
-        //         "status": "ASSIGNING_DRIVER",
-        //         "driverId": "",
-        //         "shareLink": "https://share.sandbox.lalamove.com/?MY100211228211600794410010041218730&lang=en_MY&source=api_wrapper&sign=757a3f926c2ca25fc2e121c21eec4dd5",
-        //         "previousStatus": "",
-        //         "updatedAt": "2021-12-28T21:16.00Z"
-        //       }
-        //     }
-        //   }';
-
-    
            $trackingId = '';
            $json = json_decode($request->getContent());
            if(isset($json->eventType) && $json->eventType == 'ORDER_STATUS_CHANGED' && $json->data->order->status == 'ASSIGNING_DRIVER')

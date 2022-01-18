@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use DB;
+use Auth;
 use DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,11 @@ class ReviewController extends BaseController
     public function index(Request $request){
         // echo "review";
         $product = Product::whereHas('reviews')->withCount('reviews')->with('translation_one','media.image');
+        if (Auth::user()->is_superadmin == 0) {
+            $product = $product->whereHas('vendor.permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        }
         // echo "<pre>";
         // print_r($product->toArray());
         // exit();

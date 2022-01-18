@@ -369,7 +369,7 @@
                                         <div class="form-group" id="product_nameInput">
                                             {!! Form::label('title', __('Product Name'), ['class' => 'control-label']) !!}
                                             <span class="text-danger">*</span>
-                                            {!! Form::text('product_name', null, ['class' => 'form-control', 'id' => 'product_name', 'onkeyup' => 'return setSkuFromName(event)', 'placeholder' => 'Apple iMac', 'autocomplete' => 'off']) !!}
+                                            {!! Form::text('product_name', null, ['class' => 'form-control', 'id' => 'product_name', 'onkeyup' => 'return setSkuFromName(event)', 'placeholder' => __('Product Name'), 'autocomplete' => 'off']) !!}
 
                                             <span class="invalid-feedback" role="alert">
                                                 <strong></strong>
@@ -383,7 +383,7 @@
                                         <div class="form-group" id="skuInput">
                                             {!! Form::label('title', __('SKU'), ['class' => 'control-label']) !!}
                                             <span class="text-danger">*</span>
-                                            {!! Form::text('sku', null, ['class' => 'form-control', 'id' => 'sku', 'onkeyup' => 'return alplaNumeric(event)', 'placeholder' => 'Apple-iMac']) !!}
+                                            {!! Form::text('sku', null, ['class' => 'form-control', 'id' => 'sku', 'onkeyup' => 'return alplaNumeric(event)', 'placeholder' =>  __('SKU')]) !!}
                                             <span class="invalid-feedback" role="alert">
                                                 <strong></strong>
                                             </span>
@@ -397,7 +397,7 @@
                                     <div class="col-6">
                                         <div class="form-group" id="url_slugInput">
                                             {!! Form::label('title', __('URL Slug'), ['class' => 'control-label']) !!}
-                                            {!! Form::text('url_slug', null, ['class' => 'form-control', 'id' => 'url_slug', 'placeholder' => 'Apple iMac', 'onkeypress' => 'return slugify(event)']) !!}
+                                            {!! Form::text('url_slug', null, ['class' => 'form-control', 'id' => 'url_slug', 'placeholder' =>  __('URL Slug'), 'onkeypress' => 'return slugify(event)']) !!}
                                             <span class="invalid-feedback" role="alert">
                                                 <strong></strong>
                                             </span>

@@ -98,6 +98,7 @@ class ShippingOptionController extends BaseController
         $method_id_arr = $request->input('method_id');
         $method_name_arr = $request->input('method_name');
         $active_arr = $request->input('active');
+        $base_active = $request->input('base_active');
         $test_mode_arr = $request->input('sandbox');
 
         foreach ($method_id_arr as $key => $id) {
@@ -122,10 +123,23 @@ class ShippingOptionController extends BaseController
                         'shiprocket_username'       => 'required',
                         'shiprocket_password'       => 'required',
                     ]);
-                    $json_creds = json_encode(array(
+                    $json_creds = array(
                         'username' => $request->shiprocket_username,
                         'password' => $request->shiprocket_password,
-                    ));
+                    );
+
+                    if ((isset($base_active)) && ($base_active == 'on')) {
+                        $json_creds['base_price'] = $request->base_price;
+                        $json_creds['distance'] = $request->distance;
+                        $json_creds['amount_per_km'] = $request->amount_per_km;
+                    }else{
+                        $json_creds['base_price'] = '0';
+                        $json_creds['distance'] = '0';
+                        $json_creds['amount_per_km'] = '0';
+                    }
+
+                    $json_creds = json_encode($json_creds);
+
                 }
             }
             ShippingOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);

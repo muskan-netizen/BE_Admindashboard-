@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\PromoCodeController;
-use App\Models\{User, Product, Cart, ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus};
+use App\Models\{User, Product, Cart, ProductVariantSet, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot};
 use GuzzleHttp\Client as GCLIENT;
 use Log;
 class CartController extends BaseController
@@ -461,6 +461,7 @@ class CartController extends BaseController
         return response()->json(['message' => __('Empty cart successfully.')]);
     }
 
+
     /**         *       Empty cart       *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery')
     {
@@ -469,6 +470,7 @@ class CartController extends BaseController
         if (!$cart) {
             return false;
         }
+        $vondorCnt = 0;
         $address = [];
         $latitude = '';
         $longitude = '';
@@ -873,7 +875,9 @@ class CartController extends BaseController
                 }
                 $vendorData->is_promo_code_available = $is_promo_code_available;
             }
-        }
+            ++$vondorCnt;
+        }//End cart Vendor loop
+
         $cart_product_luxury_id = CartProduct::where('cart_id', $cartID)->select('luxury_option_id', 'vendor_id')->first();
         if ($cart_product_luxury_id) {
             if ($cart_product_luxury_id->luxury_option_id == 2 || $cart_product_luxury_id->luxury_option_id == 3) {
@@ -885,6 +889,20 @@ class CartController extends BaseController
             $total_disc_amount = $total_disc_amount + $total_subscription_discount;
             $cart->total_subscription_discount = $total_subscription_discount * $clientCurrency->doller_compare;
         }
+
+        if($cartData->count() == '1'){
+            $vendorId = $cartData[0]->vendor_id;
+            //type must be a : delivery , takeaway,dine_in
+            $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
+            $slots = showSlot('',$vendorId,'delivery',$duration->slot_minutes);
+            $cart->slots = $slots;
+           // $cart->vendor_id =  $vendorId;
+        }else{
+            $slots = [];
+            $cart->slots = [];
+            //$cart->vendor_id =  0;
+        }
+
         $cart->total_service_fee = number_format($total_service_fee, 2, '.', '');
         $cart->total_tax = $total_tax;
         $cart->tax_details = $tax_details;
@@ -937,6 +955,26 @@ class CartController extends BaseController
         $cart->dropoff_delay_date =  $dropoff_delay_date??0;
         return $cart;
     }
+
+
+    public function checkScheduleSlots(Request $request)
+    {
+        $slot = [];
+        $vendorId = $request->vendor_id??0;
+        $delivery = $request->delivery??'delivery';
+        //type must be a : delivery , takeaway,dine_in
+        $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
+       // $duration = $duration->slot_minutes??'';
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes);
+        if(count($slots)<=0){
+            $slot = [];
+        }else{
+            $slot = $slots;
+        }
+        
+        return response()->json($slot);
+    }
+
 
     public function getDeliveryFeeDispatcher($vendor_id)
     {
@@ -1026,9 +1064,26 @@ class CartController extends BaseController
                 if(isset($request->schedule_dropoff) && !empty($request->schedule_dropoff))  # for pickup laundry
                 $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
+                if($request->task_type!='now'){
+                    if(isset($request->slot))
+                    {
+                        $time = explode(' - ',$request->slot);
+                        $time = date('Y-m-d',strtotime($request->schedule_dt)).' '.$time[0].':00'??null;
+                        $slot = $request->slot;
+                    }else{
+                        $time = $request->schedule_dt;
+                        $slot = null;
+                    }
+                }else{
+                    $time = null;
+                    $slot = null;
+                }
+
                 Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions ?? null,
                 'schedule_type' => $request->task_type??null,
-                'scheduled_date_time' => $request->schedule_dt??null,
+                //'scheduled_date_time' => $request->schedule_dt??null,
+                'scheduled_date_time' => $time??null,
+                'scheduled_slot' => $slot??null,
                 'comment_for_pickup_driver' => $request->comment_for_pickup_driver??null,
                 'comment_for_dropoff_driver' => $request->comment_for_dropoff_driver??null,
                 'comment_for_vendor' => $request->comment_for_vendor??null,

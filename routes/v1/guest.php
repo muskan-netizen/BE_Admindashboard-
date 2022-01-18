@@ -3,6 +3,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
     Route::group(['middleware' => ['dbCheck', 'checkAuth', 'apilogger']], function() {
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::get('cart/list', 'Api\v1\CartController@index');
+        Route::get('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
         Route::post('homepage', 'Api\v1\HomeController@homepage');
         Route::post('header', 'Api\v1\HomeController@headerContent');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
@@ -37,9 +38,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::post('promo-code-open/list', 'Api\v1\PickupDeliveryController@postPromoCodeListOpen');
 
-        
-        //Routes for edit order
-        Route::post('edit-order/search/vendor/products', 'Api\v1\VendorController@vendorProductsSearchResultsForEditOrder');
     });
     Route::group(['middleware' => ['dbCheck','systemAuth', 'apilogger']], function() {
         Route::get('cart/empty', 'Api\v1\CartController@emptyCart');

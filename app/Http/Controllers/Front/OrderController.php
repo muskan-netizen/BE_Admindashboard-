@@ -773,7 +773,7 @@ class OrderController extends FrontController
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {
                          
                             //Add here Delivery option Lalamove and dispatcher
-                            if($request->delivery_type=='L'){
+                            if($deliver_fee_data->shipping_delivery_type=='L'){
                                 $lala = new LalaMovesController();
                                 $delivery_fee = $lala->getDeliveryFeeLalamove($vendor_cart_product->vendor_id);
                             }else{
@@ -1271,6 +1271,7 @@ class OrderController extends FrontController
         $order_vendors = OrderVendor::where('order_id', $order_id)->whereHas('vendor', function ($q) {
             $q->where('auto_accept_order', 1);
         })->get();
+        $orderData = Order::find($order_id);
         //  Log::info($order_vendors);
         foreach ($order_vendors as $ov) {
             //     Log::info($ov);
@@ -1297,12 +1298,20 @@ class OrderController extends FrontController
                 $vendor_order_status->order_vendor_id = $request->order_vendor_id;
                 $vendor_order_status->order_status_option_id = $request->status_option_id;
                 $vendor_order_status->save();
+
                 if ($request->status_option_id == 2) {
+
+                    if ($orderData->shipping_delivery_type=='D') {
                     //             Log::info($request->status_option_id);
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if ($order_dispatch && $order_dispatch == 1) {
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
                     }
+                   }elseif($orderData->shipping_delivery_type=='L'){
+                        //Create Shipping place order request for Lalamove
+                        $order_lalamove = $this->placeOrderRequestlalamove($request);
+                    }
+
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
                 $this->ProductVariantStoke($order_id);
@@ -1318,6 +1327,30 @@ class OrderController extends FrontController
 
 
     /// ******************  check If any Product Last Mile on   ************************ ///////////////
+
+
+    public function placeOrderRequestlalamove($request)
+    {
+       
+        $lala = new LalaMovesController();
+        //Create Shipping place order request for Lalamove
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            $order_lalamove = $lala->placeOrderToLalamoveDev($request->vendor_id,$checkOrder->user_id,$checkOrder->id);
+            }
+
+            if ($order_lalamove->totalFee >0){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update(['web_hook_code' => $order_lalamove->orderRef]);
+            
+                return 1;
+            }
+
+        return 2;
+    }
+
+    
     public function checkIfanyProductLastMileon($request)
     {
         $order_dispatchs = 2;
@@ -2200,13 +2233,13 @@ class OrderController extends FrontController
                 $order = Order::select('id', 'tip_amount')->where('order_number', $order_number)->first();
                 if (($order->tip_amount == 0) || empty($order->tip_amount)) {
                     $tip = Order::where('order_number', $order_number)->update(['tip_amount' => $request->tip_amount]);
-                    Payment::insert([
-                        'date' => date('Y-m-d'),
-                        'order_id' => $order->id,
-                        'transaction_id' => $request->transaction_id,
-                        'balance_transaction' => $request->tip_amount,
-                        'type' => 'tip'
-                    ]);
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->order_id = $order->id;
+                    $payment->transaction_id = $request->transaction_id;
+                    $payment->balance_transaction = $request->tip_amount;
+                    $payment->type = 'tip';
+                    $payment->save();
                 }
                 $message = 'Tip has been submitted successfully';
                 $response['tip_amount'] = $request->tip_amount;

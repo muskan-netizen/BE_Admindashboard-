@@ -64,6 +64,14 @@
                                                 <p>{{$vendor->desc}}</p>
                                             </div>
                                         @endif
+                                        <div class="col-md-12 text-center">
+                                        @if($is_vendor_closed == 1 && $vendor->closed_store_order_scheduled == 0)
+                                        <p class="text-danger">Vendor is not accepting orders right now.</p>
+                                        @elseif($is_vendor_closed == 1 && $vendor->closed_store_order_scheduled == 1)
+                                        <p class="text-danger">We are not accepting orders right now. You can schedule this for {{findSlot('',$vendor->id,'')}}.</p>
+                                        @endif
+                                        </div>
+
                                     </div>
                                 </form>
                             </div>
@@ -92,7 +100,7 @@
                                         } ?>
 
 
-                                        <a class="common-product-box scale-effect border-bottom pb-2 mt-2 text-center" href="{{route('productDetail', $new['url_slug'])}}">
+                                        <a class="common-product-box scale-effect border-bottom pb-2 mt-2 text-center" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                             <div class="img-outer-box position-relative">
                                                 <img class="img-fluid blur-up lazyload" data-src="{{$imagePath}}" alt="">
                                                 <div class="pref-timing">
@@ -136,10 +144,10 @@
 
 
                                         <!-- <div class="media">
-                                            <a href="{{route('productDetail', $new['url_slug'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt="" ></a>
+                                            <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" src="{{$imagePath}}" alt="" ></a>
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing">
-                                                    <a href="{{route('productDetail', $new['url_slug'])}}">
+                                                    <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                                         <h3>{{ $new['translation_title'] }}</h3>
                                                         <h6><b>{{$new['vendor']['name']}}</b></h6>
                                                         @if($new['inquiry_only'] == 0)

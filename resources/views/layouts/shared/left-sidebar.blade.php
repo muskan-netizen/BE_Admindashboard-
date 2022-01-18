@@ -301,14 +301,7 @@
                                 </a>
                             </li>
                         @endif
-                         @if(in_array('shipping',$allowed) || Auth::user()->is_superadmin == 1)
-                            <li>
-                                <a href="{{route('shipoption.index')}}">
-                                    <span class="icon-payment-options"></span>
-                                    <span> {{ __('Shipping Options') }} </span>
-                                </a>
-                            </li>
-                        @endif
+                        
 
                         @if(in_array('DeliveryOption',$allowed) || Auth::user()->is_superadmin == 1)
                         <li>
@@ -317,7 +310,15 @@
                                 <span> {{ __('Delivery Options') }} </span>
                             </a>
                         </li>
-                    @endif
+                        @endif
+                        @if(Auth::user()->is_superadmin == 1)
+                        <li>
+                            <a href="{{route('tools.index')}}">
+                                <span class="icon-settings-1-1"></span>
+                                <span> {{ __('Tools') }} </span>
+                            </a>
+                        </li>
+                        @endif
                     </ul>
                 </li>
                 @endif

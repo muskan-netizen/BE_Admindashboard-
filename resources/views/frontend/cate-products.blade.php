@@ -142,7 +142,7 @@
                                             $imagePath = $v['image']['path']['image_fit'].'300/300'.$v['image']['path']['image_path'];
                                         }*/ ?>
 
-                                        <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', $new['url_slug'])}}">
+                                        <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                             <div class="img-outer-box position-relative">
                                                 <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
                                                 <div class="pref-timing">
@@ -184,10 +184,10 @@
                                             </div>
                                         </a>
                                         {{-- <div class="media">
-                                            <a href="{{route('productDetail', $new['url_slug'])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" data-src="{{$imagePath}}" alt=""></a>
+                                            <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" data-src="{{$imagePath}}" alt=""></a>
                                             <div class="media-body align-self-center">
                                                 <div class="inner_spacing">
-                                                    <a href="{{route('productDetail', $new['url_slug'])}}">
+                                                    <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
                                                         <h3 class="d-flex align-items-center justify-content-between">
                                                             <label class="mb-0"><b>{{ $new['translation_title'] }}</b></label>
                                                         </h3>
@@ -279,7 +279,7 @@
                                                     $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                 }*/ ?>
                                                 <div class="col-xl-3 col-6 col-grid-box mt-3">
-                                                    <a href="{{route('productDetail', $data->url_slug)}}" class="product-box scale-effect mt-0">
+                                                    <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="product-box scale-effect mt-0">
                                                         <div class="product-image p-0">
                                                             <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
                                                         </div>
