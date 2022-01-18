@@ -165,7 +165,7 @@ function dateTimeInUserTimeZone24($date, $timezone, $showDate=true, $showTime=tr
     $preferences = ClientPreference::select('date_format', 'time_format')->where('id', '>', 0)->first();
     $date_format = (!empty($preferences->date_format)) ? $preferences->date_format : 'YYYY-MM-DD';
     if($date_format == 'DD/MM/YYYY'){
-        $date_format = 'DD-MM-YYYY';
+    $date_format = 'DD-MM-YYYY';
     }
     $time_format = (!empty($preferences->time_format)) ? $preferences->time_format : '24';
     $date = Carbon::parse($date, 'UTC');
@@ -174,18 +174,16 @@ function dateTimeInUserTimeZone24($date, $timezone, $showDate=true, $showTime=tr
     $timeFormat = '';
     $dateFormat = '';
     if($showDate){
-        $dateFormat = $date_format;
+    $dateFormat = $date_format;
     }
     if($showTime){
-        if($showSeconds){
-            $secondsKey = ':ss';
-        }
-    $timeFormat = ' HH:mm'.$secondsKey; 
+    
+    $timeFormat = 'HH:🇲🇲:ss';
     }
-
+    
     $format = $dateFormat . $timeFormat;
     return $date->isoFormat($format);
-}
+    }
 
 function helper_number_formet($number){
     return number_format($number,2);
