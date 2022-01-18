@@ -295,10 +295,15 @@ function createSlug($str, $delimiter = '-'){
     function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 5)
     {
     $Duration = (($Duration==0)?'60':$Duration);
+
     $user = Auth::user();
-    $user->timezone = $user->timezone??'Asia/Kolkata';
+    if(isset($user->timezone) && !empty($user->timezone))
+    $timezoneset = $user->timezone;
+    else
+    $timezoneset = 'Asia/Kolkata';
+
     $cr = Carbon::now()->addMinutes($delayMin);
-    $now = dateTimeInUserTimeZone24($cr, $user->timezone);
+    $now = dateTimeInUserTimeZone24($cr, $timezoneset);
     $nowT = strtotime($now);
     $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
     $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
