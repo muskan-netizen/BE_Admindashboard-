@@ -173,8 +173,8 @@ class SearchController extends FrontController{
             $image_url = $category->image['proxy_url'].'300/300'.$category->image['image_path'];
             $response[] = ['id' => $category->id, 'name' => $category->name, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }
-        $products = Product::with('media')->join('product_translations as pt', 'pt.product_id', 'products.id')
-                    ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description')
+        $products = Product::with('media')->join('product_translations as pt', 'pt.product_id', 'products.id')->join('vendors', 'vendors.id','products.vendor_id')
+                    ->select('products.id', 'products.sku', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description','products.vendor_id','vendors.slug as vendor_slug')
                     ->where('pt.language_id', $language_id)
                     ->whereHas('vendor',function($query) use ($vendorType){
                         $query->where($vendorType,1);
@@ -183,7 +183,7 @@ class SearchController extends FrontController{
                         $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
                     })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')->get();
         foreach ($products as $product) {
-            $redirect_url = route('productDetail', [$product->vendor->slug,$product->sku]);
+            $redirect_url = route('productDetail', [$product->vendor_slug,$product->sku]);
             $image_url = $product->media->first() ? $product->media->first()->image->path['proxy_url'].'300/300'.$product->media->first()->image->path['image_path'] : '';
             $response[] = ['id' => $product->id, 'name' => $product->dataname, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }

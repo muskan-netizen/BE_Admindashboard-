@@ -1837,8 +1837,10 @@ label {
 .delivery_address > .form-group{
     position: relative;
 }
-.pac-container {
+.pac-container{
     z-index: 9999;
+}
+.delivery_address .pac-container {
     top: 72px!important;
     left: 0px!important;
 }

@@ -173,6 +173,11 @@
                         <input type="text" class="form-control" id="pincode" placeholder="{{__('Zip Code')}}" value="">
                         <span class="text-danger" id="pincode_error"></span>
                     </div>
+                    <div class="col-md-12 mb-3">
+                        <label for="extra_instruction">{{__('Extra Instruction')}}</label>
+                        <input type="text" class="form-control" id="extra_instruction" placeholder="{{__('Extra Instruction')}}" value="">
+                        <span class="text-danger" id="extra_instruction_error"></span>
+                    </div>
                     <div class="col-md-12 mt-3">
                         <button type="button" class="btn btn-solid" id="save_address">{{__('Save Address')}}</button>
                         <button type="button" class="btn btn-solid black-btn" id="cancel_save_address_btn">{{__('Cancel')}}</button>

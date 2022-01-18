@@ -70,6 +70,7 @@ class AddressController extends FrontController{
         $address->latitude  = $request->latitude;
         $address->longitude  = $request->longitude;
         $address->house_number = $request->house_number??"";
+        $address->extra_instruction = $request->extra_instruction??"";
         $address->save();
         if($request->ajax()){
             return response()->json(['status' => 'success', 'message' => __('Address Has Been Added Successfully'), 'address' => $address]);
@@ -113,6 +114,7 @@ class AddressController extends FrontController{
         $address->latitude  = $request->latitude;
         $address->longitude  = $request->longitude;
         $address->house_number = $request->house_number??"";
+        $address->extra_instruction = $request->extra_instruction??"";
         $address->save();
         return redirect()->route('user.addressBook')->with('success', __('Address Has Been Updated Successfully'));
     }

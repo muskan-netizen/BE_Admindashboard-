@@ -2175,6 +2175,7 @@ $(document).ready(function() {
         let latitude = $('#add_new_address_form #latitude').val();
         let longitude = $('#add_new_address_form #longitude').val();
         let house_number = $('#add_new_address_form #house_number').val();
+        let extra_instruction = $('#add_new_address_form #extra_instruction').val();
         $.ajax({
             type: "post",
             dataType: "json",
@@ -2190,6 +2191,7 @@ $(document).ready(function() {
                 "latitude": latitude,
                 "longitude": longitude,
                 "house_number": house_number,
+                "extra_instruction" : extra_instruction
             },
             beforeSend: function() {
                 if ($("#cart_table").length > 0) {

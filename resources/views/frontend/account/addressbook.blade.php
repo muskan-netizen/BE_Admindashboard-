@@ -59,6 +59,13 @@
         width: 100%;
         height: 100%;
     }
+    .address-input-group{
+        position: relative;
+    }
+    .address-input-group .pac-container{
+        top:35px!important;
+        left:0!important;
+    }
 </style>
 <section class="section-b-space">
     <div class="container">
@@ -213,7 +220,7 @@
                         <div class="form-row">
                             <div class="col-md-12 mb-2">
                                 <label for="address">{{ __('Address') }}</label>
-                                <div class="input-group">
+                                <div class="input-group address-input-group">
                                     <input type="text" name="address" class="form-control" id="address" placeholder="{{ __('Address') }}" aria-label="Recipient's Address" aria-describedby="button-addon2" value="<%= (typeof address != 'undefined') ? address.address : '' %>" autocomplete="off" required="required">
                                     <div class="input-group-append">
                                     <button class="btn btn-outline-secondary showMapHeader" type="button" id="button-addon2">
@@ -264,6 +271,11 @@
                                 <label for="pincode">{{ __('Zip Code') }}</label>
                                 <input type="text" class="form-control" id="pincode" name="pincode" placeholder="{{ __('Zip Code') }}" value="<%= ((typeof address != 'undefined') && (address.pincode != null)) ? address.pincode : ''%>" required="required">
                                 <span class="text-danger" id="pincode_error"></span>
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <label for="extra_instruction">{{ __('Extra Instruction') }}</label>
+                                <input type="text" class="form-control" id="extra_instruction" name="extra_instruction" placeholder="{{ __('Extra instruction for driver to follow..') }}" value="<%= ((typeof address != 'undefined') && (address.extra_instruction != null)) ? address.extra_instruction : ''%>">
+                                <span class="text-danger" id="extra_instruction_error"></span>
                             </div>
                             <div class="col-md-12 mt-2">
                                 <button type="submit" class="btn btn-solid" id="<%= ((typeof address !== 'undefined') && (address !== false)) ? 'updateAddress' : 'saveAddress' %>">{{__('Save Address')}}</button>
@@ -548,6 +560,11 @@
                 }
             }
         });
+
+        setTimeout(function(){ 
+            $(".pac-container").appendTo("#add_new_address_form .address-input-group");
+        }, 300);
+        
     }
 </script>
 @endsection
