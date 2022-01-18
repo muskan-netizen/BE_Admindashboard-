@@ -92,8 +92,8 @@ class SearchController extends FrontController{
             $response[] = ['id' => $category->id, 'name' => $category->name, 'image_url' => $image_url, 'redirect_url' => $redirect_url];
         }
 
-        $products = Product::with('media','vendor')->join('product_translations as pt', 'pt.product_id', 'products.id')
-        ->select('products.id', 'products.sku', 'products.url_slug', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description','vendor')
+        $products = Product::with(['media','vendor'])->join('product_translations as pt', 'pt.product_id', 'products.id')
+        // ->select('products.id', 'products.sku', 'products.url_slug', 'pt.title  as dataname', 'pt.body_html', 'pt.meta_title', 'pt.meta_keyword', 'pt.meta_description') 
         ->where('pt.language_id', $language_id)
         ->where(function ($q) use ($keyword) {
             $q->where('products.sku', ' LIKE', '%' . $keyword . '%')->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')->orWhere('pt.title', 'LIKE', '%' . $keyword . '%');
