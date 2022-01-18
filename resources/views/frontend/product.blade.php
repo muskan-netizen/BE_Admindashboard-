@@ -422,7 +422,7 @@
                                             @if($vendor_info->is_vendor_closed == 1 && $vendor_info->closed_store_order_scheduled == 0)
                                             <p class="text-danger">Vendor is not accepting orders right now.</p>
                                             @elseif($vendor_info->is_vendor_closed == 1 && $vendor_info->closed_store_order_scheduled == 1)
-                                            <p class="text-danger">We are not accepting orders right now. You can schedule this for .</p>
+                                            <p class="text-danger">We are not accepting orders right now. You can schedule this for {{findSlot('',$product->vendor_id,'')}}.</p>
                                             @endif
                                         @else
                                             <a href="#" data-toggle="modal" data-target="#inquiry_form" class="btn btn-solid inquiry_mode">{{ __('Inquire Now')}}</a>
