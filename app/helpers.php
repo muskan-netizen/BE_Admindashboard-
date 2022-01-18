@@ -296,6 +296,7 @@ function createSlug($str, $delimiter = '-'){
     {
     $Duration = (($Duration==0)?'60':$Duration);
     $user = Auth::user();
+    $user->timezone = $user->timezone??'Asia/Kolkata';
     $cr = Carbon::now()->addMinutes($delayMin);
     $now = dateTimeInUserTimeZone24($cr, $user->timezone);
     $nowT = strtotime($now);
