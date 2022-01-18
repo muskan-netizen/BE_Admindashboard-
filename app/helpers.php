@@ -352,7 +352,7 @@ $viewSlot = array();
     $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
     }
     $mytime =$mytime->dayOfWeek+1;
-    $slots = VendorSlot::where('vendor_id',$vid)
+    $slots = VendorSlot::with('dayOne')->where('vendor_id',$vid)
     ->whereHas('days',function($q)use($mytime,$type){
         return $q->where('day',$mytime)->where($type,'1');
     })
@@ -365,11 +365,10 @@ $viewSlot = array();
     }
 
     if(isset($slots) && count($slots)>0){
-    
-        foreach($slots as $slot){
-            if($slot->dayOne->id)
+        foreach($slots as $slott){
+            if(isset($slott->dayOne->id))
             {   
-               $slotss[] = SplitTime($myDate,$slot->start_time,$slot->end_time,$duration,max($min));
+               $slotss[] = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
             }
         }
 
