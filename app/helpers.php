@@ -300,7 +300,15 @@ function createSlug($str, $delimiter = '-'){
     if(isset($user->timezone) && !empty($user->timezone))
     $timezoneset = $user->timezone;
     else
-    $timezoneset = 'Asia/Kolkata';
+    {   
+        $client = ClientData::orderBy('id','desc')->select('id','timezone')->first();
+
+        if(isset($client->timezone) && !empty($client->timezone))
+        $timezoneset = $client->timezone;
+        else
+        $timezoneset = 'Asia/Kolkata';
+    }
+    
 
     $cr = Carbon::now()->addMinutes($delayMin);
     $now = dateTimeInUserTimeZone24($cr, $timezoneset);
