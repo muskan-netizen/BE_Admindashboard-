@@ -273,7 +273,7 @@
                                 <span class="text-danger" id="pincode_error"></span>
                             </div>
                             <div class="col-md-12 mb-2">
-                                <label for="extra_instruction">{{ __('Extra Instruction') }}</label>
+                                <label for="extra_instruction">{{ __('Extra Instructions') }}</label>
                                 <input type="text" class="form-control" id="extra_instruction" name="extra_instruction" placeholder="{{ __('Extra instruction for driver to follow..') }}" value="<%= ((typeof address != 'undefined') && (address.extra_instruction != null)) ? address.extra_instruction : ''%>">
                                 <span class="text-danger" id="extra_instruction_error"></span>
                             </div>

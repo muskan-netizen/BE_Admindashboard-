@@ -73,6 +73,11 @@ class VendorController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function vendorProducts(Request $request, $domain = '', $slug = 0){
+        if($request->ajax())
+        {
+          $returnHTML = $this->vendorFilters($request,'',$slug);
+          return response()->json(array('success' => true, 'html'=>$returnHTML));
+        }
         $tag_id = $request->has('tag') && $request->tag ? $request->tag : null;
         $preferences = Session::get('preferences');
         $vendor = Vendor::with('slot.day', 'slotDate')
@@ -520,7 +525,7 @@ class VendorController extends FrontController
      * Product filters on category Page
      * @return \Illuminate\Http\Response
      */
-    public function vendorFilters(Request $request, $domain = '', $vid = 0){
+    public function vendorFilters(Request $request, $domain = '', $slug = 0){
         $setArray = $optionArray = array();
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
@@ -581,7 +586,10 @@ class VendorController extends FrontController
                             $q->groupBy('product_id');
                         },
                     ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating')
-                    ->where('vendor_id', $vid)
+                    // ->where('vendor_id', $vid)
+                    ->whereHas('vendor', function($query) use($slug){
+                        $query->where('slug',$slug);
+                    })
                     ->where('is_live', 1)
                     ->whereIn('id', function($qr) use($startRange, $endRange){
                         $qr->select('product_id')->from('product_variants')
@@ -613,7 +621,8 @@ class VendorController extends FrontController
         }
         $listData = $products;
         $returnHTML = view('frontend.ajax.productList')->with(['listData' => $listData])->render();
-        return response()->json(array('success' => true, 'html'=>$returnHTML));
+        return $returnHTML;
+        // return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 
     public function vendorProductsSearchResults(Request $request)

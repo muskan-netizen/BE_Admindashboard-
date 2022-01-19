@@ -250,6 +250,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('shipoption', 'Client\ShippingOptionController');
         Route::resource('deliveryoption', 'Client\DeliveryOptionController');
         Route::resource('tools','Client\ToolsController');
+        Route::post('tools/tax','Client\ToolsController@taxCopy')->name('tools.taxCopy');
         Route::post('updateAll', 'Client\PaymentOptionController@updateAll')->name('payoption.updateAll');
         Route::post('shippment/updateAll', 'Client\ShippingOptionController@updateAll')->name('shipoption.updateAll');
         Route::post('payoutUpdateAll', 'Client\PaymentOptionController@payoutUpdateAll')->name('payoutOption.payoutUpdateAll');

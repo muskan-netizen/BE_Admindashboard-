@@ -1728,6 +1728,9 @@ $(document).ready(function() {
                     }
                 }
             });
+            setTimeout(function(){ 
+                $(".pac-container").appendTo("#add_new_address_form .address-input-group");
+            }, 300);
         }
     }
     initialize();
@@ -2162,6 +2165,7 @@ $(document).ready(function() {
     });
     $(document).on("click", "#add_new_address_btn", function() {
         $(this).hide();
+        initialize();
         $('#add_new_address_form').show();
     });
     $(document).on("click", "#save_address", function() {
