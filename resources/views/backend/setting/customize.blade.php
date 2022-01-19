@@ -617,7 +617,7 @@
         }
         for (i = 0; i < cidText.length; i++) {
             if (existCid.indexOf(cidText[i].id) === -1) {
-                var text = '<div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-' + cidText[i].id + '"><label class="primaryCurText">1 ' + pri_curr + '  = </label> <input type="number" name="multiply_by[]" min="0.01" value="0" step=".01">' + cidText[i].text + '<input type="hidden" name="cuid[]" class="curr_id" value="' + cidText[i].id + '"></div>';
+                var text = '<div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-' + cidText[i].id + '"><label class="primaryCurText">1 ' + pri_curr + '  = </label> <input type="number" name="multiply_by[]" value="0">' + cidText[i].text + '<input type="hidden" name="cuid[]" class="curr_id" value="' + cidText[i].id + '"></div>';
                 $('.multiplierData').append(text);
             }
         }
