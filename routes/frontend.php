@@ -33,6 +33,7 @@ Route::group(['middleware' => ['domain']], function () {
 	// Start edit order routes
 	Route::post('edit-order/search/vendor/products', 'Front\VendorController@vendorProductsSearchResultsForEditOrder');
 	Route::post('edit-order/vendor/products/getProductsInCart', 'Front\TempCartController@getProductsInCart');
+	Route::post('edit-order/temp-cart/product/add', 'Front\TempCartController@postAddToTempCart');
 	Route::post('edit-order/temp-cart/product/updateQuantity', 'Front\TempCartController@updateQuantity');
 	// End edit order routes
 

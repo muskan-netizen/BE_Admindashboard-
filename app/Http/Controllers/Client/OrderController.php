@@ -419,7 +419,7 @@ class OrderController extends BaseController
                 $orderData = Order::find($request->order_id);
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
-                    if ($orderData->shipping_delivery_type=='L') {
+                    if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher
                         $order_dispatch = $this->checkIfanyProductLastMileon($request);
                         if ($order_dispatch && $order_dispatch == 1)
