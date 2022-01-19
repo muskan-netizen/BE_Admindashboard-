@@ -403,7 +403,7 @@ function findSlot($myDate = null,$vid,$type = 'delivery')
             if(count((array)$slots) == 0){
                 $myDate  = date('Y-m-d',strtotime('+1 day')); 
                 $slots = showSlot($myDate,$vid,'delivery');
-            
+}            
             if(count((array)$slots) == 0){
                 $myDate  = date('Y-m-d',strtotime('+1 day')); 
                 $slots = showSlot($myDate,$vid,'delivery');
