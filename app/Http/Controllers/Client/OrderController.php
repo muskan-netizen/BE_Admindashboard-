@@ -424,7 +424,7 @@ class OrderController extends BaseController
                         $order_dispatch = $this->checkIfanyProductLastMileon($request);
                         if ($order_dispatch && $order_dispatch == 1)
                             $stats = $this->insertInVendorOrderDispatchStatus($request);
-                    
+
                     }elseif($orderData->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
                         $order_lalamove = $this->placeOrderRequestlalamove($request);
@@ -433,7 +433,7 @@ class OrderController extends BaseController
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason]);
 
                 if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
-                    
+
                     if ($orderData->shipping_delivery_type=='D') {
                         $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                         $response = Http::get($dispatch_traking_url);
@@ -527,7 +527,7 @@ class OrderController extends BaseController
 
     public function placeOrderRequestlalamove($request)
     {
-       
+
         $lala = new LalaMovesController();
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
@@ -539,7 +539,7 @@ class OrderController extends BaseController
             if ($order_lalamove->totalFee >0){
                 $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update(['web_hook_code' => $order_lalamove->orderRef]);
-            
+
                 return 1;
             }
 
@@ -657,7 +657,7 @@ class OrderController extends BaseController
                 } else {
                     $task_type = 'now';
                 }
- 
+
             $tasks[] = array(
                 'task_type_id' => 1,
                 'latitude' => $vendor_details->latitude ?? '',

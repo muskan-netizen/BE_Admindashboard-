@@ -16,7 +16,7 @@ class TempCart extends Model
     }
 
     public function coupon(){
-      return $this->hasOne('App\Models\TempCartCoupon')->select("cart_id", "coupon_id", "vendor_id");
+      return $this->hasOne('App\Models\TempCartCoupon', 'cart_id', 'id')->select("cart_id", "coupon_id", "vendor_id");
     }
 
     public function product(){
