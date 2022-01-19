@@ -18,6 +18,7 @@ use App\Http\Controllers\Client\TagController;
 use App\Http\Controllers\Client\ClientSlotController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
 use App\Http\Controllers\Client\ProductFaqController;
+use App\Http\Controllers\Client\EstimationController;
 
 Route::get('email-test', function () {
     $details['email'] = 'testmail@yopmail.com';
@@ -143,6 +144,16 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('tag/create', [TagController::class, 'store'])->name('tag.create');
         Route::post('tag/update', [TagController::class, 'update'])->name('tag.update');
         Route::post('tag/delete', [TagController::class, 'destroy'])->name('tag.delete');
+
+
+        Route::resource('estimations', 'Client\EstimationController');
+
+        Route::get('estimations/edit', [EstimationController::class, 'show'])->name('estimations.edit');
+        Route::post('estimations/create', [EstimationController::class, 'store'])->name('estimations.create');
+        Route::post('estimations/update', [EstimationController::class, 'update'])->name('estimations.update');
+        Route::post('estimations/delete', [EstimationController::class, 'destroy'])->name('estimations.delete');
+
+
 
         Route::resource('slot', 'Client\ClientSlotController');
 

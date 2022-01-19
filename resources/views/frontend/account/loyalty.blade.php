@@ -38,11 +38,11 @@
                         <div class="page-title">
                             <h2>{{ __('My Loyalty') }}</h2>
                         </div>
-                        <div class="card-box">
+                        <div class="card-box al_inner_card">
                             @if($current_loyalty)
                                 <div class="row">
                                     <div class="offset-md-3 col-md-6">
-                                        <div class="card-box">
+                                        <div class="card-box ">
                                             <div class="row align-items-center">
                                                 <div class="col-4">
                                                     <div class="medal-img">

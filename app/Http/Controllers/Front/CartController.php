@@ -1360,10 +1360,16 @@ class CartController extends FrontController
         }
         $client_preference_detail = ClientPreference::first();
 
-        // $vendors = $this->searchProductExpection($cart_details);
-        //  dd($vendors);
-
-        return response()->json(['status' => 'success', 'cart_details' => $cart_details, 'client_preference_detail' => $client_preference_detail]);
+        $expected_vendors = $this->searchProductExpection($cart_details);
+        $expected_vendor_html = '';
+        // if(count($expected_vendors))
+        // {
+        //     $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
+           
+        //     $expected_vendor_html = view('frontend.modals.expected_vendor_pricing')->with(['expected_vendors'=>$expected_vendors,'clientCurrency' => $clientCurrency])->render();
+        // }
+        
+        return response()->json(['status' => 'success', 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail]);
     }
 
 
@@ -1380,17 +1386,17 @@ class CartController extends FrontController
                 }
             }
 
-            $all_vendors = Vendor::OrderBy('id','desc')->with(['products.translation' => function($q) use($langId, $keywords){
-                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
-                }
-            ])->whereHas('products.translation',function($q) use($langId, $keywords){
-            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+            $all_vendors = Vendor::OrderBy('id','desc')->with(['products' => function($q) use($langId, $keywords){
+                $q->whereHas('translation',function($q) use($langId, $keywords){
+                    $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
+                    }
+                )->with('media.image','variant');
+            }])->whereHas('products.translation',function($q) use($langId, $keywords){
+                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
             }
-            )->where('status',1)->get()->toArray();
-       
+            )->where('status',1)->get();
 
-            print_r("<pre>");
-            print_r($all_vendors);
+              
             return $all_vendors;
     }
 

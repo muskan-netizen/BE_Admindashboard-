@@ -609,6 +609,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <div class="other_cart_products"></div>
 
 </div>
+
+
+{{-- <div id="expected_vendors" class="mb-4">
+</div> --}}
+
+
 <script type="text/template" id="other_cart_products_template">
     <div class="container mt-3 mb-5">
         <% if(cart_details.upSell_products != ''){ %>

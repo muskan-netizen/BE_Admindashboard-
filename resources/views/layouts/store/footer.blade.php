@@ -20,6 +20,10 @@
 
     \Session::forget('success');
 @endphp
+
+@if(isset($set_template)  && $set_template->template_id == 1)
+<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom-template-one.css')}}">
+@endif
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
 <script type="text/javascript">
@@ -33,7 +37,6 @@
     var autocomplete_url = "{{ route('autocomplete') }}";
     let stripe_publishable_key = '{{ $stripe_publishable_key }}';
     let yoco_public_key = '{{ $yoco_public_key }}';
-    let checkout_public_key = '{{ $checkout_public_key }}';
     var login_url = "{{ route('customer.login') }}";
     if(currentRouteName == 'indexTemplateOne')
     var home_page_url = "{{ route('indexTemplateOne') }}";
@@ -82,7 +85,6 @@
 /////////////Pagarme Payment Routes
     var pagarme_before_payment = "{{route('payment.pagarme.beforePayment')}}";
     var pagarme_create_payment = "{{route('payment.pagarme.createPayment')}}";
-
 
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";
@@ -155,7 +157,6 @@
     @php
         $mapurl = "https://maps.googleapis.com/maps/api/js?key=".$mapKey."&v=3.exp&libraries=places,drawing";
     @endphp
-
 </script>
 
 
@@ -173,22 +174,23 @@
     var bindMap=new google.maps.Map(document.getElementById("nearmap"), bindmapProp);
 </script>
 
+{{-- <script type="text/javascript" src="{{asset('front-assets/js/all-min.js')}}" defer></script> --}}
+<script type="text/javascript"
+
+src="{{asset('front-assets/js/slick.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/slick.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
+    <script type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
+    <script type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
+    <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
+    <script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/location.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/bootstrap-colorpicker/bootstrap-colorpicker.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/clockpicker/clockpicker.min.js')}}"></script>
-
-
 
 <!--WaitMe Loader Script -->
 <script type="text/javascript" src="{{asset('js/waitMe.min.js')}}"></script>
@@ -197,7 +199,6 @@
 
 <!-- SweetAlert Script -->
 <script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
-
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 @if (Auth::check())
@@ -205,6 +206,13 @@
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
 <script>
+
+    // var tag = document.createElement('script');
+    // tag.src = "{{asset('front-assets/js/all-min.js')}}";
+    // tag.setAttribute('defer','');
+    // var firstScriptTag = document.getElementsByTagName('script')[0];
+    // firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
     var firebaseConfig = {
         apiKey: firebaseCredentials.fcm_api_key,
@@ -241,11 +249,9 @@
             console.log(`Token Error :: ${err}`);
         });
     }
-
     @if(empty(Session::get('current_fcm_token')))
     initFirebaseMessagingRegistration();
     @endif
-
     messaging.onMessage(function(payload) {
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");

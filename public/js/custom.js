@@ -1,14 +1,9 @@
 jQuery(window).scroll(function() {
     var scroll = jQuery(window).scrollTop();
-
     if (scroll <= 50) {
-
         jQuery(".site-header").removeClass("fixed-bar");
-
     } else {
-
         jQuery(".site-header").addClass("fixed-bar");
-
     }
 });
 
@@ -164,12 +159,14 @@ window.initializeSlider = function initializeSlider() {
         infinite: true,
         dots: false,
         speed: 300,
-        slidesToShow: 5,
+        slidesToShow: 4,
+        centerMode: true,
+        centerPadding: '60px',
         slidesToScroll: 4,
         responsive: [
             { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
             { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 2 } }
         ]
     });
 
@@ -207,8 +204,8 @@ window.initializeSlider = function initializeSlider() {
         dots: false,
         infinite: true,
         speed: 300,
-        slidesToShow: 5,
-        slidesToScroll: 3,
+        slidesToShow: 6,
+        slidesToScroll: 1,
         centerMode: false,
         centerPadding: '60px',
         arrows: false,
@@ -244,8 +241,8 @@ window.initializeSlider = function initializeSlider() {
             {
                 breakpoint: 576,
                 settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
+                    slidesToShow: 2,
+                    slidesToScroll: 2,
                     dots: false,
                     centerMode: true,
                 }
@@ -278,15 +275,15 @@ window.initializeSlider = function initializeSlider() {
         responsive: [{
                 breakpoint: 1200,
                 settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2
+                    slidesToShow: 3,
+                    slidesToScroll: 3
                 }
             },
             {
                 breakpoint: 767,
                 settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
+                    slidesToShow: 2,
+                    slidesToScroll: 2,
                     arrows: true
                 }
             }
@@ -361,14 +358,7 @@ $(document).ready(function() {
     $("#mobile_search_box_btn").click(function() {
         $('.radius-bar').slideToggle();
     });
-    // $("#mobile_search_box_btn").click(function () {
-    //     $('.search-overlay').slideToggle();
-    // });
-    // $(".closebtn").click(function () {
-    //     $('.search-overlay').slideUp();
-    // });
-    // $("#search_viewall").click(function () {
-    // });
+
     $(document).on("click", "#search_viewall", function(e) {
         let keyword = $("#main_search_box").val();
         let url = "/search-all/" + keyword;
@@ -713,7 +703,7 @@ $(document).ready(function() {
     $(document).on("change", ".schedule_datetime", function() {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-        
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -752,8 +742,8 @@ $(document).ready(function() {
     $(document).on("click", "#order_placed_btn", function() {
 
         //var delivery_fee = $("input[name='deliveryFee']:checked").val();
-        var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode'); 
-        
+        var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode');
+
         $('.alert-danger').html('');
         if ((typeof guest_cart != undefined) && (guest_cart == 1)) {
             // window.location.href = login_url;
@@ -1310,8 +1300,8 @@ $(document).ready(function() {
     $(document).on("click", ".proceed_to_pay", function() {
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
-        var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode'); 
-       
+        var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode');
+
         let address_id = $("input:radio[name='address_id']:checked").val();
 
         if ((vendor_type == 'delivery') && ((address_id == '') || (address_id < 1) || ($("input[name='address_id']").length < 1))) {
@@ -1320,7 +1310,7 @@ $(document).ready(function() {
         }
         //let payment_option_id = $('#proceed_to_pay_modal #v_pills_tab').find('.active').data('payment_option_id');
         let payment_option_id = $("#cart_payment_form input[name='cart_payment_method']:checked").val();
-        
+
 
         let tip = $("#cart_tip_amount").val();
         if (payment_option_id == 1) {
@@ -1820,8 +1810,11 @@ $(document).ready(function() {
                                 let other_cart_products_template = _.template($('#other_cart_products_template').html());
                                 $(".other_cart_products").append(other_cart_products_template(extendedData));
                                 initializeSlider();
-                                $('#placeorder_form .left_box').html('');
+                                $('#placeorder_form .left_box').html(''); 
                                 $('#placeorder_form .left_box').html(cart_details.left_section);
+                                $('#expected_vendors').html(''); 
+                                $('#expected_vendors').html(response.expected_vendor_html);
+                                
                                 if (vendor_type != 'delivery') {
                                     var latitude = $('#latitude').val();
                                     var longitude = $('#longitude').val();

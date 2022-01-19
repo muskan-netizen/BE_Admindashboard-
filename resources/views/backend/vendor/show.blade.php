@@ -277,7 +277,7 @@
                                         </div>
                                         <div class="row mb-2">
                                             <div class="col-md-2">
-                                                {!! Form::label('title', 'Can Add Category',['class' => 'control-label']) !!} 
+                                                {!! Form::label('title', 'Can Add Category',['class' => 'control-label']) !!}
                                                 <div>
                                                     <input type="checkbox" data-plugin="switchery" name="add_category" class="form-control can_add_category1" data-color="#43bee1" @if($vendor->add_category == 1) checked @endif >
                                                 </div>
@@ -290,7 +290,7 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group" id="commission_fixed_per_orderInput">
-                                                    {!! Form::label('title', 'Commission Fixed Per Order',['class' => 'control-label']) !!} 
+                                                    {!! Form::label('title', 'Commission Fixed Per Order',['class' => 'control-label']) !!}
                                                     <input class="form-control" name="commission_fixed_per_order" type="text" value="{{$vendor->commission_fixed_per_order}}" onkeypress="return isNumberKey(event)">
                                                 </div>
                                             </div>
@@ -355,21 +355,21 @@
 
                                             <form action="{{  route('draw.circle.with.radius',$vendor->id) }}" method="post">
                                                 @csrf()
-                                             <div class="row">   
-                                                <div class="col-md-4"> 
+                                             <div class="row">
+                                                <div class="col-md-4">
                                                 {!! Form::label('title', 'Draw area with radius(Miles)',['class' => 'control-label']) !!}
                                                 </div>
-                                                <div class="col-md-4"> 
-                                                      
+                                                <div class="col-md-4">
+
                                                     <div class="form-group" id="commission_monthlyInput">
                                                         <input class="form-control"  name="radius" type="number" required>
-                                                        
+
                                                     </div>
-                                                </div>  
+                                                </div>
                                                 <div class="col-md-4">
                                                     <button type="submit" class="btn btn-info"> {{ __('Go') }}</button>
                                                 </div>
-                                             </div>   
+                                             </div>
                                             </form>
 
                                         </div>
@@ -737,7 +737,7 @@
     var pickup_delivery_service_area = "{{ isset($client_preference_detail->pickup_delivery_service_area) ? $client_preference_detail->pickup_delivery_service_area : 0 }}"
     $( document ).ready(function() {
         $(".base_url").html(base_url);
-    }); 
+    });
     $(document).on("click", ".editTablebtn", function() {
         let table_id = $(this).data('id');
         $.ajax({
@@ -804,9 +804,9 @@
 <script type="text/javascript">
     var all_coordinates = @json($all_coordinates);
     var areajson_json = all_coordinates; //{all_coordinates};
-    
+
     function initialize_show() {
-       
+
         // var myLatlng = new google.maps.LatLng("{{ $center['lat'] }}","{{ $center['lng']  }}");
         //console.log(myLatlng);
         var latitude = parseFloat("{{ $vendor['latitude'] }}");
@@ -1088,7 +1088,7 @@
             });
         }
     }
-    if ((is_hyperlocal) || (pickup_delivery_service_area == 1)) { 
+    if ((is_hyperlocal) || (pickup_delivery_service_area == 1)) {
         google.maps.event.addDomListener(window, 'load', initialize);
         google.maps.event.addDomListener(window, 'load', initialize_show);
         google.maps.event.addDomListener(window, 'load', initialize_edit);
@@ -1127,7 +1127,7 @@
 
         if($('#calendar').length > 0){
         var calendarEl = document.getElementById('calendar');
-            
+
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'timeGridWeek',
             headerToolbar: {
@@ -1233,7 +1233,7 @@
                                 var slotStartTime = moment(data.start).format('H:mm');
                                 var slotEndTime = moment(data.end).format('H:mm');
                             @endif
-                            
+
                             $.each(days, function(key, value){
                                 if(slotDay == key + 1){
                                     if(slotDayList.includes(slotDay)){
@@ -1279,11 +1279,11 @@
                 document.getElementById('edit_type_id').value = ev.event.extendedProps.type_id;
 
                 // Delete Slot Form
-                document.getElementById('deleteSlotDayid').value = ev.event.extendedProps.type_id; 
+                document.getElementById('deleteSlotDayid').value = ev.event.extendedProps.type_id;
                 document.getElementById('deleteSlotId').value = ev.event.extendedProps.slot_id;
                 document.getElementById('deleteSlotType').value = ev.event.extendedProps.type;
                 document.getElementById('deleteSlotTypeOld').value = ev.event.extendedProps.type;
-                
+
                 if(ev.event.extendedProps.type == 'date'){
                     $("#edit_slotDate").prop("checked", true);
                     $(".modal .forDateEdit").show();
@@ -1354,7 +1354,7 @@
         $('#edit-slot-modal #deleteSlotType').val(val);
         if (val == 'day') {
             $('.modal .weekDaysEdit').show();
-            $('.modal .forDateEdit').hide(); 
+            $('.modal .forDateEdit').hide();
         } else if (val == 'date') {
             $('.modal .weekDaysEdit').hide();
             $('.modal .forDateEdit').show();

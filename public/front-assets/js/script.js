@@ -24,7 +24,7 @@
                 e(".sm").addClass("hover-unset");
             }),
             e(window).width() > "1200" &&
-            e("#sub-menu > li").hover(
+            e("#sub-menu  > li").hover(
                 function () {
                     e(this).children().hasClass("has-submenu") && e(this).parents().find("nav").addClass("sidebar-unset");
                 },
