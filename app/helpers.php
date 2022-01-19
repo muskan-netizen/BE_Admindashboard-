@@ -364,7 +364,7 @@ $myDate = date('Y-m-d');
 $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
 }
 $mytime =$mytime->dayOfWeek+1;
-$slots = VendorSlot::with('dayOne')->where('vendor_id',$vid)
+$slots = VendorSlot::where('vendor_id',$vid)
 ->whereHas('days',function($q)use($mytime,$type){
 return $q->where('day',$mytime)->where($type,'1');
 })
@@ -378,7 +378,7 @@ $min[] = (($product->product->delay_order_hrs * 60) + $product->product->delay_o
 
 if(isset($slots) && count($slots)>0){
 foreach($slots as $slott){
-if(isset($slott->dayOne->id))
+if(isset($slott->days->id))
 {
 $slotss[] = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
 }else{
