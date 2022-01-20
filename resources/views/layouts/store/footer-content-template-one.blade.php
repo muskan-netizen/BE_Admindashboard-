@@ -56,7 +56,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </div>
                 {{-- Contact Us details --}}
                     @if($client_preference_detail->show_contact_us == 1)
-                        <div class="col-lg-3 col-md-6 col-7 pl-lg-4">
+                        <div class="col-lg-3 col-md-6 col-7">
                             <div class="sub-title">
                                 <div class="footer-title mt-0">
                                     <h4 class="mt-0">{{ __('Contact Us') }}</h4>
