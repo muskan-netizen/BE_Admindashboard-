@@ -202,7 +202,7 @@ class AuthController extends BaseController
                 return response()->json(['error' => 'The email has already been taken.' ], 422);
             }
         }
-
+        $client_timezone = Client::where('id', '>', 0)->value('timezone');
         $user = new User();
 
         foreach ($signReq->only('name', 'country_id', 'phone_number', 'dial_code') as $key => $value) {
@@ -225,6 +225,7 @@ class AuthController extends BaseController
         $user->country_id = $country_detail->id;
         $user->phone_token_valid_till = $sendTime;
         $user->email_token_valid_till = $sendTime;
+        $user->timezone = $client_timezone;
         $user->save();
         $wallet = $user->wallet;
         $userRefferal = new UserRefferal();
@@ -1062,6 +1063,7 @@ class AuthController extends BaseController
         try {
             $user = new User();
             $country = Country::where('code', strtoupper($req->countryData))->first();
+            $client_timezone = Client::where('id', '>', 0)->value('timezone');
             // $emailCode = mt_rand(100000, 999999);
             $email = ''; //'ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com';
             $user->type = 1;
@@ -1077,6 +1079,7 @@ class AuthController extends BaseController
             // $user->email_token = $emailCode;
             $user->phone_number = $req->phone_number;
             $user->phone_token_valid_till = $req->sendTime;
+            $user->timezone = $client_timezone;
             // $user->email_token_valid_till = $sendTime;
             // $user->password = Hash::make($req->password);
             $user->save();

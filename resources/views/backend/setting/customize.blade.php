@@ -118,7 +118,7 @@
             </form>
         </div>
         <div class="col-lg-5 col-xl-6 mb-3">
-            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}"> 
                 @csrf
                 <div class="card-box mb-0 h-100 pb-0">
                     <div class="d-flex align-items-center justify-content-between">
@@ -175,7 +175,7 @@
                                 @foreach($preference->currency as $ac)
                                 <div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-{{$ac->currency->id}}">
                                     <label class="primaryCurText">1 {{$preference->primary->currency->iso_code}} {{!empty($preference->primary->currency->symbol) ? $preference->primary->currency->symbol : ''}} = </label>
-                                    <input class="form-control w-50 d-inline-block" type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" value="{{$ac->doller_compare}}"  name="multiply_by[]"> {{$ac->currency->iso_code}} {{!empty($ac->currency->symbol) ? $ac->currency->symbol : ''}}
+                                    <input class="form-control w-50 d-inline-block" type="text" value="{{$ac->doller_compare}}" step=".0001" name="multiply_by[]" oninput="changeCurrencyValue(this)"> {{$ac->currency->iso_code}} {{!empty($ac->currency->symbol) ? $ac->currency->symbol : ''}}
                                     <input type="hidden" name="cuid[]" class="curr_id" value="{{ $ac->currency->id }}">
                                 </div>
                                 @endforeach
@@ -617,10 +617,16 @@
         }
         for (i = 0; i < cidText.length; i++) {
             if (existCid.indexOf(cidText[i].id) === -1) {
-                var text = '<div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-' + cidText[i].id + '"><label class="primaryCurText">1 ' + pri_curr + '  = </label> <input type="text"  name="multiply_by[]" value="0">' + cidText[i].text + '<input type="hidden" name="cuid[]" class="curr_id" value="' + cidText[i].id + '"></div>';
+                var text = '<div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-' + cidText[i].id + '"><label class="primaryCurText">1 ' + pri_curr + '  = </label> <input type="number" name="multiply_by[]"  oninput="changeCurrencyValue(this)" min="0.00000001" value="0" step=".00000001">' + cidText[i].text + '<input type="hidden" name="cuid[]" class="curr_id" value="' + cidText[i].id + '"></div>';
                 $('.multiplierData').append(text);
             }
         }
     });
+    function changeCurrencyValue(obj)
+    {
+        var value = $(obj).val();
+        var new_value = value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, $1);
+        $(obj).val(new_value);
+    }
 </script>
 @endsection
