@@ -273,7 +273,7 @@ class ClientPreferenceController extends BaseController{
             foreach ($request->currency_data as $key => $value) {
                 $exist_cid[] = $value;
                 $curr = ClientCurrency::where('currency_id', $value)->where('client_code',Auth::user()->code)->first();
-                $multiplier = array_key_exists($key, $request->multiply_by) ? $request->multiply_by[$key] : 1;
+                $multiplier = $request->multiply_by[$value]??1;
 
                 if(!$curr){
                     $cur_multi[] = [
