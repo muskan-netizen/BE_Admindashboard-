@@ -63,43 +63,43 @@
                </td>
             </tr>
 
-             <tr>
-                <td colspan="3" style="border-bottom: 1px solid #9797973b;padding: 5px 0;"></td>
-             </tr> 
-             @endforeach
-             <tr>
-                <td style="text-align: left;"><b>{{__('Subtotal')}}:</b></td>
-                <td></td>
-                <td style="text-align: right;">{{$currencySymbol . number_format($total_products, 2, '.', '')}}</td>
-             </tr>
+           <tr>
+              <td colspan="3" style="border-bottom: 1px solid #9797973b;padding: 5px 0;"></td>
+           </tr> 
+           @endforeach
+           <tr>
+              <td style="text-align: left;"><b>{{__('Subtotal')}}:</b></td>
+              <td></td>
+              <td style="text-align: right;">{{$currencySymbol . number_format($total_products, 2, '.', '')}}</td>
+           </tr>
 
-             <tr>
-                <td style="text-align: left;"><b>{{__('TAX')}}:</b></td>
-                <td></td>
-                <td style="text-align: right;">{{$currencySymbol . number_format($product['taxable_amount'], 2, '.', '')}}</td>
-             </tr>
+           <tr>
+              <td style="text-align: left;"><b>{{__('TAX')}}:</b></td>
+              <td></td>
+              <td style="text-align: right;">{{$currencySymbol . number_format($product['taxable_amount'], 2, '.', '')}}</td>
+           </tr>
 
-             <tr>
-                <td style="text-align: left;"><b>{{__('SHIPPING Charge')}}:</b></td>
-                <td></td>
-                <td style="text-align: right;">{{$currencySymbol . number_format($product['delivery_fee_charges'], 2, '.', '')}}</td>
-             </tr>
+           <tr>
+              <td style="text-align: left;"><b>{{__('SHIPPING Charge')}}:</b></td>
+              <td></td>
+              <td style="text-align: right;">{{$currencySymbol . number_format($product['delivery_fee_charges'], 2, '.', '')}}</td>
+           </tr>
 
-             <tr>
-                <td style="text-align: left;"><b>{{__('Discount')}}:</b></td>
-                <td></td>
-                <td style="text-align: right;">{{$currencySymbol . number_format($product['discount_amount'], 2, '.', '')}}</td>
-             </tr>
-             
-             <tr>
-                <td style="text-align: left;"><b>{{__('Total')}}:</b></td>
-                <td></td>
-                <td style="text-align: right;">{{$currencySymbol . number_format($product['payable_amount'], 2, '.', '')}}</td>
-             </tr>
-            
-            
-         </table>
-         @endif
-         @endforeach
-     </td>
- </tr>
+           <tr>
+              <td style="text-align: left;"><b>{{__('Discount')}}:</b></td>
+              <td></td>
+              <td style="text-align: right;">{{$currencySymbol . number_format($product['discount_amount'], 2, '.', '')}}</td>
+           </tr>
+           
+           <tr>
+              <td style="text-align: left;"><b>{{__('Total')}}:</b></td>
+              <td></td>
+              <td style="text-align: right;">{{$currencySymbol . number_format($product['payable_amount'], 2, '.', '')}}</td>
+           </tr>
+          
+          
+       </table>
+       @endif
+       @endforeach
+   </td>
+</tr>

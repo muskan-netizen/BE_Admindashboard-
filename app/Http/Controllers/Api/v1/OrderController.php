@@ -292,7 +292,7 @@ class OrderController extends BaseController
                                     $orderAddon->save();
                                 }
                                 if (($request->payment_option_id != 7) && ($request->payment_option_id != 6)) { // if not mobbex, payfast
-                                    CartAddon::where('cart_product_id', $vendor_cart_product->id)->delete();
+                            //        CartAddon::where('cart_product_id', $vendor_cart_product->id)->delete();
                                 }
                             }
                         }
@@ -391,7 +391,7 @@ class OrderController extends BaseController
                         $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                         $order->tip_amount = number_format($tip_amount, 2);
                     }
-                    $payable_amount = $payable_amount + $tip_amount;
+                    $payable_amount = $payable_amount + $tip_amount ;
                     $order->total_service_fee = $total_service_fee;
                     $order->total_delivery_fee = $total_delivery_fee;
                     $order->loyalty_points_used = $loyalty_points_used;
@@ -890,6 +890,7 @@ class OrderController extends BaseController
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
+                Log::info($e->getMessage());
             }
         }
     }

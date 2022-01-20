@@ -754,6 +754,7 @@ class UserhomeController extends FrontController
             $home_page_pickup_labels = CabBookingLayout::with(['translations' => function ($q) use ($langId) {
                 $q->where('language_id', $langId);
             }])->where('is_active', 1)->orderBy('order_by')->where('for_no_product_found_html',0)->get();
+            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
 
             $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
 

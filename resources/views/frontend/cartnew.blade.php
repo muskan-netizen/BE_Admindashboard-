@@ -295,6 +295,21 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </div>
                     <% } %>
 
+                    <% if(product.delivery_fee_charges_ship > 0) { %>
+                        <div class="row mb-1">
+                            <div class="col-8 text-lg-right">
+                                <label class="radio pull-right">
+                                    {{__('Shiprocket')}} :
+                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee" value="<%= Helper.formatPrice(product.delivery_fee_charges_ship) %>"  data-dcode="SR" <%= (cart_details.delivery_type == 'SR')?'checked':'' %> />
+                                    <span class="checkround"></span>
+                                </label>
+                            </div>
+                            <div class="col-4 text-right">
+                                {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges_ship) %>
+                            </div>
+                        </div>
+                    <% } %>
+
                     <div class="row">
                         <div class="col-12 text-right">
                             

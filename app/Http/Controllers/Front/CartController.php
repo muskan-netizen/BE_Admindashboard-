@@ -594,7 +594,7 @@ class CartController extends FrontController
 
             $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
         }
-        $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = $deliver_charges_lalmove = 0.00;
+        $total_payable_amount = $total_subscription_discount = $total_discount_amount = $total_discount_percent = $total_taxable_amount = $deliver_charges_lalmove = $deliver_charges_ship = 0.00;
         if ($cartData) {
             $cart_dinein_table_id = NULL;
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
@@ -617,6 +617,7 @@ class CartController extends FrontController
                 $vendor_products_total_amount = $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = $delivery_fee_charges_static =  $deliver_charges_lalmove = 0.00;
                 $delivery_count = 0;
                 $delivery_count_lm = 0;
+                $delivery_count_sr = 0;
                 $coupon_amount_used = 0;
          
                 if(Session::has('vendorTable')){
@@ -771,7 +772,21 @@ class CartController extends FrontController
                             $deliveryCharges = $deliver_charges_lalmove;
                         }
 
-
+                        
+                        //getShiprocketFee Delivery changes code
+                        $deliver_ship_fee = $this->getShiprocketFee($vendorData->vendor_id);
+                        if($deliver_ship_fee>0 && $delivery_count_sr == 0)
+                        {   
+                             $delivery_count_sr = 1;
+                             $prod->deliver_charge_shiprocket = number_format($deliver_ship_fee, 2, '.', '');
+                             $shipping_delivery_type = 'SR';
+                        }
+                       $deliver_charges_ship = $deliver_ship_fee;
+                        //End shiprocket Delivery changes code
+                        if($code =='SR' && $deliver_ship_fee>0)
+                        {
+                            $deliveryCharges = $deliver_charges_ship;
+                        }
 
                         # for static fees 
                         if($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0)
@@ -901,6 +916,7 @@ class CartController extends FrontController
                 $vendorData->delivery_fee_charges = number_format($delivery_fee_charges, 2, '.', '');
                 $vendorData->delivery_fee_charges_static = number_format($delivery_fee_charges_static, 2, '.', '');;
                 $vendorData->delivery_fee_charges_lalamove = number_format($deliver_charges_lalmove, 2, '.', '');
+                $vendorData->delivery_fee_charges_ship = number_format($deliver_charges_ship, 2, '.', '');
                 $vendorData->payable_amount = number_format($payable_amount, 2, '.', '');
                 $vendorData->discount_amount = number_format($discount_amount, 2, '.', '');
                 $vendorData->discount_percent = number_format($discount_percent, 2, '.', '');
@@ -1060,7 +1076,7 @@ class CartController extends FrontController
             $cart->loyalty_amount = number_format($loyalty_amount_saved, 2, '.', '');
             $cart->gross_amount = number_format(($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount), 2, '.', '');
             $cart->new_gross_amount = number_format(($total_payable_amount + $total_discount_amount), 2, '.', '');
-            $cart->total_payable_amount = number_format($total_payable_amount, 2, '.', '');
+            $cart->total_payable_amount = number_format($total_payable_amount+$total_service_fee, 2, '.', '');
             $cart->total_discount_amount = number_format($total_discount_amount, 2, '.', '');
             $cart->total_taxable_amount = number_format($total_taxable_amount, 2, '.', '');
             $cart->tip_5_percent = number_format((0.05 * $total_payable_amount), 2, '.', '');
@@ -1398,6 +1414,31 @@ class CartController extends FrontController
 
               
             return $all_vendors;
+    }
+
+
+
+    public function getDistance($vendorId)
+    {
+        $customer = User::find(Auth::id());
+        $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
+        $vendor_details = Vendor::find($vendorId);
+
+        $latitude[] =  $vendor_details->latitude ?? 30.71728880;
+        $latitude[] =  $cus_address->latitude ?? 30.717288800000;
+
+        $longitude[] =  $vendor_details->longitude ?? 76.803508700000;
+        $longitude[] =  $cus_address->longitude ?? 76.803508700000;
+
+        $distance =  GoogleDistanceMatrix($latitude,$longitude);
+        return $distance['distance'];
+    }
+
+    public function getShiprocketFee($vendorId)
+    {
+        $distance = $this->getDistance($vendorId);
+        $fee =   getBaseprice($distance,'shiprocket');
+        return $fee;
     }
 
 
