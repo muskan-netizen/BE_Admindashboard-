@@ -47,9 +47,9 @@
                     <div class="row mt-2">
                         <div class="col-12">
                             <div class="form-group mb-2">
-                                <label for="copy_from" class="mr-3">{{ __("Store for copy") }}</label>
+                                <label for="copy_from" class="mr-3">{{ __("Copy From") }}</label>
                                 <select class="form-control" id='copy_from' name="copy_from" required>
-                                    <option value="">{{ __("Select Store for copy") }}</option>
+                                    <option value="">{{ __("Select vendor for copy") }}</option> 
                                     @foreach($vendors as $vendor)
                                     <option value="{{$vendor->id}}">{{$vendor->name}}</option>
                                     @endforeach
@@ -58,7 +58,7 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group mb-2">
-                                <label for="copy_to" class="mr-3">{{ __("Store to copy") }}</label>
+                                <label for="copy_to" class="mr-3">{{ __("Copy To") }}</label>
                                 <select class="form-control select2-multiple" id="copy_to" name="copy_to[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required>
                                     @foreach($vendors as $vendor)
                                     <option value="{{$vendor->id}}">{{$vendor->name}}</option>

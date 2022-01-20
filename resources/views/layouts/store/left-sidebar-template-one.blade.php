@@ -126,7 +126,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
          <div class="row align-items-center position-initial">
             <div class="col-lg-12">
                <div class="row mobile-header align-items-center justify-content-between my-sm-2">
-                  <div class="logo order-lg-2">
+                  <div class="logo @if($mod_count > 1) order-lg-2 @else order-lg-1 @endif">
                      <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" href="{{route('userHome')}}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                   </div>
                   <div class="al_count_tabs order-lg-1">
@@ -414,7 +414,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
             </div>
             <div class="delivery_address p-2 mb-2 position-relative">
                <button type="button" class="close edit-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-               <div class="form-group">
+               <div class="form-group address-input-group">
                   <label class="delivery-head mb-2">{{__('SELECT YOUR LOCATION')}}</label>
                   <div class="address-input-field d-flex align-items-center justify-content-between"> <i class="fa fa-map-marker" aria-hidden="true"></i> <input class="form-control border-0 map-input" type="text" name="address-input" id="address-input" value="{{session('selectedAddress')}}"> <input type="hidden" name="address_latitude" id="address-latitude" value="{{session('latitude')}}"/> <input type="hidden" name="address_longitude" id="address-longitude" value="{{session('longitude')}}"/> <input type="hidden" name="address_place_id" id="address-place-id" value="{{session('selectedPlaceId')}}"/> </div>
                </div>

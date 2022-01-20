@@ -143,7 +143,7 @@ class OrderController extends FrontController
                 ->get();
                 $vendor->vendor_dispatcher_status_count = 6;
                 $vendor->dispatcher_status_icons = [asset('assets/icons/driver_1_1.png'),asset('assets/icons/driver_2_1.png'),asset('assets/icons/driver_4_1.png'),asset('assets/icons/driver_3_1.png'),asset('assets/icons/driver_4_2.png'),asset('assets/icons/driver_5_1.png')];
-           
+
             }
         }
 
@@ -337,7 +337,7 @@ class OrderController extends FrontController
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
                     $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
                 }
-                
+
                 $email_data = [
                     'code' => $otp,
                     'link' => "link",
@@ -354,7 +354,7 @@ class OrderController extends FrontController
                 if (!empty($data['admin_email'])) {
                     $email_data['admin_email'] = $data['admin_email'];
                 }
-                if ($vendor_id == "") { 
+                if ($vendor_id == "") {
                     $email_data['send_to_cc'] = 1;
                 }else{
                     $email_data['send_to_cc'] = 0;
@@ -609,11 +609,11 @@ class OrderController extends FrontController
         }
         return $cart;
     }
-    
+
     public function placeOrder(Request $request, $domain = '')
     {
 
-        //$stock = $this->ProductVariantStoke('18');
+        //$stock = $this->ProductVariantStock('18');
 
         // dd($request->all());
         // if ($request->input("payment-group") == '1') {
@@ -771,7 +771,7 @@ class OrderController extends FrontController
                     if ($action == 'delivery') {
                         $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {
-                         
+
                             //Add here Delivery option Lalamove and dispatcher
                             if($deliver_fee_data->shipping_delivery_type=='L'){
                                 $lala = new LalaMovesController();
@@ -780,7 +780,7 @@ class OrderController extends FrontController
                                 $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
                             }
 
-                    
+
 
                             if($deliver_fee_data)
                             $delivery_fee  = $deliver_fee_data->delivery_fee??0.00;
@@ -994,10 +994,10 @@ class OrderController extends FrontController
             $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
             $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
 
-          
+
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
-            
-           
+
+
             $order->scheduled_slot = (($cart->scheduled_slot)?$cart->scheduled_slot:null);
             $order->luxury_option_id = $luxury_option->id;
             $order->payable_amount = $payable_amount;
@@ -1067,7 +1067,7 @@ class OrderController extends FrontController
             }
             DB::commit();
             $this->sendSuccessSMS($request, $order);
-         
+
             return $this->successResponse($order);
         } catch (Exception $e) {
             DB::rollback();
@@ -1314,7 +1314,7 @@ class OrderController extends FrontController
 
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
-                $this->ProductVariantStoke($order_id);
+                $this->ProductVariantStock($order_id);
                 DB::commit();
                 $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
             }
@@ -1331,7 +1331,7 @@ class OrderController extends FrontController
 
     public function placeOrderRequestlalamove($request)
     {
-       
+
         $lala = new LalaMovesController();
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
@@ -1343,14 +1343,14 @@ class OrderController extends FrontController
             if ($order_lalamove->totalFee >0){
                 $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update(['web_hook_code' => $order_lalamove->orderRef]);
-            
+
                 return 1;
             }
 
         return 2;
     }
 
-    
+
     public function checkIfanyProductLastMileon($request)
     {
         $order_dispatchs = 2;

@@ -445,7 +445,7 @@ class OrderController extends BaseController
 
                 }
                 if($request->status_option_id == 2){
-                    $this->ProductVariantStoke($request->order_id);
+                    $this->ProductVariantStock($request->order_id);
                 }
                 DB::commit();
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);

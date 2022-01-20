@@ -7,6 +7,11 @@ jQuery(window).scroll(function() {
     }
 });
 
+// Material Select Initialization
+$(document).ready(function() {
+    $('.mdb-select').materialSelect();
+    });
+
 $(function() {
     document.ajax_loading = false;
     $.hasAjaxRunning = function() {

@@ -434,7 +434,7 @@ class CustomerAuthController extends FrontController
                 $body = "Please enter OTP ".$phoneCode." to verify your account.";
                 if(!empty($provider) ){
                     $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-                    if($send){
+                    if($send ==1){
                         $request->request->add(['codeSent' => 1]);
                         $message = __('An otp has been sent to your phone. Please check.');
                         $response = $request->all();
