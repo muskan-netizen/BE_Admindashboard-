@@ -551,14 +551,14 @@ INSERT INTO `vendor_categories` (`id`, `vendor_id`, `category_id`, `status`, `cr
 
 
 INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`, `image_mobile`) VALUES
-(2, 'Home services 1', NULL, 'banner/6VYX3rkzeAHONCxo9uXovfeTPpPdodXC3einIkn1.jpg', 1, 3, 1, '2021-09-29 17:56:00', '2024-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-10-11 10:29:39', 'banner/oYJ8lc868ZlqEX0yhnqRmX5gvu9WErZe2BwqfJzg.png'),
-(3, 'home services2', NULL, 'banner/WXu2FODrtjOgbn1UWIg844On4BBgL7nRIecNl1Dc.jpg', 1, 1, 1, '2021-09-29 17:57:00', '2023-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-10-11 10:29:19', 'banner/y2vka7wpPydRQsZIGmjIpf2wjWDKZpEjY9XHL1eJ.png'),
+(2, 'Home services 1', NULL, 'banner/6VYX3rkzeAHONCxo9uXovfeTPpPdodXC3einIkn1.jpg', 1, 3, 1, '2021-09-29 17:56:00', '2025-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-10-11 10:29:39', 'banner/oYJ8lc868ZlqEX0yhnqRmX5gvu9WErZe2BwqfJzg.png'),
+(3, 'home services2', NULL, 'banner/WXu2FODrtjOgbn1UWIg844On4BBgL7nRIecNl1Dc.jpg', 1, 1, 1, '2021-09-29 17:57:00', '2025-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-10-11 10:29:19', 'banner/y2vka7wpPydRQsZIGmjIpf2wjWDKZpEjY9XHL1eJ.png'),
 (4, 'home services 3', NULL, 'banner/pJA6aYGXt27Q6lXuirz0rH3fjPC9FhDzfqHzW2wW.jpg', 1, 2, 1, '2021-09-29 17:58:00', '2025-09-30 12:00:00', NULL, NULL, 'category', '2021-09-29 12:29:12', '2021-10-11 10:29:29', 'banner/h6gHMJfVd1YnSW7t2XFdzIDt6ZVkWqh5hZspIYWO.png');
 
 
 INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
-(2, 'Home services 3', NULL, 'banner/qHZ3kQw5GIaNqFnB91ZH5vJwrQXTLGVAtJDEHTyK.png', 1, 3, 1, '2021-09-29 17:56:00', '2024-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-11-15 10:19:27'),
-(3, 'home services1', NULL, 'banner/0yVUHoUJwREZTc2BHqKmCT7LY6p7HcnkuhjszN3i.png', 1, 1, 1, '2021-09-29 17:57:00', '2023-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-11-15 10:19:36'),
+(2, 'Home services 3', NULL, 'banner/qHZ3kQw5GIaNqFnB91ZH5vJwrQXTLGVAtJDEHTyK.png', 1, 3, 1, '2021-09-29 17:56:00', '2025-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-11-15 10:19:27'),
+(3, 'home services1', NULL, 'banner/0yVUHoUJwREZTc2BHqKmCT7LY6p7HcnkuhjszN3i.png', 1, 1, 1, '2021-09-29 17:57:00', '2025-09-30 12:00:00', NULL, 1, 'vendor', NULL, '2021-11-15 10:19:36'),
 (4, 'home services 2', NULL, 'banner/gqBRrZnjIlStdY4RSys9W3DrKVTOa9t6y8oxY2kJ.png', 1, 2, 1, '2021-09-29 17:58:00', '2025-09-30 12:00:00', NULL, NULL, 'category', '2021-09-29 12:29:12', '2021-11-15 10:19:07');
 
 
@@ -632,3 +632,8 @@ INSERT INTO `loyalty_cards` (`id`, `name`, `description`, `image`, `minimum_poin
 
 
 UPDATE `client_preferences` SET `business_type` = 'home_service'  , `is_hyperlocal` = 0 WHERE `client_preferences`.`id` = 1;
+
+INSERT INTO `service_areas` (`id`, `name`, `description`, `geo_array`, `zoom_level`, `polygon`, `vendor_id`, `created_at`, `updated_at`) VALUES
+(1, 'Chandigarh', 'Chandigarh', '(30.63028621838229, 76.73159992380675),(30.685513965108882, 76.59049427195129),(30.774933596837993, 76.59942066355285),(30.79970850374547, 76.6845647065216),(30.80649099596058, 76.74224292917785),(30.769328863793827, 76.82017719431457),(30.705588956081566, 76.85622608347472),(30.70057059981408, 76.888155099588),(30.65657501704889, 76.86206257029113)', 12, 0x000000000103000000010000000a0000004b1207705aa13e4064a07c88d22e53400c18ddd77daf3e4064a07ca8ca255340a7fd560c62c63e4064a07ce85c2653407eeb4db2b9cc3e4064a07ce8cf2b53404e2ba43176ce3e4064a07ce8802f534003dd85bcf2c43e4064a07cc87d34534003ca527aa1b43e4064a07c68cc36534096bd469858b33e4064a07c88d73853407b98e14c15a83e4064a07c082c3753404b1207705aa13e4064a07c88d22e5340, 1, '2022-01-20 10:39:16', '2022-01-20 10:39:16');
+
+UPDATE `clients` SET `logo` = 'Clientlogo/61e928297164a.png' WHERE  1;

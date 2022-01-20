@@ -355,7 +355,7 @@ INSERT INTO `vendor_categories` (`id`, `vendor_id`, `category_id`, `status`, `cr
 -- --------------------------------------------------------
 
 INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
-(1, 'Taxi 1', NULL, 'banner/nFuSarlIxDSvaxCWepwKicgzG5ZXER7tZrcAp3E4.jpg', 0, 1, 1, '2021-09-29 12:36:00', '2022-09-30 12:00:00', NULL, NULL, NULL, NULL, '2021-09-29 07:07:34');
+(1, 'Taxi 1', NULL, 'banner/nFuSarlIxDSvaxCWepwKicgzG5ZXER7tZrcAp3E4.jpg', 0, 1, 1, '2021-09-29 12:36:00', '2025-09-30 12:00:00', NULL, NULL, NULL, NULL, '2021-09-29 07:07:34');
 
 
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
@@ -438,3 +438,9 @@ UPDATE `client_preferences` SET `is_hyperlocal` = 0 WHERE `client_preferences`.`
 UPDATE `app_styling_options` SET `is_selected` = 0 WHERE `app_styling_options`.`app_styling_id` = 8;
 
 UPDATE `app_styling_options` SET `is_selected` = 1 WHERE `app_styling_options`.`image` = 'home_six.png';
+
+
+INSERT INTO `service_areas` (`id`, `name`, `description`, `geo_array`, `zoom_level`, `polygon`, `vendor_id`, `created_at`, `updated_at`) VALUES
+(2, 'chandigarh', NULL, '(30.797872667692598, 76.69839373007812),(30.660938503756807, 76.64895525351562),(30.5912163820218, 76.88653459921875),(30.76483740960205, 76.988158134375)', 10, 0x0000000001030000000100000005000000ab1c166241cc3e40b09a9d7bb22c53407b4d0a4433a93e40b09a9d7b88295340a0a4f1f459973e40b09a9dfbbc38534087ff6c62ccc33e40b09a9dfb3d3f5340ab1c166241cc3e40b09a9d7bb22c5340, 1, '2022-01-20 07:40:47', '2022-01-20 07:40:47');
+
+UPDATE `clients` SET `logo` = 'Clientlogo/61e904d3e8c8b.png' WHERE  1;
