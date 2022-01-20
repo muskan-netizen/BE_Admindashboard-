@@ -8,7 +8,7 @@ use App\Http\Traits\ApiResponser;
 use App\Models\EstimateProduct;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\EstimateProductTranslation;
-use App\Models\{Client,ClientLanguage};
+use App\Models\{Client,ClientLanguage,EstimateAddonSet,EstimateAddonOption,EstimateAddonOptionTranslation,EstimateAddonSetTranslation};
 use Illuminate\Support\Facades\Storage;
 use Auth;
 
@@ -30,8 +30,12 @@ class EstimationController extends BaseController{
         ->where('client_languages.client_code', Auth::user()->code)
         ->where('client_languages.is_active', 1)
         ->orderBy('client_languages.is_primary', 'desc')->get();
+
+        $addons = EstimateAddonSet::with('option')->select('id', 'title', 'min_select', 'max_select', 'position')
+        ->where('status', '!=', 2)
+        ->orderBy('position', 'asc')->get(); 
        
-        return view('backend/setting/estimate_product')->with(['estimate_products' => $estimate_products,'client_languages' => $client_languages]);
+        return view('backend/setting/estimate_product')->with(['estimate_products' => $estimate_products,'client_languages' => $client_languages,'addons' => $addons]);
   
     }
 

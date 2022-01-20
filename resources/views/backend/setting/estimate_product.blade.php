@@ -88,6 +88,70 @@
    </div>
 
 
+   <div class="col-xl-8"> 
+      <div class="card-box">
+          <div class="row" style="max-height: 600px; overflow-x: auto">
+              <div class="col-sm-8">
+                  <h4 class="mb-4"> {{ __("Addon Set") }}</h4>
+              </div>
+              <div class="col-sm-4 text-right">
+                  <button class="btn btn-info waves-effect waves-light text-sm-right openAddonModal" dataid="0">
+                      <i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
+                  </button>
+              </div>
+              <div class="col-md-12">
+                  <div class="row addon-row">
+                      <div class="col-md-12">
+                          <form name="addon_order" id="addon_order" action="" method="post">
+                              @csrf
+                              <input type="hidden" name="orderData" id="orderVariantData" value="" />
+                          </form>
+                          <table class="table table-centered table-nowrap table-striped" id="varient-datatable">
+                              <thead>
+                                  <tr>
+                                      <th>#</th>
+                                      <th>{{ __("Title") }}</th>
+                                      <th>{{ __("Select(Min - Max)") }}</th>
+                                      <th>{{ __("Options") }}</th>
+                                      <th>{{ __("Action") }}</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  @foreach($addon_sets as $set)
+                                  <tr>
+                                      <td>{{$set->id}}</td>
+                                      <td>{{$set->title}}</td>
+                                      <td>{{$set->min_select}} - {{$set->max_select}}</td>
+                                      <td>
+                                          @foreach($set->option as $opt)
+                                          <span>{{$opt->title}} - {{$clientCurrency->currency->symbol}}{{$opt->price}}</span><br />
+                                          <span></span>
+                                          @endforeach
+                                      </td>
+                                      <td>
+                                          <a class="action-icon editAddonBtn" dataid="{{$set->id}}" href="javascript:void(0);">
+                                              <h3> <i class="mdi mdi-square-edit-outline"></i> </h3>
+                                          </a>
+
+                                          <a class="action-icon deleteAddon" dataid="{{$set->id}}" href="javascript:void(0);"> <i class="mdi mdi-delete"></i></a>
+                                          <form action="{{route('addon.destroy', $set->id)}}" method="POST" style="display: none;" id="addonDeleteForm{{$set->id}}">
+                                              @csrf
+                                              @method('DELETE')
+
+                                          </form>
+                                      </td>
+                                  </tr>
+                                  @endforeach
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div> 
+
+
    <!-- modal for product tags -->
    <div id="add_product_tag_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -136,6 +200,136 @@
       </div>
    </div>
    
+
+
+   <div id="addAddonmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+              <div class="modal-header border-bottom">
+                  <h4 class="modal-title">{{ __("Create AddOn Set") }}</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+              </div>
+              <form id="addAddonForm" method="post" enctype="multipart/form-data" action="{{route('addon.store')}}">
+                  @csrf
+                  <div class="modal-body" id="AddAddonBox">
+                      <div class="row">
+                          <div class="col-md-12">
+                              <div class="row rowYK">
+                                  <div class="col-md-12">
+                                      <h5>{{ __("Addon Title") }}</h5>
+                                  </div>
+                                  <div class="col-md-12" style="overflow-x: auto;">
+                                      <table class="table table-borderless mb-0" id="banner-datatable">
+                                          <tr>
+                                              @foreach($languages as $langs)
+                                              <th>{{$langs->language->name}}</th>
+                                              @endforeach
+                                          </tr>
+                                          <tr>
+                                              @foreach($languages as $langs)
+                                              <td>
+                                                  {!! Form::hidden('language_id[]', $langs->language_id) !!}
+                                                  <input type="text" name="title[]" value="" class="form-control" @if($langs->is_primary == 1) required @endif>
+                                              </td>
+                                              @endforeach
+                                          </tr>
+                                      </table>
+                                  </div>
+                              </div>
+                              <div class="row rowYK mb-2">
+                                  <div class="col-md-12">
+                                      <h5>{{ __("Addon Options") }}</h5>
+                                  </div>
+                                  <div class="col-md-12" style="overflow-x: auto;">
+                                      <table class="table table-borderless mb-0 optionTableAdd" id="banner-datatable">
+                                          <tr class="trForClone">
+                                              <th>{{ __("Price") }}({{$clientCurrency->currency->symbol}})</th> 
+                                              @foreach($languages as $langs)
+                                              <th>{{$langs->language->name}}</th>
+                                              @endforeach
+                                              <th></th>
+                                          </tr>
+                                          <tr class="input_tr">
+                                              <td>{!! Form::text('price[]', null, ['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'min' => '1', 'required' => 'required']) !!}</td>
+                                              @foreach($languages as $k => $langs)
+                                              <td><input type="text" name="opt_value[{{$k}}][]" class="form-control" @if($langs->is_primary == 1) required @endif>
+                                              </td>
+                                              @endforeach
+                                              <td class="lasttd"></td>
+                                          </tr>
+                                      </table>
+                                  </div>
+                                  <div class="col-md-12">
+                                      <button type="button" class="btn btn-info waves-effect waves-light addOptionRow-Add">{{ __("Add Option") }}</button>
+                                  </div>
+                              </div>
+                              <div class="row">
+                                  <div class="col-md-6">
+                                      <div class="form-group" style="display:none;">
+                                          {!! Form::label('title', __('Min Select'),['class' => 'control-label']) !!}
+                                          {!! Form::text('min_select', 1, ['class' => 'form-control', 'id' => 'min', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                          <span class="invalid-feedback" role="alert">
+                                              <strong></strong>
+                                          </span>
+                                      </div>
+                                  </div>
+                                  <div class="col-md-6">
+                                      <div class="form-group" style="display:none;">
+                                          {!! Form::label('title', __('Max Select'),['class' => 'control-label']) !!}
+                                          {!! Form::text('max_select', 1, ['class' => 'form-control', 'id' => 'max', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                                          <span class="invalid-feedback" role="alert">
+                                              <strong></strong>
+                                          </span>
+                                      </div>
+                                  </div>
+                                  <div class="col-12 mb-2">
+                                      <div class="price-range-slider">
+                                          {!! Form::label('title', __('Min & Max Range'),['class' => 'control-label']) !!}:<input type="text" id="slider_output" readonly="" style="border:0; color:#f6931f; font-weight:bold;">
+                                          <div id="slider-range" class="range-bar"></div>
+                                      </div>
+                                      <div class="row slider-labels">
+                                          <div class="col-xs-6 caption">
+                                              <strong>{{ __("Min") }}:</strong> <span id="slider-range-value1"></span>
+                                          </div>
+                                          <div class="col-xs-6 text-right caption">
+                                              <strong>{{ __("Max") }}:</strong> <span id="slider-range-value2"></span>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="col-md-12">
+                                      <p>{{ __("If max select is greater than total option than max will be total option") }}</p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="submit" class="btn btn-info waves-effect waves-light addAddonSubmit">{{ __("Submit") }}</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+  <div id="editdAddonmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+              <div class="modal-header border-bottom">
+                  <h4 class="modal-title">{{ __("Create AddOn Set") }}</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+              </div>
+              <form id="editAddonForm" method="post" enctype="multipart/form-data" action="">
+                  @csrf
+                  @method('PUT')
+                  <div class="modal-body" id="editAddonBox">
+  
+                  </div>
+                  <div class="modal-footer">
+                      <button type="submit" class="btn btn-info waves-effect waves-light editAddonSubmit">{{ __("Submit") }}</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
 
    @endsection
    @section('script')

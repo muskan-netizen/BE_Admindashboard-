@@ -1046,7 +1046,7 @@ class CartController extends FrontController
                     $myDate  = date('Y-m-d',strtotime('+1 day')); 
                     $cart->schedule_type =  'schedule';
                     //$cart->closed_store_order_scheduled =  1;
-                }
+                } 
                 $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
                 if(count((array)$slots) == 0){
                     $myDate  = date('Y-m-d',strtotime('+1 day')); 
@@ -1076,7 +1076,7 @@ class CartController extends FrontController
             $cart->loyalty_amount = number_format($loyalty_amount_saved, 2, '.', '');
             $cart->gross_amount = number_format(($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount), 2, '.', '');
             $cart->new_gross_amount = number_format(($total_payable_amount + $total_discount_amount), 2, '.', '');
-            $cart->total_payable_amount = number_format($total_payable_amount+$total_service_fee, 2, '.', '');
+            $cart->total_payable_amount = number_format($total_payable_amount, 2, '.', '');
             $cart->total_discount_amount = number_format($total_discount_amount, 2, '.', '');
             $cart->total_taxable_amount = number_format($total_taxable_amount, 2, '.', '');
             $cart->tip_5_percent = number_format((0.05 * $total_payable_amount), 2, '.', '');
@@ -1099,7 +1099,7 @@ class CartController extends FrontController
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
-
+          
             // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
@@ -1349,8 +1349,7 @@ class CartController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function getCartData($domain = '', Request $request)
-    {
-        $cart_details = [];
+    {   $cart_details = [];
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
@@ -1360,7 +1359,7 @@ class CartController extends FrontController
         } else {
             $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
         }
-
+       
         
         if (isset($request->address_id) && !empty($request->address_id)) {
             $address_id = $request->address_id;
@@ -1369,14 +1368,13 @@ class CartController extends FrontController
         }
         
 
-      
-
         if ($cart) {
-            $cart_details = $this->getCart($cart, $address_id,$request->code);
+           $cart_details = $this->getCart($cart, $address_id,$request->code);
         }
         $client_preference_detail = ClientPreference::first();
 
-        $expected_vendors = $this->searchProductExpection($cart_details);
+        $expected_vendors = [];
+    //    $expected_vendors = $this->searchProductExpection($cart_details);
         $expected_vendor_html = '';
         // if(count($expected_vendors))
         // {

@@ -178,7 +178,12 @@ function dateTimeInUserTimeZone24($date, $timezone, $showDate=true, $showTime=tr
         $dateFormat = $date_format;
     }
     if($showTime){
+<<<<<<< HEAD
         $timeFormat = 'HH:mm:ss';
+=======
+    
+    $timeFormat = 'HH:mm:ss';
+>>>>>>> 168cf0c67e7410e53db64e871ed1ba35b92aff4f
     }
 
     $format = $dateFormat . $timeFormat;
@@ -292,7 +297,11 @@ function createSlug($str, $delimiter = '-'){
     }
 
 
+<<<<<<< HEAD
 function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 5)
+=======
+    function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 5)
+>>>>>>> 168cf0c67e7410e53db64e871ed1ba35b92aff4f
     {
     $Duration = (($Duration==0)?'60':$Duration);
 
@@ -300,6 +309,7 @@ function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 5)
     if(isset($user->timezone) && !empty($user->timezone))
     $timezoneset = $user->timezone;
     else
+<<<<<<< HEAD
     {
     $client = ClientData::orderBy('id','desc')->select('id','timezone')->first();
     
@@ -310,6 +320,18 @@ function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 5)
     }
     
     
+=======
+    {   
+        $client = ClientData::orderBy('id','desc')->select('id','timezone')->first();
+
+        if(isset($client->timezone) && !empty($client->timezone))
+        $timezoneset = $client->timezone;
+        else
+        $timezoneset = 'Asia/Kolkata';
+    }
+    
+
+>>>>>>> 168cf0c67e7410e53db64e871ed1ba35b92aff4f
     $cr = Carbon::now()->addMinutes($delayMin);
     $now = dateTimeInUserTimeZone24($cr, $timezoneset);
     $nowT = strtotime($now);
@@ -350,6 +372,7 @@ function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 5)
     
 function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
 {
+<<<<<<< HEAD
     $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
     //type must be a : delivery , takeaway,dine_in
     $client = ClientData::select('timezone')->first();
@@ -399,6 +422,59 @@ function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
     }
     
     return $viewSlot;
+=======
+$type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
+//type must be a : delivery , takeaway,dine_in
+$client = ClientData::select('timezone')->first();
+$viewSlot = array();
+if(!empty($myDate))
+{ $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
+}else{
+$myDate = date('Y-m-d');
+$mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
+}
+$mytime =$mytime->dayOfWeek+1;
+$slots = VendorSlot::where('vendor_id',$vid)
+->whereHas('days',function($q)use($mytime,$type){
+return $q->where('day',$mytime)->where($type,'1');
+})
+->get();
+$min[] = '';
+$cart = CartProduct::where('vendor_id',$vid)->get();
+foreach($cart as $product)
+{
+$min[] = (($product->product->delay_order_hrs * 60) + $product->product->delay_order_min);
+}
+
+if(isset($slots) && count($slots)>0){
+foreach($slots as $slott){
+if(isset($slott->days->id))
+{
+$slotss[] = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
+}else{
+$slotss[] = [];
+}
+}
+
+$arr = array();
+$count = count($slotss);
+
+for($i=0;$i<$count;$i++){
+$arr = array_merge($arr,$slotss[$i]);
+}
+
+if(isset($arr)){
+foreach($arr as $k=> $slt)
+{
+$sl = explode(' - ',$slt);
+$viewSlot[$k]['name'] = date('h:i:A',strtotime($sl[0])).' - '.date('h:i:A',strtotime($sl[1]));
+$viewSlot[$k]['value'] = $slt;
+}
+}
+}
+
+return $viewSlot;
+>>>>>>> 168cf0c67e7410e53db64e871ed1ba35b92aff4f
 }
 
 function showSlotTemp($myDate = null, $vid, $user_id, $type = 'delivery',$duration="60")
@@ -455,10 +531,23 @@ function showSlotTemp($myDate = null, $vid, $user_id, $type = 'delivery',$durati
 function SplitTimeTemp($user_id, $myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 5)
 {
     $Duration = (($Duration==0)?'60':$Duration);
-    $user = User::find($user_id);
+    $user = Auth::user();
+    if(isset($user->timezone) && !empty($user->timezone))
+    $timezoneset = $user->timezone;
+    else
+    {   
+        $client = ClientData::orderBy('id','desc')->select('id','timezone')->first();
+
+        if(isset($client->timezone) && !empty($client->timezone))
+        $timezoneset = $client->timezone;
+        else
+        $timezoneset = 'Asia/Kolkata';
+    }
+    
+
     $cr = Carbon::now()->addMinutes($delayMin);
-    $now =  dateTimeInUserTimeZone24($cr, $user->timezone);
-    $nowT = Carbon::createFromFormat('Y-m-d H:i', $now)->timestamp;
+    $now = dateTimeInUserTimeZone24($cr, $timezoneset);
+    $nowT = strtotime($now);
     $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
     $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
     $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
@@ -498,31 +587,89 @@ function SplitTimeTemp($user_id, $myDate,$StartTime, $EndTime, $Duration="60",$d
 
 function findSlot($myDate = null,$vid,$type = 'delivery')
 {
-    $myDate = date('Y-m-d',strtotime('+1 day'));
-    $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
-    $slots = showSlot($myDate,$vid,'delivery');
-    if(count((array)$slots) == 0){
-    $myDate = date('Y-m-d',strtotime('+2 day'));
-    $slots = showSlot($myDate,$vid,'delivery');
-    }
-    
-    if(count((array)$slots) == 0){
-    $myDate = date('Y-m-d',strtotime('+3 day'));
-    $slots = showSlot($myDate,$vid,'delivery');
-    }
-    
-    if(count((array)$slots) == 0){
-    $myDate = date('Y-m-d',strtotime('+4 day'));
-    $slots = showSlot($myDate,$vid,'delivery');
-    }
-    if(isset($slots) && count((array)$slots)>0){
-    $time = explode(' - ',$slots[0]['value']);
-    return date('d M, Y h:i:A',strtotime($myDate.'T'.$time[0]));
-    }else{
-    return ", But no Slots are avialable";
-    }
+  $myDate  = date('Y-m-d',strtotime('+1 day')); 
+  $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
+        $slots = showSlot($myDate,$vid,'delivery');
+            if(count((array)$slots) == 0){
+                $myDate  = date('Y-m-d',strtotime('+2 day')); 
+                $slots = showSlot($myDate,$vid,'delivery');
+            }
+           
+            if(count((array)$slots) == 0){
+                $myDate  = date('Y-m-d',strtotime('+3 day')); 
+                $slots = showSlot($myDate,$vid,'delivery');
+            }
+
+            if(count((array)$slots) == 0){
+                $myDate  = date('Y-m-d',strtotime('+4 day')); 
+                $slots = showSlot($myDate,$vid,'delivery');
+            }
+        if(isset($slots) && count((array)$slots)>0){
+            $time = explode(' - ',$slots[0]['value']);
+            return date('d M, Y h:i:A',strtotime($myDate.'T'.$time[0]));
+        }else{
+            return ", But no Slots are avialable";
+        }
 }
 
+function GoogleDistanceMatrix($latitude, $longitude)
+{
+    $send   = [];
+    $client = ClientPreference::where('id', 1)->first();
+    $lengths = count($latitude) - 1;
+    $value = [];
+    
+    for ($i = 1; $i<=$lengths; $i++) {
+        $count  = 0;
+        $count1 = 1;
+        $ch = curl_init();
+        $headers = array('Accept: application/json',
+                'Content-Type: application/json',
+                );
+         $url =  'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='.$latitude[$count].','.$longitude[$count].'&destinations='.$latitude[$count1].','.$longitude[$count1].'&key='.$client->map_key.'';
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $response = curl_exec($ch);
+        $result = json_decode($response);
+        curl_close($ch); // Close the connection
+        $new =   $result;
+       // dd($result);
+        array_push($value, $result->rows[0]->elements);
+        $count++;
+        $count1++;
+    }
+  
+    if (isset($value)) {
+        $totalDistance = 0;
+        $totalDuration = 0;
+        foreach ($value as $item) {
+            //dd($item);
+            $totalDistance = $totalDistance + $item[0]->distance->value;
+            $totalDuration = $totalDuration + $item[0]->duration->value;
+        }
+       
+       
+        if ($client->distance_unit == 'metric') {
+            $send['distance'] = round($totalDistance/1000, 2);      //km
+        } else {
+            $send['distance'] = round($totalDistance/1609.34, 2);  //mile
+        }
+        //
+        $newvalue = round($totalDuration/60, 2);
+        $whole = floor($newvalue);
+        $fraction = $newvalue - $whole;
+
+        if ($fraction >= 0.60) {
+            $send['duration'] = $whole + 1;
+        } else {
+            $send['duration'] = $whole;
+        }
+    }
+    return $send;
+}
+
+<<<<<<< HEAD
 function GoogleDistanceMatrix($latitude, $longitude)
 {
     $send   = [];
@@ -579,3 +726,5 @@ function GoogleDistanceMatrix($latitude, $longitude)
     }
     return $send;
 }													
+=======
+>>>>>>> 168cf0c67e7410e53db64e871ed1ba35b92aff4f
