@@ -5,7 +5,7 @@ use DB;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
-use App\Models\Tag;
+use App\Models\Tag; 
 use App\Http\Controllers\Client\BaseController;
 use App\Models\TagTranslation;
 use App\Models\Client;
