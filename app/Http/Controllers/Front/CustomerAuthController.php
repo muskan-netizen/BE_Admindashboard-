@@ -212,6 +212,7 @@ class CustomerAuthController extends FrontController
             }
             $user = new User();
             $county = Country::where('code', strtoupper($req->countryData))->first();
+            $client_timezone = Client::where('id', '>', 0)->value('timezone');
             $phoneCode = mt_rand(100000, 999999);
             $emailCode = mt_rand(100000, 999999);
             $sendTime = \Carbon\Carbon::now()->addMinutes(10)->toDateTimeString();
@@ -230,6 +231,7 @@ class CustomerAuthController extends FrontController
             $user->phone_number = $req->phone_number;
             $user->phone_token_valid_till = $sendTime;
             $user->email_token_valid_till = $sendTime;
+            $user->timezone = $client_timezone;
             $user->password = Hash::make($req->password);
             $user->save();
             $wallet = $user->wallet;
@@ -563,6 +565,7 @@ class CustomerAuthController extends FrontController
         try {
             $user = new User();
             $country = Country::where('code', strtoupper($req->countryData))->first();
+            $client_timezone = Client::where('id', '>', 0)->value('timezone');
             // $emailCode = mt_rand(100000, 999999);
             $email = ''; //'ro_'.Carbon::now()->timestamp . '.' . uniqid() . '@royoorders.com';
             $user->type = 1;
@@ -578,6 +581,7 @@ class CustomerAuthController extends FrontController
             // $user->email_token = $emailCode;
             $user->phone_number = $req->phone_number;
             $user->phone_token_valid_till = $req->sendTime;
+            $user->timezone = $client_timezone;
             // $user->email_token_valid_till = $sendTime;
             // $user->password = Hash::make($req->password);
             $user->save();
