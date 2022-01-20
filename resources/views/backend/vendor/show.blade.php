@@ -362,7 +362,7 @@
                                                 <div class="col-md-4">
 
                                                     <div class="form-group" id="commission_monthlyInput">
-                                                        <input class="form-control"  name="radius" type="number" required>
+                                                        <input class="form-control"  name="radius" type="number" min="0.01" step="0.01" required>
 
                                                     </div>
                                                 </div>

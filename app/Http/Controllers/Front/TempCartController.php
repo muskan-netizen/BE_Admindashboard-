@@ -810,7 +810,7 @@ class TempCartController extends FrontController
         }
     }
 
-    public function postAddToTempCart(Request $request)
+    public function postAddToTempCart(Request $request, $domain='')
     {
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', 'delivery')->first();
@@ -980,6 +980,148 @@ class TempCartController extends FrontController
         catch (Exception $ex) {
             return $this->errorResponse($ex->getMessage(), $ex->getCode());
         }
+    }
+
+    /**
+     * get Product detail by id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getProductById(Request $request, $domain='', $pid)
+    {
+        try{
+            // $user = Auth::user();
+            $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
+            // $userid = $user->id;
+            $product = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                            ->where('category_translations.language_id', $langId);
+                        },
+                        'variant' => function($v){
+                            $v->select('id', 'sku', 'product_id', 'title', 'quantity','price','barcode','tax_category_id')
+                            ->groupBy('product_id'); // return first variant
+                        },
+                        'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell',
+                        'addOn' => function($q1) use($langId){
+                            $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                            $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                            $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                            $q1->where('set.status', 1)->where('ast.language_id', $langId);
+                        },
+                        'variantSet' => function($z) use($langId){
+                            $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                            $z->join('variant_translations as vt','vt.variant_id','vr.id');
+                            $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                            $z->where('vt.language_id', $langId);
+                        },
+                        'variantSet.options' => function($zx) use($langId, $pid){
+                            $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
+                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
+                            ->where('pvs.product_id', $pid)
+                            ->where('vt.language_id', $langId);
+                        }, 
+                        'translation' => function($q) use($langId){
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
+                            $q->where('language_id', $langId);
+                        },
+                        'addOn.setoptions' => function($q2) use($langId){
+                            $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                            $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                            $q2->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
+                        },
+                        ])->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count')
+                        ->where('id', $pid)
+                        ->first();
+
+            if(!$product){
+                return $this->errorResponse(__('No record found.'), 422);
+            }
+            $product->vendor->is_vendor_closed = 0;
+            if($product->vendor->show_slot == 0){
+                if( ($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty()) ){
+                    $product->vendor->is_vendor_closed = 1;
+                }else{
+                    $product->vendor->is_vendor_closed = 0;
+                    if($product->vendor->slotDate->isNotEmpty()){
+                        $product->vendor->opening_time = Carbon::parse($product->vendor->slotDate->first()->start_time)->format('g:i A');
+                        $product->vendor->closing_time = Carbon::parse($product->vendor->slotDate->first()->end_time)->format('g:i A');
+                    }elseif($product->vendor->slot->isNotEmpty()){
+                        $product->vendor->opening_time = Carbon::parse($product->vendor->slot->first()->start_time)->format('g:i A');
+                        $product->vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
+                    }
+                }
+            }
+
+            $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+            $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+            foreach ($product->variant as $key => $value) {
+                $product->variant[$key]->multiplier = $clientCurrency->doller_compare;
+            }
+            $addonList = array();
+            foreach ($product->addOn as $key => $value) {
+                foreach ($value->setoptions as $k => $v) {
+                    if($v->price == 0){
+                        $v->is_free = true;
+                    }else{
+                        $v->is_free = false;
+                    }
+                    $v->multiplier = $clientCurrency->doller_compare;
+                }
+            }
+            $data_image = array();
+            /*  if variant has image return variant images else product images  */
+            $variant_id = 0;
+            foreach ($product->variant as $key => $value) {
+                $variant_id = $value->id;
+                if($product->sell_when_out_of_stock == 1){
+                    $value->stock_check = '1';
+                }elseif($value->quantity > 0){
+                    $value->stock_check = '1';
+                }else{
+                    $value->stock_check = 0;
+                }
+                if($value->media && count($value->media) > 0){
+                    foreach ($value->media as $media_key => $media_value) {
+                        $data_image[$media_key]['product_variant_id'] = $media_value->product_variant_id;
+                        $data_image[$media_key]['media_id'] = $media_value->product_image_id;
+                        $data_image[$media_key]['is_default'] = 0;
+                        $data_image[$media_key]['image'] = $media_value->pimage->image;
+                    }
+                }else{
+                    foreach ($product->media as $media_key => $media_value) {
+                        $data_image[$media_key]['product_id'] = $media_value->product_id;
+                        $data_image[$media_key]['media_id'] = $media_value->media_id;
+                        $data_image[$media_key]['is_default'] = $media_value->is_default;
+                        $data_image[$media_key]['image'] = $media_value->image;
+                    }
+                }
+            }
+            if($product->variantSet){
+                foreach ($product->variantSet as $set_key => $set_value) {
+                    foreach ($set_value->options as $opt_key => $opt_value) {
+                        $opt_value->value = $opt_value->product_variant_id == $variant_id ? true : false;
+                    }
+                }
+            }
+            $product->product_media = $data_image;
+            $response['products'] = $product;
+            $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
+            $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);
+            $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell);
+            /* group by in query return data only for key - 0 so using 0 */
+            if(isset($product->variant[0]->media) && !empty($product->variant[0]->media)){
+                unset($product->variant[0]->media);
+            }
+            unset($product->related);
+            unset($product->media);
+            unset($product->upSell);
+            unset($product->crossSell);
+            $response['products'] = $product;
+            return $this->successResponse($response, '', 200);
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }    
     }
 
 }

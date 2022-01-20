@@ -19,9 +19,6 @@ class VerifyCsrfToken extends Middleware
         'webhook/lalamove',
 
         /** routes for edit order **/
-        'edit-order/search/vendor/products',
-        'edit-order/vendor/products/getProductsInCart',
-        'edit-order/temp-cart/product/updateQuantity',
-        'edit-order/temp-cart/product/add'
+        'edit-order/*'
     ];
 }
