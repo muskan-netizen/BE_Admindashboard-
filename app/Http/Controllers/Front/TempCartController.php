@@ -769,7 +769,7 @@ class TempCartController extends FrontController
     }
 
 
-    ////////////////// Edit order functions /////////////////////
+    ////////////////// Put order in Cart /////////////////////
     public function getProductsInCart(Request $request, $domain='')
     {
         try{
@@ -778,26 +778,29 @@ class TempCartController extends FrontController
             if(!$request->has('user_id')){
                 $request->request->add(['user_id' => $getallproduct->user_id]);
             }
-            foreach($getallproduct->products as $data){
-                $request->request->add([
-                    'vendor_id' => $data->vendor_id,
-                    'product_id' => $data->product_id,
-                    'quantity' => $data->quantity,
-                    'variant_id' => $data->variant_id
-                ]);
-                $addonID = OrderProductAddon::where('order_product_id',$data->id)->pluck('addon_id');
-                $addonoptID = OrderProductAddon::where('order_product_id',$data->id)->pluck('option_id');
-                if(count($addonID)){
-                    $request->request->add(['addonID' => $addonID->toArray()]);
-                }
-                if(count($addonoptID)){
-                    $request->request->add(['addonoptID' => $addonoptID->toArray()]);
-                }
-                $this->postAddToTempCart($request);
-            }
             $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
             $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
-            $cart = TempCart::with('coupon.promo')->where('status', '0')->where('user_id', $request->user_id)->first();
+            $cart = TempCart::where('status', '0')->where('user_id', $request->user_id)->first();
+            if(!$cart){
+                foreach($getallproduct->products as $data){
+                    $request->request->add([
+                        'vendor_id' => $data->vendor_id,
+                        'product_id' => $data->product_id,
+                        'quantity' => $data->quantity,
+                        'variant_id' => $data->variant_id
+                    ]);
+                    $addonID = OrderProductAddon::where('order_product_id',$data->id)->pluck('addon_id');
+                    $addonoptID = OrderProductAddon::where('order_product_id',$data->id)->pluck('option_id');
+                    if(count($addonID)){
+                        $request->request->add(['addonID' => $addonID->toArray()]);
+                    }
+                    if(count($addonoptID)){
+                        $request->request->add(['addonoptID' => $addonoptID->toArray()]);
+                    }
+                    $this->postAddToTempCart($request);
+                }
+            }
+            $cart = TempCart::with(['address','currency','coupon.promo'])->where('status', '0')->where('user_id', $request->user_id)->first();
             $cartData = $this->getCart($cart, $langId, $currId, '');
 
             return $this->successResponse($cartData, 'Order added to cart.', 201);
@@ -814,6 +817,8 @@ class TempCartController extends FrontController
         try {
             $cart_detail = [];
             $user_id = $request->user_id;
+            $address_id = $request->address_id ?? 0;
+            $order_vendor_id = $request->order_vendor_id ?? 0;
             $user = User::find($user_id);
             // $addon_ids = $request->addonID;
             // $addon_options_ids = $request->addonoptID;
@@ -832,6 +837,8 @@ class TempCartController extends FrontController
                 'item_count' => 0,
                 'currency_id' => $client_currency->currency_id,
                 'unique_identifier' => '', //!$user ? $new_session_token : '',
+                'address_id' => $address_id,
+                'order_vendor_id' => $order_vendor_id
             ];
             if ($user) {
                 $cart_detail = TempCart::updateOrCreate(['user_id' => $user->id], $cart_detail);

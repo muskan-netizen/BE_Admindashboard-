@@ -30,4 +30,12 @@ class TempCart extends Model
     public function cartvendor(){
       return $this->hasMany('App\Models\TempCartProduct')->select('cart_id', 'vendor_id');
     }
+
+    public function address(){
+      return $this->belongsTo('App\Models\UserAddress', 'address_id', 'id');
+    }
+
+    public function currency(){
+      return $this->belongsTo('App\Models\Currency', 'currency_id', 'id');
+    }
 }
