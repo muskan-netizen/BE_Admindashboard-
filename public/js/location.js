@@ -607,10 +607,10 @@ function initMap() {
             marker.setVisible(true);
 
         });
+        setTimeout(function(){ 
+            $(".pac-container").appendTo("#edit-address .address-input-group");
+        }, 300);
     }
-    setTimeout(function(){ 
-        $(".pac-container").appendTo(".delivery_address > .form-group");
-    }, 300);
 }
 
 function setLocationCoordinates(key, lat, lng) {
@@ -630,6 +630,10 @@ $(document).on("input",".edit-other-stop",function() {
      initializeNewCabHome(random_id,rel);
 });
 
+
+$(document).delegate("#edit-address #address-input", "focus", function(){
+    initMap();
+});
 
 
   function initializeNewCabHome(random_id,rel) {

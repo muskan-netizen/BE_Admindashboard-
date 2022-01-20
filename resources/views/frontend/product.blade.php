@@ -190,7 +190,7 @@
                                 </div> --}}
 
                                 <div class="exzoom hidden w-100" id="exzoom">
-                                    <div class="exzoom_img_box">
+                                    <div class="exzoom_img_box mb-2">
                                         <ul class='exzoom_img_ul'>
                                         @if(!empty($product->media))
                                         @foreach($product->media as $k => $image)
@@ -201,17 +201,19 @@
                                                             $img = $image->image;
                                                         }
                                                     @endphp
-                                            <li><img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" /></li>
+                                            <li><img class="" src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" /></li>
                                         @endforeach
                                         @endif
                                         </ul>
                                     </div>
+                                    @if(count($product->media) > 1)
                                     <div class="exzoom_nav"></div>
                                     <p class="exzoom_btn">
                                         <a href="javascript:void(0);" class="exzoom_prev_btn">
                                             < </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
                                         </a>
                                     </p>
+                                    @endif
                                 </div>
                             </div>
 
@@ -900,8 +902,8 @@
                         let variant_image_template = _.template($('#variant_image_template').html());
                         $(".product__carousel .gallery-parent").html('');
                         $(".product__carousel .gallery-parent").append(variant_image_template({variant:response.variant}));
-                        // easyZoomInitialize();
-                        // $('.easyzoom').easyZoom();
+                        easyZoomInitialize();
+                        $('.easyzoom').easyZoom();
 
                         if(response.variant.media != ''){
                             $(".product-slick").slick({ slidesToShow: 1, slidesToScroll: 1, arrows: !0, fade: !0, asNavFor: ".slider-nav" });

@@ -60,6 +60,7 @@ h6 {
     padding: 5px 0;
     display: list-item;
 }
+
 .top-header .header-dropdown li {
     padding: 0 20px 0 0;
 }
@@ -256,6 +257,7 @@ h6 {
 }
 .popular-brands .h2-heading {
     color: #fff;
+    text-transform: capitalize !important;
 }
 .see-all-btn {
     height: 40px;
@@ -688,16 +690,7 @@ body[dir="rtl"] #social-links li:last-child {
         object-fit: fill; */
         width: 100%;
     }
-    .col-lg-10.cw {
-        flex: 0 0 80.333333%;
-        max-width: 80.333333%;
-        position: initial !important;
-    }
-    .col-lg-2.cw {
-        flex: 0 0 19.666667%;
-        max-width: 19.666667%;
-        position: initial !important;
-    }
+
     .brand-slider,
     .brand-slider .slick-list {
         position: initial !important;

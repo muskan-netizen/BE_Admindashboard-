@@ -297,6 +297,10 @@ class ProductController extends BaseController
         $product->mode_of_service        = $request->mode_of_service??null;
         $product->delay_order_hrs        = $request->delay_order_hrs??0;
         $product->delay_order_min        = $request->delay_order_min??0;
+        $product->delay_order_hrs_for_dine_in = $request->delay_order_hrs_for_dine_in??0;
+        $product->delay_order_min_for_dine_in = $request->delay_order_min_for_dine_in??0;
+        $product->delay_order_hrs_for_takeway = $request->delay_order_hrs_for_takeway??0;
+        $product->delay_order_min_for_takeway = $request->delay_order_min_for_takeway??0;
         $product->pickup_delay_order_hrs        = $request->pickup_delay_order_hrs??0;
         $product->pickup_delay_order_min        = $request->pickup_delay_order_min??0;
         $product->dropoff_delay_order_hrs        = $request->dropoff_delay_order_hrs??0;

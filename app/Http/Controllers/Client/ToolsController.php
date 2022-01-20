@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\{Vendor,Product,Client,AddonSet,Category,ProductVariant,CartProduct,UserWishlist}; 
+use App\Models\{Vendor,Product,Client,AddonSet,Category,ProductVariant,CartProduct,UserWishlist,TaxCategory};  
 use Auth,Carbon,DB;
 
 class ToolsController extends Controller
@@ -32,8 +32,10 @@ class ToolsController extends Controller
                 $query->where('user_id', Auth::user()->id);
             }); 
         }
-        $vendors = $vendors->get();
-        return view('backend.tools.index')->with('vendors',$vendors);
+        $vendors = $vendors->get(); 
+        $taxCategory = TaxCategory::all();
+        $parentCategory = Category::has('childs', '>', 0)->with(['translation_one','childs'])->where('deleted_at', NULL)->whereIn('type_id', ['1', '3', '6', '8','9'])->where('is_core', 1)->where('status', 1)->get();
+        return view('backend.tools.index')->with(['vendors'=>$vendors,'taxCategory'=>$taxCategory,'parentCategory'=>$parentCategory]);
     }
 
     /**
@@ -58,18 +60,18 @@ class ToolsController extends Controller
             $from_vendor = $this->vendorObj->getById($request->copy_from);
             $from_products = $this->productObj->getByVendorId($request->copy_from);
             $client = $this->clientObj->getClient();
-            if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
-                $sku_url =  ($client->custom_domain);
-            else
-                $sku_url =  ($client->sub_domain.env('SUBMAINDOMAIN'));
-
-            $sku_url = array_reverse(explode('.',$sku_url));
-            $sku_url = implode(".",$sku_url);
 
             if(count($request->copy_to) > 0)
             {
                 foreach($request->copy_to as $copy_to)
                 {
+                    if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
+                        $sku_url =  ($client->custom_domain);
+                    else
+                        $sku_url =  ($client->sub_domain.env('SUBMAINDOMAIN'));
+
+                    $sku_url = array_reverse(explode('.',$sku_url));
+                    $sku_url = implode(".",$sku_url);
 
                     $to_vendor = $this->vendorObj->getById($copy_to);
                     $vendor_name = $to_vendor->name;
@@ -312,5 +314,28 @@ class ToolsController extends Controller
             $new_brand->save();
         }
         return $new_category;
+    }
+    public function taxCopy(Request $request)
+    {
+        try{
+            foreach($request->product_category as $category_id)
+            {
+                $products = $this->productObj->getProductByCategory($category_id);
+                foreach($products as $product)
+                {
+                    $product->tax_category_id = $request->tax_category;
+                    $product->save();
+                    foreach($product->variant as $variant)
+                    {
+                        $variant->tax_category_id = $request->tax_category;
+                        $variant->save();
+                    }
+                }
+            }
+            return redirect()->back()->with('success', 'Tax copied successfully!');
+
+        }catch (Exception $e) {
+            return redirect()->back()->with('error', 'Something went wrong!');
+        }
     }
 }

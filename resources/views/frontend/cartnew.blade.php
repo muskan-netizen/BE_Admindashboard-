@@ -204,15 +204,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         <% } %>
                     </div>
 
-                    <% if( (vendor_product.product.delay_order_hrs != undefined && vendor_product.product.delay_order_min != undefined ) &&  ((vendor_product.product.delay_order_hrs != 0) || (vendor_product.product.delay_order_hrs != 0))) { %>
+                    <% if( (vendor_product.product.delay_order_time.delay_order_hrs != undefined && vendor_product.product.delay_order_time.delay_order_min != undefined ) &&  ((vendor_product.product.delay_order_time.delay_order_hrs != 0) || (vendor_product.product.delay_order_time.delay_order_hrs != 0))) { %>
                         <div class="col-12">
                             <div class="text-danger" style="font-size:12px;">
                                 <i class="fa fa-exclamation-circle"></i>Preparation Time is
-                                <% if(vendor_product.product.delay_order_hrs > 0) { %>
-                                    <%= vendor_product.product.delay_order_hrs %> Hrs
+                                <% if(vendor_product.product.delay_order_time.delay_order_hrs > 0) { %>
+                                    <%= vendor_product.product.delay_order_time.delay_order_hrs %> Hrs
                                 <% } %>
-                                <% if(vendor_product.product.delay_order_min > 0) { %>
-                                    <%= vendor_product.product.delay_order_min %> Minutes
+                                <% if(vendor_product.product.delay_order_time.delay_order_min > 0) { %>
+                                    <%= vendor_product.product.delay_order_time.delay_order_min %> Minutes
                                 <% } %>
                             </div>
                         </div>
@@ -609,6 +609,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <div class="other_cart_products"></div>
 
 </div>
+
+
+{{-- <div id="expected_vendors" class="mb-4">
+</div> --}}
+
+
 <script type="text/template" id="other_cart_products_template">
     <div class="container mt-3 mb-5">
         <% if(cart_details.upSell_products != ''){ %>

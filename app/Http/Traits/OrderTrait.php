@@ -8,7 +8,7 @@ use App\Models\{Order,ProductVariant};
 
 trait OrderTrait{
 
-    public function ProductVariantStoke($order_id)
+    public function ProductVariantStock($order_id)
     {
 
         $order = Order::with(['vendors.products.pvariant'])->find($order_id);

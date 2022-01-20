@@ -131,11 +131,28 @@ class Product extends Model{
       return $this->hasMany('App\Models\ProductTag', 'product_id', 'id'); 
     }
 
-    
+    public function getDelayOrderTimeAttribute()
+    {
+      $data = [];
+      $type = ((session()->get('vendorType'))?session()->get('vendorType'):'delivery');
+      if($type == 'dine_in'){
+        $data['delay_order_hrs'] = $this->attributes['delay_order_hrs_for_dine_in'];
+        $data['delay_order_min'] = $this->attributes['delay_order_min_for_dine_in'];
+      }elseif($type == 'takeaway'){
+        $data['delay_order_hrs'] = $this->attributes['delay_order_hrs_for_takeway'];
+        $data['delay_order_min'] = $this->attributes['delay_order_min_for_takeway'];
+      }else{
+        $data['delay_order_hrs'] = $this->attributes['delay_order_hrs'];
+        $data['delay_order_min'] = $this->attributes['delay_order_min'];
+      }
+      return $data;
+    }
+
     public function getDelayHrsMinAttribute()
     {
-       $delay_order_hrs = $this->attributes['delay_order_hrs'];
-       $delay_order_min = $this->attributes['delay_order_min'];
+      $data = $this->getDelayOrderTimeAttribute();
+      $delay_order_hrs = $data['delay_order_hrs'];
+      $delay_order_min = $data['delay_order_min'];
 
        if(@$delay_order_hrs > 0 || @$delay_order_min > 0){
          $total_minutues = ($delay_order_hrs * 60) + $delay_order_min;
@@ -225,6 +242,10 @@ class Product extends Model{
     public function getProductBySku($sku)
     {
       return self::where('sku',$sku)->first();
+    }
+    public function getProductByCategory($category_id)
+    {
+      return self::where('category_id',$category_id)->get();
     }
     
 }

@@ -205,6 +205,7 @@ class ClientPreferenceController extends BaseController{
             $preference->minimum_order_batch = ($request->has('minimum_order_batch') && $request->minimum_order_batch == 'on') ? 1 : 0;
             $preference->static_delivey_fee = ($request->has('static_delivey_fee') && $request->static_delivey_fee == 'on') ? 1 : 0;
             $preference->header_quick_link = ($request->has('header_quick_link') && $request->header_quick_link == 'on') ? 1 : 0;
+            $preference->get_estimations = ($request->has('get_estimations') && $request->get_estimations == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
@@ -273,6 +274,7 @@ class ClientPreferenceController extends BaseController{
                 $exist_cid[] = $value;
                 $curr = ClientCurrency::where('currency_id', $value)->where('client_code',Auth::user()->code)->first();
                 $multiplier = array_key_exists($key, $request->multiply_by) ? $request->multiply_by[$key] : 1;
+
                 if(!$curr){
                     $cur_multi[] = [
                         'currency_id'=> $value,
@@ -281,8 +283,12 @@ class ClientPreferenceController extends BaseController{
                         'doller_compare'=> $multiplier
                     ];
                 }else{
-                    ClientCurrency::where('currency_id', $value)->where('client_code',Auth::user()->code)
-                                ->update(['doller_compare' => $multiplier]);
+                    $curr->doller_compare =  $multiplier;
+                    $curr->save();
+
+                    // $res = ClientCurrency::where('currency_id', $value)->where('client_code',Auth::user()->code)
+                    //             ->update(['doller_compare' => $multiplier]);
+                               // pr($res);
                 }
             }
             ClientCurrency::insert($cur_multi);

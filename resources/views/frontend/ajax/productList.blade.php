@@ -18,7 +18,7 @@
                             <div class="pref-timing">
                                 <!--<span>5-10 min</span>-->
                             </div>
-                            <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
+                            {{--<i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>--}}
                         </div>
                         <div class="media-body align-self-center">
                             <div class="inner_spacing w-100">
@@ -65,6 +65,6 @@
 
 @if(count($listData))
 <div class="pagination pagination-rounded justify-content-end mb-0">
-    {{ $listData->links() }}
+    {{ $listData->links() }} 
 </div>
 @endif

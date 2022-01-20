@@ -417,7 +417,7 @@
         ajaxCall = $.ajax({
             type: "post",
             dataType: "json",
-            url: "{{ route('vendorProductFilters', $vendor->id) }}",
+            url: "{{ route('vendorDetail', $vendor->slug) }}",
             data: {
                 "_token": "{{ csrf_token() }}",
                 "brands": brands,

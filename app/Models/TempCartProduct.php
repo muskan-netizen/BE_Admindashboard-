@@ -47,7 +47,7 @@ class TempCartProduct extends Model{
     }
 
     public function vendorProducts(){
-      return $this->hasMany(TempCartProduct::class, 'vendor_id', 'vendor_id')->leftjoin('client_currencies as cc', 'cc.currency_id', 'cart_products.currency_id')->select('cart_products.id', 'cart_products.cart_id', 'cart_products.product_id', 'cart_products.quantity', 'cart_products.variant_id', 'cart_products.is_tax_applied', 'cart_products.tax_category_id', 'cart_products.currency_id', 'cc.doller_compare', 'cart_products.vendor_id', 'cart_products.scheduled_date_time')->orderBy('cart_products.created_at', 'asc')->orderBy('cart_products.vendor_id', 'asc');
+      return $this->hasMany(TempCartProduct::class, 'vendor_id', 'vendor_id')->leftjoin('client_currencies as cc', 'cc.currency_id', 'temp_cart_products.currency_id')->select('temp_cart_products.id', 'temp_cart_products.cart_id', 'temp_cart_products.product_id', 'temp_cart_products.quantity', 'temp_cart_products.variant_id', 'temp_cart_products.is_tax_applied', 'temp_cart_products.tax_category_id', 'temp_cart_products.currency_id', 'cc.doller_compare', 'temp_cart_products.vendor_id', 'temp_cart_products.scheduled_date_time')->orderBy('temp_cart_products.created_at', 'asc')->orderBy('temp_cart_products.vendor_id', 'asc');
     }
 
 

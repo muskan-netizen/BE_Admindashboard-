@@ -285,6 +285,16 @@
                                 </a>
                             </li>
                         @endif
+
+                        @if($client_preference_detail->get_estimations == 1)    
+                            <li>
+                                <a href="{{route('estimations.index')}}">
+                                    <span class="icon-configuration"></span>
+                                    <span> {{ __('Estimations') }} </span>
+                                </a>
+                            </li>
+                        @endif
+
                         @if(in_array('tax',$allowed) || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('tax.index')}}">

@@ -21,6 +21,7 @@ class VerifyCsrfToken extends Middleware
         /** routes for edit order **/
         'edit-order/search/vendor/products',
         'edit-order/vendor/products/getProductsInCart',
-        'edit-order/temp-cart/product/updateQuantity'
+        'edit-order/temp-cart/product/updateQuantity',
+        'edit-order/temp-cart/product/add'
     ];
 }
