@@ -8,6 +8,10 @@ html, body {
 body{
         box-sizing: border-box;
     }
+    p{
+    font-family: "Gotham", Sans-serif;
+    line-height: 1.4 !important;
+}
 @font-face {
 	  font-family: Gotham-Font;
 	  src: url(.https://sales.alerthire.com/hokitch/font/Gotham-Light.otf);
@@ -27,9 +31,7 @@ body{
     border-style: dashed;
     left: 100%;
 }
-p{
-    font-family: "Gotham", Sans-serif !important;
-}
+
 .process1:hover .process-child span {
     box-shadow: 0px 10px 50px 0px rgb(0 0 0 / 15%) !important;
     border-radius: 50%;
@@ -71,12 +73,6 @@ p{
 .service_moment {
     width: auto !important;
     padding: 30px 20px  20px 20px!important;
-}
-footer {
-    width: auto !important;
-}
-.copyright {
-    width: auto !important;
 }
 .banner_section {
     padding: 40px 20px !important;
@@ -174,6 +170,185 @@ footer {
 }
 
 
+@media screen and (min-width: 820px) and (max-width: 1180px){
+    .head-right {
+    padding: 12px 0px !important;
+}
+.set-res {
+    display: inherit !important;
+}
+.left-text {
+    width: auto !important;
+    padding: 20px 20px !important;
+}
+.right-text {
+    width: auto !important;
+    padding: 20px 20px !important;
+}
+.banner_section {
+    padding: 20px 20px !important;
+}
+.service_moment {
+    width: auto !important;
+    padding: 0px 20px !important;
+}
+.we_are .khalid-left {
+    padding: 10px 20px !important;
+}
+.bg-inner {
+    width: auto !important;
+}
+.svg-img1 svg {
+    top: -65px !important;
+}
+.we_are {
+    margin: 10px 0px !important;
+}
+.we_are h3{
+    margin-top: 0px !important;
+}
+.center {
+    width: auto !important;
+}
+.right_colomn {
+    width: auto !important;
+}
+.left-column {
+    width: auto !important;
+}
+.brand-build {
+    width: auto !important;
+}
+/*--------food partner page css start here------------*/
+.sign_in {
+    padding: 20px 0px !important;
+}
+.wrapper {
+    width: auto !important;
+}
+.outer-coulmn1 {
+    width: 70% !important;
+    margin: 0px auto !important;
+}
+.wrapper-hokies {
+    width: auto !important;
+}
+.wrapper_why {
+    width: auto !important;
+    margin: 20px 20px !important;
+}
+.hokich-matter {
+    width: auto !important;
+}
+.view-result {
+    width: auto !important;
+    margin: 40px 20px !important;
+}
+.wrapper-solution {
+    width: auto !important;
+    margin: 0px 20px !important;
+}
+.bg-child {
+    width: auto !important;
+}
+/*------------hokitch Homepage responsive css here-------------*/
+.kitch-work1 {
+    width: auto !important;
+}
+.wrapper-list {
+    width: auto !important;
+}
+/*client review css here-----*/
+.review_outer {
+    width: auto !important;
+    display: inherit !important;
+}
+.testimonial-video {
+    width: 100% !important;
+    text-align: center !important;
+}
+.testimonial-text {
+    width: 100% !important;
+    text-align: center !important;
+    margin-top: 20px !important;
+}
+.svg-img1 svg {
+    top: -74px !important;
+}
+.set_product {
+    display: inherit !important;
+}
+.wrapper-right_text {
+    width: 100% !important;
+    margin-top: 20px !important;
+}
+.testimonial-video iframe {
+    width: 100% !important;
+    height: 298px;
+}
+.order-text {
+    display: flex;
+    align-items: center;
+}
+.step-child1 {
+    display: inherit !important;
+    align-items: inherit !important;
+}
+.process1 {
+    display: inherit !important;
+    float: none !important;
+    width: 100% !important;
+    text-align: center;
+}
+.wrapper-child2 {
+    display: inherit !important;
+}
+.wrapper-left_img {
+    width: 100% !important;
+    text-align: center !important;
+}
+.wrapper-right_text {
+    width: 100% !important;
+    margin-top: 20px !important;
+}
+.review_outer {
+    display: inherit !important;
+    width: auto !important;
+}
+.testimonial-video {
+    width: 100% !important;
+    margin: 0 auto !important;
+}
+.testimonial-text {width: 100% !important;margin-top: 50px !important;}
+}
+.banner_homepage {
+    height: 50vh !important;
+}
+.outer-coulmn1{
+        width: 90% !important;
+    margin: 0px auto !important;
+}
+.center-logo img {
+    width: 56% !important;
+}
+.right-child1 p {
+}
+.outer-hokitch {
+    display: inherit !important;
+}
+.left-content {
+    width: 100% !important;
+}
+.outer-align-hokitch {
+    display: inherit !important;
+}
+.hokitch-source {
+    width: 100% !important;
+}
+.hokitch_women {
+    width: auto !important;
+}
+}
 
 
 @media screen and (min-width: 769px) and (max-width: 1024px){
@@ -204,11 +379,11 @@ footer {
 .bg-inner {
     width: auto !important;
 }
-footer {
-    width: auto !important;
-}
-.copyright {
-    width: auto !important;
+.process1 {
+    display: inherit !important;
+    float: none !important;
+    width: 100% !important;
+    text-align: center;
 }
 .svg-img1 svg {
     top: -65px !important;
@@ -299,11 +474,11 @@ footer {
 }
 .left-text {
     width: 100% !important;
-    padding-left: 0px !important;
+    padding:3px !important;
 }
 .right-text {
     width: 100% !important;
-    padding-left: 0px !important;
+    padding:3px !important;
 }
 .banner_section{
 	padding: 20px 20px !important;
@@ -313,6 +488,9 @@ footer {
 }
 .set_product {
     display: inherit !important;
+}
+.left-column img {
+    width: 100% !important;
 }
 .center {
     margin: 20px 20px;
@@ -341,14 +519,6 @@ footer {
 .service_moment {
     width: auto !important;
 }
-footer {
-    width: auto !important;
-    display: inherit !important;
-    padding: 30px 0px 10px 0px !important;
-}
-.copyright {
-    width: auto !important;
-}
 .right_colomn img {
     width: 100% !important;
 }
@@ -358,11 +528,6 @@ footer {
 }
 .logo_btm {
     width: 100% !important;
-    padding: 10px 20px !important;
-}
-
-.footer_nav {
-    width: 100%  !important;
     padding: 10px 20px !important;
 }
 .logo {
@@ -415,12 +580,6 @@ header{
 .right_colomn {
     padding: 0px 5px !important;
 }
-footer .logo_btm img {
-    display: none;
-}
-footer .footer_nav .heading h6 {
-    text-align: center;
-}
 .brand-build {
     width: auto !important;
     margin-bottom: 30px;
@@ -437,8 +596,12 @@ footer .footer_nav .heading h6 {
 .sign_in {
     width: 100% !important;
     text-align: center !important;
-    padding: 22px 0px !important;
+    padding: 8px 0px !important;
     background: #f3ddbb;
+        margin: 8px 0px 0px 0px;
+}
+.center-logo img {
+    width: 56% !important;
 }
 .center {
     width: auto !important;
@@ -485,7 +648,7 @@ footer .footer_nav .heading h6 {
 }
 .outer-align-hokitch .elemnt-box-content p {
     font-size:12px !important;
-    line-height: 20px;
+    line-height: 20px !important;
 }
 .outer-align-hokitch .hokitch-source figure img {
     width: 100%;
@@ -626,7 +789,7 @@ footer .footer_nav .heading h6 {
 
 @media screen and (max-width: 480px){
 .banner_homepage{
-        height: 30vh !important;
+        height: 50vh !important;
     }
 .process-child:before {
     height: 28px;
@@ -645,6 +808,7 @@ footer .footer_nav .heading h6 {
 }
 .wrapper-right_text p span {
     font-size: 28px !important;
+        line-height: 40px !important;
 }
 .hokitch-source .inner-text {
    vertical-align: top;
@@ -673,6 +837,15 @@ footer .footer_nav .heading h6 {
 iframe {
     width: 400px !important;
 }
+.order-text {
+    display: flex !important;
+    align-items: center !important;
+}
+.wrapper {
+    width: auto !important;
+    padding: 15px !important;
+}
+
 
 }
 
