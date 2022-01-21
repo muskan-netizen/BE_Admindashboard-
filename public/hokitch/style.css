@@ -1,3 +1,13 @@
+ *{
+        margin: 0px;
+        padding: 0px;
+    }
+html, body {
+        overflow-x: hidden;
+    }
+body{
+        box-sizing: border-box;
+    }
 @font-face {
 	  font-family: Gotham-Font;
 	  src: url(.https://sales.alerthire.com/hokitch/font/Gotham-Light.otf);
@@ -18,7 +28,7 @@
     left: 100%;
 }
 p{
-    font-family: "Gotham", Sans-serif;
+    font-family: "Gotham", Sans-serif !important;
 }
 .process1:hover .process-child span {
     box-shadow: 0px 10px 50px 0px rgb(0 0 0 / 15%) !important;
@@ -28,53 +38,6 @@ p{
     background: #000 !important;
 }
 /*==--------------------------==end here====-----=*/
- /*=====food partner page css here=====*/
-    .left-child1 {
-    position: relative;
-}
-.ds_custom_text:after {
-    border-color: #FFB005;
-    border-style: dashed;
-    content: '';
-    display: inline-block;
-    height: 100%;
-    position: absolute;
-    left: -30px;
-    top: 33px;
-    border-width: 1px !important;
-}
-.outer-coulmn1:hover .ds_custom_text {
-    background: #000 !important;
-    display: inline-block;
-}
-
-.outer-coulmn1:hover .ds_custom_text1 {
-    background: #000 !important;
-    display: inline-block;
-}
-.outer-coulmn1:hover .left-child1 {
-    box-shadow: 0px 10px 50px 0px rgb(0 0 0 / 15%) !important;
-}
-.button-wrapper a:hover {
-    color: #ffffff;
-    background-color: #F05123 !important;
-}
-.result-btn a:hover {
-    color: #ffffff;
-    background-color: #F05123 !important;
-}
-/*==========-----------=end here==----------------------===*/
-*{
-		margin: 0px;
-		padding: 0px;
-	}
-html, body {
-	    overflow-x: hidden;
-	}
-body{
-		box-sizing: border-box;
-	}
-
 
 @media screen and (min-width: 1921px) {
 	.service_moment{
@@ -125,7 +88,6 @@ footer {
 .center {
     width: auto !important;
 }
-
 .right_colomn {
     width: auto !important;
 }
@@ -160,13 +122,53 @@ footer {
 .outer-align-hokitch {
     justify-content: center;
     margin: 20px 20px !important;
+
 }
+.left-child1 {
+    position: relative;
+}
+.ds_custom_text:after {
+    border-color: #FFB005;
+    border-style: dashed;
+    content: '';
+    display: inline-block;
+    height: 100%;
+    position: absolute;
+    left: -30px;
+    top: 33px;
+    border-width: 1px !important;
+}
+.outer-coulmn1:hover .ds_custom_text {
+    background: #000 !important;
+    display: inline-block;
+}
+
+.outer-coulmn1:hover .ds_custom_text1 {
+    background: #000 !important;
+    display: inline-block;
+}
+.outer-coulmn1:hover .left-child1 {
+    box-shadow: 0px 10px 50px 0px rgb(0 0 0 / 15%) !important;
+}
+.button-wrapper a:hover {
+    color: #ffffff;
+    background-color: #F05123 !important;
+}
+.result-btn a:hover {
+    color: #ffffff;
+    background-color: #F05123 !important;
+}
+/*==========-----------=end here==----------------------===*/
 /*-------homepage responsive css here---*/
 .kitch-work1 {
     width: auto !important;
 }
 
 .wrapper-list {
+    width: auto !important;
+}
+/*customber review section css ------*/
+.review_outer {
     width: auto !important;
 }
 }
@@ -209,7 +211,7 @@ footer {
     width: auto !important;
 }
 .svg-img1 svg {
-    top: -60px !important;
+    top: -65px !important;
 }
 .we_are {
     margin: 10px 0px !important;
@@ -268,6 +270,21 @@ footer {
 .wrapper-list {
     width: auto !important;
 }
+/*client review css here-----*/
+.review_outer {
+    width: auto !important;
+    display: inherit !important;
+}
+.testimonial-video {
+    width: 100% !important;
+    text-align: center !important;
+}
+.testimonial-text {
+    width: 100% !important;
+    text-align: center !important;
+    margin-top: 20px !important;
+}
+
 }
 
 
@@ -280,7 +297,6 @@ footer {
 .set-res {
     display: inherit !important;
 }
-
 .left-text {
     width: 100% !important;
     padding-left: 0px !important;
@@ -305,11 +321,9 @@ footer {
     display: inherit !important;
     padding-bottom: 20px !important;
 }
-
 .just-food {
     padding-right: 20px !important;
 }
-
 .art-food {
     padding: 20px 20px !important;
     text-align: left !important;
@@ -429,7 +443,6 @@ footer .footer_nav .heading h6 {
 .center {
     width: auto !important;
 }
-
 .right_colomn {
     width: auto !important;
 }
@@ -560,7 +573,6 @@ footer .footer_nav .heading h6 {
     width: auto !important;
     text-align: center;
 }
-
 .wrapper-right_text {
     width: auto !important;
 }
@@ -578,10 +590,42 @@ footer .footer_nav .heading h6 {
     height: 75px !important;
     margin-bottom: 15px;
 }
+.review_outer {
+    width: auto !important;
+    display: inherit !important;
+}
+.testimonial-video {
+    width: 100% !important;
+    text-align: center !important;
+}
+.testimonial-text {
+    width: 80% !important;
+    margin: 0 auto !important;
+}
+.client_review .client_review .flickity-viewport{
+    overflow: visible !important;
+}
+.client_review .speak-customber p{
+    font-size: 10px !important;
+}
+.speak-customber {
+    width: 362px !important;
+}
+.customber_video {
+    width: 100% !important;
+    max-width: 80% !important;
+    margin: 0 auto;
+}
+.customber_video iframe {
+    width: 100% !important;
+}
+.testimonial-text {
+    margin-top: 25px !important;
+}
 }
 
 @media screen and (max-width: 480px){
-    .banner_homepage{
+.banner_homepage{
         height: 30vh !important;
     }
 .process-child:before {
@@ -595,8 +639,8 @@ footer .footer_nav .heading h6 {
     padding: 20px 20px !important;
 }
 .text-style p {
-    font-size: 22px !important;
-    line-height: 33px !important;
+    font-size: 14px !important;
+    line-height: 22px !important;
     letter-spacing: 0.2px;
 }
 .wrapper-right_text p span {
@@ -605,5 +649,30 @@ footer .footer_nav .heading h6 {
 .hokitch-source .inner-text {
    vertical-align: top;
    }
+   .client_review .client_review .flickity-viewport{
+    overflow: visible !important;
+}
+.client_review .speak-customber p{
+    font-size: 10px !important;
+}
+.speak-customber {
+    width: 260px !important;
+}
+.client_review .text-test p {
+ font-size: 26px !important;
+    padding-top: 20px;
+}
+.customber_video {
+    width: 100% !important;
+    max-width: 80% !important;
+    margin: 0 auto;
+}
+.customber_video iframe {
+    width: 100% !important;
+}
+iframe {
+    width: 400px !important;
+}
+
 }
 

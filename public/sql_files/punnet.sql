@@ -1142,15 +1142,15 @@ INSERT INTO `vendor_categories` (`id`, `vendor_id`, `category_id`, `status`, `cr
 
 
 INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`, `image_mobile`) VALUES
-(4, 'Continental', NULL, 'banner/fM5TlTbnutPR7u4pfg5L30LQYlachfhCjIvOHiQu.png', 1, 1, 1, '2021-10-05 17:46:00', '2021-12-31 12:00:00', 14, NULL, 'category', '2021-10-05 12:16:54', '2021-10-11 10:10:46', 'banner/FcIQ8uFPhLC2MR544ptHWrshKhU2RMpIb94kUnUz.png'),
-(5, 'Salad', NULL, 'banner/2QvL8oecRrfR2uoURR0HfractaWHIPrTk0dOQE6U.png', 1, 3, 1, '2021-10-05 17:48:00', '2021-12-31 12:00:00', 17, NULL, 'category', '2021-10-05 12:18:42', '2021-10-11 10:30:29', 'banner/YcFQUvjkr6l1Bif1HxF49U2J7qirVx7yyv3em7g7.png'),
-(6, 'Italian', NULL, 'banner/pRWVx8LhTYrGb3fK0fcOv1lHNlovjCxgk48piwwn.png', 1, 2, 1, '2021-10-05 17:50:00', '2021-12-31 12:00:00', 15, NULL, 'category', '2021-10-05 12:21:57', '2021-10-11 10:11:12', 'banner/wPww1rOhkV6bcC4W7X0oTLHKNnoVHDIzz99ogEkJ.png');
+(4, 'Continental', NULL, 'banner/fM5TlTbnutPR7u4pfg5L30LQYlachfhCjIvOHiQu.png', 1, 1, 1, '2021-10-05 17:46:00', '2025-12-31 12:00:00', 14, NULL, 'category', '2021-10-05 12:16:54', '2021-10-11 10:10:46', 'banner/FcIQ8uFPhLC2MR544ptHWrshKhU2RMpIb94kUnUz.png'),
+(5, 'Salad', NULL, 'banner/2QvL8oecRrfR2uoURR0HfractaWHIPrTk0dOQE6U.png', 1, 3, 1, '2021-10-05 17:48:00', '2025-12-31 12:00:00', 17, NULL, 'category', '2021-10-05 12:18:42', '2021-10-11 10:30:29', 'banner/YcFQUvjkr6l1Bif1HxF49U2J7qirVx7yyv3em7g7.png'),
+(6, 'Italian', NULL, 'banner/pRWVx8LhTYrGb3fK0fcOv1lHNlovjCxgk48piwwn.png', 1, 2, 1, '2021-10-05 17:50:00', '2025-12-31 12:00:00', 15, NULL, 'category', '2021-10-05 12:21:57', '2021-10-11 10:11:12', 'banner/wPww1rOhkV6bcC4W7X0oTLHKNnoVHDIzz99ogEkJ.png');
 
 
 INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
-(4, 'Mcdonald\'s', NULL, 'banner/3IlAMNHnqsfQQWv369O9MWXUdRhWJtWb8BIcsgu1.png', 1, 1, 1, '2021-10-05 17:46:00', '2021-12-31 12:00:00', 14, NULL, 'category', '2021-10-05 12:16:54', '2021-11-15 09:29:11'),
-(5, 'KFC', NULL, 'banner/LLB8jrDaij3EKyn2JrbwjO94mUFAXTC3JdqK4BB1.png', 1, 3, 1, '2021-10-05 17:48:00', '2021-12-31 12:00:00', 17, NULL, 'category', '2021-10-05 12:18:42', '2021-11-15 09:30:33'),
-(6, 'Domino\'s', NULL, 'banner/UnuFZLbn3URi6LuOomcmQpyM71xAHDbROPvW4JJP.png', 1, 2, 1, '2021-10-05 17:50:00', '2021-12-31 12:00:00', 15, NULL, 'category', '2021-10-05 12:21:57', '2021-11-15 09:29:45');
+(4, 'Mcdonald\'s', NULL, 'banner/3IlAMNHnqsfQQWv369O9MWXUdRhWJtWb8BIcsgu1.png', 1, 1, 1, '2021-10-05 17:46:00', '2025-12-31 12:00:00', 14, NULL, 'category', '2021-10-05 12:16:54', '2021-11-15 09:29:11'),
+(5, 'KFC', NULL, 'banner/LLB8jrDaij3EKyn2JrbwjO94mUFAXTC3JdqK4BB1.png', 1, 3, 1, '2021-10-05 17:48:00', '2025-12-31 12:00:00', 17, NULL, 'category', '2021-10-05 12:18:42', '2021-11-15 09:30:33'),
+(6, 'Domino\'s', NULL, 'banner/UnuFZLbn3URi6LuOomcmQpyM71xAHDbROPvW4JJP.png', 1, 2, 1, '2021-10-05 17:50:00', '2025-12-31 12:00:00', 15, NULL, 'category', '2021-10-05 12:21:57', '2021-11-15 09:29:45');
 
 
 
@@ -1221,3 +1221,54 @@ INSERT INTO `loyalty_cards` (`id`, `name`, `description`, `image`, `minimum_poin
 
 
 UPDATE `client_preferences` SET `business_type` = 'food_grocery_ecommerce' , `is_hyperlocal` = 0 WHERE `client_preferences`.`id` = 1;
+
+
+INSERT INTO `service_areas` (`id`, `name`, `description`, `geo_array`, `zoom_level`, `polygon`, `vendor_id`, `created_at`, `updated_at`) VALUES
+(1, 'Chandigarh', 'Chandigarh', '(30.65751640747829, 76.75317203509763),(30.68881703092044, 76.64502536761717),(30.76200903339402, 76.63506900775388),(30.79357067299027, 76.66528141009763),(30.80005869848639, 76.7239896010156),(30.793275752335877, 76.78166782367185),(30.740765467752897, 76.86406528460935),(30.709776869764205, 76.8884412001367),(30.66076505697709, 76.84415256488279)', 12, 0x000000000103000000010000000a000000e2b3cafe52a83e4064c07af8333053402abb1c5056b03e4064c07a184829534013af250613c33e4064c07af8a4285340d48e977227cb3e4064c07af8932a53401ee198a5d0cc3e4064c07ad8552e53400dfea41e14cb3e4064c07ad8063253403d0142cea2bd3e4064c07ad84c3753403218dbefb3b53e4064c07a38dc385340620e16e627a93e4064c07a9806365340e2b3cafe52a83e4064c07af833305340, 2, '2022-01-20 12:26:36', '2022-01-20 12:26:36');
+
+UPDATE `clients` SET `logo` = 'Clientlogo/61e9536f98866.png' WHERE  1;
+
+INSERT INTO `tags` (`id`, `created_at`, `updated_at`, `icon`) VALUES
+(1, '2022-01-20 13:20:43', '2022-01-20 13:20:43', 'd2cca0/tags/gFiqCC4la4MBJEgIIi7qtJxZttO7bVyfkwOccOcN.png'),
+(2, '2022-01-20 13:20:56', '2022-01-20 13:20:56', 'd2cca0/tags/HQ0pVZYjRU0dW6Hc8794D8DWjN3Ltvfp51KDybsW.png');
+
+INSERT INTO `tag_translations` (`id`, `name`, `slug`, `language_id`, `tag_id`, `created_at`, `updated_at`) VALUES
+(1, 'Veg', 'veg', 1, 1, '2022-01-20 13:20:43', '2022-01-20 13:20:43'),
+(2, 'Non-Veg', 'non-veg', 1, 2, '2022-01-20 13:20:56', '2022-01-20 13:20:56');
+
+
+INSERT INTO `product_tags` (`product_id`, `tag_id`, `created_at`, `updated_at`) VALUES
+(2, 1, NULL, NULL),
+(3, 1, NULL, NULL),
+(4, 1, NULL, NULL),
+(6, 1, NULL, NULL),
+(7, 1, NULL, NULL),
+(8, 1, NULL, NULL),
+(10, 2, NULL, NULL),
+(11, 1, NULL, NULL),
+(12, 1, NULL, NULL),
+(18, 1, NULL, NULL),
+(20, 1, NULL, NULL),
+(21, 2, NULL, NULL),
+(22, 1, NULL, NULL),
+(23, 1, NULL, NULL),
+(24, 2, NULL, NULL),
+(25, 1, NULL, NULL),
+(26, 1, NULL, NULL),
+(27, 1, NULL, NULL),
+(32, 1, NULL, NULL),
+(28, 1, NULL, NULL),
+(31, 1, NULL, NULL),
+(33, 1, NULL, NULL),
+(34, 1, NULL, NULL),
+(35, 2, NULL, NULL),
+(36, 1, NULL, NULL),
+(37, 2, NULL, NULL),
+(38, 1, NULL, NULL),
+(39, 1, NULL, NULL),
+(40, 2, NULL, NULL),
+(41, 2, NULL, NULL),
+(42, 2, NULL, NULL),
+(43, 1, NULL, NULL),
+(45, 1, NULL, NULL),
+(46, 1, NULL, NULL);

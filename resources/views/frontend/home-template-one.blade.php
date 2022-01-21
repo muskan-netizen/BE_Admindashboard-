@@ -416,7 +416,7 @@
 				<div class="al_top_heading col-md-12">
 					<div class="row d-flex justify-content-between">
 						<h2 class="h2-heading text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
-						<a class="" href="">See All</a>
+						{{-- <a class="" href="">See All</a> --}}
 					</div>
 				</div>
 				<div class="row ">

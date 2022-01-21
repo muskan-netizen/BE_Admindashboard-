@@ -88,7 +88,7 @@ h2.h2-heading:first-letter {color:  var(--theme-deafult);}
 .product-description p span {background-color: #eee;padding: 2px 8px;font-size: 12px;border-radius: 3px;color: var(--theme-deafult);opacity: 1;display: inline-block;}
 section.section-b-space.light-layout.pt-3.pb-0 {background-color: #fff;}
 .img-outer-box img {object-fit: cover;}
-.logo img {height: 40px;}
+/* .logo img {height: 40px;} */
 .cab-banner-area .card-box {padding: 48px;border-radius: 20px;-webkit-backdrop-filter: blur(10px);backdrop-filter: blur(10px);background-color: rgba(255, 255, 255, 0.5);}
 body .navigation-tab, body .navigation-tab-overlay {border-radius: 40px;}
 .product-description .al_clock p{font-size: 12px;}

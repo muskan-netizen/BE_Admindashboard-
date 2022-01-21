@@ -323,8 +323,8 @@ INSERT INTO `vendor_categories` (`id`, `vendor_id`, `category_id`, `status`, `cr
 
 INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
 (1, 'Taxi 1', NULL, 'banner/6MRxYyJHyo1JMLim7KDDp4aWbDkjMy9CpaPMvu4y.png', 0, 3, 1, '2021-09-29 11:47:00', '2025-09-30 12:00:00', NULL, 2, 'vendor', NULL, '2021-10-07 12:25:12'),
-(2, 'Taxi 2', NULL, 'banner/v8zLyWDHUH7NuukbTFZgGKDYSsMOdORbsD6HSOqa.jpg', 0, 2, 1, '2021-09-29 11:49:00', '2024-09-30 12:00:00', NULL, 2, 'vendor', NULL, '2021-10-07 12:25:10'),
-(3, 'Taxi 3', NULL, 'banner/4CR9wyiyFJoIr1RbqgGFiFa7m7hmJocnUGinbpuh.png', 1, 1, 1, '2021-09-29 11:50:00', '2024-09-30 12:00:00', NULL, 2, 'vendor', NULL, '2021-11-15 10:37:08');
+(2, 'Taxi 2', NULL, 'banner/v8zLyWDHUH7NuukbTFZgGKDYSsMOdORbsD6HSOqa.jpg', 0, 2, 1, '2021-09-29 11:49:00', '2025-09-30 12:00:00', NULL, 2, 'vendor', NULL, '2021-10-07 12:25:10'),
+(3, 'Taxi 3', NULL, 'banner/4CR9wyiyFJoIr1RbqgGFiFa7m7hmJocnUGinbpuh.png', 1, 1, 1, '2021-09-29 11:50:00', '2025-09-30 12:00:00', NULL, 2, 'vendor', NULL, '2021-11-15 10:37:08');
 
 
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
@@ -408,3 +408,8 @@ UPDATE `client_preferences` SET `is_hyperlocal` = 0 WHERE `client_preferences`.`
 UPDATE `app_styling_options` SET `is_selected` = 0 WHERE `app_styling_options`.`app_styling_id` = 8;
 
 UPDATE `app_styling_options` SET `is_selected` = 1 WHERE `app_styling_options`.`image` = 'home_six.png';
+
+INSERT INTO `service_areas` (`id`, `name`, `description`, `geo_array`, `zoom_level`, `polygon`, `vendor_id`, `created_at`, `updated_at`) VALUES
+(1, 'Chandigarh', 'Chandigarh', '(30.660824531495372, 76.74525653768939),(30.728430656837848, 76.63745319296282),(30.788321358708448, 76.63779651571673),(30.807490307216355, 76.71641742636126),(30.80866980994827, 76.77306568075579),(30.778293001541996, 76.83074390341204),(30.71219769922636, 76.8671361153261),(30.683857262849905, 76.87503253866595),(30.664073069800885, 76.82593738485735)', 12, 0x000000000103000000010000000a000000ca2ae7cb2ba93e4064207a48b22f5340b985786e7aba3e4064207a08cc2853401d64b66dcfc93e4064207aa8d1285340cc544dafb7ce3e4064207ac8d92d534088fd12fc04cf3e4064207ae8793153401c54cc353ec73e4064207ae82a355340b276a29652b63e4064207a287f3753408a12034511af3e4064207a8800385340faf254b100aa3e4064207a28dc345340ca2ae7cb2ba93e4064207a48b22f5340, 2, '2022-01-20 07:12:19', '2022-01-20 07:12:19');
+
+UPDATE `clients` SET `logo` = 'Clientlogo/61e90b1a6c483.png' WHERE  1;
