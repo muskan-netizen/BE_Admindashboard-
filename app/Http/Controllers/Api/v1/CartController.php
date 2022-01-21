@@ -618,7 +618,7 @@ class CartController extends BaseController
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
                     if(isset($prod->product) && !empty($prod->product)){
 
-                        if($prod->product->sell_when_out_of_stock == 0){
+                        if($prod->product->sell_when_out_of_stock == 0 && $prod->product->has_inventory == 1){
                             $quantity_check = productvariantQuantity($prod->variant_id);
                             if($quantity_check < $prod->quantity ){
                                 $delivery_status=0;
