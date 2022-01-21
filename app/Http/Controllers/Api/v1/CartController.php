@@ -547,8 +547,9 @@ class CartController extends BaseController
                 $is_promo_code_available = 0;
                 $vendor_products_total_amount = $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
-
                 $cart_dinein_table_id = $vendorData->vendor_dinein_table_id;
+                $slotsDate = findSlot('',$vendorData->vendor_id,'');
+                $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
 
                 if ($action != 'delivery') {
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id', 'latitude', 'longitude', 'address')->where('id', $vendorData->vendor_id)->first();
@@ -829,6 +830,7 @@ class CartController extends BaseController
                 $total_disc_amount = $total_disc_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
                 $vendorData->vendor->is_vendor_closed = $is_vendor_closed;
+
                 if (!empty($vendorData->coupon->promo)) {
                     unset($vendorData->coupon->promo);
                 }
@@ -857,6 +859,8 @@ class CartController extends BaseController
                     $vendorData->is_vendor_closed = 1;
                     $delivery_status = 0;
                 }
+
+                
 
                 $order_sub_total = $order_sub_total + $vendor_products_total_amount;
 
@@ -893,15 +897,24 @@ class CartController extends BaseController
         if($cartData->count() == '1'){
             $vendorId = $cartData[0]->vendor_id;
             //type must be a : delivery , takeaway,dine_in
-            $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
-            $slots = showSlot('',$vendorId,'delivery',$duration->slot_minutes);
-            $cart->slots = $slots;
-           // $cart->vendor_id =  $vendorId;
-        }else{
-            $slots = [];
-            $cart->slots = [];
-            //$cart->vendor_id =  0;
-        }
+            $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
+            
+            $closed_store_order_scheduled = (($slotsDate)?$duration->closed_store_order_scheduled:0);
+                $myDate  = date('Y-m-d'); 
+                if($cart->deliver_status == 0 && $closed_store_order_scheduled == 1)
+                {
+                    $cart->deliver_status = $duration->closed_store_order_scheduled;
+                    $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled;
+                    $myDate  = date('Y-m-d',strtotime('+1 day')); 
+                    $cart->schedule_type =  'schedule';
+                    //$cart->closed_store_order_scheduled =  1;
+                }
+                $slotData = findSlotNew($myDate,$vendorId);
+                $cart->slots = $slotData['slots'];
+            }else{
+                $slots = [];
+                $cart->slots = [];
+            }
 
         $cart->total_service_fee = number_format($total_service_fee, 2, '.', '');
         $cart->total_tax = $total_tax;

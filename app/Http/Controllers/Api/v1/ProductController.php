@@ -172,6 +172,7 @@ class ProductController extends BaseController
                     }
                 }
             }
+            
 
             $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();

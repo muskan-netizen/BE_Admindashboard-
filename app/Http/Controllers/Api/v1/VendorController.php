@@ -65,7 +65,7 @@ class VendorController extends BaseController{
             $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $langId = $user->language;
             $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'slug', 'show_slot',
-                        'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery')
+                        'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery','closed_store_order_scheduled')
                         ->withAvg('product', 'averageRating');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
@@ -82,6 +82,7 @@ class VendorController extends BaseController{
             if(!$vendor){
                 return response()->json(['error' => 'No record found.'], 200);
             }
+
             $vendor->is_vendor_closed = 0;
             if($vendor->show_slot == 0){
                 if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
@@ -97,6 +98,15 @@ class VendorController extends BaseController{
                     }
                 }
             }
+            $slotsDate = 0;
+            $slotsDate = findSlot('',$vendor->id,'');
+            $vendor->delaySlot = $slotsDate;
+            $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
+
+        if($vendor->closed_store_order_scheduled == 1 && $vendor->is_vendor_closed == 1)
+        {
+            $vendor->scheduled_time = findSlot('',$vid);
+          }
 
             $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
             $vendor->is_show_products_with_category = ($vendor->vendor_templete_id == 5) ? 1 : 0;
@@ -352,7 +362,7 @@ class VendorController extends BaseController{
         try{
             $paginate = $request->has('limit') ? $request->limit : 12;
             // $preferences = Session::get('preferences');
-            $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'show_slot', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id')->where('slug', $slug1)->where('status', 1)->first();
+            $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'show_slot', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id','closed_store_order_scheduled')->where('slug', $slug1)->where('status', 1)->first();
             if (!empty($vendor)) {
                 if (!empty($vendor)) {
                     $vendor->is_vendor_closed = 0;
@@ -370,7 +380,9 @@ class VendorController extends BaseController{
                             }
                         }
                     }
-
+                    $slotsDate = findSlot('',$vendor->vendor_id,'');
+                    $vendor->delaySlot = $slotsDate;
+                    $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
                     $code = $request->header('code');
                     $client = Client::where('code', $code)->first();
                     $vendor->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/vendor/".$vendor->slug;

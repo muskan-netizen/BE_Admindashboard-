@@ -97,12 +97,14 @@
                                                 <p>{{$vendor->desc}}</p>
                                             </div>
                                         @endif
-
+                                            @php
+                                               $checkSlot = findSlot('',$vendor->id,'');
+                                            @endphp
                                         <div class="col-md-12 text-center">
-                                            @if($vendor->is_vendor_closed == 1 && $vendor->closed_store_order_scheduled == 0)
+                                            @if($vendor->is_vendor_closed == 1 && $checkSlot == 0)
                                             <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
                                             @elseif($vendor->is_vendor_closed == 1 && $vendor->closed_store_order_scheduled == 1)
-                                            <p class="text-danger">We are not accepting orders right now. You can schedule this for {{findSlot('',$vendor->id,'')}}.</p>
+                                            <p class="text-danger">{{__('We are not accepting orders right now. You can schedule this for '). $checkSlot }}.</p>
                                             @endif
                                             </div>
 

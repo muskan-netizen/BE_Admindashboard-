@@ -401,6 +401,9 @@
                                         </table>--}}
                                     </div>
                                     @endif
+                                    @php
+                                    $checkSlot = findSlot('',$product->vendor->id,'');    
+                                    @endphp
                                     <div class="product-buttons">
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                         @if($is_inwishlist_btn && $is_available)
@@ -417,14 +420,16 @@
                                         else
                                         $product_quantity_in_cart = $product_in_cart->quantity??0;
 
+
                                         @endphp
                                         @if($is_available)
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($vendor_info->closed_store_order_scheduled == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
                                         @endif
-                                            @if($vendor_info->is_vendor_closed == 1 && $vendor_info->closed_store_order_scheduled == 0)
+
+                                            @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
                                             <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
                                             @elseif($vendor_info->is_vendor_closed == 1 && $vendor_info->closed_store_order_scheduled == 1)
-                                            <p class="text-danger">We are not accepting orders right now. You can schedule this for {{findSlot('',$product->vendor_id,'')}}.</p>
+                                            <p class="text-danger">{{ __('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.</p>
                                             @endif
                                         @else
                                             <a href="#" data-toggle="modal" data-target="#inquiry_form" class="btn btn-solid inquiry_mode">{{ __('Inquire Now')}}</a>

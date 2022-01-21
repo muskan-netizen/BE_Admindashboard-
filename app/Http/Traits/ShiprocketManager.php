@@ -18,8 +18,22 @@ trait ShiprocketManager{
         $this->password = $creds_arr->password;
         $this->api_url = 'https://apiv2.shiprocket.in/v1/external';
     }
+
+    public function credentials()
+    {
+        $ship_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'shiprocket')->where('status', 1)->first();
+        if(isset($ship_creds) && !empty($ship_creds)){
+            $creds_arr = json_decode($ship_creds->credentials);
+            $this->email = $creds_arr->username;
+            $this->password = $creds_arr->password;
+            $this->api_url = 'https://apiv2.shiprocket.in/v1/external';
+        }else{
+            return false;
+        }
+    }
    
     public function getAuthToken():object{
+        $this->credentials();
         $endpoint='/auth/login';
         $data=[
            'email'=>$this->email,
@@ -179,40 +193,68 @@ trait ShiprocketManager{
     }
 
 
-    public function addAddress($token,$data){
+    public function addAddress($token,$data = []){
         $endpoint='/settings/company/addpickup';
         $data = array (
-              'pickup_location' => "".rand(1000,99999999),
-              'name' => 'Deadpool',
-              'email' => 'deadpool@yopmail.com',
-              'phone' => '8059272673',
-              'address' => 'Mutant Facility, Sector 4 ',
+              'pickup_location' => "Inderjit_".time(),
+              'name' => 'Inderjit',
+              'email' => 'inder@yopmail.com',
+              'phone' => '8699210323',
+              'address' => 'Sector 34 ',
               'address_2' => '',
-              'city' => 'Pune',
-              'state' => 'Maharshtra',
+              'city' => 'Chandigarh',
+              'state' => 'Chandigarh',
               'country' => 'India',
-              'pin_code' => '110022',
+              'pin_code' => '160022',
             );
         $response=$this->postCurl($endpoint,$data,trim($token));
         return $response;
+
+    //   "success": true
+    //   "address": {
+    //   "company_id": 2001023
+    //   "pickup_code": "Inderjit_1642589053"
+    //      }
+
     }
 
     public function checkCourierService($token)
     {
+        $vendors = array();
+        $this->credentials();
         $endpoint='/courier/serviceability';
         $data = array (
-          'pickup_postcode' => 110030,
-          'delivery_postcode' => 122002,
+          'pickup_postcode' => 135001,
+          'delivery_postcode' => 160022,
           'cod' => 0,
           'weight' => 2,
-          'length' => 15,
-          'breadth' => 10,
-          'height' => 5,
-          'declared_value' => 50,
+          //'length' => 15,
+          //'breadth' => 10,
+          //'height' => 5,
+          //'declared_value' => 50,
         );
-        $response=$this->getCurl($endpoint,$data,trim($token));
-        return $response;
+
+        $result = $this->getCurl($endpoint,$data,trim($token));
+        //courier_name , rate, courier_company_id , etd , etd_hours , estimated_delivery_days
+        if($result->status == '200'){
+          $result = $result->data->available_courier_companies;
+          foreach($result as $key => $data)
+          {
+              $vendors[] = array(
+                'type'=>'SR',
+                'courier_name' => $data->courier_name,
+                'rate' => $data->rate,
+                'courier_company_id' => $data->courier_company_id,
+                'etd' => $data->etd,
+                'etd_hours' => $data->etd_hours,
+                'estimated_delivery_days' => $data->estimated_delivery_days
+            );
+          }
+        }
+        return $vendors;
     }
+
+
 
     private function postCurl($endpoint,$data,$token=null):object{
                 $ch = curl_init();
@@ -237,12 +279,15 @@ trait ShiprocketManager{
                 return json_decode($result); 
     }
 
-    private function getCurl($endpoint,$token=null):object{
-            $ch = curl_init();
+    private function getCurl($endpoint,$data,$token=null):object{
 
+        $curl = curl_init();
+          
+            $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $this->api_url.''.$endpoint);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
             $headers = array();
             $headers[] = 'Accept: */*';
             if(!is_null($token)){

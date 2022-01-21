@@ -178,10 +178,8 @@ function dateTimeInUserTimeZone24($date, $timezone, $showDate=true, $showTime=tr
     $dateFormat = $date_format;
     }
     if($showTime){
-    
     $timeFormat = 'HH:mm:ss';
     }
-    
     $format = $dateFormat . $timeFormat;
     return $date->isoFormat($format);
     }
@@ -262,7 +260,6 @@ function createSlug($str, $delimiter = '-'){
 
     function getBaseprice($dist,$option = 'lalamove')
     {
-
         $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code',$option)->where('status', 1)->first();
         if($simp_creds && $simp_creds->credentials){
             $creds_arr = json_decode($simp_creds->credentials);
@@ -275,8 +272,6 @@ function createSlug($str, $delimiter = '-'){
             }
             $lalamove_status = $simp_creds->status??'';
         }
-
-        
         $distance = $dist;
         if($distance < 1 || $base_price < 1)
         {
@@ -293,7 +288,7 @@ function createSlug($str, $delimiter = '-'){
     }
 
 
-    function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 5)
+    function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 0)
     {
     $Duration = (($Duration==0)?'60':$Duration);
 
@@ -386,7 +381,6 @@ $slotss[] = [];
 
 $arr = array();
 $count = count($slotss);
-
 for($i=0;$i<$count;$i++){
 $arr = array_merge($arr,$slotss[$i]);
 }
@@ -535,8 +529,33 @@ function findSlot($myDate = null,$vid,$type = 'delivery')
             $time = explode(' - ',$slots[0]['value']);
             return date('d M, Y h:i:A',strtotime($myDate.'T'.$time[0]));
         }else{
-            return ", But no Slots are avialable";
+            return 0;
         }
+}
+
+function findSlotNew($myDate,$vid)
+{
+        $slots = showSlot($myDate,$vid,'delivery');
+            if(count((array)$slots) == 0){
+                $myDate  = date('Y-m-d',strtotime('+1 day')); 
+                $slots = showSlot($myDate,$vid,'delivery');
+            }
+           
+            if(count((array)$slots) == 0){
+                $myDate  = date('Y-m-d',strtotime('+2 day')); 
+                $slots = showSlot($myDate,$vid,'delivery');
+            }
+
+            if(count((array)$slots) == 0){
+                $myDate  = date('Y-m-d',strtotime('+3 day')); 
+                $slots = showSlot($myDate,$vid,'delivery');
+            }
+            if(isset($slots)){
+                $slots = $slots;
+                return array('mydate'=>$myDate,'slots'=>$slots);
+            }else{
+                return array('mydate'=>'','slots'=>[]);
+            }
 }
 
 function GoogleDistanceMatrix($latitude, $longitude)
@@ -595,5 +614,3 @@ function GoogleDistanceMatrix($latitude, $longitude)
     }
     return $send;
 }
-
-

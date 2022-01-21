@@ -100,7 +100,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <% }else if( product.is_vendor_closed == 1 && product.closed_store_order_scheduled == 1 ){ %>
                     <div class="col-12">
                         <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ')}}<%= cart_details.delaySlot %>
+                            <i class="fa fa-exclamation-circle"></i> {{__('We are not accepting orders right now. You can schedule this for ')}}<%= product.delaySlot %>
                         </div>
                     </div>
                 <% } %>
@@ -269,12 +269,12 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <div class="col-8 text-lg-right">
                                 <label class="radio pull-right">
                                     {{__('Dispatcher')}} :
-                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee" value="<%= Helper.formatPrice(product.delivery_fee_charges) %>" data-dcode="D" <%= (cart_details.delivery_type == 'D')?'checked':'' %>  />
+                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee radio" value="<%= Helper.formatPrice(product.delivery_fee_charges) %>" data-dcode="D" data-id="<%= product.vendor.id %>" <%= (cart_details.delivery_type == 'D')?'checked':'' %>  />
                                     <span class="checkround"></span>
                                 </label>
                             </div>
-                            <div class="col-4 text-right <%= ((product.promo_free_deliver)?'discard_price':'') %> ">
-                                {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges) %>
+                            <div class="col-4 text-right  <%= ((product.promo_free_deliver)?'discard_price':'') %>">
+                                {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges) %> 
                             </div>
                         </div>
                     <% } %>
@@ -285,11 +285,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <div class="col-8 text-lg-right">
                                 <label class="radio pull-right">
                                     {{__('Lalamove')}} :
-                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee" value="<%= Helper.formatPrice(product.delivery_fee_charges_lalamove) %>"  data-dcode="L" <%= (cart_details.delivery_type == 'L')?'checked':'' %> />
+                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee radio" value="<%= Helper.formatPrice(product.delivery_fee_charges_lalamove) %>"  data-dcode="L" data-id="<%= product.vendor.id %>" <%= (cart_details.delivery_type == 'L')?'checked':'' %> />
                                     <span class="checkround"></span>
                                 </label>
                             </div>
-                            <div class="col-4 text-right <%= ((product.promo_free_deliver)?'discard_price':'') %>">
+                            <div class="col-4 text-right <%= ((product.promo_free_deliver)?'discard_price':'') %> ">
                                 {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges_lalamove) %>
                             </div>
                         </div>
@@ -300,11 +300,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <div class="col-8 text-lg-right">
                                 <label class="radio pull-right">
                                     {{__('Shiprocket')}} :
-                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee" value="<%= Helper.formatPrice(product.delivery_fee_charges_ship) %>"  data-dcode="SR" <%= (cart_details.delivery_type == 'SR')?'checked':'' %> />
+                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee radio" value="<%= Helper.formatPrice(product.delivery_fee_charges_ship) %>"  data-dcode="SR" data-id="<%= product.vendor.id %>" <%= (cart_details.delivery_type == 'SR')?'checked':'' %> />
                                     <span class="checkround"></span>
                                 </label>
                             </div>
-                            <div class="col-4 text-right">
+                            <div class="col-4 text-right <%= ((product.promo_free_deliver)?'discard_price':'') %>">
                                 {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges_ship) %>
                             </div>
                         </div>

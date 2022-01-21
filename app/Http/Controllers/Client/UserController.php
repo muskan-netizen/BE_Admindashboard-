@@ -63,45 +63,66 @@ class UserController extends BaseController
     public function getFilterData(Request $request)
     {
         $current_user = Auth::user();
-        $users = User::withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc')->get();
-        foreach ($users as  $user) {
-            $user->edit_url = route('customer.new.edit', $user->id);
-            $user->delete_url = route('customer.account.action', [$user->id, 3]);
-            $user->image_url = $user->image['proxy_url'] . '40/40' . $user->image['image_path'];
-            $user->login_type = 'Email';
-            $user->is_superadmin = $current_user->is_superadmin;
-            $user->login_type_value = $user->email;
-            $user->balanceFloat = $user->balanceFloat;
-            if (!empty($user->facebook_auth_id)) {
-                $user->login_type = 'Facebook';
-                $user->login_type_value = $user->facebook_auth_id;
-            } elseif (!empty($user->twitter_auth_id)) {
-                $user->login_type = 'Twitter';
-                $user->login_type_value = $user->twitter_auth_id;
-            } elseif (!empty($user->google_auth_id)) {
-                $user->login_type = 'Google';
-                $user->login_type_value = $user->google_auth_id;
-            } elseif (!empty($user->apple_auth_id)) {
-                $user->login_type = 'Apple';
-                $user->login_type_value = $user->apple_auth_id;
-            }
-        }
+        $users = User::withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
+       
         return Datatables::of($users)
+            ->addColumn('edit_url', function($users) {
+                return route('customer.new.edit', $users->id);
+            })
+            ->addColumn('delete_url', function($users) {
+                return route('customer.account.action', [$users->id, 3]);
+            })
+            ->addColumn('image_url', function($users) {
+                return $users->image['proxy_url'] . '40/40' . $users->image['image_path'];
+            })
+            ->addColumn('login_type', function($users) {
+                if (!empty($users->facebook_auth_id)) {
+                    return 'Facebook';
+                } elseif (!empty($users->twitter_auth_id)) {
+                    return 'Twitter';
+                } elseif (!empty($users->google_auth_id)) {
+                    return 'Google';
+                } elseif (!empty($users->apple_auth_id)) {
+                    return 'Apple';
+                } else{
+                    return 'Email';
+                }
+            })
+            ->addColumn('is_superadmin', function($users) use($current_user) {
+                return $current_user->is_superadmin;
+            })
+            ->addColumn('wallet', function($users) {
+                return $users->wallet;
+            })
+            ->addColumn('login_type_value', function($users) {
+                if (!empty($users->facebook_auth_id)) {
+                    return $users->facebook_auth_id;
+                } elseif (!empty($users->twitter_auth_id)) {
+                    return $users->twitter_auth_id;
+                } elseif (!empty($users->google_auth_id)) {
+                    return $users->google_auth_id;
+                } elseif (!empty($users->apple_auth_id)) {
+                    return $users->apple_auth_id;
+                } else{
+                    return $users->email;
+                }
+            })
+            ->addColumn('balanceFloat', function($users) {
+                return $users->balanceFloat;
+            })
+            ->addColumn('edit_url', function($users) {
+                return route('customer.new.edit', $users->id);
+            })
             ->addIndexColumn()
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {
-                    $instance->collection = $instance->collection->filter(function ($row) use ($request) {
-                        if (Str::contains(Str::lower($row['name']), Str::lower($request->get('search')))) {
-                            return true;
-                        } elseif (Str::contains(Str::lower($row['email']), Str::lower($request->get('search')))) {
-                            return true;
-                        } elseif (Str::contains(Str::lower($row['phone_number']), Str::lower($request->get('search')))) {
-                            return true;
-                        }
-                        return false;
-                    });
+                    $search = $request->get('search');
+                    $instance->where('name', 'LIKE', '%'.$search.'%')
+                    ->orWhere('email', 'LIKE', '%'.$search.'%')
+                    ->orWhere('phone_number', '%', 'LIKE'.$search.'%');
                 }
-            })->make(true);
+            }, true)
+            ->make(true);
     }
 
     /**

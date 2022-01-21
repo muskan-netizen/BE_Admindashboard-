@@ -193,6 +193,7 @@
                     ajax: {
                         url: "{{route('user.filterdata')}}",
                         data: function(d) {
+                            d._token = "{{ csrf_token() }}";
                             d.search = $('input[type="search"]').val();
                             d.date_filter = $('#range-datepicker').val();
                             d.payment_option = $('#payment_option_select_box option:selected').val();

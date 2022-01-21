@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
+use App\Http\Controllers\ShiprocketController;
 use App\Models\VendorOrderDispatcherStatus;
 use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency};
 use DB;
@@ -441,6 +442,10 @@ class OrderController extends BaseController
                         //Cancel Shipping place order request for Lalamove
                         $lala = new LalaMovesController();
                         $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
+                    }elseif($orderData->shipping_delivery_type=='SR'){
+                        //Cancel Shipping place order request for Shiprocket
+                        $lala = new ShiprocketController();
+                        $order_lalamove = $lala->cancelOrderRequestShiprocket($currentOrderStatus->web_hook_code);
                     }
 
                 }
