@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 use DB;
+use Session;
 use Carbon\Carbon;
 use App\Models\Cart;
 use App\Models\Order;
@@ -11,11 +12,13 @@ use App\Models\Promocode;
 use App\Models\CartCoupon;
 use App\Models\OrderVendor;
 use Illuminate\Http\Request;
+use App\Models\ClientCurrency;
 use App\Models\PromoCodeDetail;
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+
 
 class PromoCodeController extends Controller{
     use ApiResponser;
@@ -43,6 +46,7 @@ class PromoCodeController extends Controller{
                 }
             }
 
+            $doller_compare = $request->doller_compare ?  $request->doller_compare : 1 ;
             //pr($firstOrderCheck);
             // $order_vendor_coupon_list = OrderVendor::whereNotNull('coupon_id')->where('user_id', $user->id)->get([DB::raw('coupon_id'),  DB::raw('sum(coupon_id) as total')]);
             $now = Carbon::now()->toDateTimeString();
@@ -92,10 +96,19 @@ class PromoCodeController extends Controller{
                 $promo_codes = $promo_codes->merge($result2);
             }
             foreach ($promo_codes as $key => $promo_code) {
-                if($total_minimum_spend < $promo_code->minimum_spend){
+                $minimum_spend = 0;
+                if (isset( $promo_code->minimum_spend)) {
+                    $minimum_spend =  $promo_code->minimum_spend * $doller_compare;
+                }
+
+                $maximum_spend = 0;
+                if (isset($promo_code->maximum_spend)) {
+                    $maximum_spend = $promo_code->maximum_spend * $doller_compare;
+                }
+                if($total_minimum_spend < $minimum_spend){
                     $promo_codes->forget($key);
                 }
-                if($total_minimum_spend > $promo_code->maximum_spend){
+                if($total_minimum_spend > $maximum_spend){
                     $promo_codes->forget($key);
                 }
             }

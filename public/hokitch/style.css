@@ -106,8 +106,7 @@ body{
 .outer-hokitch {
     justify-content: center;
 }
-.outer-align-hokitch {
-}
+
 .view-result {
     width: auto !important;
     margin: 32px 20px !important;
@@ -320,7 +319,7 @@ body{
     margin: 0 auto !important;
 }
 .testimonial-text {width: 100% !important;margin-top: 50px !important;}
-}
+
 .banner_homepage {
     height: 50vh !important;
 }
@@ -331,8 +330,7 @@ body{
 .center-logo img {
     width: 56% !important;
 }
-.right-child1 p {
-}
+
 .outer-hokitch {
     display: inherit !important;
 }

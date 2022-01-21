@@ -94,7 +94,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <% if( product.is_vendor_closed == 1 && product.closed_store_order_scheduled == 0 ) { %>
                     <div class="col-12">
                         <div class="text-danger">
-                            <i class="fa fa-exclamation-circle"></i> {{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}
+                            <i class="fa fa-exclamation-circle"></i>{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}
                         </div>
                     </div>
                 <% }else if( product.is_vendor_closed == 1 && product.closed_store_order_scheduled == 1 ){ %>
@@ -273,7 +273,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <span class="checkround"></span>
                                 </label>
                             </div>
-                            <div class="col-4 text-right">
+                            <div class="col-4 text-right <%= ((product.promo_free_deliver)?'discard_price':'') %> ">
                                 {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges) %>
                             </div>
                         </div>
@@ -289,7 +289,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <span class="checkround"></span>
                                 </label>
                             </div>
-                            <div class="col-4 text-right">
+                            <div class="col-4 text-right <%= ((product.promo_free_deliver)?'discard_price':'') %>">
                                 {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges_lalamove) %>
                             </div>
                         </div>
