@@ -355,17 +355,17 @@ class BaseController extends Controller{
     }
 
     public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){
-        $config = array(
-            'driver' => $mail_driver,
-            'host' => $mail_host,
-            'port' => $mail_port,
-            'encryption' => $mail_encryption,
-            'username' => $mail_username,
-            'password' => $mail_password,
-            'sendmail' => '/usr/sbin/sendmail -bs',
-            'pretend' => false,
-        );
-        Config::set('mail', $config);
+        // $config = array(
+        //     'driver' => $mail_driver,
+        //     'host' => $mail_host,
+        //     'port' => $mail_port,
+        //     'encryption' => $mail_encryption,
+        //     'username' => $mail_username,
+        //     'password' => $mail_password,
+        //     'sendmail' => '/usr/sbin/sendmail -bs',
+        //     'pretend' => false,
+        // );
+        // Config::set('mail', $config);
         $app = App::getInstance();
         $app->register('Illuminate\Mail\MailServiceProvider');
         return '1';
