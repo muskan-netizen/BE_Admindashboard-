@@ -35,6 +35,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('edit-order/vendor/products/getProductsInCart', 'Front\TempCartController@getProductsInCart');
 	Route::post('edit-order/temp-cart/product/add', 'Front\TempCartController@postAddToTempCart');
 	Route::post('edit-order/temp-cart/product/updateQuantity', 'Front\TempCartController@updateQuantity');
+	Route::post('edit-order/temp-cart/product/remove', 'Front\TempCartController@removeItem');
+	Route::post('edit-order/temp-cart/remove', 'Front\TempCartController@emptyCartData');
 	Route::post('edit-order/vendor/product/{id}', 'Front\TempCartController@getProductById');
 	// End edit order routes
 

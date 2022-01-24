@@ -561,23 +561,32 @@ class TempCartController extends FrontController
      */
     public function updateQuantity(Request $request, $domain = '')
     {
-        $cartProduct = TempCartProduct::find($request->cartproduct_id);
-        $variant_id = $cartProduct->variant_id;
-        $productDetail = Product::with([
-            'variant' => function ($sel) use($variant_id) {
-                $sel->where('id', $variant_id);
-                $sel->groupBy('product_id');
+        try{
+            if ($request->quantity < 1) {
+                return $this->errorResponse(__('Quantity should not be less than 1'), 422);
             }
-        ])->find($cartProduct->product_id);
-
-        if($productDetail->category->categoryDetail->type_id != 8 && $productDetail->sell_when_out_of_stock == 0){
-            if($productDetail->variant[0]->quantity < $request->quantity){
-                return $this->errorResponse(__('Maximum quantity already added in your cart'), 422);
+            $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
+            $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
+            $cart = TempCart::where('user_id', $request->user_id)->where('id', $request->cart_id)->first();
+            if (!$cart) {
+                return $this->errorResponse(__('User cart not exist.'), 404);
             }
+            $cartProduct = TempCartProduct::where('cart_id', $cart->id)->where('id', $request->cart_product_id)->first();
+            if (!$cartProduct) {
+                return $this->errorResponse(__('Product does not exist in cart.'), 404);
+            }
+            $cartProduct->quantity = $request->quantity;
+            $cartProduct->save();
+            $totalProducts = TempCartProduct::where('cart_id', $cart->id)->sum('quantity');
+            $cart->item_count = $totalProducts;
+            $cart->save();
+            
+            $cartData = $this->getCart($cart, $langId, $currId, '');
+            $this->errorResponse($cartData, 'Cart updated successfully', 200);
         }
-        $cartProduct->quantity = $request->quantity;
-        $cartProduct->save();
-        return $this->successResponse('', 'Successfully Updated', 200);
+        catch(Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
     }
 
     /**
@@ -585,13 +594,13 @@ class TempCartController extends FrontController
      *
      * @return \Illuminate\Http\Response
      */
-    public function deleteCartProduct(Request $request, $domain = '')
-    {
-        TempCartProduct::where('id', $request->cartproduct_id)->delete();
-        TempCartCoupon::where('vendor_id', $request->vendor_id)->delete();
-        TempCartAddon::where('cart_product_id', $request->cartproduct_id)->delete();
-        return response()->json(['status' => 'success', 'message' => __('Product removed from cart successfully.') ]);
-    }
+    // public function deleteCartProduct(Request $request, $domain = '')
+    // {
+    //     TempCartProduct::where('id', $request->cartproduct_id)->delete();
+    //     TempCartCoupon::where('vendor_id', $request->vendor_id)->delete();
+    //     TempCartAddon::where('cart_product_id', $request->cartproduct_id)->delete();
+    //     return response()->json(['status' => 'success', 'message' => __('Product removed from cart successfully.') ]);
+    // }
 
     /**
      * Empty Cart
@@ -600,17 +609,57 @@ class TempCartController extends FrontController
      */
     public function emptyCartData(Request $request, $domain = '')
     {
-        $cart_id = $request->cart_id;
-        if (($cart_id != '') && ($cart_id > 0)) {
-            // Cart::where('id', $cart_id)->delete();
-            TempCartProduct::where('cart_id', $cart_id)->delete();
-            TempCartCoupon::where('cart_id', $cart_id)->delete();
-            TempCartAddon::where('cart_id', $cart_id)->delete();
+        try{
+            $cart_id = $request->cart_id;
+            if (($cart_id != '') && ($cart_id > 0)) {
+                TempCart::where('id', $cart_id)->delete();
+                TempCartProduct::where('cart_id', $cart_id)->delete();
+                TempCartCoupon::where('cart_id', $cart_id)->delete();
+                TempCartAddon::where('cart_id', $cart_id)->delete();
+                TempCartDeliveryFee::where('cart_id', $cart_id)->delete();
+                return $this->successResponse('', 'Cart has been deleted successfully.', 200);
+            } else {
+                return $this->errorResponse('Cart cannot be deleted.', 422);
+            }
+        }
+        catch(Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
+    }
 
-         
-            return response()->json(['status' => 'success', 'message' => 'Cart has been deleted successfully.']);
-        } else {
-            return response()->json(['status' => 'error', 'message' => 'Cart cannot be deleted.']);
+
+    /**
+     * Delete Cart Product
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function removeItem(Request $request, $domain='')
+    {
+        try{
+            $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
+            $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
+            $cart = TempCart::where('id', $request->cart_id)->where('user_id', $request->user_id)->first();
+            if (!$cart) {
+                return $this->errorResponse(__('Cart not exist'), 404);
+            }
+            
+            $totalProductCount = TempCartProduct::where('cart_id', $cart->id)->count();
+            if ($totalProductCount < 2) {
+                return $this->errorResponse(__('Cart can not be empty.'), 404);
+            }        
+            $cartProduct = TempCartProduct::where('cart_id', $cart->id)->where('id', $request->cart_product_id)->first();
+            if (!$cartProduct) {
+                return $this->errorResponse(__('Product does not exist in cart.'), 404);
+            }
+            $cartProduct->delete();
+            $totalProducts = TempCartProduct::where('cart_id', $cart->id)->sum('quantity');
+            $cart->item_count = $totalProducts;
+            $cart->save();
+            $cartData = $this->getCart($cart, $langId, $currId, '');
+            return $this->successResponse($cartData, __("Product removed from cart successfully."), 200);
+        }
+        catch(Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
         }
     }
 
