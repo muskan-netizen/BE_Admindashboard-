@@ -45,6 +45,7 @@ class PromoCodeController extends Controller{
                     $firstOrderCheck = 1;
                 }
             }
+
             $curId = Session::get('customerCurrency');
             $customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
 
@@ -55,16 +56,13 @@ class PromoCodeController extends Controller{
             $product_ids = Product::where('vendor_id', $request->vendor_id)->pluck("id");
             if ($product_ids) {
                 $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
-                $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details,$firstOrderCheck) {
+                $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details) {
                     $query->where(function ($query2) use ($promo_code_details) {
                         $query2->where('restriction_type', 1);
                         if (!empty($promo_code_details->toArray())) {
                             $query2->whereNotIn('id', $promo_code_details->toArray());
                         }
                     });
-                    if($firstOrderCheck){
-                        $query->where('first_order_only', 0);
-                    }
                     $query->orWhere(function ($query1) use ($promo_code_details) {
                         $query1->where('restriction_type', 0);
                         if (!empty($promo_code_details->toArray())) {
@@ -73,20 +71,22 @@ class PromoCodeController extends Controller{
                             $query1->where('id', 0);
                         }
                     });
-                })->where('is_deleted', 0)->where(['promo_visibility' => 'public'])->get();
+                });
+                if($firstOrderCheck){
+                    $result1 = $result1->where('first_order_only', 0);
+                }
+                $result1 = $result1->where('is_deleted', 0)->where(['promo_visibility' => 'public'])->get();
+
                 $promo_codes = $promo_codes->merge($result1);
 
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
-                $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details,$firstOrderCheck) {
+                $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details) {
                     $query->where(function ($query2) use ($vendor_promo_code_details) {
                         $query2->where('restriction_type', 1);
                         if (!empty($vendor_promo_code_details->toArray())) {
                             $query2->whereNotIn('id', $vendor_promo_code_details->toArray());
                         }
                     });
-                    if($firstOrderCheck){
-                        $query->where('first_order_only', 0);
-                    }
                     $query->orWhere(function ($query1) use ($vendor_promo_code_details) {
                         $query1->where('restriction_type', 0);
                         if (!empty($vendor_promo_code_details->toArray())) {
@@ -96,7 +96,13 @@ class PromoCodeController extends Controller{
                         }
                     });
 
-                })->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->where(['promo_visibility' => 'public'])->get();
+                });
+                if($firstOrderCheck){
+                    $result2 = $result2->where('first_order_only', 0);
+                }
+
+                $result2->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->where(['promo_visibility' => 'public'])->get();
+
                 $promo_codes = $promo_codes->merge($result2);
             }
             foreach ($promo_codes as $key => $promo_code) {
