@@ -1442,7 +1442,7 @@ class OrderController extends BaseController
         //$order->created_at = dateTimeInUserTimeZone($order->created_at, $user->timezone);
        // $order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
         $order->created = dateTimeInUserTimeZone($order->created_at, $user->timezone);
-        $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
+        $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : null;
         $luxury_option_name = '';
         if ($order->luxury_option_id > 0) {
             $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();

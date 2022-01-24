@@ -30,6 +30,8 @@ class PromoCodeController extends Controller{
             $promo_codes = new \Illuminate\Database\Eloquent\Collection;
             $vendor_id = $request->vendor_id;
             $firstOrderCheck = 0;
+            $is_from_cart = $request->is_cart ? $request->is_cart :0;
+
             $total_minimum_spend = $request->amount;
             $validator = $this->validatePromoCodeList($request);
             if($validator->fails()){
@@ -75,7 +77,10 @@ class PromoCodeController extends Controller{
                 if($firstOrderCheck){
                     $result1->where('first_order_only', 0);
                 }
-                $result1 = $result1->where('is_deleted', 0)->where(['promo_visibility' => 'public'])->get();
+                if($is_from_cart != 1){
+                    $result1->where(['promo_visibility' => 'public']);
+                }
+                $result1 = $result1->where('is_deleted', 0)->get();
                 $promo_codes = $promo_codes->merge($result1);
 
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
@@ -100,7 +105,10 @@ class PromoCodeController extends Controller{
                 if($firstOrderCheck){
                     $result2->where('first_order_only', 0);
                 }
-                $result2 = $result2->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->where(['promo_visibility' => 'public'])->get();
+                if($is_from_cart != 1){
+                    $result2->where(['promo_visibility' => 'public']);
+                }
+                $result2 = $result2->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
                 $promo_codes = $promo_codes->merge($result2);
             }
             foreach ($promo_codes as $key => $promo_code) {

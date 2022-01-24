@@ -717,7 +717,7 @@ class CartController extends BaseController
                                     if (!empty($deliver_charge) && $delivery_count == 0) {
                                         $delivery_count = 1;
                                         $prod->deliver_charge = number_format($deliver_charge, 2, '.', '');
-                                        $payable_amount = $payable_amount + $deliver_charge;
+                                       // $payable_amount = $payable_amount + $deliver_charge;
                                         $order_sub_total = $order_sub_total + $deliver_charge;
                                         $delivery_fee_charges = $deliver_charge;
                                     }
@@ -910,7 +910,7 @@ class CartController extends BaseController
                 $vendorData->taxable_amount = $taxable_amount;
                 $vendorData->payable_amount = $payable_amount - $discount_amount;
                 $vendorData->isDeliverable = 1;
-                $total_paying = $total_paying + $payable_amount;
+                $total_paying = $total_paying + $payable_amount + $delivery_fee_charges;
                 $total_tax = $total_tax + $taxable_amount;
                 $total_disc_amount = $total_disc_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
@@ -1441,7 +1441,7 @@ class CartController extends BaseController
                     $delivery_status = 0;
                 }
 
-                
+
 
                 $order_sub_total = $order_sub_total + $vendor_products_total_amount;
 
@@ -1479,14 +1479,14 @@ class CartController extends BaseController
             $vendorId = $cartData[0]->vendor_id;
             //type must be a : delivery , takeaway,dine_in
             $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
-            
+
             $closed_store_order_scheduled = (($slotsDate)?$duration->closed_store_order_scheduled:0);
-                $myDate  = date('Y-m-d'); 
+                $myDate  = date('Y-m-d');
                 if($cart->deliver_status == 0 && $closed_store_order_scheduled == 1)
                 {
                     $cart->deliver_status = $duration->closed_store_order_scheduled;
                     $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled;
-                    $myDate  = date('Y-m-d',strtotime('+1 day')); 
+                    $myDate  = date('Y-m-d',strtotime('+1 day'));
                     $cart->schedule_type =  'schedule';
                     //$cart->closed_store_order_scheduled =  1;
                 }
