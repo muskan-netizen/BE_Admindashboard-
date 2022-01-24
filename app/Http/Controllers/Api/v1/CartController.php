@@ -884,6 +884,7 @@ class CartController extends BaseController
 
 
 
+                $payable_amount = $payable_amount + $delivery_fee_charges ;
 
                 $deliver_charge = $deliver_charge * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
@@ -910,7 +911,7 @@ class CartController extends BaseController
                 $vendorData->taxable_amount = $taxable_amount;
                 $vendorData->payable_amount = $payable_amount - $discount_amount;
                 $vendorData->isDeliverable = 1;
-                $total_paying = $total_paying + $payable_amount + $delivery_fee_charges;
+                $total_paying = $total_paying + $payable_amount ;
                 $total_tax = $total_tax + $taxable_amount;
                 $total_disc_amount = $total_disc_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
