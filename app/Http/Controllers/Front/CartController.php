@@ -767,7 +767,7 @@ class CartController extends FrontController
                              $prod->deliver_charge_lalamove = number_format($deliver_lalmove_fee, 2, '.', '');
                              $shipping_delivery_type = 'L';
                         }
-                       $deliver_charges_lalmove = $deliver_lalmove_fee;
+                        $deliver_charges_lalmove = $deliver_lalmove_fee;
                         //End Lalamove Delivery changes code
                         if($code =='L' && $deliver_lalmove_fee>0)
                         {
@@ -828,10 +828,9 @@ class CartController extends FrontController
                         $crossSell_products->push($cross_prods);
                     }
                 }
-
+                $couponGetAmount =$payable_amount ;
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
                     //pr($vendorData->coupon->promo);
-
                     if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
                         if($vendorData->coupon->promo->first_order_only==1){
                             if(Auth::user()){
@@ -844,8 +843,16 @@ class CartController extends FrontController
                                 }
                             }
                         }
-
+                        if ($PromoDelete !=1) {
+                            if(!($vendorData->coupon->promo->expiry_date >= $nowdate) ){
+                                $cart->coupon()->delete();
+                                $vendorData->coupon()->delete();
+                                unset($vendorData->coupon);
+                                $PromoDelete =1;
+                            }
+                        }
                         if ( $PromoDelete !=1) {
+
                             $minimum_spend = 0;
                             if (isset($vendorData->coupon->promo->minimum_spend)) {
                                 $minimum_spend = $vendorData->coupon->promo->minimum_spend * $customerCurrency->doller_compare;
@@ -856,7 +863,7 @@ class CartController extends FrontController
                                 $maximum_spend = $vendorData->coupon->promo->maximum_spend * $customerCurrency->doller_compare;
                             }
 
-                            if( ($minimum_spend <= $payable_amount ) && ($maximum_spend >= $payable_amount)  && ($vendorData->coupon->promo->expiry_date > $nowdate )  )
+                            if( ($minimum_spend <= $payable_amount ) && ($maximum_spend >= $payable_amount)    )
                             {
                                 if ($vendorData->coupon->promo->promo_type_id == 2) {
                                     $total_discount_percent = $vendorData->coupon->promo->amount;
@@ -888,7 +895,16 @@ class CartController extends FrontController
                         }
                     }
                 }
-
+                $promoCodeController = new PromoCodeController();
+                $promoCodeRequest = new Request();
+                $promoCodeRequest->setMethod('POST');
+                $promoCodeRequest->request->add(['vendor_id' => $vendorData->vendor_id,'amount' => $couponGetAmount]);
+                $promoCodeResponse = $promoCodeController->postPromoCodeList($promoCodeRequest)->getData();
+                if($promoCodeResponse->status == 'Success'){
+                    if(!empty($promoCodeResponse->data)){
+                        $is_promo_code_available = 1;
+                    }
+                }
                 if (in_array(1, $subscription_features)) {
                     $subscription_discount = $subscription_discount + $deliveryCharges;
                 }
@@ -967,16 +983,7 @@ class CartController extends FrontController
                 $total_discount_percent = $total_discount_percent + $discount_percent;
                 $total_subscription_discount = $total_subscription_discount + $subscription_discount;
 
-                $promoCodeController = new PromoCodeController();
-                $promoCodeRequest = new Request();
-                $promoCodeRequest->setMethod('POST');
-                $promoCodeRequest->request->add(['vendor_id' => $vendorData->vendor_id,'doller_compare' =>$customerCurrency->doller_compare ,'amount' => $vendorData->product_total_amount]);
-                $promoCodeResponse = $promoCodeController->postPromoCodeList($promoCodeRequest)->getData();
-                if($promoCodeResponse->status == 'Success'){
-                    if(!empty($promoCodeResponse->data)){
-                        $is_promo_code_available = 1;
-                    }
-                }
+
                 $vendorData->is_promo_code_available = $is_promo_code_available;
             }
             $is_percent = 0;
