@@ -12,13 +12,13 @@ body{
     font-family: "Gotham", Sans-serif;
     line-height: 1.4 !important;
 }
-@font-face {
+@font-face {  
 	  font-family: Gotham-Font;
-	  src: url(https://sales.alerthire.com/hokitch/font/Gotham-Light.otf);
+	  src: url('../hokitch/font/Gotham-Light.otf');
 		}
 @font-face {
    font-family: Armonioso;
-   src: url(https://sales.alerthire.com/hokitch/font/Armonioso-trial.otf);
+   src: url('../hokitch/font/Armonioso-trial.otf');
 }
 /*----Home hokitch  page css here=----------- */
 .process-child:before {
@@ -325,8 +325,7 @@ body{
 .center-logo img {
     width: 56% !important;
 }
-.right-child1 p {
-}
+
 .outer-hokitch {
     display: inherit !important;
 }
