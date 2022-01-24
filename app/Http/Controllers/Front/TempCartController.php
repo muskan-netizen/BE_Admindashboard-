@@ -582,7 +582,7 @@ class TempCartController extends FrontController
             $cart->save();
             
             $cartData = $this->getCart($cart, $langId, $currId, '');
-            $this->errorResponse($cartData, 'Cart updated successfully', 200);
+            $this->successResponse($cartData, 'Cart updated successfully', 200);
         }
         catch(Exception $ex){
             return $this->errorResponse($ex->getMessage(), $ex->getCode());
