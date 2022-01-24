@@ -371,7 +371,9 @@ $min[] = '';
 $cart = CartProduct::where('vendor_id',$vid)->get();
 foreach($cart as $product)
 {
-$min[] = (($product->product->delay_order_hrs * 60) + $product->product->delay_order_min);
+    $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
+    $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
+    $min[] = (($delayHr * 60) + $delayMin);
 }
 
 if(isset($slots) && count($slots)>0){
