@@ -83,8 +83,8 @@ class PromoCodeController extends Controller{
                 if($firstOrderCheck){
                     $result1 = $result1->where('first_order_only', 0);
                 }
-                $result1->where('is_deleted', 0)
-                ->where(['promo_visibility' => 'public'])->get();
+                $result1 = $result1->where('is_deleted', 0)->where(['promo_visibility' => 'public'])->get();
+
                 $promo_codes = $promo_codes->merge($result1);
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
                 $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details ) {
