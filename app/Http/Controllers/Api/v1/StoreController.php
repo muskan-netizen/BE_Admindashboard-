@@ -934,8 +934,9 @@ class StoreController extends BaseController{
 					}
 				}
 			}
+			$images = ProductImage::with('image')->where('product_images.product_id', $product->id)->get();
 
-			return $this->successResponse('', 'Product image added successfully!', 200);			
+			return $this->successResponse($images, 'Product image added successfully!', 200);			
 			
 		} catch (Exception $e) {
 			DB::rollback();
