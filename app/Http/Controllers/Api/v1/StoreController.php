@@ -739,11 +739,11 @@ class StoreController extends BaseController{
 						$existv[] = $value;
 	
 						if ($variantData) {
-							$variantData->title             = $request->variant_titles[$key];
-							$variantData->price             = $request->variant_price[$key];
-							$variantData->compare_at_price  = $request->variant_compare_price[$key];
-							$variantData->cost_price        = $request->variant_cost_price[$key];
-							$variantData->quantity          = $request->variant_quantity[$key];
+							$variantData->title             = $request->variant_titles[$key] ?? "";
+							$variantData->price             = $request->variant_price[$key] ?? "0";
+							$variantData->compare_at_price  = $request->variant_compare_price[$key] ?? "0";
+							$variantData->cost_price        = $request->variant_cost_price[$key] ?? "0";
+							$variantData->quantity          = $request->variant_quantity[$key] ?? "0";
 							$variantData->tax_category_id   = $request->tax_category;
 							$variantData->save();
 						}
