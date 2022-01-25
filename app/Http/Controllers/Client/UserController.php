@@ -444,4 +444,27 @@ class UserController extends BaseController
         Session::put('current_fcm_token', $request->fcm_token);
         return response()->json(['status' => 'success', 'message' => 'Token updated successfully']);
     }
+
+    public function sendNotification(Type $var = null)
+    {
+        $roles = Role::all();
+        $countries = Country::all();
+        $active_users = User::where('status', 1)->where('is_superadmin', '!=', 1)->count();
+        $inactive_users = User::where('status', 3)->count();
+        $users = User::withCount(['orders', 'activeOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc')->paginate(10);
+        $social_logins = 0;
+        foreach ($users as  $user) {
+            if (!empty($user->facebook_auth_id)) {
+                $social_logins++;
+            } elseif (!empty($user->twitter_auth_id)) {
+                $social_logins++;
+            } elseif (!empty($user->google_auth_id)) {
+                $social_logins++;
+            } elseif (!empty($user->apple_auth_id)) {
+                $social_logins++;
+            }
+        }
+        $csvCustomers = CsvCustomerImport::all();
+        return view('backend.users.send_notification')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries,'csvCustomers'=>$csvCustomers]);
+    }
 }
