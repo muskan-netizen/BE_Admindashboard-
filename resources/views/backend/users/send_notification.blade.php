@@ -60,30 +60,27 @@
                 </div>
                 <form id="save_loyality_form" class="p-3" enctype="multipart/form-data">
                     @csrf
-                    
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <div class="form-group" id="customerCheck">
+                                <input type="checkbox" name="all_customer" id="all_customers" value="1">All customers
+                            </div>
+                        </div>
+                    </div>
     
                     <div class="row mb-2">
                         <div class="col-md-6">
                             <div class="form-group" id="nameInput">
-                                <label for="title" class="control-label">Name</label>
+                                <label for="title" class="control-label">Title</label>
                                 <input class="form-control" placeholder="Name" name="name" type="text">
                                 <span class="invalid-feedback" role="alert">
                                     <strong></strong>
                                 </span>
                             </div>
                         </div>
+                    </div>
+                    <div class="row mb-2">
                         <div class="col-md-6" id="slugInput">
-                            <div class="form-group">
-                                <label for="title" class="control-label">Slug</label> 
-                                <input class="form-control" required="required" onkeypress="return alphaNumeric(event)" id="slug" name="slug" type="text">
-                                <span class="invalid-feedback" role="alert">
-                                    <strong></strong>
-                                </span>
-                            </div>
-                        </div>
-                        
-                        
-                        <div class="col-md-12">
                             <div class="form-group" id="addressInput">
                                 <label for="title" class="control-label">Description</label>
                                 <!-- <input class="form-control" name="address" type="text"> -->
@@ -95,7 +92,7 @@
                         </div>
     
                     </div>
-                    <button type="submit" class="btn btn-info waves-effect waves-light submitAddForm">Submit</button>                    
+                    <button type="submit" class="btn btn-info waves-effect waves-light submitAddForm">Send</button>                    
                 </form>
                 
             </div>
