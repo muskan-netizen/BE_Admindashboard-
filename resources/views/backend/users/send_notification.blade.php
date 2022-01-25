@@ -58,7 +58,7 @@
                         </div>
                     </div>
                 </div>
-                <form id="save_loyality_form" class="p-3" enctype="multipart/form-data">
+                <form id="send_notification_form" method="POST" class="p-3" action="{{ route('send.notification') }}">
                     @csrf
                     <div class="row mb-2">
                         <div class="col-md-6">
@@ -72,7 +72,7 @@
                         <div class="col-md-6">
                             <div class="form-group" id="nameInput">
                                 <label for="title" class="control-label">Title</label>
-                                <input class="form-control" placeholder="Name" name="name" type="text">
+                                <input class="form-control" placeholder="Title" name="title" type="text">
                                 <span class="invalid-feedback" role="alert">
                                     <strong></strong>
                                 </span>
@@ -99,7 +99,7 @@
         </div>
     </div>
 </div>
-@include('backend.users.modals')
+
 <script type="text/javascript">
     $(document).ready(function() {
         var table;
@@ -108,7 +108,7 @@
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        initDataTable();
+        
         $(document).on("click", ".delete-vendor", function() {
             var destroy_url = $(this).data('destroy_url');
             var id = $(this).data('rel');
@@ -129,296 +129,8 @@
                 });
             }
         });
-
-
-        function initDataTable() {
-            try {
-                $('#user_datatable').DataTable({
-                    "dom": '<"toolbar">Bfrtip',
-                    "destroy": true,
-                    "scrollX": true,
-                    "processing": true,
-                    "serverSide": true,
-                    "iDisplayLength": 10,
-                    language: {
-                        search: "",
-                        info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
-                        paginate: {
-                            previous: "<i class='mdi mdi-chevron-left'>",
-                            next: "<i class='mdi mdi-chevron-right'>"
-                        },
-                        searchPlaceholder: '{{__("Search By Name, Email, Phone Number")}}'
-                    },
-                    drawCallback: function() {
-                        $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
-                    },
-                    buttons: [{
-                        className: 'btn btn-success waves-effect waves-light',
-                        text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>{{__("Export CSV")}}',
-                        action: function(e, dt, node, config) {
-                            window.location.href = "{{ route('customer.export') }}";
-                        }
-                    }],
-                    ajax: {
-                        url: "{{route('user.filterdata')}}",
-                        data: function(d) {
-                            d._token = "{{ csrf_token() }}";
-                            d.search = $('input[type="search"]').val();
-                            d.date_filter = $('#range-datepicker').val();
-                            d.payment_option = $('#payment_option_select_box option:selected').val();
-                            d.tax_type_filter = $('#tax_type_select_box option:selected').val();
-                        }
-                    },
-                    "initComplete": function(settings, json) {
-                        var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
-                        elems.forEach(function(html) {
-                            var switchery = new Switchery(html);
-                        });
-                        $('.dataTables_filter input[type="search"]').css({
-                            'width': '280px',
-                            'display': 'inline-block'
-                        });
-                        $("#user_datatable_wrapper").find($(".dt-buttons.btn-group.flex-wrap")).css({
-                            'right': '320px'
-                        });
-                    },
-                    columns: [{
-                            data: 'id',
-                            name: 'id',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'image_url',
-                            name: 'image_url',
-                            orderable: false,
-                            searchable: false,
-                            "mRender": function(data, type, full) {
-                                return "<img src='" + full.image_url + "' class='rounded-circle' alt='" + full.id + "' >";
-                            }
-                        },
-                        {
-                            data: 'name',
-                            name: 'name',
-                            orderable: false,
-                            searchable: false,
-                            "mRender": function(data, type, full) {
-                                return "<a href='" + full.edit_url + "'>" + full.name + "</a> ";
-                            }
-                        },
-                        {
-                            data: 'login_type',
-                            name: 'login_type',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'login_type_value',
-                            name: 'login_type_value',
-                            orderable: false,
-                            searchable: false,
-                            "mRender": function(data, type, full) {
-                                if (full.is_email_verified == 1) {
-                                    return "<i class='mdi mdi-email-check mr-1 mdi-icons'></i>" + full.login_type_value;
-                                } else {
-                                    return "<i class='mdi mdi-email-remove mr-1 mdi-icons'></i>" + full.login_type_value;
-                                }
-                            }
-                        },
-                        {
-                            data: 'is_phone_verified',
-                            name: 'is_phone_verified',
-                            orderable: false,
-                            searchable: true,
-                            "mRender": function(data, type, full) {
-                                if(full.dial_code){
-                                var dialcode = full.dial_code;
-                                full.phone_number = '+'+ dialcode + full.phone_number;
-                                }else{
-                                    full.phone_number =  full.phone_number;
-                                }
-
-                                if (full.is_phone_verified == 1) {
-                                    if (full.phone_number) {
-                                        return "<i class='mdi mdi-phone-check mr-1 mdi-icons'></i>" + full.phone_number;
-                                    } else {
-                                        return "";
-                                    }
-                                } else {
-                                    if (full.phone_number) {
-                                        return full.phone_number;
-                                    } else {
-                                        return "";
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            data: 'email_token',
-                            name: 'email_token',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'phone_token',
-                            name: 'phone_token',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'balanceFloat',
-                            name: 'balanceFloat',
-                            orderable: false,
-                            searchable: false,
-                            "mRender": function(data, type, full) {
-                                return "<a href='javascript:void(0)' class='customer_wallet_link' data-id='" + full.wallet.id + "'>" + data + "</a>";
-                            }
-                        },
-                        {
-                            data: 'orders_count',
-                            name: 'orders_count',
-                            orderable: false,
-                            searchable: false
-                        },
-                         {
-                            data: 'loyalty_name',
-                            name: 'loyalty_name',
-                            orderable: false,
-                            searchable: false,
-                            "mRender": function(data, type, full) {
-                                return  data.loyalty_name +" ("+ data.count_loyalty_points_earned+")" ;
-                            }
-                        },
-                        {
-                            data: 'currently_working_orders_count',
-                            name: 'currently_working_orders_count',
-                            orderable: false,
-                            searchable: false
-                        },
-                        {
-                            data: 'status',
-                            name: 'status',
-                            orderable: false,
-                            searchable: false,
-                            "mRender": function(data, type, full) {
-                                if (full.status == 1) {
-                                    return "<input type='checkbox' data-id='" + full.id + "' id='cur_" + full.id + "' data-plugin='switchery' name='userAccountStatus' class='chk_box' data-color='#43bee1' checked>";
-                                } else {
-                                    return "<input type='checkbox' data-id='" + full.id + "' id='cur_" + full.id + "' data-plugin='switchery' name='userAccountStatus' class='chk_box' data-color='#43bee1'>";
-                                }
-                            }
-                        },
-                        {
-                            data: 'is_superadmin',
-                            name: 'is_superadmin',
-                            orderable: false,
-                            searchable: false,
-                            "mRender": function(data, type, full) {
-                                if (full.is_superadmin == 1) {
-                                    return "<div class='form-ul'><div class='inner-div'><a href='" + full.edit_url + "' class='action-icon editIconBtn'><i class='mdi mdi-square-edit-outline'></i></a><a href='" + full.delete_url + "' class='action-icon delete_customer'><i class='mdi mdi-delete' title='Delete user'></i></a></div></div>";
-                                }
-                            }
-                        },
-                    ]
-                });
-            } finally {
-                var elems = Array.prototype.slice.call(document.querySelectorAll('.chk_box'));
-                // console.log(elems);
-                elems.forEach(function(html) {
-                    var switchery = new Switchery(html);
-                });
-            }
-        }
     });
 
-    $(document).delegate(".customer_wallet_link", "click", function() {
-        let id = $(this).attr("data-id");
-        $('#customer-wallet-transactions-modal').modal('show');
-        $('#customer_wallet_transactions_datatable').DataTable({
-            "dom": '<"toolbar">Bfrtip',
-            "destroy": true,
-            "scrollX": true,
-            "processing": true,
-            "serverSide": true,
-            "iDisplayLength": 10,
-            language: {
-                search: "",
-                paginate: {
-                    previous: "<i class='mdi mdi-chevron-left'>",
-                    next: "<i class='mdi mdi-chevron-right'>"
-                },
-                searchPlaceholder: "Search By Date, Description, Amount"
-            },
-            drawCallback: function() {
-                $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
-            },
-            buttons: [],
-            ajax: {
-                url: "{{route('customer.filterWalletTransactions')}}",
-                data: function(d) {
-                    d.search = $('input[type="search"]').val();
-                    d.walletId = id;
-                }
-            },
-            "initComplete": function(settings, json) {
-
-            },
-            columnDefs: [{
-                targets: [1, 3],
-                className: "text-nowrap",
-            }],
-            columns: [{
-                    data: 'serial',
-                    name: 'serial',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'date',
-                    name: 'date',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'description',
-                    name: 'description',
-                    orderable: false,
-                    searchable: false,
-                    "mRender": function(data, type, full) {
-                        return '<span>' + data + '</span>';
-                    }
-                },
-                {
-                    data: 'amount',
-                    name: 'amount',
-                    orderable: false,
-                    searchable: false,
-                    "mRender": function(data, type, full) {
-                        return '<span class="text-right ' + ((full.type == 'deposit') ? 'text-success' : ((full.type == 'withdraw') ? 'text-danger' : '')) + '">' + data + '</span>';
-                    }
-                },
-            ]
-        });
-    });
-
-    $(document).on('click','.delete_customer',function(e){
-        var submit_url = $(this).attr('href');
-        Swal.fire({
-            title: "{{__('Are you sure?')}}",
-            text:"{{__('You want to delete this customer.')}}",
-            icon: 'info',
-            showCancelButton: true,
-            confirmButtonText: 'Ok',
-        }).then((result) => {
-            if(result.value)
-            {
-                window.location.href = submit_url;
-            }else{
-               return false; 
-            }
-        });
-        return false;
-    })
 </script>
 @endsection
 @section('script')

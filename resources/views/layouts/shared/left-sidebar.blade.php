@@ -416,13 +416,13 @@
                                         </li>
                                     @endif
                                 @endif
-                                @if(Auth::user()->is_superadmin == 1)                                    
+                                @if(Auth::user()->is_superadmin == 1)
                                     <li>
-                                        <a href="{{ route('send.push.notification')}}">
+                                        <a href="{{ route('customer.notification')}}">
                                             <span class="icon-celebrity"></span>
                                             <span> {{ __("Send Notification") }} </span>
                                         </a>
-                                    </li>                                    
+                                    </li>
                                 @endif
                             </ul>
                         </li>

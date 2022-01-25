@@ -307,7 +307,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::resource('review', 'Client\ReviewController');
 
-        Route::get('notification', 'Client\UserController@sendNotification')->name('send.push.notification');
+        Route::get('notification', 'Client\UserController@customNotification')->name('customer.notification');
+        Route::post('sendnotification', 'Client\UserController@sendNotification')->name('send.notification');
     });
 });
 
