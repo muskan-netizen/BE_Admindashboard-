@@ -12,8 +12,9 @@ $timezone = Auth::user()->timezone;
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="page-title-box">
+                <div class="page-title-box d-flex justify-content-between ">
                     <h4 class="page-title">{{ __("Order Detail") }}</h4>
+                    <button class="al_print_btn badge badge-info" onclick='printDiv();'>Print <img src=""> </button>
                 </div>
             </div>
         </div>
@@ -425,6 +426,12 @@ $timezone = Auth::user()->timezone;
         </div>
     </div>
 </div>
+
+<!-- Order Invoice Code -->
+<div style="display: none;">
+@include('backend.order.print')
+</div>
+<!--End Order Invoice Code -->
 @endsection
 @section('script')
 <script>
@@ -520,22 +527,15 @@ $timezone = Auth::user()->timezone;
         });
     });
 
-
-        // setInterval(function () {
-        //     $.ajax({
-        //         url: "{{ url('order.webhook') }}",
-        //         type: "POST",
-        //         data: {
-        //             order_id: "{{$order->id}}",
-        //             "_token": "{{ csrf_token() }}"
-        //         },
-        //         success: function(response) {
-        //             //location.reload();
-        //         },
-        //     });
-        // }
-
-        // }, 5000);
+    function printDiv() 
+    {
+        var divToPrint=document.getElementById('al_print_area');
+        var newWin=window.open('','Print-Window');
+        newWin.document.open();
+        newWin.document.write('<html><body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
+        newWin.document.close();
+        setTimeout(function(){newWin.close();},10);
+    }
 
 </script>
 @endsection

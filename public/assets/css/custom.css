@@ -109,6 +109,7 @@ p.al_custom_title.mb-1 {font-weight: 600;}
 .al_add_user  .user_img{height: 30px;width: 30px;border-radius: 50%;object-fit: cover;}
 .al_add_user .btn-group .dropdown-menu .al_select_user sup {position: absolute;top: 18px;right: 10px;color: #ff0000;}
 .al_add_user .btn-group .dropdown-menu li sup {top: 27px;right: 17px;position: absolute;}
+.al_print_btn.badge.badge-info {height: 30px;margin-top: 20px;border: 0;}
 @media(max-width:767px){
 .al_add_user{margin-top: 0;}
 }

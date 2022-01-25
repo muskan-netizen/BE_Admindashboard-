@@ -146,7 +146,7 @@
                     </div>
                     <div class="row mt-2 al_custom_copypath" style="display: none;">
                         <div class="col-md-12">
-                            <p>
+                            <!-- <p>
                                 <a href="#"><span id="pwd_spn" class="password-span" style="display: none;"></span></a>
                                 <label class="copy_link float-right" id="cp_btn" title="copy">
                                     <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
@@ -154,7 +154,7 @@
                                 </label>
 
                                 <a id="copyAllImageUrl" href=""><label class="copy_link " id="cp_btn" title="copy">Copy all<span class="copied_txt" id="show_copy_msg_on_click_copy" style="display: none;">Copied</span></label></a>
-                            </p>
+                            </p> -->
                             <table>
                                 <tbody class="imageCopyName"></tbody>
                             </table>
@@ -189,7 +189,7 @@
             },
             success: function(file, res) {
                 $('.al_custom_copypath').show();
-                $('.imageCopyName').append('<tr id="'+res.data.image_id+'"><td style="padding: 5px"><img src="'+res.data.image_url+'"></td><td style="padding: 5px"><a href="'+res.data.image_url+'" target="_blank" style="font-size: 12px;">'+res.data.image_path+'</td><td style="padding: 5px"><label class="copy_link " id="cp_btn" title="copy"><img src="{{asset("assets/icons/domain_copy_icon.svg")}}" alt="" style="margin: 0"><span class="copied_txt" id="show_copy_msg_on_click_copy" style="display: none;">Copied</span> </label></td></tr>');
+                $('.imageCopyName').append('<tr id="'+res.data.image_id+'"><td style="padding: 5px"><img src="'+res.data.image_url+'"></td><td style="padding: 5px"><a href="'+res.data.image_url+'" target="_blank" style="font-size: 12px;" id="image_'+res.data.image_id+'">'+res.data.image_path+' </td><td style="padding: 5px"><label class="copy_link " id="cp_btn" title="copy" data-image_id="'+res.data.image_id+'" onclick="copyUrl(this)"><img src="{{asset("assets/icons/domain_copy_icon.svg")}}" alt="" style="margin: 0"><span class="copied_txt" id="show_copy_msg_on_click_copy" style="display: none;">Copied</span> </label></td></tr>');
                 uploadedDocumentMap[file.name] = res.data.image_id;
                 var imageUrl = $('#pwd_spn').text();
                 //alert();
@@ -250,18 +250,19 @@ $(document).ready(function() {
         });
     });
 });
-</script>
-<script>
-    $(document).on('click', '.copy_link', function() {
-        var $temp = $("<input>");
+
+    function copyUrl(obj)
+    {
+        var $temp = $("<input>"); 
         $("body").append($temp);
-        $temp.val($('#pwd_spn').text()).select();
+        var image_id = $(obj).data('image_id');
+        $temp.val($('#image_'+image_id).text()).select(); 
         document.execCommand("copy");
         $temp.remove();
         $("#show_copy_msg_on_click_copy").show();
         setTimeout(function() {
             $("#show_copy_msg_on_click_copy").hide();
         }, 1000);
-    });
+    }
 </script>
 @endsection

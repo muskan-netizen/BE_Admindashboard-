@@ -659,3 +659,14 @@ body .pixelstrap li ul li>a{
     width: 100%;
     text-align: left;
 }
+#edit-address .address-input-group .pac-container{
+    top:75px!important;
+    left:0!important;
+}
+.address-input-group{
+    position: relative;
+}
+.address-input-group .pac-container{
+    top:35px!important;
+    left:0!important;
+}
