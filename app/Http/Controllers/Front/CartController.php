@@ -643,10 +643,13 @@ class CartController extends FrontController
                 else{
                     if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
                         if($address_id > 0){
-                            $serviceArea = $vendorData->vendor->whereHas('serviceArea', function($query) use($latitude, $longitude){
-                                $query->select('vendor_id')
+
+                            if (!empty($latitude) && !empty($longitude)) {
+                                $serviceArea = $vendorData->vendor->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                                    $query->select('vendor_id')
                                 ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
-                            })->where('id', $vendorData->vendor_id)->get();
+                                })->where('id', $vendorData->vendor_id)->get();
+                            }
                         }
                     }
                 }

@@ -1023,7 +1023,12 @@
                                 </div>
                                 <div class="productAddonSetOptions" data-min="<%= addon.min_select %>" data-max="<%= addon.max_select %>" data-addonset-title="<%= addon.title %>">
                                     <% _.each(addon.setoptions, function(option, key2){ %>
-                                        <div class="checkbox-success d-flex mb-1">
+                                        <% if(key2 == '5')  { %>
+
+                                            <span class="btn btn-solid  show_subet_addeon" data-div_id_show="subOption<%= addon.addon_id  %>_<%= key2  %>"  href="javascript:void(0)">{{__('Show more')}}</span>
+                                           <div class="more-subset d-none" id="subOption<%= addon.addon_id %>_<%= key2 %>" >
+                                        <% } %>
+                                        <div class="checkbox-success d-flex mb-1 " <%= key2  %> >
                                             <label class="pr-2 mb-0 flex-fill font-14" for="inlineCheckbox_<%= key1 %>_<%= key2 %>">
                                                 <%= option.title %>
                                             </label>
@@ -1032,6 +1037,9 @@
                                                 <input type="checkbox" id="inlineCheckbox_<%= key1 %>_<%= key2 %>" class="product_addon_option" name="addonData[<%= key1 %>][]" addonId="<%= addon.addon_id %>" addonOptId="<%= option.id %>" addonPrice="<%= option.price %>">
                                             </div>
                                         </div>
+                                        <% if(key2 == (_.size(addon.setoptions) - 1 ) ){ %>
+                                        </div>
+                                        <% } %>
                                     <% }); %>
                                 </div>
                             </div>
@@ -1131,6 +1139,7 @@
             var get_product_addon_url = "{{ route('vendorProductAddons') }}"
 
             jQuery(window).scroll(function() {
+
                 var scroll = jQuery(window).scrollTop();
                 if (scroll >= 900) {
                     jQuery(".categories-product-list").addClass("fixed-bar");
@@ -1201,6 +1210,14 @@
             var addonids = [];
             var addonoptids = [];
             var ajaxCall = 'ToCancelPrevReq';
+
+
+            $(document).on('click','.show_subet_addeon',function(e){
+                e.preventDefault();
+                var show_class =$(this).data("div_id_show");
+                $(this).addClass("d-none");
+                $("#"+show_class).removeClass("d-none");
+            });
 
             $(document).delegate('.changeVariant', 'change', function() {
                 var variants = [];
