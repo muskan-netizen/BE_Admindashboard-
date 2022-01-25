@@ -959,7 +959,9 @@ class StoreController extends BaseController{
 			$product = Product::findOrfail($product_id);
 			$img = VendorMedia::findOrfail($image_id);
 			$img->delete();
-			return $this->successResponse('', 'Product image deleted successfully!', 200);
+
+			$images = ProductImage::with('image')->where('product_images.product_id', $product_id)->get();
+			return $this->successResponse($images, 'Product image deleted successfully!', 200);
 		} catch (Exception $e) {			
 			return $this->errorResponse($e->getMessage(), $e->getCode());
 		}			
