@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/font-awesome.min.css')}}">
     <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
     <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom.css')}}">
+    <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <style>
         .spinner-overlay .page-spinner .circle-border {
             background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 33%, rgba(255, 255, 255, 1) 100%);
@@ -58,6 +59,7 @@
 </div>
 <script src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
+<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
     let payment_success_url = "{{route('payment.getCheckoutSuccess', ':id')}}";
     let payment_return_url = "{{route('payment.gateway.return.response')}}/?gateway=yoco";
@@ -112,7 +114,13 @@
             }).catch(function(error) {
                 // Re-enable button now that request is complete
                 submitButton.disabled = false;
-                alert("error occured: " + error);
+                Swal.fire({
+                   // title: "Warning!",
+                   text: "error occured: " + error,
+                   icon : "error",
+                   button: "OK",
+                });
+                //alert("error occured: " + error);
             });
         });
 

@@ -54,7 +54,7 @@ class ProductController extends BaseController
                         ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
                         ->whereIn('pvs.product_variant_id', $pvIds)
                         ->where('vt.language_id', $langId);
-                    }, 
+                    },
                     'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                         $q->where('language_id', $langId);
@@ -140,7 +140,7 @@ class ProductController extends BaseController
                             ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
                             ->where('pvs.product_id', $pid)
                             ->where('vt.language_id', $langId);
-                        }, 
+                        },
                         'translation' => function($q) use($langId){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $langId);
@@ -172,7 +172,10 @@ class ProductController extends BaseController
                     }
                 }
             }
-            
+
+            $slotsDate = 0;
+            $slotsDate = findSlot('',$product->vendor->id,'');
+            $product->delaySlot = (($slotsDate)?$slotsDate:'');
 
             $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
@@ -246,8 +249,8 @@ class ProductController extends BaseController
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
-        
-            
+
+
     }
 
     public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [])
@@ -310,7 +313,7 @@ class ProductController extends BaseController
             if(!$product){
                 return $this->errorResponse('No record found.', 404);
             }
-            
+
             $langId = Auth::user()->language;
             $userid = Auth::user()->id;
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
@@ -384,14 +387,14 @@ class ProductController extends BaseController
         }
     }
 
-    # get all product tags 
+    # get all product tags
 
     public function getAllProductTags(Request $request)
     {
         try{
             $langId = Auth::user()->language;
             $userid = Auth::user()->id;
-           
+
             $get_all_tags = Tag::with(['translations' =>  function($q)use($langId){
                 $q->where('language_id',$langId);
             }])->get();

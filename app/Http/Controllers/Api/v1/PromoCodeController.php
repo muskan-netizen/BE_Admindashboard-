@@ -117,15 +117,16 @@ class PromoCodeController extends Controller{
                 $result2 = $result2->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
                 $promo_codes = $promo_codes->merge($result2);
             }
+            $doller_compare = $clientCurrency ?  $clientCurrency->doller_compare : 1 ;
             foreach ($promo_codes as $key => $promo_code) {
                 $minimum_spend = 0;
                 if (isset( $promo_code->minimum_spend)) {
-                    $minimum_spend =  $promo_code->minimum_spend * $clientCurrency->doller_compare;
+                    $minimum_spend =  $promo_code->minimum_spend * $doller_compare;
                 }
 
                 $maximum_spend = 0;
                 if (isset($promo_code->maximum_spend)) {
-                    $maximum_spend = $promo_code->maximum_spend * $clientCurrency->doller_compare;
+                    $maximum_spend = $promo_code->maximum_spend * $doller_compare;
                 }
                 if($total_minimum_spend < $minimum_spend){
                     $promo_codes->forget($key);

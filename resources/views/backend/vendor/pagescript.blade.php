@@ -528,7 +528,13 @@
                 window.open(url, '_blank');
             },
             error: function(data) {
-                alert(data.message);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: data.message,
+                    icon : "error",
+                    button: "{{__('ok')}}",
+                });
+                //alert(data.message);
             },
             beforeSend: function() {
                 $(".loader_box").show();
@@ -572,7 +578,13 @@
                 window.open(url, '_blank');
             },
             error: function(data) {
-                alert(data.message);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: data.message,
+                    icon : "error",
+                    button: "{{__('ok')}}",
+                });
+                //alert(data.message);
             },
             beforeSend: function() {
                 $(".loader_box").show();

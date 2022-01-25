@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\{Vendor,Product,Client,AddonSet,Category,ProductVariant,CartProduct,UserWishlist,TaxCategory};  
-use Auth,Carbon,DB;
+use Auth,Carbon,DB,Storage;
 
 class ToolsController extends Controller
 {
-    
+    private $folderName = 'prods';
     private $vendorObj, $productObj, $clientObj, $addOnSetObj, $categoryObj;
     public function __construct(Vendor $vendor, Product $product, Client $client,AddonSet $addonSet, Category $category)
     {
@@ -336,6 +336,20 @@ class ToolsController extends Controller
 
         }catch (Exception $e) {
             return redirect()->back()->with('error', 'Something went wrong!');
+        }
+    }
+    public function uploadImage(Request $request)
+    {
+        $data = [];
+        if ($request->has('file')) {
+            $imageId = '';
+            $file = $request->file('file');
+            $data['image_path'] = Storage::disk('s3')->put($this->folderName, $file, 'public');
+            $data['image_url'] = \Config::get('app.IMG_URL1').'30/30'.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($data['image_path']).'@webp';
+            $data['image_id'] = uniqid();
+            return response()->json(['data' => $data]);
+        } else {
+            return response()->json(['data' => $data,'error' => 'No file']);
         }
     }
 }

@@ -818,6 +818,27 @@ class TempCartController extends FrontController
     }
 
 
+    /**
+     * submit cart if order edit is done
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function submitCart(Request $request, $domain = '')
+    {
+        try{
+            $cart_id = $request->cart_id;
+            if (($cart_id != '') && ($cart_id > 0)) {
+                TempCart::where('id', $cart_id)->update(['is_submitted' => 1]);
+                return $this->successResponse('', 'Order has been submitted successfully.', 200);
+            } else {
+                return $this->errorResponse('Order cannot be submitted.', 422);
+            }
+        }
+        catch(Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
+    }
+
     ////////////////// Put order in Cart /////////////////////
     public function getProductsInCart(Request $request, $domain='')
     {

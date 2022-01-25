@@ -1,15 +1,19 @@
 @extends('layouts.store', ['title' => 'Product'])
+@section('css')
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+@endsection
 @section('content')
 
 <header>
     <div class="mobile-fix-option"></div>
     @if(isset($set_template)  && $set_template->template_id == 1)
         @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
+    @elseif(isset($set_template)  && $set_template->template_id == 2)
         @include('layouts.store/left-sidebar')
-        @else
+    @else
         @include('layouts.store/left-sidebar-template-one')
-        @endif
+    @endif
+
 </header>
 <section class="cab-booking pt-0">
     <div id="booking-map" style="width: 100%; height: 100%;"></div>
@@ -616,6 +620,7 @@ $('body').on('click', '.clproduct_order_form', function (event) {
 
 <script type="text/javascript">
     $(document).ready(function (e) {
+
         $(document).delegate('#submit_productfaq', 'click', function() {
        var product_order_form_element = getFormData('#product-order-form-name');
         $('#product_order_form').modal('hide');

@@ -120,7 +120,7 @@ class ClientPreferenceController extends BaseController{
 
         foreach ($request->all() as $key => $value) {
             if(!in_array($key, $keyShouldNot)){
-               $preference->{$key} = $value;
+               $preference->{$key} = $value; 
             }
         }
 
@@ -206,6 +206,7 @@ class ClientPreferenceController extends BaseController{
             $preference->static_delivey_fee = ($request->has('static_delivey_fee') && $request->static_delivey_fee == 'on') ? 1 : 0;
             $preference->header_quick_link = ($request->has('header_quick_link') && $request->header_quick_link == 'on') ? 1 : 0;
             $preference->get_estimations = ($request->has('get_estimations') && $request->get_estimations == 'on') ? 1 : 0;
+            $preference->tools_mode = ($request->has('tools_mode') && $request->tools_mode == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){

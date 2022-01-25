@@ -550,8 +550,11 @@ class CartController extends BaseController
                 $is_promo_code_available = 0;
                 $vendor_products_total_amount = $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
+                $slotsDate = findSlot('',$vendorData->vendor_id,'');
+                $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
                 $cart_dinein_table_id = $vendorData->vendor_dinein_table_id;
                 $coupon_amount_used = 0;
+
 
                 if ($action != 'delivery') {
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id', 'latitude', 'longitude', 'address')->where('id', $vendorData->vendor_id)->first();
@@ -1045,7 +1048,7 @@ class CartController extends BaseController
 
 
     /**         *       Empty cart       *          */
-    public function getCart1($cart, $langId = '1', $currency = '1', $type = 'delivery')
+    public function notWorkgetCart1($cart, $langId = '1', $currency = '1', $type = 'delivery')
     {
         $preferences = ClientPreference::first();
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();

@@ -105,11 +105,11 @@
                                                 <a class="action-icon openEditModal" loyaltyID="{{$celeb->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a> 
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{ route('celebrity.destroy', $celeb->id) }}">
+                                                <form method="POST" action="{{ route('celebrity.destroy', $celeb->id) }}" id="deleteCelebrity">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="submit" onclick="return confirm('Are you sure? You want to delete the loyalty card.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> 
+                                                       <button type="button" id="deleteCelebrityButton" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> 
 
                                                     </div>
                                                 </form>
@@ -134,6 +134,25 @@
 @endsection
 
 @section('script')
+<script type="text/javascript">
+    $('#deleteCelebrityButton').click(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete the celebrity.')}}",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $("#deleteCelebrity").off("submit").submit();
+            }else{
+                return false;
+            }
+        });
+    });
+</script>
 
 @include('backend.celebrity.pagescript')
 
