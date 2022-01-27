@@ -570,7 +570,7 @@ class TempCartController extends FrontController
             }
             $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
             $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
-            $cart = TempCart::where('user_id', $request->user_id)->where('id', $request->cart_id)->first();
+            $cart = TempCart::with(['address','currency','coupon.promo'])->where('user_id', $request->user_id)->where('id', $request->cart_id)->first();
             if (!$cart) {
                 return $this->errorResponse(__('User cart not exist.'), 404);
             }
@@ -641,7 +641,7 @@ class TempCartController extends FrontController
         try{
             $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
             $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
-            $cart = TempCart::where('id', $request->cart_id)->where('user_id', $request->user_id)->first();
+            $cart = TempCart::with(['address','currency','coupon.promo'])->where('id', $request->cart_id)->where('user_id', $request->user_id)->first();
             if (!$cart) {
                 return $this->errorResponse(__('Cart not exist'), 404);
             }
