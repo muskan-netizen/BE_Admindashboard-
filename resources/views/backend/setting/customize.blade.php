@@ -146,7 +146,7 @@
                             <select class="form-control select2-multiple" id="languages" name="languages[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
                                 @foreach($languages as $lang)
                                 @if($lang->id != $primary_language_id)
-                                    <option value="{{$lang->id}}" {{ (isset($preference) && in_array($lang->id, $cli_langs))? "selected" : "" }}>{{$lang->name ??''}}({{$lang->nativeName??''}})</option>
+                                    <option value="{{$lang->id}}" {{ (isset($preference) && in_array($lang->id, $cli_langs))? "selected" : "" }}>{{$lang->name ??''}} ({{$lang->nativeName??''}})</option>
                                 @endif
                                 @endforeach
                             </select>
