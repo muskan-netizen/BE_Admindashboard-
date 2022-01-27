@@ -104,10 +104,10 @@ class VendorController extends BaseController{
             $vendor->delaySlot = (($slotsDate)?$slotsDate:'');
             $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
 
-        if($vendor->closed_store_order_scheduled == 1 && $vendor->is_vendor_closed == 1)
-        {
-            $vendor->scheduled_time = findSlot('',$vid);
-          }
+            if($vendor->closed_store_order_scheduled == 1 && $vendor->is_vendor_closed == 1)
+            {
+                $vendor->scheduled_time = findSlot('',$vid);
+            }
 
             $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
             $vendor->is_show_products_with_category = ($vendor->vendor_templete_id == 5) ? 1 : 0;
@@ -645,10 +645,12 @@ class VendorController extends BaseController{
         $startRange = 0; $endRange = 20000;
         if($request->has('range') && !empty($request->range)){
             $range = explode(';', $request->range);
+
             $clientCurrency->doller_compare;
             $startRange = $range[0] * $clientCurrency->doller_compare;
             $endRange = $range[1] * $clientCurrency->doller_compare;
         }
+
         $multiArray = array();
         if($request->has('options') && !empty($request->options)){
             foreach ($request->options as $key => $value) {
@@ -678,25 +680,30 @@ class VendorController extends BaseController{
         }
         $order_type = $request->has('order_type') ? $request->order_type : '';
         $products = Product::with(['category.categoryDetail', 'media.image', 'translation' => function($q) use($langId){
-                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                            $q->groupBy('language_id','product_id');
                         },'variant' => function($q) use($langId, $variantIds){
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                             if(!empty($variantIds)){
                                 $q->whereIn('id', $variantIds);
                             }
-                            if(!empty($order_type) && $order_type == 'low_to_high'){
-                                $q->orderBy('price', 'asc');
-                            }
-                            if(!empty($order_type) && $order_type == 'high_to_low'){
-                                $q->orderBy('price', 'desc');
-                            }
+                            // if(!empty($order_type) && $order_type == 'low_to_high'){
+                            //     $q->orderBy('price', 'asc');
+                            // }
+                            // if(!empty($order_type) && $order_type == 'high_to_low'){
+                            //     $q->orderBy('price', 'desc');
+                            // }
                             $q->groupBy('product_id');
                         },
-                    ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating')
+                    ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
+                    ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
+                    ->join('product_translations', 'product_translations.product_id', '=', 'products.id')
                     ->where('vendor_id', $vid)
                     ->where('is_live', 1)
-                    ->whereIn('id', function($qr) use($startRange, $endRange){
-                        $qr->select('product_id')->from('product_variants')->where('price',  '>=', $startRange)->where('price',  '<=', $endRange);
+                    ->whereIn('products.id', function($qr) use($startRange, $endRange){
+                        $qr->select('product_id')->from('product_variants')
+                        ->where('price',  '>=', $startRange)
+                        ->where('price',  '<=', $endRange);
                     });
         if(!empty($productIds)){
             $products = $products->whereIn('id', $productIds);
@@ -704,8 +711,24 @@ class VendorController extends BaseController{
         if($request->has('brands') && !empty($request->brands)){
             $products = $products->whereIn('brand_id', $request->brands);
         }
-        if(!empty($order_type) && $request->order_type == 'rating'){
-            $products = $products->orderBy('averageRating', 'desc');
+
+        if (!empty($order_type) && $request->order_type == 'rating') {
+            $products = $products->orderBy('products.averageRating', 'desc');
+        }
+        if (!empty($order_type) && $order_type == 'low_to_high') {
+            $products = $products->orderBy('product_variants.price', 'asc');
+        }
+        if (!empty($order_type) && $order_type == 'high_to_low') {
+            $products = $products->orderBy('product_variants.price', 'desc');
+        }
+        if (!empty($order_type) && $order_type == 'a_to_z') {
+            $products = $products->orderBy('product_translations.title', 'asc');
+        }
+        if (!empty($order_type) && $order_type == 'z_to_a') {
+            $products = $products->orderBy('product_translations.title', 'desc');
+        }
+        if (!empty($order_type) && $order_type == 'newly_added') {
+            $products = $products->orderBy('products.id', 'desc');
         }
         $paginate = $request->has('limit') ? $request->limit : 12;
         $products = $products->paginate($paginate);

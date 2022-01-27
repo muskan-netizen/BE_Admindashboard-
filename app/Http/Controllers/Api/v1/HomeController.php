@@ -261,7 +261,7 @@ class HomeController extends BaseController
 
                 $vends[] = $vendor->id;
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                    $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences);
+                    $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences, $type);
                 }
 
             }

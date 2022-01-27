@@ -534,7 +534,6 @@ $timezone = Auth::user()->timezone;
             }
         });
     });
-
     function printDiv() 
     {
         var divToPrint=document.getElementById('al_print_area');
