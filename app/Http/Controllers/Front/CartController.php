@@ -156,7 +156,7 @@ class CartController extends FrontController
             ])->find($request->product_id);
 
             # if product type is not equal to on demand
-            if($productDetail->category->categoryDetail->type_id != 8  && $productDetail->sell_when_out_of_stock == 0){
+            if( ($productDetail->category->categoryDetail->type_id != 8) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
                 if(!empty($already_added_product_in_cart)){
                     if($productDetail->variant[0]->quantity <= $already_added_product_in_cart->quantity){
                         return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your cart s')]);

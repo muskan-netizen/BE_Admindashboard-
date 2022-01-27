@@ -293,7 +293,8 @@
                                                 @php
                                                 $product_quantity_in_cart = $product_in_cart->quantity??0;
                                                 @endphp
-                                                    <input type="hidden" id="instock" value="{{ ($product->variant[0]->quantity - $product_quantity_in_cart)}}">
+                                                <input type="hidden" value="{{$product->has_inventory}}" id="hasInventory">
+                                                <input type="hidden" id="instock" value="{{ ($product->variant[0]->quantity - $product_quantity_in_cart)}}">
                                                 @endif
                                             </h6>
                                             @if(!$product->has_inventory || $product->variant[0]->quantity > 0 || $product->sell_when_out_of_stock == 1)

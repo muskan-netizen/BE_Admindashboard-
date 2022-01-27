@@ -224,15 +224,15 @@ $timezone = Auth::user()->timezone;
                                     @php
                                     $sub_total = 0;
                                     $taxable_amount = 0;
+                                    $revenue = 0;
                                     @endphp
                                     @foreach($vendor->products as $product)
                                     @if($product->order_id == $order->id)
                                     @php
-                                    // $taxable_amount += $product->taxable_amount;
-                                    // $sub_total += $product->quantity * $product->price;
                                     $taxable_amount = $vendor->taxable_amount;
                                     $vendor_service_fee = $vendor->service_fee_percentage_amount;
                                     $sub_total += $product->total_amount;
+                                    $revenue += ($vendor->service_fee_percentage_amount + $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     <tr>
                                         <th scope="row">{{$product->product_name}}
@@ -301,6 +301,14 @@ $timezone = Auth::user()->timezone;
                                             <td>{{$clientCurrency->currency->symbol}}@money($vendor_service_fee)</td>
                                         </tr>
                                     @endif
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}@money($revenue)</td> 
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue)</td>
+                                    </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Reject Reason") }} :</th>
                                         <td style="width:200px;">{{$vendor->reject_reason}}</td>

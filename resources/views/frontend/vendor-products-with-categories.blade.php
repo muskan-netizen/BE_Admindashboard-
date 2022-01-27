@@ -1024,9 +1024,10 @@
                                 <div class="productAddonSetOptions" data-min="<%= addon.min_select %>" data-max="<%= addon.max_select %>" data-addonset-title="<%= addon.title %>">
                                     <% _.each(addon.setoptions, function(option, key2){ %>
                                         <% if(key2 == '5')  { %>
-
-                                            <span class="btn btn-solid  show_subet_addeon" data-div_id_show="subOption<%= addon.addon_id  %>_<%= key2  %>"  href="javascript:void(0)">{{__('Show more')}}</span>
-                                           <div class="more-subset d-none" id="subOption<%= addon.addon_id %>_<%= key2 %>" >
+                                            <div class="d-flex justify-content-end">
+                                                <a class="show_subet_addeon" data-div_id_show="subOption<%= addon.addon_id  %>_<%= key2  %>"  href="javascript:void(0)">{{__('Show more')}}</a>
+                                            </div>
+                                            <div class="more-subset d-none" id="subOption<%= addon.addon_id %>_<%= key2 %>" >
                                         <% } %>
                                         <div class="checkbox-success d-flex mb-1 " <%= key2  %> >
                                             <label class="pr-2 mb-0 flex-fill font-14" for="inlineCheckbox_<%= key1 %>_<%= key2 %>">

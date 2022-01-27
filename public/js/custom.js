@@ -3191,6 +3191,7 @@ $(document).ready(function() {
     // end on demand add to cart
     $(document).delegate('.quantity-right-plus', 'click', function() {
         var quan = parseInt($('.quantity_count').val());
+        var hasInv = $('#hasInventory').val();
         var str = $('#instock').val();
         var batch_count = $(this).data("batch_count");
         // var res = parseInt(str.substring(10, str.length - 1));
@@ -3199,10 +3200,10 @@ $(document).ready(function() {
         else
         batch_count = 1;
 
-        if ((quan + batch_count) > str) {
+        if ((quan + batch_count) > str && hasInv == "1") {
             Swal.fire({
                 // title: "Warning!",
-                text: "{{ __('Quantity is not available in stock') }}",
+                text: "Quantity is not available in stock",
                 icon : "warning",
                 button: "OK",
             });
@@ -3217,7 +3218,8 @@ $(document).ready(function() {
     $(document).delegate(".quantity-left-minus", "click", function() {
 
         var batch_count = $(this).data("batch_count");
-        if(batch_count >0)
+        var str = $('#instock').val();
+        if(batch_count >0 || str == '0')
         batch_count = batch_count;
         else
         batch_count = 1;
@@ -3238,7 +3240,7 @@ $(document).ready(function() {
         if (i - batch_count < minimum_order_count) {
             Swal.fire({
                 // title: "Warning!",
-                text: "{{ __('Minimum Quantity count is ') }}"+minimum_order_count,
+                text: "Minimum Quantity count is "+minimum_order_count,
                 icon : "warning",
                 button: "OK",
              });
@@ -3255,7 +3257,7 @@ $(document).ready(function() {
         if (quan > str) {
             Swal.fire({
                 // title: "Warning!",
-                text: "{{ __('Quantity is not available in stock') }}",
+                text: "Quantity is not available in stock",
                 icon : "warning",
                 button: "OK",
              });
