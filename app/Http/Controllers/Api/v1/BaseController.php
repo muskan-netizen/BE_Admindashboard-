@@ -220,7 +220,7 @@ class BaseController extends Controller{
                 $pretime =  number_format(floatval($vendor->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', '');
                 // distance is multiplied by distance time multiplier to calculate travel time
             }else{
-                $pretime =  number_format(floatval($vendor->order_pre_time), 0, '.', '');
+                $pretime =  number_format(floatval($vendor->order_pre_time), 0, '.', '') + 0;
             }
             // if($pretime >= 60){
             //     $vendor->timeofLineOfSightDistance =  $this->vendorTime($pretime) . '-' . $this->vendorTime((intval($pretime) + 5)).' '. __('hour');
