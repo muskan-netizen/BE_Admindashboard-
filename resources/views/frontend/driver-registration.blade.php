@@ -113,7 +113,7 @@
                             </div>
                         </div>
 
-                        <div class="row ">
+                        {{-- <div class="row ">
                             <div class="col-md-12" id="vehicle_type_idInput">
                                 <div class="form-group" id="vehicle_type_idInputEdit">
                                     <p class="text-muted mt-3 mb-2">TRANSPORT TYPE</p>
@@ -142,7 +142,7 @@
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="row ">
                         <div class="col-md-6" id="make_modelInput">
