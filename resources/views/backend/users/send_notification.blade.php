@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Notification'])
+@extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Campaign'])
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
@@ -33,7 +33,7 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-                <h4 class="page-title">{{ __("Send Notifications") }}</h4>
+                <h4 class="page-title">{{ __("Campaign") }}</h4>
             </div>
         </div>
         

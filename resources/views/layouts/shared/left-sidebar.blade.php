@@ -418,9 +418,9 @@
                                 @endif
                                 @if(Auth::user()->is_superadmin == 1)
                                     <li>
-                                        <a href="{{ route('customer.notification')}}">
+                                        <a href="{{ route('campaign.index')}}">
                                             <span class="icon-celebrity"></span>
-                                            <span> {{ __("Send Notification") }} </span>
+                                            <span> {{ __("Campaigns") }} </span>
                                         </a>
                                     </li>
                                 @endif
