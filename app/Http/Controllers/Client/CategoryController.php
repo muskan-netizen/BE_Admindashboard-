@@ -38,7 +38,7 @@ class CategoryController extends BaseController
         }])->where('status', 1)->orderBy('position', 'asc')->get();
 
         $variants = Variant::with('option', 'varcategory.cate.primary','translation_one')->where('status', '!=', 2)->orderBy('position', 'asc')->get();
-        $categories = Category::with('translation_one')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
+        $categories = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
 
         if ($celebrity_check == 0)
             $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .

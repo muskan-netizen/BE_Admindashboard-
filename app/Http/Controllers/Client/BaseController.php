@@ -89,7 +89,7 @@ class BaseController extends Controller
                         }
                         $icon = $node['icon']['proxy_url'] . '30/30' . $node['icon']['image_path'];
                         if (isset($node['translation_one'])) {
-                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal ellips" dataid="' . $node["id"] . '" is_vendor="0" href="#"> ' . $node['translation_one']["name"] . '</a></div><span class="inner-div text-right">';
+                            $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '"><a class="openCategoryModal ellips" dataid="' . $node["id"] . '" is_vendor="0" href="#"> ' . $node['translation_one']["name"] .'(' . @$node['type']["title"] . ') </a></div><span class="inner-div text-right">';
                         } else {
                             $this->htmlData .= '<div class="dd3-content"><div class="dd-img d-flex align-items-center"><img class="rounded-circle mr-1" src="' . $icon . '">' . $node['translation_one']["name"] . '</div><span class="inner-div text-right">';
                         }
