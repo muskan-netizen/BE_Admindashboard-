@@ -1245,6 +1245,7 @@ class TempCartController extends FrontController
                 ->paginate($limit, $page);
             foreach ($products as $product) {
                 // $product->response_type = 'product';
+                $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
                 $response[] = $product;
             }
             return $this->successResponse($response);
