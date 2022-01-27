@@ -551,7 +551,7 @@
                                                                                     $variant_price = 0;
                                                                                     $variant_quantity = $prod->variant_quantity;
                                                                                     $isAddonExist = 0;
-                                                                                    $minimum_order_count = $data->minimum_order_count;
+                                                                                    $minimum_order_count =($data->minimum_order_count == 0) ? 1:$data->minimum_order_count ;
                                                                                     $batch_count = $data->batch_count;
                                                                                     if (count($data->addOn) > 0) {
                                                                                         $isAddonExist = 1;
@@ -640,7 +640,7 @@
                                                             </div>
                                                         @else
 
-                                                            @if ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)
+                                                            @if (( $prod->has_inventory == 0) ||  ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1) )
                                                                 {{-- <a class="add_vendor-fav" href="#"><i class="fa fa-heart"></i></a> --}}
                                                                 <a class="add-cart-btn add_vendor_product"
                                                                     id="aadd_button_href{{ $data->id }}"
@@ -677,7 +677,7 @@
                                                             @endif
                                                         @endif
                                                         @if ($is_customizable)
-                                                            <div class="customizable-text">customizable</div>
+                                                            <div class="customizable-text">{{__('customizable')}}</div>
                                                         @endif
                                                     @endif
                                     </div>
