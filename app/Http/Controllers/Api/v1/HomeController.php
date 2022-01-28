@@ -492,10 +492,13 @@ class HomeController extends BaseController
 
                 $vendors = Vendor::select('id', 'name  as dataname', 'logo', 'slug', 'address')->where($action, 1);
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                    $vendors = $vendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
-                        $query->select('vendor_id')
+
+                    if (!empty($latitude) && !empty($longitude)) {
+                        $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                            $query->select('vendor_id')
                         ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
-                    });
+                        });
+                    }
                 }
 
 

@@ -37,10 +37,12 @@ class SearchController extends FrontController{
                 Session::put('selectedAddress', $selectedAddress);
             }
             if(($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude) ){
-                $vendors = $vendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
-                    $query->select('vendor_id')
+                if (!empty($latitude) && !empty($longitude)) {
+                    $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                        $query->select('vendor_id')
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
-                });
+                    });
+                }
             }
         }
         $vendors = $vendors->where(function ($q) use ($keyword) {
@@ -129,10 +131,13 @@ class SearchController extends FrontController{
                 Session::put('selectedAddress', $selectedAddress);
             }
             if(($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude) ){
-                $vendors = $vendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
-                    $query->select('vendor_id')
+
+                if (!empty($latitude) && !empty($longitude)) {
+                    $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                        $query->select('vendor_id')
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
-                });
+                    });
+                }
             }
         }
         $vendors = $vendors->where(function ($q) use ($keyword) {

@@ -164,10 +164,13 @@ class FrontController extends Controller
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
         }
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
-            $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
+
+            if (!empty($latitude) && !empty($longitude)) {
+                $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
                     $query->select('vendor_id')
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                 });
+            }
         }
         $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
 

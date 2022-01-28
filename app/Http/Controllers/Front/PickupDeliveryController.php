@@ -74,9 +74,12 @@ class PickupDeliveryController extends FrontController{
 
 
         if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
-            $vendors = $vendors->whereHas('serviceArea', function($query) use($pickup_latitude, $pickup_longitude){
-                $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
-            });
+
+            if (!empty($pickup_latitude) && !empty($pickup_longitude)) {
+                $vendors = $vendors->whereHas('serviceArea', function ($query) use ($pickup_latitude, $pickup_longitude) {
+                    $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
+                });
+            }
         }
 
         $vendors = $vendors->whereIn('id', $vendor_ids)
