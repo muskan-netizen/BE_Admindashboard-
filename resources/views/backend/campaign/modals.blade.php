@@ -18,7 +18,7 @@
                     </div>
                 </div> --}}
 
-                <div class="row mb-2">
+                <div class="row">
                     <div class="col-md-12">
                         <div class="form-group" id="nameInput">
                             {!! Form::label('title', __('Title'),['class' => 'control-label']) !!}
@@ -44,6 +44,100 @@
                             </span>
                         </div>
                     </div>
+                </div>
+                <div class="row sms-section">
+                    <div class="col-md-12">
+                        <div class="form-group" id="nameInput">
+                            <label for="sms_title" class="control-label">{{__("Message")}}</label>
+                            <textarea class="form-control" placeholder="{{__("Write your message")}}" name="sms_text" type="text" id="sms_text" maxlength="160"></textarea>
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row email-section">
+                    <div class="col-md-6">
+                        <div class="form-group" id="emailTitle">
+                            <label for="email_title" class="control-label">{{__("Title")}}</label>
+                            <input class="form-control" placeholder="{{__("Email Title")}}" name="email_title" type="text" id="email_title">
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" id="emailSubject">
+                            <label for="email_subject" class="control-label">{{__("Subject")}}</label>
+                            <input class="form-control" placeholder="{{__("Email Subject")}}" name="email_subject" type="text" id="email_subject">
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group" id="emailBody">
+                            <label for="email_body" class="control-label">{{__("Email Body")}}</label>
+                            <textarea class="form-control" placeholder="{{__("Write your email")}}" name="email_body" type="text" id="email_body"></textarea>
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row push-section">
+                    <div class="col-md-6">
+                        <div class="form-group" id="pushTitle">
+                            <label for="push_title" class="control-label">{{__("Title")}}</label>
+                            <input class="form-control" placeholder="{{__("Title")}}" name="push_title" type="text" id="push_title">
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="pushimageInput">
+                        <label>{{ __('Upload image') }}</label>
+                        <input data-default-file="" type="file" data-plugins="dropify" name="push_image" accept="image/*" class="dropify" />
+                        <label class="logo-size d-block text-right mt-1">{{ __('Image Size') }} 150x150</label>                    
+                        <span class="invalid-feedback" role="alert">
+                            <strong></strong>
+                        </span>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group" id="pushBody">
+                            <label for="push_body" class="control-label">{{__("Description")}}</label>
+                            <textarea class="form-control" placeholder={{__("Description")}} name="push_message_body" type="text" id="push_message_body"></textarea>
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" id="pushOption">
+                            <label for="push_option" class="control-label">{{__("Select Push Option")}}</label>
+                            <select class="form-control" name="push_url_option" id="push_url_option">
+                                <option value="1">URL</option>
+                                <option value="2">Category</option>
+                                <option value="3">Vendor</option>
+                            </select>                            
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" id="pushTitle">
+                            <label for="push_title" class="control-label">{{__("Push Option Value")}}</label>
+                            <input class="form-control" placeholder="" name="push_url_option_value" type="text" id="push_url_option_value">
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+
+
                     {{-- <div class="col-md-6" id="slugInput">
                         <div class="form-group">
                             {!! Form::label('title', __('Slug'),['class' => 'control-label']) !!} 
@@ -73,17 +167,6 @@
                             </span>
                         </div>
                     </div> -->
-                    <div class="col-md-12">
-                        <div class="form-group" id="addressInput">
-                            {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
-                            <!-- {!! Form::text('address', null, ['class' => 'form-control']) !!} -->
-                            <textarea class='form-control' rows="3" name="description"></textarea>
-                            <span class="invalid-feedback" role="alert">
-                                <strong></strong>
-                            </span>
-                        </div>
-                    </div>
-
                     
 
                 </div>

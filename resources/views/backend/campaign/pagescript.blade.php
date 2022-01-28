@@ -1,32 +1,31 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
 
 <script>
-    $('.chk_box').change(function() {
-        console.log("def");
-        if (this.checked) {
-            var status = 1;
-        } else {
-            var status = 2;
-        }
-        console.log($(this).attr("bid"));
-        var bid = $(this).attr("bid");
-        $.ajax({
-            url: "{{ route('celebrity.changeStatus') }}",
-            type: "POST",
-            data: {
-                "_token": "{{ csrf_token() }}",
-                id: bid,
-                status: status
-            },
-            success: function(response) {
-                console.log(response);
-            },
-        });
-    });
+    // $('.chk_box').change(function() {
+    //     console.log("def");
+    //     if (this.checked) {
+    //         var status = 1;
+    //     } else {
+    //         var status = 2;
+    //     }
+    //     console.log($(this).attr("bid"));
+    //     var bid = $(this).attr("bid");
+    //     $.ajax({
+    //         
+    //         type: "POST",
+    //         data: {
+    //             "_token": "{{ csrf_token() }}",
+    //             id: bid,
+    //             status: status
+    //         },
+    //         success: function(response) {
+    //             console.log(response);
+    //         },
+    //     });
+    // });
 
 
     $(".openEditModal").click(function(e) {
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -36,7 +35,7 @@
 
         var uid = $(this).attr('loyaltyID');
         if (uid > 0) {
-            uri = "<?php echo url('client/celebrity'); ?>" + '/' + uid + '/edit';
+            uri = "<?php echo url('client/campaign'); ?>" + '/' + uid + '/edit';
 
         }
 
@@ -65,9 +64,8 @@
         e.preventDefault();
         var form = document.getElementById('save_loyality_form');
         var formData = new FormData(form);
-        var url = "{{route('celebrity.store')}}";
+        var url = "{{route('campaign.store')}}";
         saveData(formData, 'add', url);
-
     });
 
     $(document).on('click', '.submitEditForm', function(e) {
@@ -76,7 +74,6 @@
         var formData = new FormData(form);
         var url = document.getElementById('lc_id').getAttribute('url');
         saveData(formData, 'edit', url);
-
     });
 
     function saveData(formData, type, formUri) {
@@ -130,23 +127,6 @@
         });
     }
 
-    // $(document).ready(function() {
-    //     $.ajax({
-    //         url: "{{ route('celebrity.getBrands') }}",
-    //         type: "POST",
-    //         data: {
-    //             "_token": "{{ csrf_token() }}"
-    //         },
-    //         success: function(response) {
-    //             console.log(response.brands[0].id);
-    //             for( i = 0; i<response.brands.length; i++){
-    //                 $("#brands").append("");
-    //             }
-               
-    //             // $(".primaryKey").html("1 " + response.symbol + " =");
-    //             // $("#redeem_points_per_primary_currency").val(response.value);
-    //         },
-    //     });
-    // });
+    
 
 </script>
