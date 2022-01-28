@@ -20,6 +20,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     </div>
                     <div class="col-9 col-md-10 top-header bg-transparent d-flex align-items-center justify-content-end">
                         <ul class="header-dropdown">
+                           @if($client_preference_detail->header_quick_link == 1)
                             <li class="onhover-dropdown quick-links quick-links">
 
                                 <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
@@ -54,6 +55,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                         @endforeach
                                 </ul>
                             </li>
+                            @endif
                             <li class="onhover-dropdown change-language">
                                 <a href="javascript:void(0)">{{session()->get('locale')}}
                                 <span class="icon-ic_lang align-middle"></span>
