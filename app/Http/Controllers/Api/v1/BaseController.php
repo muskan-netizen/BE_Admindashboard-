@@ -364,12 +364,12 @@ class BaseController extends Controller{
         return $currency[0]['convertedAmount'];
     }
 
-    public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption , $mail_from = "royo"){
+    public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption ){
         $config = array(
             'driver' => $mail_driver,
             'host' => $mail_host,
             'port' => $mail_port,
-            'from'       => array('address' => $mail_from, 'name' => $mail_from),
+
             'encryption' => $mail_encryption,
             'username' => $mail_username,
             'password' => $mail_password,
@@ -632,7 +632,7 @@ class BaseController extends Controller{
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
 
         if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
-            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption,$data->mail_from);
+            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
             $client_name = $emailData['client_name'];
             $mail_from = $emailData['mail_from'];
             $sendto = $emailData['email'];
