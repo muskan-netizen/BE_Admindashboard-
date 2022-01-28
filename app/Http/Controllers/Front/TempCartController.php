@@ -493,19 +493,15 @@ class TempCartController extends FrontController
         $cart->products = $cartData;
         $cart->item_count = $item_count;
         $temp_total_paying = $total_paying  + $total_tax - $total_disc_amount;
-        if ($cart->user_id > 0) {
-            $loyalty_amount_saved = $this->getLoyaltyPoints($cart->user_id, $clientCurrency->doller_compare);
-            // if($total_paying > $cart->loyalty_amount){
-            //    $cart->loyalty_amount = 0.00;
-            // }
-            // $cart->wallet = $this->getWallet($cart->user_id, $clientCurrency->doller_compare, $currency);
-        }
-        if ($loyalty_amount_saved  >= $temp_total_paying) {
-            $loyalty_amount_saved = $temp_total_paying;
-            $cart->total_payable_amount = 0.00;
-        } else {
+        // if ($cart->user_id > 0) {
+        //     $loyalty_amount_saved = $this->getLoyaltyPoints($cart->user_id, $clientCurrency->doller_compare);
+        // }
+        // if ($loyalty_amount_saved  >= $temp_total_paying) {
+        //     $loyalty_amount_saved = $temp_total_paying;
+        //     $cart->total_payable_amount = 0.00;
+        // } else {
             $cart->total_payable_amount = $total_paying  + $total_tax - $total_disc_amount - $loyalty_amount_saved;
-        }
+        // }
         $wallet_amount_used = 0;
         if (isset($user)) {
             if ($user->balanceFloat > 0) {
