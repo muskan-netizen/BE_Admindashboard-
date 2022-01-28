@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterTableOrderAndCartDeliveryType extends Migration
+class AlterOrderDeliveryFee extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class AlterTableOrderAndCartDeliveryType extends Migration
      */
     public function up()
     {
-        DB::statement("ALTER TABLE `cart_vendor_delivery_fee` CHANGE `shipping_delivery_type` `shipping_delivery_type` ENUM('D', 'L', 'S','SR') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'D';");
+        DB::statement("ALTER TABLE `orders` CHANGE `shipping_delivery_type` `shipping_delivery_type` ENUM('D', 'L', 'S','SR') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'D';");
     }
 
     /**

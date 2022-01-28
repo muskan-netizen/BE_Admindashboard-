@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\ShippingOption;
 use App\Models\User;
 use App\Models\UserAddress;
@@ -98,17 +98,49 @@ class ShiprocketController extends Controller
 			return $fee;
 		}
 
+		 # get delivery fee getShiprocketBaseFee
+		 public function getShiprocketBaseFee($vendorId)
+		 {	
+			$fee = array();
+			$fees = 0;
+			$this->configuration();
+			if($this->status == 1 && $this->base_price>0){
+				$distance = $this->getDistance($vendorId);
+				if($distance){
+					//Helper Function
+					$fees =   getBaseprice($distance,'shiprocket');
+					if($fees>0){
+						$fee[] = array(
+							'type'=>'SR',
+							'courier_name' => 'Shiprocket',
+							'rate' => number_format(round($fees), 2, '.', ''),
+							'courier_company_id' => '',
+							'etd' => 0,
+							'etd_hours' => 0,
+							'estimated_delivery_days' => 0,
+							'code' => 'SR_0'
+						);
+					}
+				}
+
+			}
+			
+			return $fee;
+		}
+
 
 		# get delivery fee Shiprocket Courier Service
 		public function getCourierService($vendorId)
 		{
-			$service = array();
 			$this->configuration();
 			if($this->status == 1){
-				$token = $this->getAuthToken();
-				$service = $this->checkCourierService($token->token);
+				if($this->base_price>0){
+				return $this->getShiprocketBaseFee($vendorId);
+			}else{
+					$token = $this->getAuthToken();
+					return $this->checkCourierService($token->token,$vendorId);
+				}
 			}
-			return $service;
 		}
 
 

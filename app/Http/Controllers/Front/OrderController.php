@@ -685,7 +685,6 @@ class OrderController extends FrontController
             if (($request->has('address_id')) && ($request->address_id > 0)) {
                 $order->address_id = $request->address_id;
             }
-            $order->shipping_delivery_type = (($request->delivery_type)?$request->delivery_type:'D');
             $order->payment_option_id = $request->payment_option_id;
             $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
             $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver ?? null;
@@ -774,15 +773,17 @@ class OrderController extends FrontController
                     if ($action == 'delivery') {
                         $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {
-
+                            $OrderVendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type;
+                            $OrderVendor->courier_id = $deliver_fee_data->courier_id;
+                            
                             //Add here Delivery option Lalamove and dispatcher
-                            if($deliver_fee_data->shipping_delivery_type=='L'){
-                                $lala = new LalaMovesController();
-                                $delivery_fee = $lala->getDeliveryFeeLalamove($vendor_cart_product->vendor_id);
-                            }else{
-                                $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
-                            }
 
+                            // if($delType=='L'){
+                            //     $lala = new LalaMovesController();
+                            //     $delivery_fee = $lala->getDeliveryFeeLalamove($vendor_cart_product->vendor_id);
+                            // }else{
+                            //     $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
+                            // }
 
 
                             if($deliver_fee_data)
@@ -805,7 +806,6 @@ class OrderController extends FrontController
                                     }
                                 }
                             }
-
 
                         }
                     }

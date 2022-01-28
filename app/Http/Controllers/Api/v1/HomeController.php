@@ -240,9 +240,15 @@ class HomeController extends BaseController
                     }
                 }
                 $slotsDate = 0;
-                $slotsDate = findSlot('',$vendor->id,'');
-                $vendor->delaySlot = $slotsDate;
-                $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
+                if($vendor->is_vendor_closed){
+                    $slotsDate = findSlot('',$vendor->id,'');
+                    $vendor->delaySlot = $slotsDate;
+                    $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
+                }else{
+                    $vendor->delaySlot = 0;
+                    $vendor->closed_store_order_scheduled = 0;
+                }
+                
                 
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4) ? 1 : 0;
 

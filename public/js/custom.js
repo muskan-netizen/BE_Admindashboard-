@@ -757,8 +757,8 @@ $(document).ready(function() {
     });
 
     $(document).on("click", "#order_placed_btn", function() {
-        //var delivery_fee = $("input[name='deliveryFee']:checked").val();
-        var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode');
+        var selected = document.querySelector(".delivery-fee.select");
+        var delivery_type = selected.value;
 
         $('.alert-danger').html('');
         if ((typeof guest_cart != undefined) && (guest_cart == 1)) {
@@ -2180,7 +2180,7 @@ $(document).ready(function() {
     });
 
     $(document).on('change', '.delivery-fee', function() {
-        let code = $(this).data('dcode');
+        let code = $(this).val();
         let address_id = $("input[type='radio'][name='address_id']:checked").val();
         cartHeaderDilivery(address_id,code);
     });

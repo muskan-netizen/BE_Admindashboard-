@@ -89,16 +89,27 @@
                         {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="show_slot" class="form-control" data-color="#43bee1" @if($vendor->show_slot == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        <div class="form-group">
-                             {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
-                        <input type="number"  name="slot_minutes" class="form-control"  value="{{$vendor->slot_minutes??0}}" min="0">
-                        </div>
+
+                    <div class="col-md-12 mb-2 align-items-center justify-content-between" style="display:{{$vendor->show_slot == 1 ? 'none!important' : 'block'}}" id="sch_vendor_close">
+                        {!! Form::label('title', __('Scheduled order if vendor closed?'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="closed_store_order_scheduled" class="form-control" data-color="#43bee1" @if($vendor->closed_store_order_scheduled == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                             {!! Form::label('title', __('Scheduled order for next day?'),['class' => 'control-label']) !!}
-                             <input type="checkbox" data-plugin="switchery" name="closed_store_order_scheduled" class="form-control" data-color="#43bee1" @if($vendor->closed_store_order_scheduled == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    <div class="form-group w-100">
+                     {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
+                        <select class="form-control" name="slot_minutes">
+                            <option value="">{{__('Slot Duration')}}</option>
+                            <option value="15" {{$vendor->slot_minutes == '15'? 'selected':''}}>15 {{__(' Minutes')}}</option>
+                            <option value="30" {{$vendor->slot_minutes == '30'? 'selected':''}}>30 {{__(' Minutes')}}</option>
+                            <option value="45" {{$vendor->slot_minutes == '45'? 'selected':''}}>45 {{__(' Minutes')}}</option>
+                            @for($i=1;$i<=8;$i++)
+                                <option value="{{$i*60}}" {{$vendor->slot_minutes == ($i*60)? 'selected':''}}>{{ $i. __(' Hour')}}</option>
+                            @endfor
+                        </select>
                     </div>
+                    </div>
+                    
                     @endif
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
@@ -614,6 +625,14 @@ $( document ).ready(function() {
             $("#auto_reject_timeInput").css("display", "none");
         } else {
             $("#auto_reject_timeInput").css("display", "block");
+        }
+    })
+
+    $("input[name='show_slot']").change(function() {
+        if($(this).prop('checked')){
+            $("#sch_vendor_close").css("display", "none");
+        } else {
+            $("#sch_vendor_close").css("display", "block");
         }
     })
 </script>

@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{User, TempCartProduct};
+use App\Models\{User, TempCartProduct, Vendor};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -346,6 +346,8 @@ function createSlug($str, $delimiter = '-'){
     
 function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
 {
+$slotDuration = Vendor::select('slot_minutes')->where('id',$vid)->first();
+$duration = ($slotDuration->slot_minutes) ?? $duration;
 $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
 //type must be a : delivery , takeaway,dine_in
 $client = ClientData::select('timezone')->first();
@@ -364,11 +366,13 @@ return $q->where('day',$mytime)->where($type,'1');
 ->get();
 $min[] = '';
 $cart = CartProduct::where('vendor_id',$vid)->get();
+if(isset($cart) && $cart->count()>0){
 foreach($cart as $product)
 {
     $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
     $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
     $min[] = (($delayHr * 60) + $delayMin);
+}
 }
 
 if(isset($slots) && count($slots)>0){

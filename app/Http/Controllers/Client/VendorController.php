@@ -215,6 +215,7 @@ class VendorController extends BaseController
         $vendor->email = $request->email;
         $vendor->website = $request->website;
         $vendor->phone_no = $request->phone_no;
+        $vendor->pincode = $request->pincode;
         $vendor->slug = Str::slug($request->name, "-");
         if(Vendor::where('slug',$vendor->slug)->count() > 0)
         $vendor->slug = Str::slug($request->name, "-").rand(10,100);
@@ -868,7 +869,7 @@ class VendorController extends BaseController
         $vendor->show_slot = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
         $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
         $vendor->slot_minutes = ($request->slot_minutes>0)?$request->slot_minutes:0;
-        $vendor->closed_store_order_scheduled = ($request->has('closed_store_order_scheduled') && $request->closed_store_order_scheduled == 'on') ? 1 : 0;
+        $vendor->closed_store_order_scheduled = (($request->has('show_slot')) ? 0 : ($request->closed_store_order_scheduled == 'on')) ? 1 : 0;
 
         if ($request->has('order_min_amount')) {
             $vendor->order_min_amount   = $request->order_min_amount;

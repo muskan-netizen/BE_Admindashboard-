@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
+use App\Http\Controllers\ShiprocketController;
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot};
 use Log;
 class CartController extends FrontController
@@ -653,7 +654,7 @@ class CartController extends FrontController
                         }
                     }
                 }
-
+                Session()->put('vid','');
                 foreach ($vendorData->vendorProducts as $ven_key => $prod) {
                     if($prod->product->sell_when_out_of_stock == 0 && $prod->product->has_inventory == 1){
                         $quantity_check = productvariantQuantity($prod->variant_id);
@@ -744,64 +745,48 @@ class CartController extends FrontController
                     if($action == 'delivery'){
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
-                       // $deliveryCharges = 0;
-
+                        $deliveryCharges = 0;
+                        $select = '';
+                        $code = (($code)?$code:$cart->shipping_delivery_type);
                         if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
+                            $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount);
+                           if(isset($deliveries[0]))
+                           {
+                            $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">'; 
+                            foreach($deliveries as $k=> $opt)
+                                {
+                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['courier_name'].', Rate : '.$opt['rate'].'</option>'; 
+                                }
+                            $select .= '</select>'; 
+                                if($code){
+                                    $new = array_filter($deliveries, function ($var) use ($code) {
+                                        return ($var['code'] == $code);
+                                    });
+                                    foreach($new as $rate){
+                                        $deliveryCharges = $rate['rate'];
+                                    }
+                                    if($deliveryCharges)
+                                    {
+                                        $deliveryCharges = $rate['rate'];
+                                    }else{
+                                        $deliveryCharges = $deliveries[0]['rate'];
+                                        $code = $deliveries[0]['code'];
+                                    }
 
-                            //Dispatcher Delivery changes code
-                            $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
-                            if (!empty($deliver_charge) && $delivery_count == 0) {
-                                $delivery_count = 1;
-                                $prod->deliver_charge = number_format($deliver_charge, 2, '.', '');
-                                // $payable_amount = $payable_amount + $deliver_charge;
-
-                                $shipping_delivery_type = 'D';
-
-                            }
-                        $delivery_fee_charges = $deliver_charge;
-                        $deliveryCharges = $delivery_fee_charges;
-
-
-                        //Lalamove Delivery changes code
-                        $lalamove = new LalaMovesController();
-                        $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
-                        if($deliver_lalmove_fee>0 && $delivery_count_lm == 0)
-                        {
-                             $delivery_count_lm = 1;
-                             $prod->deliver_charge_lalamove = number_format($deliver_lalmove_fee, 2, '.', '');
-                             $shipping_delivery_type = 'L';
-                        }
-                        $deliver_charges_lalmove = $deliver_lalmove_fee;
-                        //End Lalamove Delivery changes code
-                        if($code =='L' && $deliver_lalmove_fee>0)
-                        {
-                            $deliveryCharges = $deliver_charges_lalmove;
-                        }
-
-
-
-                        # for static fees
-                        if($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0)
-                        {
-                            if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){
-                                $deliveryCharges = number_format($vendorData->vendor->delivery_fee_maximum, 2, '.', '');
+                                }else{
+                                    $deliveryCharges = $deliveries[0]['rate'];
+                                    $code = $deliveries[0]['code'];
+                                }
                             }
 
-                            if($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
-                                $deliveryCharges = number_format($vendorData->vendor->delivery_fee_minimum, 2, '.', '');
-                            }
-
-                            $delivery_fee_charges_static =  $deliveryCharges;
-                            $delivery_fee_charges =  $delivery_fee_charges_lalamove = $deliveryCharges;
-
-                        }//End statis fe code
-
-
-                        }//End Check last time stone
-
-
-
+                    if(isset($deliveryCharges) && !empty($deliveryCharges)){
+                            $dtype = explode('_',$code);
+                            CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
                     }
+                    
+                    }//End Check last time stone 
+                        
+                }
 
                     $product = Product::with([
                         'variant' => function ($sel) {
@@ -827,7 +812,6 @@ class CartController extends FrontController
 
                 $couponGetAmount = $payable_amount ;
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
-                    //pr($vendorData->coupon->promo);
                     if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
                         if($vendorData->coupon->promo->first_order_only==1){
                             if(Auth::user()){
@@ -887,7 +871,6 @@ class CartController extends FrontController
                                 $PromoFreeDeliver = 1;
                                 $coupon_amount_used = $coupon_amount_used +  $deliveryCharges;
                                 $payable_amount = $payable_amount - $deliveryCharges;
-                               // pr($payable_amount);
                             }
                         }
                     }
@@ -925,19 +908,13 @@ class CartController extends FrontController
                 }
 
 
-
-                if(isset($deliveryCharges) && !empty($deliveryCharges)){
-                     CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $code??'D']);
-                }
-
-
                 //end applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                 $vendorData->coupon_amount_used = number_format($coupon_amount_used, 2, '.', '');
                 $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
                 $vendorData->delivery_fee_charges = number_format($delivery_fee_charges, 2, '.', '');
-                $vendorData->delivery_fee_charges_static = number_format($delivery_fee_charges_static, 2, '.', '');;
-                $vendorData->delivery_fee_charges_lalamove = number_format($deliver_charges_lalmove, 2, '.', '');
+                //$vendorData->delivery_fee_charges_static = number_format($delivery_fee_charges_static, 2, '.', '');;
+               
                 $vendorData->payable_amount = number_format($payable_amount, 2, '.', '');
                 $vendorData->discount_amount = number_format($discount_amount, 2, '.', '');
                 $vendorData->discount_percent = number_format($discount_percent, 2, '.', '');
@@ -947,11 +924,11 @@ class CartController extends FrontController
                 $vendorData->isDeliverable = 1;
                 $vendorData->promo_free_deliver = $PromoFreeDeliver;
                 $vendorData->is_vendor_closed = $is_vendor_closed;
-                $vendorData->closed_store_order_scheduled = $product->vendor->closed_store_order_scheduled;
-                   // dd($product->vendor);
-                // if (!empty($subscription_features)) {
-                //     $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount - $subscription_discount), 2, '.', '');
-                // }
+                $slotsDate = findSlot('',$vendorData->vendor->id,'');
+                $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
+                $vendorData->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
+                $vendorData->delOptions = $select;
+                
                 if(isset($serviceArea)){
                     if($serviceArea->isEmpty()){
                         $vendorData->isDeliverable = 0;
@@ -1047,16 +1024,21 @@ class CartController extends FrontController
             $cart->scheduled = $scheduled;
             $cart->schedule_type =  $cart->schedule_type;
             $cart->closed_store_order_scheduled =  0;
+            $myDate = date('Y-m-d');
             if($cart->vendorCnt==1){
                 $vendorId = $cartData[0]->vendor_id;
                 //type must be a : delivery , takeaway,dine_in
                 $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
-                $myDate  = date('Y-m-d');
-                if($cart->deliver_status == 0 && $duration->closed_store_order_scheduled == 1)
+                $closed_store_order_scheduled = (($slotsDate)?$duration->closed_store_order_scheduled:0);
+                if($cart->deliver_status == 0 && $closed_store_order_scheduled == 1)
                 {
                     $cart->deliver_status = $duration->closed_store_order_scheduled;
                     $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled;
-                    $myDate  = date('Y-m-d',strtotime('+1 day'));
+                    $myDate = date('Y-m-d',strtotime($cart->scheduled_date_time));
+                    $sttime =  strtotime($myDate);
+                    $todaytime =  strtotime(date('Y-m-d'));
+                    if($todaytime == $sttime){$sttime =  strtotime('+1 day',$sttime);}
+                    $myDate = (($myDate)?date('Y-m-d',$sttime):date('Y-m-d',strtotime('+1 day')));
                     $cart->schedule_type =  'schedule';
                     //$cart->closed_store_order_scheduled =  1;
                 }
@@ -1099,10 +1081,11 @@ class CartController extends FrontController
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
-
+            $cart->scheduled_date_time = $myDate;
             if($cart->slotsCnt>0){
-                $cart->delay_date =  $myDate;
-            }else{
+                $mdate = (object)findSlotNew('',$cart->vendor_id,'');
+                $cart->delay_date =  $mdate->mydate;
+             }else{
                 $cart->delay_date =  $delay_date??0;
             }
 
@@ -1366,9 +1349,9 @@ class CartController extends FrontController
         $langId = Session::get('customerLanguage');
         $address_id = 0;
         if ($user) {
-            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
         } else {
-            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
+            $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
         }
 
 
@@ -1424,6 +1407,97 @@ class CartController extends FrontController
 
             return $all_vendors;
     }
+
+
+
+        //Fetch all delivery fee option
+        public function getDeliveryOptions($vendorData,$preferences,$payable_amount)
+        {
+            $option = array(); 
+            $delivery_count = 0;
+            try {
+                if($vendorData->vendor_id)
+                {
+                   Session()->put('vid',$vendorData->vendor_id);
+                
+            if($preferences->static_delivey_fee != 1)
+            {
+                //Dispatcher Delivery changes code
+                $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
+                if (!empty($deliver_charge)){
+                    $deliver_charge = number_format($deliver_charge, 2, '.', '');
+                    $option[] = array(
+                        'type'=>'D',
+                        'courier_name'=>__('Dispatcher'),
+                        'rate' => $deliver_charge,
+                        'courier_company_id' => 0,
+                        'etd' => 0,
+                        'etd_hours' => 0,
+                        'estimated_delivery_days' => 0,
+                        'code' => 'D_0'
+                    );
+                }
+         
+            
+            //Lalamove Delivery changes code
+            $lalamove = new LalaMovesController();
+            $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
+            if($deliver_lalmove_fee>0)
+            {   
+                $deliver_charge_lalamove = number_format($deliver_lalmove_fee, 2, '.', '');
+            
+                $optionLala[] = array(
+                    'type'=>'L',
+                    'courier_name'=>__('Lalamove'),
+                    'rate' => $deliver_charge_lalamove,
+                    'courier_company_id' => 0,
+                    'etd' => 0,
+                    'etd_hours' => 0,
+                    'estimated_delivery_days' => 0,
+                    'code' => 'L_0'
+                );
+                $option = array_merge($option,$optionLala);
+            }
+            //End Lalamove Delivery changes code
+
+            //getShiprocketFee Delivery changes code
+            $ship = new ShiprocketController();
+            $deliver_ship_fee = $ship->getCourierService($vendorData->vendor_id);
+            //dd($deliver_ship_fee);
+            if($deliver_ship_fee)
+            {  
+                $option = array_merge($option,$deliver_ship_fee);
+            }
+            
+        }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
+             # for static fees 
+           
+                if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){ 
+                    $deliveryCharges = number_format($vendorData->vendor->delivery_fee_maximum, 2, '.', '');
+                }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
+                    $deliveryCharges = number_format($vendorData->vendor->delivery_fee_minimum, 2, '.', '');
+                }
+
+                $option[] = array(
+                    'type'=>'S',
+                    'courier_name'=>__('Static'),
+                    'rate' => $deliveryCharges,
+                    'courier_company_id' => 0,
+                    'etd' => 0,
+                    'etd_hours' => 0,
+                    'estimated_delivery_days' => 0,
+                    'code' => 'S_0'
+                );
+
+           }//End statis fe code
+
+          }
+        } catch (\Exception $e) {
+        }
+        return $option;
+    }
+
+
 
 
     # get delivery fee from dispatcher
@@ -1523,10 +1597,18 @@ class CartController extends FrontController
             $new_session_token = session()->get('_token');
             if ($user || $new_session_token) {
                 if($request->task_type == 'now'){
-                    $request->schedule_dt = Carbon::now()->format('Y-m-d H:i:s');
+                    $time = Carbon::now()->format('Y-m-d H:i:s');
                 }else{
-                    if(isset($request->schedule_dt) && !empty($request->schedule_dt))
-                    $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+
+                    if(isset($request->slot))
+                    {
+                        $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                        $slot = $request->slot;
+                    }else{
+                        if(isset($request->schedule_dt) && !empty($request->schedule_dt))
+                        $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                    }
+                    
                 }
 
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
@@ -1540,27 +1622,13 @@ class CartController extends FrontController
                 } else {
                     $cart_detail = Cart::where('unique_identifier', $new_session_token)->first();
                 }
-                if($request->task_type!='now'){
-                    if(isset($request->slot))
-                    {
-                        $time = explode(' - ',$request->slot);
-                        $time = date('Y-m-d',strtotime($request->schedule_dt)).' '.$time[0].':00'??null;
-                        $slot = $request->slot;
-                    }else{
-                        $time = $request->schedule_dt;
-                        $slot = null;
-                    }
-                }else{
-                    $time = null;
-                    $slot = null;
-                }
-                //dd($request->delivery_type);
+              
 
                 $cart_detail = $cart_detail->update(['specific_instructions' => $request->specific_instructions??null,
                 'schedule_type' => $request->task_type,
                 'scheduled_date_time' => $time??null,
                 'scheduled_slot' => $slot??null,
-                //'shipping_delivery_type' => $request->delivery_type??'D',
+                'shipping_delivery_type' => $request->delivery_type??'D',
                 'comment_for_pickup_driver' => $request->comment_for_pickup_driver??null,
                 'comment_for_dropoff_driver' => $request->comment_for_dropoff_driver??null,
                 'comment_for_vendor' => $request->comment_for_vendor??null,

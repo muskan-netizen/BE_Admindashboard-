@@ -12,7 +12,7 @@ class CartDeliveryFee extends Model
 
     protected $table = 'cart_vendor_delivery_fee';
 
-    protected $fillable = ['cart_id', 'vendor_id', 'delivery_fee', 'shipping_delivery_type'];
+    protected $fillable = ['cart_id', 'vendor_id', 'delivery_fee', 'shipping_delivery_type','courier_id'];
 
 
     

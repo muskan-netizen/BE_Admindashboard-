@@ -174,8 +174,15 @@ class ProductController extends BaseController
             }
 
             $slotsDate = 0;
-            $slotsDate = findSlot('',$product->vendor->id,'');
-            $product->delaySlot = (($slotsDate)?$slotsDate:'');
+            if($product->vendor->is_vendor_closed){
+                $slotsDate = findSlot('',$product->vendor->id,'');
+                $product->delaySlot = $slotsDate;
+                $product->vendor->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
+            }else{
+                $product->delaySlot  = 0;
+                $product->vendor->closed_store_order_scheduled = 0;
+            }
+
 
             $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
