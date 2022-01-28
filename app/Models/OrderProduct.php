@@ -68,7 +68,8 @@ class OrderProduct extends Model{
     }
     public function getImageBase64Attribute()
     {
-      $image = $this->attributes['image_path'];
+      $img = $this->attributes['image'];
+      $image = $this->getImageAttribute($img);
       $image_url = $image['proxy_url'].'100/100'.$image['image_path'];
       $base64 = base64_encode(file_get_contents($image_url));
       return $base64;

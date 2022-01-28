@@ -1421,7 +1421,7 @@ class OrderController extends BaseController
     public function orderDetails_for_notification($order_id, $vendor_id = "")
     { 
 
-        $user = Auth::user();
+        $user = Auth::user(); 
         if ($user->is_superadmin != 1) {
             $userVendorPermissions = UserVendor::where(['user_id' => $user->id])->pluck('vendor_id')->toArray();
             $vendor_id = OrderVendor::where(['order_id' => $order_id])->whereIn('vendor_id', $userVendorPermissions)->pluck('vendor_id')->first();
@@ -1431,7 +1431,7 @@ class OrderController extends BaseController
         }
         $language_id = (!empty($user->language)) ? $user->language : 1;
         $order = Order::with([ 
-            'vendors.products'  ,'vendors.vendor:id,name,auto_accept_order,logo', 'vendors.products.addon:id,order_product_id,addon_id,option_id', 'vendors.products.pvariant:id,sku,product_id,title,quantity', 'user:id,name,timezone,dial_code,phone_number', 'address:id,user_id,address', 'vendors.products.addon.option:addon_options.id,addon_options.title,addon_id,price', 'vendors.products.addon.set:addon_sets.id,addon_sets.title', 'luxury_option', 'vendors.products.translation' => function ($q) use ($language_id) {
+            'vendors.products:id,product_name,product_id,order_id,order_vendor_id,variant_id,quantity,price,image'  ,'vendors.vendor:id,name,auto_accept_order,logo', 'vendors.products.addon:id,order_product_id,addon_id,option_id', 'vendors.products.pvariant:id,sku,product_id,title,quantity', 'user:id,name,timezone,dial_code,phone_number', 'address:id,user_id,address', 'vendors.products.addon.option:addon_options.id,addon_options.title,addon_id,price', 'vendors.products.addon.set:addon_sets.id,addon_sets.title', 'luxury_option', 'vendors.products.translation' => function ($q) use ($language_id) {
                 $q->select('id', 'product_id', 'title');
                 $q->where('language_id', $language_id);
             },
@@ -1455,13 +1455,6 @@ class OrderController extends BaseController
             }
         });
         $order = $order->find($order_id);
-        foreach($order->vendors as $vendor)
-        {
-            foreach($vendor->products as $product)
-            {
-                $product->image_base64 = $product->image_base64;
-            }
-        }
         $order->admin_profile = Client::select('company_name', 'code', 'sub_domain', 'logo')->first();
         $order_item_count = 0;
         $order->payment_option_title = $order->paymentOption->title;
