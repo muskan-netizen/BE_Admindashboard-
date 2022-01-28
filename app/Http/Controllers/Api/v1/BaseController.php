@@ -625,4 +625,29 @@ class BaseController extends Controller{
         return $hours;
     }
 
+    public function testOrderMail($emailData){
+        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+
+        if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+            $client_name = $emailData['client_name'];
+            $mail_from = $emailData['mail_from'];
+            $sendto = $emailData['email'];
+            try{
+                Mail::send([], [],
+                function ($message) use($sendto, $client_name, $mail_from, $emailData) {
+                    $message->from($mail_from, $client_name);
+                    $message->to($sendto)->subject('Order mail');
+                    $message->setBody($emailData['email_template_content'], 'text/html'); // for HTML rich messages
+                });
+                $response['send_email'] = 1;
+                return count(Mail::failures());
+            }
+            catch(\Exception $e){
+                return response()->json(['data' => $e->getMessage()]);
+            }
+        }
+    }
+
 }

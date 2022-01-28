@@ -325,6 +325,7 @@ class OrderController extends FrontController
                 if ($cart) {
                     $cartDetails = $this->getCart($cart);
                 }
+
                 if ($email_template) {
                     $email_template_content = $email_template->content;
                     if ($vendor_id == "") {
@@ -332,6 +333,7 @@ class OrderController extends FrontController
                     } else {
                         $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
                     }
+
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
@@ -359,7 +361,8 @@ class OrderController extends FrontController
                 }else{
                     $email_data['send_to_cc'] = 0;
                 }
-
+                // $res = $this->testOrderMail($email_data);
+                // dd($res);
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {

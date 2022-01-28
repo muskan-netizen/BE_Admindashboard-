@@ -15,7 +15,9 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::get('dispatch-order-status-update-details/{id?}', 'Front\DispatcherController@dispatchOrderDetails')->name('dispatch-order-update-details'); // Order Status update Dispatch details
 
-	Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
+    Route::get('testsms', 'Front\FrontController@testsms');
+
+    Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
 	Route::get('cabbooking', 'Front\CustomerAuthController@getTestHtmlPage');
 	Route::get('demo/cabBooking', 'Front\CustomerAuthController@getDemoCabBookingPage');
 	Route::get('fcm', 'Front\CustomerAuthController@fcm');
@@ -41,7 +43,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('edit-order/vendor/product/{id}', 'Front\TempCartController@getProductById');
 	// End edit order routes
 
-	
+
 
 	Route::get('payment/gateway/returnResponse', 'Front\PaymentController@getGatewayReturnResponse')->name('payment.gateway.return.response');
 
