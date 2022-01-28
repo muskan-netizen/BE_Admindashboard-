@@ -40,8 +40,8 @@ class MailConfigServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
+      
     }
 
-
+    
 }

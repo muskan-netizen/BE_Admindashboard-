@@ -297,6 +297,7 @@ class OrderController extends BaseController
                                 }
                             }
                         }
+
                         $coupon_id = null;
                         $coupon_name = null;
                         $actual_amount = $vendor_payable_amount;
@@ -850,7 +851,7 @@ class OrderController extends BaseController
             $client_name = 'Sales';
             $mail_from = $data->mail_from;
 
-            // try {
+            try {
                 $email_template_content = '';
                 $email_template = EmailTemplate::where('id', 5)->first();
 
@@ -885,7 +886,7 @@ class OrderController extends BaseController
                 $email_data = [
                     'code' => $otp,
                     'link' => "link",
-                    'email' => $sendto,//"harbans.sayonakh@gmail.com",//
+                    'email' => $sendto,//"harbans.sayonakh@gmail.com",// 
                     'mail_from' => $mail_from,
                     'client_name' => $client_name,
                     'logo' => $client->logo['original'],
@@ -904,16 +905,16 @@ class OrderController extends BaseController
                 }else{
                     $email_data['send_to_cc'] = 0;
                 }
-
+               
 
                 // $res = $this->testOrderMail($email_data);
                 // dd($res);
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
-            // } catch (\Exception $e) {
-            //     Log::info("send order mail error".$e->getmessage());
+            } catch (\Exception $e) {
+                Log::info("send order mail error".$e->getmessage());
 
-            // }
+            }
         }
     }
 

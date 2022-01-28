@@ -22,6 +22,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('vendor/{id?}', 'Api\v1\VendorController@productsByVendor');
         Route::post('vendor/filters/{id?}', 'Api\v1\VendorController@vendorFilters');
         Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
+        Route::post('vendor/vendorProductsFilter', 'Api\v1\VendorController@vendorProductsFilter');
         // Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
         Route::get('vendor/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProducts');
         // Route::get('vendor/category/productsFilter/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProductsFilter');

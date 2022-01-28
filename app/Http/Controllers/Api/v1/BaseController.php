@@ -377,7 +377,6 @@ class BaseController extends Controller{
             'pretend' => false,
         );
         Config::set('mail', $config);
-        Config::set('mail.mailers.smtp', $config);
         $app = App::getInstance();
         $app->register('Illuminate\Mail\MailServiceProvider');
         return  $config;
@@ -638,6 +637,7 @@ class BaseController extends Controller{
             $sendto = $emailData['email'];
 
             try{
+                //dd('base',\Config::get('mail'));
                 Mail::send([], [],
                 function ($message) use($sendto, $client_name, $mail_from, $emailData) {
                     $message->from($mail_from, $client_name);
