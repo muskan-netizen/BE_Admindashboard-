@@ -10,16 +10,6 @@ use Auth;
 class MailConfigServiceProvider extends ServiceProvider
 {
     /**
-     * Register services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-
-    }
-
-    /**
      * Bootstrap services.
      *
      * @return void
@@ -43,4 +33,15 @@ class MailConfigServiceProvider extends ServiceProvider
             Config::set('mail', $config);
         }
     }
+    /**
+     * Register services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+
+    }
+
+
 }

@@ -757,10 +757,10 @@ $(document).ready(function() {
     });
 
     $(document).on("click", "#order_placed_btn", function() {
-        delivery_type = 'D';
+        var delivery_type = 'D';
         var selected = document.querySelector(".delivery-fee.select");
         if(selected){
-            var delivery_type = selected.value;
+             delivery_type = selected.value;
         }
 
         $('.alert-danger').html('');

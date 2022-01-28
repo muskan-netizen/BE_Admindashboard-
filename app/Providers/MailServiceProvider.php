@@ -14,8 +14,14 @@ class MailServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+     /**
+     * Bootstrap services.
+     *
+     * @return void
+     */
+    public function boot()
     {
+        //
         $mail = ClientPreference::where('id', '>', 0)->first(['id', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from']);
 
         if (isset($mail->id)){
@@ -31,14 +37,10 @@ class MailServiceProvider extends ServiceProvider
             Config::set('mail', $config);
         }
     }
-
-    /**
-     * Bootstrap services.
-     *
-     * @return void
-     */
-    public function boot()
+    public function register()
     {
-        //
+
     }
+
+
 }

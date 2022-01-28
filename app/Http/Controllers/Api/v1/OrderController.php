@@ -410,7 +410,8 @@ class OrderController extends BaseController
                         $this->sendSuccessEmail($request, $order, $vendor_id);
                     }
                     $res = $this->sendSuccessEmail($request, $order);
-                    
+                    // pr($res);
+                    // exit();
                     $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
                     if (!in_array($request->payment_option_id, $ex_gateways)) {
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
@@ -833,8 +834,7 @@ class OrderController extends BaseController
         $otp = mt_rand(100000, 999999);
 
         if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
-            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption,$data->mail_from);
-    
+            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
             if ($vendor_id == "") {
                 $sendto =  $user->email;
             } else {
@@ -849,7 +849,7 @@ class OrderController extends BaseController
             $client_name = 'Sales';
             $mail_from = $data->mail_from;
 
-            try {
+            // try {
                 $email_template_content = '';
                 $email_template = EmailTemplate::where('id', 5)->first();
 
@@ -863,6 +863,7 @@ class OrderController extends BaseController
                 if ($cart) {
                     $cartDetails = $this->getCart($cart);
                 }
+                //pr( $cartDetails->toArray());
 
                 if ($email_template) {
 
@@ -883,7 +884,7 @@ class OrderController extends BaseController
                 $email_data = [
                     'code' => $otp,
                     'link' => "link",
-                    'email' => "harbans.sayonakh@gmail.com",
+                    'email' => $sendto,//"harbans.sayonakh@gmail.com",//
                     'mail_from' => $mail_from,
                     'client_name' => $client_name,
                     'logo' => $client->logo['original'],
@@ -902,14 +903,16 @@ class OrderController extends BaseController
                 }else{
                     $email_data['send_to_cc'] = 0;
                 }
+
+
                 // $res = $this->testOrderMail($email_data);
                 // dd($res);
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
-            } catch (\Exception $e) {
-                Log::info("send order mail error".$e->getmessage());
+            // } catch (\Exception $e) {
+            //     Log::info("send order mail error".$e->getmessage());
 
-            }
+            // }
         }
     }
 

@@ -284,7 +284,7 @@ class BaseController extends Controller{
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                 });
             }
-           
+
         }
         $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
 
@@ -364,7 +364,7 @@ class BaseController extends Controller{
         return $currency[0]['convertedAmount'];
     }
 
-    public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption , $mail_from){
+    public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption , $mail_from = "royo"){
         $config = array(
             'driver' => $mail_driver,
             'host' => $mail_host,
@@ -377,12 +377,13 @@ class BaseController extends Controller{
             'pretend' => false,
         );
         Config::set('mail', $config);
+        Config::set('mail.mailers.smtp', $config);
         $app = App::getInstance();
         $app->register('Illuminate\Mail\MailServiceProvider');
         return  $config;
     }
 
-    /**     * check if cookie already exist     */
+    /*** check if cookie already exist */
     public function checkCookies($userid){
         if (isset(Auth::user()->system_user) && !empty(Auth::user()->system_user)) {
             $userFind = User::where('system_id', Auth::user()->system_user)->first();
@@ -635,6 +636,7 @@ class BaseController extends Controller{
             $client_name = $emailData['client_name'];
             $mail_from = $emailData['mail_from'];
             $sendto = $emailData['email'];
+
             try{
                 Mail::send([], [],
                 function ($message) use($sendto, $client_name, $mail_from, $emailData) {
