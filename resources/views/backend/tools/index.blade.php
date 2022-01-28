@@ -105,13 +105,13 @@
                                 <label for="product_category" class="mr-3">{{ __("Product Category") }}</label>
                                 <select class="form-control select2-multiple" id='product_category' name="product_category[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required>
                                     <option value="">{{ __("Select Product Category") }}</option>
-                                    @foreach($parentCategory as $parent)
-                                    @if(count( $parent->childs) > 0)
-                                    <optgroup label="{{$parent->slug}}">
-                                        @foreach($parent->childs as $child)
-                                        <option value="{{$child->id}}">{{$child->slug}}</option>
-                                        @endforeach
-                                    @endif
+                                    @foreach($categories as $category)
+                                    <option value="{{$category->id}}">
+                                        @if(!is_null($category->parent) && $category->parent_id > 1)
+                                        {{$category->parent->translation_one->name}}-> @endif
+                                        {{$category->translation_one->name}}
+                                        @if(!is_null($category->vendor)) ({{$category->vendor->name}}) @endif
+                                    </option>
                                     @endforeach
                                 </select>
                             </div>

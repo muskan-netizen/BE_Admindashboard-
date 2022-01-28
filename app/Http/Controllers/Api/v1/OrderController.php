@@ -8,12 +8,13 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
+use App\Http\Controllers\Front\TempCartController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
+use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
 use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\OrderTrait;
 
@@ -1083,7 +1084,21 @@ class OrderController extends BaseController
                         $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                         $q->where('language_id', $language_id);
                     },
-                    'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus'
+                    'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus', 
+                    'vendors.tempCart' => function($q){
+                        $q->where('is_approved', '!=', 1);
+                    },
+                    'vendors.tempCart.cartProducts.product.media.image',
+                    'vendors.tempCart.cartProducts.pvariant.media.pimage.image',
+                    'vendors.tempCart.cartProducts.product.translation' => function ($q) use ($language_id) {
+                        $q->where('language_id', $language_id)->groupBy('product_id');
+                    },
+                    'vendors.tempCart.cartProducts.addon.set' => function ($qry) use ($language_id) {
+                        $qry->where('language_id', $language_id);
+                    },
+                    'vendors.tempCart.cartProducts.addon.option' => function ($qry) use ($language_id) {
+                        $qry->where('language_id', $language_id);
+                    }
                 ])
                     ->where(function ($q1) {
                         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
@@ -1103,7 +1118,21 @@ class OrderController extends BaseController
                         'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating',
                         'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
                             $qry->where('language_id', $language_id);
-                        }, 'vendors.dineInTable.category'
+                        }, 'vendors.dineInTable.category', 
+                        'vendors.tempCart' => function($q){
+                            $q->where('is_approved', '!=', 1);
+                        },
+                        'vendors.tempCart.cartProducts.product.media.image',
+                        'vendors.tempCart.cartProducts.pvariant.media.pimage.image',
+                        'vendors.tempCart.cartProducts.product.translation' => function ($q) use ($language_id) {
+                            $q->where('language_id', $language_id)->groupBy('product_id');
+                        },
+                        'vendors.tempCart.cartProducts.addon.set' => function ($qry) use ($language_id) {
+                            $qry->where('language_id', $language_id);
+                        },
+                        'vendors.tempCart.cartProducts.addon.option' => function ($qry) use ($language_id) {
+                            $qry->where('language_id', $language_id);
+                        }
                     ]
                 )
                     ->where(function ($q1) {
@@ -1114,6 +1143,7 @@ class OrderController extends BaseController
                     })
                     ->where('user_id', $user->id)->where('id', $order_id)->select('*', 'id as total_discount_calculate')->first();
             }
+            $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
             if ($order) {
                 $order->user_name = $order->user->name;
                 $order->user_image = $order->user->image;
@@ -1181,6 +1211,15 @@ class OrderController extends BaseController
                     ->get();
                     $vendor->vendor_dispatcher_status_count = 6;
                     $vendor->dispatcher_status_icons = [asset('assets/icons/driver_1_1.png'),asset('assets/icons/driver_2_1.png'),asset('assets/icons/driver_3_1.png'),asset('assets/icons/driver_4_1.png'),asset('assets/icons/driver_4_2.png'),asset('assets/icons/driver_5_1.png')];
+
+                    // Start temp cart calculations
+                    if($vendor->tempCart){
+                        $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
+                        $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
+                        $tempCartController = new TempCartController();
+                        $vendor->tempCart = $tempCartController->getCartForApproval($vendor->tempCart, $order, $langId, $currId, '');
+                    }
+
                 }
                 if (!empty($order->scheduled_date_time)) {
                     $order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);

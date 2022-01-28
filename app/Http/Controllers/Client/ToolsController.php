@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Client\BaseController;
 use App\Models\{Vendor,Product,Client,AddonSet,Category,ProductVariant,CartProduct,UserWishlist,TaxCategory};  
-use Auth,Carbon,DB,Storage;
+use Auth,Carbon,DB,Storage,Session;
 
-class ToolsController extends Controller
+class ToolsController extends BaseController
 {
     private $folderName = 'prods';
     private $vendorObj, $productObj, $clientObj, $addOnSetObj, $categoryObj;
@@ -18,7 +19,7 @@ class ToolsController extends Controller
         $this->clientObj = $client;
         $this->addOnSetObj = $addonSet;
         $this->categoryObj = $category;
-    } 
+    }  
     /**
      * Display a listing of the resource.
      *
@@ -34,8 +35,18 @@ class ToolsController extends Controller
         }
         $vendors = $vendors->get(); 
         $taxCategory = TaxCategory::all();
-        $parentCategory = Category::has('childs', '>', 0)->with(['translation_one','childs'])->where('deleted_at', NULL)->whereIn('type_id', ['1', '3', '6', '8','9'])->where('is_core', 1)->where('status', 1)->get();
-        return view('backend.tools.index')->with(['vendors'=>$vendors,'taxCategory'=>$taxCategory,'parentCategory'=>$parentCategory]);
+
+        $p_categories = Category::with(['parent','translation_one'])
+        ->whereIn('type_id',['1','3','7','8','9'])
+        ->where('id', '>', '1')
+        ->where('deleted_at', NULL)
+        ->where('status', 1)
+        ->orderBy('parent_id', 'asc')
+        ->orderBy('position', 'asc')
+        ->orderBy('id', 'asc')
+        ->get();
+
+        return view('backend.tools.index')->with(['vendors'=>$vendors,'taxCategory'=>$taxCategory,'categories'=>$p_categories]);
     }
 
     /**
