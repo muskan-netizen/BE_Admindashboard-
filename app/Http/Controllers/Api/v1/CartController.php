@@ -964,6 +964,9 @@ class CartController extends BaseController
             ++$vondorCnt;
         }//End cart Vendor loop
 
+        $slotsDate = findSlot('',$vendorData->vendor->id,'','api');
+        $vendorData->delaySlot = $slotsDate;
+
         $cart_product_luxury_id = CartProduct::where('cart_id', $cartID)->select('luxury_option_id', 'vendor_id')->first();
         if ($cart_product_luxury_id) {
             if ($cart_product_luxury_id->luxury_option_id == 2 || $cart_product_luxury_id->luxury_option_id == 3) {

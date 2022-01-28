@@ -512,7 +512,7 @@ function SplitTimeTemp($user_id, $myDate,$StartTime, $EndTime, $Duration="60",$d
     return $ReturnArray;
 }
 
-function findSlot($myDate = null,$vid,$type = 'delivery')
+function findSlot($myDate = null,$vid,$type = 'delivery',$api = null)
 {
   $myDate  = date('Y-m-d',strtotime('+1 day')); 
   $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
@@ -533,7 +533,13 @@ function findSlot($myDate = null,$vid,$type = 'delivery')
             }
         if(isset($slots) && count((array)$slots)>0){
             $time = explode(' - ',$slots[0]['value']);
-            return date('d M, Y h:i:A',strtotime($myDate.'T'.$time[0]));
+
+            if($api != 'api'){
+                return date('d M, Y h:i:A',strtotime($myDate.'T'.$time[0]));
+            }else{
+                return date('Y-m-d',strtotime($myDate.'T'.$time[0]));
+            }
+            
         }else{
             return 0;
         }
