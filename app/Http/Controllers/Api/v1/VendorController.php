@@ -939,7 +939,7 @@ class VendorController extends BaseController{
                             $products = $products->where('category_id', $category->id??0);
                         }
                         if (!empty($productIds)) {
-                            $products = $products->whereIn('id', $productIds);
+                            $products = $products->whereIn('products.id', $productIds);
                         }
 
                         if ($request->has('brands') && !empty($request->brands)) {
@@ -963,7 +963,7 @@ class VendorController extends BaseController{
                         if (!empty($order_type) && $order_type == 'newly_added') {
                             $products = $products->orderBy('products.id', 'desc');
                         }
-                    $products = $products->where('is_live', 1)->where('vendor_id', $vendor->id)->paginate($paginate);
+                    $products = $products->where('is_live', 1)->groupBy('products.id')->where('vendor_id', $vendor->id)->paginate($paginate);
                     if (!empty($products)) {
                         foreach ($products as $key => $product) {
                             foreach ($product->addOn as $key => $value) {
@@ -1100,24 +1100,18 @@ class VendorController extends BaseController{
                             if(!empty($variantIds)){
                                 $q->whereIn('id', $variantIds);
                             }
-                            // if(!empty($order_type) && $order_type == 'low_to_high'){
-                            //     $q->orderBy('price', 'asc');
-                            // }
-                            // if(!empty($order_type) && $order_type == 'high_to_low'){
-                            //     $q->orderBy('price', 'desc');
-                            // }
                             $q->groupBy('product_id');
                         },
                     ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
-                    ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
-                    ->join('product_translations', 'product_translations.product_id', '=', 'products.id')
-                    ->where('vendor_id', $vid)
-                    ->where('is_live', 1)
-                    ->whereIn('products.id', function($qr) use($startRange, $endRange){
-                        $qr->select('product_id')->from('product_variants')
-                        ->where('price',  '>=', $startRange)
-                        ->where('price',  '<=', $endRange);
-                    });
+                        ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
+                        ->join('product_translations', 'product_translations.product_id', '=', 'products.id')
+                        ->where('vendor_id', $vid)
+                        ->where('is_live', 1)
+                        ->whereIn('products.id', function($qr) use($startRange, $endRange){
+                            $qr->select('product_id')->from('product_variants')
+                            ->where('price',  '>=', $startRange)
+                            ->where('price',  '<=', $endRange);
+                        });
         if(!empty($productIds)){
             $products = $products->whereIn('id', $productIds);
         }
