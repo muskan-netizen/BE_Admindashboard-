@@ -84,7 +84,7 @@ trait ApiResponser
 	}
 
 	protected function failMail()
-	{	
+	{
 		try{
 			$data = ClientPreference::select(
 				'sms_key',
@@ -101,8 +101,8 @@ trait ApiResponser
 				'mail_from'
 			)->where('id', '>', 0)->first();
 			$confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-	
-	
+
+
 			$mail_from = $data->mail_from;
 			$email_template_content = '';
 			$email_template = EmailTemplate::where('id', 7)->first();
@@ -117,7 +117,7 @@ trait ApiResponser
 			if ($email_template) {
 				$email_template_content = $email_template->content;
 				$returnHTML = view('email.orderProducts')->with(['cartData' => $cartDetails])->render();
-	
+
 				$email_template_content = str_ireplace("{name}", Auth::user()->name, $email_template_content);
 				$email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
 			}
@@ -127,9 +127,9 @@ trait ApiResponser
 				$message->subject('Payment Failure Notification');
 			});
 		}catch (\Exception $ex){
-			
+
 		}
-		
+
 	}
 
 
@@ -156,7 +156,7 @@ trait ApiResponser
 
 
 
-	# check if last mile delivery on 
+	# check if last mile delivery on
 	public function checkIfPickupDeliveryOnCommon()
 	{
 		$preference = ClientPreference::select('id', 'need_dispacher_ride', 'pickup_delivery_service_key', 'pickup_delivery_service_key_code', 'pickup_delivery_service_key_url')->first();
@@ -176,7 +176,7 @@ trait ApiResponser
 			return false;
 	}
 
-	# check if on demand service  on 
+	# check if on demand service  on
 	public function checkIfOnDemandOnCommon()
 	{
 		$preference = ClientPreference::select('id', 'need_dispacher_home_other_service', 'dispacher_home_other_service_key', 'dispacher_home_other_service_key_code', 'dispacher_home_other_service_key_url')->first();
@@ -187,7 +187,7 @@ trait ApiResponser
 	}
 
 
-	# set currency in session 
+	# set currency in session
 	public function setCurrencyInSesion(){
 		$currency_id = Session::get('customerCurrency');
 		if(isset($currency_id) && !empty($currency_id)){
@@ -216,8 +216,8 @@ trait ApiResponser
 	{
 		$cart_id = $cart->id;
 		$user = Auth::user();
-		$langId = Auth::user()->language;
-        $curId = Auth::user()->language;
+		$langId = $user->language;
+        $curId = $user->currency;
 		$pharmacy = ClientPreference::first();
 		$cart->pharmacy_check = $pharmacy->pharmacy_check;
 		$customerCurrency = ClientCurrency::where('currency_id', $curId)->first();

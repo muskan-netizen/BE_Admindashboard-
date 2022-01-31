@@ -499,6 +499,29 @@
             }
         });
     });
+    // search users for set permission
+    $('#search_user_for_vendor_permission').keyup(function(){
+        var query = $(this).val();
+        var vendor_id = 1;
+        if(query != '')
+        {
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+            url:"{{ route('searchUserForPermission') }}",
+            method:"POST",
+            data:{query:query, _token:_token, vendor_id:vendor_id},
+            success:function(data){
+            $('#userList').fadeIn();
+            $('#userList').html(data);
+            }
+            });
+        }
+    });
+    $(document).on('click', '#userList li', function(){
+        $('#search_user_for_vendor_permission').val($(this).text());
+        $('#userId').val($(this).attr('data-id'));
+        $('#userList').fadeOut();
+    });
 
     ///// **************** 1.1  check vendor exists in dispatcher or not for pickup********** //////////
 
@@ -528,7 +551,13 @@
                 window.open(url, '_blank');
             },
             error: function(data) {
-                alert(data.message);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: data.message,
+                    icon : "error",
+                    button: "{{__('ok')}}",
+                });
+                //alert(data.message);
             },
             beforeSend: function() {
                 $(".loader_box").show();
@@ -572,7 +601,13 @@
                 window.open(url, '_blank');
             },
             error: function(data) {
-                alert(data.message);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: data.message,
+                    icon : "error",
+                    button: "{{__('ok')}}",
+                });
+                //alert(data.message);
             },
             beforeSend: function() {
                 $(".loader_box").show();

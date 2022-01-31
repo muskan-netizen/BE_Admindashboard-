@@ -16,6 +16,15 @@
                 @csrf
                 <div class="modal-body" >
                     <div class="row">
+                        <div class="col-md-12 d-none">
+                            <h4 class="modal-title">personal details</h4>
+                            <div class="form-group" id="user_search">
+                                {!! Form::text('search', null, ['class' => 'form-control', 'placeholder' => __('Search User'), 'id' => 'search_user_for_vendor_permission', 'required' => 'required']) !!}
+                                <input type="hidden" id='userId' name="userId" readonly>
+                                <div id="userList">
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-12">
                             <div class="row mb-2">
                                 <div class="col-md-3">
@@ -109,7 +118,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="">{{ __('Website') }}</label>
-                                        <input class="form-control" type="text" name="website">
+                                        <input class="form-control" type="text" name="website" value="111">
                                     </div>
                                 </div>
                                 <div class="col-md-6">

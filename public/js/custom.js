@@ -424,7 +424,13 @@ $(document).ready(function() {
         $("form").submit(function(e) {
             let address_id = $("input:radio[name='address_id']").is(":checked");
             if (!address_id) {
-                alert('Address field required.');
+               // alert('Address field required.');
+                Swal.fire({
+                    // title: "Warning!",
+                    text: "{{__('Address field required.') }}",
+                    icon : "error",
+                    button: "OK",
+                });
                 return false;
             }
         });
@@ -604,7 +610,13 @@ $(document).ready(function() {
                 }).catch(function(error) {
                     // Re-enable button now that request is complete
                     _this.attr("disabled", false);
-                    alert("error occured: " + error);
+                    //alert("error occured: " + error);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: "error occured: " + error,
+                        icon : "error",
+                        button: "OK",
+                    });
                 });
             } else if (payment_option_id == 9) {
                 paymentViaPaylink('', '');
@@ -745,8 +757,11 @@ $(document).ready(function() {
     });
 
     $(document).on("click", "#order_placed_btn", function() {
-        //var delivery_fee = $("input[name='deliveryFee']:checked").val();
-        var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode');
+        var delivery_type = 'D';
+        var selected = document.querySelector(".delivery-fee.select");
+        if(selected){
+             delivery_type = selected.value;
+        }
 
         $('.alert-danger').html('');
         if ((typeof guest_cart != undefined) && (guest_cart == 1)) {
@@ -1349,7 +1364,13 @@ $(document).ready(function() {
                 }
             }).catch(function(error) {
                 // Re-enable button now that request is complete
-                alert("error occured: " + error);
+                //alert("error occured: " + error);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: "error occured: " + error,
+                    icon : "error",
+                    button: "OK",
+                });
             });
         } else if (payment_option_id == 3) {
             paymentViaPaypal(address_id, payment_option_id);
@@ -1562,7 +1583,14 @@ $(document).ready(function() {
                 }
             }).catch(function(error) {
                 // Re-enable button now that request is complete
-                alert("error occured: " + error);
+               // alert("error occured: " + error);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: "error occured: " + error,
+                    icon : "error",
+                    button: "OK",
+                });
+
             });
         }else if (payment_option_id == 9) {
             paymentViaPaylink('', '');
@@ -1645,7 +1673,13 @@ $(document).ready(function() {
             error: function(reject) {
                 if (reject.status === 422) {
                     var message = $.parseJSON(reject.responseText);
-                    alert(message.message);
+                    //alert(message.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: message.message,
+                        icon : "error",
+                        button: "OK",
+                    });
                 }
             }
         });
@@ -1722,7 +1756,7 @@ $(document).ready(function() {
                     }
                 }
             });
-            setTimeout(function(){ 
+            setTimeout(function(){
                 $(".pac-container").appendTo("#add_new_address_form .address-input-group");
             }, 300);
         }
@@ -1814,11 +1848,11 @@ $(document).ready(function() {
                                 let other_cart_products_template = _.template($('#other_cart_products_template').html());
                                 $(".other_cart_products").append(other_cart_products_template(extendedData));
                                 initializeSlider();
-                                $('#placeorder_form .left_box').html(''); 
+                                $('#placeorder_form .left_box').html('');
                                 $('#placeorder_form .left_box').html(cart_details.left_section);
-                                $('#expected_vendors').html(''); 
+                                $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
-                                
+
                                 if (vendor_type != 'delivery') {
                                     var latitude = $('#latitude').val();
                                     var longitude = $('#longitude').val();
@@ -2034,6 +2068,7 @@ $(document).ready(function() {
             url: update_qty_url,
             data: { "quantity": quantity, "cartproduct_id": cartproduct_id },
             success: function(response) {
+               // console.log(response);
                 var latest_price = parseInt(base_price) * parseInt(quantity);
                 $('#product_total_amount_' + cartproduct_id).html('$' + latest_price);
                 cartHeader();
@@ -2148,7 +2183,7 @@ $(document).ready(function() {
     });
 
     $(document).on('change', '.delivery-fee', function() {
-        let code = $(this).data('dcode');
+        let code = $(this).val();
         let address_id = $("input[type='radio'][name='address_id']:checked").val();
         cartHeaderDilivery(address_id,code);
     });
@@ -2328,13 +2363,25 @@ $(document).ready(function() {
                     returnResponse = true;
                     cartHeader();
                 } else {
-                    alert(response.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: response.message,
+                        icon : "warning",
+                        button: "OK",
+                    });
+                    //alert(response.message);
                 }
             },
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 let error_messages = response.message;
-                alert(error_messages);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error_messages,
+                    icon : "error",
+                    button: "OK",
+                });
+               // alert(error_messages);
             },
         });
         return returnResponse;
@@ -2370,13 +2417,25 @@ $(document).ready(function() {
                     $("#product_addon_modal .modal-content").append(addon_template({ addOnData: response.data }));
                     $("#product_addon_modal").modal('show');
                 } else {
-                    alert(response.message);
+                   // alert(response.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: response.message,
+                        icon : "warning",
+                        button: "OK",
+                    });
                 }
             },
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 let error_messages = response.message;
-                alert(error_messages);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error_messages,
+                    icon : "error",
+                    button: "OK",
+                });
+                //alert(error_messages);
             },
         });
     }
@@ -2400,7 +2459,13 @@ $(document).ready(function() {
             },
             error: function(response){
                 var error = $.parseJSON(response.responseText);
-                alert(error.message);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error.message,
+                    icon : "error",
+                    button: "OK",
+                });
+                //alert(error.message);
             }
         });
     }
@@ -2416,12 +2481,24 @@ $(document).ready(function() {
                     $('#customize_repeated_item_modal .modal-content').html(response.data);
                 }else{
                     $('#customize_repeated_item_modal .modal-content').html('');
-                    alert(response.message);
+                    //alert(response.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: response.message,
+                        icon : "warning",
+                        button: "OK",
+                    });
                 }
             },
             error: function(response){
                 var error = $.parseJSON(response.responseText);
-                alert(error.message);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error.message,
+                    icon : "error",
+                    button: "OK",
+                });
+                //alert(error.message);
                 $('#customize_repeated_item_modal .modal-content').html('');
             }
         });
@@ -2730,13 +2807,25 @@ $(document).ready(function() {
                         }
                     }
                 } else {
-                    alert(response.message);
+                    //alert(response.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: response.message,
+                        icon : "error",
+                        button: "OK",
+                    });
                 }
             },
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 let error_messages = response.message;
-                alert(error_messages);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error_messages,
+                    icon : "error",
+                    button: "OK",
+                });
+                //alert(error_messages);
             },
         });
         return returnResponse;
@@ -2843,7 +2932,13 @@ $(document).ready(function() {
                 } else {
                     addonids = [];
                     addonoptids = [];
-                    alert(response.message);
+                    //alert(response.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: response.message,
+                        icon : "warning",
+                        button: "OK",
+                    });
                 }
             },
             error: function(error) {
@@ -2852,7 +2947,13 @@ $(document).ready(function() {
                 addonids = [];
                 addonoptids = [];
                 that.prop('checked', false);
-                alert(error_messages);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error_messages,
+                    icon : "error",
+                    button: "OK",
+                });
+                //alert(error_messages);
             }
         });
 
@@ -2947,13 +3048,26 @@ $(document).ready(function() {
                         addons_div.hide();
                     }
                 } else {
-                    alert(response.message);
+                    //alert(response.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: response.message,
+                        icon : "warning",
+                        button: "OK",
+                    });
                 }
             },
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 let error_messages = response.message;
-                alert(error_messages);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error_messages,
+                    icon : "error",
+                    button: "OK",
+                });
+               // alert(error_messages);
+
             },
         });
     }
@@ -3060,7 +3174,14 @@ $(document).ready(function() {
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 let error_messages = response.message;
-                alert(error_messages);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error_messages,
+                    icon : "error",
+                    button: "OK",
+                });
+              //  alert(error_messages);
+
             },
         });
     }
@@ -3074,6 +3195,7 @@ $(document).ready(function() {
     // end on demand add to cart
     $(document).delegate('.quantity-right-plus', 'click', function() {
         var quan = parseInt($('.quantity_count').val());
+        var hasInv = $('#hasInventory').val();
         var str = $('#instock').val();
         var batch_count = $(this).data("batch_count");
         // var res = parseInt(str.substring(10, str.length - 1));
@@ -3082,8 +3204,14 @@ $(document).ready(function() {
         else
         batch_count = 1;
 
-        if ((quan + batch_count) > str) {
-            alert("Quantity is not available in stock");
+        if ((quan + batch_count) > str && hasInv == "1") {
+            Swal.fire({
+                // title: "Warning!",
+                text: "Quantity is not available in stock",
+                icon : "warning",
+                button: "OK",
+            });
+           // alert("Quantity is not available in stock");
             $('.quantity_count').val(str);
         } else {
             var s = $(".qty-box .input-qty-number"),
@@ -3094,7 +3222,8 @@ $(document).ready(function() {
     $(document).delegate(".quantity-left-minus", "click", function() {
 
         var batch_count = $(this).data("batch_count");
-        if(batch_count >0)
+        var str = $('#instock').val();
+        if(batch_count >0 || str == '0')
         batch_count = batch_count;
         else
         batch_count = 1;
@@ -3113,7 +3242,13 @@ $(document).ready(function() {
             i = parseInt(s.val(), 10);
 
         if (i - batch_count < minimum_order_count) {
-                alert("Minimum Quantity count is " + minimum_order_count);
+            Swal.fire({
+                // title: "Warning!",
+                text: "Minimum Quantity count is "+minimum_order_count,
+                icon : "warning",
+                button: "OK",
+             });
+                //alert("Minimum Quantity count is " + minimum_order_count);
                 return false;
         }
         !isNaN(i) && i > 1 && s.val(i - batch_count);
@@ -3124,7 +3259,13 @@ $(document).ready(function() {
 
 
         if (quan > str) {
-            alert("Quantity is not available in stock");
+            Swal.fire({
+                // title: "Warning!",
+                text: "Quantity is not available in stock",
+                icon : "warning",
+                button: "OK",
+             });
+           // alert("Quantity is not available in stock");
             $('.quantity_count').val(str);
         }
     });

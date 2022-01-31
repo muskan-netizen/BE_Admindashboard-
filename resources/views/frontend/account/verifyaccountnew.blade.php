@@ -84,7 +84,7 @@
                 @if($user->is_phone_verified == 0)
                 <img src="{{asset('front-assets/images/phone-otp.svg')}}">
                 <h3 class="mb-2">{{__('Verify Phone')}}</h3>
-                <p>{{__('Enter the code we just sent you on your email address')}}</p>
+                <p>{{__('Enter the code we just sent you on your phone number')}}</p>
                 <div class="row mt-3">
                     <div class="offset-xl-3 col-xl-6 text-left">
                         <div class="verify_id input-group mb-3 radius-flag">

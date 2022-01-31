@@ -551,8 +551,7 @@ class CartController extends BaseController
                 $vendor_products_total_amount = $codeApplied = $is_percent = $proSum = $proSumDis = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
                 $cart_dinein_table_id = $vendorData->vendor_dinein_table_id;
-                $coupon_amount_used = 0;
-
+                $vendorData->vendor->closed_store_order_scheduled = $vendorData->vendor->closed_store_order_scheduled;
                 if ($action != 'delivery') {
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id', 'latitude', 'longitude', 'address')->where('id', $vendorData->vendor_id)->first();
                     if ($action == 'dine_in') {
@@ -965,6 +964,9 @@ class CartController extends BaseController
             ++$vondorCnt;
         }//End cart Vendor loop
 
+        $slotsDate = findSlot('',$vendorData->vendor->id,'','api');
+        $vendorData->delaySlot = $slotsDate;
+
         $cart_product_luxury_id = CartProduct::where('cart_id', $cartID)->select('luxury_option_id', 'vendor_id')->first();
         if ($cart_product_luxury_id) {
             if ($cart_product_luxury_id->luxury_option_id == 2 || $cart_product_luxury_id->luxury_option_id == 3) {
@@ -1045,7 +1047,7 @@ class CartController extends BaseController
 
 
     /**         *       Empty cart       *          */
-    public function getCart1($cart, $langId = '1', $currency = '1', $type = 'delivery')
+    public function notWorkgetCart1($cart, $langId = '1', $currency = '1', $type = 'delivery')
     {
         $preferences = ClientPreference::first();
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
@@ -1145,10 +1147,13 @@ class CartController extends BaseController
                 } else {
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
                         if ($address_id > 0) {
-                            $serviceArea = $vendorData->vendor->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
-                                $query->select('vendor_id')
+
+                            if (!empty($latitude) && !empty($longitude)) {
+                                $serviceArea = $vendorData->vendor->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                                    $query->select('vendor_id')
                                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                            })->where('id', $vendorData->vendor_id)->get();
+                                })->where('id', $vendorData->vendor_id)->get();
+                            }
                         }
                     }
                 }
@@ -1199,9 +1204,8 @@ class CartController extends BaseController
 
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
                     if(isset($prod->product) && !empty($prod->product)){
-
                         if($prod->product->sell_when_out_of_stock == 0 && $prod->product->has_inventory == 1){
-                            $quantity_check = productvariantQuantity($prod->variant_id);
+                             $quantity_check = productvariantQuantity($prod->variant_id);
                             if($quantity_check < $prod->quantity ){
                                 $delivery_status=0;
                                 $product_out_of_stock = 1;
@@ -1413,6 +1417,7 @@ class CartController extends BaseController
                 $total_discount_percent = $total_discount_percent + $discount_percent;
                 $vendorData->vendor->is_vendor_closed = $is_vendor_closed;
 
+
                 if (!empty($vendorData->coupon->promo)) {
                     unset($vendorData->coupon->promo);
                 }
@@ -1441,9 +1446,16 @@ class CartController extends BaseController
                     $vendorData->is_vendor_closed = 1;
                     $delivery_status = 0;
                 }
-
-
-
+                $slotsDate = 0;
+                $slotsDate = findSlot('',$vendorData->vendor_id,'');
+                if($vendorData->vendor->is_vendor_closed){
+                    $vendorData->delaySlot = $slotsDate;
+                    $vendorData->closed_store_order_scheduled = $vendorData->vendor->closed_store_order_scheduled;
+                  }else{
+                    $vendorData->delaySlot = 0;
+                    $vendorData->closed_store_order_scheduled = 0;
+                }
+               
                 $order_sub_total = $order_sub_total + $vendor_products_total_amount;
 
                 if((float)($vendorData->vendor->order_min_amount) > $payable_amount){  # if any vendor total amount of order is less then minimum order amount
@@ -1489,7 +1501,6 @@ class CartController extends BaseController
                     $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled;
                     $myDate  = date('Y-m-d',strtotime('+1 day'));
                     $cart->schedule_type =  'schedule';
-                    //$cart->closed_store_order_scheduled =  1;
                 }
                 $slotData = findSlotNew($myDate,$vendorId);
                 $cart->slots = $slotData['slots'];
@@ -1662,17 +1673,17 @@ class CartController extends BaseController
                 if($request->task_type!='now'){
                     if(isset($request->slot))
                     {
-                        $time = explode(' - ',$request->slot);
-                        $time = date('Y-m-d',strtotime($request->schedule_dt)).' '.$time[0].':00'??null;
+                        $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                        $time = $request->schedule_dt;
                         $slot = $request->slot;
                     }else{
-                        $time = $request->schedule_dt;
-                        $slot = null;
+                    $time = $request->schedule_dt;
+                    $slot = null;
                     }
-                }else{
+                    }else{
                     $time = null;
                     $slot = null;
-                }
+                    }
 
                 Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions ?? null,
                 'schedule_type' => $request->task_type??null,

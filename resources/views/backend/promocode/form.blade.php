@@ -164,6 +164,15 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
+                    {!! Form::label('title', __('Promo Visibility'),['class' => 'control-label']) !!}
+                    <select class="selectize-select form-control" name="promo_visibility">
+                        <option value="public" @if(isset($promo->promo_visibility) && $promo->promo_visibility == 'public') selected @endif >{{ __('Public')}}</option>
+                        <option value="private" @if(isset($promo->promo_visibility) && $promo->promo_visibility == 'private') selected @endif >{{ __('Private')}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
                     {!! Form::label('title', __('Apply Restriction On'),['class' => 'control-label']) !!}
                     <select class="selectize-select form-control inlineRadioOptions" name="restriction_on" for="{{(isset($promo->id) && $promo->id > 0) ? 'edit' : 'add'}}">
                         <option value='0' @if($promo->restriction_on == 0) selected @endif>Products</option>
@@ -171,6 +180,7 @@
                     </select>
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="form-group">
                     {!! Form::label('title', __('Restriction Type'),['class' => 'control-label']) !!}
@@ -200,15 +210,7 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    {!! Form::label('title', __('Promo Visibility'),['class' => 'control-label']) !!}
-                    <select class="selectize-select form-control" name="promo_visibility">
-                        <option value="public" @if(isset($promo->promo_visibility) && $promo->promo_visibility == 'public') selected @endif >{{ __('Public')}}</option>
-                        <option value="private" @if(isset($promo->promo_visibility) && $promo->promo_visibility == 'private') selected @endif >{{ __('Private')}}</option>
-                    </select>
-                </div>
-            </div>
+
         </div>
     </div>
 </div>

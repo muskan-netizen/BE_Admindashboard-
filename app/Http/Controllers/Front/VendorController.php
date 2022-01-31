@@ -22,7 +22,7 @@ class VendorController extends FrontController
     public function viewAll(){
         $langId = Session::get('customerLanguage');
         $vendorType = Session::get('vendorType');
-        $preferences = Session::get('preferences');
+        $preferences = (object)Session::get('preferences');
         $navCategories = $this->categoryNav($langId);
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 30;
         $ses_vendors = $this->getServiceAreaVendors();

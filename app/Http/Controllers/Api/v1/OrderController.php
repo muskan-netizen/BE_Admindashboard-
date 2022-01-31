@@ -8,12 +8,13 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
+use App\Http\Controllers\Front\TempCartController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
+use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
 use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\OrderTrait;
 
@@ -308,7 +309,7 @@ class OrderController extends BaseController
                                 $vendor_payable_amount -= $coupon_discount_amount;
                                 $vendor_discount_amount += $coupon_discount_amount;
                             } else {
-                                $coupon_discount_amount = ($quantity_price * $vendor_cart_product->coupon->promo->amount / 100);
+                                $coupon_discount_amount = ($vendor_payable_amount * $vendor_cart_product->coupon->promo->amount / 100);
                                 $final_coupon_discount_amount = $coupon_discount_amount * $clientCurrency->doller_compare;
                                 $total_discount += $final_coupon_discount_amount;
                                 $vendor_payable_amount -= $final_coupon_discount_amount;
@@ -319,6 +320,8 @@ class OrderController extends BaseController
                         $vendor_service_fee_percentage_amount = 0;
                         if ($vendor_cart_product->vendor->service_fee_percent > 0) {
                             $vendor_service_fee_percentage_amount = ($vendor_products_total_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                           
+                           
                             $vendor_payable_amount += $vendor_service_fee_percentage_amount;
                             $payable_amount += $vendor_service_fee_percentage_amount;
                         }
@@ -409,7 +412,9 @@ class OrderController extends BaseController
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                         $this->sendSuccessEmail($request, $order, $vendor_id);
                     }
-                    $this->sendSuccessEmail($request, $order);
+                    $res = $this->sendSuccessEmail($request, $order);
+                    // pr($res);
+                    // exit();
                     $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
                     if (!in_array($request->payment_option_id, $ex_gateways)) {
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
@@ -821,15 +826,16 @@ class OrderController extends BaseController
             'vendor_id' =>  $request->vendor_id
         ]);
     }
-
     public function sendSuccessEmail($request, $order, $vendor_id = '')
     {
+
         $user = Auth::user();
 
         $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
         $message = __('An otp has been sent to your email. Please check.');
         $otp = mt_rand(100000, 999999);
+
         if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
             $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
             if ($vendor_id == "") {
@@ -840,36 +846,48 @@ class OrderController extends BaseController
                     $sendto =  $vendor->email;
                 }
             }
+
             $customerCurrency = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.currency_id', $user->currency)->first();
             $currSymbol = $customerCurrency->symbol;
             $client_name = 'Sales';
             $mail_from = $data->mail_from;
+
             try {
                 $email_template_content = '';
                 $email_template = EmailTemplate::where('id', 5)->first();
+
                 $address = UserAddress::where('id', $request->address_id)->first();
                 if ($user) {
                     $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+                } else {
+                    $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
                 }
+
                 if ($cart) {
                     $cartDetails = $this->getCart($cart);
                 }
+                //pr( $cartDetails->toArray());
+
                 if ($email_template) {
+
                     $email_template_content = $email_template->content;
                     if ($vendor_id == "") {
+
                         $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol])->render();
                     } else {
                         $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
                     }
+
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
                     $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
                 }
+
                 $email_data = [
                     'code' => $otp,
                     'link' => "link",
-                    'email' => $sendto,
+                    'email' => $sendto,//"harbans.sayonakh@gmail.com",// 
                     'mail_from' => $mail_from,
                     'client_name' => $client_name,
                     'logo' => $client->logo['original'],
@@ -879,6 +897,7 @@ class OrderController extends BaseController
                     'cartData' => $cartDetails,
                     'user_address' => $address,
                 ];
+
                 if (!empty($data['admin_email'])) {
                     $email_data['admin_email'] = $data['admin_email'];
                 }
@@ -887,13 +906,20 @@ class OrderController extends BaseController
                 }else{
                     $email_data['send_to_cc'] = 0;
                 }
+               
+
+                // $res = $this->testOrderMail($email_data);
+                // dd($res);
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
-                Log::info($e->getMessage());
+                Log::info("send order mail error".$e->getmessage());
+
             }
         }
     }
+
+
 
     public function sendSuccessSMS($request, $order, $vendor_id = '')
     {
@@ -1060,7 +1086,21 @@ class OrderController extends BaseController
                         $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                         $q->where('language_id', $language_id);
                     },
-                    'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus'
+                    'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus', 
+                    'vendors.tempCart' => function($q){
+                        $q->where('is_approved', '!=', 1);
+                    },
+                    'vendors.tempCart.cartProducts.product.media.image',
+                    'vendors.tempCart.cartProducts.pvariant.media.pimage.image',
+                    'vendors.tempCart.cartProducts.product.translation' => function ($q) use ($language_id) {
+                        $q->where('language_id', $language_id)->groupBy('product_id');
+                    },
+                    'vendors.tempCart.cartProducts.addon.set' => function ($qry) use ($language_id) {
+                        $qry->where('language_id', $language_id);
+                    },
+                    'vendors.tempCart.cartProducts.addon.option' => function ($qry) use ($language_id) {
+                        $qry->where('language_id', $language_id);
+                    }
                 ])
                     ->where(function ($q1) {
                         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
@@ -1080,7 +1120,21 @@ class OrderController extends BaseController
                         'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating',
                         'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
                             $qry->where('language_id', $language_id);
-                        }, 'vendors.dineInTable.category'
+                        }, 'vendors.dineInTable.category', 
+                        'vendors.tempCart' => function($q){
+                            $q->where('is_approved', '!=', 1);
+                        },
+                        'vendors.tempCart.cartProducts.product.media.image',
+                        'vendors.tempCart.cartProducts.pvariant.media.pimage.image',
+                        'vendors.tempCart.cartProducts.product.translation' => function ($q) use ($language_id) {
+                            $q->where('language_id', $language_id)->groupBy('product_id');
+                        },
+                        'vendors.tempCart.cartProducts.addon.set' => function ($qry) use ($language_id) {
+                            $qry->where('language_id', $language_id);
+                        },
+                        'vendors.tempCart.cartProducts.addon.option' => function ($qry) use ($language_id) {
+                            $qry->where('language_id', $language_id);
+                        }
                     ]
                 )
                     ->where(function ($q1) {
@@ -1091,6 +1145,7 @@ class OrderController extends BaseController
                     })
                     ->where('user_id', $user->id)->where('id', $order_id)->select('*', 'id as total_discount_calculate')->first();
             }
+            $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
             if ($order) {
                 $order->user_name = $order->user->name;
                 $order->user_image = $order->user->image;
@@ -1158,6 +1213,15 @@ class OrderController extends BaseController
                     ->get();
                     $vendor->vendor_dispatcher_status_count = 6;
                     $vendor->dispatcher_status_icons = [asset('assets/icons/driver_1_1.png'),asset('assets/icons/driver_2_1.png'),asset('assets/icons/driver_3_1.png'),asset('assets/icons/driver_4_1.png'),asset('assets/icons/driver_4_2.png'),asset('assets/icons/driver_5_1.png')];
+
+                    // Start temp cart calculations
+                    if($vendor->tempCart){
+                        $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
+                        $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
+                        $tempCartController = new TempCartController();
+                        $vendor->tempCart = $tempCartController->getCartForApproval($vendor->tempCart, $order, $langId, $currId, '');
+                    }
+
                 }
                 if (!empty($order->scheduled_date_time)) {
                     $order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
@@ -1399,9 +1463,9 @@ class OrderController extends BaseController
     }
 
     public function orderDetails_for_notification($order_id, $vendor_id = "")
-    {
+    { 
 
-        $user = Auth::user();
+        $user = Auth::user(); 
         if ($user->is_superadmin != 1) {
             $userVendorPermissions = UserVendor::where(['user_id' => $user->id])->pluck('vendor_id')->toArray();
             $vendor_id = OrderVendor::where(['order_id' => $order_id])->whereIn('vendor_id', $userVendorPermissions)->pluck('vendor_id')->first();
@@ -1410,8 +1474,8 @@ class OrderController extends BaseController
             }
         }
         $language_id = (!empty($user->language)) ? $user->language : 1;
-        $order = Order::with([
-            'vendors.products:id,product_name,product_id,order_id,order_vendor_id,variant_id,quantity,price', 'vendors.vendor:id,name,auto_accept_order,logo', 'vendors.products.addon:id,order_product_id,addon_id,option_id', 'vendors.products.pvariant:id,sku,product_id,title,quantity', 'user:id,name,timezone,dial_code,phone_number', 'address:id,user_id,address', 'vendors.products.addon.option:addon_options.id,addon_options.title,addon_id,price', 'vendors.products.addon.set:addon_sets.id,addon_sets.title', 'luxury_option', 'vendors.products.translation' => function ($q) use ($language_id) {
+        $order = Order::with([ 
+            'vendors.products:id,product_name,product_id,order_id,order_vendor_id,variant_id,quantity,price,image'  ,'vendors.vendor:id,name,auto_accept_order,logo', 'vendors.products.addon:id,order_product_id,addon_id,option_id', 'vendors.products.pvariant:id,sku,product_id,title,quantity', 'user:id,name,timezone,dial_code,phone_number', 'address:id,user_id,address', 'vendors.products.addon.option:addon_options.id,addon_options.title,addon_id,price', 'vendors.products.addon.set:addon_sets.id,addon_sets.title', 'luxury_option', 'vendors.products.translation' => function ($q) use ($language_id) {
                 $q->select('id', 'product_id', 'title');
                 $q->where('language_id', $language_id);
             },
@@ -1497,4 +1561,5 @@ class OrderController extends BaseController
             return $this->errorResponse('Invalid User', 400);
         }
     }
+
 }

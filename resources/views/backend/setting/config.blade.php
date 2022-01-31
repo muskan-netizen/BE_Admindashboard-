@@ -1454,68 +1454,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
             </div>
 
 
-            <div class="col-xl-6 mb-3">
-
-               <form method="POST" class="h-100" action="#">
-                  @csrf
-                  <div class="card-box product-tags mb-0 pb-1">
-                     <div class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title text-uppercase">{{ __('Create Slot')}}</h4>
-                        <a class="btn btn-info d-block" id="add_slot_modal_btn">
-                           <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
-                        </a>
-                     </div>
-                     <div class="table-responsive mt-3 mb-1">
-                        <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
-                           <thead>
-                              <tr>
-                                 <th>{{ __("Name") }}</th>
-                                 <th>{{ __("Slot") }}</th>
-                                 <th>{{ __("Action") }}</th>
-                              </tr>
-                           </thead>
-                           <tbody id="post_list">
-                              @forelse($slots as $slot)
-                                 <tr>
-                                    <td>
-                                       <a class="edit_slot_btn" data-slot_id="{{$slot->id}}" href="javascript:void(0)">
-                                          {{$slot->name ? $slot->name : ''}}
-                                       </a>
-                                    </td>
-                                    <td>
-                                       <a class="edit_slot_btn" data-slot_id="{{$slot->id}}" href="javascript:void(0)">
-                                          {{@$slot->start_time.' - '.@$slot->end_time }}
-                                       </a>
-                                    </td>
-                                    <td>
-                                       <div>
-                                          <div class="inner-div" style="float: left;">
-                                             <a class="action-icon edit_slot_btn" data-slot_id="{{$slot->id}}" href="javascript:void(0)">
-                                                <i class="mdi mdi-square-edit-outline"></i>
-                                             </a>
-                                          </div>
-                                          <div class="inner-div">
-                                             <button type="button" class="btn btn-primary-outline action-icon delete_slot_btn" data-slot_id="{{$slot->id}}">
-                                                <i class="mdi mdi-delete"></i>
-                                             </button>
-                                          </div>
-                                       </div>
-                                    </td>
-                                 </tr>
-                              @empty
-                                 <tr align="center">
-                                    <td colspan="4" style="padding: 20px 0">{{ __("Slot not found.") }}</td>
-                                 </tr>
-                              @endforelse
-                           </tbody>
-                        </table>
-                     </div>
-                  </div>
-               </form>
-            </div>
-
-
-
          </div>
       </div>
    </div>

@@ -146,7 +146,7 @@
                             <select class="form-control select2-multiple" id="languages" name="languages[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
                                 @foreach($languages as $lang)
                                 @if($lang->id != $primary_language_id)
-                                    <option value="{{$lang->id}}" {{ (isset($preference) && in_array($lang->id, $cli_langs))? "selected" : "" }}>{{$lang->nativeName??''}}</option>
+                                    <option value="{{$lang->id}}" {{ (isset($preference) && in_array($lang->id, $cli_langs))? "selected" : "" }}>{{$lang->name ??''}} ({{$lang->nativeName??''}})</option>
                                 @endif
                                 @endforeach
                             </select>
@@ -617,7 +617,7 @@
         }
         for (i = 0; i < cidText.length; i++) {
             if (existCid.indexOf(cidText[i].id) === -1) {
-                var text = '<div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-' + cidText[i].id + '"><label class="primaryCurText">1 ' + pri_curr + '  = </label> <input type="number" name="multiply_by['+cidText[i].id+']"  oninput="changeCurrencyValue(this)" min="0.00000001" value="0" step=".00000001">' + cidText[i].text + '<input type="hidden" name="cuid[]" class="curr_id" value="' + cidText[i].id + '"></div>';
+                var text = '<div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-' + cidText[i].id + '"><label class="primaryCurText">1 ' + pri_curr + '  = </label> <input type="number" name="multiply_by['+ cidText[i].id +']"  oninput="changeCurrencyValue(this)" min="0.00000001" value="0" step=".00000001">' + cidText[i].text + '<input type="hidden" name="cuid[]" class="curr_id" value="' + cidText[i].id + '"></div>';
                 $('.multiplierData').append(text);
             }
         }

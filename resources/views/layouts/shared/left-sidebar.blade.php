@@ -321,7 +321,7 @@
                             </a>
                         </li>
                         @endif
-                        @if($client_preference_detail->tools_mode == 1) 
+                        @if(in_array('vendors',$allowed) || (Auth::user()->is_superadmin == 1 && $client_preference_detail->tools_mode == 1)) 
                         <li>
                             <a href="{{route('tools.index')}}">
                                 <span class="icon-settings-1-1"></span>

@@ -137,6 +137,9 @@ class ShippingOptionController extends BaseController
                         $json_creds['distance'] = '0';
                         $json_creds['amount_per_km'] = '0';
                     }
+                        $json_creds['height'] = ($request->height) ?? 0;
+                        $json_creds['width'] = ($request->width) ?? 0;
+                        $json_creds['weight'] = ($request->weight) ?? 0;
 
                     $json_creds = json_encode($json_creds);
 

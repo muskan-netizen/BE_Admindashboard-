@@ -53,7 +53,7 @@ $timezone = Auth::user()->timezone;
                         <img style="width: 100%;height: 100%;border-radius: 3px;object-fit: cover;" src="{{$vendor_product['product']['media'][0]['image']['path']['image_fit']}}100/100{{$vendor_product['product']['media'][0]['image']['path']['image_path']}}" alt="">
                      </div>
                      <div style="padding: 0 0 0 15px;">
-                        <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{$vendor_product['product']['translation_one']['title']}}</h3>
+                        <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{ ($vendor_product['product']['translation_one']['title'] ?? false) ? $vendor_product['product']['translation_one']['title'] : "" }}</h3>
                         @if(count($vendor_product['addon']))
                         @foreach ($vendor_product['addon'] as $addon)
                         <p style="color: #777777;font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;">{{$addon['option']['title']??''}}</p>

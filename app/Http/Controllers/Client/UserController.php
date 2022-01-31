@@ -119,7 +119,8 @@ class UserController extends BaseController
                     $search = $request->get('search');
                     $instance->where('name', 'LIKE', '%'.$search.'%')
                     ->orWhere('email', 'LIKE', '%'.$search.'%')
-                    ->orWhere('phone_number', '%', 'LIKE'.$search.'%');
+                    ->orWhere('phone_number', 'LIKE', '%'.$search.'%')
+                    ->orWhere('import_user_id', 'LIKE', '%'.$search.'%');
                 }
             }, true)
             ->make(true);

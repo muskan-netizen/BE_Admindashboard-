@@ -12,8 +12,9 @@ $timezone = Auth::user()->timezone;
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="page-title-box">
+                <div class="page-title-box d-flex justify-content-between ">
                     <h4 class="page-title">{{ __("Order Detail") }}</h4>
+                    <button class="al_print_btn badge badge-info" onclick='printDiv();'>Print <img src=""> </button>
                 </div>
             </div>
         </div>
@@ -32,13 +33,13 @@ $timezone = Auth::user()->timezone;
                              @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->shipping_delivery_type=='D')
                              <div class='inner-div d-inline-block' style="float: right;">
                                 <form method='POST' action='"+full.destroy_url+"'>
-                                   
+
                                         <button type='button' class='btn btn-danger' id="create_dispatch_request"  data-order_vendor_id="{{$order->vendors->first()->id}}">{{__('Create Dispatch Request')}}</i>
                                         </button>
-                                   
+
                                 </form>
                              </div>
-                            @endif    
+                            @endif
 
                             @if(isset($order->vendors) && isset($order->vendors->first()->dispatch_traking_url) && $order->vendors->first()->dispatch_traking_url !=null && $order->vendors->first()->dispatch_traking_url !=0 )
                             <div class="col-lg-6">
@@ -109,7 +110,7 @@ $timezone = Auth::user()->timezone;
                                     @endforeach
 
                                     <!-- List of incomplete order status if order is not rejected -->
-                                    
+
                                     @if(!in_array(3, $vendor_order_status_option_ids))
                                         @foreach($order_status_options as $order_status_option)
                                             @if(!in_array($order_status_option->id, $vendor_order_status_option_ids))
@@ -149,7 +150,7 @@ $timezone = Auth::user()->timezone;
                                 </ul>
                             </div>
 
-                           
+
 
                             @if(isset($order->vendors) && ($order->vendors->first()->dispatch_traking_url !=null || $order->vendors->first()->lalamove_tracking_url !=null))
                             <div class="col-lg-6">
@@ -188,9 +189,9 @@ $timezone = Auth::user()->timezone;
                 <div class="card mb-0 h-100">
                     <div class="card-body">
                         <h4 class="header-title mb-3">
- 
+
                             <div class='form-ul'> {{ $vendor_data->name }}
-                                
+
                             </div>
 
 
@@ -223,15 +224,15 @@ $timezone = Auth::user()->timezone;
                                     @php
                                     $sub_total = 0;
                                     $taxable_amount = 0;
+                                    $revenue = 0;
                                     @endphp
                                     @foreach($vendor->products as $product)
                                     @if($product->order_id == $order->id)
                                     @php
-                                    // $taxable_amount += $product->taxable_amount;
-                                    // $sub_total += $product->quantity * $product->price;
                                     $taxable_amount = $vendor->taxable_amount;
                                     $vendor_service_fee = $vendor->service_fee_percentage_amount;
                                     $sub_total += $product->total_amount;
+                                    $revenue += ($vendor->service_fee_percentage_amount + $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     <tr>
                                         <th scope="row">{{$product->product_name}}
@@ -254,7 +255,7 @@ $timezone = Auth::user()->timezone;
                                         <td>
                                             @if($product->image_path)
                                             <img src="{{@$product->image_path['proxy_url'].'32/32'.@$product->image_path['image_path']}}" alt="product-img" height="32">
-                                            @else 
+                                            @else
                                             @php $image_path = getDefaultImagePath(); @endphp
                                             <img src="{{$image_path['proxy_url'].'32/32'.$image_path['image_path']}}" alt="product-img" height="32">
                                             @endif
@@ -299,6 +300,16 @@ $timezone = Auth::user()->timezone;
                                             <th scope="row" colspan="4" class="text-end">{{ __("Service Fee") }} :</th>
                                             <td>{{$clientCurrency->currency->symbol}}@money($vendor_service_fee)</td>
                                         </tr>
+                                    @endif
+                                    @if(Auth::user()->is_superadmin)
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}@money($revenue)</td> 
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
+                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue)</td>
+                                    </tr>
                                     @endif
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Reject Reason") }} :</th>
@@ -425,87 +436,115 @@ $timezone = Auth::user()->timezone;
         </div>
     </div>
 </div>
+
+<!-- Order Invoice Code -->
+<div style="display: none;">
+@include('backend.order.print')
+</div>
+<!--End Order Invoice Code -->
 @endsection
 @section('script')
 <script>
     $("#order_statuses li").click(function() {
-        if (confirm("Are you Sure?")) {
-            let that = $(this);
-            var status_option_id = that.data("status_option_id");
-            var order_vendor_id = that.data("order_vendor_id");
-            $.ajax({
-                url: "{{ route('order.changeStatus') }}",
-                type: "POST",
-                data: {
-                    order_id: "{{$order->id}}",
-                    vendor_id: "{{$vendor_id}}",
-                    "_token": "{{ csrf_token() }}",
-                    status_option_id: status_option_id,
-                    order_vendor_id: order_vendor_id,
-                },
-                success: function(response) {
-                    console.log(response);
-                    that.addClass("completed");
-                    if (status_option_id == 2) {
-                        that.next('li').remove();
-                    }
-                    if (status_option_id == 3) {
-                        that.prev('li').remove();
-                        that.nextAll('li').remove();
-                    }
-                    $('#text_muted_' + status_option_id).html('<small class="text-muted">' + response.created_date + '</small>');
-                    if (status_option_id == 2)
-                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                    location.reload();
-                },
-            });
-        }
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+           // text:"{{__('You want to delete the banner.')}}",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                let that = $(this);
+                var status_option_id = that.data("status_option_id");
+                var order_vendor_id = that.data("order_vendor_id");
+                $.ajax({
+                    url: "{{ route('order.changeStatus') }}",
+                    type: "POST",
+                    data: {
+                        order_id: "{{$order->id}}",
+                        vendor_id: "{{$vendor_id}}",
+                        "_token": "{{ csrf_token() }}",
+                        status_option_id: status_option_id,
+                        order_vendor_id: order_vendor_id,
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        that.addClass("completed");
+                        if (status_option_id == 2) {
+                            that.next('li').remove();
+                        }
+                        if (status_option_id == 3) {
+                            that.prev('li').remove();
+                            that.nextAll('li').remove();
+                        }
+                        $('#text_muted_' + status_option_id).html('<small class="text-muted">' + response.created_date + '</small>');
+                        if (status_option_id == 2)
+                            $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        location.reload();
+                    },
+                });
+            }else{
+                return false;
+            }
+        });
+
     });
 
 
     $("#create_dispatch_request").click(function() {
-        if (confirm("Are you Sure?")) {
-            let that = $(this);
-            var order_vendor_id = that.data("order_vendor_id");
-            $.ajax({
-                url: "{{ route('create.dispatch.request') }}",
-                type: "POST",
-                data: {
-                    order_id: "{{$order->id}}",
-                    vendor_id: "{{$vendor_id}}",
-                    "_token": "{{ csrf_token() }}",
-                    order_vendor_id: order_vendor_id,
-                },
-                success: function(response) {
-                    $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", response.status);
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+           // text:"{{__('You want to delete the banner.')}}",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+
+                let that = $(this);
+                var order_vendor_id = that.data("order_vendor_id");
+                $.ajax({
+                    url: "{{ route('create.dispatch.request') }}",
+                    type: "POST",
+                    data: {
+                        order_id: "{{$order->id}}",
+                        vendor_id: "{{$vendor_id}}",
+                        "_token": "{{ csrf_token() }}",
+                        order_vendor_id: order_vendor_id,
+                    },
+                    success: function(response) {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", response.status);
+                    // location.reload();
+                    },
+                    error: function(error) {
+                    var response = $.parseJSON(error.responseText);
+                    let error_messages = response.message;
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: error_messages,
+                        icon : "error",
+                        button: "{{__('ok')}}",
+                    });
+                    //  alert(error_messages);
                     location.reload();
-                },
-                error: function(error) {
-                var response = $.parseJSON(error.responseText);
-                let error_messages = response.message;
-                alert(error_messages);
-                location.reload();
-                }
-            });
-        }
+                    }
+                });
+            }else{
+                return false;
+            }
+        });
     });
-
-
-        // setInterval(function () {
-        //     $.ajax({
-        //         url: "{{ url('order.webhook') }}",
-        //         type: "POST",
-        //         data: {
-        //             order_id: "{{$order->id}}",
-        //             "_token": "{{ csrf_token() }}"
-        //         },
-        //         success: function(response) {
-        //             //location.reload();   
-        //         },
-        //     });
-        // }
-
-        // }, 5000);
+    function printDiv() 
+    {
+        var divToPrint=document.getElementById('al_print_area');
+        var newWin=window.open('','Print-Window');
+        newWin.document.open();
+        newWin.document.write('<html><body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
+        newWin.document.close();
+        setTimeout(function(){newWin.close();},10);
+    }
 
 </script>
 @endsection

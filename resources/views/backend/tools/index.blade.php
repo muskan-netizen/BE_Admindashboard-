@@ -35,7 +35,7 @@
             <div class="text-sm-left">
                 <div class="page-title-box">
                     <h4 class="page-title">{{ __("Tools") }}</h4>
-                </div> 
+                </div>
             </div>
         </div>
     </div>
@@ -54,7 +54,7 @@
                             <div class="form-group mb-2">
                                 <label for="copy_from" class="mr-3">{{ __("Copy From") }}</label>
                                 <select class="form-control" id='copy_from' name="copy_from" required>
-                                    <option value="">{{ __("Select vendor for copy") }}</option> 
+                                    <option value="">{{ __("Select vendor for copy") }}</option>
                                     @foreach($vendors as $vendor)
                                     <option value="{{$vendor->id}}">{{$vendor->name}}</option>
                                     @endforeach
@@ -77,9 +77,9 @@
                             </div>
                         </div>
                     </div>
-                </div>             
+                </div>
             </form>
-        </div> 
+        </div>
         <div class="col-md-3">
             <form method="POST" id="tax_copy_tools" action="{{route('tools.taxCopy')}}">
             @csrf
@@ -91,7 +91,7 @@
                     <div class="row mt-2">
                         <div class="col-12">
                             <div class="form-group mb-2">
-                                <label for="tax_category" class="mr-3">{{ __("Tax Category") }}</label> 
+                                <label for="tax_category" class="mr-3">{{ __("Tax Category") }}</label>
                                 <select class="form-control" id='tax_category' name="tax_category" required>
                                     <option value="">{{ __("Select Tax Category") }}</option>
                                     @foreach($taxCategory as $tax)
@@ -102,33 +102,33 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group mb-2">
-                                <label for="product_category" class="mr-3">{{ __("Product Category") }}</label> 
+                                <label for="product_category" class="mr-3">{{ __("Product Category") }}</label>
                                 <select class="form-control select2-multiple" id='product_category' name="product_category[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required>
                                     <option value="">{{ __("Select Product Category") }}</option>
-                                    @foreach($parentCategory as $parent)
-                                    @if(count( $parent->childs) > 0)
-                                    <optgroup label="{{$parent->slug}}">
-                                        @foreach($parent->childs as $child)
-                                        <option value="{{$child->id}}">{{$child->slug}}</option>
-                                        @endforeach
-                                    @endif
+                                    @foreach($categories as $category)
+                                    <option value="{{$category->id}}">
+                                        @if(!is_null($category->parent) && $category->parent_id > 1)
+                                        {{$category->parent->translation_one->name}}-> @endif
+                                        {{$category->translation_one->name}}
+                                        @if(!is_null($category->vendor)) ({{$category->vendor->name}}) @endif
+                                    </option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                       
+
                         <div class="col-md-2 mt-3">
                             <div class="form-group mb-0 text-center">
                                 <button class="btn btn-info btn-block" id="tax_copy_button" type="submit"> {{ __("Update") }} </button>
                             </div>
                         </div>
                     </div>
-                </div>             
+                </div>
             </form>
         </div>
-        @endif 
+        @endif
         <div class="col-md-6">
-            <form method="POST" id="upload_image_tool" action="{{route('tools.uploadImage')}}"> 
+            <form method="POST" id="upload_image_tool" action="{{route('tools.uploadImage')}}">
             @csrf
             @method('POST')
                 <div class="card-box h-100 mb-0">
@@ -146,7 +146,7 @@
                     </div>
                     <div class="row mt-2 al_custom_copypath" style="display: none;">
                         <div class="col-md-12">
-                            <p>
+                            <!-- <p>
                                 <a href="#"><span id="pwd_spn" class="password-span" style="display: none;"></span></a>
                                 <label class="copy_link float-right" id="cp_btn" title="copy">
                                     <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
@@ -154,22 +154,22 @@
                                 </label>
 
                                 <a id="copyAllImageUrl" href=""><label class="copy_link " id="cp_btn" title="copy">Copy all<span class="copied_txt" id="show_copy_msg_on_click_copy" style="display: none;">Copied</span></label></a>
-                            </p>
+                            </p> -->
                             <table>
                                 <tbody class="imageCopyName"></tbody>
                             </table>
                         </div>
                     </div>
-                </div>             
+                </div>
             </form>
         </div>
     </div>
-</div> 
+</div>
 
 @endsection
 
 @section('script')
-<script src="{{asset('assets/js/dropzone.js')}}"></script> 
+<script src="{{asset('assets/js/dropzone.js')}}"></script>
 
 <script type="text/javascript">
     var uploadedDocumentMap = {};
@@ -185,14 +185,14 @@
             // },
             parameter: "{{route('tools.uploadImage')}}",
             headers: {
-                'X-CSRF-TOKEN': "{{ csrf_token() }}" 
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
             },
             success: function(file, res) {
                 $('.al_custom_copypath').show();
-                $('.imageCopyName').append('<tr id="'+res.data.image_id+'"><td style="padding: 5px"><img src="'+res.data.image_url+'"></td><td style="padding: 5px"><a href="'+res.data.image_url+'" target="_blank" style="font-size: 12px;">'+res.data.image_path+'</td><td style="padding: 5px"><label class="copy_link " id="cp_btn" title="copy"><img src="{{asset("assets/icons/domain_copy_icon.svg")}}" alt="" style="margin: 0"><span class="copied_txt" id="show_copy_msg_on_click_copy" style="display: none;">Copied</span> </label></td></tr>');
+                $('.imageCopyName').append('<tr id="'+res.data.image_id+'"><td style="padding: 5px"><img src="'+res.data.image_url+'"></td><td style="padding: 5px"><a href="'+res.data.image_url+'" target="_blank" style="font-size: 12px;" id="image_'+res.data.image_id+'">'+res.data.image_path+' </td><td style="padding: 5px"><label class="copy_link " id="cp_btn" title="copy" data-image_id="'+res.data.image_id+'" onclick="copyUrl(this)"><img src="{{asset("assets/icons/domain_copy_icon.svg")}}" alt="" style="margin: 0"><span class="copied_txt" id="show_copy_msg_on_click_copy" style="display: none;">Copied</span> </label></td></tr>');
                 uploadedDocumentMap[file.name] = res.data.image_id;
                 var imageUrl = $('#pwd_spn').text();
-                alert();
+                //alert();
                 if(imageUrl != "")
                 {
                     imageUrl = imageUrl+", ";
@@ -250,18 +250,19 @@ $(document).ready(function() {
         });
     });
 });
-</script>
-<script>
-    $(document).on('click', '.copy_link', function() { 
+
+    function copyUrl(obj)
+    {
         var $temp = $("<input>"); 
         $("body").append($temp);
-        $temp.val($('#pwd_spn').text()).select(); 
+        var image_id = $(obj).data('image_id');
+        $temp.val($('#image_'+image_id).text()).select(); 
         document.execCommand("copy");
         $temp.remove();
         $("#show_copy_msg_on_click_copy").show();
         setTimeout(function() {
             $("#show_copy_msg_on_click_copy").hide();
         }, 1000);
-    });
+    }
 </script>
 @endsection

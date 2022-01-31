@@ -338,10 +338,13 @@ class UserhomeController extends FrontController
                 }
             }
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
-                    $query->select('vendor_id')
+
+                if (!empty($latitude) && !empty($longitude)) {
+                    $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                        $query->select('vendor_id')
                         ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                });
+                    });
+                }
             }
         }
         $vendors = $vendors->where('status', 1)->inRandomOrder()->get();
@@ -537,7 +540,7 @@ class UserhomeController extends FrontController
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'vendor' => $on_sale_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (number_format($on_sale_product_detail->variant->first()->price??0 * $multiply, 2)),
-                'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug
+                'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
         }
         $home_page_labels = HomePageLabel::with('translations')->get();

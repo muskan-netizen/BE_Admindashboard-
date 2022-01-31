@@ -49,7 +49,7 @@ class PaystackGatewayController extends FrontController
             $returnUrlParams = $returnUrlParams.'&gateway=paystack';
             $response = $this->gateway->purchase([
                 'amount' => $amount,
-                'currency' => 'ZAR', //$this->currency,
+                'currency' => $this->currency, //'ZAR'
                 'email' => $user->email,
                 'returnUrl' => url($request->returnUrl . $returnUrlParams),
                 'cancelUrl' => url($request->cancelUrl),

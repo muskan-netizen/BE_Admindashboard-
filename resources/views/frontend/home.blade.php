@@ -423,8 +423,8 @@
         @endforeach
        @else
         <div class="row">
-            <div class="col-12">
-                <img class="no-store-image w-100 mt-2 mb-2" src="{{ getImageUrl(asset('images/no-stores.svg'),'250/250') }}" style="max-height: 250px;">
+            <div class="col-12 text-center">
+                <img class="no-store-image mt-2 mb-2" src="{{ getImageUrl(asset('images/no-stores.svg'),'250/250') }}" style="max-height: 250px;">
             </div>
         </div>
         <div class="row">

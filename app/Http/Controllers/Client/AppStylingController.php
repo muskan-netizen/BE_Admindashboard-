@@ -57,7 +57,13 @@ class AppStylingController extends BaseController
             case "taxi":    # if business type is taxi
             $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
             if ($homepage_style) {
-                $homepage_style_options = AppStylingOption::where('image', 'home_six.png')->get();
+                $homepage_style_options = AppStylingOption::where('image', 'home_six.png')->where('app_styling_id', $homepage_style->id)->get();
+            }
+            break;
+            case "food_grocery_ecommerce":    # if business type is taxi
+            $homepage_style = AppStyling::where('name', 'Home Page Style')->first();
+            if ($homepage_style) {
+                $homepage_style_options = AppStylingOption::where('image','!=', 'home_six.png')->where('app_styling_id', $homepage_style->id)->get();
             }
             break;
             default:

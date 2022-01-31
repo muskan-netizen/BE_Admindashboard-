@@ -261,7 +261,7 @@
                                     {!! Form::number('minimum_order_count', $product->minimum_order_count, ['class'=>'form-control', 'id' => 'minimum_order_count', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
                                 <div class="col-sm-2">
-                                    {!! Form::label('title', __('Batch Count'),['class' => 'control-label']) !!}
+                                    {!! Form::label('title', __('Batch (Min Increment)'),['class' => 'control-label']) !!}
                                     {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
                                 @endif

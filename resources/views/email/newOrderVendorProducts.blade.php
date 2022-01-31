@@ -22,7 +22,7 @@
          <table  border="0" cellpadding="0" cellspacing="0" align="left" style="width: 100%;margin-bottom: 50px;">
             <tr>
                 <td colspan="3" style="border-bottom: 1px solid #9797973b;padding: 3px 0 10px;"></td>
-             </tr>    
+             </tr>
              @php
              $total_products = 0;
              @endphp
@@ -31,14 +31,20 @@
                <td style="width: 45%;padding: 15px 0 10px; ">
                   <div style="display: flex;">
                      <div style=" height: 60px;width: 60px;background-color: #D8D8D8;">
-                        <img style="width: 100%;height: 100%;border-radius: 3px;object-fit: cover;" src="{{$vendor_product['product']['media'][0]['image']['path']['image_fit']}}100/100{{$vendor_product['product']['media'][0]['image']['path']['image_path']}}" alt="">
+                        @php
+                        $img = '';
+                        if(isset($vendor_product['product']['media'][0])){
+                           $img = $vendor_product['product']['media'][0]['image']['path']['image_fit'].'100/100'.$vendor_product['product']['media'][0]['image']['path']['image_path'];
+                        }
+                        @endphp
+                        <img style="width: 100%;height: 100%;border-radius: 3px;object-fit: cover;" src="{{ $img }}" alt="">
                      </div>
                      <div style="padding: 0 0 0 15px;">
-                        <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{$vendor_product['product']['translation_one']['title']}}</h3>
+                        <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{ ($vendor_product['product']['translation_one']['title'] ?? false) ? $vendor_product['product']['translation_one']['title'] : "" }}</h3>
                         @if(count($vendor_product['addon']))
-                        @foreach ($vendor_product['addon'] as $addon)
-                        <p style="color: #777777;font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;">{{$addon['option']['title']??''}}</p>
-                        @endforeach
+                           @foreach ($vendor_product['addon'] as $addon)
+                           <p style="color: #777777;font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;">{{$addon['option']['title']??''}}</p>
+                           @endforeach
                         @endif
                         {{-- <p style="color: #777777;font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;">Extra olives</p>
                         <p style="color: #777777;font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;">Extra cheese</p> --}}
@@ -53,19 +59,21 @@
                <td style="width: 35%;padding: 15px 0 10px;  text-align: right;">
                   <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{ $currencySymbol . number_format(($vendor_product['pvariant']['price']), 2, '.', '')}}</h3>
                   @if(count($vendor_product['addon']))
-                  @foreach ($vendor_product['addon'] as $addon)
-                  @php
-                     $vendor_product['pvariant']['price'] = $vendor_product['pvariant']['price'] + $addon['option']['price_in_cart']
-                  @endphp
-                  {{-- <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p>
-                  <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p> --}}
-                  <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 5px 0 0;padding: 5px 0 0;color: #000000;display: inline-block;border-top: 1px solid #ddd;min-width: 80px;">{{ $currencySymbol . number_format(($vendor_product['pvariant']['price']*$vendor_product['quantity']), 2, '.', '')}}</h3>
+                     @foreach ($vendor_product['addon'] as $addon)
+                     @php
+                        $vendor_product['pvariant']['price'] = $vendor_product['pvariant']['price'] + $addon['option']['price_in_cart']
+                     @endphp
+                     {{-- <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p>
+                     <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p> --}}
+                     <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 5px 0 0;padding: 5px 0 0;color: #000000;display: inline-block;border-top: 1px solid #ddd;min-width: 80px;">{{ $currencySymbol . number_format(($vendor_product['pvariant']['price']*$vendor_product['quantity']), 2, '.', '')}}</h3>
+                     @endforeach
+                  @endif
                </td>
             </tr>
 
            <tr>
               <td colspan="3" style="border-bottom: 1px solid #9797973b;padding: 5px 0;"></td>
-           </tr> 
+           </tr>
            @endforeach
            <tr>
               <td style="text-align: left;"><b>{{__('Subtotal')}}:</b></td>
@@ -90,14 +98,14 @@
               <td></td>
               <td style="text-align: right;">{{$currencySymbol . number_format($product['discount_amount'], 2, '.', '')}}</td>
            </tr>
-           
+
            <tr>
               <td style="text-align: left;"><b>{{__('Total')}}:</b></td>
               <td></td>
-              <td style="text-align: right;">{{$currencySymbol . number_format($product['payable_amount'], 2, '.', '')}}</td>
+              <td style="text-align: right;">{{$currencySymbol .$product['payable_amount']}}</td>
            </tr>
-          
-          
+
+
        </table>
        @endif
        @endforeach

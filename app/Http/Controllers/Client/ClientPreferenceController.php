@@ -275,7 +275,6 @@ class ClientPreferenceController extends BaseController{
                 $exist_cid[] = $value;
                 $curr = ClientCurrency::where('currency_id', $value)->where('client_code',Auth::user()->code)->first();
                 $multiplier = $request->multiply_by[$value]??1;
-
                 if(!$curr){
                     $cur_multi[] = [
                         'currency_id'=> $value,

@@ -75,6 +75,9 @@ class Category extends Model
     public function type(){
       return $this->belongsTo('App\Models\Type')->select('id', 'title');
     }
+    public function vendor(){
+      return $this->belongsTo('App\Models\Vendor');
+    }
 
     public function categoryTag()
     {

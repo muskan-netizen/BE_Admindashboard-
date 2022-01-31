@@ -246,7 +246,7 @@ class BaseController extends Controller{
         return $products;
     }
 
-    function getVendorDistanceWithTime($userLat='', $userLong='', $vendor, $preferences){
+    function getVendorDistanceWithTime($userLat='', $userLong='', $vendor, $preferences, $type = 'delivery'){
         if(($preferences) && ($preferences->is_hyperlocal == 1)){
             if( (empty($userLat)) && (empty($userLong)) ){
                 $userLat = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
@@ -262,7 +262,13 @@ class BaseController extends Controller{
             $distance_to_time_multiplier = (!empty($preferences->distance_to_time_multiplier)) ? $preferences->distance_to_time_multiplier : 2;
             $distance = $this->calulateDistanceLineOfSight($lat1, $long1, $lat2, $long2, $distance_unit);
             $vendor->lineOfSightDistance = number_format($distance, 1, '.', '') .' '. $unit_abbreviation;
-            $pretime =  number_format(floatval($vendor->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', ''); // distance is multiplied by distance time multiplier to calculate travel time
+            if($type == 'delivery')
+            {
+                $pretime =  number_format(floatval($vendor->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', '');
+                // distance is multiplied by distance time multiplier to calculate travel time
+            }else{
+                $pretime =  number_format(floatval($vendor->order_pre_time), 0, '.', '') + 0;
+            }
             // if($pretime >= 60){
             //     $vendor->timeofLineOfSightDistance =  $this->vendorTime($pretime) . '-' . $this->vendorTime((intval($pretime) + 5)).' '. __('hour');
             // }else{
@@ -318,10 +324,14 @@ class BaseController extends Controller{
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
             $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
-            $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
+
+            if(!empty($latitude) && !empty($longitude) ){
+                $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
                     $query->select('vendor_id')
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                 });
+            }
+
         }
         $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
 
@@ -401,24 +411,25 @@ class BaseController extends Controller{
         return $currency[0]['convertedAmount'];
     }
 
-    public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){
-        // $config = array(
-        //     'driver' => $mail_driver,
-        //     'host' => $mail_host,
-        //     'port' => $mail_port,
-        //     'encryption' => $mail_encryption,
-        //     'username' => $mail_username,
-        //     'password' => $mail_password,
-        //     'sendmail' => '/usr/sbin/sendmail -bs',
-        //     'pretend' => false,
-        // );
-        // Config::set('mail', $config);
+    public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption ){
+        $config = array(
+            'driver' => $mail_driver,
+            'host' => $mail_host,
+            'port' => $mail_port,
+
+            'encryption' => $mail_encryption,
+            'username' => $mail_username,
+            'password' => $mail_password,
+            'sendmail' => '/usr/sbin/sendmail -bs',
+            'pretend' => false,
+        );
+        Config::set('mail', $config);
         $app = App::getInstance();
         $app->register('Illuminate\Mail\MailServiceProvider');
-        return '1';
+        return  $config;
     }
 
-    /**     * check if cookie already exist     */
+    /*** check if cookie already exist */
     public function checkCookies($userid){
         if (isset(Auth::user()->system_user) && !empty(Auth::user()->system_user)) {
             $userFind = User::where('system_id', Auth::user()->system_user)->first();
@@ -660,6 +671,72 @@ class BaseController extends Controller{
         $hours = intdiv($minutes, 60).':'. ($minutes % 60);
 
         return $hours;
+    }
+
+    public function testOrderMail($emailData){
+        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+
+        if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+            $client_name = $emailData['client_name'];
+            $mail_from = $emailData['mail_from'];
+            $sendto = $emailData['email'];
+
+            try{
+                //dd('base',\Config::get('mail'));
+                Mail::send([], [],
+                function ($message) use($sendto, $client_name, $mail_from, $emailData) {
+                    $message->from($mail_from, $client_name);
+                    $message->to($sendto)->subject('Order mail');
+                    $message->setBody($emailData['email_template_content'], 'text/html'); // for HTML rich messages
+                });
+                $response['send_email'] = 1;
+                return count(Mail::failures());
+            }
+            catch(\Exception $e){
+                return response()->json(['data' => $e->getMessage()]);
+            }
+        }
+    }
+
+
+    public function sendTestMail(){
+        $after7days = Carbon::now()->addDays(7)->toDateString();
+        $now = Carbon::now()->toDateString();
+    
+        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+
+            if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+                $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+              
+                $client_name = $client->name;
+                $mail_from = 'dinesh.codebrewlabs@gmail.com';
+                $sendto = 'dinesh.codebrewlabs@gmail.com';
+                try{
+                    // $data = [
+                    //     'customer_name' => 'Test',
+                    //     'code_text' => '',
+                    //     'logo' => $client->logo['original'],
+                    //     'frequency' => $subscription->frequency,
+                    //     'end_date' => $subscription->end_date,
+                    //     'link'=> "http://local.myorder.com/user/subscription/select/".$subscription->plan->slug,
+                    // ];
+                    Mail::send([], [],
+                    function ($message) use($sendto, $client_name, $mail_from) {
+                        $message->from($mail_from, $client_name);
+                        $message->to($sendto)->subject('Upcoming Subscription Billing');
+                        $message->setBody('TEst data', 'text/html'); // for HTML rich messages
+                    });
+                    $response['send_email'] = 1;
+                    return count(Mail::failures());
+                }
+                catch(\Exception $e){
+                    return response()->json(['data' => $e->getMessage()]);
+                }
+            }
+        
     }
 
 }

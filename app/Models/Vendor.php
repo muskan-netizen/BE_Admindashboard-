@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Vendor extends Model{
   //use Searchable;
-    protected $fillable = ['name','slug','desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled'];
+    protected $fillable = ['name','slug','desc','logo','banner','address','email','website','phone_no','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','commission_percent','commission_fixed_per_order','commission_monthly','dine_in','takeaway','delivery','status','add_category','setting','show_slot','vendor_templete_id','auto_accept_order', 'service_fee_percent','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','slot_minutes','closed_store_order_scheduled','pincode'];
 
     public function serviceArea(){
        return $this->hasMany('App\Models\ServiceArea')->select('vendor_id', 'geo_array', 'name');
@@ -25,7 +25,13 @@ class Vendor extends Model{
     }
 
     public function slots(){
-        return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id');
+      return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id');
+    }
+    public function slotDates(){
+      return $this->hasMany('App\Models\VendorSlotDate', 'vendor_id', 'id');
+    }
+    public function dineinCategories(){
+      return $this->hasMany('App\Models\VendorDineinCategory', 'vendor_id', 'id');
     }
 
     public function slotDate(){
@@ -106,8 +112,7 @@ class Vendor extends Model{
     return $this->hasMany('App\Models\VendorCategory');
   }
 
-  public function getById($id)
-  {
+  public function getById($id){
     return self::where('id',$id)->first();
   }
 

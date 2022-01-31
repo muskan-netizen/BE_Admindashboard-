@@ -232,9 +232,12 @@ class CategoryController extends BaseController
             }
             $vendorData = Vendor::select('id', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id');
             if(isset($preferences->pickup_delivery_service_area) && ($preferences->pickup_delivery_service_area == 1)){
-                $vendorData = $vendorData->whereHas('serviceArea', function($query) use($pickup_latitude, $pickup_longitude){
-                    $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
-                });
+
+                if (!empty($pickup_latitude) && !empty($pickup_longitude)) {
+                    $vendorData = $vendorData->whereHas('serviceArea', function ($query) use ($pickup_latitude, $pickup_longitude) {
+                        $query->select('vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$pickup_latitude." ".$pickup_longitude.")'))");
+                    });
+                }
             }
             $vendorData = $vendorData->where('status', 1)->whereIn('id', $vendor_ids)->with('slot', 'products')->paginate($limit);
             // $avgRating = $vendorData->products->avg('averageRating');
@@ -469,8 +472,8 @@ class CategoryController extends BaseController
                 ->where('products.is_live', 1)
                 ->whereIn('products.id', function ($qr) use ($startRange, $endRange) {
                 $qr->select('product_id')->from('product_variants')
-                ->where('price', '>=', $startRange)
-                ->where('price', '<=', $endRange);
+                    ->where('price', '>=', $startRange)
+                    ->where('price', '<=', $endRange);
                 });
 
             if (!empty($productIds)) {
@@ -481,7 +484,7 @@ class CategoryController extends BaseController
             $products = $products->whereIn('products.brand_id', $request->brands);
             }
             if (!empty($order_type) && $request->order_type == 'rating') {
-            $products = $products->orderBy('product_variants.averageRating', 'desc');
+            $products = $products->orderBy('products.averageRating', 'desc');
             }
             if (!empty($order_type) && $order_type == 'low_to_high') {
             $products = $products->orderBy('product_variants.price', 'asc');

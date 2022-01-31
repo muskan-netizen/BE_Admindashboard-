@@ -76,6 +76,8 @@
                                 <h5>Hello, {{ucwords(Auth::user()->name)}} !</h5>
                                 <!-- <p>To enjoy shopping from our website, Please verify below information. So you will not face any interruption in future.</p> -->
                             </div>
+                            <div id="msg"></div>
+
                             <div class="box-account box-info">
                                 <!-- <form name="register" id="register" action="{{route('customer.register')}}" class="theme-form" method="post"> @csrf -->
                                 <form id="sendEmail" class="theme-form">@csrf
@@ -113,7 +115,7 @@
 
     $("#sendEmail").submit(function(event) {
         event.preventDefault();
-        console.log("fregwr");
+        //console.log("fregwr");
         var form = document.getElementById('sendEmail');
         var formData = new FormData(form);
         $.ajaxSetup({
@@ -136,8 +138,11 @@
                 //    icon: "success",
                 //    button: "OK",
                 // });
-                alert("Sent Successfully");
-                window.location.href = "{{route('user.profile')}}";
+                var html ='<div class="alert alert-success"><span>{{__("Sent Successfully")}}</span></div>';
+                $('#msg').html(html);
+                setTimeout(reload, 3000);
+               // alert("Sent Successfully");
+               // window.location.href = "{{route('user.profile')}}";
             },
             error: function(data) {
                 $(".invalid-feedback2").html(data.responseJSON.error);
@@ -145,6 +150,9 @@
             },
         });
     });
+    function reload(){
+        window.location.href = "{{route('user.profile')}}";
+    }
 </script>
 
 @endsection

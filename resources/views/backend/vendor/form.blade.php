@@ -66,7 +66,7 @@
             </div>
         </div>
         <div class="row mb-2" id="edit">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="form-group mb-3" id="addressInput">
                     {!! Form::label('title', __('Address'),['class' => 'control-label']) !!}
                     <div class="input-group">
@@ -80,6 +80,20 @@
                     </span>
                 </div>
             </div>
+
+            <div class="col-md-6">
+                <div class="form-group mb-3" id="pincode">
+                    {!! Form::label('title', __('Pincode'),['class' => 'control-label']) !!}
+                    <input type="text" name="pincode" placeholder="Pincode" class="form-control" value="{{@$vendor->pincode}}">
+                    @if($errors->has('Pincode'))
+                    <span class="text-danger" role="alert">
+                        <strong>{{ $errors->first('Pincode') }}</strong>
+                    </span>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2" >
             <div class="col-md-4">
                 <div class="form-group mb-3" id="latitudeInput">
                     {!! Form::label('title', __('latitude'),['class' => 'control-label']) !!}

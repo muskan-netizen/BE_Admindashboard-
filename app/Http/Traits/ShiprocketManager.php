@@ -3,7 +3,8 @@ namespace App\Http\Traits;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use App\Models\{ShippingOption};
+use App\Models\{ShippingOption, UserAddress, Vendor};
+use Illuminate\Support\Facades\Auth;
 
 trait ShiprocketManager{
 
@@ -17,6 +18,7 @@ trait ShiprocketManager{
         $this->email = $creds_arr->username;
         $this->password = $creds_arr->password;
         $this->api_url = 'https://apiv2.shiprocket.in/v1/external';
+        $this->weight = $creds_arr->weight;
     }
 
     public function credentials()
@@ -27,6 +29,7 @@ trait ShiprocketManager{
             $this->email = $creds_arr->username;
             $this->password = $creds_arr->password;
             $this->api_url = 'https://apiv2.shiprocket.in/v1/external';
+            $this->weight = $creds_arr->weight;
         }else{
             return false;
         }
@@ -168,9 +171,6 @@ trait ShiprocketManager{
         return $response;
     }
 
-
-
-
     public function trackingThroughShipmentId($token,$shipmentId){
         $endpoint="/shipments/$shipmentId";
         $response=$this->getCurl($endpoint,$token);
@@ -218,22 +218,25 @@ trait ShiprocketManager{
 
     }
 
-    public function checkCourierService($token)
+    public function checkCourierService($token,$vid,$weight = null)
     {
         $vendors = array();
+        $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
+         $vendor_details = Vendor::find($vid);
+         if($cus_address->pincode!='')
+         {
         $this->credentials();
         $endpoint='/courier/serviceability';
         $data = array (
-          'pickup_postcode' => 135001,
-          'delivery_postcode' => 160022,
+          'pickup_postcode' => ($vendor_details->pincode) ?? null,
+          'delivery_postcode' => ($cus_address->pincode)?? null,
           'cod' => 0,
-          'weight' => 2,
+          'weight' => (($weight)?$weight:$this->weight),
           //'length' => 15,
           //'breadth' => 10,
           //'height' => 5,
           //'declared_value' => 50,
         );
-
         $result = $this->getCurl($endpoint,$data,trim($token));
         //courier_name , rate, courier_company_id , etd , etd_hours , estimated_delivery_days
         if($result->status == '200'){
@@ -243,13 +246,15 @@ trait ShiprocketManager{
               $vendors[] = array(
                 'type'=>'SR',
                 'courier_name' => $data->courier_name,
-                'rate' => $data->rate,
+                'rate' => number_format(round($data->rate), 2, '.', ''),
                 'courier_company_id' => $data->courier_company_id,
                 'etd' => $data->etd,
                 'etd_hours' => $data->etd_hours,
-                'estimated_delivery_days' => $data->estimated_delivery_days
+                'estimated_delivery_days' => $data->estimated_delivery_days,
+                'code' => 'SR_'.$data->courier_company_id
             );
           }
+        }
         }
         return $vendors;
     }

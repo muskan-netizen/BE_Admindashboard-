@@ -1,3 +1,38 @@
+@font-face {
+font-family: 'Armonioso';
+src: url('../hokitch/fonts/armonioso-trial-webfont.woff2') format('woff2'),
+url('../hokitch/font/armonioso-trial-webfont.woff') format('woff');
+font-weight: normal;
+font-style: normal;
+}
+@font-face {
+font-family: 'gothamblack';
+src: url('../hokitch/fonts/gotham-black-webfont.woff2') format('woff2'),
+url('../hokitch/font/gotham-black-webfont.woff') format('woff');
+font-weight: normal;
+font-style: normal;
+}
+@font-face {
+font-family: 'gothambold';
+src: url('../hokitch/fonts/gotham-bold-webfont.woff2') format('woff2'),
+url('../hokitch/font/gotham-bold-webfont.woff') format('woff');
+font-weight: normal;
+font-style: normal;
+}
+@font-face {
+font-family: 'gothammedium';
+src: url('../hokitch/fonts/gothammedium-webfont.woff2') format('woff2'),
+url('../hokitch/font/gothammedium-webfont.woff') format('woff');
+font-weight: normal;
+font-style: normal;
+}
+@font-face {
+font-family: 'gothamlight';
+src: url('../hokitch/fonts/gothamlight-webfont.woff2') format('woff2'),
+url('../hokitch/font/gothamlight-webfont.woff') format('woff');
+font-weight: normal;
+font-style: normal;
+}
  *{
         margin: 0px;
         padding: 0px;
@@ -12,14 +47,7 @@ body{
     font-family: "Gotham", Sans-serif;
     line-height: 1.4 !important;
 }
-@font-face {  
-	  font-family: Gotham-Font;
-	  src: url('../hokitch/font/Gotham-Light.otf');
-		}
-@font-face {
-   font-family: Armonioso;
-   src: url('../hokitch/font/Armonioso-trial.otf');
-}
+
 /*----Home hokitch  page css here=----------- */
 .process-child:before {
     content: '';

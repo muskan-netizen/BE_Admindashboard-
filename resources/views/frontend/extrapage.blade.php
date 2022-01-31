@@ -152,7 +152,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-12">
-                                    <h2>{{__('Store Details.')}}</h2>
+                                    <h2>{{getNomenclatureName('Vendors', true) . __(' Details.')}}</h2>
                                 </div>
                             </div>
                             <div class="form-row">
