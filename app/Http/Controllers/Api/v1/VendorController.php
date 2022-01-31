@@ -649,6 +649,7 @@ class VendorController extends BaseController{
             }
             $paginate = $request->has('limit') ? $request->limit : 12;
             // $preferences = Session::get('preferences');
+            $user = Auth::user();
             $latitude = $user->latitude;
             $longitude = $user->longitude;
             $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
