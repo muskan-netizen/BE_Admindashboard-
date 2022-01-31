@@ -144,5 +144,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('plan/updateStatus/vendor/{slug}', 'Api\v1\SubscriptionPlansVendorController@updateSubscriptionPlanStatus');
             Route::post('plan/updateOnRequest/vendor/{slug}', 'Api\v1\SubscriptionPlansVendorController@updateSubscriptionPlanOnRequest');
         });
+
+        // Edit Order
+        Route::group(['prefix' => 'edit-order'], function () {
+            Route::post('approve/reject', 'Api\v1\OrderController@submitEditedOrder');
+        }); 
     });
 });
