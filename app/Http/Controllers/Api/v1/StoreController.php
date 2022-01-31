@@ -66,6 +66,7 @@ class StoreController extends BaseController{
 				$products = $products->where('vendor_id', $selected_vendor_id);
 			}
 			$products = $products->where('is_live', 1)->paginate($paginate);
+			//$products = $products->paginate($paginate);
 			foreach ($products as $product) {
                 foreach ($product->variant as $k => $v) {
                     $product->variant[$k]->multiplier = $client_currency_detail->doller_compare;
