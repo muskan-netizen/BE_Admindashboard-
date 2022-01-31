@@ -854,7 +854,7 @@ class VendorController extends BaseController{
                         }
                         //->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
                         // $products = $products->where('is_live', 1)->where('category_id', $category->category_id)->where('vendor_id', $vid)->get();
-                        $products = $products->get();
+                        $products = $products->groupBy('products.id')->get();
                         if (!empty($products)) {
                             foreach ($products as $key => $value) {
                                 foreach ($value->addOn as $key => $val) {

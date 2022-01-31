@@ -887,7 +887,7 @@ class OrderController extends BaseController
                 $email_data = [
                     'code' => $otp,
                     'link' => "link",
-                    'email' => "harbans.sayonakh@gmail.com",//  $sendto,//
+                    'email' => $sendto,//"harbans.sayonakh@gmail.com",//  $sendto,//
                     'mail_from' => $mail_from,
                     'client_name' => $client_name,
                     'logo' => $client->logo['original'],

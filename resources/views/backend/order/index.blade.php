@@ -433,6 +433,12 @@
         init("pending_orders", "{{ route('orders.filter') }}", '', false);
     });
 
+    function autoloaddashboad(){
+        console.log('dasd');
+        var typ=  $("a.nav-link.active").data('rel');
+        init(typ, "{{ route('orders.filter') }}", '', false);
+
+    }
 
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
     var date_filter = $('#range-datepicker').val();
@@ -449,7 +455,7 @@
             },
             success: function(response) {
                 // reload after 10 sec
-                setTimeout(autoloaddashboad, 10000);
+                setTimeout(autoloaddashboad(), 10000);
 
                 $('#order_list_order').hide();
                 if (response.status == 'Success') {
@@ -489,12 +495,7 @@
             $("#pending_order-tab").trigger('click');
         }, 500);
         //setInterval(autoloaddashboad, 10000);
-        function autoloaddashboad(){
-            console.log('dasd');
-            var typ=  $("a.nav-link.active").data('rel');
-            init(typ, "{{ route('orders.filter') }}", '', false);
-
-        }
+        
         $(document).on("click", ".load-more-btn", function() {
             $('#order_list_order').show();
             var url = $(this).data('url');
