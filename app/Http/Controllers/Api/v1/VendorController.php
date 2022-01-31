@@ -1144,7 +1144,7 @@ class VendorController extends BaseController{
             $products = $products->orderBy('products.id', 'desc');
         }
         $paginate = $request->has('limit') ? $request->limit : 12;
-        $products = $products->paginate($paginate);
+        $products = $products->groupBy('products.id')->paginate($paginate);
         if(!empty($products)){
             foreach ($products as $key => $product) {
                 $product->is_wishlist = $product->category->categoryDetail->show_wishlist;

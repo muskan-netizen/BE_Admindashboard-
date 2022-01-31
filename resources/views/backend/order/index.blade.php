@@ -101,7 +101,7 @@
                                                            <% }else{ %>
                                                             <span class="ml-2">{{__('Your order will arrive by')}} <%= order.converted_scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
                                                            <% } %>
-                                                            
+
                                                    <% } %>
 
                                                 </div>
@@ -182,7 +182,7 @@
                                                                     <span>{{$clientCurrency->currency->symbol}} 0.00</span>
                                                                 <% } %>
                                                             </li>
-                                                            <% } %>    
+                                                            <% } %>
 
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Amount') }}</label>
@@ -191,7 +191,7 @@
                                                 </ul>
                                             </div>
 
-                                            
+
 
                                         </a>
                                         <div id="update-single-status" class="mb-2">
@@ -448,6 +448,9 @@
                 date_filter: date_filter
             },
             success: function(response) {
+                // reload after 10 sec
+                setTimeout(autoloaddashboad, 10000);
+
                 $('#order_list_order').hide();
                 if (response.status == 'Success') {
                     if (!isOnload) {
@@ -485,7 +488,7 @@
         setTimeout(function() {
             $("#pending_order-tab").trigger('click');
         }, 500);
-        setInterval(autoloaddashboad, 5000);
+        //setInterval(autoloaddashboad, 10000);
         function autoloaddashboad(){
             console.log('dasd');
             var typ=  $("a.nav-link.active").data('rel');

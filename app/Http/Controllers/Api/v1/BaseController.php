@@ -38,6 +38,10 @@ class BaseController extends Controller{
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
                 $send = $this->mazinhost_sms($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 4) //for unifonic gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->unifonic($to,$body,$crendentials);
             }else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -425,7 +429,7 @@ class BaseController extends Controller{
         );
         Config::set('mail', $config);
         $app = App::getInstance();
-        $app->register('Illuminate\Mail\MailServiceProvider');
+        // $app->register('Illuminate\Mail\MailServiceProvider');
         return  $config;
     }
 
@@ -684,7 +688,6 @@ class BaseController extends Controller{
             $sendto = $emailData['email'];
 
             try{
-                //dd('base',\Config::get('mail'));
                 Mail::send([], [],
                 function ($message) use($sendto, $client_name, $mail_from, $emailData) {
                     $message->from($mail_from, $client_name);
