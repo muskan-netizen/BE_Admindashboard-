@@ -2750,10 +2750,19 @@ $sms_crendential = json_decode($preference->sms_credentials);
             $("#" + id).trigger('click');
          }
       }
-
+$(document).ready(function() {
+   smsChange();
+});
       function toggle_smsFields(obj)
       {
-         var id = $(obj).find(':selected').attr('data-id');
+         smsChange();
+         // var id = $(obj).find(':selected').attr('data-id');
+         // $('.sms_fields').css('display','none');
+         // $('#'+id).css('display','flex');
+         // console.log(id);
+      }
+      function smsChange(){
+         var id = $("#sms_provider").find(':selected').attr('data-id');
          $('.sms_fields').css('display','none');
          $('#'+id).css('display','flex');
          console.log(id);

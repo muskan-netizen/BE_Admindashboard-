@@ -22,6 +22,7 @@ $(document).ready(function () {
         if($("#address-longitude").length > 0){
             longitude = $("#address-longitude").val();
         }
+        getHomePageCategoryMenu(latitude, longitude);
         getHomePage(latitude, longitude);
         // $(document).ready(function () {
         if ($.cookie("age_restriction") != 1) {
@@ -237,9 +238,11 @@ $(document).ready(function () {
                         $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
                         $(".nav-tabs.vendor_mods").attr("data-mod", type);
                     } else {
+                        getHomePageCategoryMenu(latitude, longitude, type);
                         getHomePage(latitude, longitude, type);
                     }
                 } else {
+                    getHomePageCategoryMenu(latitude, longitude, type);
                     getHomePage(latitude, longitude, type);
                 }
             }
@@ -269,27 +272,10 @@ $(document).ready(function () {
             url: home_page_data_url,
             beforeSend: function(){
                 $(".shimmer_effect").show();
-                $(".no-store-wrapper, .home-slider, .home-banner-slider, #main-menu, #our_vendor_main_div").hide();
-                $(".shimmer_effect .menu-slider").css("display" , "flex");
+                $(".no-store-wrapper, .home-slider, .home-banner-slider, #our_vendor_main_div").hide();
             },
             success: function (response) {
                 if (response.status == "Success") {
-                    if($('.menu-slider').hasClass('slick-initialized')){
-                        $('.menu-slider').slick('destroy');
-                    }
-                    $('#main-menu').smartmenus('destroy');
-                    $("#main-menu").html('');
-                    let nav_categories_template = _.template($('#nav_categories_template').html());
-                    $("#main-menu").append(nav_categories_template({ nav_categories: response.data.navCategories }));
-                    $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
-                    //     if($(window).width() >= 320){
-                    //         if(!$('.menu-slider').hasClass('slick-initialized')){
-                    //             loadMainMenuSlider();
-                    //         }
-                    //    }
-                    resizeMenuSlider();
-                    $("#main-menu").css("display" , "flex");
-
                     var path = window.location.pathname;
                     if (path == '/') {
                         // $(".home-slider, .home-slider-wrapper, #our_vendor_main_div").show();
@@ -373,11 +359,11 @@ $(document).ready(function () {
                 // Hide image container
                 $(".shimmer_effect").hide();
                 $(".home-slider, .home-banner-slider").show();
-                $("#main-menu").show();
                 $("#our_vendor_main_div").show();
             }
         });
     }
+    
 
 
 
@@ -432,11 +418,13 @@ $(document).ready(function () {
                         $("#remove_cart_modal").modal('show');
                         $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", response.data.id);
                     } else {
+                        getHomePageCategoryMenu(latitude, longitude);
                         getHomePage(latitude, longitude);
                         let selected_address = $("#address-input").val();
                         $(".homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
                     }
                 } else {
+                    getHomePageCategoryMenu(latitude, longitude);
                     getHomePage(latitude, longitude);
                 }
             }
@@ -463,6 +451,7 @@ $(document).ready(function () {
                     if($(".nav-tabs.vendor_mods .nav-link").length > 0){
                         vendor_mod = $(".nav-tabs.vendor_mods").attr("data-mod");
                     }
+                    getHomePageCategoryMenu(latitude, longitude, vendor_mod);
                     getHomePage(latitude, longitude, vendor_mod);
                 }
             }
@@ -513,6 +502,7 @@ $(document).ready(function () {
                             $("#address-latitude").val(latitude);
                             $("#address-longitude").val(longitude);
                             $(".homepage-address span").text(value).attr({ "title": value, "data-original-title": value });
+                            getHomePageCategoryMenu(latitude, longitude);
                             getHomePage(latitude, longitude);
                         }
                     }
@@ -526,6 +516,74 @@ $(document).ready(function () {
             }
         );
     }
+
+
+    ////////////// *****************   home page category icon **************** //////////////////
+  function getHomePageCategoryMenu(latitude, longitude, vtype = "") {
+    if(vtype != ''){
+        vendor_type = vtype;
+    }
+    let selected_address = $("#address-input").val();
+    // return 0;
+    let selected_place_id = $("#address-place-id").val();
+    $(".homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
+    $("#edit-address").modal('hide');
+    let ajaxData = { type: vendor_type };
+    if ((latitude) && (longitude) && (selected_address)) {
+        ajaxData.latitude = latitude;
+        ajaxData.longitude = longitude;
+        ajaxData.selectedAddress = selected_address;
+        ajaxData.selectedPlaceId = selected_place_id;
+    }
+    $.ajax({
+        data: ajaxData,
+        type: "POST",
+        dataType: 'json',
+        url: home_page_data_url_category_menu,
+        beforeSend: function(){
+            $("#main-menu").hide();
+            $(".shimmer_effect .menu-slider").css("display" , "flex");
+        },
+        success: function (response) {
+            if (response.status == "Success") {
+                if($('.menu-slider').hasClass('slick-initialized')){
+                    $('.menu-slider').slick('destroy');
+                }
+                $('#main-menu').smartmenus('destroy');
+                $("#main-menu").html('');
+                let nav_categories_template = _.template($('#nav_categories_template').html());
+                $("#main-menu").append(nav_categories_template({ nav_categories: response.data.navCategories }));
+                $("#main-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 }), $("#sub-menu").smartmenus({ subMenusSubOffsetX: 1, subMenusSubOffsetY: -8 });
+                //     if($(window).width() >= 320){
+                //         if(!$('.menu-slider').hasClass('slick-initialized')){
+                //             loadMainMenuSlider();
+                //         }
+                //    }
+                resizeMenuSlider();
+                $("#main-menu").css("display" , "flex");
+
+                var path = window.location.pathname;
+                if (path == '/') {
+                   
+                }
+                else {
+                    if ((latitude) && (longitude) && (selected_address)) {
+                        window.location.href = home_page_url;
+                    }
+                }
+            }
+        },
+        complete:function(data){
+             $("#main-menu").show();
+        }
+    });
+}
+
+
+
+  /////////// **************  end home page category icon *************** //////////////
+
+
 });
 
 function addressInputDisplay(locationWrapper, inputWrapper, input) {
@@ -651,6 +709,10 @@ $(document).delegate("#edit-address #address-input", "focus", function(){
 
     });
   }
+
+
+
+  
 
 
 
