@@ -301,6 +301,7 @@ $timezone = Auth::user()->timezone;
                                             <td>{{$clientCurrency->currency->symbol}}@money($vendor_service_fee)</td>
                                         </tr>
                                     @endif
+                                    @if(Auth::user()->is_superadmin)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
                                         <td>{{$clientCurrency->currency->symbol}}@money($revenue)</td> 
@@ -309,6 +310,7 @@ $timezone = Auth::user()->timezone;
                                         <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
                                         <td>{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue)</td>
                                     </tr>
+                                    @endif
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Reject Reason") }} :</th>
                                         <td style="width:200px;">{{$vendor->reject_reason}}</td>

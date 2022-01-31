@@ -25,7 +25,13 @@ class Vendor extends Model{
     }
 
     public function slots(){
-        return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id');
+      return $this->hasMany('App\Models\VendorSlot', 'vendor_id', 'id');
+    }
+    public function slotDates(){
+      return $this->hasMany('App\Models\VendorSlotDate', 'vendor_id', 'id');
+    }
+    public function dineinCategories(){
+      return $this->hasMany('App\Models\VendorDineinCategory', 'vendor_id', 'id');
     }
 
     public function slotDate(){
@@ -106,8 +112,7 @@ class Vendor extends Model{
     return $this->hasMany('App\Models\VendorCategory');
   }
 
-  public function getById($id)
-  {
+  public function getById($id){
     return self::where('id',$id)->first();
   }
 

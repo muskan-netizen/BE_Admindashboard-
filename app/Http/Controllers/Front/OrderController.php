@@ -1925,6 +1925,20 @@ class OrderController extends FrontController
     public function driverSignup(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'phone_number' => 'required',
+                'type' => 'required',
+                'team' => 'required',
+            ], [
+                "name.required" => __('The name field is required.'),
+                "phone_number.required" => __('The phone number field is required.'),
+                "type.required" => __('The type field is required.'),
+                "team.required" => __('The team field is required.')
+            ]);
+            if($validator->fails()){
+                return $this->errorResponse($validator->errors(), 422);
+            }
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
 
@@ -1935,12 +1949,7 @@ class OrderController extends FrontController
                     'name' => 'required',
                     'phone_number' => 'required',
                     'type' => 'required',
-                    'team' => 'required',
-                    // 'vehicle_type_id' => 'required',
-                    // 'make_model' => 'required',
-                    // 'uid' => 'required',
-                    // 'plate_number' => 'required',
-                    // 'color' => 'required'
+                    'team' => 'required'
                 ];
                 foreach ($driver_registration_documents as $driver_registration_document) {
                     if($driver_registration_document->is_required == 1){

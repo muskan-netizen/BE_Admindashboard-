@@ -24,5 +24,9 @@ class VendorSlot extends Model
     public function days(){
         return $this->hasOne('App\Models\SlotDay', 'slot_id', 'id'); 
     }
+    public function deleteVendorSlots($vendor_id)
+    {
+        return $this->where('vendor_id',$vendor_id)->delete();
+    }
 
 }

@@ -1487,4 +1487,148 @@ class VendorController extends BaseController{
         }
     }
 
+    public function getVendorDetails(Request $request)
+    {
+        try {
+			$validator = Validator::make($request->all(), [
+				'vendor_id' => 'required',	
+			]);
+
+			if ($validator->fails()) {			
+				return $this->errorResponse($validator->errors()->first(), 422);
+			}
+            $vendordetail = Vendor::where('id',$request->vendor_id)->first();
+            if($vendordetail)
+            {
+                if($vendordetail->name=="" || $vendordetail->desc=="" || $vendordetail->logo=="" || $vendordetail->address=="" || $vendordetail->email=="" || $vendordetail->phone_no=="")
+                {
+                    $vendordetail->profile_status = 0;
+                }else{
+                    $vendordetail->profile_status = 1;
+                }
+                return $this->successResponse($vendordetail);
+            }else{
+                return $this->errorResponse('Vendor not found', 422);
+            }
+        } catch (Exception $e) {            
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function updateVendorDetails(Request $request)
+    {
+        try{
+            $validator = Validator::make($request->all(), [
+				'vendor_id' => 'required',	
+			]);
+
+			if ($validator->fails()) {			
+				return $this->errorResponse($validator->errors()->first(), 422);
+			}
+            //return $request->all();
+            $vendordetail = Vendor::where('id',$request->vendor_id)->first();
+            if($vendordetail)
+            {
+                if($request->name)
+                {
+                    $vendordetail->name = $request->name;
+                }
+                if($request->desc)
+                {
+                    $vendordetail->desc = $request->desc;                    
+                }
+                if($request->email)
+                {
+                    $vendordetail->email = $request->email;                    
+                }
+                if($request->phone_no)
+                {
+                    $vendordetail->phone_no = $request->phone_no;                    
+                }
+                if($request->address)
+                {
+                    $vendordetail->address = $request->address;                    
+                }
+                if($request->latitude)
+                {
+                    $vendordetail->latitude = $request->latitude;                    
+                }
+                if($request->longitude)
+                {
+                    $vendordetail->longitude = $request->longitude;                    
+                }
+                if($request->website)
+                {
+                    $vendordetail->website = $request->website;
+                }
+                // if($request->slug)
+                // {
+                //     $vendordetail->slug = $request->slug;                    
+                // }
+                // if($request->order_min_amount)
+                // {
+                //     $vendordetail->order_min_amount = $request->order_min_amount;                    
+                // }
+                // if($request->order_pre_time)
+                // {
+                //     $vendordetail->order_pre_time = $request->order_pre_time;                    
+                // }
+                // if($request->auto_reject_time)
+                // {
+                //     $vendordetail->auto_reject_time = $request->auto_reject_time;                    
+                // }
+                // if($request->commission_percent)
+                // {
+                //     $vendordetail->commission_percent = $request->commission_percent;                    
+                // }
+                // if($request->commission_fixed_per_order)
+                // {
+                //     $vendordetail->commission_fixed_per_order = $request->commission_fixed_per_order;                    
+                // }
+                // if($request->commission_monthly)
+                // {
+                //     $vendordetail->commission_monthly = $request->commission_monthly;                    
+                // }
+                if($request->dine_in!="")
+                {
+                    $vendordetail->dine_in = $request->dine_in;                    
+                }
+                if($request->takeaway!="")
+                {
+                    $vendordetail->takeaway = $request->takeaway;                    
+                }
+                if($request->delivery!="")
+                {
+                    $vendordetail->delivery = $request->delivery;                    
+                }
+                // if($request->status)
+                // {
+                //     $vendordetail->status = $request->status;                    
+                // }
+                // if($request->commission_fixed_per_order)
+                // {
+                //     $vendordetail->commission_fixed_per_order = $request->commission_fixed_per_order;                    
+                // }
+
+                //images                
+                if ($request->hasFile('upload_logo')) {
+                    $file = $request->file('upload_logo');
+                    $vendordetail->logo = Storage::disk('s3')->put('/vendor', $file, 'public');
+                }
+                if ($request->hasFile('upload_banner')) {
+                    $file = $request->file('upload_banner');
+                    $vendordetail->banner = Storage::disk('s3')->put('/vendor', $file, 'public');
+                }
+                
+                $vendordetail->save();
+                $vendordetail = Vendor::where('id',$request->vendor_id)->first();
+                return $this->successResponse($vendordetail);
+            }else{
+                return $this->errorResponse('Vendor not found', 422);
+            }
+        } catch (Exception $e) {            
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
 }

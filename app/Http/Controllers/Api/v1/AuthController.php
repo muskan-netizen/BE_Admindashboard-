@@ -43,6 +43,7 @@ class AuthController extends BaseController
      */
     public function login(LoginRequest $loginReq)
     {
+        //dd($loginReq->all());
         $errors = array();
         $user = User::with('country')->where('email', $loginReq->email)->first();
         if (!$user) {
