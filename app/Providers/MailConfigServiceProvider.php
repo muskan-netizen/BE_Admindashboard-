@@ -49,7 +49,7 @@ Config::set("database.connections.$schemaName", $default);
 config(["database.connections.mysql.database" => $schemaName]);
 
 $mail = ClientPreference::on($schemaName)->where('id', '>', 0)->first(['id', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from']);
-
+DB::disconnect($database_username);
 }
 
 
@@ -68,7 +68,7 @@ $config = array(
 );
 Config::set('mail', $config);
 }
-DB::disconnect($database_username);
+
 }
 /**
 * Register services.
