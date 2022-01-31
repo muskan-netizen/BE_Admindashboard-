@@ -642,7 +642,7 @@ class VendorController extends BaseController{
     public function vendorProductsFilter(Request $request){
         try{
             $vendor_id =  $request->has('vendor_id') && $request->vendor_id ? $request->vendor_id : null;
-            $slug2 =  $request->has('category_slug') && $request->category_slug ? $request->category_slug : null;;
+            $category_id =  $request->has('category_id') && $request->category_id ? $request->category_id : null;;
             if(!$vendor_id){
                 return response()->json(['error' => 'No record found.'], 404);
             }
@@ -685,15 +685,59 @@ class VendorController extends BaseController{
                 $langId = $user->language;
                 $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
                 $categoriesList = '';
+                //filter data
+                $order_type = $request->has('order_type') ? $request->order_type : '';
+                $setArray = $optionArray = array();
+                if ($request->has('variants') && !empty($request->variants)) {
+                    $setArray = array_unique($request->variants);
+                }
+                $multiArray = array();
+                if ($request->has('options') && !empty($request->options)) {
+                    foreach ($request->options as $key => $value) {
+                        $multiArray[$request->variants[$key]][] = $value;
+                    }
+                }
+                $variantIds = $productIds = array();
+                if (!empty($multiArray)) {
+                    foreach ($multiArray as $key => $value) {
+                        $new_pIds = $new_vIds = array();
+                        $vResult = ProductVariantSet::join('product_categories as pc', 'product_variant_sets.product_id', 'pc.product_id')->select('product_variant_sets.product_variant_id', 'product_variant_sets.product_id')
+                            ->where('product_variant_sets.variant_type_id', $key)
+                            ->whereIn('product_variant_sets.variant_option_id', $value);
+
+                        if (!empty($variantIds)) {
+                            $vResult  = $vResult->whereIn('product_variant_sets.product_variant_id', $variantIds);
+                        }
+                        $vResult  = $vResult->groupBy('product_variant_sets.product_variant_id')->get();
+
+                        if ($vResult) {
+                            foreach ($vResult as $key => $value) {
+                                $new_vIds[] = $value->product_variant_id;
+                                $new_pIds[] = $value->product_id;
+                            }
+                        }
+                        $variantIds = $new_vIds;
+                        $productIds = $new_pIds;
+                    }
+                }
+
+                $startRange = 0;
+                $endRange = 20000;
+                if ($request->has('range') && !empty($request->range)) {
+                    $range = explode(';', $request->range);
+                    $clientCurrency->doller_compare;
+                    $startRange = $range[0] * $clientCurrency->doller_compare;
+                    $endRange = $range[1] * $clientCurrency->doller_compare;
+                }
 
                 if ($vendor->vendor_templete_id == 5) {
                     $vid = $vendor->id;
                     $vendor_categories = VendorCategory::with(['category.translation' => function ($q) use ($langId) {
                         $q->where('category_translations.language_id', $langId);
                     }])->where('vendor_id', $vid);
-                    if (isset($slug2) && ($slug2 != '') && ($slug2)) {
-                        $vendor_categories = $vendor_categories->whereHas('category', function ($query) use ($slug2) {
-                            $query->where('slug', $slug2);
+                    if (isset($category_id) && ($category_id != '') && ($category_id)) {
+                        $vendor_categories = $vendor_categories->whereHas('category', function ($query) use ($category_id) {
+                            $query->where('id', $category_id);
                         });
                         $vendor_categories = $vendor_categories->where('status', 1)->get();
                         foreach ($vendor_categories as $category) {
@@ -739,13 +783,55 @@ class VendorController extends BaseController{
                             'translation' => function ($q) use ($langId) {
                                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                             },
-                            'variant' => function ($q) use ($langId) {
+                            'variant' => function ($q) use ($langId, $variantIds) {
                                 $q->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price')->orderBy('quantity', 'desc');
                             // $q->groupBy('product_id');
+                                if (!empty($variantIds)) {
+                                    $q->whereIn('id', $variantIds);
+                                }
                             },'variant.checkIfInCartApp', 'checkIfInCartApp',
-                        ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
-                        $products = $products->where('is_live', 1)->where('category_id', $category->category_id)->where('vendor_id', $vid)->get();
+                        ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
+                            ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
+                            ->join('product_translations', 'product_translations.product_id', '=', 'products.id'); // Or whatever the join logic is
 
+                        $products->where('products.category_id', $category->category_id);
+
+
+                        $products =  $products->where('products.is_live', 1)
+                                    ->where('vendor_id', $vid)
+                                    ->whereIn('products.id', function ($qr) use ($startRange, $endRange) {
+                                        $qr->select('product_id')->from('product_variants')
+                                            ->where('price', '>=', $startRange)
+                                            ->where('price', '<=', $endRange);
+                                    });
+                        if (!empty($productIds)) {
+                            $products = $products->whereIn('id', $productIds);
+                        }
+
+                        if ($request->has('brands') && !empty($request->brands)) {
+                             $products = $products->whereIn('products.brand_id', $request->brands);
+                        }
+                        if (!empty($order_type) && $request->order_type == 'rating') {
+                            $products = $products->orderBy('products.averageRating', 'desc');
+                        }
+                        if (!empty($order_type) && $order_type == 'low_to_high') {
+                            $products = $products->orderBy('product_variants.price', 'asc');
+                        }
+                        if (!empty($order_type) && $order_type == 'high_to_low') {
+                            $products = $products->orderBy('product_variants.price', 'desc');
+                        }
+                        if (!empty($order_type) && $order_type == 'a_to_z') {
+                            $products = $products->orderBy('product_translations.title', 'asc');
+                        }
+                        if (!empty($order_type) && $order_type == 'z_to_a') {
+                            $products = $products->orderBy('product_translations.title', 'desc');
+                        }
+                        if (!empty($order_type) && $order_type == 'newly_added') {
+                            $products = $products->orderBy('products.id', 'desc');
+                        }
+                        //->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+                        // $products = $products->where('is_live', 1)->where('category_id', $category->category_id)->where('vendor_id', $vid)->get();
+                        $products = $products->get();
                         if (!empty($products)) {
                             foreach ($products as $key => $value) {
                                 foreach ($value->addOn as $key => $val) {
@@ -837,11 +923,41 @@ class VendorController extends BaseController{
                                 $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
                             // $q->groupBy('product_id');
                             }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
-                        ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
-                    if (!empty($slug2)) {
-                        $category = Category::select('id')->where('slug', $slug2)->first();
-                        $products = $products->where('category_id', $category->id??0);
-                    }
+                        ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
+                        ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
+                        ->join('product_translations', 'product_translations.product_id', '=', 'products.id'); // Or whatever the join logic is
+
+
+                        //->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+                        if (!empty($category_id)) {
+                            $category = Category::select('id')->where('id', $category_id)->first();
+                            $products = $products->where('category_id', $category->id??0);
+                        }
+                        if (!empty($productIds)) {
+                            $products = $products->whereIn('id', $productIds);
+                        }
+
+                        if ($request->has('brands') && !empty($request->brands)) {
+                            $products = $products->whereIn('products.brand_id', $request->brands);
+                        }
+                        if (!empty($order_type) && $request->order_type == 'rating') {
+                            $products = $products->orderBy('products.averageRating', 'desc');
+                        }
+                        if (!empty($order_type) && $order_type == 'low_to_high') {
+                            $products = $products->orderBy('product_variants.price', 'asc');
+                        }
+                        if (!empty($order_type) && $order_type == 'high_to_low') {
+                            $products = $products->orderBy('product_variants.price', 'desc');
+                        }
+                        if (!empty($order_type) && $order_type == 'a_to_z') {
+                            $products = $products->orderBy('product_translations.title', 'asc');
+                        }
+                        if (!empty($order_type) && $order_type == 'z_to_a') {
+                            $products = $products->orderBy('product_translations.title', 'desc');
+                        }
+                        if (!empty($order_type) && $order_type == 'newly_added') {
+                            $products = $products->orderBy('products.id', 'desc');
+                        }
                     $products = $products->where('is_live', 1)->where('vendor_id', $vendor->id)->paginate($paginate);
                     if (!empty($products)) {
                         foreach ($products as $key => $product) {

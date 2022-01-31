@@ -445,6 +445,11 @@
                                                         @endif
 
                                                     @endif
+
+                                                    @php
+                                                        $checkSlot = findSlot('',$vendor->id,'');
+                                                        @endphp
+
                                                     <li class="d-block vendor-timing">
                                                         <i class="icon-time"></i>
                                                         @if ($vendor->is_vendor_closed == 0 && $vendor->show_slot == 0)
@@ -452,8 +457,12 @@
                                                             <span class="badge badge-success">Open</span>
                                                         @elseif($vendor->is_vendor_closed == 0 && $vendor->show_slot == 1)
                                                             24 x 7 <span class="badge badge-success">Open</span>
+                                                        @elseif($vendor->closed_store_order_scheduled == 1 && $checkSlot != 0)
+                                                        <span class="badge badge-danger">Closed</span>
+                                                        {{__('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.
+                                                            
                                                         @else
-                                                            <span class="badge badge-danger">Closed</span>
+                                                            <span class="badge badge-danger">Closed</span> 
                                                         @endif
                                                         </span>
                                                         {{-- <span data-toggle="tooltip" data-placement="right" title="Tooltip on right"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></span>
@@ -625,8 +634,7 @@
                                                                                 @endif
                                                     @endforeach
 
-                                                    @if ($vendor->is_vendor_closed == 0)
-
+                                                    @if ($vendor->is_vendor_closed == 0 || ($vendor->closed_store_order_scheduled != 0 && $checkSlot !=0) )
                                                         @php
                                                             $is_customizable = false;
                                                             if ($isAddonExist > 0 && ($variant_quantity > 0 || $prod->sell_when_out_of_stock == 1)) {

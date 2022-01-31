@@ -440,7 +440,11 @@ class VendorController extends BaseController
                 $active[] = $category->id;
             }
             if (in_array($category->id, $VendorCategory) && in_array($category->parent_id, $VendorCategory)) {
-                $active[] = $category->id;
+                $active[] = $category->id; 
+            }
+            if($category->vendor_id == $id)
+            {
+                $active[] = $category->id; 
             }
         }
         if ($categories) {
@@ -460,7 +464,7 @@ class VendorController extends BaseController
         $vendor_registration_documents = VendorRegistrationDocument::get();
         $clientCurrency = ClientCurrency::select('currency_id')->where('is_primary', 1)->with('currency')->first();
         $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
-        $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
+        $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count(); 
 
         return view('backend.vendor.vendorCategory')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'clientCurrency'=>$clientCurrency]);
     }

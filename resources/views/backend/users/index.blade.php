@@ -234,7 +234,11 @@
                             orderable: false,
                             searchable: false,
                             "mRender": function(data, type, full) {
-                                return "<a href='" + full.edit_url + "'>" + full.name + "</a> ";
+                                var improtId = '';
+                                if(full.import_user_id){
+                                    improtId = "<br>("+ full.import_user_id +")";
+                                }
+                                return "<a href='" + full.edit_url + "'>" + full.name + "</a>"+ improtId;
                             }
                         },
                         {

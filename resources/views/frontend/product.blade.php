@@ -424,7 +424,7 @@
 
 
                                         @endphp
-                                        @if($is_available)
+                                        @if($is_available == 1)
                                             <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
                                         @endif
 
