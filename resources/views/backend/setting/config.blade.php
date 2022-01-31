@@ -2750,9 +2750,9 @@ $sms_crendential = json_decode($preference->sms_credentials);
             $("#" + id).trigger('click');
          }
       }
-$(document).ready(function() {
-   smsChange();
-});
+      $(document).ready(function() {
+         smsChange();
+      });
       function toggle_smsFields(obj)
       {
          smsChange();

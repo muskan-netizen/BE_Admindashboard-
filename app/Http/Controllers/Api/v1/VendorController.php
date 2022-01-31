@@ -368,7 +368,8 @@ class VendorController extends BaseController{
         try{
             $paginate = $request->has('limit') ? $request->limit : 12;
             // $preferences = Session::get('preferences');
-            $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'show_slot', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id','closed_store_order_scheduled')->where('slug', $slug1)->where('status', 1)->first();
+            $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'show_slot', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id','closed_store_order_scheduled')
+            ->withAvg('product', 'averageRating')->where('slug', $slug1)->where('status', 1)->first();
             if (!empty($vendor)) {
                 if (!empty($vendor)) {
                     $vendor->is_vendor_closed = 0;
@@ -648,7 +649,23 @@ class VendorController extends BaseController{
             }
             $paginate = $request->has('limit') ? $request->limit : 12;
             // $preferences = Session::get('preferences');
-            $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'show_slot', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id','closed_store_order_scheduled')->where('id', $vendor_id)->where('status', 1)->first();
+            $latitude = $user->latitude;
+            $longitude = $user->longitude;
+            $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
+            $vendor = Vendor::select('id', 'name', 'slug', 'desc', 'logo', 'show_slot', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id','closed_store_order_scheduled')
+                        ->withAvg('product', 'averageRating')->where('id', $vendor_id)->where('status', 1);
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                //3961 for miles and 6371 for kilometers
+                $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                $vendor = $vendor->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                        cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                        sin( radians(' . $latitude . ') ) *
+                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
+            }
+            $vendor = $vendor->first();
             if (!empty($vendor)) {
                 if (!empty($vendor)) {
                     $vendor->is_vendor_closed = 0;
@@ -675,7 +692,11 @@ class VendorController extends BaseController{
                         $vendor->delaySlot = 0;
                         $vendor->closed_store_order_scheduled = 0;
                     }
-
+                    $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
+                    $vendor->is_show_products_with_category = ($vendor->vendor_templete_id == 5) ? 1 : 0;
+                    if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                        $vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
+                    }
                     $code = $request->header('code');
                     $client = Client::where('code', $code)->first();
                     $vendor->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/vendor/".$vendor->slug;
