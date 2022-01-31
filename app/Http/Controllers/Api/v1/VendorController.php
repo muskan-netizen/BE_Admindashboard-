@@ -765,6 +765,7 @@ class VendorController extends BaseController{
                         $products = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function ($q) use ($langId) {
                             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                                 ->where('category_translations.language_id', $langId);
+                                $q->groupBy('category_translations.language_id');
                         }, 'inwishlist' => function ($qry) use ($userid) {
                             $qry->where('user_id', $userid);
                         },
@@ -902,6 +903,7 @@ class VendorController extends BaseController{
                             'category.categoryDetail', 'category.categoryDetail.translation' => function ($q) use ($langId) {
                                 $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                                 ->where('category_translations.language_id', $langId);
+                                $q->groupBy('category_translations.language_id');
                             }, 'inwishlist' => function ($qry) use ($userid) {
                                 $qry->where('user_id', $userid);
                             },
@@ -919,9 +921,12 @@ class VendorController extends BaseController{
                             'translation' => function ($q) use ($langId) {
                                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                             },
-                            'variant' => function ($q) use ($langId) {
+                            'variant' => function ($q) use ($langId,$variantIds) {
                                 $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
-                            // $q->groupBy('product_id');
+                                if (!empty($variantIds)) {
+                                    $q->whereIn('id', $variantIds);
+                                }
+                               //$q->groupBy('product_id');
                             }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                         ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
                         ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
