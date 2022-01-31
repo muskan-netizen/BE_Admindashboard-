@@ -1573,7 +1573,7 @@ class OrderController extends BaseController
                             $order_vendor->payable_amount = $vendor_payable_amount;
                             $order_vendor->taxable_amount = $vendor_taxable_amount;
                             $order_vendor->discount_amount = $vendor_discount_amount;
-                            $order_vendor->payment_option_id = $request->payment_option_id;
+                            // $order_vendor->payment_option_id = $request->payment_option_id;
                             $vendor_info = Vendor::where('id', $vendor_id)->first();
                             if ($vendor_info) {
                                 if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {

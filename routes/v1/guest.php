@@ -8,6 +8,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('cart/list', 'Api\v1\CartController@index');
         Route::get('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
         Route::post('homepage', 'Api\v1\HomeController@homepage');
+        Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
         Route::post('header', 'Api\v1\HomeController@headerContent');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
