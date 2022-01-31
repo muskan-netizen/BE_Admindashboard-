@@ -1050,4 +1050,26 @@ class VendorController extends BaseController{
         }
     }
 
+    public function getVendorDetails(Request $request)
+    {
+        try {
+			$validator = Validator::make($request->all(), [
+				'vendor_id' => 'required',	
+			]);
+
+			if ($validator->fails()) {			
+				return $this->errorResponse($validator->errors()->first(), 422);
+			}
+            $vendordetail = Vendor::where('id',$request->vendor_id)->first();
+            if($vendordetail)
+            {
+                return $this->successResponse($vendordetail);
+            }else{
+                return $this->errorResponse('Vendor not found', 422);
+            }
+        } catch (Exception $e) {            
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
 }

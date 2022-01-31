@@ -66,6 +66,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('mystore/product/addProductImage', 'Api\v1\StoreController@productImages');
         Route::post('mystore/product/getProductImages', 'Api\v1\StoreController@getProductImages');
         Route::post('mystore/product/deleteimage', 'Api\v1\StoreController@deleteProductImage');
+
+        Route::post('vendor-dasboard-data', 'Api\v1\RevenueController@getDashboardDetails');
+        Route::post('get-vendor-profile', 'Api\v1\VendorController@getVendorDetails');
         
       
         Route::get('payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');

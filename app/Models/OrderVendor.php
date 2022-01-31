@@ -57,7 +57,7 @@ class OrderVendor extends Model{
 			  break;
 			case "Completed":
 			  $title = "You have arrived at your destination!";
-			 break;  
+			  break;  
 			default:
 			$title = $title;
 		  }
