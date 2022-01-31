@@ -68,7 +68,7 @@ $config = array(
 );
 Config::set('mail', $config);
 }
-DB::disconnect($database_name);
+DB::disconnect($database_username);
 }
 /**
 * Register services.

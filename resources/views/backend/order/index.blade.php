@@ -434,7 +434,7 @@
     });
 
     function autoloaddashboad(){
-        console.log('dasd');
+        //console.log('dasd');
         var typ=  $("a.nav-link.active").data('rel');
         init(typ, "{{ route('orders.filter') }}", '', false);
 
