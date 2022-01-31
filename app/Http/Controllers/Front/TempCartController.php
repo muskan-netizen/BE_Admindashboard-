@@ -1716,18 +1716,19 @@ class TempCartController extends FrontController
         $wallet_amount_used = 0;
         if (isset($user)) {
             $cart->user_wallet_balance = $user->balanceFloat; 
-            if ( ($user->balanceFloat > 0) && ($user->balanceFloat >= $cart->total_payable_amount) ) {
-                $wallet_amount_used = $user->balanceFloat;
-                if ($clientCurrency) {
-                    $wallet_amount_used = $user->balanceFloat * $clientCurrency->doller_compare;
-                }
-                if ($wallet_amount_used > $cart->total_payable_amount) {
-                    $wallet_amount_used = $cart->total_payable_amount;
-                }
-                $cart->total_payable_amount = $cart->total_payable_amount - $wallet_amount_used;
-                $cart->wallet_amount_used = $wallet_amount_used;
-            }
+            // if ( ($user->balanceFloat > 0) && ($user->balanceFloat >= $cart->total_payable_amount) ) {
+            //     $wallet_amount_used = $user->balanceFloat;
+            //     if ($clientCurrency) {
+            //         $wallet_amount_used = $user->balanceFloat * $clientCurrency->doller_compare;
+            //     }
+            //     if ($wallet_amount_used > $cart->total_payable_amount) {
+            //         $wallet_amount_used = $cart->total_payable_amount;
+            //     }
+            //     $cart->total_payable_amount = $cart->total_payable_amount - $wallet_amount_used;
+            //     $cart->wallet_amount_used = $wallet_amount_used;
+            // }
         }
+        $cart->wallet_amount_used = $wallet_amount_used;
         $cart->difference_to_be_paid = $cart->total_payable_amount - $order->payable_amount;
         $cart->deliver_status = $delivery_status;
         $cart->loyalty_amount = $loyalty_amount_saved;
