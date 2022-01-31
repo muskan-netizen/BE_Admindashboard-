@@ -1303,9 +1303,9 @@ class OrderController extends BaseController
 
                 if ($user) {
                     $user_wallet_balance = $user->balanceFloat;
-                    if($user_wallet_balance < $new_payable_amount){
-                        return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
-                    }
+                    // if($user_wallet_balance < $new_payable_amount){
+                    //     return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
+                    // }
 
                     DB::beginTransaction();
 
@@ -1618,6 +1618,11 @@ class OrderController extends BaseController
                             if ($user->balanceFloat > 0) {
                                 $wallet = $user->wallet;
                                 $wallet_amount_used = $user->balanceFloat;
+
+                                if($difference_to_be_paid > $wallet_amount_used){
+                                    return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
+                                }
+
                                 if ($wallet_amount_used > $payable_amount) {
                                     $wallet_amount_used = $payable_amount;
                                 }
@@ -1648,7 +1653,7 @@ class OrderController extends BaseController
                         $order->total_service_fee = $total_service_fee;
                         $order->total_delivery_fee = $total_delivery_fee;
                         $order->loyalty_points_used = $loyalty_points_used;
-                        $order->loyalty_amount_saved = $loyalty_amount_saved;
+                        $order->loyalty_amount_saved = 0; //$loyalty_amount_saved;
                         $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                         $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                         $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
