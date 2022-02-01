@@ -66,6 +66,7 @@ class StoreController extends BaseController{
 				$products = $products->where('vendor_id', $selected_vendor_id);
 			}
 			$products = $products->where('is_live', 1)->paginate($paginate);
+			//$products = $products->paginate($paginate);
 			foreach ($products as $product) {
                 foreach ($product->variant as $k => $v) {
                     $product->variant[$k]->multiplier = $client_currency_detail->doller_compare;
@@ -1011,6 +1012,96 @@ class StoreController extends BaseController{
 		} catch (Exception $e) {			
 			return $this->errorResponse($e->getMessage(), $e->getCode());
 		}			
+    }
+
+	public function getVendorProductList(Request $request){
+    	try {			
+			$category_list = [];
+			$allcategories = [];
+    		$user = Auth::user();
+    		$langId = $user->language;
+    		$is_selected_vendor_id = 0;
+            $paginate = $request->has('limit') ? $request->limit : 12;
+            $client_currency_detail = ClientCurrency::where('currency_id', $user->currency)->first();
+            $selected_vendor_id = $request->has('selected_vendor_id') ? $request->selected_vendor_id : '';
+            $selected_category_id = $request->has('selected_category_id') ? $request->selected_category_id : '';
+			$user_vendor_ids = UserVendor::where('user_id', $user->id)->pluck('vendor_id');
+			if($user_vendor_ids){
+				$is_selected_vendor_id = $selected_vendor_id ? $selected_vendor_id : $user_vendor_ids->first();
+			}
+			$vendor_list = Vendor::whereIn('id', $user_vendor_ids)->get(['id','name','logo']);
+			foreach ($vendor_list as $vendor) {
+				$vendor->is_selected = ($is_selected_vendor_id == $vendor->id) ? true : false;
+			}
+			$vendor_categories = VendorCategory::where('vendor_id', $is_selected_vendor_id)
+							->whereHas('category', function($query) {
+							   	$query->whereIn('type_id', [1]);
+							})->where('status', 1)->get('category_id');
+			$vendor_category_id = 0;
+			if($vendor_categories->count()){
+				$vendor_category_id = $vendor_categories->first()->category_id;
+			}
+			
+			
+			
+			//  $is_selected_category_id = $selected_category_id ? $selected_category_id : $vendor_category_id;
+			// if($selected_category_id)
+			// {
+			// 	$allcategories[] = $selected_category_id;
+			// }else{
+			// 	foreach ($vendor_categories as $vendor_category) {
+			// 		$allcategories[] = $vendor_category->category->id;					
+			// 	}
+			// }			
+			$is_selected_category_id = $selected_category_id;
+			foreach ($vendor_categories as $vendor_category) {
+				$Category_translation = Category_translation::where('category_id', $vendor_category->category->id)->where('language_id', $langId)->first();
+				if(!$Category_translation){
+					$Category_translation = Category_translation::where('category_id', $vendor_category->category->id)->first();
+				}
+				$category_list []= array(
+					'id' => $vendor_category->category->id,
+					'name' => $Category_translation ? $Category_translation->name : $vendor_category->category->slug,
+					'type_id' => $vendor_category->category->type_id,
+					'is_selected' => $is_selected_category_id == $vendor_category->category_id ? true : false
+				);
+			}
+			$products = Product::select('id', 'sku', 'url_slug','is_live','category_id')->has('vendor')
+						->with(['media.image', 'translation' => function($q) use($langId){
+                        	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                    	},'variant' => function($q) use($langId){
+                            $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->groupBy('product_id');
+                    	},
+                    ])->orderBy('id', 'DESC');
+
+			if($selected_category_id)
+			{
+				$products = $products->where('category_id', $selected_category_id);
+			}
+					// ->where('category_id', $is_selected_category_id);
+			if($selected_vendor_id > 0){
+				$products = $products->where('vendor_id', $selected_vendor_id);
+			}
+			$publishtype = $request->has('type') ? $request->type : '';
+			
+			if($publishtype=="all" )
+			{
+				$products = $products->paginate($paginate);
+			}else{
+				$products = $products->where('is_live', 1)->paginate($paginate);
+			}
+			
+			foreach ($products as $product) {
+                foreach ($product->variant as $k => $v) {
+                    $product->variant[$k]->multiplier = $client_currency_detail->doller_compare;
+                }
+            }
+			$data = ['vendor_list' => $vendor_list,'category_list' => $category_list,'products'=> $products];
+            return $this->successResponse($data, '', 200);
+    	} catch (Exception $e) {
+    		return $this->errorResponse($e->getMessage(), $e->getCode());
+    	}
     }
 
 	private function preProductDetail($productid)
