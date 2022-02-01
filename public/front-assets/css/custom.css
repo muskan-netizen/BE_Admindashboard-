@@ -95,3 +95,14 @@ li.mobile-menu-btn.d-sm-inline-block.d-none,.main-menu .menu-right .icon-nav li.
 #main-nav {width: 350px;}.product-right .product-buttons .btn-solid, .product-right .product-buttons .btn-outline {margin: 0 0 20px !important;}.suppliers-img-outer {height: 100px !important;}
 }
 
+#edit-address .address-input-group .pac-container{
+    top:75px!important;
+    left:0!important;
+    }
+    .address-input-group{
+    position: relative;
+    }
+    .address-input-group .pac-container{
+    top:35px!important;
+    left:0!important;
+    }
