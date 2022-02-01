@@ -56,6 +56,21 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('primary/address/{id}', 'Api\v1\AddressController@postUpdatePrimaryAddress');
         Route::post('update/order/status', 'Api\v1\OrderController@postVendorOrderStatusUpdate');
         Route::get('payment/options/{page}', 'Api\v1\PaymentOptionController@getPaymentOptions');
+        Route::post('mystore/vendor/category', 'Api\v1\StoreController@VendorCategory');
+        Route::post('mystore/product/add', 'Api\v1\StoreController@addProduct');
+        Route::post('mystore/product/detail', 'Api\v1\StoreController@productDetail'); 
+        Route::post('mystore/product/createvariant','Api\v1\StoreController@makeVariantRows');       
+        Route::post('mystore/product/update', 'Api\v1\StoreController@updateProduct');
+        Route::post('mystore/product/delete', 'Api\v1\StoreController@deleteProduct');
+        Route::post('mystore/product/deletevariant', 'Api\v1\StoreController@deleteProductVariant');
+        Route::post('mystore/product/addProductImage', 'Api\v1\StoreController@productImages');
+        Route::post('mystore/product/getProductImages', 'Api\v1\StoreController@getProductImages');
+        Route::post('mystore/product/deleteimage', 'Api\v1\StoreController@deleteProductImage');
+
+        Route::post('vendor-dasboard-data', 'Api\v1\RevenueController@getDashboardDetails');
+        Route::post('get-vendor-profile', 'Api\v1\VendorController@getVendorDetails');
+        Route::post('update-vendor-profile', 'Api\v1\VendorController@updateVendorDetails');
+        
       
         Route::get('payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
         Route::post('payment/razorpay/pay/{amount}/{order}', 'Api\v1\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
@@ -129,5 +144,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('plan/updateStatus/vendor/{slug}', 'Api\v1\SubscriptionPlansVendorController@updateSubscriptionPlanStatus');
             Route::post('plan/updateOnRequest/vendor/{slug}', 'Api\v1\SubscriptionPlansVendorController@updateSubscriptionPlanOnRequest');
         });
+
+        // Edit Order
+        Route::group(['prefix' => 'edit-order'], function () {
+            Route::post('approve/reject', 'Api\v1\OrderController@submitEditedOrder');
+        }); 
     });
 });

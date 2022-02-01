@@ -1,4 +1,7 @@
 @extends('layouts.store', ['title' => 'Booking Details'])
+@section('css')
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+@endsection
 @section('content')
 
 <header>
@@ -208,7 +211,7 @@
 
 
 
-</section> 
+</section>
 <div class="modal fade product-rating" id="product_rating" tabindex="-1" aria-labelledby="product_ratingLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -246,6 +249,7 @@ var apply_cab_booking_promocode_coupon_url = "{{ route('verify.cab.booking.promo
 var order_place_driver_details_url = "{{$route}}";
 var location_icon = "{{asset("demo/images/location.png")}}";
 $(document).ready(function (){
+
     setOrderDetailsPage();
 });
 

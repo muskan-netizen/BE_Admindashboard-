@@ -984,7 +984,6 @@
    "Revenue" :"Ingresos",
    "Sales" : "Ventas",
    "Net Revenue" : "Ingresos Netos",
-   "Vendor is not accepting orders right now." : "El proveedor no recibe pedidos",
    "Number of Sales" : "Ventas totales",
    "Hide Nav Bar" : "Esconder barra de navegación",
    "Products for this vendor are not deliverable at your area. Please change address or remove product." : "El proveedor elegido no realiza entregas en tu zona. Prueba cambiando de dirección o eligiendo otro Proveedor",
@@ -1042,6 +1041,7 @@
    "Allow Location Access": "Permitir acceso a la ubicación",
    "Your Current Location": "Su ubicación actual",
    "Delivering to" : "Entregando a",
+   " is not accepting orders right now." : " no recibe pedidos",
    "Mobbex" : "Tarjeta de Débito o Crédito"
 
 }

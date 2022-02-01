@@ -42,7 +42,8 @@
                                         @endif
                                     @endif
                                 </h3> -->
-                                <h6 class="mt-0"><b>{{$data->vendor->name}}</b></h6>
+                                <!-- <h6 class="mt-0"><b>{{$data->vendor->name}}</b></h6> -->
+                                <h6 class="mt-0">{{__('In')}} {{$data->category_name}}</h6>
                                 @if (strlen($data->translation_description) >= 65)
                                     <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
                                 @else
@@ -50,7 +51,7 @@
                                 @endif
                                 @if($data['inquiry_only'] == 0)
                                     <h4 class="mt-1">{{Session::get('currencySymbol').' '.(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
-                                @endif
+                                @endif 
                             </div>
                         </div>
                     </a>

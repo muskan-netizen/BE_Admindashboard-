@@ -38,7 +38,7 @@ class CategoryController extends BaseController
         }])->where('status', 1)->orderBy('position', 'asc')->get();
 
         $variants = Variant::with('option', 'varcategory.cate.primary','translation_one')->where('status', '!=', 2)->orderBy('position', 'asc')->get();
-        $categories = Category::with('translation_one')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
+        $categories = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
 
         if ($celebrity_check == 0)
             $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
@@ -76,7 +76,7 @@ class CategoryController extends BaseController
             $type =Type::where('title','Pickup/Delivery')->orderBY('sequence', 'ASC')->get();
             break;
             case "food_grocery_ecommerce":
-            $type =Type::whereNotIn('title',['Pickup/Delivery','On Demand Service','Pickup/Parent'])->orderBY('sequence', 'ASC')->get();
+            $type =Type::whereNotIn('title',['Pickup/Delivery','On Demand Service','Pickup/Parent','laundry'])->orderBY('sequence', 'ASC')->get();
             break;
             case "home_service":
             $type =Type::whereNotIn('title',['Pickup/Delivery','Pickup/Parent'])->orderBY('sequence', 'ASC')->get();
@@ -170,7 +170,7 @@ class CategoryController extends BaseController
             $type =Type::where('title','Pickup/Delivery')->orderBY('sequence', 'ASC')->get();
             break;
             case "food_grocery_ecommerce":
-            $type =Type::whereNotIn('title',['Pickup/Delivery','On Demand Service','Pickup/Parent'])->orderBY('sequence', 'ASC')->get();
+            $type =Type::whereNotIn('title',['Pickup/Delivery','On Demand Service','Pickup/Parent','laundry'])->orderBY('sequence', 'ASC')->get();
             break;
             case "laundry":
             $type =Type::whereNotIn('title',['Pickup/Delivery','Pickup/Parent','On Demand Service'])->orderBY('sequence', 'ASC')->get();

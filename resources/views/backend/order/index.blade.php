@@ -1,44 +1,17 @@
 @extends('layouts.vertical', ['title' => 'Orders'])
 @section('content')
 <style type="text/css">
-    .ellipsis {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    body {
-        font-size: 0.75rem;
-    }
-
-    .order_data>div,
-    .order_head h4 {
-        padding: 0 !important;
-    }
-
-    .order-page .card-box {
-        padding: 20px 20px 5px !important;
-    }
-
-    .progress-order {
-        width: calc(100% + 48px);
-        margin: -24px 0 20px;
-        background: #00000012;
-        color: var(--theme-deafult);
-        position: relative;
-        left: -24px;
-        font-weight: 600;
-        border-top-left-radius: 15px;
-        border-top-right-radius: 15px;
-        padding: 5px 0;
-    }
+.ellipsis {white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}body {font-size: 0.75rem;}.order_data>div,.order_head h4 {padding: 0 !important;
+}.order-page .card-box {padding: 20px 20px 5px !important;}.progress-order {width: calc(100% + 48px);margin: -24px 0 20px;background: #00000012;
+color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;border-top-left-radius: 15px;border-top-right-radius: 15px;padding: 5px 0;
+}
 </style>
 
 <script type="text/template" id="order_page_template">
     <div class="row">
         <% _.each(orders, function(order, k){%>
             <% if(order.vendors.length !== 0) { %>
-                <div class="col-xl-6"  id="full-order-div<%= k %>">
+                <div class="col-xl-6 al_order_sec"  id="full-order-div<%= k %>">
                     <div class="row no-gutters order_head">
                         <div class="col-md-3"><h4>{{ __("Order ID") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Date & Time") }}</h4></div>
@@ -101,7 +74,7 @@
                                                            <% }else{ %>
                                                             <span class="ml-2">{{__('Your order will arrive by')}} <%= order.converted_scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
                                                            <% } %>
-                                                            
+
                                                    <% } %>
 
                                                 </div>
@@ -118,8 +91,6 @@
                                                 <ul class="status_box mt-1 pl-0">
                                                     <li>
                                                         <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
-
-
                                                         <label class="m-0 in-progress"><%= vendor.order_status %></label>
                                                     </li>
                                                 </ul>
@@ -128,8 +99,8 @@
                                                 <div class="row no-gutters product_list align-items-center flex-wrap">
                                                     <% _.each(vendor.products, function(product, pr){%>
                                                         <div class="col-4 text-center mb-2">
-                                                            <div class="list-img">
-                                                                <img src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
+                                                            <div class="list-img" style="height:50px;">
+                                                                <img style="height:50px;" src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
                                                                 <span class="item_no position-absolute">x<%= product.quantity %></span>
                                                             </div>
                                                             <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
@@ -182,7 +153,7 @@
                                                                     <span>{{$clientCurrency->currency->symbol}} 0.00</span>
                                                                 <% } %>
                                                             </li>
-                                                            <% } %>    
+                                                            <% } %>
 
                                                     <li class="grand_total d-flex align-items-center justify-content-between">
                                                         <label class="m-0">{{ __('Amount') }}</label>
@@ -191,7 +162,7 @@
                                                 </ul>
                                             </div>
 
-                                            
+
 
                                         </a>
                                         <div id="update-single-status" class="mb-2">
@@ -310,8 +281,8 @@
             </div>
         </div>
 
-        <div class="col-md-9 col-lg-10 mb-3">
-            <div class="row align-items-center">
+        <div class="col-sm-12 mb-2 d-flex justify-content-end">
+            <div class="row align-items-center ">
                 <div class="col">
                     <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
                 </div>
@@ -325,15 +296,18 @@
                     </select>
                 </div>
                 <div class="col">
-                    <button type="button" class="btn btn-danger waves-effect waves-light" id="clear_filter_btn_icon">
-                        <i class="mdi mdi-close"></i>
-                    </button>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
+                            <i class="mdi mdi-close"></i>
+                        </button>
+                        <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-lg-2 mb-3">
-            <input type="search" class="form-control form-control-sm" placeholder="{{ __('Search By Order ID') }}" id="search_via_keyword">
-        </div>
+        <!-- <div class="col-md-3 col-lg-2 mb-3">
+            <input type="search" class="form-control form-control-sm" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+        </div> -->
     </div>
 </div>
 <script type="text/template" id="no_order_template">
@@ -371,7 +345,7 @@
                 <div class="error-msg">
                     <p>{{ __('You have not any order yet now.') }}</p>
                 </div>
-            </div>
+            </div> 
         </div>
     </div>
 </div>
@@ -433,6 +407,12 @@
         init("pending_orders", "{{ route('orders.filter') }}", '', false);
     });
 
+    function autoloaddashboad(){
+        //console.log('dasd');
+        var typ=  $("a.nav-link.active").data('rel');
+        init(typ, "{{ route('orders.filter') }}", '', false);
+
+    }
 
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
     var date_filter = $('#range-datepicker').val();
@@ -447,7 +427,10 @@
                 vendor_id: vendor_id,
                 date_filter: date_filter
             },
-            success: function(response) {
+            success: function(response) { 
+                // reload after 10 sec
+               
+
                 $('#order_list_order').hide();
                 if (response.status == 'Success') {
                     if (!isOnload) {
@@ -473,25 +456,25 @@
                     $("#active-orders").html("(" + response.data.active_orders + ")");
                     $("#pending-orders").html("(" + response.data.pending_orders + ")");
                     $("#history-orders").html("(" + response.data.orders_history + ")");
-                }
+
+                 }
+                // setTimeout(autoloaddashboad(), 20000);
             },
             error: function(data) {
 
             },
         });
+
+
+        
     }
     $(document).ready(function() {
 
         setTimeout(function() {
             $("#pending_order-tab").trigger('click');
         }, 500);
-        setInterval(autoloaddashboad, 5000);
-        function autoloaddashboad(){
-            console.log('dasd');
-            var typ=  $("a.nav-link.active").data('rel');
-            init(typ, "{{ route('orders.filter') }}", '', false);
-
-        }
+        //setInterval(autoloaddashboad, 10000);
+        
         $(document).on("click", ".load-more-btn", function() {
             $('#order_list_order').show();
             var url = $(this).data('url');

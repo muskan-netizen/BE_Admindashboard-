@@ -18,7 +18,11 @@ class CustomerImport implements ToCollection
             $error = array();
             $i = 0;
             try {
-                foreach ($rows as $row) {
+                foreach ($rows as $key =>$row) {
+                        
+                    if($key == 0)
+                        continue;
+
                     $row = $row->toArray();
                     $checker = 0;
                     if ($row[0] == ""){
@@ -44,22 +48,37 @@ class CustomerImport implements ToCollection
                     $i++;
                 }
                 if (!empty($data)) {
-                    $insert_vendor_details = [];
+                    $newusers = [];
                     foreach ($data as $da) {
-                        if (!User::where('name', $da[0])->exists()) {
-                           
-                            $insert_vendor_details[] = array(
-                                'name' => $da[0],
-                                'phone_number' => ($da[1] == "") ? NULL : $da[1],
-                                'email' => ($da[2] == "") ? NULL : $da[2],
-                                'password' => Hash::make('123456'),
-                                'is_email_verified' => ($row[2] == '') ? '0' : '1',
-                                'is_phone_verified' => ($row[1] == '') ? '0' : '1',
-                                'status'=>'1'
-                            );
+
+                        $insert_vendor_details = array(
+                            'name' => $da[0],
+                            'phone_number' => ($da[1]) ?? NULL,
+                            'email' => ($da[2]) ?? NULL,
+                            'import_user_id' => ($da[3]) ?? NULL,
+                            'password' => Hash::make('123456'),
+                            'is_email_verified' => ($row[2] == '') ? '0' : '1',
+                            'is_phone_verified' => ($row[1] == '') ? '0' : '1',
+                            'status'=>'1'
+                        );
+
+                        if(User::where('phone_number',$da[1])->exists())
+                        {
+                             User::where('phone_number',$da[1])->update($insert_vendor_details);
+                        }elseif(User::where('email',$da[2])->exists()){
+                             User::where('email',$da[2])->update($insert_vendor_details);
+                        }
+
+                        if (!User::where('phone_number',$da[1])->orWhere('email',$da[2])->exists()) {
+                            $newusers[] = $insert_vendor_details;
                         }
                     }
-                    User::insert($insert_vendor_details);
+
+                    if(isset($newusers) && count($newusers)>0)
+                    {
+                        User::insert($newusers);
+                    }
+
                 }
             } catch(\Exception $ex){
                 $error[] = "Other: " .$ex->getMessage();

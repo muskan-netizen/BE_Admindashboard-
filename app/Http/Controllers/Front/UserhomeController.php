@@ -292,11 +292,9 @@ class UserhomeController extends FrontController
         $preferences = Session::get('preferences');
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
-        $layouts = CabBookingLayoutTranslation::where('language_id',$language_id)->with('layout')->get()->toArray();
-
+      
         $currency_id = $this->setCurrencyInSesion();
 
-       // $key = array_search(1, array_columns($layouts, 'cab_booking_layout_id'));
         $featured_products_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','featured_products');})->value('title');
 
         $vendors_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','vendors');})->value('title');
@@ -484,8 +482,6 @@ class UserhomeController extends FrontController
             $mostSellingVendors = $mostSellingVendors->sortBy('lineOfSightDistance')->values()->all();
         }
 
-        $navCategories = $this->categoryNav($language_id);
-        Session::put('navCategories', $navCategories);
         $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
         $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
         $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
@@ -539,8 +535,8 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $on_sale_product_detail->inquiry_only,
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'vendor' => $on_sale_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (number_format($on_sale_product_detail->variant->first()->price * $multiply, 2)),
-                'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug
+                'price' => Session::get('currencySymbol') . ' ' . (number_format($on_sale_product_detail->variant->first()->price??0 * $multiply, 2)),
+                'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
         }
         $home_page_labels = HomePageLabel::with('translations')->get();
@@ -600,8 +596,7 @@ class UserhomeController extends FrontController
             'brands' => $brands,
             'vendors' => $vendors,
             'new_products' => $new_products,
-            'navCategories' => $navCategories,
-            'homePageLabels' => $home_page_labels,
+             'homePageLabels' => $home_page_labels,
             'feature_products' => $feature_products,
             'on_sale_products' => $on_sale_products,
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
@@ -766,5 +761,49 @@ class UserhomeController extends FrontController
             pr($e->getCode());
             die;
         }
+    }
+
+    # category menu 
+
+    public function homePageDataCategoryMenu(Request $request)
+    {
+          if ($request->has('latitude')) {
+            $latitude = $request->latitude;
+            Session::put('latitude', $latitude);
+        } else {
+            $latitude = Session::get('latitude');
+        }
+        if ($request->has('longitude')) {
+            $longitude = $request->longitude;
+            Session::put('longitude', $longitude);
+        } else {
+            $longitude = Session::get('longitude');
+        }
+        $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
+        $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
+        $preferences = Session::get('preferences');
+        $currency_id = Session::get('customerCurrency');
+        $language_id = Session::get('customerLanguage');
+     
+        $currency_id = $this->setCurrencyInSesion();
+
+    
+        Session::forget('vendorType');
+        Session::put('vendorType', $request->type);
+       
+        $now = Carbon::now()->toDateTimeString();
+     
+
+        $navCategories = $this->categoryNav($language_id);
+        Session::put('navCategories', $navCategories);
+      
+        $user = Auth::user();
+
+     
+
+        $data = [
+           'navCategories' => $navCategories,
+             ];
+        return $this->successResponse($data);
     }
 }

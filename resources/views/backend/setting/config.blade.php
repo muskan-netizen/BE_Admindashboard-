@@ -788,6 +788,44 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </div>
                      </div>
                   </div>
+
+                  <!-- For unifonic_fields -->
+                  <div class="row sms_fields mx-0" id="unifonic_fields" style="display : {{$preference->sms_provider == 4 ? 'flex' : 'none'}};">
+                     <div class="col-12">
+                        <div class="form-group mb-2">
+                           <label for="unifonic_app_id">{{ __("App Id") }}</label>
+                           <input type="text" name="unifonic_app_id" id="unifonic_app_id" placeholder="" class="form-control" value="{{ old('unifonic_app_id', $sms_crendential->unifonic_app_id ?? '')}}">
+                           @if($errors->has('unifonic_app_id'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('unifonic_app_id') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+                     </div>
+                     <div class="col-12">
+                        <div class="form-group mb-2">
+                           <label for="unifonic_account_email">{{ __("Unifonic Account Email") }}</label>
+                           <input type="text" name="unifonic_account_email" id="unifonic_account_email" placeholder="" class="form-control" value="{{ old('unifonic_account_email', $sms_crendential->unifonic_account_email ?? '')}}">
+                           @if($errors->has('unifonic_account_email'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('unifonic_account_email') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+                     </div>
+                      <div class="col-12">
+                        <div class="form-group mb-2">
+                           <label for="unifonic_account_password">{{ __("Unifonic Account Password") }}</label>
+                           <input type="text" name="unifonic_account_password" id="unifonic_account_password" placeholder="" class="form-control" value="{{ old('unifonic_account_password', $sms_crendential->unifonic_account_password ?? '')}}">
+                           @if($errors->has('unifonic_account_password'))
+                           <span class="text-danger" role="alert">
+                              <strong>{{ $errors->first('unifonic_account_password') }}</strong>
+                           </span>
+                           @endif
+                        </div>
+                     </div>
+                  </div>
+
                   <div class="col-md-2 mt-3">
                      <div class="form-group mb-0 text-center">
                         <button class="btn btn-info btn-block" type="submit"> {{ __("Save") }} </button>
@@ -1045,19 +1083,19 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         <div class="row align-items-center">
                            <div class="col-md-12">
                               <div class="form-group">
-                                 <label for="dinein_check" class="mr-3 mb-0">{{ __("Dine In") }}</label>
+                                 <label for="dinein_check" class="mr-3 mb-0">{{getDynamicTypeName('Dine-In')}}</label>
                                  <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
                            <div class="col-md-12">
                               <div class="form-group">
-                                 <label for="delivery_check" class="mr-3 mb-0">{{ __("Delivery") }}</label>
+                                 <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
                                  <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
                            <div class="col-md-12">
                               <div class="form-group">
-                                 <label for="takeaway_check" class="mr-3 mb-0">{{ __("Takeaway") }}</label>
+                                 <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
                                  <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
@@ -1183,6 +1221,12 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <div class="form-group mb-3">
                      <label for="page_header" class="mr-2 mb-0">{{__('Get Estimations')}}</label>
                      <input type="checkbox" data-plugin="switchery" name="get_estimations" id="get_estimations" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->get_estimations == '1')) checked='checked' @endif>
+                  </div>
+                 </div>
+                 <div class="col-md-4">
+                  <div class="form-group mb-3">
+                     <label for="page_header" class="mr-2 mb-0">{{__('Tools')}}</label>
+                     <input type="checkbox" data-plugin="switchery" name="tools_mode" id="tools_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tools_mode == '1')) checked='checked' @endif>
                   </div>
                  </div>
 
@@ -1446,68 +1490,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                </form>
             </div>
-
-
-            <div class="col-xl-6 mb-3">
-
-               <form method="POST" class="h-100" action="#">
-                  @csrf
-                  <div class="card-box product-tags mb-0 pb-1">
-                     <div class="d-flex align-items-center justify-content-between">
-                        <h4 class="header-title text-uppercase">{{ __('Create Slot')}}</h4>
-                        <a class="btn btn-info d-block" id="add_slot_modal_btn">
-                           <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
-                        </a>
-                     </div>
-                     <div class="table-responsive mt-3 mb-1">
-                        <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
-                           <thead>
-                              <tr>
-                                 <th>{{ __("Name") }}</th>
-                                 <th>{{ __("Slot") }}</th>
-                                 <th>{{ __("Action") }}</th>
-                              </tr>
-                           </thead>
-                           <tbody id="post_list">
-                              @forelse($slots as $slot)
-                                 <tr>
-                                    <td>
-                                       <a class="edit_slot_btn" data-slot_id="{{$slot->id}}" href="javascript:void(0)">
-                                          {{$slot->name ? $slot->name : ''}}
-                                       </a>
-                                    </td>
-                                    <td>
-                                       <a class="edit_slot_btn" data-slot_id="{{$slot->id}}" href="javascript:void(0)">
-                                          {{@$slot->start_time.' - '.@$slot->end_time }}
-                                       </a>
-                                    </td>
-                                    <td>
-                                       <div>
-                                          <div class="inner-div" style="float: left;">
-                                             <a class="action-icon edit_slot_btn" data-slot_id="{{$slot->id}}" href="javascript:void(0)">
-                                                <i class="mdi mdi-square-edit-outline"></i>
-                                             </a>
-                                          </div>
-                                          <div class="inner-div">
-                                             <button type="button" class="btn btn-primary-outline action-icon delete_slot_btn" data-slot_id="{{$slot->id}}">
-                                                <i class="mdi mdi-delete"></i>
-                                             </button>
-                                          </div>
-                                       </div>
-                                    </td>
-                                 </tr>
-                              @empty
-                                 <tr align="center">
-                                    <td colspan="4" style="padding: 20px 0">{{ __("Slot not found.") }}</td>
-                                 </tr>
-                              @endforelse
-                           </tbody>
-                        </table>
-                     </div>
-                  </div>
-               </form>
-            </div>
-
 
 
          </div>
@@ -2768,10 +2750,19 @@ $sms_crendential = json_decode($preference->sms_credentials);
             $("#" + id).trigger('click');
          }
       }
-
+      $(document).ready(function() {
+         smsChange();
+      });
       function toggle_smsFields(obj)
       {
-         var id = $(obj).find(':selected').attr('data-id');
+         smsChange();
+         // var id = $(obj).find(':selected').attr('data-id');
+         // $('.sms_fields').css('display','none');
+         // $('#'+id).css('display','flex');
+         // console.log(id);
+      }
+      function smsChange(){
+         var id = $("#sms_provider").find(':selected').attr('data-id');
          $('.sms_fields').css('display','none');
          $('#'+id).css('display','flex');
          console.log(id);

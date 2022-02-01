@@ -8,12 +8,13 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
+use App\Http\Controllers\Front\TempCartController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
+use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet};
 use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\OrderTrait;
 
@@ -319,6 +320,8 @@ class OrderController extends BaseController
                         $vendor_service_fee_percentage_amount = 0;
                         if ($vendor_cart_product->vendor->service_fee_percent > 0) {
                             $vendor_service_fee_percentage_amount = ($vendor_products_total_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
+
+
                             $vendor_payable_amount += $vendor_service_fee_percentage_amount;
                             $payable_amount += $vendor_service_fee_percentage_amount;
                         }
@@ -409,7 +412,9 @@ class OrderController extends BaseController
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                         $this->sendSuccessEmail($request, $order, $vendor_id);
                     }
-                    $this->sendSuccessEmail($request, $order);
+                    $res = $this->sendSuccessEmail($request, $order);
+                    // pr($res);
+                    // exit();
                     $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
                     if (!in_array($request->payment_option_id, $ex_gateways)) {
 
@@ -822,15 +827,16 @@ class OrderController extends BaseController
             'vendor_id' =>  $request->vendor_id
         ]);
     }
-
     public function sendSuccessEmail($request, $order, $vendor_id = '')
     {
+
         $user = Auth::user();
 
         $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
         $message = __('An otp has been sent to your email. Please check.');
         $otp = mt_rand(100000, 999999);
+
         if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
             $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
             if ($vendor_id == "") {
@@ -841,36 +847,48 @@ class OrderController extends BaseController
                     $sendto =  $vendor->email;
                 }
             }
+
             $customerCurrency = ClientCurrency::join('currencies as cu', 'cu.id', 'client_currencies.currency_id')->where('client_currencies.currency_id', $user->currency)->first();
             $currSymbol = $customerCurrency->symbol;
             $client_name = 'Sales';
             $mail_from = $data->mail_from;
+
             try {
                 $email_template_content = '';
                 $email_template = EmailTemplate::where('id', 5)->first();
+
                 $address = UserAddress::where('id', $request->address_id)->first();
                 if ($user) {
                     $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
+                } else {
+                    $cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
                 }
+
                 if ($cart) {
                     $cartDetails = $this->getCart($cart);
                 }
+                //pr( $cartDetails->toArray());
+
                 if ($email_template) {
+
                     $email_template_content = $email_template->content;
                     if ($vendor_id == "") {
+
                         $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol])->render();
                     } else {
                         $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
                     }
+
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
                     $email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
                 }
+
                 $email_data = [
                     'code' => $otp,
                     'link' => "link",
-                    'email' => $sendto,
+                    'email' => $sendto,//"harbans.sayonakh@gmail.com",//  $sendto,//
                     'mail_from' => $mail_from,
                     'client_name' => $client_name,
                     'logo' => $client->logo['original'],
@@ -880,6 +898,7 @@ class OrderController extends BaseController
                     'cartData' => $cartDetails,
                     'user_address' => $address,
                 ];
+
                 if (!empty($data['admin_email'])) {
                     $email_data['admin_email'] = $data['admin_email'];
                 }
@@ -888,13 +907,18 @@ class OrderController extends BaseController
                 }else{
                     $email_data['send_to_cc'] = 0;
                 }
+                // $res = $this->testOrderMail($email_data);
+                // dd($res);
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
-                Log::info($e->getMessage());
+                Log::info("send order mail error".$e->getmessage());
+
             }
         }
     }
+
+
 
     public function sendSuccessSMS($request, $order, $vendor_id = '')
     {
@@ -1061,7 +1085,21 @@ class OrderController extends BaseController
                         $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                         $q->where('language_id', $language_id);
                     },
-                    'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus'
+                    'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus',
+                    'vendors.tempCart' => function($q){
+                        $q->where('is_submitted', 1)->where('is_approved', 0);
+                    },
+                    'vendors.tempCart.cartProducts.product.media.image',
+                    'vendors.tempCart.cartProducts.pvariant.media.pimage.image',
+                    'vendors.tempCart.cartProducts.product.translation' => function ($q) use ($language_id) {
+                        $q->where('language_id', $language_id)->groupBy('product_id');
+                    },
+                    'vendors.tempCart.cartProducts.addon.set' => function ($qry) use ($language_id) {
+                        $qry->where('language_id', $language_id);
+                    },
+                    'vendors.tempCart.cartProducts.addon.option' => function ($qry) use ($language_id) {
+                        $qry->where('language_id', $language_id);
+                    }
                 ])
                     ->where(function ($q1) {
                         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
@@ -1081,7 +1119,21 @@ class OrderController extends BaseController
                         'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating',
                         'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
                             $qry->where('language_id', $language_id);
-                        }, 'vendors.dineInTable.category'
+                        }, 'vendors.dineInTable.category',
+                        'vendors.tempCart' => function($q){
+                            $q->where('is_submitted', 1)->where('is_approved', 0);
+                        },
+                        'vendors.tempCart.cartProducts.product.media.image',
+                        'vendors.tempCart.cartProducts.pvariant.media.pimage.image',
+                        'vendors.tempCart.cartProducts.product.translation' => function ($q) use ($language_id) {
+                            $q->where('language_id', $language_id)->groupBy('product_id');
+                        },
+                        'vendors.tempCart.cartProducts.addon.set' => function ($qry) use ($language_id) {
+                            $qry->where('language_id', $language_id);
+                        },
+                        'vendors.tempCart.cartProducts.addon.option' => function ($qry) use ($language_id) {
+                            $qry->where('language_id', $language_id);
+                        }
                     ]
                 )
                     ->where(function ($q1) {
@@ -1090,8 +1142,10 @@ class OrderController extends BaseController
                             $q2->where('payment_option_id', 1);
                         });
                     })
-                    ->where('user_id', $user->id)->where('id', $order_id)->select('*', 'id as total_discount_calculate')->first();
+                    ->where('user_id', $user->id)->where('id', $order_id)->select('*', 'id as total_discount_calculate')
+                    ->first();
             }
+            $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
             if ($order) {
                 $order->user_name = $order->user->name;
                 $order->user_image = $order->user->image;
@@ -1159,6 +1213,17 @@ class OrderController extends BaseController
                     ->get();
                     $vendor->vendor_dispatcher_status_count = 6;
                     $vendor->dispatcher_status_icons = [asset('assets/icons/driver_1_1.png'),asset('assets/icons/driver_2_1.png'),asset('assets/icons/driver_3_1.png'),asset('assets/icons/driver_4_1.png'),asset('assets/icons/driver_4_2.png'),asset('assets/icons/driver_5_1.png')];
+
+                    // Start temp cart calculations
+                    if($vendor->tempCart){
+                        $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
+                        $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
+                        $tempCartController = new TempCartController();
+                        $vendor->tempCart = $tempCartController->getCartForApproval($vendor->tempCart, $order, $langId, $currId, '');
+                    }else{
+                        $vendor->tempCart = null;
+                    }
+
                 }
                 if (!empty($order->scheduled_date_time)) {
                     $order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
@@ -1197,6 +1262,500 @@ class OrderController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
+
+
+    public function submitEditedOrder(Request $request)
+    {
+        try {
+            $rules = [
+                'cart_id' => 'required',
+                'address_id'=> 'required:exists:user_addresses,id',
+                'order_vendor_id'=> 'required',
+                'total_payable_amount' => 'required',
+                'status'    => 'required'
+                // 'payment_option_id' => 'required'
+            ];
+            $validator = Validator::make($request->all(), $rules, [
+                'cart_id.required' => __('Cart data is required'),
+                'address_id.required' => __('Address is required'),
+                'order_vendor_id.required' => __('Order data is required'),
+                'total_payable_amount.required' => __('Invalid Amount')
+                // 'payment_option_id.required' => __('Payment Option is required')
+            ]);
+            if ($validator->fails()) {
+                foreach ($validator->errors()->toArray() as $error_key => $error_value) {
+                    $errors['error'] = __($error_value[0]);
+                    return response()->json($errors, 422);
+                }
+            }
+            $status = $request->status;
+            $cart_id = $request->cart_id;
+            $order_vendor_id = $request->order_vendor_id;
+            $new_payable_amount = $request->total_payable_amount;
+
+            DB::beginTransaction();
+            if($status == 1){
+                ////// Edited Order accepted functionality /////
+                $total_amount = 0;
+                $total_discount = 0;
+                $taxable_amount = 0;
+                $payable_amount = 0;
+                $tax_category_ids = [];
+                $user = Auth::user();
+                $language_id = $user->language ?? 1;
+
+                if ($user) {
+                    $user_wallet_balance = $user->balanceFloat;
+                    // if($user_wallet_balance < $new_payable_amount){
+                    //     return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
+                    // }
+
+                    $subscription_features = array();
+                    $now = Carbon::now()->toDateTimeString();
+                    $user_subscription = SubscriptionInvoicesUser::with('features')
+                        ->select('id', 'user_id', 'subscription_id')
+                        ->where('user_id', $user->id)
+                        ->where('end_date', '>', $now)
+                        ->orderBy('end_date', 'desc')->first();
+                    if ($user_subscription) {
+                        foreach ($user_subscription->features as $feature) {
+                            $subscription_features[] = $feature->feature_id;
+                        }
+                    }
+                    $loyalty_amount_saved = 0;
+                    $redeem_points_per_primary_currency = '';
+                    $loyalty_card = LoyaltyCard::where('status', '0')->first();
+                    if ($loyalty_card) {
+                        $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
+                    }
+                    $client_preference = ClientPreference::first();
+                    // if ($client_preference->verify_email == 1) {
+                    //     if ($user->is_email_verified == 0) {
+                    //         return response()->json(['error' => 'Your account is not verified.'], 404);
+                    //     }
+                    // }
+                    if ($client_preference->verify_phone == 1) {
+                        if ($user->is_phone_verified == 0) {
+                            return response()->json(['error' => 'Your phone is not verified.'], 404);
+                        }
+                    }
+                    $user_address = UserAddress::where('id', $request->address_id)->first();
+                    if (!$user_address) {
+                        return response()->json(['error' => 'Invalid address id.'], 404);
+                    }
+                    $action = ($request->has('type')) ? $request->type : 'delivery';
+                    $luxury_option = LuxuryOption::where('title', $action)->first();
+                    $cart = TempCart::where('status', '0')->where('id', $cart_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', 1)->where('is_approved', 0)->first();
+                    if ($cart) {
+                        $loyalty_points_used;
+                        $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+                        if ($order_loyalty_points_earned_detail) {
+                            $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                            if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                                $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                            }
+                        }
+                        $order = Order::whereHas('vendors', function($q) use($order_vendor_id){
+                            $q->where('id', $order_vendor_id);
+                        })->first();
+
+                        $order_vendor = $order->vendors->first();
+
+                        //Previous Order Total
+                        if($order->payable_amount > 0){
+                            $previous_order_total = $order->payable_amount;
+                        }else{
+                            $previous_order_total = $order->total_amount + $order->wallet_amount_used + $order->loyalty_amount_saved + $order->taxable_amount + $order->total_delivery_fee + $order->tip_amount + $order->total_service_fee - $order->total_discount;
+                        }
+
+                        // $order->user_id = $user->id;
+                        // $order->order_number = generateOrderNo();
+                        $order->address_id = $request->address_id;
+                        // $order->payment_option_id = $request->payment_option_id;
+                        // $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
+                        // $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver ?? null;
+                        // $order->comment_for_vendor = $cart->comment_for_vendor ?? null;
+                        // $order->schedule_pickup = $cart->schedule_pickup ?? null;
+                        // $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
+                        // $order->specific_instructions = $cart->specific_instructions ?? null;
+                        // $order->is_gift = $request->is_gift ?? 0;
+                        $order->save();
+
+
+                        $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                        foreach($order_products as $order_prod){
+                            OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                        }
+                        OrderProduct::where('order_id', $order->id)->delete();
+                        OrderProductPrescription::where('order_id', $order->id)->delete();
+                        OrderTax::where('order_id', $order->id)->delete();
+                        
+                        $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+                        $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+                        
+                        $cart_products = TempCartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+                        $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
+                        
+                        foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                            $delivery_fee = 0;
+                            $deliver_charge = $delivery_fee_charges = 0.00;
+                            $delivery_count = 0;
+                            $product_taxable_amount = 0;
+                            $vendor_products_total_amount = 0;
+                            $vendor_payable_amount = 0;
+                            $vendor_discount_amount = 0;
+                            // $order_vendor = new OrderVendor;
+                            // $order_vendor->status = 0;
+                            // $order_vendor->user_id = $user->id;
+                            // $order_vendor->order_id = $order->id;
+                            // $order_vendor->vendor_id = $vendor_id;
+                            // $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
+                            // $order_vendor->save();
+
+                            foreach ($vendor_cart_products as $vendor_cart_product)
+                            {
+                                $variant = $vendor_cart_product->product->variants->where('id', $vendor_cart_product->variant_id)->first();
+                                $quantity_price = 0;
+                                $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
+                                $price_in_currency = $variant->price / $divider;
+                                $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
+                                $quantity_price = $price_in_dollar_compare * $vendor_cart_product->quantity;
+                                $payable_amount = $payable_amount + $quantity_price;
+                                $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
+                                $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
+                                $product_payable_amount = 0;
+                                $vendor_taxable_amount = 0;
+
+                                if (isset($vendor_cart_product->product->taxCategory)) {
+                                    foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
+                                        if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
+                                            $tax_category_ids[] = $tax_rate_detail->id;
+                                        }
+                                        $rate = round($tax_rate_detail->tax_rate);
+                                        $tax_amount = ($price_in_dollar_compare * $rate) / 100;
+                                        $product_tax = $quantity_price * $rate / 100;
+                                        // $taxable_amount = $taxable_amount + $product_tax;
+                                        $product_taxable_amount += $product_tax;
+                                        $payable_amount = $payable_amount + $product_tax;
+                                    }
+                                }
+
+                                if ($action == 'delivery') {
+                                    if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) {
+                                        $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
+                                        if (!empty($delivery_fee) && $delivery_count == 0) {
+                                            $delivery_count = 1;
+                                            $vendor_cart_product->delivery_fee = number_format($delivery_fee, 2, '.', '');
+                                            // $payable_amount = $payable_amount + $delivery_fee;
+                                            $delivery_fee_charges = $delivery_fee;
+                                            $latitude = $request->header('latitude');
+                                            $longitude = $request->header('longitude');
+                                            $vendor_cart_product->vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor_cart_product->vendor, $client_preference);
+                                            $order_vendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
+                                            if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
+                                                $order_vendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $order_vendor->order_pre_time;
+                                            }
+                                        }
+                                    }
+                                }
+                                $taxable_amount += $product_taxable_amount;
+                                $vendor_taxable_amount += $taxable_amount;
+                                $total_amount += $vendor_cart_product->quantity * $variant->price;
+                                $order_product = new OrderProduct;
+                                $order_product->order_vendor_id = $order_vendor->id;
+                                $order_product->order_id = $order->id;
+                                $order_product->price = $variant->price;
+                                $order_product->taxable_amount = $product_taxable_amount;
+                                $order_product->quantity = $vendor_cart_product->quantity;
+                                $order_product->vendor_id = $vendor_cart_product->vendor_id;
+                                $order_product->product_id = $vendor_cart_product->product_id;
+                                $order_product->created_by = $vendor_cart_product->created_by;
+                                $order_product->variant_id = $vendor_cart_product->variant_id;
+                                $product_variant_sets = '';
+                                if (isset($vendor_cart_product->variant_id) && !empty($vendor_cart_product->variant_id)) {
+                                    $var_sets = ProductVariantSet::where('product_variant_id', $vendor_cart_product->variant_id)->where('product_id', $vendor_cart_product->product->id)
+                                        ->with([
+                                            'variantDetail.trans' => function ($qry) use ($language_id) {
+                                                $qry->where('language_id', $language_id);
+                                            },
+                                            'optionData.trans' => function ($qry) use ($language_id) {
+                                                $qry->where('language_id', $language_id);
+                                            }
+                                        ])->get();
+                                    if (count($var_sets)) {
+                                        foreach ($var_sets as $set) {
+                                            if (isset($set->variantDetail) && !empty($set->variantDetail)) {
+                                                $product_variant_set = @$set->variantDetail->trans->title . ":" . @$set->optionData->trans->title . ", ";
+                                                $product_variant_sets .= $product_variant_set;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                $order_product->product_variant_sets = $product_variant_sets;
+                                if (!empty($vendor_cart_product->product->title))
+                                    $vendor_cart_product->product->title = $vendor_cart_product->product->title;
+                                elseif (empty($vendor_cart_product->product->title)  && !empty($vendor_cart_product->product->translation))
+                                    $vendor_cart_product->product->title = $vendor_cart_product->product->translation[0]->title;
+                                else
+                                    $vendor_cart_product->product->title = $vendor_cart_product->product->sku;
+
+                                $order_product->product_name = $vendor_cart_product->product->title ?? $vendor_cart_product->product->sku;
+                                $order_product->product_dispatcher_tag = $vendor_cart_product->product->tags;
+                                if ($vendor_cart_product->product->pimage) {
+                                    $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
+                                }
+                                $order_product->save();
+                                if (!empty($vendor_cart_product->addon)) {
+                                    foreach ($vendor_cart_product->addon as $ck => $addon) {
+                                        $opt_quantity_price = 0;
+                                        $opt_price_in_currency = $addon->option->price;
+                                        $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                                        $opt_quantity_price = $opt_price_in_doller_compare * $order_product->quantity;
+                                        $total_amount = $total_amount + $opt_quantity_price;
+                                        $payable_amount = $payable_amount + $opt_quantity_price;
+                                        $vendor_payable_amount = $vendor_payable_amount + $opt_quantity_price;
+                                    }
+                                }
+                                $cart_addons = TempCartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
+                                if ($cart_addons) {
+                                    foreach ($cart_addons as $cart_addon) {
+                                        $orderAddon = new OrderProductAddon;
+                                        $orderAddon->addon_id = $cart_addon->addon_id;
+                                        $orderAddon->option_id = $cart_addon->option_id;
+                                        $orderAddon->order_product_id = $order_product->id;
+                                        $orderAddon->save();
+                                    }
+                                    if (($request->payment_option_id != 7) && ($request->payment_option_id != 6)) { // if not mobbex, payfast
+                                //        CartAddon::where('cart_product_id', $vendor_cart_product->id)->delete();
+                                    }
+                                }
+                            }
+
+                            $coupon_id = null;
+                            $coupon_name = null;
+                            $actual_amount = $vendor_payable_amount;
+                            if ($vendor_cart_product->coupon && !empty($vendor_cart_product->coupon->promo)) {
+                                $coupon_id = $vendor_cart_product->coupon->promo->id;
+                                $coupon_name = $vendor_cart_product->coupon->promo->name;
+                                if ($vendor_cart_product->coupon->promo->promo_type_id == 2) {
+                                    $coupon_discount_amount = $vendor_cart_product->coupon->promo->amount;
+                                    $total_discount += $coupon_discount_amount;
+                                    $vendor_payable_amount -= $coupon_discount_amount;
+                                    $vendor_discount_amount += $coupon_discount_amount;
+                                } else {
+                                    $coupon_discount_amount = ($quantity_price * $vendor_cart_product->coupon->promo->amount / 100);
+                                    $final_coupon_discount_amount = $coupon_discount_amount * $clientCurrency->doller_compare;
+                                    $total_discount += $final_coupon_discount_amount;
+                                    $vendor_payable_amount -= $final_coupon_discount_amount;
+                                    $vendor_discount_amount += $final_coupon_discount_amount;
+                                }
+                            }
+                            //Start applying service fee on vendor products total
+                            $vendor_service_fee_percentage_amount = 0;
+                            if ($vendor_cart_product->vendor->service_fee_percent > 0) {
+                                $vendor_service_fee_percentage_amount = ($vendor_products_total_amount * $vendor_cart_product->vendor->service_fee_percent) / 100;
+                                $vendor_payable_amount += $vendor_service_fee_percentage_amount;
+                                $payable_amount += $vendor_service_fee_percentage_amount;
+                            }
+                            //End applying service fee on vendor products total
+                            $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
+                            $order_vendor->service_fee_percentage_amount = $vendor_service_fee_percentage_amount;
+
+                            $total_delivery_fee += $delivery_fee;
+                            $vendor_payable_amount += $delivery_fee;
+                            $vendor_payable_amount += $vendor_taxable_amount;
+
+                            $order_vendor->coupon_id = $coupon_id;
+                            $order_vendor->coupon_code = $coupon_name;
+                            $order_vendor->order_status_option_id = 1;
+                            $order_vendor->delivery_fee = $delivery_fee;
+                            $order_vendor->subtotal_amount = $actual_amount;
+                            $order_vendor->payable_amount = $vendor_payable_amount;
+                            $order_vendor->taxable_amount = $vendor_taxable_amount;
+                            $order_vendor->discount_amount = $vendor_discount_amount;
+                            // $order_vendor->payment_option_id = $request->payment_option_id;
+                            $vendor_info = Vendor::where('id', $vendor_id)->first();
+                            if ($vendor_info) {
+                                if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
+                                    $order_vendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($vendor_payable_amount / 100), 2);
+                                }
+                                if (($vendor_info->commission_fixed_per_order) != null && $vendor_payable_amount > 0) {
+                                    $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
+                                }
+                            }
+                            $order_vendor->save();
+
+                            $order_status = VendorOrderStatus::where('order_id', $order->id)->where('order_vendor_id', $order_vendor_id)->first();
+                            $order_status->order_id = $order->id;
+                            $order_status->vendor_id = $vendor_id;
+                            $order_status->order_status_option_id = 1;
+                            $order_status->order_vendor_id = $order_vendor->id;
+                            $order_status->save();
+                        }
+                        $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
+                        if (in_array(1, $subscription_features)) {
+                            $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
+                        }
+                        $total_discount = $total_discount + $total_subscription_discount;
+                        $order->total_amount = $total_amount;
+                        $order->total_discount = $total_discount;
+                        $order->taxable_amount = $taxable_amount;
+                        $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
+                        if ($loyalty_amount_saved > 0) {
+                            if ($loyalty_amount_saved > $payable_amount) {
+                                $loyalty_amount_saved = $payable_amount;
+                                $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
+                            }
+                        }
+                        // $payable_amount = $payable_amount - $loyalty_amount_saved;
+
+                        $difference_to_be_paid = $payable_amount - $previous_order_total;
+                        // dd($difference_to_be_paid);
+
+                        // If new amount is greater than previous amount then deduct from wallet
+                        if($difference_to_be_paid > 0){
+                            $wallet_amount_used = 0;
+                            if ($user->balanceFloat > 0) {
+                                $wallet = $user->wallet;
+                                $wallet_amount_used = $user->balanceFloat;
+
+                                if($difference_to_be_paid > $wallet_amount_used){
+                                    return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
+                                }
+
+                                if ($wallet_amount_used > $payable_amount) {
+                                    $wallet_amount_used = $payable_amount;
+                                }
+                                $order->wallet_amount_used = $wallet_amount_used;
+                                if ($wallet_amount_used > 0) {
+                                    $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                                }
+                            }
+                            $payable_amount = $payable_amount - $wallet_amount_used;
+                        }
+                        else{
+                            if($difference_to_be_paid < 0){
+                                $wallet = $user->wallet;
+                                $difference_to_be_paid = abs($difference_to_be_paid);
+                                $wallet->depositFloat($difference_to_be_paid, ['Wallet has been <b>credited</b> for order number <b>' . $order->order_number . '</b>']);
+                            }
+                        }
+
+
+                        // $tip_amount = 0;
+                        // if ((isset($request->tip)) && ($request->tip != '') && ($request->tip > 0)) {
+                        //     $tip_amount = $request->tip;
+                        //     $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
+                        //     $order->tip_amount = number_format($tip_amount, 2);
+                        // }
+                        // $payable_amount = $payable_amount + $tip_amount;
+                        $order->tip_amount = 0;
+                        $order->total_service_fee = $total_service_fee;
+                        $order->total_delivery_fee = $total_delivery_fee;
+                        $order->loyalty_points_used = 0;
+                        $order->loyalty_amount_saved = 0; //$loyalty_amount_saved;
+                        $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
+                        $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
+                        $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
+                        $order->subscription_discount = $total_subscription_discount;
+                        $order->luxury_option_id = $luxury_option->id;
+                        $order->payable_amount = $payable_amount;
+                        $order->payment_status = 1;
+
+                        // if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
+                        //     $order->payment_status = 1;
+                        // }
+                        $order->save();
+                        foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
+                            $this->sendSuccessEmail($request, $order, $vendor_id);
+                        }
+                        $res = $this->sendSuccessEmail($request, $order);
+                        
+                        $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
+                        // if (!in_array($request->payment_option_id, $ex_gateways)) {
+                        //     Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
+                        //     CartCoupon::where('cart_id', $cart->id)->delete();
+                        //     CartProduct::where('cart_id', $cart->id)->delete();
+                        //     CartProductPrescription::where('cart_id', $cart->id)->delete();
+                        // }
+
+                        if (count($tax_category_ids)) {
+                            foreach ($tax_category_ids as $tax_category_id) {
+                                $order_tax = new OrderTax();
+                                $order_tax->order_id = $order->id;
+                                $order_tax->tax_category_id = $tax_category_id;
+                                $order_tax->save();
+                            }
+                        }
+                        $cart->is_approved = 1;
+                        $cart->save();
+
+                        // if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
+                        //     Payment::insert([
+                        //         'date' => date('Y-m-d'),
+                        //         'order_id' => $order->id,
+                        //         'transaction_id' => $request->transaction_id,
+                        //         'balance_transaction' => $order->payable_amount,
+                        //         'type' => 'cart'
+                        //     ]);
+                        // }
+                        $order = $order->with(['vendors:id,order_id,dispatch_traking_url,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
+                        if (!in_array($order->payment_option_id, $ex_gateways)) {
+                            $code = $request->header('code');
+                            if (!empty($order->vendors)) {
+                                foreach ($order->vendors as $vendor_value) {
+                                    $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                                    $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                                    $vendorDetail = $vendor_value->vendor;
+                                    if ($vendorDetail->auto_accept_order == 0 && $vendorDetail->auto_reject_time > 0) {
+                                        $clientDetail = Client::on('mysql')->where(['code' => $client_preference->client_code])->first();
+                                        AutoRejectOrderCron::on('mysql')->create(['database_host' => $clientDetail->database_path, 'database_name' => $clientDetail->database_name, 'database_username' => $clientDetail->database_username, 'database_password' => $clientDetail->database_password, 'order_vendor_id' => $vendor_value->id, 'auto_reject_time' => Carbon::now()->addMinute($vendorDetail->auto_reject_time)]);
+                                    }
+                                    $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail, $code);
+                                }
+                            }
+                            $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
+                            $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                            $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
+                        }
+
+                        # if payment type cash on delivery or payment status is 'Paid'
+                        if (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
+                            # if vendor selected auto accept
+                            $autoaccept = $this->autoAcceptOrderIfOn($order->id);
+                        }
+
+                        DB::commit();
+                        $this->sendSuccessSMS($request, $order);
+
+                        return $this->successResponse($order, __('Order accepted successfully.'), 201);
+                    }
+                    else{
+                        return $this->errorResponse(__('Order already submitted'), 422);
+                    }
+                } else {
+                    return $this->errorResponse(__('Invalid data'), 422);
+                }
+            }
+            else{
+                ////// Edited Order rejected functionality /////
+                $cart = TempCart::where('status', '0')->where('id', $cart_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', 1)->where('is_approved', 0)->first();
+                if($cart){
+                    $cart->is_approved = 2;
+                    $cart->save();
+                }
+                DB::commit();
+                return $this->successResponse($cart, __('Order rejected successfully.'), 201);
+            }
+        } 
+        catch (Exception $e) {
+            DB::rollback();
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    
     public function postVendorOrderStatusUpdate(Request $request)
     {
         DB::beginTransaction();
@@ -1412,7 +1971,7 @@ class OrderController extends BaseController
         }
         $language_id = (!empty($user->language)) ? $user->language : 1;
         $order = Order::with([
-            'vendors.products:id,product_name,product_id,order_id,order_vendor_id,variant_id,quantity,price', 'vendors.vendor:id,name,auto_accept_order,logo', 'vendors.products.addon:id,order_product_id,addon_id,option_id', 'vendors.products.pvariant:id,sku,product_id,title,quantity', 'user:id,name,timezone,dial_code,phone_number', 'address:id,user_id,address', 'vendors.products.addon.option:addon_options.id,addon_options.title,addon_id,price', 'vendors.products.addon.set:addon_sets.id,addon_sets.title', 'luxury_option', 'vendors.products.translation' => function ($q) use ($language_id) {
+            'vendors.products:id,product_name,product_id,order_id,order_vendor_id,variant_id,quantity,price,image'  ,'vendors.vendor:id,name,auto_accept_order,logo', 'vendors.products.addon:id,order_product_id,addon_id,option_id', 'vendors.products.pvariant:id,sku,product_id,title,quantity', 'user:id,name,timezone,dial_code,phone_number', 'address:id,user_id,address', 'vendors.products.addon.option:addon_options.id,addon_options.title,addon_id,price', 'vendors.products.addon.set:addon_sets.id,addon_sets.title', 'luxury_option', 'vendors.products.translation' => function ($q) use ($language_id) {
                 $q->select('id', 'product_id', 'title');
                 $q->where('language_id', $language_id);
             },
@@ -1443,7 +2002,7 @@ class OrderController extends BaseController
         //$order->created_at = dateTimeInUserTimeZone($order->created_at, $user->timezone);
        // $order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
         $order->created = dateTimeInUserTimeZone($order->created_at, $user->timezone);
-        $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
+        $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : null;
         $luxury_option_name = '';
         if ($order->luxury_option_id > 0) {
             $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
@@ -1498,4 +2057,5 @@ class OrderController extends BaseController
             return $this->errorResponse('Invalid User', 400);
         }
     }
+
 }

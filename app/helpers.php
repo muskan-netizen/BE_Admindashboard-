@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{User, TempCartProduct};
+use App\Models\{User, TempCartProduct, Vendor};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -178,7 +178,6 @@ function dateTimeInUserTimeZone24($date, $timezone, $showDate=true, $showTime=tr
     $dateFormat = $date_format;
     }
     if($showTime){
-    
     $timeFormat = 'HH:mm:ss';
     }
     
@@ -262,7 +261,6 @@ function createSlug($str, $delimiter = '-'){
 
     function getBaseprice($dist,$option = 'lalamove')
     {
-
         $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code',$option)->where('status', 1)->first();
         if($simp_creds && $simp_creds->credentials){
             $creds_arr = json_decode($simp_creds->credentials);
@@ -275,9 +273,7 @@ function createSlug($str, $delimiter = '-'){
             }
             $lalamove_status = $simp_creds->status??'';
         }
-
-        
-        $distance = $dist;
+         $distance = $dist;  
         if($distance < 1 || $base_price < 1)
         {
             return 0;    
@@ -287,13 +283,11 @@ function createSlug($str, $delimiter = '-'){
         $amount_per_km = $amount_per_km;
         $total = $base_price + ($distance * $amount_per_km);
         return  $total;
-        
     // + ($paid_duration * $pricingRule->duration_price);
-
     }
 
 
-    function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 5)
+    function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 0)
     {
     $Duration = (($Duration==0)?'60':$Duration);
 
@@ -351,6 +345,8 @@ function createSlug($str, $delimiter = '-'){
     
 function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
 {
+$slotDuration = Vendor::select('slot_minutes')->where('id',$vid)->first();
+$duration = ($slotDuration->slot_minutes) ?? $duration;
 $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
 //type must be a : delivery , takeaway,dine_in
 $client = ClientData::select('timezone')->first();
@@ -369,11 +365,13 @@ return $q->where('day',$mytime)->where($type,'1');
 ->get();
 $min[] = '';
 $cart = CartProduct::where('vendor_id',$vid)->get();
+if(isset($cart) && $cart->count()>0){
 foreach($cart as $product)
 {
     $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
     $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
     $min[] = (($delayHr * 60) + $delayMin);
+}
 }
 
 if(isset($slots) && count($slots)>0){
@@ -388,7 +386,6 @@ $slotss[] = [];
 
 $arr = array();
 $count = count($slotss);
-
 for($i=0;$i<$count;$i++){
 $arr = array_merge($arr,$slotss[$i]);
 }
@@ -514,7 +511,7 @@ function SplitTimeTemp($user_id, $myDate,$StartTime, $EndTime, $Duration="60",$d
     return $ReturnArray;
 }
 
-function findSlot($myDate = null,$vid,$type = 'delivery')
+function findSlot($myDate = null,$vid,$type = 'delivery',$api = null)
 {
   $myDate  = date('Y-m-d',strtotime('+1 day')); 
   $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
@@ -535,10 +532,41 @@ function findSlot($myDate = null,$vid,$type = 'delivery')
             }
         if(isset($slots) && count((array)$slots)>0){
             $time = explode(' - ',$slots[0]['value']);
-            return date('d M, Y h:i:A',strtotime($myDate.'T'.$time[0]));
+
+            if($api != 'api'){
+                return date('d M, Y h:i:A',strtotime($myDate.'T'.$time[0]));
+            }else{
+                return date('Y-m-d',strtotime($myDate.'T'.$time[0]));
+            }
+            
         }else{
-            return ", But no Slots are avialable";
+            return 0;
         }
+}
+
+function findSlotNew($myDate,$vid)
+{
+        $slots = showSlot($myDate,$vid,'delivery');
+            if(count((array)$slots) == 0){
+                $myDate  = date('Y-m-d',strtotime('+1 day')); 
+                $slots = showSlot($myDate,$vid,'delivery');
+            }
+           
+            if(count((array)$slots) == 0){
+                $myDate  = date('Y-m-d',strtotime('+2 day')); 
+                $slots = showSlot($myDate,$vid,'delivery');
+            }
+
+            if(count((array)$slots) == 0){
+                $myDate  = date('Y-m-d',strtotime('+3 day')); 
+                $slots = showSlot($myDate,$vid,'delivery');
+            }
+            if(isset($slots)){
+                $slots = $slots;
+                return array('mydate'=>$myDate,'slots'=>$slots);
+            }else{
+                return array('mydate'=>'','slots'=>[]);
+            }
 }
 
 function GoogleDistanceMatrix($latitude, $longitude)
@@ -596,5 +624,27 @@ function GoogleDistanceMatrix($latitude, $longitude)
         }
     }
     return $send;
+}
+function getDynamicMail(){
+    $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+    $config = array(
+        'driver' => $data->mail_driver,
+        'host' => $data->mail_host,
+        'port' => $data->mail_port,
+        'from'       => array('address' => $data->mail_from, 'name' => $data->mail_from),
+        'encryption' => $data->mail_encryption,
+        'username' => $data->mail_username,
+        'password' => $data->mail_password,
+        'sendmail' => '/usr/sbin/sendmail -bs',
+        'pretend' => false,
+    );
+    \Config::set('mail.mailers.smtp', $config);
+    return 2;
+}
+function getDynamicTypeName($name)
+{
+    $new_name = getNomenclatureName($name, true);
+    $new_name = ($new_name === $name) ? __($name) : $new_name;
+    return $new_name;
 }
 

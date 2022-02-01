@@ -248,6 +248,7 @@ class ProductController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
+       // dd($request->all());
         $product = Product::where('id', $id)->firstOrFail();
         $rule = array(
             'product_name' => 'required|string',
@@ -491,6 +492,7 @@ class ProductController extends BaseController
     /**      Make variant rows          */
     public function makeVariantRows(Request $request)
     {
+        //return $request->all();
         $multiArray = array();
         $variantNames = array();
         $product = Product::where('id', $request->pid)->firstOrFail();

@@ -261,16 +261,17 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
           <div class="modal-body pb-0">
               <div class="form-group">
                 <h5 class="text-17 mb-2">{{__('Available Balance')}}</h5>
-              </div>  
+              </div>
               <div class="form-group">
                   <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">@money($user_wallet_balance)</span></div>
               </div>
-              
+
               @if($user_wallet_balance <= 0)
                 <div class="alert alert-danger">
                     <span>{{ __('Insufficient funds in wallet') }}</span>
                 </div>
               @else
+              <div id="error_dev"></div>
               <div class="form-group" id="wallet_transfer_amountInput">
                 <label for="wallet_transfer_amount">{{__('Amount to transfer')}}</label>
                 <input class="form-control" name="wallet_transfer_amount" id="wallet_transfer_amount" type="text" placeholder="{{__('Enter Amount')}}">
@@ -289,7 +290,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                 </span>
               </div>
               <div class="form-group" id="user_profile">
-                
+
               </div>
               <span class="error-msg pl-0" id="wallet_transfer_error_msg"></span>
               @endif
@@ -365,13 +366,13 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
 </script>
 @endsection
 @section('script')
-@if(in_array('razorpay',$client_payment_options)) 
+@if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
-@if(in_array('stripe',$client_payment_options)) 
+@if(in_array('stripe',$client_payment_options))
 <script src="https://js.stripe.com/v3/"></script>
 @endif
-@if(in_array('yoco',$client_payment_options)) 
+@if(in_array('yoco',$client_payment_options))
 <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
 <script type="text/javascript">
@@ -379,7 +380,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
         publicKey: yoco_public_key
     });
 </script>
-@endif 
+@endif
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
     var credit_wallet_url = "{{route('user.creditWallet')}}";
@@ -400,7 +401,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
     var wallet_balance_insufficient_msg = "{{ __('Insufficient funds in wallet') }}";
     var user_wallet_balance = parseFloat("{{ $user_wallet_balance }}");
 
-    
+
     var inline='';
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
@@ -543,6 +544,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
         var amount = $("#wallet_transfer_amount").val();
         var username = $("#wallet_transfer_user").val();
         if((amount != '') && (username != '')){
+            $("#error_dev").hide();
             var is_valid = true;
             $('#wallet_transfer_form input').each(function(index, el) {
                 if($(el).hasClass("is-invalid")){
@@ -583,7 +585,8 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                 },
             });
         }else{
-            alert('All fields are required');
+            var html ='<div class="alert alert-danger"><span>{{ __("All fields are required") }}</span></div>'
+            $("#error_dev").html(html).show();
         }
     });
 </script>

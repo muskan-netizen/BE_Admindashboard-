@@ -27,11 +27,14 @@ class VendorDineinTable extends Model
     }
 
     public function translations(){
-      $langData = $this->hasMany('App\Models\VendorDineinTableTranslation');
-      return $langData;
+      return $this->hasMany('App\Models\VendorDineinTableTranslation');
     }
     public function category(){
-      $langData = $this->hasOne('App\Models\VendorDineinCategory', 'id', 'vendor_dinein_category_id');
-      return $langData;
+      return $this->hasOne('App\Models\VendorDineinCategory', 'id', 'vendor_dinein_category_id');
     }
+    public function deleteByVendor($vendor_id){
+      $ids = $this->where('vendor_id',$vendor_id)->pluck('id')->toArray();
+      $delete_trans = VendorDineinTableTranslation::whereIn('vendor_dinein_table_id',$ids)->delete();
+      return $this->where('vendor_id',$vendor_id)->delete();
+  }
 }

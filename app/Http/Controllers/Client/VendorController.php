@@ -20,6 +20,7 @@ use App\Http\Traits\ToasterResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
+use App\Http\Controllers\ShiprocketController;
 use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, VendorPayout};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
@@ -215,6 +216,11 @@ class VendorController extends BaseController
         $vendor->email = $request->email;
         $vendor->website = $request->website;
         $vendor->phone_no = $request->phone_no;
+        $vendor->pincode = $request->pincode;
+        $vendor->city = $request->city;
+        $vendor->state = $request->state;
+        $vendor->country = $request->country;
+
         $vendor->slug = Str::slug($request->name, "-");
         if(Vendor::where('slug',$vendor->slug)->count() > 0)
         $vendor->slug = Str::slug($request->name, "-").rand(10,100);
@@ -439,7 +445,11 @@ class VendorController extends BaseController
                 $active[] = $category->id;
             }
             if (in_array($category->id, $VendorCategory) && in_array($category->parent_id, $VendorCategory)) {
-                $active[] = $category->id;
+                $active[] = $category->id; 
+            }
+            if($category->vendor_id == $id)
+            {
+                $active[] = $category->id; 
             }
         }
         if ($categories) {
@@ -459,7 +469,7 @@ class VendorController extends BaseController
         $vendor_registration_documents = VendorRegistrationDocument::get();
         $clientCurrency = ClientCurrency::select('currency_id')->where('is_primary', 1)->with('currency')->first();
         $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
-        $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
+        $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count(); 
 
         return view('backend.vendor.vendorCategory')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'clientCurrency'=>$clientCurrency]);
     }
@@ -868,7 +878,7 @@ class VendorController extends BaseController
         $vendor->show_slot = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
         $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
         $vendor->slot_minutes = ($request->slot_minutes>0)?$request->slot_minutes:0;
-        $vendor->closed_store_order_scheduled = ($request->has('closed_store_order_scheduled') && $request->closed_store_order_scheduled == 'on') ? 1 : 0;
+        $vendor->closed_store_order_scheduled = (($request->has('show_slot')) ? 0 : ($request->closed_store_order_scheduled == 'on')) ? 1 : 0;
 
         if ($request->has('order_min_amount')) {
             $vendor->order_min_amount   = $request->order_min_amount;
@@ -907,6 +917,24 @@ class VendorController extends BaseController
         // }
         $vendor->save();
         return redirect()->back()->with('success', $msg . ' updated successfully!');
+    }
+
+    public function updateLocation(Request $request, $domain = '',  $id)
+    {
+        $vendor = Vendor::where('id', $id)->first();
+        $msg = 'Shiprocket Pickup Location added';
+
+        if ($request->has('shiprocket_pickup_name')) {
+            $ship = new ShiprocketController();
+            $save = $ship->addShiprocketPickup($vendor,$request->shiprocket_pickup_name);
+             if(isset($save->success) && $save->success){
+                $vendor->shiprocket_pickup_name  = $save->address->pickup_code;
+                $vendor->save();
+                return redirect()->back()->with('success', $msg . ' successfully!');
+             }
+             return redirect()->back()->with('success',$save->errors->pickup_location[0]);
+        }
+       
     }
 
     /**     Activate Category for vendor     */

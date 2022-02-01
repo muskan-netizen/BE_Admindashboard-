@@ -43,6 +43,7 @@ class AuthController extends BaseController
      */
     public function login(LoginRequest $loginReq)
     {
+        //dd($loginReq->all());
         $errors = array();
         $user = User::with('country')->where('email', $loginReq->email)->first();
         if (!$user) {
@@ -1159,11 +1160,11 @@ class AuthController extends BaseController
                     'phone_number' => 'required',
                     'type' => 'required',
                     'team' => 'required',
-                    'vehicle_type_id' => 'required',
-                    'make_model' => 'required',
-                    'uid' => 'required',
-                    'plate_number' => 'required',
-                    'color' => 'required'
+                    // 'vehicle_type_id' => 'required',
+                    // 'make_model' => 'required',
+                    // 'uid' => 'required',
+                    // 'plate_number' => 'required',
+                    // 'color' => 'required'
                 ];
                 foreach ($driver_registration_documents as $driver_registration_document) {
                     if($driver_registration_document->is_required == 1){
@@ -1342,23 +1343,23 @@ class AuthController extends BaseController
                         ],
                         [
                             'name' => 'vehicle_type_id',
-                            'contents' => $request->vehicle_type_id
+                            'contents' => $request->vehicle_type_id??null
                         ],
                         [
                             'name' => 'make_model',
-                            'contents' => $request->make_model
+                            'contents' => $request->make_model??null
                         ],
                         [
                             'name' => 'uid',
-                            'contents' => $request->uid
+                            'contents' => $request->uid??null
                         ],
                         [
                             'name' => 'plate_number',
-                            'contents' => $request->plate_number
+                            'contents' => $request->plate_number??null
                         ],
                         [
                             'name' => 'color',
-                            'contents' => $request->color
+                            'contents' => $request->color??null
                         ],
                         [
                             'name' => 'team_id',

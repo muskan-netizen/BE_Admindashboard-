@@ -1,10 +1,14 @@
 <?php
 Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function () {
     Route::group(['middleware' => ['dbCheck', 'checkAuth', 'apilogger']], function() {
+
+        Route::post('sendTestMail', 'Api\v1\BaseController@sendTestMail');
+
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::get('cart/list', 'Api\v1\CartController@index');
         Route::get('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
         Route::post('homepage', 'Api\v1\HomeController@homepage');
+        Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
         Route::post('header', 'Api\v1\HomeController@headerContent');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
@@ -22,6 +26,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('vendor/{id?}', 'Api\v1\VendorController@productsByVendor');
         Route::post('vendor/filters/{id?}', 'Api\v1\VendorController@vendorFilters');
         Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
+        Route::post('vendor/vendorProductsFilter', 'Api\v1\VendorController@vendorProductsFilter');
         // Route::post('vendor/category/list', 'Api\v1\VendorController@postVendorCategoryList');
         Route::get('vendor/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProducts');
         // Route::get('vendor/category/productsFilter/{slug1}/{slug2}', 'Api\v1\VendorController@vendorCategoryProductsFilter');

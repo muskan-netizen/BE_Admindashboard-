@@ -97,12 +97,14 @@
                                                 <p>{{$vendor->desc}}</p>
                                             </div>
                                         @endif
-
+                                            @php
+                                               $checkSlot = findSlot('',$vendor->id,'');
+                                            @endphp
                                         <div class="col-md-12 text-center">
-                                            @if($vendor->is_vendor_closed == 1 && $vendor->closed_store_order_scheduled == 0)
-                                            <p class="text-danger">Vendor is not accepting orders right now.</p>
+                                            @if($vendor->is_vendor_closed == 1 && $checkSlot == 0)
+                                            <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
                                             @elseif($vendor->is_vendor_closed == 1 && $vendor->closed_store_order_scheduled == 1)
-                                            <p class="text-danger">We are not accepting orders right now. You can schedule this for {{findSlot('',$vendor->id,'')}}.</p>
+                                            <p class="text-danger">{{__('We are not accepting orders right now. You can schedule this for '). $checkSlot }}.</p>
                                             @endif
                                             </div>
 
@@ -332,21 +334,21 @@
                                                                     </div>
                                                                     <!-- <h3>{{ $data->translation_title }}</h3> -->
                                                                     <p>{{$data->description}}</p>
-                                                                    <!-- <p class="border-bottom pb-1 mb-1">In {{$data->category_name}}</p> -->
-                                                                    <p>{{__('In')}} {{$data->category_name}}</p>
+                                                                    <p class="border-bottom pb-1 mb-1">In {{$data->category_name}}</p>
+                                                                   
 
-                                                                    <!-- <div class="d-flex align-items-center justify-content-between">
+                                                                    <div class="d-flex align-items-center justify-content-between">
                                                                         @if($data['inquiry_only'] == 0)
                                                                             <h4 class="mt-0">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
                                                                         @endif
-                                                                        @if($client_preference_detail)
+                                                                      <!--   @if($client_preference_detail)
                                                                             @if($client_preference_detail->rating_check == 1)
                                                                                 @if($data->averageRating > 0)
                                                                                     <span class="rating">{{ number_format($data->averageRating, 1, '.', '') }} <i class="fa fa-star text-white p-0"></i></span>
                                                                                 @endif
                                                                             @endif
-                                                                        @endif
-                                                                    </div> -->
+                                                                        @endif -->
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </a>
@@ -380,10 +382,10 @@
     $('.js-range-slider').ionRangeSlider({
         type: 'double',
         grid: false,
-        min: "{{$range_products->last() ? $range_products->last()->price * (!empty(Session::get('currencyMultiplier'))?Session::get('currencyMultiplier'):1) : 0}}",
-        max: "{{$range_products->first() ? $range_products->first()->price * (!empty(Session::get('currencyMultiplier'))?Session::get('currencyMultiplier'):1) : 1000}}",
-        from: "{{$range_products->last() ? $range_products->last()->price * (!empty(Session::get('currencyMultiplier'))?Session::get('currencyMultiplier'):1) : 0}}",
-        to: "{{$range_products->first() ? $range_products->first()->price * (!empty(Session::get('currencyMultiplier'))?Session::get('currencyMultiplier'):1) : 1000}}",
+        min: "{{floor($range_products->last() ? $range_products->last()->price * (!empty(Session::get('currencyMultiplier'))?Session::get('currencyMultiplier'):1) : 0)}}",
+        max: "{{ceil($range_products->first() ? $range_products->first()->price * (!empty(Session::get('currencyMultiplier'))?Session::get('currencyMultiplier'):1) : 1000)}}",
+        from: "{{floor($range_products->last() ? $range_products->last()->price * (!empty(Session::get('currencyMultiplier'))?Session::get('currencyMultiplier'):1) : 0)}}",
+        to: "{{ceil($range_products->first() ? $range_products->first()->price * (!empty(Session::get('currencyMultiplier'))?Session::get('currencyMultiplier'):1) : 1000)}}",
         prefix: ""
     });
 

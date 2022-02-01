@@ -43,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-7 col-xl-9 mb-2">
+        <div class="col-lg-7 col-xl-9 mb-2 al_custom_cms_email">
             <div class="card">
                 <div class="card-body p-3" id="edit_page_content">
                     <div class="row">
@@ -51,20 +51,20 @@
                             <button type="button" class="btn btn-info" id="update_email_template"> {{ __("Publish") }}</button>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row al_custom_cke">
                         <input type="hidden" id="email_template_id" value="">
                         <div class="col-lg-12">
                             <div class="row">
-                                <div class="col-12 mb-3">
-                                    <label for="title" class="control-label">{{ __("Subject") }}</label>
-                                    <input class="form-control" id="subject" placeholder="Subject" name="subject" type="text">
+                                <div class="col-12 mb-2">
+                                    <label for="title" class="control-label ">{{ __("Subject") }}</label>
+                                    <input class="form-control al_box_height" id="subject" placeholder="Subject" name="subject" type="text">
                                     <span class="text-danger error-text updatetitleError"></span>
                                 </div>
                                 <div class="col-md-10 mb-3">
-                                    <label for="title" class="control-label">{{ __("Content") }}</label>
-                                    <textarea class="form-control" id="editor" placeholder="Meta Keyword" rows="6" name="meta_keyword" cols="10"></textarea>
+                                    <label for="title" class="control-label mb-0">{{ __("Content") }}</label>
+                                    <textarea style="visibility: hidden;" class="form-control" id="editor" placeholder="Meta Keyword" rows="6" name="meta_keyword" cols="10"></textarea>
                                 </div>
-                                <div class="col-md-2 mb-3">
+                                <div class="col-md-2">
                                     <label for="title" class="control-label">{{ __("Tags") }}:-<div id="tags" disabled=""></div></label>
                                 </div>
                             </div>

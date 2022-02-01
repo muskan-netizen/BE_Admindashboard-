@@ -67,11 +67,12 @@
                                                 <a class="action-icon editTaxCateModal" userId="{{$cat->id}}" href="javascript:void(0);"><i class="mdi mdi-square-edit-outline"></i></a>
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{ route('tax.destroy', $cat->id) }}">
+                                                <form method="POST" action="{{ route('tax.destroy', $cat->id) }}" id="deleteTaxCategory">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="submit" onclick="return confirm('Are you sure? You want to delete the tax category.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>
+                                                       <button type="submit" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> 
+                                                     <!--  <button type="submit" onclick="sweetAlert_popup('Are you sure?','You want to delete the tax category.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>  --> 
 
                                                     </div>
                                                 </form>
@@ -138,11 +139,12 @@
                                                 <a class="action-icon editTaxRateModal" userId="{{$rat->id}}" href="javascript:void(0);"><i class="mdi mdi-square-edit-outline"></i></a>
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{ route('taxRate.destroy', $rat->id) }}">
+                                                <form method="POST" action="{{ route('taxRate.destroy', $rat->id) }}" id="deleteTax">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="submit" onclick="return confirm('Are you sure? You want to delete the tax rate.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>
+                                                       <button type="submit" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>
+                                                       <!-- <button type="submit" onclick="return confirm('Are you sure? You want to delete the tax rate.')" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> -->
                                                     </div>
                                                 </form>
                                             </div>
@@ -162,5 +164,41 @@
 @include('backend.tax.modals')
 @endsection
 @section('script')
+<script type="text/javascript">
+    $('#deleteTax').submit(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete the tax rate.')}}",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $("#deleteTax").off("submit").submit();
+            }else{
+                return false;
+            }
+        });
+    });
+    $('#deleteTaxCategory').submit(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__(' You want to delete the tax category.')}}",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $("#deleteTaxCategory").off("submit").submit();
+            }else{
+                return false;
+            }
+        });
+    });
+</script>
 @include('backend.tax.pagescript')
 @endsection

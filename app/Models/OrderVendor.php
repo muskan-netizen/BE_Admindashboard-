@@ -57,7 +57,7 @@ class OrderVendor extends Model{
 			  break;
 			case "Completed":
 			  $title = "You have arrived at your destination!";
-			 break;  
+			  break;  
 			default:
 			$title = $title;
 		  }
@@ -71,5 +71,9 @@ class OrderVendor extends Model{
 
 	public function dineInTable(){
 	    return $this->belongsTo('App\Models\VendorDineinTable' , 'vendor_dinein_table_id', 'id'); 
+	}
+
+	public function tempCart(){
+	    return $this->hasOne('App\Models\TempCart' , 'order_vendor_id', 'id'); 
 	}
 }

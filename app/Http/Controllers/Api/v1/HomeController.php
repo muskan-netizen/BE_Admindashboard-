@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot};
+use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart};
 
 class HomeController extends BaseController
 {
@@ -187,13 +187,13 @@ class HomeController extends BaseController
             $type = 'delivery';
             if ($request->has('type')) {
                 if (empty($request->type)) {
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating');
+                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
                 } else {
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating')->where($request->type, 1);
+                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($request->type, 1);
                     $type = $request->type;
                 }
             } else {
-                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating');
+                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','closed_store_order_scheduled')->withAvg('product', 'averageRating');
             }
 
             $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
@@ -239,7 +239,17 @@ class HomeController extends BaseController
                         }
                     }
                 }
-
+                $slotsDate = 0;
+                if($vendor->is_vendor_closed){
+                    $slotsDate = findSlot('',$vendor->id,'');
+                    $vendor->delaySlot = $slotsDate;
+                    $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
+                }else{
+                    $vendor->delaySlot = 0;
+                    $vendor->closed_store_order_scheduled = 0;
+                }
+                
+                
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4) ? 1 : 0;
 
                 $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();
@@ -257,7 +267,7 @@ class HomeController extends BaseController
 
                 $vends[] = $vendor->id;
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                    $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences);
+                    $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences, $type);
                 }
 
             }
@@ -326,8 +336,7 @@ class HomeController extends BaseController
                     'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
                 );
             }
-
-
+            
             $isVendorArea = 0;
             $categories = $this->categoryNav($langId, $vends);
             $homeData['vendors'] = $vendorData;
@@ -354,6 +363,21 @@ class HomeController extends BaseController
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+
+    public function getEditedOrders(Request $request){
+        // Get user Edited Orders from Temp Cart
+        $user = Auth::user();
+        $temp_order_vendors = TempCart::where('status', '0')->where('user_id', $user->id)->where('is_submitted', 1)->where('is_approved', 0)->pluck('order_vendor_id');
+        $temp_orders = Order::with(['vendors'=> function($q){
+            $q->select('order_id','vendor_id', 'dispatch_traking_url');
+        }])->whereHas('vendors', function($q) use($temp_order_vendors){
+            $q->whereIn('id', $temp_order_vendors);
+        })
+        ->select('id','order_number')
+        ->get();
+
+        return $this->successResponse($temp_orders, '', 200);
     }
 
     public function vendorProducts($venderIds, $langId, $currency = '', $where = '', $type)

@@ -24,13 +24,13 @@
             @endif
         </div>
     </div>
-    <div class="row catalog_box">
+    <div class="row catalog_box al_catalog_box">
         <div class="col-xl-4 col-lg-6 mb-4 order-list-view">
             <div class="card-box h-100">
                 <div class="row mb-2">
                     <div class="col-sm-8">
                         <h4 class="page-title">{{ __('Category') }}</h4>
-                        <p class="sub-header">
+                        <p class="sub-header ">
                             {{ __('Drag & drop Categories to make child parent relation') }}
                         </p>
                     </div>
@@ -48,7 +48,7 @@
                         <div class="custom-dd-empty dd" id="nestable_list_3">
                             <div class="table-responsive outer-box">
                                 <?php print_r($html); ?>
-                            </div>    
+                            </div>
                         </div>
                     </div>
                 </div>

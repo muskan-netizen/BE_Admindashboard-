@@ -14,7 +14,7 @@
         z-index: 5;
     }
 
-    .input-group .intl-tel-input .form-control {
+    .input-group .intl-tel-input .form-control al_box_height {
         border-top-left-radius: 4px;
         border-top-right-radius: 0;
         border-bottom-left-radius: 4px;
@@ -50,7 +50,7 @@
     </div>
     <div class="row">
         @if(Auth::user()->is_superadmin == 1)
-        <div class="col-md-6">
+        <div class="col-md-10 col-xl-7 col-lg-8">
             <div class="card">
                 <div class="card-body">
                     <h4 class="header-title">{{ __("Organization details") }}</h4>
@@ -66,7 +66,7 @@
                                 <input type="file" accept="image/png, image/gif, image/jpeg, image/jpg" data-plugins="dropify" name="logo" data-default-file="{{$client->logo['image_fit'] . '300/100' . $client->logo['image_path']}}" />
                                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 300x100</label>
                             </div>
-                            <div class="offset-2 col-md-6">
+                            <div class="offset-1 col-md-7">
                                 <div class="row">
                                     <div class="col-md-6 mb-2">
                                         <div class="form-group">
@@ -92,10 +92,10 @@
                             </div>
                         </div>
                         <div class=" row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="name" class="control-label">{{ __("NAME") }}</label>
-                                    <input type="text" class="form-control" name="name" id="name" value="{{ old('name', Auth::user()->name ?? '')}}" placeholder="John Doe">
+                                    <input type="text" class="form-control al_box_height" name="name" id="name" value="{{ old('name', Auth::user()->name ?? '')}}" placeholder="John Doe">
                                     @if($errors->has('name'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('name') }}</strong>
@@ -103,10 +103,10 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="email" class="control-label">{{ __("EMAIL") }}</label>
-                                    <input type="email" class="form-control" id="email" name="email" value="{{ old('email', Auth::user()->email ?? '')}}" placeholder="Enter email address" disabled="" style="cursor:not-allowed;">
+                                    <input type="email" class="form-control al_box_height" id="email" name="email" value="{{ old('email', Auth::user()->email ?? '')}}" placeholder="Enter email address" disabled="" style="cursor:not-allowed;">
                                     @if($errors->has('email'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('email') }}</strong>
@@ -114,11 +114,11 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="phone_number" class="control-label">{{ __("CONTACT NUMBER") }}</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" name="phone_number" id="phone_number" value="{{ old('phone_number', Auth::user()->phone_number ?? '')}}">
+                                        <input type="text" class="form-control al_box_height" name="phone_number" id="phone_number" value="{{ old('phone_number', Auth::user()->phone_number ?? '')}}">
                                     </div>
                                     @if($errors->has('phone_number'))
                                     <span class="text-danger" role="alert">
@@ -127,10 +127,10 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="company_address" class="control-label">{{ __("COMPANY ADDRESS") }}</label>
-                                    <input type="text" class="form-control" id="company_address" name="company_address" value="{{ old('company_address', $client->company_address ?? '')}}" placeholder="Enter company address">
+                                    <input type="text" class="form-control al_box_height" id="company_address" name="company_address" value="{{ old('company_address', $client->company_address ?? '')}}" placeholder="Enter company address">
                                     @if($errors->has('company_address'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('company_address') }}</strong>
@@ -138,10 +138,10 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="company_name" class="control-label">{{ __("COMPANY NAME") }}</label>
-                                    <input type="text" class="form-control" name="company_name" id="company_name" value="{{ old('company_name', $client->company_name ?? '')}}" placeholder="Enter company name">
+                                    <input type="text" class="form-control al_box_height" name="company_name" id="company_name" value="{{ old('company_name', $client->company_name ?? '')}}" placeholder="Enter company name">
                                     @if($errors->has('company_name'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('company_name') }}</strong>
@@ -149,7 +149,7 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group mb-3" id="countryInput">
                                     <label for="country">{{ __("COUNTRY") }}</label>
                                     @if($errors->has('country'))
@@ -157,7 +157,7 @@
                                         <strong>{{ $errors->first('country') }}</strong>
                                     </span>
                                     @endif
-                                    <select class="form-control" id="country" name="country_id" value="{{ old('country', $client->id ?? '')}}" placeholder="Country">
+                                    <select class="form-control al_box_height" id="country" name="country_id" value="{{ old('country', $client->id ?? '')}}" placeholder="Country">
                                         @foreach($countries as $code=> $country)
                                             <option value="{{ $country->id }}" @if($client->country_id == $country->id) selected @endif>{{ $country->name }}</option>
                                         @endforeach
@@ -169,7 +169,7 @@
                             </div>
 
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group mb-3" id="timezoneInput">
                                     <label for="timezone">{{ __("TIMEZONE") }}</label>
                                     @if($errors->has('timezone'))
@@ -177,7 +177,7 @@
                                         <strong>{{ $errors->first('timezone') }}</strong>
                                     </span>
                                     @endif
-                                    <select class="form-control" id="timezone" name="timezone" value="{{ old('timezone', $client->timezone ?? '')}}" placeholder="Timezone">
+                                    <select class="form-control al_box_height" id="timezone" name="timezone" value="{{ old('timezone', $client->timezone ?? '')}}" placeholder="Timezone">
                                         @foreach($tzlist as $tz)
                                         <option value="{{ $tz->timezone }}" @if($client->timezone == $tz->timezone) selected @endif>{{ $tz->timezone }} {{ $tz->diff_from_gtm }}</option>
                                         @endforeach
@@ -187,10 +187,8 @@
                                     </span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button type="submit" class="btn btn-info waves-effect waves-light">{{ __("Update") }}</button>
+                            <div class="col-md-4">
+                                <button type="submit" class=" mt-3 btn btn-info waves-effect waves-light">{{ __("Update") }}</button>
                             </div>
                         </div>
                     </form>

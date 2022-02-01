@@ -472,8 +472,8 @@ class CategoryController extends BaseController
                 ->where('products.is_live', 1)
                 ->whereIn('products.id', function ($qr) use ($startRange, $endRange) {
                 $qr->select('product_id')->from('product_variants')
-                ->where('price', '>=', $startRange)
-                ->where('price', '<=', $endRange);
+                    ->where('price', '>=', $startRange)
+                    ->where('price', '<=', $endRange);
                 });
 
             if (!empty($productIds)) {
@@ -484,7 +484,7 @@ class CategoryController extends BaseController
             $products = $products->whereIn('products.brand_id', $request->brands);
             }
             if (!empty($order_type) && $request->order_type == 'rating') {
-            $products = $products->orderBy('product_variants.averageRating', 'desc');
+            $products = $products->orderBy('products.averageRating', 'desc');
             }
             if (!empty($order_type) && $order_type == 'low_to_high') {
             $products = $products->orderBy('product_variants.price', 'asc');

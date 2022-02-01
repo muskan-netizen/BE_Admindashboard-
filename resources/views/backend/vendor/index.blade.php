@@ -2,6 +2,7 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .pac-container,
     .pac-container .pac-item {
@@ -243,9 +244,20 @@
         </div>
     </div>
 </div>
-@include('backend.vendor.modals')
+@php
+$server = env('APP_ENV', 'development');
+if($server == 'local')
+{
+    $file = 'backend.vendor.modals';
+}else{
+    $file = 'backend.vendor.modals2';
+}
+@endphp
+@include($file)
+
 @endsection
 @section('script')
+<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 @include('backend.vendor.pagescript')
 <script src="{{asset('js/admin_vendor.js')}}"></script>
 <script type="text/javascript">

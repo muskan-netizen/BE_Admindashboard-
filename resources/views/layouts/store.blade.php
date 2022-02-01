@@ -14,7 +14,7 @@ $set_common_business_type = $client_preference_detail->business_type??'';
     :root {--theme-deafult: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;--top-header-color: <?= ($client_preference_detail) ? $client_preference_detail->site_top_header_color : '#4c4c4c' ?>;}
     a {color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;}
   </style>
-
+   @yield('css')
 </head>
 @php
 $dark_mode = '';

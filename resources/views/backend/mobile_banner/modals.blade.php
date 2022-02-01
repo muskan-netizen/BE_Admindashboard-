@@ -8,7 +8,7 @@
             <form id="save_banner_form" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body" id="AddCardBox">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light submitAddForm">{{ __('Submit') }}</button>
@@ -28,7 +28,7 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body" id="editCardBox">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light submitEditForm">{{ __("Submit") }}</button>

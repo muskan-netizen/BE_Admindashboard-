@@ -272,7 +272,7 @@
                         <div class="card-body">
                          <h4 class="header-title mb-0 pb-2">{{ __("Orders (Top Categories)") }}</h4>
                          <div class="gray-placeholder-img text-center py-5 my-2 hide" id="empty_card_collpase4">
-                             <img src="{{asset('assets/images/Dashboard _ Royo.png')}}" alt="">
+                             <img class="img-fluid" src="{{asset('assets/images/Dashboard _ Royo.png')}}" alt="">
                          </div>
                          <div id="cardCollpase4" class="collapse show pt-3">
                             <div id="apexchartsfwg700r2" class="apexcharts-canvas apexchartsfwg700r2 apexcharts-theme-light" style="height: 433px"></div>

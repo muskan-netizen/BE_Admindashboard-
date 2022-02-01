@@ -325,6 +325,7 @@ class OrderController extends FrontController
                 if ($cart) {
                     $cartDetails = $this->getCart($cart);
                 }
+
                 if ($email_template) {
                     $email_template_content = $email_template->content;
                     if ($vendor_id == "") {
@@ -332,6 +333,8 @@ class OrderController extends FrontController
                     } else {
                         $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'id' => $vendor_id, 'currencySymbol' => $currSymbol])->render();
                     }
+                    //pr($returnHTML);
+
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
@@ -359,7 +362,8 @@ class OrderController extends FrontController
                 }else{
                     $email_data['send_to_cc'] = 0;
                 }
-
+                // $res = $this->testOrderMail($email_data);
+                // dd($res);
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
@@ -682,7 +686,6 @@ class OrderController extends FrontController
             if (($request->has('address_id')) && ($request->address_id > 0)) {
                 $order->address_id = $request->address_id;
             }
-            $order->shipping_delivery_type = (($request->delivery_type)?$request->delivery_type:'D');
             $order->payment_option_id = $request->payment_option_id;
             $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
             $order->comment_for_dropoff_driver = $cart->comment_for_dropoff_driver ?? null;
@@ -771,15 +774,17 @@ class OrderController extends FrontController
                     if ($action == 'delivery') {
                         $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {
-
+                            $OrderVendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type;
+                            $OrderVendor->courier_id = $deliver_fee_data->courier_id;
+                            
                             //Add here Delivery option Lalamove and dispatcher
-                            if($deliver_fee_data->shipping_delivery_type=='L'){
-                                $lala = new LalaMovesController();
-                                $delivery_fee = $lala->getDeliveryFeeLalamove($vendor_cart_product->vendor_id);
-                            }else{
-                                $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
-                            }
 
+                            // if($delType=='L'){
+                            //     $lala = new LalaMovesController();
+                            //     $delivery_fee = $lala->getDeliveryFeeLalamove($vendor_cart_product->vendor_id);
+                            // }else{
+                            //     $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
+                            // }
 
 
                             if($deliver_fee_data)
@@ -802,7 +807,6 @@ class OrderController extends FrontController
                                     }
                                 }
                             }
-
 
                         }
                     }

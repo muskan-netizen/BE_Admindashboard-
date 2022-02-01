@@ -15,7 +15,9 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::get('dispatch-order-status-update-details/{id?}', 'Front\DispatcherController@dispatchOrderDetails')->name('dispatch-order-update-details'); // Order Status update Dispatch details
 
-	Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
+    Route::get('testsms', 'Front\FrontController@testsms');
+
+    Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
 	Route::get('cabbooking', 'Front\CustomerAuthController@getTestHtmlPage');
 	Route::get('demo/cabBooking', 'Front\CustomerAuthController@getDemoCabBookingPage');
 	Route::get('fcm', 'Front\CustomerAuthController@fcm');
@@ -31,14 +33,17 @@ Route::group(['middleware' => ['domain']], function () {
 
 
 	// Start edit order routes
-	Route::post('edit-order/search/vendor/products', 'Front\VendorController@vendorProductsSearchResultsForEditOrder');
+	Route::post('edit-order/search/vendor/products', 'Front\TempCartController@vendorProductsSearchResults');
 	Route::post('edit-order/vendor/products/getProductsInCart', 'Front\TempCartController@getProductsInCart');
 	Route::post('edit-order/temp-cart/product/add', 'Front\TempCartController@postAddToTempCart');
 	Route::post('edit-order/temp-cart/product/updateQuantity', 'Front\TempCartController@updateQuantity');
+	Route::post('edit-order/temp-cart/product/remove', 'Front\TempCartController@removeItem');
+	Route::post('edit-order/temp-cart/remove', 'Front\TempCartController@emptyCartData');
+	Route::post('edit-order/temp-cart/submit', 'Front\TempCartController@submitCart');
 	Route::post('edit-order/vendor/product/{id}', 'Front\TempCartController@getProductById');
 	// End edit order routes
 
-	
+
 
 	Route::get('payment/gateway/returnResponse', 'Front\PaymentController@getGatewayReturnResponse')->name('payment.gateway.return.response');
 
@@ -159,6 +164,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('page/{slug}', 'Front\UserhomeController@getExtraPage')->name('extrapage');
 
 	Route::post('/homePageData', 'Front\UserhomeController@postHomePageData')->name('homePageData');
+	Route::post('/homePageDataCategoryMenu', 'Front\UserhomeController@homePageDataCategoryMenu')->name('homePageDataCategoryMenu');
 	Route::post('/theme', 'Front\UserhomeController@setTheme')->name('config.update');
 	Route::get('/getConfig', 'Front\UserhomeController@getConfig')->name('config.get');
 	Route::post('getClientPreferences', 'Front\UserhomeController@getClientPreferences')->name('getClientPreferences');
