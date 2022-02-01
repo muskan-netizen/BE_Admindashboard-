@@ -60,7 +60,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% } %>
                                                     <% if(order.scheduled_date_time) { %>
                                                         <span class="badge badge-success ml-2">Scheduled</span>
-                                                        <span class="ml-2"><%= order.scheduled_date_time %></span>
+                                                       <!-- <span class="ml-2"><%= order.scheduled_date_time %></span> -->
                                                     <% } %>
 
 
