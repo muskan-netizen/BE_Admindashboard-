@@ -44,6 +44,12 @@ else if($client_preference_detail->show_dark_mode == 2){
   @media(max-width: 991px){
     .cab-booking-header img.img-fluid {height: auto !important;}
   }
+
+  .cab-booking-header .icon-ic_currency:before{color: var(--theme-deafult) !important;}	
+.top-headeral li{padding: 0 20px 0 0;}	
+.mobile-account{color: var(--theme-deafult) }	
+@media(max-width:767px){.cab-booking-header.al a.navbar-brand.mr-0 {margin: 10px auto 0;text-align: center;display: block;}}
+
   </style>
   @else
   <style>
