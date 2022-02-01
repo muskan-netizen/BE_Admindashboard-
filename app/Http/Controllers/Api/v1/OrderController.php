@@ -1672,7 +1672,7 @@ class OrderController extends BaseController
                         }
                         $res = $this->sendSuccessEmail($request, $order);
                         
-                        // $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
+                        $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
                         // if (!in_array($request->payment_option_id, $ex_gateways)) {
                         //     Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         //     CartCoupon::where('cart_id', $cart->id)->delete();
@@ -1701,7 +1701,7 @@ class OrderController extends BaseController
                         //     ]);
                         // }
                         $order = $order->with(['vendors:id,order_id,dispatch_traking_url,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
-                        // if (!in_array($request->payment_option_id, $ex_gateways)) {
+                        if (!in_array($order->payment_option_id, $ex_gateways)) {
                             $code = $request->header('code');
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {
@@ -1714,21 +1714,10 @@ class OrderController extends BaseController
                                     }
                                     $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail, $code);
                                 }
-                            // }
+                            }
                             $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
                             $super_admin = User::where('is_superadmin', 1)->pluck('id');
                             $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
-                            // $user_admins = User::where(function ($query) {
-                            //     $query->where(['is_superadmin' => 1]);
-                            // })->pluck('id')->toArray();
-                            // $user_vendors = [];
-                            // if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
-                            //     $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
-                            // }
-                            // $order->admins = array_unique(array_merge($user_admins, $user_vendors));
-
-                            // // $this->sendOrderNotification($user->id);
-                            // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id], $code);
                         }
 
                         # if payment type cash on delivery or payment status is 'Paid'
