@@ -713,10 +713,10 @@ class BaseController extends Controller{
 
             if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
                 $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-              
+             
                 $client_name = $client->name;
-                $mail_from = 'dinesh.codebrewlabs@gmail.com';
-                $sendto = 'dinesh.codebrewlabs@gmail.com';
+                $mail_from = 'dineshk@codebrewinnovations.com';
+                $sendto = 'dkdenni7@gmail.com'; 
                 try{
                     // $data = [
                     //     'customer_name' => 'Test',

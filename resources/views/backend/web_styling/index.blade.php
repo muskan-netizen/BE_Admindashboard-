@@ -30,7 +30,7 @@
 
 <form id="favicon-form" method="post" enctype="multipart/form-data">
     <div class="row">
-        <div class="col-md-6 col-xl-3">
+        <div class="col-md-4 col-xl-4">
             <div class="card">
                 <div class="card-body">
                     <h4 class="header-title">{{ __("Home Page Style") }}</h4>
@@ -54,194 +54,199 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-6 col-xl-3">
-            <div class="card card-box">
-                <div class="row">
-                    <div class="col-5">
+
+            <div class="row">
+                <div class="col-md-12 col-xl-6">
+                    <div class="card card-box">
                         <h4 class="header-title">{{ __("Favicon") }}</h4>
                         <div class="mb-0">
                             <label>{{ __("Upload Favicon") }}</label>
                             <input type="file" accept="image/*" data-default-file="{{$client_preferences->favicon ? $client_preferences->favicon['proxy_url'].'600/400'.$client_preferences->favicon['image_path'] : ''}}" data-plugins="dropify" name="favicon" class="dropify" id="image" />
-                            <label class="logo-size d-block text-right mt-1">{{ __("Icon Size") }} 32x32</label>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
+                            <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 32x32</label>
                         </div>
                     </div>
-                    <div class="col-7">
-                        <h4 class="header-title">{{ __("Color") }}</h4>
-                        <div class="form-group">
-                            <label for="primary_color">{{ __("Primary Color") }}</label>
-                            <input type="text" id="primary_color_option" name="primary_color" class="form-control" value="{{ old('primary_color', $client_preferences->web_color ?? 'cccccc')}}">
-                        </div>
-                        <div class="form-group mb-0">
-                            <label>{{ __("Top Header Color") }}</label>
-                            <input type="text" id="site_top_header_color" name="site_top_header_color" class="form-control" value="{{ old('site_top_header_color', $client_preferences->site_top_header_color ?? '#4c4c4c')}}">
+                </div>
+                <div class="col-md-12 col-xl-6">
+                    <div class="card card-box">
+                        <div class="col">
+                            <h4 class="header-title">{{ __("Color") }}</h4>
+                            <div class="form-group">
+                                <label for="primary_color">{{ __("Primary Color") }}</label>
+                                <input type="text" id="primary_color_option" name="primary_color" class="form-control" value="{{ old('primary_color', $client_preferences->web_color ?? 'cccccc')}}">
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>{{ __("Top Header Color") }}</label>
+                                <input type="text" id="site_top_header_color" name="site_top_header_color" class="form-control" value="{{ old('site_top_header_color', $client_preferences->site_top_header_color ?? '#4c4c4c')}}">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+
         </div>
-        <div class="col-md-6 col-xl-3">
-            @if($client_preference_detail->business_type != 'taxi')
-                <div class="card card-box">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
-                        <div class="mb-0">
-                            <input type="checkbox" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box1" data-color="#43bee1" {{$client_preferences->age_restriction == 1 ? 'checked' : ''}}>
+
+        <div class="col-md-4 col-xl-5">
+            <div class="row">
+                <div class="col-md-12 col-xl-6">
+                    @if($client_preference_detail->business_type != 'taxi')
+                    <div class="card card-box">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
+                            <div class="mb-0">
+                                <input type="checkbox" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box1" data-color="#43bee1" {{$client_preferences->age_restriction == 1 ? 'checked' : ''}}>
+                            </div>
+                        </div>
+                        <label for="">{{ __('Title') }}</label>
+                        <input type="text" class="form-control" id="age_restriction_title" name="age_restriction_title" value="{{ old('age_restriction_title', $client_preferences->age_restriction_title ?? '')}}">
+                    </div>
+                    @endif
+                    <div class="card card-box">
+                        <ul class="pl-0 mb-0">
+                            <li class="d-flex flex-column justify-content-start mt-2">
+                                <h4 class="header-title mb-2">{{ __("Show Dark Mode") }}</h4>
+                                <div class="form-group">
+                                    <ul class="list-inline">
+                                        <li class="d-inline-block ml-3 mr-2">
+                                            <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('0')" id="option1" name="show_dark_mode" {{$client_preferences->show_dark_mode == 0 ? 'checked' : ''}}>
+                                            <label class="custom-control-label" for="option1">{{ __("Day") }}</label>
+                                        </li>
+                                        <li class="d-inline-block ml-3 mr-2 mb-2 mb-lg-0">
+                                            <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('1')" id="option2" name="show_dark_mode" {{$client_preferences->show_dark_mode == 1 ? 'checked' : ''}}>
+                                            <label class="custom-control-label" for="option2">{{ __("Night") }}</label>
+                                        </li>
+                                        <li class="d-inline-block ml-3">
+                                            <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('2')" id="option3" name="show_dark_mode" {{$client_preferences->show_dark_mode == 2 ? 'checked' : ''}}>
+                                            <label class="custom-control-label" for="option3">{{ __("Day with Toggle") }}</label>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- <div class="mb-0">
+                                    <input type="checkbox" id="show_dark_mode" data-plugin="switchery" name="show_dark_mode" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_dark_mode == 1 ? 'checked' : ''}}>
+                                </div> -->
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-xl-6">
+                    <div class="card card-box">
+                        <ul class="pl-0 mb-0">
+                            @if($client_preference_detail->business_type != 'taxi')
+                                <li class="d-flex align-items-center justify-content-between">
+                                    <h4 class="header-title mb-2">{{ __("Show Wishlist Icon") }}</h4>
+                                    <div class="mb-0">
+                                        <input type="checkbox" id="show_wishlist" data-plugin="switchery" name="show_wishlist" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_wishlist == 1 ? 'checked' : ''}}>
+                                    </div>
+                                </li>
+                                <li class="d-flex align-items-center justify-content-between mt-2">
+                                    <h4 class="header-title mb-2">{{ __("Show Ratings") }}</h4>
+                                    <div class="mb-0">
+                                        <input type="checkbox" id="rating_enable" data-plugin="switchery" name="rating_enable" class="chk_box2" data-color="#43bee1" {{$client_preferences->rating_check == 1 ? 'checked' : ''}}>
+                                    </div>
+                                </li>
+                                <li class="d-flex align-items-center justify-content-between mt-2">
+                                    <h4 class="header-title mb-2">{{ __("Show Cart Icon") }}</h4>
+                                    <div class="mb-0">
+                                        <input type="checkbox" id="cart_enable" data-plugin="switchery" name="cart_enable" class="chk_box1" data-color="#43bee1" {{$client_preferences->cart_enable == 1 ? 'checked' : ''}}>
+                                    </div>
+                                </li>
+                            @endif
+
+                            <li class="d-flex align-items-center justify-content-between mt-2">
+                                <h4 class="header-title mb-2">{{ __("Show Contact Us") }}</h4>
+                                <div class="mb-0">
+                                    <input type="checkbox" id="show_contact_us" data-plugin="switchery" name="show_contact_us" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_contact_us == 1 ? 'checked' : ''}}>
+                                </div>
+                            </li>
+                            @if($client_preference_detail->business_type != 'taxi')
+                            <li class="d-flex align-items-center justify-content-between mt-2">
+                                <h4 class="header-title mb-2">{{ __("Show Icons in navigation") }}</h4>
+                                <div class="mb-0">
+                                    <input type="checkbox" id="show_icons" data-plugin="switchery" name="show_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_icons == 1 ? 'checked' : ''}}>
+                                </div>
+                            </li>
+                            @endif
+                            <li class="d-flex align-items-center justify-content-between mt-2">
+                                <h4 class="header-title mb-2">{{ __("Show Payment Icons") }}</h4>
+                                <div class="mb-0">
+                                    <input type="checkbox" id="show_payment_icons" data-plugin="switchery" name="show_payment_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
+                                </div>
+                            </li>
+                            @if($client_preference_detail->business_type != 'taxi')
+                            <li class="d-flex align-items-center justify-content-between mt-2">
+                                <h4 class="header-title mb-2">{{ __('Hide Nav Bar') }}</h4>
+                                <div class="mb-0">
+                                    <input type="checkbox" id="hide_nav_bar" data-plugin="switchery" name="hide_nav_bar" class="chk_box2" data-color="#43bee1" {{$client_preferences->hide_nav_bar == 1 ? 'checked' : ''}}>
+                                </div>
+                            </li>
+                            @endif
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-3">
+            <form method="POST" action="{{route('web.styling.update_contact_up')}}">
+                @csrf
+                <div class="row h-100">
+                    <div class="col-12">
+                        <div class="card-box">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h4 class="header-title mb-0">{{ __("Contact Us") }}</h4>
+                                <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group mb-0">
+                                        <label for="contact_address">{{ __("Company Address") }}</label>
+                                        <div class="input-group">
+                                            <input type="text" name="contact_address" id="contact_address"  class="form-control" value="{{ old('contact_address', $clientContact->contact_address ?? '')}}">
+                                        </div>
+                                        @if($errors->has('contact_address'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('contact_address') }}</strong>
+                                        </span>
+                                        @endif
+                                    </div>
+                                    <div class="form-group mt-2 mb-0">
+                                        <label for="contact_phone_number">{{ __("Contact Number") }}</label>
+                                        <input type="text" name="contact_phone_number" id="contact_phone_number" placeholder="" class="form-control" value="{{ old('contact_phone_number', $clientContact->contact_phone_number ?? '')}}">
+                                        @if($errors->has('contact_phone_number'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('contact_phone_number') }}</strong>
+                                        </span>
+                                        @endif
+                                    </div>
+                                    <div class="form-group mt-2 mb-0">
+                                        <label for="contact_email">{{ __("Contact Email") }}</label>
+                                        <input type="text" name="contact_email" id="contact_email" placeholder="" class="form-control" value="{{ old('contact_email', $clientContact->contact_email ?? '')}}">
+                                        @if($errors->has('contact_email'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('contact_email') }}</strong>
+                                        </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <label for="">{{ __('Title') }}</label>
-                    <input type="text" class="form-control" id="age_restriction_title" name="age_restriction_title" value="{{ old('age_restriction_title', $client_preferences->age_restriction_title ?? '')}}">
                 </div>
-            @endif
-            <div class="card card-box">
-                <ul class="pl-0 mb-0">
-                    <li class="d-flex flex-column justify-content-start mt-2">
-                        <h4 class="header-title mb-2">{{ __("Show Dark Mode") }}</h4>
-                        <div class="form-group">
-                            <ul class="list-inline">
-                                <li class="d-inline-block ml-3 mr-2">
-                                    <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('0')" id="option1" name="show_dark_mode" {{$client_preferences->show_dark_mode == 0 ? 'checked' : ''}}>
-                                    <label class="custom-control-label" for="option1">{{ __("Day") }}</label>
-                                </li>
-                                <li class="d-inline-block ml-3 mr-2 mb-2 mb-lg-0">
-                                    <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('1')" id="option2" name="show_dark_mode" {{$client_preferences->show_dark_mode == 1 ? 'checked' : ''}}>
-                                    <label class="custom-control-label" for="option2">{{ __("Night") }}</label>
-                                </li>
-                                <li class="d-inline-block ml-3">
-                                    <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('2')" id="option3" name="show_dark_mode" {{$client_preferences->show_dark_mode == 2 ? 'checked' : ''}}>
-                                    <label class="custom-control-label" for="option3">{{ __("Day with Toggle") }}</label>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- <div class="mb-0">
-                            <input type="checkbox" id="show_dark_mode" data-plugin="switchery" name="show_dark_mode" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_dark_mode == 1 ? 'checked' : ''}}>
-                        </div> -->
-                    </li>
-                </ul>
-            </div>
+            </form>
         </div>
 
-        <div class="col-md-6 col-xl-3">
-            <div class="card card-box">
-                <ul class="pl-0 mb-0">
-
-                    @if($client_preference_detail->business_type != 'taxi')
-                        <li class="d-flex align-items-center justify-content-between">
-                            <h4 class="header-title mb-2">{{ __("Show Wishlist Icon") }}</h4>
-                            <div class="mb-0">
-                                <input type="checkbox" id="show_wishlist" data-plugin="switchery" name="show_wishlist" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_wishlist == 1 ? 'checked' : ''}}>
-                            </div>
-                        </li>
-                        <li class="d-flex align-items-center justify-content-between mt-2">
-                            <h4 class="header-title mb-2">{{ __("Show Ratings") }}</h4>
-                            <div class="mb-0">
-                                <input type="checkbox" id="rating_enable" data-plugin="switchery" name="rating_enable" class="chk_box2" data-color="#43bee1" {{$client_preferences->rating_check == 1 ? 'checked' : ''}}>
-                            </div>
-                        </li>
-                        <li class="d-flex align-items-center justify-content-between mt-2">
-                            <h4 class="header-title mb-2">{{ __("Show Cart Icon") }}</h4>
-                            <div class="mb-0">
-                                <input type="checkbox" id="cart_enable" data-plugin="switchery" name="cart_enable" class="chk_box1" data-color="#43bee1" {{$client_preferences->cart_enable == 1 ? 'checked' : ''}}>
-                            </div>
-                        </li>
-                    @endif
-
-                    <li class="d-flex align-items-center justify-content-between mt-2">
-                        <h4 class="header-title mb-2">{{ __("Show Contact Us") }}</h4>
-                        <div class="mb-0">
-                            <input type="checkbox" id="show_contact_us" data-plugin="switchery" name="show_contact_us" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_contact_us == 1 ? 'checked' : ''}}>
-                        </div>
-                    </li>
-                    @if($client_preference_detail->business_type != 'taxi')
-                    <li class="d-flex align-items-center justify-content-between mt-2">
-                        <h4 class="header-title mb-2">{{ __("Show Icons in navigation") }}</h4>
-                        <div class="mb-0">
-                            <input type="checkbox" id="show_icons" data-plugin="switchery" name="show_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_icons == 1 ? 'checked' : ''}}>
-                        </div>
-                    </li>
-                    @endif
-                    <li class="d-flex align-items-center justify-content-between mt-2">
-                        <h4 class="header-title mb-2">{{ __("Show Payment Icons") }}</h4>
-                        <div class="mb-0">
-                            <input type="checkbox" id="show_payment_icons" data-plugin="switchery" name="show_payment_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
-                        </div>
-                    </li>
-                    @if($client_preference_detail->business_type != 'taxi')
-                    <li class="d-flex align-items-center justify-content-between mt-2">
-                        <h4 class="header-title mb-2">{{ __('Hide Nav Bar') }}</h4>
-                        <div class="mb-0">
-                            <input type="checkbox" id="hide_nav_bar" data-plugin="switchery" name="hide_nav_bar" class="chk_box2" data-color="#43bee1" {{$client_preferences->hide_nav_bar == 1 ? 'checked' : ''}}>
-                        </div>
-                    </li>
-                    @endif
-                </ul>
-            </div>
-        </div>
 
 
     </div>
 
 
 </form>
-<div class="col-lg-3 col-md-6 mb-3">
-    <form method="POST" action="{{route('web.styling.update_contact_up')}}">
-        @csrf
-        <div class="row h-100">
-        <div class="col-12">
-            <div class="card-box h-100">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h4 class="header-title mb-0">{{ __("Contact Us") }}</h4>
-                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                    <div class="row">
-                        <div class="col-12 mt-3 ">
-                            <div class="row">
-                                <div class="col-12">
-                                <div class="form-group mb-0">
-                                    <label for="contact_address">{{ __("Company Address") }}</label>
-                                    <div class="input-group">
-                                        <input type="text" name="contact_address" id="contact_address"  class="form-control" value="{{ old('contact_address', $clientContact->contact_address ?? '')}}">
-                                    </div>
-                                    @if($errors->has('contact_address'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('contact_address') }}</strong>
-                                    </span>
-                                    @endif
-                                </div>
-                                <div class="form-group mt-3 mb-0">
-                                    <label for="contact_phone_number">{{ __("Contact Number") }}</label>
-                                    <input type="text" name="contact_phone_number" id="contact_phone_number" placeholder="" class="form-control" value="{{ old('contact_phone_number', $clientContact->contact_phone_number ?? '')}}">
-                                    @if($errors->has('contact_phone_number'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('contact_phone_number') }}</strong>
-                                    </span>
-                                    @endif
-                                </div>
-                                <div class="form-group mt-3 mb-0">
-                                    <label for="contact_email">{{ __("Contact Email") }}</label>
-                                    <input type="text" name="contact_email" id="contact_email" placeholder="" class="form-control" value="{{ old('contact_email', $clientContact->contact_email ?? '')}}">
-                                    @if($errors->has('contact_email'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('contact_email') }}</strong>
-                                    </span>
-                                    @endif
-                                </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-    </form>
-</div>
+
 
 <!-- cab booking template -->
 <form id="favicon-form-pickup" method="post" enctype="multipart/form-data">
@@ -266,80 +271,91 @@
             <div class="custom-dd-empty dd" id="pickup_datatable">
                 <ol class="dd-list p-0" id="pickup_ol" >
                     @foreach($cab_booking_layouts as $key => $home_page_label)
-                    <li class="dd-item dd3-item d-flex align-items-center on_click{{$home_page_label->slug}}" data-id="1" data-row-id="{{$home_page_label->id}}">
-                        <a herf="#" class="dd-handle dd3-handle d-block mr-auto">
-                            {{$home_page_label->title}}
-                        </a>
-
-                        <div class="language-inputs style-4">
-                            <div class="row no-gutters flex-nowrap align-items-center my-2">
-                                @foreach($langs as $lang)
-                                @php
-                                $exist = 0;
-                                $value = '';
-                                @endphp
-                                <div class="col-3 pl-1">
-                                    <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="home_labels[]">
-                                    <input class="form-control" type="hidden" value="{{$lang->langId}}" name="languages[]">
-                                    @foreach($home_page_label->translations as $translation)
-                                    @if($translation->language_id == $lang->langId)
-                                    @php
-                                    $exist = 1;
-                                    $value = $translation->title;
-                                    @endphp
-                                    @endif
-                                    @endforeach
-                                    <input class="form-control" value="{{$exist == 1 ? $value : '' }}" type="text" name="names[]" placeholder="{{ $lang->langName }}">
+                    <div id="al_web_styling" class="row dd-item dd3-item d-flex align-items-center justify-content-between on_click{{$home_page_label->slug}}" data-id="1" data-row-id="{{$home_page_label->id}}">
+                        <div class="col-md-6">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-md-5 p-0">
+                                    <a herf="#" class="dd-handle dd3-handle d-block mr-auto">
+                                        {{$home_page_label->title}}
+                                    </a>
                                 </div>
-                                @endforeach
+                                <div class="col-md-7 p-0">
+                                    <div class="language-input style-4">
+                                        <div class="row no-gutters flex-nowrap align-items-center my-2">
+                                            @foreach($langs as $lang)
+                                            @php
+                                            $exist = 0;
+                                            $value = '';
+                                            @endphp
+                                            <div class="col-6 pl-1">
+                                                <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="home_labels[]">
+                                                <input class="form-control" type="hidden" value="{{$lang->langId}}" name="languages[]">
+                                                @foreach($home_page_label->translations as $translation)
+                                                @if($translation->language_id == $lang->langId)
+                                                @php
+                                                $exist = 1;
+                                                $value = $translation->title;
+                                                @endphp
+                                                @endif
+                                                @endforeach
+                                                <input class="form-control" value="{{$exist == 1 ? $value : '' }}" type="text" name="names[]" placeholder="{{ $lang->langName }}">
+                                            </div>
+                                            @endforeach
 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-6">
+                            <div class=" d-flex align-items-center justify-content-end">
+                                @if($home_page_label->slug == 'pickup_delivery')
+                                    <div class="col pl-1">
+                                        <select class="form-control select2-multiple" required id="categories" name="categories[{{$key}}][check]" data-toggle="select2"  data-placeholder="Choose ...">
+
+                                        {{-- <select class="form-control w-100">  --}}
+                                            @foreach ($all_pickup_category as $category)
+                                            <option value="{{$category->id}}"
+                                                @if(isset($home_page_label->pickupCategories->first()->categoryDetail) && !empty($home_page_label->pickupCategories->first()) && $home_page_label->pickupCategories->first()->categoryDetail->id == $category->id)
+                                                selected="selected"
+                                                @endif>{{$category->translation_one->name??''}}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endif
+
+
+                                @if($home_page_label->slug == 'pickup_delivery')
+                                <a class="action-icon openBannerModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
+                                    <i class="mdi mdi-pencil"></i>
+                                </a>
+                                @endif
+                                @if($home_page_label->slug == 'dynamic_page')
+                                <a class="action-icon edit_dynamic_page" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
+                                    <i class="mdi mdi-pencil"></i>
+                                </a>
+                                @endif
+                                @if($home_page_label->slug == 'dynamic_page')
+                                <input type="checkbox" name="for_no_product_found_html[{{$key}}]" {{$home_page_label->for_no_product_found_html == 1 ? 'checked' : ''}} >{{__('For No Records')}}
+                                @else
+                                <input type="hidden" name="for_no_product_found_html[{{$key}}]">
+                                @endif
+
+                                <div class="mb-0 ml-1">
+                                    <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="pickup_labels[]">
+
+                                    <input type="checkbox" {{$home_page_label->is_active == 1 ? 'checked' : ''}} id="{{$home_page_label->slug}}" data-plugin="switchery" name="is_active[{{$key}}][check]" class="chk_box2" data-color="#43bee1">
+                                </div>
+
+                                <a class="action-icon deletePickupSectionx" href="{{route('pickup.delete.section', $home_page_label->id)}}" onclick="return confirm('Are you sure you want to delete this section?');"  dataid="{{$home_page_label->id}}" href="javascript:void(0);">
+                                    <i class="mdi mdi-delete"></i>
+                                </a>
                             </div>
                         </div>
+                    </div>
 
-                        @if($home_page_label->slug == 'pickup_delivery')
-                            <div class="col-2 pl-1">
-                                <select class="form-control select2-multiple" required id="categories" name="categories[{{$key}}][check]" data-toggle="select2"  data-placeholder="Choose ...">
-
-                                {{-- <select class="form-control w-100">  --}}
-                                    @foreach ($all_pickup_category as $category)
-                                    <option value="{{$category->id}}"
-                                        @if(isset($home_page_label->pickupCategories->first()->categoryDetail) && !empty($home_page_label->pickupCategories->first()) && $home_page_label->pickupCategories->first()->categoryDetail->id == $category->id)
-                                        selected="selected"
-                                        @endif>{{$category->translation_one->name??''}}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        @endif
-
-
-                         @if($home_page_label->slug == 'pickup_delivery')
-                        <a class="action-icon openBannerModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
-                            <i class="mdi mdi-pencil"></i>
-                        </a>
-                        @endif
-                        @if($home_page_label->slug == 'dynamic_page')
-                        <a class="action-icon edit_dynamic_page" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
-                            <i class="mdi mdi-pencil"></i>
-                        </a>
-                        @endif
-                        @if($home_page_label->slug == 'dynamic_page')
-                        <input type="checkbox" name="for_no_product_found_html[{{$key}}]" {{$home_page_label->for_no_product_found_html == 1 ? 'checked' : ''}} >{{__('For No Records')}}
-                        @else
-                        <input type="hidden" name="for_no_product_found_html[{{$key}}]">
-                        @endif
-
-                        <div class="mb-0 ml-1">
-                            <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="pickup_labels[]">
-
-                            <input type="checkbox" {{$home_page_label->is_active == 1 ? 'checked' : ''}} id="{{$home_page_label->slug}}" data-plugin="switchery" name="is_active[{{$key}}][check]" class="chk_box2" data-color="#43bee1">
-                        </div>
-
-                        <a class="action-icon deletePickupSectionx" href="{{route('pickup.delete.section', $home_page_label->id)}}" onclick="return confirm('Are you sure you want to delete this section?');"  dataid="{{$home_page_label->id}}" href="javascript:void(0);">
-                            <i class="mdi mdi-delete"></i>
-                        </a>
-
-                    </li>
                     @endforeach
                 </ol>
             </div>
@@ -349,7 +365,7 @@
     <div class="col-xl-3">
         <div class="card-box home-options-list">
             <div class="row mb-2">
-                <div class="col-sm-8">
+                <div class="col-sm-12">
                     <h4 class="page-title mt-0">{{ __('Home Page Sections') }}</h4>
                     <p class="sub-header">
                         {{ __('Drag & drop to home page sections') }}

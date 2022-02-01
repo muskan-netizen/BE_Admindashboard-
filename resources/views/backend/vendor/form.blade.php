@@ -95,6 +95,41 @@
         </div>
         <div class="row mb-2" >
             <div class="col-md-4">
+                <div class="form-group mb-3">
+                    {!! Form::label('title', __('City'),['class' => 'control-label']) !!}
+                    <input type="text" name="city" placeholder="City" class="form-control" value="{{$vendor->city}}">
+                    @if($errors->has('city'))
+                    <span class="text-danger" role="alert">
+                        <strong>{{ $errors->first('city') }}</strong>
+                    </span>
+                    @endif
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group mb-3">
+                    {!! Form::label('title', __('State'),['class' => 'control-label']) !!}
+                    <input type="text" name="state" placeholder="State" class="form-control" value="{{$vendor->state}}">
+                    @if($errors->has('state'))
+                    <span class="text-danger" role="alert">
+                        <strong>{{ $errors->first('state') }}</strong>
+                    </span>
+                    @endif
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group mb-3">
+                    {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
+                    <input type="text" name="country" placeholder="Country" class="form-control" value="{{$vendor->country}}">
+                    @if($errors->has('country'))
+                    <span class="text-danger" role="alert">
+                        <strong>{{ $errors->first('country') }}</strong>
+                    </span>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2" >
+            <div class="col-md-4">
                 <div class="form-group mb-3" id="latitudeInput">
                     {!! Form::label('title', __('latitude'),['class' => 'control-label']) !!}
                     <input type="text" name="latitude" id="edit_latitude" placeholder="24.9876755" class="form-control" value="{{$vendor->latitude}}">

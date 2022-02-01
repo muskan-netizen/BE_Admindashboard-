@@ -30,42 +30,45 @@
                     </span>
                 </div>
             </div>
-        </div>                            
-        <div class="row rowYK">
+        </div>
+
+        <div class="row rowYK al_row_table">
             <div class="col-md-12">
                 <h5>{{ __("Variant Title") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
+
                 <table class="table table-borderless mb-0" id="banner-datatable" >
-                    <tr>
+                    <tr class="row">
                         @foreach($languages as $langs)
-                            <th>{{$langs->language->name}}</th>
+                            <th class="col-md-6">{{$langs->language->name}}</th>
                         @endforeach
                     </tr>
-                    <tr>
+                    <tr class="row">
                         @foreach($languages as $langs)
                             @if($langs->is_primary == 1)
-                                <td>
+                                <td class="col-md-6">
                                     {!! Form::hidden('language_id[]', $langs->language_id) !!}
                                     {!! Form::text('title[]', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                 </td>
                             @else
-                                <td>
+                                <td  class="col-md-6">
                                     {!! Form::hidden('language_id[]', $langs->language_id) !!}
                                     {!! Form::text('title[]', null, ['class' => 'form-control']) !!}
                                 </td>
                             @endif
-                        @endforeach 
+                        @endforeach
                     </tr>
                 </table>
             </div>
         </div>
-        <div class="row rowYK">
+
+        <div class="row rowYK al_row_table">
             <div class="col-md-12">
                 <h5>{{ __("Variant Options") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
-                <table class="table table-borderless mb-0 optionTableAdd" id="banner-datatable">
+                <table class="row table table-borderless mb-0 optionTableAdd" id="banner-datatable">
                     <tr class="trForClone">
                         <th class="hexacodeClass-add" style="display:none;">{{ __("Color Code") }}</th>
                         @foreach($languages as $langs)
@@ -74,7 +77,7 @@
                         <th></th>
                     </tr>
                     <tr>
-                        <td style="min-width: 200px; display:none;" class="hexacodeClass-add">
+                        <td style="min-width: 200px; display:none;" class="hexacodeClass-add col-md-6">
                             <input type="text" name="hexacode[]" class="form-control hexa-colorpicker" value="cccccc" id="add-hexa-colorpicker-1">
                         </td>
                        @foreach($languages as $key => $langs)

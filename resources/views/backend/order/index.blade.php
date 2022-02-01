@@ -1,44 +1,17 @@
 @extends('layouts.vertical', ['title' => 'Orders'])
 @section('content')
 <style type="text/css">
-    .ellipsis {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    body {
-        font-size: 0.75rem;
-    }
-
-    .order_data>div,
-    .order_head h4 {
-        padding: 0 !important;
-    }
-
-    .order-page .card-box {
-        padding: 20px 20px 5px !important;
-    }
-
-    .progress-order {
-        width: calc(100% + 48px);
-        margin: -24px 0 20px;
-        background: #00000012;
-        color: var(--theme-deafult);
-        position: relative;
-        left: -24px;
-        font-weight: 600;
-        border-top-left-radius: 15px;
-        border-top-right-radius: 15px;
-        padding: 5px 0;
-    }
+.ellipsis {white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}body {font-size: 0.75rem;}.order_data>div,.order_head h4 {padding: 0 !important;
+}.order-page .card-box {padding: 20px 20px 5px !important;}.progress-order {width: calc(100% + 48px);margin: -24px 0 20px;background: #00000012;
+color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;border-top-left-radius: 15px;border-top-right-radius: 15px;padding: 5px 0;
+}
 </style>
 
 <script type="text/template" id="order_page_template">
     <div class="row">
         <% _.each(orders, function(order, k){%>
             <% if(order.vendors.length !== 0) { %>
-                <div class="col-xl-6"  id="full-order-div<%= k %>">
+                <div class="col-xl-6 al_order_sec"  id="full-order-div<%= k %>">
                     <div class="row no-gutters order_head">
                         <div class="col-md-3"><h4>{{ __("Order ID") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Date & Time") }}</h4></div>
@@ -118,8 +91,6 @@
                                                 <ul class="status_box mt-1 pl-0">
                                                     <li>
                                                         <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
-
-
                                                         <label class="m-0 in-progress"><%= vendor.order_status %></label>
                                                     </li>
                                                 </ul>
@@ -128,8 +99,8 @@
                                                 <div class="row no-gutters product_list align-items-center flex-wrap">
                                                     <% _.each(vendor.products, function(product, pr){%>
                                                         <div class="col-4 text-center mb-2">
-                                                            <div class="list-img">
-                                                                <img src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
+                                                            <div class="list-img" style="height:50px;">
+                                                                <img style="height:50px;" src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
                                                                 <span class="item_no position-absolute">x<%= product.quantity %></span>
                                                             </div>
                                                             <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
@@ -310,8 +281,8 @@
             </div>
         </div>
 
-        <div class="col-md-9 col-lg-10 mb-3">
-            <div class="row align-items-center">
+        <div class="col-sm-12 mb-2 d-flex justify-content-end">
+            <div class="row align-items-center ">
                 <div class="col">
                     <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
                 </div>
@@ -325,15 +296,18 @@
                     </select>
                 </div>
                 <div class="col">
-                    <button type="button" class="btn btn-danger waves-effect waves-light" id="clear_filter_btn_icon">
-                        <i class="mdi mdi-close"></i>
-                    </button>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-danger waves-effect waves-light mr-3" id="clear_filter_btn_icon">
+                            <i class="mdi mdi-close"></i>
+                        </button>
+                        <input type="search" class="form-control" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-lg-2 mb-3">
-            <input type="search" class="form-control form-control-sm" placeholder="{{ __('Search By Order ID') }}" id="search_via_keyword">
-        </div>
+        <!-- <div class="col-md-3 col-lg-2 mb-3">
+            <input type="search" class="form-control form-control-sm" placeholder="{{ __('Search...') }}" id="search_via_keyword">
+        </div> -->
     </div>
 </div>
 <script type="text/template" id="no_order_template">
@@ -366,12 +340,12 @@
         </ul>
         <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
             <div class="tab-pane fade past-order show active" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
-            <div class="tab-pane fade" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
+            <!-- <div class="tab-pane fade" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
             <div class="tab-pane fade past-order" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
                 <div class="error-msg">
                     <p>{{ __('You have not any order yet now.') }}</p>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>

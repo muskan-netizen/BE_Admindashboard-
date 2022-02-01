@@ -16,7 +16,7 @@
             </div>
         </div>
     </div>
-    <div class="row cms-cols">
+    <div class="row cms-cols al_custom_cms_page">
         <div class="col-lg-5 col-xl-3 mb-2">
             <div class="card">
                 <div class="card-body p-3">
@@ -40,10 +40,10 @@
                                         <td>
                                             <a class="text-body" href="javascript:void(0)" id="text_body_{{$page->id}}">{{$page->primary ? $page->primary->title : ''}}</a>
                                         </td>
-                                        <td align="right">
-                                        <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_BLANK">
-                                            <i class="mdi mdi-eye"></i>
-                                        </a>
+                                        <td align ="right">
+                                            <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_BLANK">
+                                                <i class="mdi mdi-eye"></i>
+                                            </a>
                                             @if(!in_array($page->id, [1,2,3]))
                                                 <a class="text-body delete-page" href="javascript:void(0)" data-page_id="{{$page->id}}">
                                                     <i class="mdi mdi-delete"></i>
@@ -64,18 +64,19 @@
                                 {{$page->primary ? $page->primary->title : ''}}
 
                                 <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_BLANK">
-                                    <i class="mdi mdi-eye"></i>
+                                    <!-- <i class="mdi mdi-eye"></i> -->
+                                    <img src="https://img.icons8.com/clouds/30/000000/domain.png"/>
                                 </a>
                                 @if(!in_array($page->id, [1,2,3]))
                                     <a class="text-body delete-page" href="javascript:void(0)" data-page_id="{{$page->id}}">
-                                        <i class="mdi mdi-delete"></i>
+                                        <!-- <i class="mdi mdi-delete"></i> -->
+                                        <img src="https://img.icons8.com/bubbles/30/000000/delete-forever.png"/>
                                     </a>
                                 @endif
                             </a>
-
                         </li>
                         @empty
-                                @endforelse
+                        @endforelse
                     </ol>
                    </div>
                 </div>
@@ -162,8 +163,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 mb-2">
-                            <label for="title" class="control-label mb-0">{{ __("Description") }}</label>
+                        <div class="col-12 al_custom_cke">
+                            <label for="title" class="control-label mb-0 ">{{ __("Description") }}</label>
                             <textarea class="form-control" id="edit_description" rows="9" name="meta_description" cols="100"></textarea>
                             <span class="text-danger error-text updatedescrpitionError"></span>
                         </div>

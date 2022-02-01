@@ -1083,19 +1083,19 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         <div class="row align-items-center">
                            <div class="col-md-12">
                               <div class="form-group">
-                                 <label for="dinein_check" class="mr-3 mb-0">{{ __("Dine In") }}</label>
+                                 <label for="dinein_check" class="mr-3 mb-0">{{getDynamicTypeName('Dine-In')}}</label>
                                  <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
                            <div class="col-md-12">
                               <div class="form-group">
-                                 <label for="delivery_check" class="mr-3 mb-0">{{ __("Delivery") }}</label>
+                                 <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
                                  <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
                            <div class="col-md-12">
                               <div class="form-group">
-                                 <label for="takeaway_check" class="mr-3 mb-0">{{ __("Takeaway") }}</label>
+                                 <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
                                  <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
                               </div>
                            </div>

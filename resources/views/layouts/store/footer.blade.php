@@ -176,16 +176,14 @@
 </script>
 
 {{-- <script type="text/javascript" src="{{asset('front-assets/js/all-min.js')}}" defer></script> --}}
-<script type="text/javascript"
-
-src="{{asset('front-assets/js/slick.js')}}"></script>
+<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
-    <script type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
-    <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
-    <script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/location.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>

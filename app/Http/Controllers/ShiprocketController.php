@@ -161,6 +161,16 @@ class ShiprocketController extends Controller
     	//dd($token->token,$order,$response,$order->order_id,$cancel_order,$add_address,$tracking_shipping);
     }
 
+	public function addShiprocketPickup($vendor,$name)
+    {
+		$this->configuration();
+    	$token = $this->getAuthToken();
+		if(isset($token->token)){
+			$address = $this->addAddress($token->token,$vendor,$name);
+			return $address; 
+		}
+		return 0;
+	}
 
 	public function createOrderRequestShiprocket($user_id,$orderVendor)
     { 
@@ -192,7 +202,7 @@ class ShiprocketController extends Controller
 			$data = array (
 				'order_id' => $orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id,
 				'order_date' => $order->scheduled_date_time ?? $order->created_at,
-				'pickup_location' => 'Inderjit_1642589053',
+				'pickup_location' => $vendor_details->shiprocket_pickup_name ?? '',
 				'channel_id' => '',
 				'comment' => '',
 				'billing_customer_name' => $customer->name ?? '',//Required  
@@ -257,7 +267,7 @@ class ShiprocketController extends Controller
 		{
 			return $awb_order->response->data;
 		}
-		return 15;
+		return 0;
     }
 
 

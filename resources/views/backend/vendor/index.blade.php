@@ -244,7 +244,17 @@
         </div>
     </div>
 </div>
-@include('backend.vendor.modals')
+@php
+$server = env('APP_ENV', 'development');
+if($server == 'local')
+{
+    $file = 'backend.vendor.modals';
+}else{
+    $file = 'backend.vendor.modals2';
+}
+@endphp
+@include($file)
+
 @endsection
 @section('script')
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>

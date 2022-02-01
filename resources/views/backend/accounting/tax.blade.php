@@ -2,6 +2,11 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<style>
+.dataTables_filter,.toolbar,.dt-buttons.btn-group.flex-wrap {position: absolute;height:40px;}.dataTables_filter{right:0;top: -50px;}
+.dataTables_filter label{margin:0;height:40px;}.dataTables_filter label input{margin:0;height:40px;}.dt-buttons.btn-group.flex-wrap{right: 170px;top: -50px;}
+.table-responsive{position: relative;overflow:visible;margin-top:10px;}table.dataTable{margin-top:0 !important;}
+</style>
 @endsection
 @section('content')
 <div class="content">
@@ -44,16 +49,16 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-body position-relative">
-                    <div class="top-input position-absolute">
+                <div class="card-body position-relative al">
+                    <div class="top-input position-absoluteal">
                         <div class="row">
                             <div class="col-md-9">
                                 <div class="row">
                                     <div class="col">
-                                        <input type="text" id="range-datepicker" class="form-control flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
+                                        <input type="text" id="range-datepicker" class="form-control al_box_height flatpickr-input" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
                                     </div>
                                     <div class="col">
-                                        <select class="form-control" id="tax_type_select_box">
+                                        <select class="form-control al_box_height" id="tax_type_select_box">
                                             <option value="">{{ __("Select Tax Type") }}</option>
                                             @foreach($tax_category_options as $tax_category_option)
                                                 <option value="{{$tax_category_option->id}}">{{$tax_category_option->title}}</option>
@@ -61,7 +66,7 @@
                                         </select>
                                     </div>
                                     <div class="col">
-                                        <select class="form-control" id="payment_option_select_box">
+                                        <select class="form-control al_box_height" id="payment_option_select_box">
                                             <option value="">{{ __("Select Payment Method") }}</option>
                                             @foreach($payment_options as $payment_option)
                                                 <option value="{{$payment_option->id}}">{{$payment_option->title}}</option>
@@ -69,7 +74,7 @@
                                         </select>
                                     </div>
                                     <div class="col">
-                                        <button type="button" class="btn btn-danger waves-effect waves-light" id="clear_filter_btn_icon">
+                                        <button type="button" class="btn btn-danger al_box_height waves-effect waves-light" id="clear_filter_btn_icon">
                                             <i class="mdi mdi-close"></i>
                                         </button>
                                     </div>

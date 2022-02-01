@@ -156,7 +156,7 @@ window.initializeSlider = function initializeSlider() {
             { breakpoint: 1367, settings: { slidesToShow: 5, slidesToScroll: 5, infinite: !0 } },
             { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
             { breakpoint: 767, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 3, infinite: !0 } },
-            { breakpoint: 480, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } }
+            { breakpoint: 480, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
     $(".product-4").slick({
@@ -171,7 +171,7 @@ window.initializeSlider = function initializeSlider() {
         responsive: [
             { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
             { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 2 } }
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
 
@@ -187,7 +187,7 @@ window.initializeSlider = function initializeSlider() {
         responsive: [
             { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 2 } },
             { breakpoint: 991, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 1 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } },
             { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
@@ -237,8 +237,8 @@ window.initializeSlider = function initializeSlider() {
             {
                 breakpoint: 767,
                 settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
                     dots: false,
                     centerMode: true,
                 }
@@ -246,8 +246,8 @@ window.initializeSlider = function initializeSlider() {
             {
                 breakpoint: 576,
                 settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
                     dots: false,
                     centerMode: true,
                 }
@@ -264,6 +264,7 @@ window.initializeSlider = function initializeSlider() {
         responsive: [
             { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
             { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } },
             { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
@@ -287,8 +288,8 @@ window.initializeSlider = function initializeSlider() {
             {
                 breakpoint: 767,
                 settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
                     arrows: true
                 }
             }
@@ -306,7 +307,7 @@ window.initializeSlider = function initializeSlider() {
             { breakpoint: 1367, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
             { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
             { breakpoint: 767, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 3, infinite: !0 } },
-            { breakpoint: 480, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } }
+            { breakpoint: 480, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
 
@@ -673,8 +674,9 @@ $(document).ready(function() {
                     if ($("[id^=cart_product_]").length == 0) {
                         $(".shopping-cart").html('');
                     }
-                    cartTotalProductCount();
                     cartHeader();
+                    cartTotalProductCount();
+                    
 
                     if ($('#show_plus_minus' + cartproduct_id).length != 0) {
                         if($('.addon_variant_quantity_' + cartproduct_id).closest('.customized_product_row').length > 0){
