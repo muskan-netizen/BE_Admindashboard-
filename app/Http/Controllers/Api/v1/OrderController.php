@@ -1265,6 +1265,7 @@ class OrderController extends BaseController
 
     public function submitEditedOrder(Request $request)
     {
+        DB::beginTransaction();
         try {
             $rules = [
                 'cart_id' => 'required',
@@ -1307,8 +1308,6 @@ class OrderController extends BaseController
                     // if($user_wallet_balance < $new_payable_amount){
                     //     return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
                     // }
-
-                    DB::beginTransaction();
 
                     $subscription_features = array();
                     $now = Carbon::now()->toDateTimeString();
