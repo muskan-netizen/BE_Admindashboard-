@@ -1265,7 +1265,6 @@ class OrderController extends BaseController
 
     public function submitEditedOrder(Request $request)
     {
-        DB::beginTransaction();
         try {
             $rules = [
                 'cart_id' => 'required',
@@ -1293,6 +1292,7 @@ class OrderController extends BaseController
             $order_vendor_id = $request->order_vendor_id;
             $new_payable_amount = $request->total_payable_amount;
 
+            DB::beginTransaction();
             if($status == 1){
                 ////// Edited Order accepted functionality /////
                 $total_amount = 0;
@@ -1378,7 +1378,7 @@ class OrderController extends BaseController
                         // $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
                         // $order->specific_instructions = $cart->specific_instructions ?? null;
                         // $order->is_gift = $request->is_gift ?? 0;
-                        $order->update();
+                        $order->save();
 
 
                         $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
@@ -1583,14 +1583,14 @@ class OrderController extends BaseController
                                     $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                                 }
                             }
-                            $order_vendor->update();
+                            $order_vendor->save();
 
                             $order_status = VendorOrderStatus::where('order_id', $order->id)->where('order_vendor_id', $order_vendor_id)->first();
                             $order_status->order_id = $order->id;
                             $order_status->vendor_id = $vendor_id;
                             $order_status->order_status_option_id = 1;
                             $order_status->order_vendor_id = $order_vendor->id;
-                            $order_status->update();
+                            $order_status->save();
                         }
                         $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
                         if (in_array(1, $subscription_features)) {
@@ -1652,7 +1652,7 @@ class OrderController extends BaseController
                         $order->tip_amount = 0;
                         $order->total_service_fee = $total_service_fee;
                         $order->total_delivery_fee = $total_delivery_fee;
-                        $order->loyalty_points_used = $loyalty_points_used;
+                        $order->loyalty_points_used = 0;
                         $order->loyalty_amount_saved = 0; //$loyalty_amount_saved;
                         $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                         $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
@@ -1665,7 +1665,7 @@ class OrderController extends BaseController
                         // if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                         //     $order->payment_status = 1;
                         // }
-                        $order->update();
+                        $order->save();
                         foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                             $this->sendSuccessEmail($request, $order, $vendor_id);
                         }
@@ -1688,7 +1688,7 @@ class OrderController extends BaseController
                             }
                         }
                         $cart->is_approved = 1;
-                        $cart->update();
+                        $cart->save();
 
                         // if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                         //     Payment::insert([
@@ -1742,8 +1742,9 @@ class OrderController extends BaseController
                 $cart = TempCart::where('status', '0')->where('id', $cart_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', 1)->where('is_approved', 0)->first();
                 if($cart){
                     $cart->is_approved = 2;
-                    $cart->update();
+                    $cart->save();
                 }
+                DB::commit();
                 return $this->successResponse($cart, __('Order rejected successfully.'), 201);
             }
         } 
