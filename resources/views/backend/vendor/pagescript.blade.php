@@ -523,6 +523,25 @@
         $('#userList').fadeOut();
     });
 
+    // search users for set permission
+    $('#search_user_for_permission').keyup(function(){
+        var query = $(this).val();
+        var vendor_id = 0;
+        if(query != '')
+        {
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+            url:"{{ route('searchUserForPermission') }}",
+            method:"POST",
+            data:{query:query, _token:_token, vendor_id:vendor_id},
+            success:function(data){
+            $('#userList').fadeIn();
+            $('#userList').html(data);
+            }
+            });
+        }
+    });
+
     ///// **************** 1.1  check vendor exists in dispatcher or not for pickup********** //////////
 
     $(".openConfirmDispatcher").click(function(e) {

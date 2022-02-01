@@ -203,7 +203,7 @@
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        <input type="text" name="is_show_vendor_details" class="form-control" value="{{@$vendor->shiprocket_pickup_name}}" {{(($vendor->shiprocket_pickup_name)? 'disabled' :'')}}>
+                        <input type="text" name="shiprocket_pickup_name" class="form-control" value="{{@$vendor->shiprocket_pickup_name}}" {{(($vendor->shiprocket_pickup_name)? 'disabled' :'')}} placeholder="{{__('Pickup Location Name')}}" required>
                     </div>
                     <div class="col-12">
                         <button class="btn btn-info waves-effect waves-light w-100" {{(($vendor->shiprocket_pickup_name)? 'disabled' :'')}}>{{ __("Save") }}</button>

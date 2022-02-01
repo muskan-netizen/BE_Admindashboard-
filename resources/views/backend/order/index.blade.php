@@ -427,9 +427,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 vendor_id: vendor_id,
                 date_filter: date_filter
             },
-            success: function(response) {
+            success: function(response) { 
                 // reload after 10 sec
-                setTimeout(autoloaddashboad(), 10000);
+               
 
                 $('#order_list_order').hide();
                 if (response.status == 'Success') {
@@ -456,12 +456,17 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     $("#active-orders").html("(" + response.data.active_orders + ")");
                     $("#pending-orders").html("(" + response.data.pending_orders + ")");
                     $("#history-orders").html("(" + response.data.orders_history + ")");
-                }
+
+                 }
+                 setTimeout(autoloaddashboad(), 20000);
             },
             error: function(data) {
 
             },
         });
+
+
+        
     }
     $(document).ready(function() {
 

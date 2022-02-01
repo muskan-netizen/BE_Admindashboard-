@@ -149,12 +149,13 @@
 
                         <!-- al_add_user start -->
                         <div class="col-md-4 al_add_user">
-                            <h5>SEARCH USER </h5>
+                            <h5>{{__("SEARCH USER")}} </h5>
                             <div class="form-group">
                                 <div class="btn-group w-100">
-                                    <input type="text" class="dropdown-toggle form-control w-100" value="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" placeholder="search user">
+                                    {{-- data-toggle="dropdown" aria-haspopup="true" --}}
+                                    <input type="text" id="search_user_for_permission" class="dropdown-toggle form-control w-100" value="" name="user_search_name" autocomplete="off" aria-expanded="false" placeholder="search user">
 
-                                    <div class="dropdown-menu w-100">
+                                    <div class="dropdown-menu w-100" id="userList">
                                         <!-- <p class="d-flex justify-content-start pt-1 pb-1 al_select_user">
                                             <span><input class="mt-1 mr-1" type="checkbox"></span>
                                             <span>Select All</span>
