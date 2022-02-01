@@ -15,11 +15,11 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         <div class="cab-booking-header">
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-3 col-md-2">
+                    <div class="col-sm-3 col-md-2">
                          <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     </div>
-                    <div class="col-9 col-md-10 top-header bg-transparent d-flex align-items-center justify-content-end">
-                        <ul class="header-dropdown">
+                    <div class="col-sm-9 col-md-10 ">
+                        <ul class="header-dropdown top-headeral bg-transparent d-flex align-items-center justify-content-md-end justify-content-center">
                            @if($client_preference_detail->header_quick_link == 1)
                             <li class="onhover-dropdown quick-links quick-links">
 
