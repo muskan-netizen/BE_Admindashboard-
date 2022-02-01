@@ -789,7 +789,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                      </div>
                   </div>
 
-                  <!-- For mTalkz -->
+                  <!-- For unifonic_fields -->
                   <div class="row sms_fields mx-0" id="unifonic_fields" style="display : {{$preference->sms_provider == 4 ? 'flex' : 'none'}};">
                      <div class="col-12">
                         <div class="form-group mb-2">

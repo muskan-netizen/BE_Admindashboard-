@@ -1219,6 +1219,8 @@ class OrderController extends BaseController
                         $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
                         $tempCartController = new TempCartController();
                         $vendor->tempCart = $tempCartController->getCartForApproval($vendor->tempCart, $order, $langId, $currId, '');
+                    }else{
+                        $vendor->tempCart = null;
                     }
 
                 }
