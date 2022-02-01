@@ -46,98 +46,8 @@ trait ShiprocketManager{
         return $response;
     }
 
-        public function createOrder($token,$data){
+    public function createOrder($token,$data){
         $endpoint="/orders/create/adhoc";
-        // $data=[
-        //     'order_id'                  =>  $data['order_id'],
-        //     'order_date'                =>  $data['order_date'],
-        //     'pickup_location'           =>  $data['pickup_location']??null,
-        //     'billing_customer_name'     =>  $data['billing_customer_name'],
-        //     'billing_last_name'         =>  $data['billing_last_name']??'',
-        //     'billing_address'           =>  $data['billing_address'],
-        //     'billing_address_2'         =>  $data['billing_address_2']??null,
-        //     'billing_city'              =>  $data['billing_city'],
-        //     'billing_pincode'           =>  $data['billing_pincode'],
-        //     'billing_state'             =>  $data['billing_state'],
-        //     'billing_country'           =>  $data['billing_country'],
-        //     "billing_email"             => $data['billing_email'],
-        //     "billing_phone"             =>  $data["billing_phone"],
-        //     "shipping_is_billing"       => $data["shipping_is_billing"],
-        //     "order_items" => $data['order_items'],
-        //     "payment_method"=>$data['payment_method']??"Prepaid",
-        //     "shipping_charges"=> $data['shipping_charges']??0,
-        //     "giftwrap_charges"=>$data['giftwrap_charges']??0 ,
-        //     "transaction_charges"=>$data['transaction_charges']??0,
-        //     "total_discount"=>$data['total_discount']??0,
-        //     "sub_total" =>  $data['sub_total'],
-        //     "length"=>  $data['length'],
-        //     "breadth"=>  $data['breadth'],
-        //     "height"=> $data['height'],
-        //     "weight"=>  $data['weight']
-
-        // ];
-        $data = array (
-              'order_id' => '22411447',
-              'order_date' => '2021-08-24 11:11',
-              'pickup_location' => 'Primary',
-              'channel_id' => '',
-              'comment' => 'Reseller: M/s Goku',
-              'billing_customer_name' => 'TEsting',
-              'billing_last_name' => 'Uzumaki',
-              'billing_address' => 'Code brew Labs, CDCL Building',
-              'billing_address_2' => '',
-              'billing_city' => 'Chandigarh',
-              'billing_pincode' => '160002',
-              'billing_state' => 'Chandigarh',
-              'billing_country' => 'India',
-              'billing_email' => 'sujatacodebrew@gmail.com',
-              'billing_phone' => '8059272673',
-              'shipping_is_billing' => true,
-              'shipping_customer_name' => '',
-              'shipping_last_name' => '',
-              'shipping_address' => '',
-              'shipping_address_2' => '',
-              'shipping_city' => '',
-              'shipping_pincode' => '',
-              'shipping_country' => '',
-              'shipping_state' => '',
-              'shipping_email' => '',
-              'shipping_phone' => '',
-              'order_items' => 
-              array (
-                0 => 
-                array (
-                  'name' => 'Kunai',
-                  'sku' => 'chakra123',
-                  'units' => 10,
-                  'selling_price' => '900',
-                  'discount' => '',
-                  'tax' => '',
-                  'hsn' => 441122,
-                ),
-                0 => 
-                array (
-                  'name' => 'Kunai 2',
-                  'sku' => 'chakra123-2',
-                  'units' => 10,
-                  'selling_price' => '900',
-                  'discount' => '',
-                  'tax' => '',
-                  'hsn' => 441122,
-                ),
-              ),
-              'payment_method' => 'Prepaid',
-              'shipping_charges' => 0,
-              'giftwrap_charges' => 0,
-              'transaction_charges' => 0,
-              'total_discount' => 0,
-              'sub_total' => 18000,
-              'length' => 10,
-              'breadth' => 15,
-              'height' => 20,
-              'weight' => 2.5,
-            );
-        // dd($endpoint,$data,trim($token),$token);
         $response=$this->postCurl($endpoint,$data,trim($token));
         return $response;
     }
@@ -222,9 +132,9 @@ trait ShiprocketManager{
     {
         $vendors = array();
         $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
-         $vendor_details = Vendor::find($vid);
-         if($cus_address->pincode!='')
-         {
+        $vendor_details = Vendor::find($vid);
+        if($cus_address->pincode!='')
+        {
         $this->credentials();
         $endpoint='/courier/serviceability';
         $data = array (

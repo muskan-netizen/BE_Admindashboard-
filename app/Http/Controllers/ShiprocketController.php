@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Models\OrderVendorProduct;
 use App\Models\ShippingOption;
 use App\Models\User;
 use App\Models\UserAddress;
@@ -18,6 +20,7 @@ class ShiprocketController extends Controller
     private $status;
     private $distance;
     private $amount_per_km;
+    private $weight;
 
     public function __construct()
     {
@@ -31,7 +34,7 @@ class ShiprocketController extends Controller
                 $this->base_price = $creds_arr->base_price??'0';
                 $this->distance = $creds_arr->distance??'0';
                 $this->amount_per_km = $creds_arr->amount_per_km??'0';
-
+				$this->weight = $creds_arr->weight;
             }
             $this->status = $simp_creds->status??'0';
         }else{
@@ -52,7 +55,7 @@ class ShiprocketController extends Controller
                 $this->base_price = $creds_arr->base_price??'0';
                 $this->distance = $creds_arr->distance??'0';
                 $this->amount_per_km = $creds_arr->amount_per_km??'0';
-
+				$this->weight = $creds_arr->weight;
             }
             $this->status = $simp_creds->status??'0';
         }else{
@@ -159,11 +162,102 @@ class ShiprocketController extends Controller
     }
 
 
-	public function createOrderRequestShiprocket(Request $request)
-    {
+	public function createOrderRequestShiprocket($user_id,$orderVendor)
+    { 
 		$this->configuration();
 		$token = $this->getAuthToken();
-    	$order = $this->createOrder($token->token,[]);
+		if($token->token)
+		{
+			$order = Order::find($orderVendor->order_id);
+        	$customer = User::find($user_id);
+			$vendor_details = Vendor::find($orderVendor->vendor_id);
+			$cus_address = UserAddress::find($order->address_id);
+			$orderProducts = OrderVendorProduct::where(['order_id'=>$orderVendor->order_id,'order_vendor_id'=>$orderVendor->id])->get();
+			$itemsArray = array();
+			$weight = array();
+			foreach($orderProducts as $items)
+			{
+				$itemsArray[] = array (
+					'name' => $items->product_name, //Required
+					'sku' => $items->product->sku ?? $items->id, //Required
+					'units' => $items->quantity,
+					'selling_price' => helper_number_formet($items->price),
+					'discount' => '',
+					'tax' => helper_number_formet($items->taxable_amount),
+					'hsn' => '',
+					);
+					$weight[] = $items->product->weight;
+			}
+			$weightSum = array_sum($weight);
+			$data = array (
+				'order_id' => $orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id,
+				'order_date' => $order->scheduled_date_time ?? $order->created_at,
+				'pickup_location' => 'Inderjit_1642589053',
+				'channel_id' => '',
+				'comment' => '',
+				'billing_customer_name' => $customer->name ?? '',//Required  
+				'billing_last_name' => '',
+				'billing_address' => $cus_address->address ?? '', //Required 
+				'billing_address_2' => '',
+				'billing_city' => $cus_address->city ?? '', //Required 
+				'billing_pincode' => $cus_address->pincode ?? '', //Required 
+				'billing_state' => $cus_address->state ?? '', //Required 
+				'billing_country' => $cus_address->country ?? '', //Required 
+				'billing_email' => $customer->email ?? '', //Required
+				'billing_phone' => $customer->phone_number, //Required
+				'shipping_is_billing' => true,
+				'shipping_customer_name' => '',
+				'shipping_last_name' => '',
+				'shipping_address' => '',
+				'shipping_address_2' => '',
+				'shipping_city' => '',
+				'shipping_pincode' => '',
+				'shipping_country' => '',
+				'shipping_state' => '',
+				'shipping_email' => '',
+				'shipping_phone' => '',
+				'order_items' => $itemsArray,
+				'payment_method' => (($order->payment_option_id==1)?'COD':'Prepaid'),
+				'shipping_charges' => 0,
+				'giftwrap_charges' => 0,
+				'transaction_charges' => 0,
+				'total_discount' => 0,
+				'sub_total' => $order->total_amount,
+				'length' => '.5',
+				'breadth' => '.5',
+				'height' => '.5',
+				'weight' => ($weightSum>0)? $weightSum : $this->weight,
+			  );
+		}
+    	$orderSuc = $this->createOrder($token->token,$data);
+		if($orderSuc->status_code == 1)
+		{
+		  return $this->AWBForShipment($orderSuc->shipment_id,$orderVendor->courier_id,$token->token);
+		}
+		return 0;
+		//Response Result
+		//"order_id": 181022136
+  		//"shipment_id": 180553979
+  		//"status": "NEW"
+  		//"status_code": 1
+  		//"onboarding_completed_now": 0
+  		//"awb_code": ""
+  		//"courier_company_id": ""
+  		//"courier_name": ""
+
+    }
+
+
+	public function AWBForShipment($shipment_id,$courierId,$token)
+    {
+		$data['shipment_id'] = $shipment_id;
+		if($courierId){$data['courier_id'] = $courierId;}
+		$awb_order= $this->generateAWBForShipment($token,$data);
+		if($awb_order->awb_assign_status == 1)
+		{
+			return $awb_order->response->data;
+		}
+		return 15;
     }
 
 
