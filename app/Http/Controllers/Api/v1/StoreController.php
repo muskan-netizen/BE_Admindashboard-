@@ -1067,7 +1067,7 @@ class StoreController extends BaseController{
 				);
 			}
 			$products = Product::select('id', 'sku', 'url_slug','is_live','category_id')->has('vendor')
-						->with(['media.image', 'translation' => function($q) use($langId){
+						->with(['media.image', 'categoryName', 'translation' => function($q) use($langId){
                         	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     	},'variant' => function($q) use($langId){
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
@@ -1102,6 +1102,31 @@ class StoreController extends BaseController{
     	} catch (Exception $e) {
     		return $this->errorResponse($e->getMessage(), $e->getCode());
     	}
+    }
+
+	public function updateProductStatus(Request $request){
+		try{
+			$validator = Validator::make($request->all(), [
+				'product_id' => 'required',
+				'is_live'	=> 'required'
+			]);
+
+			if ($validator->fails()) {			
+				return $this->errorResponse($validator->errors()->first(), 422);
+			}
+			$product_id = $request->product_id;
+			$product = Product::where('id', $request->product_id)->first();
+			if($product)
+			{
+				$product->is_live = $request->is_live;
+				$product->save();
+				return $this->successResponse('','Status updated successfully!', 200);
+			}else{
+				return $this->errorResponse('Product not found', 422);
+			}
+		} catch (Exception $e) {			
+			return $this->errorResponse($e->getMessage(), $e->getCode());
+		}			
     }
 
 	private function preProductDetail($productid)
