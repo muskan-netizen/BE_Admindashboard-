@@ -1015,14 +1015,7 @@ class StoreController extends BaseController{
     }
 
 	public function getVendorProductList(Request $request){
-    	try {
-			// $validator = Validator::make($request->all(), [
-			// 	'selected_vendor_id' => 'required',	
-			// ]);
-
-			// if ($validator->fails()) {			
-			// 	return $this->errorResponse($validator->errors()->first(), 422);
-			// }			
+    	try {			
 			$category_list = [];
 			$allcategories = [];
     		$user = Auth::user();
@@ -1052,14 +1045,14 @@ class StoreController extends BaseController{
 			
 			
 			//  $is_selected_category_id = $selected_category_id ? $selected_category_id : $vendor_category_id;
-			if($selected_category_id)
-			{
-				$allcategories[] = $selected_category_id;
-			}else{
-				foreach ($vendor_categories as $vendor_category) {
-					$allcategories[] = $vendor_category->category->id;					
-				}
-			}			
+			// if($selected_category_id)
+			// {
+			// 	$allcategories[] = $selected_category_id;
+			// }else{
+			// 	foreach ($vendor_categories as $vendor_category) {
+			// 		$allcategories[] = $vendor_category->category->id;					
+			// 	}
+			// }			
 			$is_selected_category_id = $selected_category_id;
 			foreach ($vendor_categories as $vendor_category) {
 				$Category_translation = Category_translation::where('category_id', $vendor_category->category->id)->where('language_id', $langId)->first();
@@ -1080,7 +1073,12 @@ class StoreController extends BaseController{
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
                     	},
-                    ])->whereIn('category_id', $allcategories);
+                    ])->orderBy('id', 'DESC');
+
+			if($selected_category_id)
+			{
+				$products = $products->where('category_id', $selected_category_id);
+			}
 					// ->where('category_id', $is_selected_category_id);
 			if($selected_vendor_id > 0){
 				$products = $products->where('vendor_id', $selected_vendor_id);
