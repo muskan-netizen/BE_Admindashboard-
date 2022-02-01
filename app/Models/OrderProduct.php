@@ -68,10 +68,16 @@ class OrderProduct extends Model{
     }
     public function getImageBase64Attribute()
     {
+      if(!empty($image_url))
       $img = $this->attributes['image'];
+      else
+      $img = 'default/default_image.png';
+
       $image = $this->getImageAttribute($img);
       $image_url = $image['proxy_url'].'100/100'.$image['image_path'];
+
       $base64 = base64_encode(file_get_contents($image_url));
+    
       return $base64;
     }
 }

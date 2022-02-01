@@ -340,12 +340,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         </ul>
         <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
             <div class="tab-pane fade past-order show active" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
-            <!-- <div class="tab-pane fade" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
+            <div class="tab-pane fade" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
             <div class="tab-pane fade past-order" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
                 <div class="error-msg">
                     <p>{{ __('You have not any order yet now.') }}</p>
                 </div>
-            </div> -->
+            </div> 
         </div>
     </div>
 </div>

@@ -146,7 +146,25 @@ class ShiprocketController extends Controller
 			}
 		}
 
+		public function trackingShipmentId($shipId)
+		{
+			$this->configuration();
+			if($this->status == 1){
+				$token = $this->getAuthToken();
+				return $this->trackingThroughShipmentId($token->token,$shipId);
+			}
+			return 0;
+		}
 
+		public function trackingAWB($awbId)
+		{
+			$this->configuration();
+			if($this->status == 1){
+				$token = $this->getAuthToken();
+				return $this->trackingThroughAWB($token->token,$awbId);
+			}
+			return 0;
+		}
 
 
     public function checkShiprocket()
