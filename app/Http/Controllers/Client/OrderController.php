@@ -447,8 +447,8 @@ class OrderController extends BaseController
                         $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
                     }elseif($orderData->shipping_delivery_type=='SR'){
                         //Cancel Shipping place order request for Shiprocket
-                        $lala = new ShiprocketController();
-                        $order_lalamove = $lala->cancelOrderRequestShiprocket($currentOrderStatus->web_hook_code);
+                        $ship = new ShiprocketController();
+                        $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
                     }
 
                 }
