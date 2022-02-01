@@ -1725,8 +1725,8 @@ class OrderController extends BaseController
                             $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                         }
 
-                        DB::commit();
                         $this->sendSuccessSMS($request, $order);
+                        DB::commit();
 
                         return $this->successResponse($order, __('Order accepted successfully.'), 201);
                     }
@@ -1743,8 +1743,8 @@ class OrderController extends BaseController
                 if($cart){
                     $cart->is_approved = 2;
                     $cart->update();
-                    DB::commit();
                 }
+                DB::commit();
                 return $this->successResponse($cart, __('Order rejected successfully.'), 201);
             }
         } 
