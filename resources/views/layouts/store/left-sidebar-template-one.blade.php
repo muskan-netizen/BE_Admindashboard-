@@ -85,8 +85,8 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 </ul>
                             </li>
                             @if(Auth::guest())
-                            <li class="onhover-dropdown mobile-account">
-                                <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
+                            <li class="onhover-dropdown mobile-account d-block">
+                                <i class="fa fa-user mr-1" aria-hidden="true"></i>{{__('Account')}}
                                 <ul class="onhover-show-div">
                                     <li>
                                         <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
@@ -97,8 +97,8 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 </ul>
                             </li>
                             @else
-                            <li class="onhover-dropdown mobile-account">
-                                <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
+                            <li class="onhover-dropdown mobile-account d-block">
+                                <i class="fa fa-user mr-1" aria-hidden="true"></i>{{__('Account')}}
                                 <ul class="onhover-show-div">
                                     @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>
