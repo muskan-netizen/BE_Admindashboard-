@@ -1750,9 +1750,10 @@ class OrderController extends BaseController
             else{
                 ////// Edited Order rejected functionality /////
                 $cart = TempCart::where('status', '0')->where('id', $cart_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', 1)->where('is_approved', 0)->first();
-                $cart->is_approved = 2;
-                $cart->update();
-
+                if($cart){
+                    $cart->is_approved = 2;
+                    $cart->update();
+                }
                 return $this->successResponse($cart, __('Order rejected successfully.'), 201);
             }
         } 
