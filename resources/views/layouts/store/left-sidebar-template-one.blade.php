@@ -18,8 +18,8 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <div class="col-sm-3 col-md-2">
                          <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     </div>
-                    <div class="col-sm-9 col-md-10 ">
-                        <ul class="header-dropdown top-header bg-transparent d-flex align-items-center justify-content-md-end justify-content-center">
+                    <div class="col-sm-9 col-md-10 top-header bg-transparent">
+                        <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
                            @if($client_preference_detail->header_quick_link == 1)
                             <li class="onhover-dropdown quick-links quick-links">
 
