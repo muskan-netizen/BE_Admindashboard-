@@ -3,7 +3,10 @@
         <tr>
             <td>
                 <div class="al_print_header" style="width: 100%;">
-                    <h5 style="color: #000;margin: 0px;font-family: Lato,sans-serif;">{{ $vendor_data->name }}</h5>
+                    <h5 style="color: #000;margin: 0px;font-family: Lato,sans-serif;display: inline-block;vertical-align: middle;">
+                        <img style="margin-right: 10px;" src="{{@$vendor_data->logo['image_fit'].'32/32'.@$vendor_data->logo['image_path']}}" alt="product-img" height="20">
+                        <span style="color: #000;margin: 0px;margin-bottom: 10px; font-family: Lato,sans-serif;display: inline-block;vertical-align: middle;">{{ $vendor_data->name }}</span>
+                        </h5>
                         <ul style="padding: 0; margin: 0;">
                             @if($order->luxury_option_name != '')
                                 <li style="display: inline-block;vertical-align: middle;margin-right: 10px"><span style="font-family: Lato,sans-serif; background-color: #05C3DF;color: #fff;border-radius: 10px;font-size: 12px;padding: 2px 7px">Delivery</span></li>
@@ -152,12 +155,14 @@
                                 </td>
                                 <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue)</p></td>
                             </tr> -->
+                            @if($vendor->reject_reason)
                             <tr>
                                 <td scope="row" colspan="4">
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif; width:200px;">{{ __("Reject Reason") }} :</b></p>
                                 </td>
                                 <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$vendor->reject_reason}}</p></td>
                             </tr>
+                            @endif
                             <tr>
                                 <td scope="row" colspan="4">
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Total") }} :</b></p>
@@ -196,6 +201,7 @@
                                             </p>
                                         </td>
                                     </tr>
+                                    @if(!is_null($order->user) && isset($order->user->phone_number))
                                     <tr>
                                         <td align="left">
                                             <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
@@ -203,6 +209,7 @@
                                             </p>
                                         </td>
                                     </tr>
+                                    @endif
                                     <tr>
                                         <td align="left">
                                             <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
@@ -219,6 +226,7 @@
                                         </td>
                                     </tr>
                                     @endif
+                                    @if(isset($order->address) && !empty($order->address->city))
                                     <tr>
                                         <td align="left">
                                             <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
@@ -226,6 +234,8 @@
                                             </p>
                                         </td>
                                     </tr>
+                                    @endif
+                                    @if(isset($order->address) && !empty($order->address->state))
                                     <tr>
                                         <td align="left">
                                             <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
@@ -233,6 +243,7 @@
                                             </p>
                                         </td>
                                     </tr>
+                                    @endif
                                     <tr>
                                         <td align="left">
                                             <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
