@@ -77,13 +77,13 @@ trait ShiprocketManager{
 
     public function trackingThroughAWB($token,$awbCode){
         $endpoint="/courier/track/awb/$awbCode";
-        $response=$this->getCurl($endpoint,$token);
+        $response=$this->getCurl($endpoint,'',$token);
         return $response;
     }
 
     public function trackingThroughShipmentId($token,$shipmentId){
         $endpoint="/shipments/$shipmentId";
-        $response=$this->getCurl($endpoint,$token);
+        $response=$this->getCurl($endpoint,'',$token);
         return $response;
     }
 
@@ -201,7 +201,11 @@ trait ShiprocketManager{
             curl_setopt($ch, CURLOPT_URL, $this->api_url.''.$endpoint);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+            if($data)
             curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
+
+
             $headers = array();
             $headers[] = 'Accept: */*';
             if(!is_null($token)){

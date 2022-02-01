@@ -983,9 +983,14 @@ class CartController extends BaseController
             $vendorId = $cartData[0]->vendor_id;
             //type must be a : delivery , takeaway,dine_in
             $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
-            $slots = showSlot('',$vendorId,'delivery',$duration->slot_minutes);
+            $slotsDate = findSlot('',$vendorId,'','api');
+            $slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes);
             $cart->slots = $slots;
-            $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled ?? 0;
+            if(count($slots)>0){
+                $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled ?? 0;
+             }else{
+                $cart->closed_store_order_scheduled = 0;
+            }
         }else{
             $slots = [];
             $cart->slots = [];

@@ -1265,7 +1265,6 @@ class OrderController extends BaseController
 
     public function submitEditedOrder(Request $request)
     {
-        DB::beginTransaction();
         try {
             $rules = [
                 'cart_id' => 'required',
@@ -1293,6 +1292,7 @@ class OrderController extends BaseController
             $order_vendor_id = $request->order_vendor_id;
             $new_payable_amount = $request->total_payable_amount;
 
+            DB::beginTransaction();
             if($status == 1){
                 ////// Edited Order accepted functionality /////
                 $total_amount = 0;
@@ -1652,7 +1652,7 @@ class OrderController extends BaseController
                         $order->tip_amount = 0;
                         $order->total_service_fee = $total_service_fee;
                         $order->total_delivery_fee = $total_delivery_fee;
-                        $order->loyalty_points_used = $loyalty_points_used;
+                        $order->loyalty_points_used = 0;
                         $order->loyalty_amount_saved = 0; //$loyalty_amount_saved;
                         $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                         $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
@@ -1725,8 +1725,8 @@ class OrderController extends BaseController
                             $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                         }
 
-                        DB::commit();
                         $this->sendSuccessSMS($request, $order);
+                        DB::commit();
 
                         return $this->successResponse($order, __('Order accepted successfully.'), 201);
                     }
@@ -1744,6 +1744,7 @@ class OrderController extends BaseController
                     $cart->is_approved = 2;
                     $cart->update();
                 }
+                DB::commit();
                 return $this->successResponse($cart, __('Order rejected successfully.'), 201);
             }
         } 
