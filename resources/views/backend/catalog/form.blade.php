@@ -1,13 +1,11 @@
 <div class="row">
     <div class="col-md-12">
-        
-
         <div class="row">
             <div class="col-md-3">
                 <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify" data-default-file="{{ !empty($banner->icon) ? env('IMG_URL').'storage/app/public/'.$banner->icon : '' }}" />
                 <p class="text-muted text-center mt-2 mb-0">{{ __("Upload Category Icon") }}</p>
             </div>
-            <div class="col-md-6"> <!--  Storage::disk('s3')->url($client->logo)  -->                 
+            <div class="col-md-6"> <!--  Storage::disk('s3')->url($client->logo)  -->
                 <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{ !empty($banner->image) ? env('IMG_URL').'storage/app/public/'.$banner->image : '' }}" />
                 <p class="text-muted text-center mt-2 mb-0">{{ __("Upload Category image") }}</p>
             </div>
@@ -26,7 +24,7 @@
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    {!! Form::label('title', __('Slug'),['class' => 'control-label']) !!} 
+                    {!! Form::label('title', __('Slug'),['class' => 'control-label']) !!}
                     {!! Form::text('slug[]', null, ['class' => 'form-control']) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
@@ -35,19 +33,19 @@
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    {!! Form::label('title', __('Meta Title'),['class' => 'control-label']) !!} 
+                    {!! Form::label('title', __('Meta Title'),['class' => 'control-label']) !!}
                     {!! Form::text('meta_title[]', null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', __('Meta Description'),['class' => 'control-label']) !!} 
+                    {!! Form::label('title', __('Meta Description'),['class' => 'control-label']) !!}
                     {!! Form::textarea('meta_description[]', null, ['class'=>'form-control']) !!}
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', __('Meta Keywords'),['class' => 'control-label']) !!} 
+                    {!! Form::label('title', __('Meta Keywords'),['class' => 'control-label']) !!}
                     {!! Form::textarea('meta_keywords[]', null, ['class' => 'form-control']) !!}
                 </div>
             </div>
@@ -66,7 +64,7 @@
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    {!! Form::label('title', __('Slug'),['class' => 'control-label']) !!} 
+                    {!! Form::label('title', __('Slug'),['class' => 'control-label']) !!}
                     {!! Form::text('slug[]', null, ['class' => 'form-control']) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
@@ -75,24 +73,24 @@
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    {!! Form::label('title', __('Meta Title'),['class' => 'control-label']) !!} 
+                    {!! Form::label('title', __('Meta Title'),['class' => 'control-label']) !!}
                     {!! Form::text('meta_title[]', null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', __('Meta Description'),['class' => 'control-label']) !!} 
+                    {!! Form::label('title', __('Meta Description'),['class' => 'control-label']) !!}
                     {!! Form::textarea('meta_description[]', null, ['class'=>'form-control']) !!}
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', __('Meta Keywords'),['class' => 'control-label']) !!} 
+                    {!! Form::label('title', __('Meta Keywords'),['class' => 'control-label']) !!}
                     {!! Form::textarea('meta_keywords[]', null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             @endforeach
         </div>
-        
+
     </div>
 </div>

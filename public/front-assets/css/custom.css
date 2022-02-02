@@ -50,6 +50,17 @@ body .item_no {width: 30px;height: 30px;line-height: 30px;border-radius: 50px;fo
 body .status_box label {padding: 2px 10px;font-size: 12px;overflow: hidden;margin-top: 2px !important;}
 body .suppliers-img-outer, body .img-outer-box{height: 150px;}body .pixelstrap li a:hover img.blur-up.lazyloaded {transform: rotate(25deg);}
 .cab-booking-header .top-header .header-dropdown li a, .cab-booking-header .top-header .header-dropdown li{color: var(--theme-deafult);font-size: 14px;}
+.vendors .slick-next{right: -30px;}
+.vendors .slick-prev{left: -30px;}
+.vendors .slick-next:before,.vendors .slick-prev:before {content: "";background-image: url(https://img.icons8.com/ios/50/000000/expand-arrow--v2.png);
+font-size: 0;height: 20px;width: 20px;left: 0;position: absolute;-webkit-transform: rotate(90deg);transform: rotate(90deg);z-index: 1;top: 0;background-size: 20px;background-repeat: no-repeat;}
+.vendors .slick-slider {overflow: visible;}
+.vendors .slick-next:before {transform: rotate(-90deg);}
+.vendors .no-arrow .slick-next, .vendors .no-arrow .slick-prev {display: block !important;}
+.menu-slider .slick-prev, .menu-slider .slick-next {background-image: url(https://img.icons8.com/ios/50/000000/expand-arrow--v2.png);background-repeat: no-repeat;
+background-size: 20px;top: 50%;-webkit-transform: translate(0, -50%) rotate(-90deg);transform: translate(0, -50%) rotate(-90deg);height: 20px;width: 20px;}
+body .pixelstrap li a, body .pixelstrap li a:hover {padding: 0;}
+.menu-slider .slick-prev{-webkit-transform: translate(0, -50%) rotate(90deg);transform: translate(0, -50%) rotate(90deg);}
 /* ------------------------------- al css start end ----------------------------- */
 
 /* Responsiveness Css Start From Here */
@@ -109,4 +120,3 @@ body .top-header .header-dropdown li span:last-child {display: inline-block;}
 top: 60px;bottom: 0;right: 0;left: auto;height: 100%;max-height: 100%;min-height: 125px;}
 .onhover-dropdown:before {right: 10px;}
 }
-

@@ -1650,7 +1650,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </form>
       </div>
    </div>
-   <div id="show-map-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+   <div id="show-map-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-bs-backdrop="static" style="display: none;">
       <div class="modal-dialog modal-full-width">
          <div class="modal-content">
             <div class="modal-header border-bottom">

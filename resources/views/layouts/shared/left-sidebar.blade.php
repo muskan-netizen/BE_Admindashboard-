@@ -286,7 +286,7 @@
                             </li>
                         @endif
 
-                        @if($client_preference_detail->get_estimations == 1)    
+                        @if($client_preference_detail->get_estimations == 1)
                             <li>
                                 <a href="{{route('estimations.index')}}">
                                     <span class="icon-configuration"></span>
@@ -311,7 +311,7 @@
                                 </a>
                             </li>
                         @endif
-                        
+
 
                         @if(in_array('DeliveryOption',$allowed) || Auth::user()->is_superadmin == 1)
                         <li>
@@ -321,7 +321,7 @@
                             </a>
                         </li>
                         @endif
-                        @if(in_array('vendors',$allowed) || (Auth::user()->is_superadmin == 1 && $client_preference_detail->tools_mode == 1)) 
+                        @if(in_array('vendors',$allowed) || (Auth::user()->is_superadmin == 1 && $client_preference_detail->tools_mode == 1))
                         <li>
                             <a href="{{route('tools.index')}}">
                                 <span class="icon-settings-1-1"></span>
@@ -344,17 +344,17 @@
                         <li>
                             <a href="#sidebarbanner" data-toggle="collapse">
                                 <span class="icon-styling"></span>
-                                <span> {{ __('Banner') }} </span>
+                                <span> {{ __('Banners') }} </span>
                             </a>
                             <div class="collapse" id="sidebarbanner">
                                 <ul class="nav-second-level">
                                         @if($client_preference_detail->business_type != 'taxi')
                                         <li>
-                                            <a href="{{route('banner.index')}}">{{ __('Banner') }}</a>
+                                            <a href="{{route('banner.index')}}">{{ __('Web Banners') }}</a>
                                         </li>
                                         @endif
                                          <li>
-                                            <a href="{{route('mobilebanner.index')}}">{{ __('Mobile Banner') }}</a>
+                                            <a href="{{route('mobilebanner.index')}}">{{ __('Mobile Banners') }}</a>
                                         </li>
                                 </ul>
                             </div>
