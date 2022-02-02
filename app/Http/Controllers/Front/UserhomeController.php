@@ -289,7 +289,7 @@ class UserhomeController extends FrontController
         }
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
-        $preferences = Session::get('preferences');
+        $preferences = (object)Session::get('preferences');
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
       

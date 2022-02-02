@@ -66,12 +66,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){ %>
                                                         <% if(order.scheduled_slot == null){ %>
                                                         <% if(order.scheduled_date_time){ %>
-                                                               <span class="ml-2">{{__('Your order will arrive by')}} <%= order.converted_scheduled_date_time %></span>
+                                                               <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %></span>
                                                            <% } else { %>
                                                                <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
                                                            <% } %>
                                                            <% }else{ %>
-                                                            <span class="ml-2">{{__('Your order will arrive by')}} <%= order.converted_scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
+                                                            <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
                                                            <% } %>
 
                                                    <% } %>
