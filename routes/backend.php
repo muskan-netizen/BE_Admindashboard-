@@ -230,6 +230,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('customer/account/{user}/{action}', 'Client\UserController@deleteCustomer')->name('customer.account.action');
         Route::get('customer/edit/{id}', 'Client\UserController@newEdit')->name('customer.new.edit');
         Route::post('customer/import', 'Client\UserController@importCsv')->name('customer.import');
+
         Route::put('newUpdate/edit/{id}', 'Client\UserController@newUpdate')->name('customer.new.update');
         Route::put('profile/{id}', 'Client\UserController@updateProfile')->name('client.profile.update');
         Route::post('password/update', 'Client\UserController@changePassword')->name('client.password.update');
