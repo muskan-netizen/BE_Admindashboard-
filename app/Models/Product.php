@@ -69,6 +69,10 @@ class Product extends Model{
   	    return $this->hasOne('App\Models\ProductCategory')->select('product_id', 'category_id'); 
   	}
 
+    public function categoryName(){
+      return $this->hasOne('App\Models\CategoryTranslation', 'category_id', 'category_id')->select('id', 'name', 'category_id'); 
+    }
+
   	public function variantSet(){
   	    return $this->hasMany('App\Models\ProductVariantSet')->select('product_id', 'product_variant_id', 'variant_type_id', 'variant_option_id')->groupBy('variant_type_id')->orderBy('product_variant_id');
   	}

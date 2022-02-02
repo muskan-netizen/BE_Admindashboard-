@@ -20,7 +20,8 @@ use App\Http\Traits\ToasterResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, VendorPayout};
+use App\Http\Controllers\ShiprocketController;
+use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Models\VendorRegistrationDocument;
@@ -185,7 +186,8 @@ class VendorController extends BaseController
     public function store(Request $request){
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         $rules = array(
-            'name' => 'required|string|max:150',//|unique:vendors
+            // 'name' => 'required|string|max:150|unique:vendors',
+            'name' => 'required|string|max:150',
             'address' => 'required',
         );
         foreach ($vendor_registration_documents as $vendor_registration_document) {
@@ -243,6 +245,10 @@ class VendorController extends BaseController
         $vendor->website = $request->website;
         $vendor->phone_no = $request->phone_no;
         $vendor->pincode = $request->pincode;
+        $vendor->city = $request->city;
+        $vendor->state = $request->state;
+        $vendor->country = $request->country;
+
         $vendor->slug = Str::slug($request->name, "-");
         if(Vendor::where('slug',$vendor->slug)->count() > 0)
         $vendor->slug = Str::slug($request->name, "-").rand(10,100);
@@ -311,8 +317,6 @@ class VendorController extends BaseController
             'data' => $VendorConfigrespons
         ]);
         // pr($VendorConfigrespons);
-
-
     }
     /**
      * Show the form for editing the specified resource.
@@ -341,6 +345,7 @@ class VendorController extends BaseController
         $rules = array(
             'address' => 'required',
         //    'name' => 'required|string|max:150|unique:vendors,name,' . $id,
+            'name' => 'required|string|max:150',
         );
         //dd($request->all());
         $validation  = Validator::make($request->all(), $rules)->validate();
@@ -380,7 +385,6 @@ class VendorController extends BaseController
     /*  /**   show vendor page - config tab      */
     public function show($domain = '', $id)
     {
-
         $active = array();
         $categoryToggle = array();
         $user = Auth::user();
@@ -647,8 +651,10 @@ class VendorController extends BaseController
 
         $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
         $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
+        $ship_creds = ShippingOption::select('status', 'test_mode')->where('code', 'shiprocket')->where('status', 1)->first();
+        $checkShip = ($ship_creds->status) ?? 0;
 
-        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service]);
+        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip]);
     }
 
     /**   show vendor page - payout tab      */
@@ -984,6 +990,24 @@ class VendorController extends BaseController
             return $this->successResponse($vendor, $msg);
         }
         return redirect()->back()->with('success', $msg . ' updated successfully!');
+    }
+
+    public function updateLocation(Request $request, $domain = '',  $id)
+    {
+        $vendor = Vendor::where('id', $id)->first();
+        $msg = 'Shiprocket Pickup Location added';
+
+        if ($request->has('shiprocket_pickup_name')) {
+            $ship = new ShiprocketController();
+            $save = $ship->addShiprocketPickup($vendor,$request->shiprocket_pickup_name);
+             if(isset($save->success) && $save->success){
+                $vendor->shiprocket_pickup_name  = $save->address->pickup_code;
+                $vendor->save();
+                return redirect()->back()->with('success', $msg . ' successfully!');
+             }
+             return redirect()->back()->with('success',$save->errors->address[0]);
+        }
+
     }
 
     /**     Activate Category for vendor     */

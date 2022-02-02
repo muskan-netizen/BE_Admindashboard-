@@ -8,7 +8,7 @@ use DB;
 use App;
 use Auth;
 use Config;
-use Session;
+use Session,Log;
 use Carbon\CarbonPeriod;
 use DateTime;
 use DateInterval;
@@ -57,10 +57,11 @@ class FrontController extends Controller
                     return 2;
                 }
             }
-           // return $send;
+            // return $send;
         }
         catch(\Exception $e){
-          //  pr($e->getMessage());
+            Log::info('SMS logs');
+            Log::info($e->getMessage());
             return '2';
         }
         return '1';

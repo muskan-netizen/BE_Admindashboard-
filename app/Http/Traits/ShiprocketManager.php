@@ -77,13 +77,13 @@ trait ShiprocketManager{
 
     public function trackingThroughAWB($token,$awbCode){
         $endpoint="/courier/track/awb/$awbCode";
-        $response=$this->getCurl($endpoint,$token);
+        $response=$this->getCurl($endpoint,'',$token);
         return $response;
     }
 
     public function trackingThroughShipmentId($token,$shipmentId){
         $endpoint="/shipments/$shipmentId";
-        $response=$this->getCurl($endpoint,$token);
+        $response=$this->getCurl($endpoint,'',$token);
         return $response;
     }
 
@@ -103,23 +103,22 @@ trait ShiprocketManager{
     }
 
 
-    public function addAddress($token,$data = []){
+    public function addAddress($token,$vid,$name){
         $endpoint='/settings/company/addpickup';
         $data = array (
-              'pickup_location' => "Inderjit_".time(),
-              'name' => 'Inderjit',
-              'email' => 'inder@yopmail.com',
-              'phone' => '8699210323',
-              'address' => 'Sector 34 ',
+              'pickup_location' => $name,
+              'name' => $vid->name,
+              'email' => $vid->email,
+              'phone' => $vid->phone_no,
+              'address' => $vid->address,
               'address_2' => '',
-              'city' => 'Chandigarh',
-              'state' => 'Chandigarh',
-              'country' => 'India',
-              'pin_code' => '160022',
+              'city' => $vid->city,
+              'state' => $vid->state,
+              'country' => $vid->country,
+              'pin_code' => $vid->pincode,
             );
         $response=$this->postCurl($endpoint,$data,trim($token));
         return $response;
-
     //   "success": true
     //   "address": {
     //   "company_id": 2001023
@@ -202,7 +201,11 @@ trait ShiprocketManager{
             curl_setopt($ch, CURLOPT_URL, $this->api_url.''.$endpoint);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+            if($data)
             curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
+
+
             $headers = array();
             $headers[] = 'Accept: */*';
             if(!is_null($token)){

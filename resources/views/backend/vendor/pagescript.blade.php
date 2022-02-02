@@ -53,8 +53,8 @@
             autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById(name + "-address"), {
                 types: ['geocode']
             });
-            google.maps.event.addListener(autocomplete[name], 'place_changed', function() {
 
+            google.maps.event.addListener(autocomplete[name], 'place_changed', function() {
                 var place = autocomplete[name].getPlace();
 
                 geocoder.geocode({
@@ -67,9 +67,18 @@
                         document.getElementById(name + '_latitude').value = lat;
                         document.getElementById(name + '_longitude').value = lng;
                     }
-                });
+                }); 
             });
+           
         });
+    }
+    function checkAddressString(obj,name)
+    {
+        if($(obj).val() == "")
+        {
+            document.getElementById(name + '_latitude').value = '';
+            document.getElementById(name + '_longitude').value = '';
+        }
     }
     $('#show-map-modal').on('hide.bs.modal', function() {
         $('#add-customer-modal').removeClass('fadeIn');

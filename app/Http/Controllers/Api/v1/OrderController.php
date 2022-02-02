@@ -1283,8 +1283,7 @@ class OrderController extends BaseController
             ]);
             if ($validator->fails()) {
                 foreach ($validator->errors()->toArray() as $error_key => $error_value) {
-                    $errors['error'] = __($error_value[0]);
-                    return response()->json($errors, 422);
+                    return $this->errorResponse(__($error_value[0]), 422);
                 }
             }
             $status = $request->status;
@@ -1292,6 +1291,7 @@ class OrderController extends BaseController
             $order_vendor_id = $request->order_vendor_id;
             $new_payable_amount = $request->total_payable_amount;
 
+            DB::beginTransaction();
             if($status == 1){
                 ////// Edited Order accepted functionality /////
                 $total_amount = 0;
@@ -1307,8 +1307,6 @@ class OrderController extends BaseController
                     // if($user_wallet_balance < $new_payable_amount){
                     //     return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
                     // }
-
-                    DB::beginTransaction();
 
                     $subscription_features = array();
                     $now = Carbon::now()->toDateTimeString();
@@ -1336,12 +1334,12 @@ class OrderController extends BaseController
                     // }
                     if ($client_preference->verify_phone == 1) {
                         if ($user->is_phone_verified == 0) {
-                            return response()->json(['error' => 'Your phone is not verified.'], 404);
+                            return $this->errorResponse(__('Your phone is not verified.'), 404);
                         }
                     }
                     $user_address = UserAddress::where('id', $request->address_id)->first();
                     if (!$user_address) {
-                        return response()->json(['error' => 'Invalid address id.'], 404);
+                        return $this->errorResponse(__('Invalid address id.'), 404);
                     }
                     $action = ($request->has('type')) ? $request->type : 'delivery';
                     $luxury_option = LuxuryOption::where('title', $action)->first();
@@ -1653,7 +1651,7 @@ class OrderController extends BaseController
                         $order->tip_amount = 0;
                         $order->total_service_fee = $total_service_fee;
                         $order->total_delivery_fee = $total_delivery_fee;
-                        $order->loyalty_points_used = $loyalty_points_used;
+                        $order->loyalty_points_used = 0;
                         $order->loyalty_amount_saved = 0; //$loyalty_amount_saved;
                         $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                         $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
@@ -1672,7 +1670,7 @@ class OrderController extends BaseController
                         }
                         $res = $this->sendSuccessEmail($request, $order);
                         
-                        // $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
+                        $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
                         // if (!in_array($request->payment_option_id, $ex_gateways)) {
                         //     Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
                         //     CartCoupon::where('cart_id', $cart->id)->delete();
@@ -1692,16 +1690,15 @@ class OrderController extends BaseController
                         $cart->update();
 
                         // if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
-                        //     Payment::insert([
-                        //         'date' => date('Y-m-d'),
-                        //         'order_id' => $order->id,
-                        //         'transaction_id' => $request->transaction_id,
-                        //         'balance_transaction' => $order->payable_amount,
-                        //         'type' => 'cart'
-                        //     ]);
+                            $order_payment = Payment::where('order_id', $order->id)->first();
+                            if($order_payment){
+                                $order_payment->date = date('Y-m-d');
+                                $order_payment->balance_transaction = $order->payable_amount;
+                                $order_payment->update();
+                            }
                         // }
                         $order = $order->with(['vendors:id,order_id,dispatch_traking_url,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
-                        // if (!in_array($request->payment_option_id, $ex_gateways)) {
+                        if (!in_array($order->payment_option_id, $ex_gateways)) {
                             $code = $request->header('code');
                             if (!empty($order->vendors)) {
                                 foreach ($order->vendors as $vendor_value) {
@@ -1714,22 +1711,13 @@ class OrderController extends BaseController
                                     }
                                     $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail, $code);
                                 }
-                            // }
+                            }
                             $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
                             $super_admin = User::where('is_superadmin', 1)->pluck('id');
                             $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
-                            // $user_admins = User::where(function ($query) {
-                            //     $query->where(['is_superadmin' => 1]);
-                            // })->pluck('id')->toArray();
-                            // $user_vendors = [];
-                            // if (!empty($order->user_vendor) && count($order->user_vendor) > 0) {
-                            //     $user_vendors = $order->user_vendor->pluck('user_id')->toArray();
-                            // }
-                            // $order->admins = array_unique(array_merge($user_admins, $user_vendors));
-
-                            // // $this->sendOrderNotification($user->id);
-                            // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id], $code);
                         }
+
+                        DB::commit();
 
                         # if payment type cash on delivery or payment status is 'Paid'
                         if (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
@@ -1737,7 +1725,6 @@ class OrderController extends BaseController
                             $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                         }
 
-                        DB::commit();
                         $this->sendSuccessSMS($request, $order);
 
                         return $this->successResponse($order, __('Order accepted successfully.'), 201);
@@ -1756,6 +1743,7 @@ class OrderController extends BaseController
                     $cart->is_approved = 2;
                     $cart->update();
                 }
+                DB::commit();
                 return $this->successResponse($cart, __('Order rejected successfully.'), 201);
             }
         } 
