@@ -109,11 +109,15 @@ li.mobile-menu-btn.d-sm-inline-block.d-none,.main-menu .menu-right .icon-nav li.
     .top-header .header-dropdown .onhover-dropdown .onhover-show-div li{background-color: #fff;}
 
     @media(max-width:991px){
-        body .cab-booking #booking-map {height: 50vh!important;position: relative !important;top: 0;}
+        body .cab-booking #map_canvas, body .cab-booking #booking-map {height: 50vh!important;position: relative !important;top: 0;}
         body .booking-experience {height: 100%;position: relative;}
         body .taxi-header+.offset-top {margin-top: 0!important;}
         body .top-header .header-dropdown li span:last-child {display: inline-block;}
+        body .promo-box {
+            position: static;
+            height: 100%;
         }
+}
 
     @media (max-width: 576px){
         .top-header .header-dropdown .mobile-account .onhover-show-div, .top-header .header-dropdown .mobile-wishlist .onhover-show-div {
