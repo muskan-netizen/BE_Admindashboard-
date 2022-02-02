@@ -1719,6 +1719,9 @@ class OrderController extends BaseController
 
                         DB::commit();
 
+                        // Send push notification to order specific driver
+                        $this->sendEditOrderApprovalStatusNotification($order_vendor, 1);
+
                         # if payment type cash on delivery or payment status is 'Paid'
                         if (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                             # if vendor selected auto accept
@@ -1742,6 +1745,10 @@ class OrderController extends BaseController
                 if($cart){
                     $cart->is_approved = 2;
                     $cart->update();
+
+                    // Send push notification to order specific driver
+                    $order_vendor = OrderVendor::select('web_hook_code')->where('id', $order_vendor_id)->first();
+                    $this->sendEditOrderApprovalStatusNotification($order_vendor, 2);
                 }
                 DB::commit();
                 return $this->successResponse($cart, __('Order rejected successfully.'), 201);
@@ -1753,6 +1760,33 @@ class OrderController extends BaseController
         }
     }
 
+    public function sendEditOrderApprovalStatusNotification($order_vendor, $status){
+        try{
+            $dispatch_domain = $this->checkIfLastMileOn();
+            if ($dispatch_domain && $dispatch_domain != false) {
+                $postdata =  ['web_hook_code' => $order_vendor->web_hook_code, 'status' => $status];
+                $client = new GCLIENT([
+                    'headers' => [
+                        'personaltoken' => $dispatch_domain->delivery_service_key,
+                        'shortcode' => $dispatch_domain->delivery_service_key_code,
+                        'content-type' => 'application/json'
+                    ]
+                ]);
+                $url = $dispatch_domain->delivery_service_key_url;
+                $res = $client->post(
+                    $url . '/api/edit-order/driver/notify',
+                    ['form_params' => ($postdata)]
+                );
+                $response = json_decode($res->getBody(), true);
+                // if ($response && $response['message'] == 'success') {
+                //     return $response;
+                // }
+            }
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
     
     public function postVendorOrderStatusUpdate(Request $request)
     {
