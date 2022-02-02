@@ -137,7 +137,28 @@
                 </div>
                 <div class="row mb-2">
 
-
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="send_to" class="control-label">{{__("Select Users")}}</label>
+                            <select class="form-control" name="send_to" id="send_to">
+                                <option value="1">All</option>                                
+                                <option value="2">Vendors</option>
+                            </select>                            
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="schedule_datetime" class="control-label">{{__("Schedule Date")}}</label>
+                            <input type="datetime-local" class="form-control" name="schedule_datetime" id="schedule_datetime">
+                                                       
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
                     {{-- <div class="col-md-6" id="slugInput">
                         <div class="form-group">
                             {!! Form::label('title', __('Slug'),['class' => 'control-label']) !!} 
