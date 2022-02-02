@@ -285,10 +285,10 @@
 
                             <h5 class="d-inline-block mt-3">
                                 <span>{{ __('Webhook Url') }} : </span>
-                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('carrier.webhook.shiprocket')}}</span></a>
+                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('webshiprocket')}}</span></a>
                             </h5>
                             <sup class="position-relative">
-                                <a class="copy-icon ml-2" id="copy_icon2" data-urls="{{route('carrier.webhook.shiprocket')}}" style="cursor:pointer;">
+                                <a class="copy-icon ml-2" id="copy_icon2" data-urls="{{route('webshiprocket')}}" style="cursor:pointer;">
                                     <i class="fa fa-copy"></i>
                                 </a>
                                 <h6 id="copy_message2" class="copy-message mt-2"></h6>
