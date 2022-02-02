@@ -137,12 +137,34 @@ class VendorController extends BaseController
         if(count($vendors) == 1 && $user->is_superadmin == 0){
             return Redirect::route('vendor.catalogs', $vendors->first()->id);
         }else{
+            $build = array();
+            $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+            ->where('id', '>', '1')
+            // ->where('is_core', 1)
+            ->whereNotIn('type_id', [4, 5])
+            ->where(function ($q) {
+                $q->whereNull('vendor_id');
+            })->orderBy('position', 'asc')
+            ->orderBy('id', 'asc')
+            ->where('status', 1)
+            ->orderBy('parent_id', 'asc')->get();
+            if ($categories) {
+                $build = $this->buildTree($categories->toArray());
+            }
+            $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
+
+
             return view('backend/vendor/index')->with([
                 'vendors' => $vendors,
                 'vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,
                 'vendor_for_ondemand' => $vendor_for_ondemand,
                 'vendor_docs' => $vendor_docs,
                 'csvVendors' => $csvVendors,
+
+                'builds' => $build,
+                'VendorCategory' => array(),
+                'templetes' => $templetes,
+
                 'total_vendor_count' => $total_vendor_count,
                 'client_preferences' => $client_preferences,
                 'active_vendor_count' => $active_vendor_count,
@@ -165,6 +187,7 @@ class VendorController extends BaseController
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         $rules = array(
             // 'name' => 'required|string|max:150|unique:vendors',
+            'name' => 'required|string|max:150',
             'address' => 'required',
         );
         foreach ($vendor_registration_documents as $vendor_registration_document) {
@@ -176,8 +199,13 @@ class VendorController extends BaseController
             }
         }
         $validation  = Validator::make($request->all(), $rules)->validate();
-        $vendor = new Vendor();
+        $new_model   = $request->has('new_model') && $request->new_model ? $request->new_model : null;
+        $vendor      = new Vendor();
         $saveVendor = $this->save($request, $vendor, 'false');
+        if($new_model){
+            $this->addDataSaveVendor($request, $saveVendor  , 'false');
+        }
+       // dd('a');
         if ($saveVendor > 0) {
             return response()->json([
                 'status' => 'success',
@@ -254,6 +282,42 @@ class VendorController extends BaseController
         return $vendor->id;
     }
 
+
+    public function addDataSaveVendor(Request $request, $vendor_id){
+        $vendor = Vendor::where('id', $vendor_id)->firstOrFail();
+        $VendorController = new VendorController();
+        if($request->has('userIDs')){
+            // permissionsForUserViaVendor
+            foreach($request->userIDs as $userId){
+                $UserViaVendorRequest = new Request();
+                $UserViaVendorRequest->setMethod('POST');
+                $UserViaVendorRequest->request->add(['vendor_id' => $vendor_id,'ids' => $userId]);
+                $UserViaVendorRequestResponse = $VendorController->permissionsForUserViaVendor($UserViaVendorRequest)->getData();
+            }
+        }
+        $request->merge(["return_json"=>1]);
+        $VendorConfigrespons = $VendorController->updateConfig($request,'',$vendor_id)->getData();//$this->updateConfig($vendor_id);
+
+        if($request->has('can_add_category')){
+            $vendor->add_category = $request->can_add_category == 'on' ? 1 : 0;
+        }
+        if ($request->has('assignTo')) {
+            $vendor->vendor_templete_id = $request->assignTo;
+        }
+
+        $vendor->save();
+        if($request->has('category_ids')){
+            foreach($request->category_ids as $category_id){
+                VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+            }
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Vendor created Successfully!',
+            'data' => $VendorConfigrespons
+        ]);
+        // pr($VendorConfigrespons);
+    }
     /**
      * Show the form for editing the specified resource.
      *
@@ -281,6 +345,7 @@ class VendorController extends BaseController
         $rules = array(
             'address' => 'required',
         //    'name' => 'required|string|max:150|unique:vendors,name,' . $id,
+            'name' => 'required|string|max:150',
         );
         //dd($request->all());
         $validation  = Validator::make($request->all(), $rules)->validate();
@@ -444,11 +509,11 @@ class VendorController extends BaseController
                 $active[] = $category->id;
             }
             if (in_array($category->id, $VendorCategory) && in_array($category->parent_id, $VendorCategory)) {
-                $active[] = $category->id; 
+                $active[] = $category->id;
             }
             if($category->vendor_id == $id)
             {
-                $active[] = $category->id; 
+                $active[] = $category->id;
             }
         }
         if ($categories) {
@@ -459,7 +524,7 @@ class VendorController extends BaseController
         $addons = AddonSet::with('option')->select('id', 'title', 'min_select', 'max_select', 'position')
             ->where('status', '!=', 2)
             ->where('vendor_id', $id)
-            ->orderBy('position', 'asc')->get(); 
+            ->orderBy('position', 'asc')->get();
         $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')
             ->where('is_active', 1)
             ->orderBy('is_primary', 'desc')->get();
@@ -468,7 +533,7 @@ class VendorController extends BaseController
         $vendor_registration_documents = VendorRegistrationDocument::get();
         $clientCurrency = ClientCurrency::select('currency_id')->where('is_primary', 1)->with('currency')->first();
         $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
-        $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count(); 
+        $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
 
         return view('backend.vendor.vendorCategory')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'clientCurrency'=>$clientCurrency]);
     }
@@ -492,6 +557,7 @@ class VendorController extends BaseController
         abort(404);
 
         $VendorCategory = VendorCategory::where('vendor_id', $id)->where('status', 1)->pluck('category_id')->toArray();
+
         $check_pickup_delivery_service = Category::whereIn('id',$VendorCategory)->where('type_id',7)->count();
         $check_on_demand_service = Category::whereIn('id',$VendorCategory)->where('type_id',8)->count();
         $categories = Category::with('primary')->select('id', 'slug')
@@ -538,10 +604,12 @@ class VendorController extends BaseController
                 $active[] = $category->id;
             }
         }
+
         if ($categories) {
             $build = $this->buildTree($categories->toArray());
             $categoryToggle = $this->printTreeToggle($build, $active);
         }
+       // pr($build);
         $product_categories = VendorCategory::with(['category', 'category.translation' => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
             ->where('category_translations.language_id', $langId);
@@ -907,7 +975,7 @@ class VendorController extends BaseController
             $vendor->commission_percent         = $request->commission_percent;
             $vendor->commission_fixed_per_order = $request->commission_fixed_per_order;
             $vendor->commission_monthly         = $request->commission_monthly;
-            $vendor->service_fee_percent         = $request->service_fee_percent;
+            $vendor->service_fee_percent        = $request->service_fee_percent;
             //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
             $vendor->show_slot         = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
             $msg = 'commission configuration';
@@ -917,6 +985,10 @@ class VendorController extends BaseController
         //     $msg = 'commission configuration';
         // }
         $vendor->save();
+        $return_json   = $request->has('return_json') && $request->return_json ? $request->return_json : 0;
+        if($return_json ==  1 ){
+            return $this->successResponse($vendor, $msg);
+        }
         return redirect()->back()->with('success', $msg . ' updated successfully!');
     }
 
@@ -935,7 +1007,7 @@ class VendorController extends BaseController
              }
              return redirect()->back()->with('success',$save->errors->address[0]);
         }
-       
+
     }
 
     /**     Activate Category for vendor     */
@@ -967,7 +1039,7 @@ class VendorController extends BaseController
             $product_category->category->title = $product_category->category ? $product_category->category->translation_one->name : '';
 
             if(isset($product_category->category) && !empty($product_category->category)) {
-                        if($product_category->category->type_id == 7 || $product_category->category->type_id == "7")
+                    if($product_category->category->type_id == 7 || $product_category->category->type_id == "7")
                     {
                         $check_pickup_delivery_service = 1;
                     }
@@ -1135,15 +1207,16 @@ class VendorController extends BaseController
                 $alreadyids = UserVendor::where('vendor_id', $vendor_id)->pluck('user_id');
                 if (isset($search)) {
                     if ($search == '') {
-                        $employees = User::orderby('name', 'asc')->select('id', 'name','email','phone_number')->where('is_superadmin','!=',1)->whereNotIn('id',$alreadyids)->limit(10)->get();
+                        $employees = User::orderby('name', 'asc')->select('id', 'name','email','phone_number','image')->where('is_superadmin','!=',1)->whereNotIn('id',$alreadyids)->limit(10)->get();
                     } else {
-                        $employees = User::orderby('name', 'asc')->select('id', 'name','email','phone_number')->where('is_superadmin','!=',1)->whereNotIn('id',$alreadyids)->where('name', 'LIKE', "%{$search}%")->limit(10)->get();
+                        $employees = User::orderby('name', 'asc')->select('id', 'name','email','phone_number','image')->where('is_superadmin','!=',1)->whereNotIn('id',$alreadyids)->where('name', 'LIKE', "%{$search}%")->limit(10)->get();
                     }
-                    $output = '<ul class="dropdown-menu" style="display:block; position:relative">';
+                    $output = '<ul class="dropdown-menu" id="sujesion_user_id" style="display:block; position:relative">';
                         foreach($employees as $row)
                         {
-                        $output .= '
-                        <li data-id="'.$row->id.'"><a href="#">'.$row->name.' ('.$row->email.')</a></li>
+                         $image =   $row->image['image_fit'].'100/100'.$row->image['image_path'];
+                         $output .= '
+                        <li data-id="'.$row->id.'" data-email="'.$row->email.'" data-name="'.$row->name.'"  data-image="'.$image.'"  ><a href="#">'.$row->name.' ('.$row->email.')</a></li>
                         ';
                         }
                         $output .= '</ul>';
