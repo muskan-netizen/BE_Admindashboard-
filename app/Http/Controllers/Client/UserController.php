@@ -64,7 +64,7 @@ class UserController extends BaseController
     {
         $current_user = Auth::user();
         $users = User::withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
-       
+
         return Datatables::of($users)
             ->addColumn('edit_url', function($users) {
                 return route('customer.new.edit', $users->id);
@@ -184,7 +184,7 @@ class UserController extends BaseController
     //          $query->where('phone_number', $full_number);
     //         })],
     //         'password' => ['required', 'string', 'min:6', 'max:50'],
-          
+
 
     //     ]);
     // }
@@ -196,17 +196,18 @@ class UserController extends BaseController
      */
     public function store(Request $request)
     {
-
         $customer = new User();
        $validation  = Validator::make($request->all(), $customer->rules())->validate();
        //$validator = $this->validator($request->all())->validate();
-       
+
         $saveId = $this->save($request, $customer, 'false');
         if ($saveId > 0) {
+            $user = User::where('id', $saveId)->firstOrFail();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Customer created Successfully!',
                 'data' => $saveId,
+                'Userdata' => $user,
                 'aaa' => $request->all()
             ]);
         }
