@@ -28,32 +28,54 @@ class CampaignController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request){
+        //dd($request->all());
         $rules = array(
-            'slug' => 'required|string|max:30|unique:celebrities',
-            'name' => 'required|string|max:150',
+            // 'slug' => 'required|string|max:30|unique:celebrities',
+            'title' => 'required|string|max:190',
+            'schedule_datetime' => 'required'
         );
         /* upload logo file */
-        if ($request->hasFile('image')) {
-            $rules['image'] =  'image|mimes:jpeg,png,jpg,gif';
+        if ($request->hasFile('push_image')) {
+            $rules['push_image'] =  'image|mimes:jpeg,png,jpg,gif';
         }
         $validation  = Validator::make($request->all(), $rules)->validate();
-        $celebrity = new Celebrity();
-        $celebrity->status = '1';
-        $celebrity->name = $request->name;
-        $celebrity->slug = $request->slug;
-        $celebrity->country_id = $request->countries;
-        $celebrity->description = $request->description;
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $images = Storage::disk('s3')->put('/celebrity', $file, 'public');
-            $celebrity->avatar = $images;
+        $campaign = new Campaign();
+        $campaign->title = $request->title;
+        $campaign->type = $request->type;
+        if($request->type==1)
+        {
+            $campaign->sms_text = $request->sms_text;
+        }elseif($request->type==2)
+        {
+            $campaign->email_title = $request->email_title;
+            $campaign->email_subject = $request->email_subject;
+            $campaign->email_body = $request->email_body;
+        }else{
+            $campaign->push_title = $request->push_title;
+            $campaign->push_message_body = $request->push_message_body;
+            $campaign->push_url_option = $request->push_url_option;
+            $campaign->push_url_option_value = $request->push_url_option_value;
+        }        
+        $campaign->send_to = $request->send_to;
+        $campaign->schedule_datetime = $request->schedule_datetime;
+        $campaign->request_user_count = $request->request_user_count;
+        $campaign->request_time_difference = $request->request_time_gap;
+        $campaign->status = $request->status;
+        if($request->type==3)
+        {
+            if ($request->hasFile('push_image')) {
+                $file = $request->file('push_image');
+                $images = Storage::disk('s3')->put('/notification', $file, 'public');
+                $campaign->push_image = $images;
+            }
         }
-        $celebrity->save();
-        if ($celebrity->id > 0) {
+        $campaign->save();
+        if ($campaign->id > 0) {
+            $usertype = $request->send_to;
             return response()->json([
                 'status' => 'success',
-                'message' => 'Celebrity created Successfully!',
-                'data' => $celebrity
+                'message' => 'Campaign created Successfully!',
+                'data' => $campaign
             ]);
         }
     }
@@ -66,14 +88,14 @@ class CampaignController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        $celeb = Celebrity::where('id', $id)->first();
+        $campaign = Campaign::where('id', $id)->first();
         $pros = array();
         foreach ($celeb->brands as $repo) {
             $pros[] = $repo->id;
         }
         $countries = Country::all();
         $brands = Brand::all();
-        $returnHTML = view('backend.celebrity.form')->with(['lc' => $celeb, 'brands' => $brands, 'pros' => $pros, 'countries' => $countries])->render();
+        $returnHTML = view('backend.campaign.form')->with(['lc' => $celeb, 'brands' => $brands, 'pros' => $pros, 'countries' => $countries])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
     }
 
@@ -121,8 +143,8 @@ class CampaignController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function destroy($domain = '', $id){
-        Celebrity::where('id', $id)->delete();
-        return redirect()->back()->with('success', 'Celebrity deleted successfully!');
+        Campaign::where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Campaign deleted successfully!');
     }
 
     /**

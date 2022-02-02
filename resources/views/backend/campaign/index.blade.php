@@ -58,8 +58,7 @@
                                 </div>
                                 @endif
                             </div>
-                        </div>
-                        
+                        </div>                        
                     </div>
 
                     <div class="table-responsive">
@@ -87,32 +86,32 @@
                                     <!-- <td class="draggableTd"><span class="dragula-handle"></span></td> -->
                                     <td>                                         
                                     </td>
-                                    <td><a class="openEditModal text-capitalize" loyaltyID="{{$campaign->id}}" href="#">{{ $campaign->title }}</a> </td>
+                                    {{-- <td><a class="openEditModal text-capitalize" loyaltyID="{{$campaign->id}}" href="#">{{ $campaign->title }}</a> </td> --}}
+                                    <td class="text-capitalize">{{ $campaign->title }} </td>
                                     <td class="descript">
                                         @if ($campaign->type==1)
-                                            SMS
+                                            {{__('SMS')}}
                                         @elseif($campaign->type==2)
-                                            Email
+                                            {{__('Email')}}
                                         @else
-                                            Push Notification
+                                            {{__('Push Notification')}}
                                         @endif    
                                     </td>
                                     <td>
                                         @if ($campaign->push_url_option==1)
-                                        URL
+                                        {{__('URL')}}
                                         @elseif($campaign->push_url_option==2)
-                                        Category
+                                        {{__('Category')}}
                                         @elseif($campaign->push_url_option==3)
-                                        Vendor
-                                        @else                                            
-                                        @endif
-                                        
+                                        {{__('Vendor')}} 
+                                        @else
+                                        @endif                                        
                                     </td>
                                     <td> 
                                         @if($campaign->send_to==1)
-                                            All
+                                            {{__('All')}}
                                         @else
-                                            Vendors
+                                            {{__('Vendors')}}
                                         @endif
                                     </td>
                                     <td> 
@@ -132,9 +131,9 @@
                                     </td>
                                     <td> 
                                         <div class="form-ul" style="width: 60px;">
-                                            <div class="inner-div" style="float: left;">
+                                            {{-- <div class="inner-div" style="float: left;">
                                                 <a class="action-icon openEditModal" loyaltyID="{{$campaign->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a> 
-                                            </div>
+                                            </div> --}}
                                             <div class="inner-div">
                                                 <form method="POST" action="{{ route('campaign.destroy', $campaign->id) }}" id="deleteCampaign">
                                                     @csrf
@@ -183,6 +182,28 @@
             }
         });
     });
+
+    $('input[type="radio"][name="type"]').click(function(){
+    if ($(this).is(':checked'))
+    {
+      var type = $(this).val();
+      if(type==1)
+      {
+        $('.sms-section').css('display','');
+        $('.email-section, .push-section').css('display','none');        
+        // $('#email_title, #email_subject, #email_body').val('');
+        // $('#push_title, #push_message_body, #push_url_option, #push_url_option_value').val('');
+      }else if(type==2){
+        $('.email-section').css('display','');
+        $('.sms-section, .push-section').css('display','none');
+        // $('#sms_text, #push_title, #push_message_body, #push_url_option, #push_url_option_value').val('');
+      }else if(type==3){
+        $('.push-section').css('display','');
+        $('.sms-section, .email-section').css('display','none');
+        // $('#sms_text, #email_title, #email_subject, #email_body').val('');
+      }
+    }
+  });
 </script>
 
 @include('backend.campaign.pagescript')

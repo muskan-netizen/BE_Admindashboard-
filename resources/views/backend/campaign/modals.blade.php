@@ -30,15 +30,19 @@
                     </div>
                     <div class="col-md-12">
                         {{__('Notification Type')}}
-                        <div class="form-group" id="nameInput">
-                            {!! Form::label('sms', __('SMS'),['class' => 'control-label']) !!}
-                            {!! Form::radio('type', 1, ['class' => 'form-control']) !!}
-
-                            {!! Form::label('email', __('Email'),['class' => 'control-label']) !!}
-                            {!! Form::radio('type', 2, ['class' => 'form-control']) !!}
-
-                            {!! Form::label('push', __('Push Notification'),['class' => 'control-label']) !!}
-                            {!! Form::radio('type', 3, ['class' => 'form-control']) !!}
+                        <div class="form-group row" id="nameInput">
+                            <div class="col-md-3">  
+                                <input name="type" type="radio" value="1" checked>
+                                <label for="push" class="control-label">{{__('SMS')}}</label> 
+                            </div>
+                            <div class="col-md-3">      
+                                <input name="type" type="radio" value="2">
+                                <label for="push" class="control-label">{{__('Email')}}</label> 
+                            </div>
+                            <div class="col-md-3">         
+                                <input name="type" type="radio" value="3">
+                                <label for="push" class="control-label">{{__('Push Notification')}}</label>
+                            </div>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
@@ -56,7 +60,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row email-section">
+                <div class="row email-section" style="display: none">
                     <div class="col-md-6">
                         <div class="form-group" id="emailTitle">
                             <label for="email_title" class="control-label">{{__("Title")}}</label>
@@ -85,7 +89,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row push-section">
+                <div class="row push-section" style="display: none">
                     <div class="col-md-6">
                         <div class="form-group" id="pushTitle">
                             <label for="push_title" class="control-label">{{__("Title")}}</label>
@@ -154,6 +158,39 @@
                             <label for="schedule_datetime" class="control-label">{{__("Schedule Date")}}</label>
                             <input type="datetime-local" class="form-control" name="schedule_datetime" id="schedule_datetime">
                                                        
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="request_user_count" class="control-label">{{__("Request User Count")}}</label>
+                            <input type="text" class="form-control" name="request_user_count" id="request_user_count">
+                                                       
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="request_time_gap" class="control-label">{{__("Request Time Gap")}}</label>
+                            <input type="text" class="form-control" name="request_time_gap" id="request_time_gap">
+                                                       
+                            <span class="invalid-feedback" role="alert">
+                                <strong></strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="status" class="control-label">{{__("Status")}}</label>
+                            <select class="form-control" name="status" id="campaign_status">
+                                <option value="1">Active</option>                                
+                                <option value="2">Pause</option>
+                                <option value="3">Finish</option>
+                            </select>                            
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>

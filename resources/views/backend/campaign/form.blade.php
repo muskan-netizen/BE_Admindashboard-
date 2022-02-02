@@ -1,4 +1,4 @@
-<input type="hidden" name="lc_id" id="lc_id" url="{{route('celebrity.update', $lc->id)}}">
+<input type="hidden" name="lc_id" id="lc_id" url="{{route('campaign.update', $lc->id)}}">
 <div class="row">
     <div class="col-md-6" id="imageInput">
         <label>{{ __('Upload image') }}</label>
