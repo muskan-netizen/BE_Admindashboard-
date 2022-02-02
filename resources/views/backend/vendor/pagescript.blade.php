@@ -1,4 +1,5 @@
 <script>
+    var section_id = 0
     $('.openAddModal').click(function() {
         $('#add-form').modal({
             //backdrop: 'static',
@@ -309,7 +310,7 @@
     });
 
     function saveData(formData, type, data_uri) {
-        console.log(data_uri);
+      //  console.log(data_uri);
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -327,6 +328,66 @@
             processData: false,
             success: function(response) {
 
+                if (response.status == 'success') {
+                    $(".modal .close").click();
+                   // location.reload();
+                } else {
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text(response.message);
+                }
+                return response;
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            },
+            error: function(response) {
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    Object.keys(errors).forEach(function(key) {
+                        $("#" + key + "Input input").addClass("is-invalid");
+                        $("#" + key + "Input span.invalid-feedback").children("strong").text(errors[key][0]);
+                        $("#" + key + "Input span.invalid-feedback").show();
+                    });
+                } else {
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text('Something went wrong, Please try Again.');
+                }
+                return response;
+            }
+        });
+    }
+    $(document).on('click', '#add_vendor_form', function(e) {
+        e.preventDefault();
+        var input='';
+        $(".activeCategory:checkbox:checked").each(function(){
+            var category_id = $(this).data('category_id');
+                 input+= "  <input type='hideen' name='category_ids[]' value='"+category_id+"' >";
+        });
+        $('#nestable_list_1').append(input);
+        var form = document.getElementById('save_banner_form');
+        var formData = new FormData(form);
+        var data_uri = "{{route('vendor.store')}}";
+        // console.log(formData);
+        // return false;
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: data_uri,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
                 if (response.status == 'success') {
                     $(".modal .close").click();
                     location.reload();
@@ -357,7 +418,9 @@
                 return response;
             }
         });
-    }
+
+    });
+
     $(".openAddonModal").click(function(e) {
         $('#addAddonmodal').modal({
             backdrop: 'static',
@@ -535,12 +598,92 @@
             method:"POST",
             data:{query:query, _token:_token, vendor_id:vendor_id},
             success:function(data){
-            $('#userList').fadeIn();
-            $('#userList').html(data);
+            $('#userList_model').fadeIn();
+            $('#userList_model').html(data);
             }
             });
         }
     });
+    $(document).on('click', '#userList_model li', function(){
+        $("#selected_user_ul").removeClass('active');
+        $("#selected_user_ul").addClass('active');
+       var user_id = $(this).attr('data-id');
+       var name = $(this).attr('data-name');
+       var image = $(this).attr('data-image');
+       var email = $(this).attr('data-email');
+
+       $('#userList_model').fadeOut();
+        var user_id_section    = $('#user_id_section').html();
+        var modified_temp         = _.template(user_id_section);
+        $('#selected_user').append(modified_temp({ id:section_id,user_id:user_id,name:name,image:image,email:email}));
+
+      // $('#userList_model').fadeOut();
+    });
+    $(document).on('click', '#addUserAddForm', function(e){
+        e.preventDefault();
+        var url=$(this).attr('data-url');
+
+        console.log(url);
+        var name       = $("#new_user_name").val();
+        var token       = $("input[name=_token]").val();
+        var email      = $("#new_user_email").val();
+        var phone_number = $("#new_user_phone_number").val();
+        var countryCode = $("#countryCode").val();
+        var dial_code   = $("#dialCode").val();
+        var password    = $("#new_user_password").val();
+
+        console.log(name,phone_number,countryCode,dial_code);
+        if(name =='' || email =='' || phone_number =='' || password ==''  ){
+
+         var alert = '<div class="alert alert-danger"><span>All fields required</span></div>'
+            $('#adduesr_error').html(alert);
+            return false;
+        }
+
+        var contact=dial_code+phone_number;
+
+        $.ajax({
+            method: 'post',
+            url: url,
+            data: { _token:token,name: name,contact:contact,phone_number:phone_number,dial_code:dial_code,email:email,password:password},
+            success: function(response) {
+                $('#adduesr_error').html('');
+                console.log(response);
+                var user =response.Userdata;
+                console.log(user);
+                var user_id =user.id;
+                var name = user.name;
+                var email =user.email;
+
+                var image = '';
+                if( user.image){
+                    image=user.image.image_fit+'100/100'+user.image.image_path;
+                }
+
+                var user_id_section    = $('#user_id_section').html();
+                var modified_temp         = _.template(user_id_section);
+                $('#selected_user').append(modified_temp({ id:section_id,user_id:user_id,name:name,image:image,email:email}));
+
+            },
+            error: function(response) {
+                var alert = '<div class="alert alert-danger">';
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    Object.keys(errors).forEach(function(key) {
+                        alert+='<span>'+errors[key][0]+'</span><br>';
+
+                    });
+                } else {
+                    alert+='<span>Something went wrong, Please try Again.</span>';
+                }
+                alert+='</div>';
+
+                $('#adduesr_error').html(alert);
+                return response;
+            }
+        });
+    });
+
 
     ///// **************** 1.1  check vendor exists in dispatcher or not for pickup********** //////////
 
