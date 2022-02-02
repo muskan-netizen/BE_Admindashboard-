@@ -1460,13 +1460,15 @@ class CartController extends FrontController
             }
             //End Lalamove Delivery changes code
 
-            //getShiprocketFee Delivery changes code
-            $ship = new ShiprocketController();
-            $deliver_ship_fee = $ship->getCourierService($vendorData->vendor_id);
-            //dd($deliver_ship_fee);
-            if($deliver_ship_fee)
-            {  
-                $option = array_merge($option,$deliver_ship_fee);
+            
+            if($vendorData->vendor->shiprocket_pickup_name){
+                //getShiprocketFee Delivery changes code
+                $ship = new ShiprocketController();
+                $deliver_ship_fee = $ship->getCourierService($vendorData->vendor_id);
+                if($deliver_ship_fee)
+                {  
+                    $option = array_merge($option,$deliver_ship_fee);
+                }
             }
             
         }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){

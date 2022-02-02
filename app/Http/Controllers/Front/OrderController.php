@@ -1276,6 +1276,11 @@ class OrderController extends FrontController
             $q->where('auto_accept_order', 1);
         })->get();
         $orderData = Order::find($order_id);
+        $user = Auth::user();
+        if(!$user){
+            $user_id = $orderData->user_id;
+            $user = User::find($user_id);
+        }
         //  Log::info($order_vendors);
         foreach ($order_vendors as $ov) {
             //     Log::info($ov);
@@ -1320,7 +1325,7 @@ class OrderController extends FrontController
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
                 $this->ProductVariantStock($order_id);
                 DB::commit();
-                $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
+                $this->sendSuccessNotification($user->id, $request->vendor_id);
             }
             // } catch(\Exception $e){
             // DB::rollback();

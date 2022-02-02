@@ -70,7 +70,7 @@
                 <div class="form-group mb-3" id="addressInput">
                     {!! Form::label('title', __('Address'),['class' => 'control-label']) !!}
                     <div class="input-group">
-                        <input type="text" name="address" id="edit-address" placeholder="Delhi, India" class="form-control" value="{{$vendor->address}}">
+                        <input type="text" name="address" id="edit-address" placeholder="Delhi, India" class="form-control" value="{{$vendor->address}}" onkeyup="checkAddressString(this,'edit')">
                         <div class="input-group-append">
                             <button class="btn btn-xs btn-dark waves-effect waves-light showMap" type="button" num="edit"> <i class="mdi mdi-map-marker-radius"></i></button>
                         </div>

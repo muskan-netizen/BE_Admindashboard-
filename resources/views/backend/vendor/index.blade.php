@@ -3,15 +3,13 @@
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 <style type="text/css">
-    .pac-container,
-    .pac-container .pac-item {
-        z-index: 99999 !important;
-    }
-    @media(min-width: 1440px){
-        .content{min-height: calc(100vh - 100px);}
-        .dataTables_scrollBody {height: calc(100vh - 500px);}
-    }
+@media(min-width: 1440px){.content{min-height: calc(100vh - 100px);}.dataTables_scrollBody {height: calc(100vh - 500px);}}
+.dd-list .dd3-item {list-style: none;}
+</style>
+<style type="text/css">
+    .pac-container,.pac-container .pac-item{z-index:99999!important}.fc-v-event{border-color:#43bee1;background-color:#43bee1}.dd-list .dd3-content{position:relative}span.inner-div{top:50%;-webkit-transform:translateY(-50%);-moz-transform:translateY(-50%);transform:translateY(-50%)}.button{position:relative;padding:8px 16px;background:#009579;border:none;outline:0;border-radius:50px;cursor:pointer}.button:active{background:#007a63}.button__text{font:bold 20px Quicksand,san-serif;color:#fff;transition:all .2s}.button--loading .button__text{visibility:hidden;opacity:0}.button--loading::after{content:"";position:absolute;width:16px;height:16px;top:0;left:0;right:0;bottom:0;margin:auto;border:4px solid transparent;border-top-color:#fff;border-radius:50%;animation:button-loading-spinner 1s ease infinite}@keyframes button-loading-spinner{from{transform:rotate(0turn)}to{transform:rotate(1turn)}}
 </style>
 @endsection
 @section('content')
@@ -254,10 +252,97 @@ if($server == 'local')
 }
 @endphp
 @include($file)
-
+<script type="text/template" id="user_id_section">
+    <li class="d-flex justify-content-start align-items-center position-relative" id ="user_selected_<%= id %>" data-section_number="<%= id %>">
+        <p class="al_checkbox m-0 py-2 ">
+            <input type="hidden" name="userIDs[]" value="<%= user_id %>" class="mt-2 mr-1">
+            <img class="user_img mr-2" src="<%= image %>" alt="">
+        </p>
+        <p class="al_username m-0 py-2">
+            <span> <%= name %> </span>
+            <small><%= email %></small>
+        </p>
+        <sup class="">&#128473;</sup>
+    </li>
+</script>
 @endsection
 @section('script')
+<script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
+<script type="text/javascript">
+    var mobile_number = '';
+    // $('#add-agent-modal .xyz').val(mobile_number.getSelectedCountryData().dialCode);
+    $('#add-agent-modal .xyz').change(function() {
+        var phonevalue = $('.xyz').val();
+        $("#countryCode").val(mobile_number.getSelectedCountryData().dialCode);
+    });
+
+    function phoneInput() {
+        console.log('phone working');
+        var input = document.querySelector(".xyz");
+
+        var mobile_number_input = document.querySelector(".xyz");
+        mobile_number = window.intlTelInput(mobile_number_input, {
+            separateDialCode: true,
+            hiddenInput: "full_number",
+            utilsScript: "{{ asset('telinput/js/utils.js') }}",
+        });
+    }
+    var input = document.querySelector("#new_user_phone_number");
+    if(input){
+        window.intlTelInput(input, {
+        separateDialCode: true,
+        hiddenInput: "contact",
+        utilsScript: "{{asset('assets/js/utils.js')}}",
+        initialCountry: "{{ Session::get('default_country_code','US') }}",
+    });
+    }
+
+    $(document).ready(function() {
+        $("#new_user_phone_number").keypress(function(e) {
+            if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+                return false;
+            }
+            return true;
+        });
+        @if($client_preference_detail->business_type != 'taxi')
+            vendorOrderTime();
+        @endif
+    });
+    $('.iti__country').click(function() {
+        var code = $(this).attr('data-country-code');
+        $('#countryData').val(code);
+        var dial_code = $(this).attr('data-dial-code');
+        $('#dialCode').val(dial_code);
+    });
+    $(document).on('change', '#Vendor_order_pre_time', function(){
+        vendorOrderTime();
+    });
+    function vendorOrderTime(){
+       var min = $('#Vendor_order_pre_time').val();
+       //alert(min);
+       if(min >=60){
+            var hours = Math.floor(min / 60);
+            var minutes = min % 60;
+            var txt = '~ '+hours+':'+minutes+" {{__('Hours')}}";
+            $('#Vendor_order_pre_time_show').text(txt);
+       }else{
+            var txt = min+" {{__('Min')}}";
+            $('#Vendor_order_pre_time_show').text(txt);
+       }
+    }
+    // $(document).on('change', '.activeCategory', function(){
+    //     //var status = $(this).is(":checked");
+    //     var category_id = $(this).data('category_id');
+    //    var input= "  <input type='hideen' name='category_ids[]' value='"+category_id+"' >";
+    //    $('#nestable_list_1').append(input);
+
+    // });
+    // $('.iti__country').click(function() {
+    //     var code = $(this).attr('data-country-code');
+    //     document.getElementById('addCountryData').value = code;
+    // })
+</script>
 @include('backend.vendor.pagescript')
 <script src="{{asset('js/admin_vendor.js')}}"></script>
 <script type="text/javascript">

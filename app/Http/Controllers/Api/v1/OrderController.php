@@ -1283,8 +1283,7 @@ class OrderController extends BaseController
             ]);
             if ($validator->fails()) {
                 foreach ($validator->errors()->toArray() as $error_key => $error_value) {
-                    $errors['error'] = __($error_value[0]);
-                    return response()->json($errors, 422);
+                    return $this->errorResponse(__($error_value[0]), 422);
                 }
             }
             $status = $request->status;
@@ -1335,12 +1334,12 @@ class OrderController extends BaseController
                     // }
                     if ($client_preference->verify_phone == 1) {
                         if ($user->is_phone_verified == 0) {
-                            return response()->json(['error' => 'Your phone is not verified.'], 404);
+                            return $this->errorResponse(__('Your phone is not verified.'), 404);
                         }
                     }
                     $user_address = UserAddress::where('id', $request->address_id)->first();
                     if (!$user_address) {
-                        return response()->json(['error' => 'Invalid address id.'], 404);
+                        return $this->errorResponse(__('Invalid address id.'), 404);
                     }
                     $action = ($request->has('type')) ? $request->type : 'delivery';
                     $luxury_option = LuxuryOption::where('title', $action)->first();
@@ -1691,13 +1690,12 @@ class OrderController extends BaseController
                         $cart->update();
 
                         // if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
-                        //     Payment::insert([
-                        //         'date' => date('Y-m-d'),
-                        //         'order_id' => $order->id,
-                        //         'transaction_id' => $request->transaction_id,
-                        //         'balance_transaction' => $order->payable_amount,
-                        //         'type' => 'cart'
-                        //     ]);
+                            $order_payment = Payment::where('order_id', $order->id)->first();
+                            if($order_payment){
+                                $order_payment->date = date('Y-m-d');
+                                $order_payment->balance_transaction = $order->payable_amount;
+                                $order_payment->update();
+                            }
                         // }
                         $order = $order->with(['vendors:id,order_id,dispatch_traking_url,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
                         if (!in_array($order->payment_option_id, $ex_gateways)) {
@@ -1719,6 +1717,11 @@ class OrderController extends BaseController
                             $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
                         }
 
+                        DB::commit();
+
+                        // Send push notification to order specific driver
+                        $this->sendEditOrderApprovalStatusNotification($order_vendor, 1);
+
                         # if payment type cash on delivery or payment status is 'Paid'
                         if (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                             # if vendor selected auto accept
@@ -1726,7 +1729,6 @@ class OrderController extends BaseController
                         }
 
                         $this->sendSuccessSMS($request, $order);
-                        DB::commit();
 
                         return $this->successResponse($order, __('Order accepted successfully.'), 201);
                     }
@@ -1743,6 +1745,10 @@ class OrderController extends BaseController
                 if($cart){
                     $cart->is_approved = 2;
                     $cart->update();
+
+                    // Send push notification to order specific driver
+                    $order_vendor = OrderVendor::select('web_hook_code')->where('id', $order_vendor_id)->first();
+                    $this->sendEditOrderApprovalStatusNotification($order_vendor, 2);
                 }
                 DB::commit();
                 return $this->successResponse($cart, __('Order rejected successfully.'), 201);
@@ -1754,6 +1760,33 @@ class OrderController extends BaseController
         }
     }
 
+    public function sendEditOrderApprovalStatusNotification($order_vendor, $status){
+        try{
+            $dispatch_domain = $this->checkIfLastMileOn();
+            if ($dispatch_domain && $dispatch_domain != false) {
+                $postdata =  ['web_hook_code' => $order_vendor->web_hook_code, 'status' => $status];
+                $client = new GCLIENT([
+                    'headers' => [
+                        'personaltoken' => $dispatch_domain->delivery_service_key,
+                        'shortcode' => $dispatch_domain->delivery_service_key_code,
+                        'content-type' => 'application/json'
+                    ]
+                ]);
+                $url = $dispatch_domain->delivery_service_key_url;
+                $res = $client->post(
+                    $url . '/api/edit-order/driver/notify',
+                    ['form_params' => ($postdata)]
+                );
+                $response = json_decode($res->getBody(), true);
+                // if ($response && $response['message'] == 'success') {
+                //     return $response;
+                // }
+            }
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
     
     public function postVendorOrderStatusUpdate(Request $request)
     {
