@@ -1283,8 +1283,7 @@ class OrderController extends BaseController
             ]);
             if ($validator->fails()) {
                 foreach ($validator->errors()->toArray() as $error_key => $error_value) {
-                    $errors['error'] = __($error_value[0]);
-                    return response()->json($errors, 422);
+                    return $this->errorResponse(__($error_value[0]), 422);
                 }
             }
             $status = $request->status;
@@ -1335,12 +1334,12 @@ class OrderController extends BaseController
                     // }
                     if ($client_preference->verify_phone == 1) {
                         if ($user->is_phone_verified == 0) {
-                            return response()->json(['error' => 'Your phone is not verified.'], 404);
+                            return $this->errorResponse(__('Your phone is not verified.'), 404);
                         }
                     }
                     $user_address = UserAddress::where('id', $request->address_id)->first();
                     if (!$user_address) {
-                        return response()->json(['error' => 'Invalid address id.'], 404);
+                        return $this->errorResponse(__('Invalid address id.'), 404);
                     }
                     $action = ($request->has('type')) ? $request->type : 'delivery';
                     $luxury_option = LuxuryOption::where('title', $action)->first();
@@ -1378,7 +1377,7 @@ class OrderController extends BaseController
                         // $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
                         // $order->specific_instructions = $cart->specific_instructions ?? null;
                         // $order->is_gift = $request->is_gift ?? 0;
-                        $order->save();
+                        $order->update();
 
 
                         $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
@@ -1583,14 +1582,14 @@ class OrderController extends BaseController
                                     $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                                 }
                             }
-                            $order_vendor->save();
+                            $order_vendor->update();
 
                             $order_status = VendorOrderStatus::where('order_id', $order->id)->where('order_vendor_id', $order_vendor_id)->first();
                             $order_status->order_id = $order->id;
                             $order_status->vendor_id = $vendor_id;
                             $order_status->order_status_option_id = 1;
                             $order_status->order_vendor_id = $order_vendor->id;
-                            $order_status->save();
+                            $order_status->update();
                         }
                         $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
                         if (in_array(1, $subscription_features)) {
@@ -1665,7 +1664,7 @@ class OrderController extends BaseController
                         // if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                         //     $order->payment_status = 1;
                         // }
-                        $order->save();
+                        $order->update();
                         foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                             $this->sendSuccessEmail($request, $order, $vendor_id);
                         }
@@ -1688,16 +1687,15 @@ class OrderController extends BaseController
                             }
                         }
                         $cart->is_approved = 1;
-                        $cart->save();
+                        $cart->update();
 
                         // if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
-                        //     Payment::insert([
-                        //         'date' => date('Y-m-d'),
-                        //         'order_id' => $order->id,
-                        //         'transaction_id' => $request->transaction_id,
-                        //         'balance_transaction' => $order->payable_amount,
-                        //         'type' => 'cart'
-                        //     ]);
+                            $order_payment = Payment::where('order_id', $order->id)->first();
+                            if($order_payment){
+                                $order_payment->date = date('Y-m-d');
+                                $order_payment->balance_transaction = $order->payable_amount;
+                                $order_payment->update();
+                            }
                         // }
                         $order = $order->with(['vendors:id,order_id,dispatch_traking_url,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
                         if (!in_array($order->payment_option_id, $ex_gateways)) {
@@ -1719,13 +1717,14 @@ class OrderController extends BaseController
                             $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
                         }
 
+                        DB::commit();
+
                         # if payment type cash on delivery or payment status is 'Paid'
                         if (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                             # if vendor selected auto accept
                             $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                         }
 
-                        DB::commit();
                         $this->sendSuccessSMS($request, $order);
 
                         return $this->successResponse($order, __('Order accepted successfully.'), 201);
@@ -1742,7 +1741,7 @@ class OrderController extends BaseController
                 $cart = TempCart::where('status', '0')->where('id', $cart_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', 1)->where('is_approved', 0)->first();
                 if($cart){
                     $cart->is_approved = 2;
-                    $cart->save();
+                    $cart->update();
                 }
                 DB::commit();
                 return $this->successResponse($cart, __('Order rejected successfully.'), 201);
