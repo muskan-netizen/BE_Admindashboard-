@@ -121,8 +121,9 @@ li.mobile-menu-btn.d-sm-inline-block.d-none,.main-menu .menu-right .icon-nav li.
         .onhover-dropdown:before {right: 3px;}
         
 }
-@media(max-witdh:335px){
+@media(max-width:335px){
 .cab-booking-header .top-header .header-dropdown li a, .cab-booking-header .top-header .header-dropdown li {
+
     font-size: 11px;
 }    
 }
