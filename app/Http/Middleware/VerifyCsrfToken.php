@@ -17,6 +17,7 @@ class VerifyCsrfToken extends Middleware
         'payment/paypal/notify',
         'payment/mobbex/notify',
         'webhook/lalamove',
+        'shiprocket_webhook',
 
         /** routes for edit order **/
         'edit-order/*'
