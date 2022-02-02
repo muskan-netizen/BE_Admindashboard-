@@ -20,6 +20,7 @@ class PayfastGatewayController extends BaseController
 {
     use ApiResponser;
     public $gateway;
+    public $currency;
 
     public function __construct()
     {
@@ -34,7 +35,9 @@ class PayfastGatewayController extends BaseController
         $this->gateway->setMerchantKey($merchant_key);
         $this->gateway->setPassphrase($passphrase);
         $this->gateway->setTestMode($testmode); //set it to 'false' when go live
-        // dd($this->gateway);
+        
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
     }
 
     function generateSignature($data, $passPhrase = null) {
@@ -171,7 +174,7 @@ class PayfastGatewayController extends BaseController
             //     // 'metadata' => ['user_id' => $user->id],
             // );
 
-            $request_arr['currency'] = 'ZAR';
+            $request_arr['currency'] = $this->currency; //'ZAR';
             $request_arr['description'] = $description;
 
             $response = $this->gateway->purchase($request_arr)->send();

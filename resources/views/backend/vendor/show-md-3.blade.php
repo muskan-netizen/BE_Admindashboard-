@@ -191,6 +191,7 @@
 
 
 @if(Auth::user()->is_superadmin == 1)
+@if($checkShip)
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -213,7 +214,7 @@
         </div>
     </div>
 </div>
-
+@endif
 
 <div class="card-box">
     <div class="row text-left">
