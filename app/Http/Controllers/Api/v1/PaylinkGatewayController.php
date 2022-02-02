@@ -88,7 +88,7 @@ class PaylinkGatewayController extends BaseController
                 'requestId' => 'CHK-' . $uniqid,
                 'orderId' => $reference_number,
                 'amount' => $amount,
-                'currency' => 'AED', //$this->currency
+                'currency' => $this->currency, //'AED'
                 'description' => $description,
                 'reference' => $reference_number,
                 'returnUrl' => url($request->serverUrl.'payment/paylink/return/app' . $returnUrlParams),
