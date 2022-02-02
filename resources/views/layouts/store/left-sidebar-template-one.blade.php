@@ -5,6 +5,12 @@ $languageList = \App\Models\ClientLanguage::with('language')->where('is_active',
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 @endphp
+<style>
+.cab-booking-header .icon-ic_currency:before{color: var(--theme-deafult) !important;}
+.top-header li{padding: 0 20px 0 0;}
+.mobile-account{color: var(--theme-deafult) }
+@media(max-width:767px){.cab-booking-header.al a.navbar-brand.mr-0 {margin: 10px auto 0;text-align: center;display: block;}}
+</style>
 <header class="site-header @if($client_preference_detail->business_type == 'taxi') taxi-header @endif">
    @if(Auth::check())
    @include('layouts.store/topbar-auth-template-one')
@@ -12,22 +18,20 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
    @include('layouts.store/topbar-guest-template-one')
    @endif
         <!-- Start Cab Booking Header From Here -->
-        <div class="cab-booking-header">
+        <div class="cab-booking-header al">
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-3 col-md-2">
+                    <div class="col-sm-3 col-md-2">
                          <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     </div>
-                    <div class="col-9 col-md-10 top-header bg-transparent d-flex align-items-center justify-content-end">
-                        <ul class="header-dropdown">
+                    <div class="col-md-9 col-md-10 top-header bg-transparent">
+                        <ul class="header-dropdown  d-flex align-items-center justify-content-md-end justify-content-center">
                            @if($client_preference_detail->header_quick_link == 1)
                             <li class="onhover-dropdown quick-links quick-links">
 
                                 <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
                                 </a>
                                 <ul class="onhover-show-div">
-
-
                                     @foreach($pages as $page)
                                         @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
                                         @if(isset($last_mile_common_set) && $last_mile_common_set != false)
@@ -85,7 +89,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 </ul>
                             </li>
                             @if(Auth::guest())
-                            <li class="onhover-dropdown mobile-account">
+                            <li class="onhover-dropdown mobile-account d-block">
                                 <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
                                 <ul class="onhover-show-div">
                                     <li>
@@ -97,8 +101,8 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 </ul>
                             </li>
                             @else
-                            <li class="onhover-dropdown mobile-account">
-                                <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
+                            <li class="onhover-dropdown mobile-account d-block">
+                                <i class="fa fa-user mr-1" aria-hidden="true"></i>{{__('Account')}}
                                 <ul class="onhover-show-div">
                                     @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>

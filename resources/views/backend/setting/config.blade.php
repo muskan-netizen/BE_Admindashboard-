@@ -8,7 +8,7 @@
 $sms_crendential = json_decode($preference->sms_credentials);
 @endphp
 
-<div class="container-fluid custom-toggle">
+<div class="container-fluid custom-toggle al">
    <div class="row">
       <div class="col-12">
          <div class="page-title-box">
