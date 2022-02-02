@@ -100,7 +100,7 @@ class PaylinkGatewayController extends FrontController
                 'requestId' => 'CHK-' . $uniqid,
                 'orderId' => $reference_number,
                 'amount' => $amount,
-                'currency' => 'AED', //$this->currency
+                'currency' => $this->currency, //'AED',
                 'description' => $description,
                 'reference' => $reference_number,
                 'returnUrl' => url('payment/paylink/return' . $returnUrlParams),
