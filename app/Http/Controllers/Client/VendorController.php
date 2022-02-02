@@ -165,6 +165,7 @@ class VendorController extends BaseController
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         $rules = array(
             // 'name' => 'required|string|max:150|unique:vendors',
+            'name' => 'required|string|max:150',
             'address' => 'required',
         );
         foreach ($vendor_registration_documents as $vendor_registration_document) {
@@ -281,6 +282,7 @@ class VendorController extends BaseController
         $rules = array(
             'address' => 'required',
         //    'name' => 'required|string|max:150|unique:vendors,name,' . $id,
+            'name' => 'required|string|max:150',
         );
         //dd($request->all());
         $validation  = Validator::make($request->all(), $rules)->validate();
