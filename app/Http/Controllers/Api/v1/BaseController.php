@@ -636,7 +636,7 @@ class BaseController extends Controller{
         }
         $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
         $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
-        $amount = number_format($amount, 2);
+        $amount = number_format($amount, 2,'.','');
         return $amount;
     }
 
