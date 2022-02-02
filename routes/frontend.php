@@ -9,6 +9,8 @@ Route::get('/debug-sentry', function () {
 
 Route::group(['middleware' => ['domain']], function () {
 	Route::any('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
+	Route::post('shiprocket_webhook','ShiprocketController@shiprocketWebhook')->name('carrier.webhook.shiprocket');
+
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
 
@@ -56,7 +58,6 @@ Route::group(['middleware' => ['domain']], function () {
 
 	////check Shiprocket
 	Route::get('carrier/test/shiprocket','ShiprocketController@checkShiprocket')->name('carrier.test.shiprocket');
-	Route::post('shiprocket_webhook','ShiprocketController@shiprocketWebhook')->name('carrier.webhook.shiprocket');
 
 
 	// Stripe
