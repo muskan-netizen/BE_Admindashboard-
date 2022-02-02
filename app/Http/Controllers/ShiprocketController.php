@@ -347,7 +347,7 @@ class ShiprocketController extends Controller
         }
 
         if($request && isset($json->shipment_status_id)){
-         Webhook::create(['tracking_order_id'=>(($$json->awb)?$$json->awb:''),'response'=>$request->getContent()]);
+         Webhook::create(['tracking_order_id'=>(($json->awb)?$json->awb:''),'response'=>$request->getContent()]);
         }
 
         return response([],200);
