@@ -15,11 +15,11 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         <div class="cab-booking-header">
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-3 col-md-2">
+                    <div class="col-sm-3 col-md-2">
                          <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     </div>
-                    <div class="col-9 col-md-10 top-header bg-transparent d-flex align-items-center justify-content-end">
-                        <ul class="header-dropdown">
+                    <div class="col-sm-9 col-md-10 top-header bg-transparent ">
+                        <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
                            @if($client_preference_detail->header_quick_link == 1)
                             <li class="onhover-dropdown quick-links quick-links">
 
@@ -85,8 +85,8 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 </ul>
                             </li>
                             @if(Auth::guest())
-                            <li class="onhover-dropdown mobile-account">
-                                <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
+                            <li class="onhover-dropdown mobile-account d-block">
+                                <i class="fa fa-user mr-1" aria-hidden="true"></i>{{__('Account')}}
                                 <ul class="onhover-show-div">
                                     <li>
                                         <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
@@ -97,8 +97,8 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 </ul>
                             </li>
                             @else
-                            <li class="onhover-dropdown mobile-account">
-                                <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
+                            <li class="onhover-dropdown mobile-account d-block">
+                                <i class="fa fa-user mr-1" aria-hidden="true"></i>{{__('Account')}}
                                 <ul class="onhover-show-div">
                                     @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
                                     <li>

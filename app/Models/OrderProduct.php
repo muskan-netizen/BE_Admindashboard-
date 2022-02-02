@@ -68,7 +68,7 @@ class OrderProduct extends Model{
     }
     public function getImageBase64Attribute()
     {
-      if(!empty($image_url))
+      if(!empty($this->attributes['image']))
       $img = $this->attributes['image'];
       else
       $img = 'default/default_image.png';
