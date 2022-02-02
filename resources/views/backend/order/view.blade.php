@@ -14,8 +14,12 @@ $timezone = Auth::user()->timezone;
             <div class="col-12">
                 <div class="page-title-box d-flex justify-content-between ">
                     <h4 class="page-title">{{ __("Order Detail") }}</h4>
-                    <button class="al_print_btn badge badge-info" onclick='printDiv();'>Print <img src=""> </button>
+                    <div class="al_back_btn">
+                        <a class="al_print_btn_back mr-2" href="{{ url()->previous() }}">Back</a>
+                        <button class="al_print_btn badge badge-info" onclick='printDiv();'>Print <img src=""> </button>
+                    </div>
                 </div>
+
             </div>
         </div>
         <div class="row">
@@ -132,8 +136,12 @@ $timezone = Auth::user()->timezone;
                                                 <li class="{{$class}} {{$glow}}  @if(in_array($order_status_option->id, $open_option))open-for-update-status @else disabled @endif" data-status_option_id="{{$order_status_option->id}}" data-order_vendor_id="{{$order_status_option->order_vendor_id}}">
                                                     @if( ($order_status_option->id == 5) && (($order->luxury_option_id == 2) || ($order->luxury_option_id == 3)) )
                                                         <h5 class="mt-0 mb-1">{{__('Order Prepared')}}</h5>
+                                                    @elseif($order_status_option->id == 2)
+                                                        <h5 style="padding: 2px 10px;" class="mt-0 mb-1  btn btn-info ">{{$order_status_option->title}}</h5>
+                                                    @elseif($order_status_option->id == 3)
+                                                    <h5 style="padding: 2px 10px;" class="mt-0 mb-1  btn btn-danger ">{{$order_status_option->title}}</h5>
                                                     @else
-                                                        <h5 class="mt-0 mb-1">{{$order_status_option->title}}</h5>
+                                                    <h5 class="mt-0 mb-1">{{$order_status_option->title}}</h5>
                                                     @endif
                                                     <p class="text-muted" id="text_muted_{{$order_status_option->id}}">
                                                         @if($date)
@@ -189,12 +197,10 @@ $timezone = Auth::user()->timezone;
                 <div class="card mb-0 h-100">
                     <div class="card-body">
                         <h4 class="header-title mb-3">
+                            <div class="form-ul mb-1">
 
-                            <div class='form-ul'> {{ $vendor_data->name }}
-
-                            </div>
-
-
+                                <span><img src="{{@$vendor_data->logo['image_fit'].'32/32'.@$vendor_data->logo['image_path']}}" alt="product-img" height="20"></span>
+                                 {{ $vendor_data->name }}</div>
 
                             @if($order->luxury_option_name != '')
                                 <span class="badge badge-info mr-2">{{$order->luxury_option_name}}</span>
@@ -235,7 +241,7 @@ $timezone = Auth::user()->timezone;
                                     $revenue += ($vendor->service_fee_percentage_amount + $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     <tr>
-                                        <th scope="row">{{$product->product_name}}
+                                        <th scope="row"><a href="{{ route('product.edit', $product->product->id) }}" target="_blank">{{$product->product_name}}</a>
                                             <p class="p-0 m-0">
                                                 @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
                                             </p>
@@ -304,13 +310,17 @@ $timezone = Auth::user()->timezone;
                                     @if(Auth::user()->is_superadmin)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($revenue)</td> 
+                                        <td>{{$clientCurrency->currency->symbol}}@money($revenue)</td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)</td>
                                     </tr>
                                     @endif
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Redemmed Loyality Points") }} :</th>
+                                        <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}@money($vendor->orderDetail->loyalty_amount_saved??0.00))</td>
+                                    </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Reject Reason") }} :</th>
                                         <td style="width:200px;">{{$vendor->reject_reason}}</td>
@@ -438,7 +448,7 @@ $timezone = Auth::user()->timezone;
 </div>
 
 <!-- Order Invoice Code -->
-<div style="display: none;">
+<div style="display: block;">
 @include('backend.order.print')
 </div>
 <!--End Order Invoice Code -->
@@ -536,7 +546,7 @@ $timezone = Auth::user()->timezone;
             }
         });
     });
-    function printDiv() 
+    function printDiv()
     {
         var divToPrint=document.getElementById('al_print_area');
         var newWin=window.open('','Print-Window');

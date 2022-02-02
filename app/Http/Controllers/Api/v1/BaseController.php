@@ -38,6 +38,10 @@ class BaseController extends Controller{
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
                 $send = $this->mazinhost_sms($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 4) //for unifonic gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->unifonic($to,$body,$crendentials);
             }else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -425,7 +429,7 @@ class BaseController extends Controller{
         );
         Config::set('mail', $config);
         $app = App::getInstance();
-        $app->register('Illuminate\Mail\MailServiceProvider');
+        // $app->register('Illuminate\Mail\MailServiceProvider');
         return  $config;
     }
 
@@ -684,7 +688,6 @@ class BaseController extends Controller{
             $sendto = $emailData['email'];
 
             try{
-                //dd('base',\Config::get('mail'));
                 Mail::send([], [],
                 function ($message) use($sendto, $client_name, $mail_from, $emailData) {
                     $message->from($mail_from, $client_name);
@@ -710,10 +713,10 @@ class BaseController extends Controller{
 
             if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
                 $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-              
+             
                 $client_name = $client->name;
-                $mail_from = 'dinesh.codebrewlabs@gmail.com';
-                $sendto = 'dinesh.codebrewlabs@gmail.com';
+                $mail_from = 'dineshk@codebrewinnovations.com';
+                $sendto = 'dkdenni7@gmail.com'; 
                 try{
                     // $data = [
                     //     'customer_name' => 'Test',

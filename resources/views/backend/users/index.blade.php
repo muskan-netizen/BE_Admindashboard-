@@ -42,7 +42,7 @@
             <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
             </button>
         </div>
-       
+
     </div>
 
     <div class="row">
@@ -83,7 +83,7 @@
 
     <div class="row main-customer-page">
         <div class="col-12">
-            <div class="card-box set-height">
+            <div class="card-box set-height pb-0">
                 <div class="row mb-2">
                     <div class="col-sm-12">
                         <div class="text-sm-left">
@@ -449,7 +449,7 @@
             {
                 window.location.href = submit_url;
             }else{
-               return false; 
+               return false;
             }
         });
         return false;

@@ -337,15 +337,6 @@ class HomeController extends BaseController
                 );
             }
             
-            // Get user Edited Orders from Temp Cart
-            $temp_order_vendors = TempCart::where('status', '0')->where('user_id', $user->id)->where('is_submitted', 1)->where('is_approved', 0)->pluck('order_vendor_id');
-            $temp_orders = Order::whereHas('vendors', function($q) use($temp_order_vendors){
-                $q->whereIn('id', $temp_order_vendors);
-            })
-            ->select('id','order_number')
-            ->get();
-
-
             $isVendorArea = 0;
             $categories = $this->categoryNav($langId, $vends);
             $homeData['vendors'] = $vendorData;
@@ -354,7 +345,6 @@ class HomeController extends BaseController
             $homeData['on_sale_products'] = $on_sale_product_details;
             $homeData['new_products'] = $new_product_details;
             $homeData['featured_products'] = $feature_product_details;
-            $homeData['temp_orders'] = $temp_orders;
 
             $brands = Brand::with(['bc.categoryDetail', 'bc.categoryDetail.translation' =>  function ($q) use ($langId) {
                 $q->select('category_translations.name', 'category_translations.category_id', 'category_translations.language_id')->where('category_translations.language_id', $langId);
@@ -373,6 +363,21 @@ class HomeController extends BaseController
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+
+    public function getEditedOrders(Request $request){
+        // Get user Edited Orders from Temp Cart
+        $user = Auth::user();
+        $temp_order_vendors = TempCart::where('status', '0')->where('user_id', $user->id)->where('is_submitted', 1)->where('is_approved', 0)->pluck('order_vendor_id');
+        $temp_orders = Order::with(['vendors'=> function($q){
+            $q->select('order_id','vendor_id', 'dispatch_traking_url');
+        }])->whereHas('vendors', function($q) use($temp_order_vendors){
+            $q->whereIn('id', $temp_order_vendors);
+        })
+        ->select('id','order_number')
+        ->get();
+
+        return $this->successResponse($temp_orders, '', 200);
     }
 
     public function vendorProducts($venderIds, $langId, $currency = '', $where = '', $type)

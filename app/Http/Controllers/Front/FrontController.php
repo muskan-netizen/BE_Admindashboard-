@@ -45,6 +45,10 @@ class FrontController extends Controller
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
                 $send = $this->mazinhost($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 4) //for unifonic gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->unifonic($to,$body,$crendentials);
             }else{
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
@@ -63,8 +67,8 @@ class FrontController extends Controller
 	}
     public function testsms()
     {
-        $to = '966505980169';
-        $body = "asd";
+        $to = '966506342600';
+        $body = "this is test sms from codebrew";
         $crendentials = [
             'app_id' =>'ab8JPwmnCRgTrn2kkDEMCuCkMysK8l',
             'account_email' => 'abhimanyuvij@code-brew.com',

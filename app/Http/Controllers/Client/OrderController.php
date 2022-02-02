@@ -417,7 +417,7 @@ class OrderController extends BaseController
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
                 }
-                $orderData = Order::find($request->order_id);
+                $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type=='D') {
@@ -429,6 +429,9 @@ class OrderController extends BaseController
                     }elseif($orderData->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
                         $order_lalamove = $this->placeOrderRequestlalamove($request);
+                    }elseif($orderData->shipping_delivery_type=='SR'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_lalamove = $this->placeOrderRequestShiprocket($request);
                     }
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason]);
@@ -529,6 +532,28 @@ class OrderController extends BaseController
         }
     }
     /// ******************  check If any Product Last Mile on   ************************ ///////////////
+
+    public function placeOrderRequestShiprocket($request)
+    {
+        $ship = new ShiprocketController();
+        //Create Shipping place order request for Shiprocket
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            $order_ship = $ship->createOrderRequestShiprocket($checkOrder->user_id,$checkdeliveryFeeAdded);
+            }
+            if ($order_ship->order_id){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'ship_order_id' => $order_ship->order_id,
+                    'ship_shipment_id' => $order_ship->shipment_id,
+                    'ship_awb_id' => $order_ship->awb_code
+                    ]);
+                return 1;
+            }
+
+        return 2;
+    }
 
     public function placeOrderRequestlalamove($request)
     {

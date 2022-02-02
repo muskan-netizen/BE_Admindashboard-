@@ -12,7 +12,7 @@
 <!-- start page title -->
 <div class="row">
     <div class="col-12">
-        <div class="page-title-box">
+        <div class="page-title-box ">
             <h4 class="page-title">{{ __("App Styling") }}</h4>
         </div>
     </div>
@@ -28,7 +28,7 @@
                             <h4 class="header-title">{{ __("Font Styles") }}</h4>
                             <div class="mb-2">
                                 <label class="form-label">{{ __("Selecting regular font") }}</label>
-                                <select class="form-control" name="fonts" onchange="submitRegularFontForm()" id="save_regular_fonts">
+                                <select class="form-control al_box_height" name="fonts" onchange="submitRegularFontForm()" id="save_regular_fonts">
                                     @foreach($regular_font_options as $regular_font)
                                     <option value="{{$regular_font->id}}" {{$regular_font->is_selected == 1 ? 'selected' : ''}}>{{$regular_font->name}}</option>
                                     @endforeach
@@ -36,7 +36,7 @@
                             </div>
                             <div class="mb-2">
                                 <label class="form-label">{{ __("Selecting medium font") }}</label>
-                                <select class="form-control" name="fonts" onchange="submitMediumFontForm()" id="save_medium_fonts">
+                                <select class="form-control al_box_height" name="fonts" onchange="submitMediumFontForm()" id="save_medium_fonts">
                                     @foreach($medium_font_options as $medium_font)
                                     <option value="{{$medium_font->id}}" {{$medium_font->is_selected == 1 ? 'selected' : ''}}>{{$medium_font->name}}</option>
                                     @endforeach
@@ -44,7 +44,7 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">{{ __("Selecting bold font") }}</label>
-                                <select class="form-control" name="fonts" onchange="submitBoldFontForm()" id="save_bold_fonts">
+                                <select class="form-control al_box_height" name="fonts" onchange="submitBoldFontForm()" id="save_bold_fonts">
                                     @foreach($bold_font_options as $bold_font)
                                     <option value="{{$bold_font->id}}" {{$bold_font->is_selected == 1 ? 'selected' : ''}}>{{$bold_font->name}}</option>
                                     @endforeach
@@ -54,7 +54,7 @@
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <h4 class="header-title mb-0">{{ __("Signup Tagline") }}</h4>
                                 </div>
-                                <input type="text" class="form-control" data-id="{{ $signup_tag_line_text->id??'' }}" id="signup_tagline" name="signup_tagline" value="{{ $signup_tag_line_text->name??'' }}">
+                                <input type="text" class="form-control al_box_height" data-id="{{ $signup_tag_line_text->id??'' }}" id="signup_tagline" name="signup_tagline" value="{{ $signup_tag_line_text->name??'' }}">
                             </div>
                         </div>
                     </div>
@@ -65,15 +65,15 @@
                             <h4 class="header-title">{{ __("Color Picker") }}</h4>
                             <div class="form-group mb-3">
                                 <label for="primary_color">{{ __("Primary Color") }}</label>
-                                <input type="text" id="primary_color_option" onchange="submitPrimaryColorForm()" name="primary_color" class="form-control" value="{{ old('primary_color', $primary_color_options->name ?? 'cccccc')}}">
+                                <input type="text" id="primary_color_option" onchange="submitPrimaryColorForm()" name="primary_color" class="form-control al_box_height" value="{{ old('primary_color', $primary_color_options->name ?? 'cccccc')}}">
                             </div>
                             <div class="form-group mb-3">
                                 <label for="secondary_color">{{ __("Secondary Color") }}</label>
-                                <input type="text" id="secondary_color_option" onchange="submitSecondaryColorForm()" name="secondary_color" class="form-control" value="{{ old('secondary_color', $secondary_color_options->name ?? 'cccccc')}}">
+                                <input type="text" id="secondary_color_option" onchange="submitSecondaryColorForm()" name="secondary_color" class="form-control al_box_height" value="{{ old('secondary_color', $secondary_color_options->name ?? 'cccccc')}}">
                             </div>
                             <div class="form-group mb-0">
                                 <label for="tertiary_color">{{ __("Tertiary Color") }}</label>
-                                <input type="text" id="tertiary_color_option" onchange="submitTertiaryColorForm()" name="tertiary_color" class="form-control" value="{{ old('tertiary_color', $tertiary_color_options->name ?? 'cccccc')}}">
+                                <input type="text" id="tertiary_color_option" onchange="submitTertiaryColorForm()" name="tertiary_color" class="form-control al_box_height" value="{{ old('tertiary_color', $tertiary_color_options->name ?? 'cccccc')}}">
                             </div>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
                             <div class="row">
                                 @foreach($tab_style_options as $tab_style)
                                 <div class="col-12">
-                                    <div class="card mb-3 shadow-none bg-tranparent">
+                                    <div class="card al_card mb-3 shadow-none bg-tranparent">
                                         <div class="card-body px-2 py-0">
                                             <div class="row">
                                                 <div class="col-sm-12 custom-control custom-radio radio_new p-0">

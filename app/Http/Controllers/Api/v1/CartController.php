@@ -982,14 +982,19 @@ class CartController extends BaseController
         if($cartData->count() == '1'){
             $vendorId = $cartData[0]->vendor_id;
             //type must be a : delivery , takeaway,dine_in
-            $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
-            $slots = showSlot('',$vendorId,'delivery',$duration->slot_minutes);
+            $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
+            $slotsDate = findSlot('',$vendorId,'','api');
+            $slots = showSlot($slotsDate,$vendorId,'delivery',$duration->slot_minutes);
             $cart->slots = $slots;
-        // $cart->vendor_id =  $vendorId;
+            if(count($slots)>0){
+                $cart->closed_store_order_scheduled = $duration->closed_store_order_scheduled ?? 0;
+             }else{
+                $cart->closed_store_order_scheduled = 0;
+            }
         }else{
             $slots = [];
             $cart->slots = [];
-            //$cart->vendor_id =  0;
+            $cart->closed_store_order_scheduled = 0;
         }
 
         $cart->total_service_fee = number_format($total_service_fee, 2, '.', '');
@@ -1028,7 +1033,12 @@ class CartController extends BaseController
                 $cart->wallet_amount_used = $wallet_amount_used;
             }
         }
-        $cart->deliver_status = $delivery_status;
+        if($delivery_status == 0 && $duration->closed_store_order_scheduled == 1)
+        {
+            $cart->deliver_status = 1;
+        }else{
+            $cart->deliver_status = $delivery_status;
+        }
         $cart->loyalty_amount = $loyalty_amount_saved;
         $cart->tip = array(
             ['label' => '5%', 'value' => number_format((0.05 * $cart->total_payable_amount), 2, '.', '')],

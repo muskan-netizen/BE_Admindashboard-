@@ -1,6 +1,11 @@
 @extends('layouts.vertical', ['demo' => 'Order list', 'title' => 'Accounting - Vendors'])
 @section('css')
 {{-- <link href="{{asset('assets/libs/datatables/datatables.min.css')}}" rel="stylesheet" type="text/css" /> --}}
+<style>
+.dataTables_filter,.toolbar,.dt-buttons.btn-group.flex-wrap {position: absolute;height:40px;}.dataTables_filter{right:0;top: -50px;}
+.dataTables_filter label{margin:0;height:40px;}.dataTables_filter label input{margin:0;height:40px;}.dt-buttons.btn-group.flex-wrap{right: 170px;top: -50px;}
+.table-responsive{position: relative;overflow:visible;margin-top:10px;}table.dataTable{margin-top:0 !important;}
+</style>
 @endsection
 @section('content')
 <div class="content">
@@ -56,11 +61,11 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-body position-relative">
-                    <div class="top-input position-absolute">
+                <div class="card-body position-relative al">
+                    <div class="top-input position-absoluteal">
                         <div class="row">
                             <div class="col-md-3">
-                                 <input type="text" class="form-control flatpickr-input" id="range-datepicker" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
+                                 <input type="text" class="form-control al_box_height flatpickr-input" id="range-datepicker" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
                             </div>
                         </div>
                    </div>

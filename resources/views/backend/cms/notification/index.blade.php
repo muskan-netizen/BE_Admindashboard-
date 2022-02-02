@@ -18,7 +18,7 @@
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h4>{{ __("List") }}</h4>
-                    </div> 
+                    </div>
                    <div class="table-responsive pages-list-data">
                         <table class="table table-striped w-100">
                             <thead>
@@ -38,7 +38,7 @@
                             </tbody>
                         </table>
                    </div>
-                </div>            
+                </div>
             </div>
         </div>
         <div class="col-lg-7 col-xl-9 mb-2">
@@ -53,22 +53,22 @@
                         <input type="hidden" id="notification_template_id" value="">
                         <div class="col-lg-12">
                             <div class="row">
-                                <div class="col-12 mb-3">
+                                <div class="col-12 mb-2">
                                     <label for="title" class="control-label">{{ __("Subject") }}</label>
-                                    <input class="form-control" id="subject" placeholder="Subject" name="subject" type="text">
+                                    <input class="form-control " id="subject" placeholder="Subject" name="subject" type="text">
                                     <span class="text-danger error-text updatetitleError"></span>
                                 </div>
-                                <div class="col-md-10 mb-3">
+                                <div class="col-md-10 mb-2">
                                     <label for="title" class="control-label">{{ __("Content") }}</label>
                                     <textarea class="form-control" id="content" placeholder="Meta Keyword" rows="6" name="meta_keyword" cols="10" maxlength="250"></textarea>
                                 </div>
-                                <div class="col-md-2 mb-3">
+                                <div class="col-md-2">
                                     <label for="title" class="control-label">{{ __("Tags") }}:-<div id="tags" disabled=""></div></label>
                                 </div>
-                            </div>         
+                            </div>
                         </div>
                     </div>
-                </div>            
+                </div>
             </div>
         </div>
     </div>
@@ -80,7 +80,7 @@
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        setTimeout(function(){ 
+        setTimeout(function(){
             $('tr.page-title:first').trigger('click');
         }, 500);
         $(document).on("click","#client_language",function() {

@@ -353,13 +353,13 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
       <div class="container-fluid">
          <div class="row">
             <div class="col-12">
-               <div class="shimmer_effect">
+               <div class="shimmer_effectx d-none">
                   <ul class="sm pixelstrap sm-horizontal menu-slider">
                      @foreach($navCategories as $cate) @if($cate['name'])
                      <li>
                         <a href="{{route('categoryDetail', $cate['slug'])}}">
                            @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-                           <div class="nav-cate-img loading"> </div>
+                           <div class="nav-cate-imgx loading"> </div>
                            @endif <span><span class="loading"></span></span>
                         </a>
                      </li>

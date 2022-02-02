@@ -190,7 +190,7 @@ class VendorController extends FrontController
             }
         }
 
-        $tags = Tag::with('primary')->get();
+        $tags = Tag::with('primary')->get();  
         //dd($page);
 
         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
@@ -584,6 +584,8 @@ class VendorController extends FrontController
                                 $q->orderBy('price', 'desc');
                             }
                             $q->groupBy('product_id');
+                        },'category.categoryDetail.translation' => function($q) use($langId){
+                            $q->where('category_translations.language_id', $langId);
                         },
                     ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating')
                     // ->where('vendor_id', $vid)
@@ -614,13 +616,14 @@ class VendorController extends FrontController
                 $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                 $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
                 $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                $value->category_name = ($value->category->categoryDetail->translation->first()) ? $value->category->categoryDetail->translation->first()->name : $value->category->categoryDetail->slug;
                 // foreach ($value->variant as $k => $v) {
                 //     $value->variant[$k]->multiplier = $clientCurrency->doller_compare;
                 // }
             }
         }
         $listData = $products;
-        $returnHTML = view('frontend.ajax.productList')->with(['listData' => $listData])->render();
+        $returnHTML = view('frontend.ajax.productList')->with(['listData' => $listData])->render(); 
         return $returnHTML;
         // return response()->json(array('success' => true, 'html'=>$returnHTML));
     }

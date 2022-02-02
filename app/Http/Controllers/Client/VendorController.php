@@ -20,6 +20,7 @@ use App\Http\Traits\ToasterResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
+use App\Http\Controllers\ShiprocketController;
 use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, VendorPayout};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
@@ -216,6 +217,10 @@ class VendorController extends BaseController
         $vendor->website = $request->website;
         $vendor->phone_no = $request->phone_no;
         $vendor->pincode = $request->pincode;
+        $vendor->city = $request->city;
+        $vendor->state = $request->state;
+        $vendor->country = $request->country;
+
         $vendor->slug = Str::slug($request->name, "-");
         if(Vendor::where('slug',$vendor->slug)->count() > 0)
         $vendor->slug = Str::slug($request->name, "-").rand(10,100);
@@ -912,6 +917,24 @@ class VendorController extends BaseController
         // }
         $vendor->save();
         return redirect()->back()->with('success', $msg . ' updated successfully!');
+    }
+
+    public function updateLocation(Request $request, $domain = '',  $id)
+    {
+        $vendor = Vendor::where('id', $id)->first();
+        $msg = 'Shiprocket Pickup Location added';
+
+        if ($request->has('shiprocket_pickup_name')) {
+            $ship = new ShiprocketController();
+            $save = $ship->addShiprocketPickup($vendor,$request->shiprocket_pickup_name);
+             if(isset($save->success) && $save->success){
+                $vendor->shiprocket_pickup_name  = $save->address->pickup_code;
+                $vendor->save();
+                return redirect()->back()->with('success', $msg . ' successfully!');
+             }
+             return redirect()->back()->with('success',$save->errors->pickup_location[0]);
+        }
+       
     }
 
     /**     Activate Category for vendor     */

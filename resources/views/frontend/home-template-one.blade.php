@@ -13,7 +13,7 @@
 				@foreach($banners as $key => $banner)
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
-					 <a class="banner-img-outer" href="{{$url??'#'}}"> 
+					 <a class="banner-img-outer" href="{{$url??'#'}}">
 						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
 					</a>
 					</div>
@@ -98,7 +98,7 @@
 							{{__('In')}}
 								<%=product.category %></span>
 							</p>
-							<div class="d-flex align-items-center justify-content-between al_clock"> <b><% if(product.inquiry_only==0){%> <%=product.price %> <%}%></b> 
+							<div class="d-flex align-items-center justify-content-between al_clock"> <b><% if(product.inquiry_only==0){%> <%=product.price %> <%}%></b>
 								<!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->
 							</div>
 						</div>
@@ -403,7 +403,7 @@
 <section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div">
 	<div class="vendors"> @foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery') @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page') @elseif($homePageLabel->slug == 'brands')
 		<section class="popular-brands left-shape_ position-relative">
-			<div class="container d-block d-md-none">
+			<!-- <div class="container ">
 				<div class="row align-items-center">
 					<div class="col-lg-2 cw top-heading pr-0 text-center text-lg-left mb-3 mb-lg-0">
 						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2> </div>
@@ -411,8 +411,8 @@
 						<div class="brand-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 					</div>
 				</div>
-			</div>
-			<div class="container d-none d-md-block">
+			</div> -->
+			<div class="container ">
 				<div class="al_top_heading col-md-12">
 					<div class="row d-flex justify-content-between">
 						<h2 class="h2-heading text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
@@ -421,7 +421,7 @@
 				</div>
 				<div class="row ">
 					<div class=" col-md-12 al_custom_brand">
-					<div class="d-flex justify-content-around render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
+					<div class=" brand-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 					</div>
 				</div>
 			</div>
@@ -474,7 +474,7 @@
 <div class="modal age-restriction fade" id="age_restriction" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
-			<div class="modal-body text-center"> <img class="blur-up lazyload" data-src="{{getImageUrl(asset('assets/images/age-img.svg'),'150/150')}}" alt="" title="">
+			<div class="modal-body text-center"> <img style="width: 150px;" class="blur-up lazyload" data-src="{{getImageUrl(asset('assets/images/age-img.svg'),'150/150')}}" alt="" title="">
 				<p class="mb-0 mt-3">{{$client_preference_detail ? $client_preference_detail->age_restriction_title : 'Are you 18 or older?'}}</p>
 				<p class="mb-0">Are you sure you want to continue?</p>
 			</div>

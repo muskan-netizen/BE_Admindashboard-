@@ -56,11 +56,11 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-body position-relative">
-                    {{-- <div class="top-input position-absolute">
+                <div class="card-body position-relative al">
+                    {{-- <div class="top-input position-absoluteal">
                         <div class="row">
                             <div class="col-md-3">
-                                 <input type="text" class="form-control flatpickr-input" id="range-datepicker" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
+                                 <input type="text" class="form-control al_box_height flatpickr-input" id="range-datepicker" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
                             </div>
                         </div>
                    </div> --}}

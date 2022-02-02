@@ -853,7 +853,7 @@ class TempCartController extends FrontController
             }
             $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
             $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
-            $cart = TempCart::where('status', '0')->where('user_id', $request->user_id)->first();
+            $cart = TempCart::where('status', '0')->where('user_id', $request->user_id)->where('order_vendor_id', $order_vendor_id)->first();
             if(!$cart){
                 foreach($getallproduct->products as $data){
                     $request->request->add([
@@ -873,7 +873,7 @@ class TempCartController extends FrontController
                     $this->postAddToTempCart($request);
                 }
             }
-            $cart = TempCart::with(['address','currency','coupon.promo'])->where('status', '0')->where('user_id', $request->user_id)->first();
+            $cart = TempCart::with(['address','currency','coupon.promo'])->where('status', '0')->where('user_id', $request->user_id)->where('order_vendor_id', $order_vendor_id)->first();
             $cartData = $this->getCart($cart, $langId, $currId, '');
 
             return $this->successResponse($cartData, 'Order added to cart.', 201);
@@ -914,7 +914,11 @@ class TempCartController extends FrontController
                 'order_vendor_id' => $order_vendor_id
             ];
             if ($user) {
-                $cart_detail = TempCart::updateOrCreate(['user_id' => $user->id], $cart_detail);
+                $cart_detail = TempCart::updateOrCreate([
+                    'user_id' => $user->id,
+                    'is_submitted' => 0,
+                    'is_approved' => 0
+                ], $cart_detail);
                 $already_added_product_in_cart = TempCartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
             } else {
                 return $this->errorResponse(__('Invalid user data'), 422);
@@ -1711,24 +1715,27 @@ class TempCartController extends FrontController
         // }
         $wallet_amount_used = 0;
         if (isset($user)) {
-            if ($user->balanceFloat > 0) {
-                $wallet_amount_used = $user->balanceFloat;
-                if ($clientCurrency) {
-                    $wallet_amount_used = $user->balanceFloat * $clientCurrency->doller_compare;
-                }
-                if ($wallet_amount_used > $cart->total_payable_amount) {
-                    $wallet_amount_used = $cart->total_payable_amount;
-                }
-                $cart->total_payable_amount = $cart->total_payable_amount - $wallet_amount_used;
-                $cart->wallet_amount_used = $wallet_amount_used;
-            }
-        } 
+            $cart->user_wallet_balance = $user->balanceFloat; 
+            // if ( ($user->balanceFloat > 0) && ($user->balanceFloat >= $cart->total_payable_amount) ) {
+            //     $wallet_amount_used = $user->balanceFloat;
+            //     if ($clientCurrency) {
+            //         $wallet_amount_used = $user->balanceFloat * $clientCurrency->doller_compare;
+            //     }
+            //     if ($wallet_amount_used > $cart->total_payable_amount) {
+            //         $wallet_amount_used = $cart->total_payable_amount;
+            //     }
+            //     $cart->total_payable_amount = $cart->total_payable_amount - $wallet_amount_used;
+            //     $cart->wallet_amount_used = $wallet_amount_used;
+            // }
+        }
+        $cart->wallet_amount_used = $wallet_amount_used;
+        $cart->difference_to_be_paid = $cart->total_payable_amount - $order->payable_amount;
         $cart->deliver_status = $delivery_status;
         $cart->loyalty_amount = $loyalty_amount_saved;
         $cart->tip = array(
-            ['label' => '5%', 'value' => number_format((0.05 * $cart->total_payable_amount), 2, '.', '')],
-            ['label' => '10%', 'value' => number_format((0.1 * $cart->total_payable_amount), 2, '.', '')],
-            ['label' => '15%', 'value' => number_format((0.15 * $cart->total_payable_amount), 2, '.', '')]
+            ['label' => '5%', 'value' => number_format((0.05 * $cart->difference_to_be_paid), 2, '.', '')],
+            ['label' => '10%', 'value' => number_format((0.1 * $cart->difference_to_be_paid), 2, '.', '')],
+            ['label' => '15%', 'value' => number_format((0.15 * $cart->difference_to_be_paid), 2, '.', '')]
         );
         $cart->vendor_details = $vendor_details;
         $cart->cart_dinein_table_id = $cart_dinein_table_id;

@@ -53,7 +53,7 @@
                                     $sub_total += $product->total_amount;
                                 @endphp
                             <tr>
-                                <td scope="row">
+                                <td scope="row" valign="top">
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif;">{{$product->product_name}}</b></p>
                                     <p class="p-0 m-0">
                                         @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
@@ -62,19 +62,20 @@
                                         <br><a target="_blank" href="{{ ($pres) ? @$pres->prescription['proxy_url'].'74/100'.@$pres->prescription['image_path'] : ''}}">{{($product->prescription) ? 'Prescription' : ''}}</a>
                                     @endforeach
                                     <p class="p-0 m-0">{{ substr($product->product_variant_sets, 0, -2) }}</p>
-                                    @if($product->addon && count($product->addon))
+                                    <!-- @if($product->addon && count($product->addon))
                                         <hr class="my-2">
                                         <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
                                         @foreach($product->addon as $addon)
                                             <p class="p-0 m-0">{{ $addon->option->translation_title }}</p>
                                         @endforeach
-                                    @endif
+                                    @endif -->
                                 </td>
+
                                 <td>
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                     @if($product->image_path)
                                         <img style="height: 30px;" src="{{@$product->image_path['proxy_url'].'32/32'.@$product->image_path['image_path']}}" >
-                                    @else 
+                                    @else
                                         @php $image_path = getDefaultImagePath(); @endphp
                                         <img style="height: 30px;" src="{{$image_path['proxy_url'].'32/32'.$image_path['image_path']}}" >
                                     @endif
@@ -87,16 +88,36 @@
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                         {{$clientCurrency->currency->symbol}}@money($product->price)
                                         @if($product->addon->isNotEmpty())
-                                        <hr class="my-2">
-                                        @foreach($product->addon as $addon)
-                                            <p class="p-0 m-0">{{$clientCurrency->currency->symbol}}{{ $addon->option->price_in_cart }}</p>
-                                        @endforeach
-                                        @endif
+
                                     </p>
                                 </td>
                                 <td>
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($product->total_amount)</p>
                                 </td>
+                            </tr>
+                            @endif
+
+                            @if($product->addon && count($product->addon))
+                            <tr>
+
+                                <td style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px" align="top" scope="row" colspan="3">
+                                    <span style="font-size: 14px;display:inline-block; font-family: Lato,sans-serif;margin: 0;padding: 10px">{{__('Add Ons')}}
+                                    <br>
+                                        @foreach($product->addon as $addon)
+                                        <small style="margin font-size: 12px;font-family: Lato,sans-serif;margin: 0;padding: 5px;background-color: #000;color: #fff">{{ $addon->option->translation_title }}</small>
+                                        @endforeach
+                                    </span>
+                                </td>
+
+                                <td style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
+                                    <ul class="d-inline-flex p-0">
+                                        @foreach($product->addon as $addon)
+                                            <li class="p-0 m-0 " style="margin-right:3px; list-style:none;">{{$clientCurrency->currency->symbol}}{{ $addon->option->price_in_cart }} , </li>
+                                        @endforeach
+                                        @endif
+                                    </ul>
+                                </td>
+                                <td style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"></td>
                             </tr>
                             @endif
                             @endforeach
@@ -296,7 +317,7 @@
                                 </tbody>
                             </table>
                             @endif
-                            
+
                         </td>
                         <td align="left" valign="top">
                             <table>
@@ -325,7 +346,7 @@
                                     <tr>
                                         <td height="20"></td>
                                     </tr>
-                                    
+
                                 </tbody>
                             </table>
                             <table>
@@ -392,13 +413,13 @@
                                     <tr>
                                         <td height="20"></td>
                                     </tr>
-                                    
+
                                 </tbody>
                             </table>
                         </td>
                     </table>
                 </td>
-                
+
             </tr>
         </table>
     </div>

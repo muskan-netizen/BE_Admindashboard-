@@ -34,6 +34,12 @@ class SmsProviderSeeder extends Seeder
                 'keyword' => 'mazinhost',
                 'status' => '1'
             ),
+            array(
+                'id' => 4,
+                'provider' => 'Unifonic Service',
+                'keyword' => 'unifonic',
+                'status' => '1'
+            ),
         );
         if($sms_count == 0)
         {

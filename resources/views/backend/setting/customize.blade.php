@@ -1,6 +1,9 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Customize'])
 @section('css')
 <link href="https://itsjavi.com/fontawesome-iconpicker/dist/css/fontawesome-iconpicker.min.css" rel="stylesheet" type="text/css" />
+<style>
+.select2-multiple {visibility: hidden !important;}
+</style>
 @endsection
 @section('content')
 <div class="container-fluid">
@@ -80,7 +83,7 @@
                         <div class="col-md-12">
                             <div class="form-group mb-2">
                                 <label for="date_format">{{ __("Date Format") }}</label>
-                                <select class="form-control" id="date_format" name="date_format">
+                                <select class="form-control al_box_height al_box_height" id="date_format" name="date_format">
                                     <option value="DD-MM-YYYY" {{ ($preference && $preference->date_format =="DD-MM-YYYY")? "selected" : "" }}>
                                         DD-MM-YYYY</option>
                                     {{-- <option value="DD/MM/YYYY" {{ ($preference && $preference->date_format =="DD/MM/YYYY")? "selected" : "" }}>
@@ -100,7 +103,7 @@
                         <div class="col-md-12">
                             <div class="form-group mb-2">
                                 <label for="time_format">{{ __("Time Format") }}</label>
-                                <select class="form-control" id="time_format" name="time_format">
+                                <select class="form-control al_box_height al_box_height" id="time_format" name="time_format">
                                     <option value="12" {{ ($preference && $preference->time_format =="12")? "selected" : "" }}>12 {{ __("hours") }}
                                     </option>
                                     <option value="24" {{ ($preference && $preference->time_format =="24")? "selected" : "" }}>24 {{ __("hours") }}
@@ -118,7 +121,7 @@
             </form>
         </div>
         <div class="col-lg-5 col-xl-6 mb-3">
-            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}"> 
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <div class="card-box mb-0 h-100 pb-0">
                     <div class="d-flex align-items-center justify-content-between">
@@ -132,7 +135,7 @@
                     <div class="row col-spacing">
                         <div class="col-sm-4 mb-2">
                             <label for="languages">{{ __("Primary Language") }}</label>
-                            <select class="form-control" id="primary_language" name="primary_language">
+                            <select class="form-control al_box_height" id="primary_language" name="primary_language">
                                 @php
                                    $primary_language_id =  $preference->primarylang ? $preference->primarylang->language_id : '';
                                 @endphp
@@ -143,7 +146,7 @@
                         </div>
                         <div class="col-sm-8 mb-2">
                             <label for="languages">{{ __("Additional Languages") }}</label>
-                            <select class="form-control select2-multiple" id="languages" name="languages[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
+                            <select class="form-control al_box_height select2-multiple" id="languages" name="languages[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
                                 @foreach($languages as $lang)
                                 @if($lang->id != $primary_language_id)
                                     <option value="{{$lang->id}}" {{ (isset($preference) && in_array($lang->id, $cli_langs))? "selected" : "" }}>{{$lang->name ??''}} ({{$lang->nativeName??''}})</option>
@@ -153,7 +156,7 @@
                         </div>
                         <div class="col-sm-4 mb-2">
                             <label for="primary_currency">{{ __("Primary Currency") }}</label>
-                            <select class="form-control" id="primary_currency" name="primary_currency">
+                            <select class="form-control al_box_height" id="primary_currency" name="primary_currency">
                                 @foreach($currencies as $currency)
                                 <option iso="{{$currency->iso_code.' '.$currency->symbol}}" {{ (isset($preference) && $preference->primary->currency->id == $currency->id) ? "selected" : ""}} value="{{$currency->id}}"> {{$currency->iso_code.' '.$currency->symbol}} </option>
                                 @endforeach
@@ -161,7 +164,7 @@
                         </div>
                         <div class="col-sm-8">
                             <label for="currency">{{ __("Additional Currency") }}</label>
-                            <select class="form-control select2-multiple" id="currency" name="currency_data[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
+                            <select class="form-control al_box_height select2-multiple" id="currency" name="currency_data[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
                                 @foreach($currencies as $currency)
                                 @if($preference->primary->currency->id != $currency->id)
                                 <option value="{{$currency->id}}" iso="{{$currency->iso_code}}" {{ (isset($preference) && in_array($currency->id, $cli_currs))? "selected" : "" }}> {{$currency->iso_code}} {{!empty($currency->symbol) ? $currency->symbol : ''}} </option>
@@ -175,7 +178,7 @@
                                 @foreach($preference->currency as $ac)
                                 <div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-{{$ac->currency->id}}">
                                     <label class="primaryCurText">1 {{$preference->primary->currency->iso_code}} {{!empty($preference->primary->currency->symbol) ? $preference->primary->currency->symbol : ''}} = </label>
-                                    <input class="form-control w-50 d-inline-block" type="text" value="{{$ac->doller_compare}}" step=".0001" name="multiply_by[{{$ac->currency->id}}]" oninput="changeCurrencyValue(this)"> {{$ac->currency->iso_code}} {{!empty($ac->currency->symbol) ? $ac->currency->symbol : ''}}
+                                    <input class="form-control al_box_height w-50 d-inline-block" type="text" value="{{$ac->doller_compare}}" step=".0001" name="multiply_by[{{$ac->currency->id}}]" oninput="changeCurrencyValue(this)"> {{$ac->currency->iso_code}} {{!empty($ac->currency->symbol) ? $ac->currency->symbol : ''}}
                                     <input type="hidden" name="cuid[]" class="curr_id" value="{{ $ac->currency->id }}">
                                 </div>
                                 @endforeach
@@ -207,7 +210,7 @@
 
                                 <div class="domain-outer d-flex align-items-center">
                                     <div class="domain_name">https://</div>
-                                    <input type="text" name="custom_domain" id="custom_domain" placeholder="" class="form-control" value="{{ old('custom_domain', $preference->domain->custom_domain ?? '')}}">
+                                    <input type="text" name="custom_domain" id="custom_domain" placeholder="" class="form-control al_box_height" value="{{ old('custom_domain', $preference->domain->custom_domain ?? '')}}">
                                 </div>
 
 
@@ -289,7 +292,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Vendors") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 1)}}">
+                                    <input type="text" name="names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 1)}}">
                                     @if($k == 0)
                                         @if($errors->has('names.0'))
                                             <span class="text-danger" role="alert">
@@ -307,7 +310,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Loyalty Cards") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="loyalty_cards_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="loyalty_cards_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 2)}}">
+                                    <input type="text" name="loyalty_cards_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 2)}}">
                                     @if($k == 0)
                                         @if($errors->has('loyalty_cards_names.0'))
                                             <span class="text-danger" role="alert">
@@ -325,7 +328,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Takeaway") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="takeaway_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="takeaway_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 3)}}">
+                                    <input type="text" name="takeaway_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 3)}}">
                                     @if($k == 0)
                                         @if($errors->has('takeaway_names.0'))
                                             <span class="text-danger" role="alert">
@@ -343,7 +346,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Search") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="search_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="search_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 4)}}">
+                                    <input type="text" name="search_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 4)}}">
                                     @if($k == 0)
                                         @if($errors->has('search_names.0'))
                                             <span class="text-danger" role="alert">
@@ -361,7 +364,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Wishlist") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="wishlist_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="wishlist_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 5)}}">
+                                    <input type="text" name="wishlist_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 5)}}">
                                     @if($k == 0)
                                         @if($errors->has('wishlist_names.0'))
                                             <span class="text-danger" role="alert">
@@ -379,7 +382,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Dine-In") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="dinein_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="dinein_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 6)}}">
+                                    <input type="text" name="dinein_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 6)}}">
                                     @if($k == 0)
                                         @if($errors->has('dinein_names.0'))
                                             <span class="text-danger" role="alert">
@@ -397,7 +400,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Delivery") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="delivery_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="delivery_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 7)}}">
+                                    <input type="text" name="delivery_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 7)}}">
                                     @if($k == 0)
                                         @if($errors->has('delivery_names.0'))
                                             <span class="text-danger" role="alert">
@@ -431,7 +434,7 @@
                             <div class="input-group-prepend">
                                 <div class="input-group-text"><i class="fab fa-facebook"></i></div>
                             </div>
-                            <select class="form-control" id="social_icons" name="icon">
+                            <select class="form-control al_box_height" id="social_icons" name="icon">
                                 <option value="facebook"> Facebook </option>
                                 <option value="github"> Github </option>
                                 <option value="reddit"> Reddit </option>
@@ -449,7 +452,7 @@
                     </div>
                     <div class="form-group position-relative">
                         <label for="">{{ __("URL") }}</label>
-                        <input class="form-control" name="url" type="text" placeholder="http://www.google.com">
+                        <input class="form-control al_box_height" name="url" type="text" placeholder="http://www.google.com">
                         <span class="text-danger error-text social_media_url_err"></span>
                     </div>
                 </div>
