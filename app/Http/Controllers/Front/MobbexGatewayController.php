@@ -21,6 +21,7 @@ class MobbexGatewayController extends FrontController
     public $API_ACCESS_TOKEN;
     public $test_mode;
     public $mb;
+    public $currency;
 
     public function __construct()
     {
@@ -32,6 +33,9 @@ class MobbexGatewayController extends FrontController
 
         $this->API_KEY = $api_key;
         $this->API_ACCESS_TOKEN = $api_access_token;
+
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
 
         try {
             $this->mb = new MB($api_key, $api_access_token);
@@ -63,7 +67,7 @@ class MobbexGatewayController extends FrontController
 
             $checkout_data = array(
                 'total' => $amount,
-                'currency' => 'ARS',
+                'currency' => $this->currency, //'ARS',
                 'description' => 'Order Checkout',
                 'return_url' => url($request->returnUrl . $returnUrlParams),
                 'reference' => $request->order_number,
