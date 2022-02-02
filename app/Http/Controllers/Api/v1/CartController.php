@@ -960,12 +960,13 @@ class CartController extends BaseController
                     }
                 }
                 $vendorData->is_promo_code_available = $is_promo_code_available;
+                $slotsDate = findSlot('',$vendorData->vendor->id,'','api');
+                $vendorData->delaySlot = $slotsDate;
             }
             ++$vondorCnt;
         }//End cart Vendor loop
 
-        $slotsDate = findSlot('',$vendorData->vendor->id,'','api');
-        $vendorData->delaySlot = $slotsDate;
+        
 
         $cart_product_luxury_id = CartProduct::where('cart_id', $cartID)->select('luxury_option_id', 'vendor_id')->first();
         if ($cart_product_luxury_id) {
