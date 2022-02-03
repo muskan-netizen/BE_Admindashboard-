@@ -1682,18 +1682,18 @@ class CartController extends BaseController
                 $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
                 if($request->task_type!='now'){
-                    if(isset($request->slot))
-                    {
-                        $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                        if(isset($request->slot))
+                        {
+                        //$request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                            $time = $request->schedule_dt;
+                            $slot = $request->slot;
+                        }else{
+                            $time = $request->schedule_dt;
+                            $slot = null;
+                        }
+                    }else{
                         $time = $request->schedule_dt;
-                        $slot = $request->slot;
-                    }else{
-                    $time = $request->schedule_dt;
-                    $slot = null;
-                    }
-                    }else{
-                    $time = null;
-                    $slot = null;
+                        $slot = null;
                     }
 
                 Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions ?? null,
