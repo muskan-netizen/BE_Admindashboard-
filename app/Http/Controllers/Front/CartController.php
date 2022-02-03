@@ -742,12 +742,12 @@ class CartController extends FrontController
                         $dropoff_delay_date = $prod->product->dropoff_delay_hrs_min;
                     }
                     $select = '';
+                      
                     if($action == 'delivery'){
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
                         $deliveryCharges = 0;
-                        
-                        $code = (($code)?$code:$cart->shipping_delivery_type);
+                         $code = (($code)?$code:$cart->shipping_delivery_type);
                         if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
                             $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount);
                            if(isset($deliveries[0]))

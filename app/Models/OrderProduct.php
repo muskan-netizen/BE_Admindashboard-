@@ -75,9 +75,16 @@ class OrderProduct extends Model{
 
       $image = $this->getImageAttribute($img);
       $image_url = $image['proxy_url'].'100/100'.$image['image_path'];
-
-      $base64 = base64_encode(file_get_contents($image_url));
-    
+      try{
+        if(isset($image_url) && !empty($image_url))
+        $base64 = base64_encode(@file_get_contents($image_url));
+        else
+        $base64 = '';
+        return $base64;
+     }
+     catch(Exception $e) {
+      $base64 = '';
       return $base64;
+      }
     }
 }
