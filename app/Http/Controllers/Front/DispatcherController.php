@@ -20,17 +20,20 @@ class DispatcherController extends FrontController
     /******************    ---- order status update from dispatch (Need to dispatcher_status_option_id ) -----   ******************/
     public function dispatchOrderStatusUpdate(DispatchOrderStatusUpdateRequest $request, $domain = '', $web_hook_code)
     {
+
         try {
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
+
             if($checkiftokenExist){
                 $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $checkiftokenExist->order_id,
                     'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
                     'type' =>  $request->task_type??1]);
+                    $this->sendOrderNotification($update->id);
                     $type = $request->task_type??1;
-                $dispatch_status = $request->dispatcher_status_option_id;
+                   $dispatch_status = $request->dispatcher_status_option_id;
 
                     switch ($dispatch_status) {
                         case 2:
@@ -57,6 +60,7 @@ class DispatcherController extends FrontController
                         'order_status_option_id' =>  $request->status_option_id,
                         'vendor_id' =>  $checkiftokenExist->vendor_id,
                         'order_vendor_id' =>  $checkiftokenExist->id])->count();
+
                         if($checkif == 0){
                             $update_vendor = VendorOrderStatus::updateOrCreate([
                                 'order_id' =>  $checkiftokenExist->order_id,
@@ -65,8 +69,6 @@ class DispatcherController extends FrontController
                                 'order_vendor_id' =>  $checkiftokenExist->id ]);
 
                                 OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['order_status_option_id' => $request->status_option_id]);
-
-                                $this->sendOrderNotification($update_vendor->id);
                             }
 
 
@@ -105,6 +107,7 @@ class DispatcherController extends FrontController
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
             $type = $request->task_type??1;
+
             if($checkiftokenExist){
 
                 $dispatch_status = $request->dispatcher_status_option_id;
@@ -177,6 +180,7 @@ class DispatcherController extends FrontController
     /******************    ---- share all details of order for dispatcher -----   ******************/
     public function dispatchOrderDetails(Request $request, $domain = '', $web_hook_code)
     {
+
         try {
             $user = Auth::user();
             $order_item_count = 0;
@@ -327,14 +331,20 @@ class DispatcherController extends FrontController
     /******************    ---- send notification to user -----   ******************/
     public function sendOrderNotification( $vendor_order_status_id )
     {
+         //pr($vendor_order_status_id);
+
         $OrderStatus = VendorOrderDispatcherStatus::select('*','dispatcher_status_option_id as status_data')->find($vendor_order_status_id);
 
         if($OrderStatus){
             $orderNumber = Order::where('id',$OrderStatus->order_id)->select('order_number','user_id')->first();
+
             $user_id = $orderNumber ? $orderNumber->user_id : '';
             $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token');
+
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+
             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+
                 $from = $client_preferences->fcm_server_key;
                     $title = __('Order Status : #').($orderNumber ?  $orderNumber->order_number : '');
                     $body =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
@@ -342,6 +352,8 @@ class DispatcherController extends FrontController
                         'Authorization: key=' . $from,
                         'Content-Type: application/json',
                     ];
+                    //pr($title);
+                    //pr($body);
                     $data = [
                         "registration_ids" => $devices,
                         "notification" => [

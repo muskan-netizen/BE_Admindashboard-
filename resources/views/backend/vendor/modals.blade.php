@@ -15,6 +15,7 @@
                 <div class="modal-body" >
                     <div class="row">
                         <div class="col-md-8">
+
                             <div class="row mb-2">
                                 <div class="col-md-3">
                                     <label>{{ __('Upload Logo') }} </label>
@@ -322,29 +323,29 @@
                                                 @endif
                                         </div>
                                     </div>
+                                    @if(Auth::user()->is_superadmin == 1)
+                                        <div class="col-md-4">
+                                            <div class="al_advanced_details p-2">
+                                                <p class="al_custom_title mb-1"><span class="">{{ __("Commission") }}</span> ({{ __("Visible For Admin") }})</p>
 
-                                    <div class="col-md-4">
-                                        <div class="al_advanced_details p-2">
-                                            <p class="al_custom_title mb-1"><span class="">{{ __("Commission") }}</span> ({{ __("Visible For Admin") }})</p>
+                                                    <div class="form-group">
+                                                        {!! Form::label('title', __('Commission Percent'),['class' => 'control-label']) !!}
+                                                        <input class="form-control" name="commission_percent" type="text" value="{{@$vendor->commission_percent}}" onkeypress="return isNumberKey(event)"  onkeydown="if(this.value.length > 6) return false;">
 
-                                                <div class="form-group">
-                                                    {!! Form::label('title', __('Commission Percent'),['class' => 'control-label']) !!}
-                                                    <input class="form-control" name="commission_percent" type="text" value="{{@$vendor->commission_percent}}" onkeypress="return isNumberKey(event)"  onkeydown="if(this.value.length > 6) return false;">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        {!! Form::label('title', __('Commission Fixed Per Order'),['class' => 'control-label']) !!}
+                                                        <input class="form-control" name="commission_fixed_per_order" type="text" value="{{@$vendor->commission_fixed_per_order}}" onkeypress="return isNumberKey(event)">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
+                                                        <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{@$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
 
-                                                </div>
-                                                <div class="form-group">
-                                                    {!! Form::label('title', __('Commission Fixed Per Order'),['class' => 'control-label']) !!}
-                                                    <input class="form-control" name="commission_fixed_per_order" type="text" value="{{@$vendor->commission_fixed_per_order}}" onkeypress="return isNumberKey(event)">
-                                                </div>
-                                                <div class="form-group">
-                                                    {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
-                                                    <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{@$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
+                                                    </div>
 
-                                                </div>
-
+                                            </div>
                                         </div>
-                                    </div>
-
+                                    @endif
                                     <div class="col-md-4">
                                         @if($client_preference_detail->business_type != 'taxi')
                                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
