@@ -4,12 +4,15 @@
         $('#add-form').modal({
             //backdrop: 'static',
             keyboard: false
+
         });
-        //runPicker();
+       // runPicker();
         $('.dropify').dropify();
         $('.selectize-select').selectize();
+        $('.selectized').selectize();
         autocompletesWraps.push('add');
         loadMap(autocompletesWraps);
+
     });
 
     $('.openImportModal').click(function() {
