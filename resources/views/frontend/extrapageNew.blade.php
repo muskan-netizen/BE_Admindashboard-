@@ -156,7 +156,6 @@
                                     <h2>{{getNomenclatureName('Vendors', true) . __(' Details.')}}</h2>
                                 </div>
                             </div>
-
                             <div class="form-row">
                                 <div class="col-md-4 mb-3">
 

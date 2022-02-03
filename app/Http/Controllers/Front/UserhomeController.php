@@ -169,7 +169,6 @@ class UserhomeController extends FrontController
             $vendor_registration_documents = VendorRegistrationDocument::with(['primary','options','options.translation' => function($query) use($language_id) {
                 $query->where('language_id', session()->get('customerLanguage'));
             }])->get();
-
                 $server = env('APP_ENV', 'development');
                 if($server == 'local')
                 {
