@@ -119,6 +119,8 @@ li.mobile-menu-btn.d-sm-inline-block.d-none,.main-menu .menu-right .icon-nav li.
         }
 }
 
+.al_main_category_list li:last-child{border:none;}
+
     @media (max-width: 576px){
         .top-header .header-dropdown .mobile-account .onhover-show-div, .top-header .header-dropdown .mobile-wishlist .onhover-show-div {
         top: 40px;bottom: 0;right: 0;left: auto;height: 100%;max-height: 100%;}
