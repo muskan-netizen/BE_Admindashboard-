@@ -675,8 +675,9 @@ $(document).ready(function() {
                     if ($("[id^=cart_product_]").length == 0) {
                         $(".shopping-cart").html('');
                     }
-                    cartTotalProductCount();
                     cartHeader();
+                    cartTotalProductCount();
+                    
 
                     if ($('#show_plus_minus' + cartproduct_id).length != 0) {
                         if($('.addon_variant_quantity_' + cartproduct_id).closest('.customized_product_row').length > 0){

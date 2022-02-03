@@ -1083,19 +1083,19 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         <div class="row align-items-center">
                            <div class="col-md-12">
                               <div class="form-group">
-                                 <label for="dinein_check" class="mr-3 mb-0">{{ __("Dine In") }}</label>
+                                 <label for="dinein_check" class="mr-3 mb-0">{{getDynamicTypeName('Dine-In')}}</label>
                                  <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
                            <div class="col-md-12">
                               <div class="form-group">
-                                 <label for="delivery_check" class="mr-3 mb-0">{{ __("Delivery") }}</label>
+                                 <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
                                  <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
                            <div class="col-md-12">
                               <div class="form-group">
-                                 <label for="takeaway_check" class="mr-3 mb-0">{{ __("Takeaway") }}</label>
+                                 <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
                                  <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
                               </div>
                            </div>
@@ -1655,7 +1655,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
          <div class="modal-content">
             <div class="modal-header border-bottom">
                <h4 class="modal-title">{{ __("Select Location") }}</h4>
-               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+               <button type="button" class="close remove-modal-open" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body p-4">
                <div class="row">
@@ -1664,13 +1664,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         <div id="googleMap" style="height: 500px; min-width: 500px; width:100%"></div>
                         <input type="hidden" name="lat_input" id="lat_map" value="0" />
                         <input type="hidden" name="lng_input" id="lng_map" value="0" />
+                        <input type="hidden" name="address_map" id="address_map" value="" />
                         <input type="hidden" name="for" id="map_for" value="" />
                      </div>
                   </form>
                </div>
             </div>
             <div class="modal-footer">
-               <button type="submit" class="btn btn-info waves-effect waves-light selectMapLocation">{{ __("Ok") }}</button>
+               <button type="submit" class="btn btn-info waves-effect waves-light  remove-modal-open selectMapLocation">{{ __("Ok") }}</button>
             </div>
          </div>
       </div>

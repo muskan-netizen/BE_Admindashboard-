@@ -60,19 +60,19 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% } %>
                                                     <% if(order.scheduled_date_time) { %>
                                                         <span class="badge badge-success ml-2">Scheduled</span>
-                                                        <span class="ml-2"><%= order.scheduled_date_time %></span>
+                                                       <!-- <span class="ml-2"><%= order.scheduled_date_time %></span> -->
                                                     <% } %>
 
 
                                                     <% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){ %>
                                                         <% if(order.scheduled_slot == null){ %>
                                                         <% if(order.scheduled_date_time){ %>
-                                                               <span class="ml-2">{{__('Your order will arrive by')}} <%= order.converted_scheduled_date_time %></span>
+                                                               <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %></span>
                                                            <% } else { %>
                                                                <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
                                                            <% } %>
                                                            <% }else{ %>
-                                                            <span class="ml-2">{{__('Your order will arrive by')}} <%= order.converted_scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
+                                                            <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
                                                            <% } %>
 
                                                    <% } %>
@@ -340,12 +340,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         </ul>
         <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
             <div class="tab-pane fade past-order show active" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
-            <!-- <div class="tab-pane fade" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
+            <div class="tab-pane fade" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
             <div class="tab-pane fade past-order" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
                 <div class="error-msg">
                     <p>{{ __('You have not any order yet now.') }}</p>
                 </div>
-            </div> -->
+            </div> 
         </div>
     </div>
 </div>
@@ -427,9 +427,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 vendor_id: vendor_id,
                 date_filter: date_filter
             },
-            success: function(response) {
+            success: function(response) { 
                 // reload after 10 sec
-                setTimeout(autoloaddashboad(), 10000);
+               
 
                 $('#order_list_order').hide();
                 if (response.status == 'Success') {
@@ -456,12 +456,17 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     $("#active-orders").html("(" + response.data.active_orders + ")");
                     $("#pending-orders").html("(" + response.data.pending_orders + ")");
                     $("#history-orders").html("(" + response.data.orders_history + ")");
-                }
+
+                 }
+                // setTimeout(autoloaddashboad(), 20000);
             },
             error: function(data) {
 
             },
         });
+
+
+        
     }
     $(document).ready(function() {
 

@@ -15,7 +15,7 @@ $timezone = Auth::user()->timezone;
                 <div class="page-title-box d-flex justify-content-between ">
                     <h4 class="page-title">{{ __("Order Detail") }}</h4>
                     <div class="al_back_btn">
-                        <a class="al_print_btn_back mr-2"  href="{{ url()->previous() }}">Back</a>
+                        <a class="al_print_btn_back mr-2" href="{{ url()->previous() }}">Back</a>
                         <button class="al_print_btn badge badge-info" onclick='printDiv();'>Print <img src=""> </button>
                     </div>
                 </div>
@@ -314,9 +314,13 @@ $timezone = Auth::user()->timezone;
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)</td>
                                     </tr>
                                     @endif
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">{{ __("Redemmed Loyality Points") }} :</th>
+                                        <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}@money($vendor->orderDetail->loyalty_amount_saved??0.00))</td>
+                                    </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Reject Reason") }} :</th>
                                         <td style="width:200px;">{{$vendor->reject_reason}}</td>

@@ -641,4 +641,10 @@ function getDynamicMail(){
     \Config::set('mail.mailers.smtp', $config);
     return 2;
 }
+function getDynamicTypeName($name)
+{
+    $new_name = getNomenclatureName($name, true);
+    $new_name = ($new_name === $name) ? __($name) : $new_name;
+    return $new_name;
+}
 

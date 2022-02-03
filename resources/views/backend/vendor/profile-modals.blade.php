@@ -278,7 +278,7 @@
 
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __("Select Location") }}</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <button type="button" class="close remove-modal-open" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body p-4">
 
@@ -288,13 +288,14 @@
                             <div id="googleMap" style="height: 500px; min-width: 500px; width:100%"></div>
                             <input type="hidden" name="lat_input" id="lat_map" value="0" />
                             <input type="hidden" name="lng_input" id="lng_map" value="0" />
+                            <input type="hidden" name="address_map" id="address_map" value="" />
                             <input type="hidden" name="for" id="map_for" value="" />
                         </div>
                     </form>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-info waves-effect waves-light selectMapLocation">{{ __('Ok') }}</button>
+                <button type="submit" class="btn btn-info waves-effect waves-light remove-modal-open selectMapLocation">{{ __('Ok') }}</button>
                 <!--<button type="Cancel" class="btn btn-info waves-effect waves-light cancelMapLocation">cancel</button>-->
             </div>
         </div>
