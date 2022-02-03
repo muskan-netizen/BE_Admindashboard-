@@ -189,6 +189,10 @@ class VendorController extends BaseController
             // 'name' => 'required|string|max:150|unique:vendors',
             'name' => 'required|string|max:150',
             'address' => 'required',
+            'city' => 'required',
+            'pincode' => 'required',
+            'state' => 'required',
+            'country' => 'required',
         );
         foreach ($vendor_registration_documents as $vendor_registration_document) {
             if($vendor_registration_document->is_required == 1){

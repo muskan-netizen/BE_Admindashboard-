@@ -14,7 +14,7 @@ class SmsProviderSeeder extends Seeder
     public function run()
     {
         $sms_count = DB::table('sms_providers')->count();
- 
+
         $maps = array(
             array(
                 'id' => 1,
@@ -50,13 +50,17 @@ class SmsProviderSeeder extends Seeder
             DB::table('sms_providers')->insert($maps);
         }else{
             foreach($maps as $map){
-                $sms = SmsProvider::updateOrCreate([
-                    'keyword' => $map['keyword']
-                ],[
-                    'provider' => $map['provider'],
-                    'status' => $map['status'],
-                ]);
+                $first = SmsProvider::where('keyword',$map['keyword'] )->first();
+                if(!$first){
+                    DB::table('sms_providers')->insert($map);
+                }
+                // $sms = SmsProvider::updateOrCreate([
+                //     'keyword' => $map['keyword']
+                // ],[
+                //     'provider' => $map['provider'],
+                //     'status' => $map['status'],
+                // ]);
             }
-        } 
+        }
     }
 }
