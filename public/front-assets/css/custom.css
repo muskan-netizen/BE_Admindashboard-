@@ -61,6 +61,7 @@ font-size: 0;height: 20px;width: 20px;left: 0;position: absolute;-webkit-transfo
 background-size: 20px;top: 50%;-webkit-transform: translate(0, -50%) rotate(-90deg);transform: translate(0, -50%) rotate(-90deg);height: 20px;width: 20px;}
 body .pixelstrap li a, body .pixelstrap li a:hover {padding: 0;}
 .menu-slider .slick-prev{-webkit-transform: translate(0, -50%) rotate(90deg);transform: translate(0, -50%) rotate(90deg);}
+
 /* ------------------------------- al css start end ----------------------------- */
 
 /* Responsiveness Css Start From Here */

@@ -191,7 +191,7 @@
                             @endif
                              <li>
                                 <a href="{{route('review.index')}}">
-                                    <span class="icon-customer-2"></span>
+                                    <span class="icon-customer al"><img src="https://img.icons8.com/external-xnimrodx-lineal-gradient-xnimrodx/64/000000/external-review-customer-review-xnimrodx-lineal-gradient-xnimrodx-3.png"/></span>
                                     <span> {{ __('Product Reviews') }} </span>
                                 </a>
                             </li>
@@ -316,7 +316,7 @@
                         @if(in_array('DeliveryOption',$allowed) || Auth::user()->is_superadmin == 1)
                         <li>
                             <a href="{{route('deliveryoption.index')}}">
-                                <span class="icon-payment-options"></span>
+                                <span class="icon-customer al"><img src="https://img.icons8.com/external-kiranshastry-gradient-kiranshastry/64/000000/external-delivery-truck-automobile-kiranshastry-gradient-kiranshastry.png"/></span>
                                 <span> {{ __('Delivery Options') }} </span>
                             </a>
                         </li>
