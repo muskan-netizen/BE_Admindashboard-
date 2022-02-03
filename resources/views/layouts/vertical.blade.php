@@ -80,7 +80,7 @@
 <script>
     var Default_latitude  =  {{ $Default_latitude }};
     var Default_longitude =  {{ $Default_longitude }};
-    console.log(Default_latitude);
+
     var NumberFormatHelper = { formatPrice: function(x){
         if(x){
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
