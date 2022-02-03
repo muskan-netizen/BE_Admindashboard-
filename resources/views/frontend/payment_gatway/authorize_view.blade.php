@@ -64,6 +64,7 @@
         cardData.month = document.getElementById("cc-exp-month").value;
         cardData.year = document.getElementById("cc-exp-year").value;
         cardData.cardCode = document.getElementById("cc-cvc").value;
+    console.log(cardData);
 
     // Now send the card data to the gateway for tokenisation.
     // The responseHandler function will handle the response.
