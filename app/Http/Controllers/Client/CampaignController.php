@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Campaign, CampaignRoster, Celebrity, Brand, Country, User};
+use App\Models\{Campaign, CampaignRoster, Celebrity, Brand, Country, User, UserVendor, Client, Timezone };
+use Carbon\Carbon;
 
 class CampaignController extends BaseController
 {
@@ -16,7 +17,8 @@ class CampaignController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(){
+    public function index(){     
+        //return $vendors = UserVendor::select('user_id')->with('user')->groupBy('user_id')->get();
         $campaigns = Campaign::all();
         return view('backend.campaign.index')->with(['campaigns' => $campaigns]);
     }
@@ -27,7 +29,7 @@ class CampaignController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request){
+    public function store(Request $request){      
         //dd($request->all());
         $rules = array(
             // 'slug' => 'required|string|max:30|unique:celebrities',
@@ -72,6 +74,17 @@ class CampaignController extends BaseController
         $campaign->save();
         if ($campaign->id > 0) {
             $usertype = $request->send_to;
+            $timezonedetail = Client::with('getTimezone')->first('timezone');
+            $tz = new Timezone();
+            $usertimezone = $tz->timezone_name($timezonedetail->timezone);        
+            $notification_time = Carbon::parse($request->schedule_datetime . $usertimezone ?? 'UTC')->tz('UTC');
+            if($usertype==1)    // for all users
+            {
+                $users = User::where(['status'=>1])->get();
+
+            }else{  //for vendors only
+                $vendors = UserVendor::select('user_id')->with('user')->groupBy('user_id')->get();
+            }
             return response()->json([
                 'status' => 'success',
                 'message' => 'Campaign created Successfully!',
@@ -89,13 +102,8 @@ class CampaignController extends BaseController
     public function edit($domain = '', $id)
     {
         $campaign = Campaign::where('id', $id)->first();
-        $pros = array();
-        foreach ($celeb->brands as $repo) {
-            $pros[] = $repo->id;
-        }
-        $countries = Country::all();
-        $brands = Brand::all();
-        $returnHTML = view('backend.campaign.form')->with(['lc' => $celeb, 'brands' => $brands, 'pros' => $pros, 'countries' => $countries])->render();
+        
+        $returnHTML = view('backend.campaign.form')->with(['campaign' => $campaign])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
     }
 
