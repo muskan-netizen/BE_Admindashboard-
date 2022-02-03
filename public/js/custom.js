@@ -1610,6 +1610,8 @@ $(document).ready(function() {
             paymentViaPagarme('', '');
         }else if (payment_option_id == 17) {
             paymentViaCheckout('', '');
+        }else if (payment_option_id == 18) {
+            paymentViaAuthorize('', '');
         }
     });
     $(document).on("click", ".remove_promo_code_btn", function() {

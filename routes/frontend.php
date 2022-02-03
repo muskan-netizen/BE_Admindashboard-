@@ -111,6 +111,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/pagarme','Front\PagarmeController@createPayment')->name('payment.pagarme.createPayment');
 	Route::post('payment/pagarme/card','Front\PagarmeController@createPaymentCard')->name('payment.pagarme.createPaymentCard');
 
+	//Authorize.Net
+	Route::match(['get','post'],'payment/authorize/page','Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
+	Route::post('payment/authorize','Front\AuthorizeGatewayController@createPayment')->name('payment.authorize.createPayment');
+
 	// Checkout
 	Route::post('payment/checkout', 'Front\CheckoutGatewayController@checkoutPurchase')->name('payment.checkoutPurchase');
 	Route::post('payment/checkout/notify', 'Front\CheckoutGatewayController@checkoutNotify')->name('payment.checkoutNotify');
