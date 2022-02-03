@@ -44,6 +44,10 @@ else if($client_preference_detail->show_dark_mode == 2){
   @media(max-width: 991px){
     .cab-booking-header img.img-fluid {height: auto !important;}
   }
+
+
+@media(max-width:767px){.cab-booking-header a.navbar-brand.mr-0 {margin: 10px auto 0;text-align: center;display: block;}}
+
   </style>
   @else
   <style>
