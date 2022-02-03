@@ -136,7 +136,7 @@ class PromoCodeController extends Controller{
                 }
             }
 
-            return $this->successResponse($promo_codes, '', 200);
+            return $this->successResponse(array_values($promo_codes->toArray()), '', 200);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
