@@ -993,6 +993,7 @@ class CartController extends BaseController
                 $cart->closed_store_order_scheduled = 0;
             }
         }else{
+            $duration = [];
             $slots = [];
             $cart->slots = [];
             $cart->closed_store_order_scheduled = 0;
@@ -1684,17 +1685,17 @@ class CartController extends BaseController
                 if($request->task_type!='now'){
                     if(isset($request->slot))
                     {
-                        $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                    //$request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                         $time = $request->schedule_dt;
                         $slot = $request->slot;
                     }else{
+                        $time = $request->schedule_dt;
+                        $slot = null;
+                    }
+                }else{
                     $time = $request->schedule_dt;
                     $slot = null;
-                    }
-                    }else{
-                    $time = null;
-                    $slot = null;
-                    }
+                }
 
                 Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions ?? null,
                 'schedule_type' => $request->task_type??null,
