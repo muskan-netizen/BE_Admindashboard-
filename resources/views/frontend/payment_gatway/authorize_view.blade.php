@@ -90,7 +90,7 @@ function responseHandler(response) {
 function paymentFormUpdate(opaqueData) {
     document.getElementById("opaqueDataDescriptor").value = opaqueData.dataDescriptor;
     document.getElementById("opaqueDataValue").value = opaqueData.dataValue;
-    document.getElementById("paymentForm").submit();
+    document.getElementById("authorize-payment-form").submit();
 }
 </script>
 <body>
