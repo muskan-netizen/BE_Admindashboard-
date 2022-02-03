@@ -33,6 +33,8 @@ class FrontController extends Controller
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+                    Log::info('SMS twilio respons');
+                    Log::info($send);
                 }else{
                     return 2;
                 }
@@ -53,6 +55,8 @@ class FrontController extends Controller
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+                    Log::info('SMS twilio respons');
+                    Log::info($send);
                 }else{
                     return 2;
                 }

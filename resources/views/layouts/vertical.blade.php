@@ -25,9 +25,15 @@
     </head>
     @php
         $classBody1 = 'light';
-        $theme1 = \App\Models\ClientPreference::where(['id' => 1])->first('theme_admin');
+        $Default_latitude = '30.7187';
+        $Default_longitude = '76.8106';
+        $theme1 = \App\Models\ClientPreference::where(['id' => 1])->first('theme_admin','Default_latitude','Default_longitude');
         if($theme1 && ($theme1->theme_admin == 'dark' || $theme1->theme_admin == 'Dark')){
             $classBody1 = 'dark';
+        }
+        if($theme1){
+            $Default_latitude = $theme1->Default_latitude ? $theme1->Default_latitude : '30.7187' ;
+            $Default_longitude = $theme1->Default_longitude ? $theme1->Default_longitude : '76.8106' ;
         }
 
         $ll = session()->get('applocale_admin');
@@ -72,6 +78,9 @@
         <!-- End Page content -->
     </div>
 <script>
+    var Default_latitude  =  {{ $Default_latitude }};
+    var Default_longitude =  {{ $Default_longitude }};
+    console.log(Default_latitude);
     var NumberFormatHelper = { formatPrice: function(x){
         if(x){
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -85,5 +94,11 @@
 
     @yield('script')
     <script src="{{asset('assets/js/app.min.js')}}"></script>
+    <script>
+
+        $(".remove-modal-open").click(function (e) {
+               $('body').addClass('modal-opensag');
+       });
+    </script>
     </body>
 </html>

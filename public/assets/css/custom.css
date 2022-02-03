@@ -38,6 +38,9 @@ ul#sujesion_user_id #userList_model{width: 100%;}
 .dropdown-menu_al.w-100.active li {
     border-bottom: 1px solid #eee;
 }
+.modal-opensag .modal {overflow-x: hidden;overflow-y: auto;}
+.modal-opensag{overflow: hidden;}
+
 .dropdown-menu_al.w-100.active li:last-child {
     border-bottom: 1px solid transparent;
 }
