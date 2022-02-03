@@ -164,13 +164,19 @@ class UserhomeController extends FrontController
             if($page_detail->primary->type_of_form == 3){
              $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', session()->get('customerLanguage'))->get();
              $page_detail->faqs_details = $faq;
+
             }
             $vendor_registration_documents = VendorRegistrationDocument::with(['primary','options','options.translation' => function($query) use($language_id) {
                 $query->where('language_id', session()->get('customerLanguage'));
             }])->get();
-
-            return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents'));
-        } else {
+                $server = env('APP_ENV', 'development');
+                if($server == 'local')
+                {
+                    return view('frontend.extrapageNew', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents'));
+                }else{
+                    return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents'));
+                }
+            } else {
             $tag = [];
             $showTag = implode(',', $tag);
             $client = Client::with('country')->first();
@@ -255,7 +261,7 @@ class UserhomeController extends FrontController
 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
 
-            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get(); 
+            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
 
             // $last_mile = $this->checkIfLastMileDeliveryOn();
             if (isset($set_template)  && $set_template->template_id == 1)
@@ -292,7 +298,7 @@ class UserhomeController extends FrontController
         $preferences = (object)Session::get('preferences');
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
-      
+
         $currency_id = $this->setCurrencyInSesion();
 
         $featured_products_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','featured_products');})->value('title');
@@ -763,7 +769,7 @@ class UserhomeController extends FrontController
         }
     }
 
-    # category menu 
+    # category menu
 
     public function homePageDataCategoryMenu(Request $request)
     {
@@ -784,22 +790,22 @@ class UserhomeController extends FrontController
         $preferences = Session::get('preferences');
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
-     
+
         $currency_id = $this->setCurrencyInSesion();
 
-    
+
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
-       
+
         $now = Carbon::now()->toDateTimeString();
-     
+
 
         $navCategories = $this->categoryNav($language_id);
         Session::put('navCategories', $navCategories);
-      
+
         $user = Auth::user();
 
-     
+
 
         $data = [
            'navCategories' => $navCategories,
