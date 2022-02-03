@@ -15,7 +15,7 @@ class RemoveFornkeySmsprovider extends Migration
     {
         //
         Schema::table('client_preferences', function (Blueprint $table) {
-            $table->dropForeign(['map_provider']);
+            $table->dropForeign(['sms_provider']);
         });
     }
 
