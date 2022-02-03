@@ -18,7 +18,7 @@ use App\Http\Controllers\Client\TagController;
 use App\Http\Controllers\Client\ClientSlotController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
 use App\Http\Controllers\Client\ProductFaqController;
-use App\Http\Controllers\Client\EstimationController;
+use App\Http\Controllers\Client\EstimationController;   
 
 Route::get('email-test', function () {
     $details['email'] = 'testmail@yopmail.com';
@@ -263,6 +263,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('payoption', 'Client\PaymentOptionController');
         Route::resource('shipoption', 'Client\ShippingOptionController');
         Route::resource('deliveryoption', 'Client\DeliveryOptionController');
+        Route::post('delivery/dunzo', 'Client\DeliveryOptionController@dunzo')->name('delivery.dunzo');
         Route::resource('tools','Client\ToolsController');
         Route::post('tools/tax','Client\ToolsController@taxCopy')->name('tools.taxCopy');
         Route::post('tool/uploadImage','Client\ToolsController@uploadImage')->name('tools.uploadImage');
