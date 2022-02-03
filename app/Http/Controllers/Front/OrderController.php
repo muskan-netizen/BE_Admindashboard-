@@ -72,7 +72,7 @@ class OrderController extends FrontController
         $pastOrders = Order::with([
             'vendors' => function ($q) {
                 $q->where('order_status_option_id', 6);
-            },
+            },'vendors.vendor',
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address'
@@ -241,7 +241,6 @@ class OrderController extends FrontController
                 }
             }
         }
-
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
 

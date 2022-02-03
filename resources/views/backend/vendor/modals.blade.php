@@ -262,7 +262,7 @@
                                                 <div class="row">
 
                                                     @if($client_preference_detail->business_type != 'taxi')
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
                                                             <div class="mt-md-1">
@@ -272,7 +272,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
 
                                                             {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
@@ -282,9 +282,19 @@
 
                                                         </div>
                                                     </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+
+                                                            {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}
+                                                            <div class="mt-md-1">
+                                                                <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if(@$vendor->return_request == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
                                                     @endif
                                                     @if(Auth::user()->is_superadmin == 1)
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             {!! Form::label('title', __('Show Profile Details'),['class' => 'control-label']) !!}
                                                             <div class="mt-md-1">
