@@ -733,7 +733,8 @@
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)</span>
                                                                                             </li>
-                                                                                            @if (isset($hidereturn) && $hidereturn != 1)
+                                                                                           
+                                                                                            @if (isset($hidereturn) && $hidereturn != 1 && $vendor->vendor->return_request)
                                                                                                 <button
                                                                                                     class="return-order-product btn btn-solid"
                                                                                                     data-id="{{ $order->id ?? 0 }}"
