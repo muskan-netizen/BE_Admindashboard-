@@ -164,10 +164,12 @@ class UserhomeController extends FrontController
             if($page_detail->primary->type_of_form == 3){
              $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', session()->get('customerLanguage'))->get();
              $page_detail->faqs_details = $faq;
+
             }
             $vendor_registration_documents = VendorRegistrationDocument::with(['primary','options','options.translation' => function($query) use($language_id) {
                 $query->where('language_id', session()->get('customerLanguage'));
             }])->get();
+
                 $server = env('APP_ENV', 'development');
                 if($server == 'local')
                 {

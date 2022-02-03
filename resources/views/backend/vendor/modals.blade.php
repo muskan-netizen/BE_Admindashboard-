@@ -15,6 +15,7 @@
                 <div class="modal-body" >
                     <div class="row">
                         <div class="col-md-8">
+
                             <div class="row mb-2">
                                 <div class="col-md-3">
                                     <label>{{ __('Upload Logo') }} </label>
