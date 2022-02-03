@@ -293,12 +293,13 @@
                                                                                                 <a href="{{ route('front.booking.details', $order->order_number) }}"
                                                                                                     target="_blank">{{ __('Details') }}</a>
                                                                                             @endif
+                                                                                            @if ($vendor->order_status_option_id==1)
                                                                                             <h6 class="m-0">
                                                                                                 <label class="rating-star cancel_order"  data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
                                                                                                     {{ __('Cancel Order') }}
                                                                                                 </label>
                                                                                             </h6>
-
+                                                                                            @endif
                                                                                             @if ($vendor->dineInTable)
                                                                                                 <li>
                                                                                                     <h5 class="mb-1">
