@@ -19,7 +19,8 @@ class ShippingOptionSeeder extends Seeder
 
       	$shipping_options = array(
         	array('id' => '1', 'path' => '', 'code' => 'shiprocket',  'title' => 'ShipRocket', 'status' => '0'),
-        	array('id' => '2', 'path' => '', 'code' => 'lalamove', 'title' => 'Lalamove', 'status' => '0')
+        	array('id' => '2', 'path' => '', 'code' => 'lalamove', 'title' => 'Lalamove', 'status' => '0'),
+        	array('id' => '3', 'path' => '', 'code' => 'dunzo', 'title' => 'Dunzo', 'status' => '0')
       	); 
 
       	if($option_count == 0)
@@ -33,18 +34,16 @@ class ShippingOptionSeeder extends Seeder
       else{
           foreach ($shipping_options as $option) {
 
-            $newUser = ShippingOption::updateOrCreate([
-                //Add unique field combo to match here
-                //For example, perhaps you only want one entry per user:
-                'code'   => $option['code'],
-            ],[
+            $find = ShippingOption::where('code',$option['code'])->first();
+            if(!$find){
+            $newUser = ShippingOption::Create([
                 'title' => $option['title'],
                 'code' => $option['code'],
                 'path' => $option['path'],
                 'status' => $option['status'],
             ]);
-
           }
+        }
       }
     }
 }
