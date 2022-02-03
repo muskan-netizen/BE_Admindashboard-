@@ -60,7 +60,7 @@
     // You can pick up bank account fields in a similar way, if using
     // that payment method.
     var cardData = {};
-        cardData.cardNumber = document.getElementById("cc-number").value;
+        cardData.cardNumber = document.getElementById("cc-number").value.replace(/\s/g, '');
         cardData.month = document.getElementById("cc-exp-month").value;
         cardData.year = document.getElementById("cc-exp-year").value;
         cardData.cardCode = document.getElementById("cc-cvc").value;
