@@ -117,18 +117,18 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 number_format($order_vendors->service_fee_percentage_amount,2),
                 number_format($order_vendors->delivery_fee,2),
                 number_format($order_vendors->taxable_amount,2),
-                number_format($order_vendors->payable_amount,2) - (number_format($order_vendors->admin_commission_percentage_amount,2) + number_format($order_vendors->admin_commission_fixed_amount,2) + number_format($order_vendors->delivery_fee,2)),
+                number_format($order_vendors->payable_amount - ($order_vendors->admin_commission_percentage_amount + $order_vendors->admin_commission_fixed_amount + $order_vendors->delivery_fee),2),
                 number_format($order_vendors->admin_commission_fixed_amount),
                 number_format($order_vendors->admin_commission_percentage_amount),
                 number_format($order_vendors->payable_amount),
                 $order_vendors->orderDetail ? $order_vendors->orderDetail->loyalty_points_used : '',
                 $order_vendors->orderDetail ? $order_vendors->orderDetail->loyalty_points_earned : '',
-                number_format($order_vendors->admin_commission_percentage_amount,2) + number_format($order_vendors->admin_commission_fixed_amount,2) + number_format($order_vendors->service_fee_percentage_amount,2),
+                number_format(($order_vendors->admin_commission_percentage_amount + $order_vendors->admin_commission_fixed_amount + $order_vendors->service_fee_percentage_amount),2),
                 $order_vendors->orderDetail ? $order_vendors->orderDetail->paymentOption->title : '',
                 $order_vendors->order_status,
                 $order_vendors->orderDetail->shipping_delivery_type == 'L' ?'Lalamove' :'Dispatcher',
-                $order_vendors->orderDetail ? $order_vendors->orderDetail->address->house_number.', '.$order_vendors->orderDetail->address->address.', '.$order_vendors->orderDetail->address->city.', '.$order_vendors->orderDetail->address->state : '',
-                $order_vendors->vendor ? $order_vendors->vendor->address : '',
+                $order_vendors->orderDetail ? ($order_vendors->orderDetail->address)? $order_vendors->orderDetail->address->house_number.','.$order_vendors->orderDetail->address->city.', '.$order_vendors->orderDetail->address->state : '' : '',
+                $order_vendors->vendor ? $order_vendors->vendor->address?? '' : '',
             ];
         }else{
             return [
@@ -144,14 +144,15 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 number_format($order_vendors->service_fee_percentage_amount,2),
                 number_format($order_vendors->delivery_fee,2),
                 number_format($order_vendors->taxable_amount,2),
-                number_format($order_vendors->payable_amount,2) - (number_format($order_vendors->admin_commission_percentage_amount,2) + number_format($order_vendors->admin_commission_fixed_amount,2)),
+                number_format($order_vendors->admin_commission_percentage_amount + $order_vendors->admin_commission_fixed_amount + $order_vendors->service_fee_percentage_amount,2),
                 number_format($order_vendors->admin_commission_fixed_amount),
                 number_format($order_vendors->admin_commission_percentage_amount),
                 number_format($order_vendors->payable_amount),
                 $order_vendors->orderDetail ? $order_vendors->orderDetail->paymentOption->title : '',
                 $order_vendors->order_status,
                 $order_vendors->orderDetail->shipping_delivery_type == 'L' ?'Lalamove' :'Dispatcher',
-                $order_vendors->orderDetail ? $order_vendors->orderDetail->address->house_number.', '.$order_vendors->orderDetail->address->address.', '.$order_vendors->orderDetail->address->city.', '.$order_vendors->orderDetail->address->state : ''
+                $order_vendors->orderDetail ? ($order_vendors->orderDetail->address)? $order_vendors->orderDetail->address->house_number.','.$order_vendors->orderDetail->address->city.', '.$order_vendors->orderDetail->address->state : '' : ''
+               
             ];
 
         }

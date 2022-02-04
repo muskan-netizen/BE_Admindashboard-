@@ -452,7 +452,7 @@ $pages = \App\Models\Page::with([
                         <ul class="sm pixelstrap sm-horizontal menu-slider">
                             @foreach ($navCategories as $cate)
                                 @if ($cate['name'])
-                                    <li>
+                                    <li class="al_main_category">
                                         <a href="{{ route('categoryDetail', $cate['slug']) }}">
                                             @if ($client_preference_detail->show_icons == 1 && \Request::route()->getName() == 'userHome')
                                                 <div class="nav-cate-imgx loading"> </div>
