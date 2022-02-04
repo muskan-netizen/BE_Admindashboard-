@@ -76,7 +76,6 @@ class AuthorizeGatewayController extends FrontController
     	if($request->payment_from == 'cart'){
             $order_number = $request->order_number;
             $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
-            dd($order);
             if ($order) {
                 $order->payment_status = 1;
                 $order->save();
