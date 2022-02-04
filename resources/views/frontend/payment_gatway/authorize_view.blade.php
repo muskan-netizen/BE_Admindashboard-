@@ -115,9 +115,7 @@ function paymentFormUpdate(opaqueData) {
             <form id="authorize-payment-form" action="{{route('payment.authorize.createPayment')}}" method="POST">
 
                 <div class="form-group mb-1 Error_message">
-                   <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                     You should check in on some of those fields below.
-                    </div>
+        
                 </div>
 
                 <div class="form-group">
