@@ -52,45 +52,18 @@ class AuthorizeGatewayController extends FrontController
         $amount = $this->getDollarCompareAmount($request->amount);
 
     	$data = $request->all();
-    	$request['username'] = $user->name;
-    	$request['email'] = $user->email;
-    	$request['source'] = 'WEB';
-    	$request['amount'] = $amount*100;
-        if($request->payment_from == 'cart'){
-            $request['description'] = 'Order Checkout';
-            if($request->has('order_number')){
-                $request['reference'] = $request->order_number;
-            }
-        }
-        elseif($request->payment_from == 'wallet'){
-            $request['description'] = 'Wallet Checkout';
-            $request['reference'] = $user->id;
-        }
-        elseif($request->payment_from == 'tip'){
-            $request['description'] = 'Tip Checkout';
-            if($request->has('order_number')){
-                $request['reference'] = $request->order_number;
-            }
-        }
-        elseif($request->payment_from == 'subscription'){
-            $request['description'] = 'Subscription Checkout';
-            if($request->has('subscription_id')){
-                $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $request->subscription_id)->where('status', '1')->first();
-                $request['reference'] = $request->subscription_id;
-            }
-        }
-    	$payment = $this->create_payment($request->all()); 
     	$request['amount'] = $amount;
-    	if($payment->paymentStatus == 'APPROVED')
+    	$transaction_id = $this->create_payment($request->all()); 
+    	if(!is_null($transaction_id))
     	{
-            $returnUrl = $this->sucessPayment($request,$payment);
+            $returnUrl = $this->sucessPayment($request,$transaction_id);
         } else{
-            $returnUrl = $this->failedPayment($request,$payment);
+            $returnUrl = $this->failedPayment($request,$transaction_id);
         }
         // dd($returnUrl);
         return Redirect::to(url($returnUrl));
     }
-    public function sucessPayment($request, $pamyent)
+    public function sucessPayment($request, $transactionId)
     {
         if($request->come_from == "app")
         {
@@ -98,7 +71,6 @@ class AuthorizeGatewayController extends FrontController
             Auth::login($user);
         }
         $user = Auth::user();
-    	$transactionId = $pamyent->id;
     	if($request->payment_from == 'cart'){
             $order_number = $request->order_number;
             $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
