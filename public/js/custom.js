@@ -635,6 +635,8 @@ $(document).ready(function() {
                 paymentViaPagarme('', '');
             }else if (payment_option_id == 17) {
                 paymentViaCheckout('', '');
+            }else if (payment_option_id == 18) { 
+                paymentViaAuthorize('', '');
             }
         } else {
             _this.attr("disabled", false);
@@ -1429,6 +1431,14 @@ $(document).ready(function() {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
                 paymentViaCheckout(address_id, order);
+            } else {
+                return false;
+            }
+        }
+        else if (payment_option_id == 18) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaAuthorize(address_id, order);
             } else {
                 return false;
             }
