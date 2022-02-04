@@ -8,7 +8,7 @@ use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, Wal
 use Auth, Log, Redirect;
 use App\Models\{PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User};
 
-class AuthorizeGatewayController extends Controller 
+class AuthorizeGatewayController extends FrontController 
 {
     use \App\Http\Traits\AuthorizePaymentManager;
 	use \App\Http\Traits\ApiResponser;
@@ -48,7 +48,7 @@ class AuthorizeGatewayController extends Controller
     	$user = Auth::user();
     	$cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
         $amount = $this->getDollarCompareAmount($request->amount);
-        
+
     	$data = $request->all();
     	$request['username'] = $user->name;
     	$request['email'] = $user->email;
@@ -77,7 +77,7 @@ class AuthorizeGatewayController extends Controller
                 $request['reference'] = $request->subscription_id;
             }
         }
-    	$payment = $this->create_payment($request->all());
+    	$payment = $this->create_payment($request->all()); 
     	$request['amount'] = $amount;
     	if($payment->paymentStatus == 'APPROVED')
     	{
