@@ -189,8 +189,8 @@ class CustomerAuthController extends FrontController
                     'email'  => 'required',
                     'phone_number'  => 'required'
                 ],[
-                    "email.required" => __('The email or phone number field is required.'),
-                    "phone_number.required" => __('The email or phone number field is required.'),
+                    "email.required" => __('The email field is required.'),
+                    "phone_number.required" => __('The phone number field is required.'),
                 ]);
             }
             else{

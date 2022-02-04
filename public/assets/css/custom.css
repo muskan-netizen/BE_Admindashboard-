@@ -114,6 +114,6 @@ line-height: 1;}
 body .swal2-actions:not(.swal2-loading) .swal2-styled:hover {background-image: none;}
 body .swal2-icon.swal2-info.swal2-icon-show{display: none !important;}
 body .swal2-styled.swal2-confirm {padding: 5px 50px;text-transform: uppercase;}
-#AddbrandBox .dropify-wrapper{height: 100px;}
+body .dropify-wrapper{height: 100px;}
 @media(max-width:1499px){h1.control-label {font-size: 46px;}}
 @media(max-width:767px){.al_add_user{margin-top: 0;}}
