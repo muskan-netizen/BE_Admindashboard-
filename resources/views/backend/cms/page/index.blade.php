@@ -63,14 +63,14 @@
                             <a herf="#" class="dd-handle dd3-handle d-block mr-auto" id="text_body_{{$page->id}}">
                                 {{$page->primary ? $page->primary->title : ''}}
 
-                                <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_BLANK">
-                                    <!-- <i class="mdi mdi-eye"></i> -->
-                                    <img src="https://img.icons8.com/clouds/30/000000/domain.png"/>
+                                <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_BLANK" class="mr-2">
+                                    <i class="mdi mdi-eye"></i>
+
                                 </a>
                                 @if(!in_array($page->id, [1,2,3]))
                                     <a class="text-body delete-page" href="javascript:void(0)" data-page_id="{{$page->id}}">
-                                        <!-- <i class="mdi mdi-delete"></i> -->
-                                        <img src="https://img.icons8.com/bubbles/30/000000/delete-forever.png"/>
+                                        <i class="mdi mdi-delete"></i>
+
                                     </a>
                                 @endif
                             </a>

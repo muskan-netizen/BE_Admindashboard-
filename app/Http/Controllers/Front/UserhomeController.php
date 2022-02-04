@@ -169,6 +169,24 @@ class UserhomeController extends FrontController
             $vendor_registration_documents = VendorRegistrationDocument::with(['primary','options','options.translation' => function($query) use($language_id) {
                 $query->where('language_id', session()->get('customerLanguage'));
             }])->get();
+            $builds = array();
+            $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+                                    ->where('id', '>', '1')
+                                    // ->where('is_core', 1)
+                                    ->whereNotIn('type_id', [4, 5])
+                                    ->where(function ($q) {
+                                        $q->whereNull('vendor_id');
+                                    })->orderBy('position', 'asc')
+                                    ->orderBy('id', 'asc')
+                                    ->where('status', 1)
+                                    ->orderBy('parent_id', 'asc')->get();
+            if ($categories) {
+                $builds = $this->buildTree($categories->toArray());
+            }
+
+            $VendorCategory =array();
+
+            $templetes  = \DB::table('vendor_templetes')->where('status', 1)->get();
                 $server = env('APP_ENV', 'development');
                 $langId = session()->get('customerLanguage');
                 $privacy = Page::with(['translations' => function ($q) use($langId) {
@@ -185,9 +203,9 @@ class UserhomeController extends FrontController
 
                 if($server == 'local')
                 {
-                    return view('frontend.extrapageNew', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents','privacy'));
+                    return view('frontend.extrapageNew', compact('page_detail','templetes','VendorCategory','builds','navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
                 }else{
-                    return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms'));
+                    return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
                 }
             } else {
             $tag = [];

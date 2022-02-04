@@ -36,6 +36,7 @@
     @endif
     var autocomplete_url = "{{ route('autocomplete') }}";
     let stripe_publishable_key = '{{ $stripe_publishable_key }}';
+    let stripe_fpx_publishable_key = '{{ $stripe_fpx_publishable_key }}';
     let yoco_public_key = '{{ $yoco_public_key }}';
     var login_url = "{{ route('customer.login') }}";
     if(currentRouteName == 'indexTemplateOne')
@@ -86,6 +87,10 @@
 /////////////Pagarme Payment Routes
     var pagarme_before_payment = "{{route('payment.pagarme.beforePayment')}}";
     var pagarme_create_payment = "{{route('payment.pagarme.createPayment')}}";
+
+/////////////Authorize Payment Routes
+    var authorize_before_payment = "{{route('payment.authorize.beforePayment')}}";
+    var authorize_create_payment = "{{route('payment.authorize.createPayment')}}"; 
 
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";
