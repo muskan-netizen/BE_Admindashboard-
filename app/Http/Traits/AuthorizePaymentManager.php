@@ -31,9 +31,9 @@ trait AuthorizePaymentManager{
       // $request->setOpaqueData($data['opaqueDataDescriptor'], $data['opaqueDataValue']);
       $request->setToken($data['opaqueDataDescriptor'] . ':' . $data['opaqueDataValue']);
       $response = $request->send();
-      dd($response, $response->isSuccessful());
 
       if($response->isSuccessful()) {
+        dd($response);
         // Captured from the authorization response.
         $transactionReference = $response->getTransactionReference();
         $response = $gateway->capture([
@@ -42,6 +42,8 @@ trait AuthorizePaymentManager{
           'transactionReference' => $transactionReference,
         ])->send();
         $transaction_id = $response->getTransactionReference();
+      }else{
+        dd($response->getMessage());
       }
     }catch(Exception $e) {
         return [
