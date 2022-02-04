@@ -29,7 +29,7 @@ trait AuthorizePaymentManager{
         'opaqueDataValue' => $data['opaqueDataValue'],
       ]);
       // $request->setOpaqueData($data['opaqueDataDescriptor'], $data['opaqueDataValue']);
-      $request->setToken($$data['opaqueDataDescriptor'] . ':' . $data['opaqueDataValue']);
+      $request->setToken($data['opaqueDataDescriptor'] . ':' . $data['opaqueDataValue']);
       $response = $request->send();
       dd($response);
 
