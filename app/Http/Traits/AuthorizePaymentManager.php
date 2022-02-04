@@ -21,16 +21,16 @@ trait AuthorizePaymentManager{
     $gateway = $this->init();
     $transactionId = rand(100000000, 999999999);
     try {
-      $request = $gateway->authorize([
+      $response = $gateway->authorize([
         'amount' => '7.99',
         'currency' => 'USD',
         'transactionId' => $transactionId,
         'opaqueDataDescriptor' => $data['opaqueDataDescriptor'],
         'opaqueDataValue' => $data['opaqueDataValue'],
-      ]);
-      $request->setOpaqueData($data['opaqueDataDescriptor'], $data['opaqueDataValue']);
-      $request->setToken($$data['opaqueDataDescriptor'] . ':' . $data['opaqueDataValue']);
-      $response = $request->send();
+      ])->send();
+      // $request->setOpaqueData($data['opaqueDataDescriptor'], $data['opaqueDataValue']);
+      // $request->setToken($$data['opaqueDataDescriptor'] . ':' . $data['opaqueDataValue']);
+      // $response = $request->send();
       dd($response);
 
       if($response->isSuccessful()) {
