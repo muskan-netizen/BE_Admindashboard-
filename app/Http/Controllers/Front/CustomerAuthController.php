@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, AppStylingOption, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice};
+use App\Models\{AppStyling, AppStylingOption, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page};
 use Kutia\Larafirebase\Facades\Larafirebase;
 use Math;
 class CustomerAuthController extends FrontController
@@ -101,11 +101,25 @@ class CustomerAuthController extends FrontController
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
 
+       
 
+        $privacy = Page::with(['translations' => function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+        }])->whereHas('translations', function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+        })->first();
+
+        $terms = Page::with(['translations' => function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+        }])->whereHas('translations', function ($q) use($langId) {
+            $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+        })->first();
+
+        
         if (!Session::get('referrer')) {
-            return view('frontend.account.registernew')->with(['navCategories' => $navCategories]);
+            return view('frontend.account.registernew')->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms]);
         } else {
-            return view('frontend.account.registernew')->with(['navCategories' => $navCategories, 'code' => Session::get('referrer')]);
+            return view('frontend.account.registernew')->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms]);
         }
     }
 

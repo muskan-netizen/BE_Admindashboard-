@@ -170,11 +170,24 @@ class UserhomeController extends FrontController
                 $query->where('language_id', session()->get('customerLanguage'));
             }])->get();
                 $server = env('APP_ENV', 'development');
+                $langId = session()->get('customerLanguage');
+                $privacy = Page::with(['translations' => function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+                }])->whereHas('translations', function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+                })->first();
+        
+                $terms = Page::with(['translations' => function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+                }])->whereHas('translations', function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+                })->first();
+
                 if($server == 'local')
                 {
-                    return view('frontend.extrapageNew', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents'));
+                    return view('frontend.extrapageNew', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents','privacy'));
                 }else{
-                    return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents'));
+                    return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms'));
                 }
             } else {
             $tag = [];
