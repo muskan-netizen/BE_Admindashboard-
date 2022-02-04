@@ -8,7 +8,7 @@ use Log;
 trait AuthorizePaymentManager{
 
   private $login_id;
-  private $client_key;
+  private $client_key, $transaction_key;
   public function __construct()
   {
     $anet_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'authorize_net')->where('status', 1)->first();
