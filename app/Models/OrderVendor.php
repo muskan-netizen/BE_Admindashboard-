@@ -33,6 +33,10 @@ class OrderVendor extends Model{
 	public function orderstatus(){
 	    return $this->hasOne('App\Models\VendorOrderStatus' , 'vendor_id', 'vendor_id', 'order_id', 'order_id')->orderBy('id', 'DESC')->latest(); 
 	}
+	public function cancelledBy()
+	{
+		return $this->belongsTo('App\Models\User','cancelled_by','id')->select('id','name');
+	}
 	public function scopeBetween($query, $from, $to){
         $query->whereBetween('created_at', [$from, $to]);
     }

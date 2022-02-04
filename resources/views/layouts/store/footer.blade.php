@@ -87,6 +87,10 @@
     var pagarme_before_payment = "{{route('payment.pagarme.beforePayment')}}";
     var pagarme_create_payment = "{{route('payment.pagarme.createPayment')}}";
 
+/////////////Authorize Payment Routes
+    var authorize_before_payment = "{{route('payment.authorize.beforePayment')}}";
+    var authorize_create_payment = "{{route('payment.authorize.createPayment')}}"; 
+
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";
     var logged_in_user_email = "{{Auth::user()->email??''}}";

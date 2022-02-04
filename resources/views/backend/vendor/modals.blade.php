@@ -15,6 +15,7 @@
                 <div class="modal-body" >
                     <div class="row">
                         <div class="col-md-8">
+
                             <div class="row mb-2">
                                 <div class="col-md-3">
                                     <label>{{ __('Upload Logo') }} </label>
@@ -28,7 +29,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="form-group" id="nameInput">
                                         {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                                         {!! Form::text('name', null, ['class'=>'form-control']) !!}
@@ -37,10 +38,7 @@
                                         </span>
                                     </div>
                                 </div>
-
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group" id="emailInput">
                                         <label for="">{{ __('Email') }}</label>
                                         {!! Form::text('email', null, ['class'=>'form-control']) !!}
@@ -49,6 +47,10 @@
                                         </span>
                                     </div>
                                 </div>
+
+                            </div>
+                            <div class="row">
+
                                 <div class="col-md-4">
                                     <div class="form-group" id="phone_noInput">
                                         <label for="">{{ __('Phone Number') }}</label>
@@ -64,13 +66,24 @@
                                         <input class="form-control" type="text" name="website">
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3" >
+                                        {!! Form::label('title', __('Pincode'),['class' => 'control-label']) !!}
+                                        <input type="text" name="pincode" id="pincode" placeholder="" class="form-control" value="{{@$vendor->pincode}}">
+                                        @if($errors->has('Pincode'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('Pincode') }}</strong>
+                                        </span>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
                             <div class="row" id="add">
                                 <div class="col-md-4">
                                     <div class="form-group mb-3" id="addressInput">
                                         {!! Form::label('title', __('Address'),['class' => 'control-label']) !!}
                                         <div class="input-group">
-                                            <input type="text" name="address" id="add-address" placeholder="Delhi, India" class="form-control">
+                                            <input type="text" name="address" id="add-address" onkeyup="checkAddressString(this,'add')" placeholder="" class="form-control">
                                             <div class="input-group-append">
                                                 <button class="btn btn-xs btn-dark waves-effect waves-light showMap" type="button" num="add"> <i class="mdi mdi-map-marker-radius"></i></button>
                                             </div>
@@ -84,7 +97,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group mb-3" id="latitudeInput">
                                         {!! Form::label('title', __('Latitude'),['class' => 'control-label']) !!}
-                                        <input type="text" name="latitude" id="add_latitude" placeholder="24.9876755" class="form-control" value="">
+                                        <input type="text" name="latitude" id="add_latitude" placeholder="" class="form-control" value="">
                                         @if($errors->has('latitude'))
                                         <span class="text-danger" role="alert">
                                             <strong>{{ $errors->first('latitude') }}</strong>
@@ -95,12 +108,41 @@
                                 <div class="col-md-4">
                                     <div class="form-group mb-3" id="longitudeInput">
                                         {!! Form::label('title', __('Longitude'),['class' => 'control-label']) !!}
-                                        <input type="text" name="longitude" id="add_longitude" placeholder="11.9871371723" class="form-control" value="">
+                                        <input type="text" name="longitude" id="add_longitude" placeholder="" class="form-control" value="">
                                         @if($errors->has('longitude'))
                                         <span class="text-danger" role="alert">
                                             <strong>{{ $errors->first('longitude') }}</strong>
                                         </span>
                                         @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3" id="cityInput">
+                                        {!! Form::label('title', __('City'),['class' => 'control-label']) !!}
+                                        <input type="text" name="city" id="city" placeholder="" class="form-control" value="{{@$vendor->city}}">
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3" id="stateInput">
+                                        {!! Form::label('title', __('State'),['class' => 'control-label']) !!}
+                                        <input type="text" name="state" id="state" placeholder="" class="form-control" value="{{@$vendor->state}}">
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3" id="countryInput" >
+                                        {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
+                                        <input type="text" name="country" id="country" placeholder="" class="form-control" value="{{@$vendor->country}}">
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -220,7 +262,7 @@
                                                 <div class="row">
 
                                                     @if($client_preference_detail->business_type != 'taxi')
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
                                                             <div class="mt-md-1">
@@ -230,7 +272,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
 
                                                             {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
@@ -240,9 +282,19 @@
 
                                                         </div>
                                                     </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+
+                                                            {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}
+                                                            <div class="mt-md-1">
+                                                                <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if(@$vendor->return_request == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
                                                     @endif
                                                     @if(Auth::user()->is_superadmin == 1)
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             {!! Form::label('title', __('Show Profile Details'),['class' => 'control-label']) !!}
                                                             <div class="mt-md-1">
@@ -272,32 +324,38 @@
                                                             @endfor
                                                         </select>
                                                     </div>
+
+                                                        <div class="form-group" id="order_min_amountInput">
+                                                            {!! Form::label('title', 'Absolute Min Order Value [AMOV]',['class' => 'control-label']) !!}
+                                                            <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{@$vendor->order_min_amount}}" {{(isset($vendor)) ? (($vendor->status ?? 0) == 1 ? '' : 'disabled') : ''}}>
+                                                        </div>
+
                                                 @endif
                                         </div>
                                     </div>
+                                    @if(Auth::user()->is_superadmin == 1)
+                                        <div class="col-md-4">
+                                            <div class="al_advanced_details p-2">
+                                                <p class="al_custom_title mb-1"><span class="">{{ __("Commission") }}</span> ({{ __("Visible For Admin") }})</p>
 
-                                    <div class="col-md-4">
-                                        <div class="al_advanced_details p-2">
-                                            <p class="al_custom_title mb-1"><span class="">{{ __("Commission") }}</span> ({{ __("Visible For Admin") }})</p>
+                                                    <div class="form-group">
+                                                        {!! Form::label('title', __('Commission Percent'),['class' => 'control-label']) !!}
+                                                        <input class="form-control" name="commission_percent" type="text" value="{{@$vendor->commission_percent}}" onkeypress="return isNumberKey(event)"  onkeydown="if(this.value.length > 6) return false;">
 
-                                                <div class="form-group">
-                                                    {!! Form::label('title', __('Commission Percent'),['class' => 'control-label']) !!}
-                                                    <input class="form-control" name="commission_percent" type="text" value="{{@$vendor->commission_percent}}" onkeypress="return isNumberKey(event)"  onkeydown="if(this.value.length > 6) return false;">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        {!! Form::label('title', __('Commission Fixed Per Order'),['class' => 'control-label']) !!}
+                                                        <input class="form-control" name="commission_fixed_per_order" type="text" value="{{@$vendor->commission_fixed_per_order}}" onkeypress="return isNumberKey(event)">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
+                                                        <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{@$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
 
-                                                </div>
-                                                <div class="form-group">
-                                                    {!! Form::label('title', __('Commission Fixed Per Order'),['class' => 'control-label']) !!}
-                                                    <input class="form-control" name="commission_fixed_per_order" type="text" value="{{@$vendor->commission_fixed_per_order}}" onkeypress="return isNumberKey(event)">
-                                                </div>
-                                                <div class="form-group">
-                                                    {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
-                                                    <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{@$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
+                                                    </div>
 
-                                                </div>
-
+                                            </div>
                                         </div>
-                                    </div>
-
+                                    @endif
                                     <div class="col-md-4">
                                         @if($client_preference_detail->business_type != 'taxi')
                                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
@@ -418,7 +476,7 @@
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __('Import') }} {{ $vendor_name }}</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <button type="button" class="close " data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form method="post" enctype="multipart/form-data" id="save_imported_vendors">
                 @csrf
@@ -490,7 +548,7 @@
 
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __("Select Location") }}</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <button type="button" class="close remove-modal-open" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body p-4">
 
@@ -500,13 +558,14 @@
                             <div id="googleMap" style="height: 500px; min-width: 500px; width:100%"></div>
                             <input type="hidden" name="lat_input" id="lat_map" value="0" />
                             <input type="hidden" name="lng_input" id="lng_map" value="0" />
+                            <input type="hidden" name="address_map" id="address_map" value="" />
                             <input type="hidden" name="for" id="map_for" value="" />
                         </div>
                     </form>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-info waves-effect waves-light selectMapLocation">Ok</button>
+                <button type="submit" class="btn btn-info waves-effect waves-light remove-modal-open selectMapLocation">Ok</button>
                 <!--<button type="Cancel" class="btn btn-info waves-effect waves-light cancelMapLocation">cancel</button>-->
             </div>
         </div>

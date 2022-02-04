@@ -72,7 +72,7 @@ class OrderController extends FrontController
         $pastOrders = Order::with([
             'vendors' => function ($q) {
                 $q->where('order_status_option_id', 6);
-            },
+            },'vendors.vendor',
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address'
@@ -241,8 +241,6 @@ class OrderController extends FrontController
                 }
             }
         }
-        // pr($rejectedOrders->toArray());
-        // exit();
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
 
@@ -251,9 +249,7 @@ class OrderController extends FrontController
         }
 
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
-
         //   dd($activeOrders->toArray());
-
         return view('frontend/account/orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency]);
     }
 
@@ -778,7 +774,7 @@ class OrderController extends FrontController
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {
                             $OrderVendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type;
                             $OrderVendor->courier_id = $deliver_fee_data->courier_id;
-                            
+
                             //Add here Delivery option Lalamove and dispatcher
 
                             // if($delType=='L'){

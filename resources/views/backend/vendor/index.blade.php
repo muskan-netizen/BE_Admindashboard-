@@ -221,7 +221,7 @@
             </div>
         </div>
     </div>
-    <div id="edit_vendor_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div id="edit_vendor_modal" class="modal al fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header border-bottom">
@@ -244,12 +244,12 @@
 </div>
 @php
 $server = env('APP_ENV', 'development');
-if($server == 'local')
-{
+// if($server == 'local')
+// {
     $file = 'backend.vendor.modals';
-}else{
-    $file = 'backend.vendor.modals2';
-}
+// }else{
+//     $file = 'backend.vendor.modals2';
+// }
 @endphp
 @include($file)
 <script type="text/template" id="user_id_section">
