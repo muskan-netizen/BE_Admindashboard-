@@ -7,17 +7,6 @@ use Omnipay\Omnipay;
 use Log;
 trait AuthorizePaymentManager{
 
-  private $login_id;
-  private $client_key, $transaction_key;
-  public function __construct()
-  {
-    $anet_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'authorize_net')->where('status', 1)->first();
-    $creds_arr = json_decode($anet_creds->credentials);
-    $this->login_id = $creds_arr->login_id??'';
-    $this->transaction_key = $creds_arr->transaction_key??'';
-    $this->client_key = $creds_arr->client_key??'';
-  }
-
   public function init()
   {
     $gateway = Omnipay::create('AuthorizeNetApi_Api');
