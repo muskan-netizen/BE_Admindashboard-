@@ -1,5 +1,5 @@
 <div id="add-tax-category" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __("Add Tax Category") }}</h4>
@@ -7,7 +7,7 @@
             </div>
             <form id="save_tax_category" method="post" enctype="multipart/form-data">
                 @csrf
-                
+
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12">
@@ -50,7 +50,7 @@
 </div>
 
 <div id="edit-tax-category" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __("Edit Tax Category") }}</h4>
@@ -61,20 +61,20 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body" id="taxCategoryBox">
-                    
+
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light submitEditTaxCate">{{ __("Submit") }}</button>
                 </div>
-                
+
             </form>
         </div>
     </div>
 </div>
 
 <div id="add-tax-rate" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __("Add Tax Rate") }}</h4>
@@ -192,7 +192,7 @@
 </div>
 
 <div id="edit-tax-rate" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __("Edit Tax Rate") }}</h4>
@@ -208,7 +208,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light submitEditTaxRate">{{ __("Submit") }}</button>
                 </div>
-                
+
             </form>
         </div>
     </div>
