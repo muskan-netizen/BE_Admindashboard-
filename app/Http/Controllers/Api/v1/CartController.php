@@ -993,7 +993,7 @@ class CartController extends BaseController
                 $cart->closed_store_order_scheduled = 0;
             }
         }else{
-            $duration = (object)[]; 
+            $duration = (object)['closed_store_order_scheduled'=>'0'];
             $slots = [];
             $cart->slots = [];
             $cart->closed_store_order_scheduled = 0;
@@ -1035,7 +1035,7 @@ class CartController extends BaseController
                 $cart->wallet_amount_used = $wallet_amount_used;
             }
         }
-        if($delivery_status == 0 && $duration->closed_store_order_scheduled??0 == 1)
+        if($delivery_status == 0 && $duration->closed_store_order_scheduled == 1)
         {
             $cart->deliver_status = 1;
         }else{
