@@ -40,7 +40,6 @@ class AuthorizeGatewayController extends Controller
     {
         Log::info("Create Payment");
         Log::info($request->all());
-        dd($request->all());
         if($request->come_from == "app")
         {
             $user = User::where('auth_token', $request->auth_token)->first();
@@ -49,6 +48,7 @@ class AuthorizeGatewayController extends Controller
     	$user = Auth::user();
     	$cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
         $amount = $this->getDollarCompareAmount($request->amount);
+        
     	$data = $request->all();
     	$request['username'] = $user->name;
     	$request['email'] = $user->email;
