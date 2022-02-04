@@ -12,7 +12,7 @@ trait AuthorizePaymentManager{
     $gateway = Omnipay::create('AuthorizeNetApi_Api');
     $gateway->setAuthName($this->login_id);
     $gateway->setTransactionKey($this->transaction_key);
-    $gateway->setTestMode(true);
+    $gateway->setTestMode($this->test_mode?true:false);
     return $gateway;
   }
 
