@@ -118,7 +118,7 @@ class CartController extends BaseController
 
             if ($product->category->categoryDetail->type_id == 8) {
             } else {
-                if ( ($product->sell_when_out_of_stock == 0) && ($productVariant->quantity < $request->quantity) ) {
+                if ( ($product->sell_when_out_of_stock == 0) && ($productVariant->quantity < $request->quantity && $product->has_inventory == 1) ) {
                     return $this->errorResponse('You Can not order more than ' . $productVariant->quantity . ' quantity.', 404);
                 }
             }
@@ -993,7 +993,7 @@ class CartController extends BaseController
                 $cart->closed_store_order_scheduled = 0;
             }
         }else{
-            $duration = [];
+            $duration = (object)['closed_store_order_scheduled'=>'0'];
             $slots = [];
             $cart->slots = [];
             $cart->closed_store_order_scheduled = 0;

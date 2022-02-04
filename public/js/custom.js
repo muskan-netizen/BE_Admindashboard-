@@ -9,8 +9,9 @@ jQuery(window).scroll(function() {
 
 // Material Select Initialization
 $(document).ready(function() {
-    $('.mdb-select').materialSelect();
-    });
+    //$('.mdb-select').materialSelect();
+
+});
 
 $(function() {
     document.ajax_loading = false;
@@ -144,7 +145,7 @@ if ($(window).width() < 767) {
 
 window.initializeSlider = function initializeSlider() {
     $(".slide-6").slick({
-        arrows: false,
+        arrows: true,
         dots: false,
         infinite: true,
         speed: 300,
@@ -162,12 +163,12 @@ window.initializeSlider = function initializeSlider() {
     $(".product-4").slick({
         dots: false,
         infinite: true,
-        dots: false,
         speed: 300,
         slidesToShow: 4,
         centerMode: true,
         centerPadding: '60px',
         slidesToScroll: 4,
+        arrows: true,
         responsive: [
             { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
             { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
@@ -176,7 +177,7 @@ window.initializeSlider = function initializeSlider() {
     });
 
     $(".recent-orders").slick({
-        arrows: false,
+        arrows: true,
         dots: false,
         infinite: true,
         speed: 300,
@@ -192,28 +193,27 @@ window.initializeSlider = function initializeSlider() {
         ]
     });
     $(".brand-slider").slick({
-        arrows: false,
-        dots: !1,
-        infinite: !1,
+        arrows: true,
+        dots: false,
+        infinite: true,
         speed: 300,
         slidesToShow: 4,
         slidesToScroll: 3,
         responsive: [
-            {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,arrows: false,infinite: true}},
-            {breakpoint: 991,settings: {slidesToShow: 3,arrows: false,slidesToScroll: 1}},
-            {breakpoint: 767,settings: {slidesToShow: 2,arrows: false,slidesToScroll: 1}},
-            {breakpoint: 360,settings: {slidesToShow: 1,arrows: false,slidesToScroll: 1}}
+            {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 1}},
+            {breakpoint: 767,settings: {slidesToShow: 2,slidesToScroll: 1}},
+            {breakpoint: 360,settings: {slidesToShow: 1,slidesToScroll: 1}}
         ]
     });
     $('.suppliers-slider').slick({
-        dots: false,
         infinite: true,
         speed: 300,
         slidesToShow: 6,
         slidesToScroll: 1,
         centerMode: false,
         centerPadding: '60px',
-        arrows: false,
+        arrows: true,
         dots: false,
         responsive: [{
                 breakpoint: 1199,
@@ -255,6 +255,7 @@ window.initializeSlider = function initializeSlider() {
         ]
     });
     $(".product-5").slick({
+        arrows: true,
         dots: false,
         infinite: true,
         dots: false,
@@ -271,7 +272,7 @@ window.initializeSlider = function initializeSlider() {
     $('.vendor-product').slick({
         infinite: true,
         speed: 300,
-        arrows: false,
+        arrows: true,
         dots: false,
         slidesToShow: 4,
         slidesToScroll: 2,
@@ -298,7 +299,8 @@ window.initializeSlider = function initializeSlider() {
 
 
     $(".booking-time").slick({
-        dots: !1,
+        dots: false,
+        arrows: true,
         infinite: !0,
         speed: 300,
         slidesToShow: 3,
@@ -659,6 +661,8 @@ $(document).ready(function() {
                 paymentViaPagarme('', '');
             }else if (payment_option_id == 17) {
                 paymentViaCheckout('', '');
+            }else if (payment_option_id == 18) {
+                paymentViaAuthorize('', '');
             }
         } else {
             _this.attr("disabled", false);
@@ -700,7 +704,7 @@ $(document).ready(function() {
                     }
                     cartHeader();
                     cartTotalProductCount();
-                    
+
 
                     if ($('#show_plus_minus' + cartproduct_id).length != 0) {
                         if($('.addon_variant_quantity_' + cartproduct_id).closest('.customized_product_row').length > 0){
@@ -867,7 +871,7 @@ $(document).ready(function() {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions:specific_instructions,task_type: task_type,schedule_dropoff:schedule_dropoff, schedule_pickup:schedule_pickup,schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor , delivery_type : delivery_type ,slot:slot},
+                data: { specific_instructions:specific_instructions,task_type: task_type,schedule_dropoff:schedule_dropoff, schedule_pickup:schedule_pickup,schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor , delivery_type : delivery_type ,slot:slot,address : address},
                 success: function(response) {
                     if (response.status == "Success") {
                         $.ajax({
@@ -1468,6 +1472,14 @@ $(document).ready(function() {
                 return false;
             }
         }
+        else if (payment_option_id == 18) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaAuthorize(address_id, order);
+            } else {
+                return false;
+            }
+        }
     });
 
 
@@ -1645,6 +1657,8 @@ $(document).ready(function() {
             paymentViaPagarme('', '');
         }else if (payment_option_id == 17) {
             paymentViaCheckout('', '');
+        }else if (payment_option_id == 18) {
+            paymentViaAuthorize('', '');
         }
     });
     $(document).on("click", ".remove_promo_code_btn", function() {

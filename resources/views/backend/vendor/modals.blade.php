@@ -262,7 +262,7 @@
                                                 <div class="row">
 
                                                     @if($client_preference_detail->business_type != 'taxi')
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
                                                             <div class="mt-md-1">
@@ -272,7 +272,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
 
                                                             {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
@@ -282,9 +282,19 @@
 
                                                         </div>
                                                     </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+
+                                                            {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}
+                                                            <div class="mt-md-1">
+                                                                <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if(@$vendor->return_request == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
                                                     @endif
                                                     @if(Auth::user()->is_superadmin == 1)
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             {!! Form::label('title', __('Show Profile Details'),['class' => 'control-label']) !!}
                                                             <div class="mt-md-1">
@@ -352,16 +362,18 @@
                                             {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
                                             <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if( (@$vendor->add_category == 1)) checked @endif >
                                         </div>
-                                        <div class="col-md-6 mb-3">
-                                            {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
-                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
+                                            </div>
 
-                                        <div class="col-md-6 mb-3">
-                                            <select class="selectize-select form-control assignToSelect" name="assignTo" id="assignTo" >
-                                                @foreach($templetes as $templete)
-                                                    <option value="{{$templete->id}}" {{@$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{$templete->title}}</option>
-                                                @endforeach
-                                            </select>
+                                            <div class="col-md-6 mb-3">
+                                                <select class="selectize-select form-control assignToSelect" name="assignTo" id="assignTo" >
+                                                    @foreach($templetes as $templete)
+                                                        <option value="{{$templete->id}}" {{@$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{$templete->title}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
                                         @endif
                                         <div class="col-md-12">

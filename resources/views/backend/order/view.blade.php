@@ -137,9 +137,11 @@ $timezone = Auth::user()->timezone;
                                                     @if( ($order_status_option->id == 5) && (($order->luxury_option_id == 2) || ($order->luxury_option_id == 3)) )
                                                         <h5 class="mt-0 mb-1">{{__('Order Prepared')}}</h5>
                                                     @elseif($order_status_option->id == 2)
-                                                        <h5 style="padding: 2px 10px;" class="mt-0 mb-1  btn btn-info ">{{$order_status_option->title}}</h5>
+                                                        <h5 style="padding: 2px 10px;" class="mt-0 mb-1 text-info">
+                                                           {{$order_status_option->title}}</h5>
                                                     @elseif($order_status_option->id == 3)
-                                                    <h5 style="padding: 2px 10px;" class="mt-0 mb-1  btn btn-danger ">{{$order_status_option->title}}</h5>
+                                                    <h5 style="padding: 2px 10px;" class="mt-0 mb-1 text-danger">
+                                                       {{$order_status_option->title}} </h5>
                                                     @else
                                                     <h5 class="mt-0 mb-1">{{$order_status_option->title}}</h5>
                                                     @endif
@@ -221,7 +223,6 @@ $timezone = Auth::user()->timezone;
                                         <th>{{ __("Product") }}</th>
                                         <th>{{ __("Quantity") }}</th>
                                         <th>{{ __("Price") }}</th>
-
                                         <th>{{ __("Total") }}</th>
                                     </tr>
                                 </thead>
@@ -273,7 +274,6 @@ $timezone = Auth::user()->timezone;
                                                 <hr class="my-2">
                                                 @foreach($product->addon as $addon)
                                                     <p class="p-0 m-0">{{$clientCurrency->currency->symbol}}{{ $addon->option->price_in_cart }}</p>
-                                                    {{-- <p class="p-0 m-0">${{ $addon->option->quantity_price }}</p> --}}
                                                 @endforeach
                                             @endif
                                         </td>
@@ -317,14 +317,18 @@ $timezone = Auth::user()->timezone;
                                         <td>{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)</td>
                                     </tr>
                                     @endif
+                                    @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Redemmed Loyality Points") }} :</th>
                                         <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}@money($vendor->orderDetail->loyalty_amount_saved??0.00))</td>
                                     </tr>
+                                    @endif
+                                    @if($vendor->reject_reason)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Reject Reason") }} :</th>
                                         <td style="width:200px;">{{$vendor->reject_reason}}</td>
                                     </tr>
+                                    @endif
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
@@ -349,13 +353,17 @@ $timezone = Auth::user()->timezone;
                         <h4 class="header-title mb-3">{{ __("Delivery Information") }}</h4>
                         <h5 class="font-family-primary fw-semibold">{{$order->user->name}}</h5>
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("Email") }}:</span> {{ $order->user->email ? $order->user->email : ''}}</p>
+                        @if(!is_null($order->user) && isset($order->user->phone_number))
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __('Phone')}}:</span> {{'+'.$order->user->dial_code.$order->user->phone_number}}</p>
+                        @endif
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("Address") }}:</span> {{ $order->address->house_number ? $order->address->house_number."," : ''}} {{ $order->address ? $order->address->address : ''}}</p>
                         @if(isset($order->address) && !empty($order->address->street))
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('Street')}}:</span> {{ $order->address ? $order->address->street : ''}}</p>
                         @endif
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('City')}}:</span> {{ $order->address ? $order->address->city : ''}}</p>
+                        @if(isset($order->address) && !empty($order->address->state))
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("State") }}:</span> {{ $order->address ? $order->address->state : ''}}</p>
+                        @endif
                         <p class="mb-0"><span class="fw-semibold me-2">{{ __("Zip Code") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
                     </div>
                 </div>
@@ -372,7 +380,9 @@ $timezone = Auth::user()->timezone;
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('Street')}}:</span> {{ $order->address ? $order->address->street : ''}}</p>
                         @endif
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('City')}}:</span> {{ $order->address ? $order->address->city : ''}}</p>
+                        @if(isset($order->address) && !empty($order->address->state))
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("State") }}:</span> {{ $order->address ? $order->address->state : ''}}</p>
+                        @endif
                         <p class="mb-0"><span class="fw-semibold me-2">{{ __("Zip Code") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
 
                     </div>
@@ -448,7 +458,7 @@ $timezone = Auth::user()->timezone;
 </div>
 
 <!-- Order Invoice Code -->
-<div style="display: block;">
+<div style="display: none;">
 @include('backend.order.print')
 </div>
 <!--End Order Invoice Code -->

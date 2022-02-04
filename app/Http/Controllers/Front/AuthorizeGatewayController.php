@@ -8,33 +8,38 @@ use App\Http\Controllers\Front\{UserSubscriptionController, OrderController, Wal
 use Auth, Log, Redirect;
 use App\Models\{PaymentOption, Cart, SubscriptionPlansUser, Order, Payment, CartAddon, CartCoupon, CartProduct, CartProductPrescription, UserVendor, User};
 
-class SimplifyController extends FrontController
+class AuthorizeGatewayController extends FrontController 
 {
-	use \App\Http\Traits\SimplifyPaymentManager;
+    use \App\Http\Traits\AuthorizePaymentManager;
 	use \App\Http\Traits\ApiResponser;
 
-	private $public_key;
-	private $private_key;
+	private $login_id;
+	private $client_key;
+	private $transaction_key;
+	private $test_mode;
 	public function __construct()
   	{
-		$simp_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'simplify')->where('status', 1)->first();
-	    $creds_arr = json_decode($simp_creds->credentials);
-	    $this->public_key = $creds_arr->public_key??'';
-	    $this->private_key = $creds_arr->private_key??'';
+		$anet_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'authorize_net')->where('status', 1)->first();
+	    $creds_arr = json_decode($anet_creds->credentials);
+	    $this->login_id = $creds_arr->login_id??'';
+	    $this->client_key = $creds_arr->client_key??'';
+	    $this->transaction_key = $creds_arr->transaction_key??'';
+	    $this->test_mode = $anet_creds->test_mode;
 	}
-
-    public function beforePayment(Request $request)
+	public function beforePayment(Request $request)
     {
     	$data = $request->all();
-    	$data['public_key'] = $this->public_key;
         $data['come_from'] = 'app';
+        $data['login_id'] = $this->login_id;
+        $data['client_key'] = $this->client_key;
+        $data['is_test'] = $this->test_mode;
         if($request->isMethod('post'))
         {
             $data['come_from'] = 'web';
         }
         Log::info("Before Payment");
         Log::info($data);
-    	return view('frontend.payment_gatway.simplify_view')->with(['data' => $data]);
+    	return view('frontend.payment_gatway.authorize_view')->with(['data' => $data]);
     }
     public function createPayment(Request $request)
     {
@@ -48,46 +53,19 @@ class SimplifyController extends FrontController
     	$user = Auth::user();
     	$cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
         $amount = $this->getDollarCompareAmount($request->amount);
+
     	$data = $request->all();
-    	$request['username'] = $user->name;
-    	$request['email'] = $user->email;
-    	$request['source'] = 'WEB';
-    	$request['amount'] = $amount*100;
-        if($request->payment_from == 'cart'){
-            $request['description'] = 'Order Checkout';
-            if($request->has('order_number')){
-                $request['reference'] = $request->order_number;
-            }
-        }
-        elseif($request->payment_from == 'wallet'){
-            $request['description'] = 'Wallet Checkout';
-            $request['reference'] = $user->id;
-        }
-        elseif($request->payment_from == 'tip'){
-            $request['description'] = 'Tip Checkout';
-            if($request->has('order_number')){
-                $request['reference'] = $request->order_number;
-            }
-        }
-        elseif($request->payment_from == 'subscription'){
-            $request['description'] = 'Subscription Checkout';
-            if($request->has('subscription_id')){
-                $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $request->subscription_id)->where('status', '1')->first();
-                $request['reference'] = $request->subscription_id;
-            }
-        }
-    	$payment = $this->create_payment($request->all());
     	$request['amount'] = $amount;
-    	if($payment->paymentStatus == 'APPROVED')
+    	$transaction_id = $this->create_payment($request->all()); 
+    	if(!is_null($transaction_id))
     	{
-            $returnUrl = $this->sucessPayment($request,$payment);
+            $returnUrl = $this->sucessPayment($request,$transaction_id);
         } else{
-            $returnUrl = $this->failedPayment($request,$payment);
+            $returnUrl = $this->failedPayment($request,$transaction_id);
         }
-        // dd($returnUrl);
         return Redirect::to(url($returnUrl));
     }
-    public function sucessPayment($request, $pamyent)
+    public function sucessPayment($request, $transactionId)
     {
         if($request->come_from == "app")
         {
@@ -95,7 +73,6 @@ class SimplifyController extends FrontController
             Auth::login($user);
         }
         $user = Auth::user();
-    	$transactionId = $pamyent->id;
     	if($request->payment_from == 'cart'){
             $order_number = $request->order_number;
             $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
@@ -139,7 +116,7 @@ class SimplifyController extends FrontController
                 }
                 if($request->come_from == 'app')
                 {
-                    $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify'.'&status=200&transaction_id='.$transactionId.'&order='.$order_number;
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net'.'&status=200&transaction_id='.$transactionId.'&order='.$order_number;
                 }else{
                     $returnUrl = route('order.return.success');
                 }
@@ -152,7 +129,7 @@ class SimplifyController extends FrontController
             $walletController->creditWallet($request);
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify'.'&status=200&transaction_id='.$transactionId;
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net'.'&status=200&transaction_id='.$transactionId;
             }else{
                 $returnUrl = route('user.wallet');
             }
@@ -162,7 +139,12 @@ class SimplifyController extends FrontController
             $request->request->add(['order_number' => $request->order_number, 'tip_amount' => $request->amount, 'transaction_id' => $transactionId]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
-            $returnUrl = route('user.orders');
+            if($request->come_from == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net'.'&status=200&transaction_id='.$transactionId;
+            }else{
+                 $returnUrl = route('user.orders');
+            }
             return $returnUrl;
         }
         elseif($request->payment_from == 'subscription'){
@@ -171,7 +153,7 @@ class SimplifyController extends FrontController
             $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify'.'&status=200&transaction_id='.$transactionId; 
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net'.'&status=200&transaction_id='.$transactionId; 
             }else{
                 $returnUrl = route('user.subscription.plans');
             }
@@ -196,7 +178,7 @@ class SimplifyController extends FrontController
             Order::where('id', $order->id)->delete();
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify&status=0';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
             }else{
                 $returnUrl = route('showCart');
             }
@@ -205,7 +187,7 @@ class SimplifyController extends FrontController
         elseif($request->payment_from == 'wallet'){
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify&status=0';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
             }else{
                 $returnUrl = route('user.wallet');
             }
@@ -214,7 +196,7 @@ class SimplifyController extends FrontController
         elseif($request->payment_from == 'tip'){
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify&status=0';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
             }else{
                 $returnUrl = route('user.orders');
             }
@@ -223,7 +205,7 @@ class SimplifyController extends FrontController
         elseif($request->payment_from == 'subscription'){
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify&status=0';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
             }else{
                 $returnUrl = route('user.subscription.plans');
             }

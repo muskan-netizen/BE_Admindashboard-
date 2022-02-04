@@ -995,7 +995,7 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner'])
+        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request'])
             ->whereHas('orderDetail', function ($q1) {
                 $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1]);
                 $q1->orWhere(function ($q2) {

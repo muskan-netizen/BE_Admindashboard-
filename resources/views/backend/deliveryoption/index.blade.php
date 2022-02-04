@@ -401,15 +401,15 @@
 
             <div class="col-12">
 
-                <input type="hidden" name="method_id[]" id="{{$optDunzo->id}}" value="{{$optDunzo->id}}">
-                <input type="hidden" name="method_name[]" id="{{$optDunzo->code}}" value="{{$optDunzo->code}}">
+                <input type="hidden" name="method_id" id="{{$optDunzo->id}}" value="{{$optDunzo->id}}">
+                <input type="hidden" name="method_name" id="{{$optDunzo->code}}" value="{{$optDunzo->code}}">
 
                 <?php
                 $creds = json_decode($optDunzo->credentials);
                 if($optDunzo->test_mode == 1){
-                    $app_url = (isset($creds->app_url)) ? $creds->app_url : 'https://dev.adloggs.com/aa';
+                    $app_url = 'https://dev.adloggs.com/aa';
                 }else{
-                    $app_url = (isset($creds->app_url)) ? $creds->app_url : 'https://app.adloggs.com/aa';
+                    $app_url = 'https://app.adloggs.com/aa';
                 }
                 $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
 
@@ -433,14 +433,14 @@
                         <div class="col-md-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-3">{{ __("Enable") }}</label>
-                                <input type="checkbox" data-id="{{$optDunzo->id}}" data-title="{{$optDunzo->code}}" data-plugin="switchery" name="active[{{$optDunzo->id}}]" class="chk_box all_select" data-color="#43bee1" @if($optDunzo->status == 1) checked @endif>
+                                <input type="checkbox" data-id="{{$optDunzo->id}}" data-title="{{$optDunzo->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($optDunzo->status == 1) checked @endif>
                             </div>
                         </div>
                         @if ( (strtolower($optDunzo->code) == 'dunzo'))
                         <div class="col-6">
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
-                                <input type="checkbox" data-id="{{$optDunzo->id}}" data-title="{{$optDunzo->code}}" data-plugin="switchery" name="sandbox[{{$optDunzo->id}}]" class="chk_box" data-color="#43bee1" @if($optDunzo->test_mode == 1) checked @endif>
+                                <input type="checkbox" data-id="{{$optDunzo->id}}" data-title="{{$optDunzo->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($optDunzo->test_mode == 1) checked @endif>
                             </div>
                         </div>
                         @endif
@@ -469,7 +469,7 @@
                             <div class="col-md-6">
                                 <div class="form-group mb-0">
                                     <label for="dunzo_app_url" class="mr-3">{{ __("App Url") }}</label>
-                                    <input type="text" name="app_url" id="dunzo_app_url" class="form-control" value="{{$app_url}}" disabled>
+                                    <input type="text" name="app_url" id="dunzo_app_url" class="form-control" value="{{$app_url}}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">

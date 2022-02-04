@@ -31,9 +31,10 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '14', 'path' => 'tradesafe/omnipay-ozow', 'code' => 'ozow', 'title' => 'Ozow', 'off_site' => '1', 'status' => '0'),
         array('id' => '15', 'path' => 'pagarme/pagarme-php', 'code' => 'pagarme', 'title' => 'Pagarme', 'off_site' => '1', 'status' => '0'),
         array('id' => '17', 'path' => 'checkout/checkout-sdk-php', 'code' => 'checkout', 'title' => 'Checkout', 'off_site' => '0', 'status' => '0'),
-        array('id' => '19', 'path' => 'omnipay/stripe', 'code' => 'stripe_fpx', 'title' => 'Stripe FPX', 'off_site' => '1', 'status' => '0'),
+        array('id' => '18', 'path' => 'academe/omnipay-authorizenetapi', 'code' => 'authorize_net', 'title' => 'Authorize.net', 'off_site' => '0', 'status' => '0'),
+        array('id' => '19', 'path' => 'omnipay/stripe', 'code' => 'stripe_fpx', 'title' => 'Stripe FPX', 'off_site' => '1', 'status' => '0')
       ); 
-
+ 
       if($option_count == 0)
       {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
