@@ -59,11 +59,13 @@ class AuthorizeGatewayController extends FrontController
     	$transaction_id = $this->create_payment($request->all()); 
     	if(!is_null($transaction_id))
     	{
+    		Log::info('Transaction ID');
+    		Log::info($transaction_id);
+    		Log::info($request->all());
             $returnUrl = $this->sucessPayment($request,$transaction_id);
         } else{
             $returnUrl = $this->failedPayment($request,$transaction_id);
         }
-        // dd($returnUrl);
         return Redirect::to(url($returnUrl));
     }
     public function sucessPayment($request, $transactionId)

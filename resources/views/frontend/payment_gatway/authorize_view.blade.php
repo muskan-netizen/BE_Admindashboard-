@@ -38,7 +38,7 @@
     </style>
 </head>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-@if($data['is_test'])
+@if($data['is_test'] == 1 && $data['is_test'] == '1')
 <script type="text/javascript" src="https://jstest.authorize.net/v1/Accept.js"charset="utf-8"></script>
 @else
 <script type="text/javascript" src="https://js.authorize.net/v1/Accept.js"charset="utf-8"></script>
