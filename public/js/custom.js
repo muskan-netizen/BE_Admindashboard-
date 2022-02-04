@@ -526,8 +526,32 @@ $(document).ready(function() {
         card.mount('#stripe-card-element');
     }
 
+    function stripeFPXInitialize() {
+        stripe_fpx = Stripe(stripe_fpx_publishable_key);
+        var elements = stripe_fpx.elements();
+        var style = {
+            base: {
+              // Add your base input styles here. For example:
+              padding: '10px 12px',
+              color: '#32325d',
+              fontSize: '16px',
+            },
+        };
+        fpxBank = elements.create('fpxBank',
+            {
+              style: style,
+              accountHolderType: 'individual',
+            }
+        );
+        // Add an instance of the fpxBank Element into the container with id `fpx-bank-element`.
+        fpxBank.mount('#fpx-bank-element');
+    }
+
     if ($("#stripe-card-element").length > 0) {
         stripeInitialize();
+    }
+    if ($("#fpx-bank-element").length > 0) {
+        stripeFPXInitialize();
     }
 
     $(document).delegate(".subscribe_btn", "click", function() {
@@ -862,6 +886,7 @@ $(document).ready(function() {
                                     $('#proceed_to_pay_modal').modal('show');
                                     $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
                                     stripeInitialize();
+                                    stripeFPXInitialize();
                                 }
                             },
                             error: function(error) {
@@ -1345,7 +1370,17 @@ $(document).ready(function() {
                     paymentViaStripe(result.token.id, address_id, payment_option_id,delivery_type);
                 }
             });
-        } else if (payment_option_id == 8) {
+        }
+        else if (payment_option_id == 19) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaStripeFPX(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
+        }
+        else if (payment_option_id == 8) {
             var order;
             inline.createToken().then(function(result) {
                 if (result.error) {

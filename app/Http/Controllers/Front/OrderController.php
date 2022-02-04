@@ -639,6 +639,8 @@ class OrderController extends FrontController
     public function orderSave($request, $paymentStatus)
     {
         try {
+            $order =  Order::where('order_number', '91463486')->first();
+            return $this->successResponse($order);
             DB::beginTransaction();
             $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code')->first();
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
@@ -1011,7 +1013,7 @@ class OrderController extends FrontController
             }
             // $this->sendOrderNotification($user->id, $vendor_ids);
             $this->sendSuccessEmail($request, $order);
-            $ex_gateways = [7, 8, 9, 10, 17]; //  mobbex, yoco, pointcheckout, razorpay, checkout
+            $ex_gateways = [7, 8, 9, 10, 17, 19]; //  mobbex, yoco, pointcheckout, razorpay, checkout, stripe_fpx
             if (!in_array($request->payment_option_id, $ex_gateways)) {
                 Cart::where('id', $cart->id)->update([
                     'schedule_type' => null, 'scheduled_date_time' => null,
