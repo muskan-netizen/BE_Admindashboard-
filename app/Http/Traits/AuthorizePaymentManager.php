@@ -22,7 +22,7 @@ trait AuthorizePaymentManager{
     $transactionId = rand(100000000, 999999999);
     try {
       $response = $gateway->authorize([
-        'amount' => '7.99',
+        'amount' => $data['amount'],
         'currency' => 'USD',
         'transactionId' => $transactionId,
         'opaqueDataDescriptor' => $data['opaqueDataDescriptor'],
@@ -33,7 +33,7 @@ trait AuthorizePaymentManager{
         // Captured from the authorization response.
         $transactionReference = $response->getTransactionReference();
         $response = $gateway->capture([
-          'amount' => '7.99',
+          'amount' => $data['amount'],
           'currency' => 'USD',
           'transactionReference' => $transactionReference,
         ])->send();
