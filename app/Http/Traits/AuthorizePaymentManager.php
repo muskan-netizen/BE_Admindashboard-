@@ -31,7 +31,7 @@ trait AuthorizePaymentManager{
       // $request->setOpaqueData($data['opaqueDataDescriptor'], $data['opaqueDataValue']);
       $request->setToken($data['opaqueDataDescriptor'] . ':' . $data['opaqueDataValue']);
       $response = $request->send();
-      dd($response);
+      dd($response, $response->isSuccessful());
 
       if($response->isSuccessful()) {
         // Captured from the authorization response.
