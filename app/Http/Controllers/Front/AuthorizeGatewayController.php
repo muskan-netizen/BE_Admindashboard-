@@ -24,7 +24,7 @@ class AuthorizeGatewayController extends FrontController
 	    $this->login_id = $creds_arr->login_id??'';
 	    $this->client_key = $creds_arr->client_key??'';
 	    $this->transaction_key = $creds_arr->transaction_key??'';
-	    $this->test_mode = $anet_creds->anet_creds;
+	    $this->test_mode = $anet_creds->test_mode;
 	}
 	public function beforePayment(Request $request)
     {
