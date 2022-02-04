@@ -638,8 +638,6 @@ class OrderController extends FrontController
     public function orderSave($request, $paymentStatus)
     {
         try {
-            $order =  Order::where('order_number', '91463486')->first();
-            return $this->successResponse($order);
             DB::beginTransaction();
             $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code')->first();
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';

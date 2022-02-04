@@ -14,7 +14,7 @@ use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser};
+use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
 
 class StripeGatewayController extends FrontController
 {
@@ -198,7 +198,7 @@ class StripeGatewayController extends FrontController
                         $transactionId = $charges[0]->balance_transaction;
                     }
                     
-                    dd($charges[0]);
+                    // dd($charges[0]);
 
                     if($request->payment_form == 'cart'){
                         $order_number = $request->order;
@@ -240,7 +240,7 @@ class StripeGatewayController extends FrontController
                                 $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                             }
                             $returnUrlParams = ''; //'?gateway=paylink&order=' . $order->id;
-                            $returnUrl = route('order.return.success');
+                            $returnUrl = route('order.success', $order->id); // route('order.return.success');
                             return Redirect::to(url($returnUrl . $returnUrlParams));
         
                             // Send Email
