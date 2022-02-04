@@ -993,7 +993,7 @@ class CartController extends BaseController
                 $cart->closed_store_order_scheduled = 0;
             }
         }else{
-            $duration = new stdClass();;
+            $duration = (object)[]; 
             $slots = [];
             $cart->slots = [];
             $cart->closed_store_order_scheduled = 0;
