@@ -38,8 +38,11 @@
     </style>
 </head>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+@if($data['is_test'])
 <script type="text/javascript" src="https://jstest.authorize.net/v1/Accept.js"charset="utf-8"></script>
-<!-- Use https://js.authorize.net/v1/Accept.js for live -->
+@else
+<script type="text/javascript" src="https://js.authorize.net/v1/Accept.js"charset="utf-8"></script>
+@endif
 <script type="text/javascript" src="{{asset('js/card.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
@@ -51,8 +54,8 @@
     function sendPaymentDataToAnet() { 
     // Set up authorisation to access the gateway.
     var authData = {};
-        authData.clientKey = "{{$data['client_key']}}";
-        authData.apiLoginID = "{{$data['login_id']}}";
+    authData.clientKey = "{{$data['client_key']}}";
+    authData.apiLoginID = "{{$data['login_id']}}";
 
     // Capture the card details from the payment form.
     // The cardCode is the CVV.
@@ -60,20 +63,20 @@
     // You can pick up bank account fields in a similar way, if using
     // that payment method.
     var cardData = {};
-        cardData.cardNumber = document.getElementById("cc-number").value.replace(/\s/g, '');
-        cardData.month = document.getElementById("cc-exp-month").value;
-        cardData.year = document.getElementById("cc-exp-year").value;
-        cardData.cardCode = document.getElementById("cc-cvc").value;
-    console.log(cardData);
+    cardData.cardNumber = document.getElementById("cc-number").value.replace(/\s/g, '');
+    cardData.month = document.getElementById("cc-exp-month").value;
+    cardData.year = document.getElementById("cc-exp-year").value;
+    cardData.cardCode = document.getElementById("cc-cvc").value;
 
     // Now send the card data to the gateway for tokenisation.
     // The responseHandler function will handle the response.
     var secureData = {};
-        secureData.authData = authData;
-        secureData.cardData = cardData;
-        Accept.dispatchData(secureData, responseHandler);
+    secureData.authData = authData;
+    secureData.cardData = cardData;
+    Accept.dispatchData(secureData, responseHandler);
 }
 function responseHandler(response) {
+    $('.Error_message').html('');
     if (response.messages.resultCode === "Error") {
         var i = 0;
         while (i < response.messages.message.length) {
@@ -81,6 +84,7 @@ function responseHandler(response) {
                 response.messages.message[i].code + ": " +
                 response.messages.message[i].text
             );
+            $('.Error_message').append('<div class="alert alert-danger alert-dismissible fade show" role="alert">'+response.messages.message[i].text+'</div>');
             i = i + 1;
         }
     } else {
@@ -109,6 +113,13 @@ function paymentFormUpdate(opaqueData) {
     <div class="row">
         <div class="offset-lg-3 col-lg-6">
             <form id="authorize-payment-form" action="{{route('payment.authorize.createPayment')}}" method="POST">
+
+                <div class="form-group mb-1 Error_message">
+                   <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                     You should check in on some of those fields below.
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>{{__('Credit Card Number')}}: </label>
                     <input class="form-control" id="cc-number" type="text" maxlength="20" autocomplete="off" value="" autofocus />

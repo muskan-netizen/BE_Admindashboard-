@@ -16,6 +16,7 @@ class AuthorizeGatewayController extends FrontController
 	private $login_id;
 	private $client_key;
 	private $transaction_key;
+	private $test_mode;
 	public function __construct()
   	{
 		$anet_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'authorize_net')->where('status', 1)->first();
@@ -23,6 +24,7 @@ class AuthorizeGatewayController extends FrontController
 	    $this->login_id = $creds_arr->login_id??'';
 	    $this->client_key = $creds_arr->client_key??'';
 	    $this->transaction_key = $creds_arr->transaction_key??'';
+	    $this->test_mode = $anet_creds->anet_creds;
 	}
 	public function beforePayment(Request $request)
     {
@@ -30,6 +32,7 @@ class AuthorizeGatewayController extends FrontController
         $data['come_from'] = 'app';
         $data['login_id'] = $this->login_id;
         $data['client_key'] = $this->client_key;
+        $data['is_test'] = $this->test_mode;
         if($request->isMethod('post'))
         {
             $data['come_from'] = 'web';
@@ -114,7 +117,7 @@ class AuthorizeGatewayController extends FrontController
                 }
                 if($request->come_from == 'app')
                 {
-                    $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify'.'&status=200&transaction_id='.$transactionId.'&order='.$order_number;
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=auth'.'&status=200&transaction_id='.$transactionId.'&order='.$order_number;
                 }else{
                     $returnUrl = route('order.return.success');
                 }
@@ -127,7 +130,7 @@ class AuthorizeGatewayController extends FrontController
             $walletController->creditWallet($request);
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify'.'&status=200&transaction_id='.$transactionId;
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net'.'&status=200&transaction_id='.$transactionId;
             }else{
                 $returnUrl = route('user.wallet');
             }
@@ -146,7 +149,7 @@ class AuthorizeGatewayController extends FrontController
             $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify'.'&status=200&transaction_id='.$transactionId; 
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net'.'&status=200&transaction_id='.$transactionId; 
             }else{
                 $returnUrl = route('user.subscription.plans');
             }
@@ -171,7 +174,7 @@ class AuthorizeGatewayController extends FrontController
             Order::where('id', $order->id)->delete();
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify&status=0';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
             }else{
                 $returnUrl = route('showCart');
             }
@@ -180,7 +183,7 @@ class AuthorizeGatewayController extends FrontController
         elseif($request->payment_form == 'wallet'){
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify&status=0';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
             }else{
                 $returnUrl = route('user.wallet');
             }
@@ -189,7 +192,7 @@ class AuthorizeGatewayController extends FrontController
         elseif($request->payment_form == 'tip'){
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify&status=0';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
             }else{
                 $returnUrl = route('user.orders');
             }
@@ -198,7 +201,7 @@ class AuthorizeGatewayController extends FrontController
         elseif($request->payment_form == 'subscription'){
             if($request->come_from == 'app')
             {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=simplify&status=0';
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
             }else{
                 $returnUrl = route('user.subscription.plans');
             }
