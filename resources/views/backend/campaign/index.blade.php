@@ -139,7 +139,7 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="button" id="deleteCampaignButton" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> 
+                                                       <button type="button" id="deleteCampaignButton" class="btn btn-primary-outline action-icon deleteCampaignButton"><i class="mdi mdi-delete"></i></button> 
 
                                                     </div>
                                                 </form>
@@ -165,7 +165,7 @@
 
 @section('script')
 <script type="text/javascript">
-    $('#deleteCampaignButton').click(function(e) {
+    $('.deleteCampaignButton').click(function(e) {
         e.preventDefault();
         Swal.fire({
             title: "{{__('Are you sure?')}}",

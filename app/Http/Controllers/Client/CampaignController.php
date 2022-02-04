@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Campaign, CampaignRoster, Celebrity, Brand, Country, User, UserVendor, Client, Timezone };
+use App\Models\{Campaign, CampaignRoster, Celebrity, Brand, Country, User, UserVendor, Client, Timezone, UserDevice };
 use Carbon\Carbon;
 
 class CampaignController extends BaseController
@@ -17,7 +17,7 @@ class CampaignController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(){     
+    public function index(){ 
         //return $vendors = UserVendor::select('user_id')->with('user')->groupBy('user_id')->get();
         $campaigns = Campaign::all();
         return view('backend.campaign.index')->with(['campaigns' => $campaigns]);
@@ -31,6 +31,13 @@ class CampaignController extends BaseController
      */
     public function store(Request $request){      
         //dd($request->all());
+
+        // $timezonedetail = Client::with('getTimezone')->first('timezone');
+        // $tz = new Timezone();
+        // $usertimezone = $tz->timezone_name($timezonedetail->timezone);        
+        // echo $notification_time = Carbon::parse($request->schedule_datetime . $usertimezone ?? 'UTC')->tz('UTC');
+        //  return $newnotification_time = $notification_time->addMinute($request->request_time_gap);
+
         $rules = array(
             // 'slug' => 'required|string|max:30|unique:celebrities',
             'title' => 'required|string|max:190',
@@ -78,12 +85,79 @@ class CampaignController extends BaseController
             $tz = new Timezone();
             $usertimezone = $tz->timezone_name($timezonedetail->timezone);        
             $notification_time = Carbon::parse($request->schedule_datetime . $usertimezone ?? 'UTC')->tz('UTC');
+            $notification_type = $request->type;
             if($usertype==1)    // for all users
             {
                 $users = User::where(['status'=>1])->get();
-
+                $getusercount = count($users);                
+                $totalbatches = round($getusercount/$request->request_user_count);
+                for ($i=1;$i<=$totalbatches;$i++)
+                {
+                    $usercount = $request->request_user_count;
+                    if($i==1)
+                    {
+                        $notification_time = $notification_time;
+                    }else{                        
+                        $notification_time = $notification_time->addMinute($request->request_time_gap);
+                    }
+                    $roasterdata = [];
+                    $conditionalvalue = (($i*$usercount)<=$getusercount)?$i*$usercount:$getusercount;
+                    for($j = (($i-1)*$usercount); $j<$conditionalvalue;$j++)
+                    {                        
+                        $getdevicedetail = UserDevice::where('user_id',$users[$j]->id)->latest()->first();
+                        if($getdevicedetail)
+                        {
+                            $roasterdata[] = array(
+                                'campaign_id'   =>  $campaign->id,
+                                'user_id'   =>  $users[$j]->id,
+                                'notification_time'   =>  $notification_time,
+                                'notofication_type'   =>  $notification_type,
+                                'device_type'   =>  $getdevicedetail->device_type,
+                                'device_token'   =>  $getdevicedetail->device_token,
+                                'status'    =>  0
+                            );
+                        }                        
+                    }
+                    $insertroaster = CampaignRoster::insert($roasterdata);
+                }
+                $total_requests = CampaignRoster::where('campaign_id',$campaign->id)->count();
+                Campaign::where('id',$campaign->id)->update(['total_request_count'=>$total_requests]);
+                
             }else{  //for vendors only
                 $vendors = UserVendor::select('user_id')->with('user')->groupBy('user_id')->get();
+                $getusercount = count($vendors);                
+                $usercount = $request->request_user_count;
+                $totalbatches = round($getusercount/$usercount);
+                for ($i=1;$i<=$totalbatches;$i++)
+                {                    
+                    if($i==1)
+                    {
+                        $notification_time = $notification_time;
+                    }else{                        
+                        $notification_time = $notification_time->addMinute($request->request_time_gap);
+                    }                    
+                    $roasterdata = [];
+                    $conditionalvalue = (($i*$usercount)<=$getusercount)?$i*$usercount:$getusercount;
+                    for($j = (($i-1)*$usercount); $j<$conditionalvalue;$j++)
+                    {
+                        $getdevicedetail = UserDevice::where('user_id',$vendors[$j]->user_id)->latest()->first();
+                        if($getdevicedetail)
+                        {
+                            $roasterdata[] = array(
+                                'campaign_id'   =>  $campaign->id,
+                                'user_id'   =>  $vendors[$j]->user_id,
+                                'notification_time'   =>  $notification_time,
+                                'notofication_type'   =>  $notification_type,
+                                'device_type'   =>  $getdevicedetail->device_type,
+                                'device_token'   =>  $getdevicedetail->device_token,
+                                'status'    =>  0
+                            );
+                        }  
+                    }
+                    $insertroaster = CampaignRoster::insert($roasterdata);
+                }
+                $total_requests = CampaignRoster::where('campaign_id',$campaign->id)->count();
+                Campaign::where('id',$campaign->id)->update(['total_request_count'=>$total_requests]);
             }
             return response()->json([
                 'status' => 'success',
@@ -152,6 +226,7 @@ class CampaignController extends BaseController
      */
     public function destroy($domain = '', $id){
         Campaign::where('id', $id)->delete();
+        CampaignRoster::where('campaign_id',$id)->delete();
         return redirect()->back()->with('success', 'Campaign deleted successfully!');
     }
 
