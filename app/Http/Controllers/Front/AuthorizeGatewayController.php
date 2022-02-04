@@ -59,9 +59,6 @@ class AuthorizeGatewayController extends FrontController
     	$transaction_id = $this->create_payment($request->all()); 
     	if(!is_null($transaction_id))
     	{
-    		Log::info('Transaction ID');
-    		Log::info($transaction_id);
-    		Log::info($request->all());
             $returnUrl = $this->sucessPayment($request,$transaction_id);
         } else{
             $returnUrl = $this->failedPayment($request,$transaction_id);
@@ -79,6 +76,7 @@ class AuthorizeGatewayController extends FrontController
     	if($request->payment_from == 'cart'){
             $order_number = $request->order_number;
             $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
+            dd($order);
             if ($order) {
                 $order->payment_status = 1;
                 $order->save();
@@ -182,7 +180,7 @@ class AuthorizeGatewayController extends FrontController
             }
             return $returnUrl;
         }
-        elseif($request->payment_form == 'wallet'){
+        elseif($request->payment_from == 'wallet'){
             if($request->come_from == 'app')
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
@@ -191,7 +189,7 @@ class AuthorizeGatewayController extends FrontController
             }
             return $returnUrl;
         }
-        elseif($request->payment_form == 'tip'){
+        elseif($request->payment_from == 'tip'){
             if($request->come_from == 'app')
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
@@ -200,7 +198,7 @@ class AuthorizeGatewayController extends FrontController
             }
             return $returnUrl;
         }
-        elseif($request->payment_form == 'subscription'){
+        elseif($request->payment_from == 'subscription'){
             if($request->come_from == 'app')
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net&status=0';
