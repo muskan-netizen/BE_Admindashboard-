@@ -25,6 +25,8 @@ trait AuthorizePaymentManager{
         'amount' => '7.99',
         'currency' => 'USD',
         'transactionId' => $transactionId,
+        'opaqueDataDescriptor' => $data['opaqueDataDescriptor'],
+        'opaqueDataValue' => $data['opaqueDataValue'],
       ]);
       $request->setOpaqueData($data['opaqueDataDescriptor'], $data['opaqueDataValue']);
       $request->setToken($$data['opaqueDataDescriptor'] . ':' . $data['opaqueDataValue']);
