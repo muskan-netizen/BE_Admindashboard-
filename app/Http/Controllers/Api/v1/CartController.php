@@ -118,7 +118,7 @@ class CartController extends BaseController
 
             if ($product->category->categoryDetail->type_id == 8) {
             } else {
-                if ( ($product->sell_when_out_of_stock == 0) && ($productVariant->quantity < $request->quantity) ) {
+                if ( ($product->sell_when_out_of_stock == 0) && ($productVariant->quantity < $request->quantity && $product->has_inventory == 1) ) {
                     return $this->errorResponse('You Can not order more than ' . $productVariant->quantity . ' quantity.', 404);
                 }
             }
