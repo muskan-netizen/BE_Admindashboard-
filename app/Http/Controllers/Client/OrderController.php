@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
+use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
 use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency};
 use DB;
@@ -432,7 +433,10 @@ class OrderController extends BaseController
                         $order_lalamove = $this->placeOrderRequestlalamove($request);
                     }elseif($orderData->shipping_delivery_type=='SR'){
                         //Create Shipping place order request for Shiprocket
-                        $order_lalamove = $this->placeOrderRequestShiprocket($request);
+                        $order_ship = $this->placeOrderRequestShiprocket($request);
+                    }elseif($orderData->shipping_delivery_type=='DU'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_dunzo = $this->placeOrderRequestDunzo($request);
                     }
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]); 
@@ -450,6 +454,10 @@ class OrderController extends BaseController
                         //Cancel Shipping place order request for Shiprocket
                         $ship = new ShiprocketController();
                         $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
+                    }elseif($orderData->shipping_delivery_type=='DU'){
+                        //Cancel Dunzo place order request for Dunzo
+                        $ship = new DunzoController();
+                        $order_ship = $ship->cancelOrderRequestDunzo($currentOrderStatus->web_hook_code);
                     }
 
                 }
@@ -550,6 +558,30 @@ class OrderController extends BaseController
                     'ship_shipment_id' => $order_ship->shipment_id,
                     'ship_awb_id' => $order_ship->awb_code
                     ]);
+                return 1;
+            }
+
+        return 2;
+    }
+
+    public function placeOrderRequestDunzo($request)
+    {
+
+        $data = new DunzoController();
+        //Create Shipping place order request for Dunzo
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+                $order_lalamove = $data->createOrderRequestDunzo($checkOrder->user_id,$checkdeliveryFeeAdded);
+            }
+
+            if ($order_lalamove->status){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'web_hook_code' => $order_lalamove->data->order_uuid,
+                    'lalamove_tracking_url'=>$order_lalamove->data->trackUrl
+                ]);
+
                 return 1;
             }
 

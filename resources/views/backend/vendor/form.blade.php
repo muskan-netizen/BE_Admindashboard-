@@ -28,8 +28,9 @@
             @endif--}}
         </div>
         {!! Form::hidden('vendor_id', $vendor->id, ['class'=>'form-control']) !!}
+
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="form-group" id="nameInput">
                     {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                     {!! Form::text('name', $vendor->name, ['class'=>'form-control']) !!}
@@ -38,14 +39,6 @@
                     </span>
                 </div>
             </div>
-            <div class="col-md-12">
-                <div class="form-group" id="descInput">
-                    {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
-                    {!! Form::textarea('desc', $vendor->desc, ['class' => 'form-control', 'rows' => '3']) !!}
-                </div>
-            </div>
-        </div>
-        <div class="row">
             <div class="col-md-6">
                 <div class="form-group" id="emailInput">
                     <label for="">{{ __('Email') }}</label>
@@ -64,9 +57,20 @@
                     </span>
                 </div>
             </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="">{{ __('Website') }}</label>
+                    {!! Form::text('website', $vendor->website, ['class'=>'form-control']) !!}
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row">
+
         </div>
         <div class="row mb-2" id="edit">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group mb-3" id="addressInput">
                     {!! Form::label('title', __('Address'),['class' => 'control-label']) !!}
                     <div class="input-group">
@@ -80,8 +84,10 @@
                     </span>
                 </div>
             </div>
+        </div>
 
-            <div class="col-md-6">
+        <div class="row mb-2" >
+            <div class="col-md-4">
                 <div class="form-group mb-3" id="pincode">
                     {!! Form::label('title', __('Pincode'),['class' => 'control-label']) !!}
                     <input type="text" name="pincode" placeholder="Pincode" class="form-control" value="{{@$vendor->pincode}}">
@@ -92,8 +98,6 @@
                     @endif
                 </div>
             </div>
-        </div>
-        <div class="row mb-2" >
             <div class="col-md-4">
                 <div class="form-group mb-3">
                     {!! Form::label('title', __('City'),['class' => 'control-label']) !!}
@@ -131,7 +135,7 @@
         <div class="row mb-2" >
             <div class="col-md-4">
                 <div class="form-group mb-3" id="latitudeInput">
-                    {!! Form::label('title', __('latitude'),['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Latitude'),['class' => 'control-label']) !!}
                     <input type="text" name="latitude" id="edit_latitude" placeholder="24.9876755" class="form-control" value="{{$vendor->latitude}}">
                     @if($errors->has('latitude'))
                     <span class="text-danger" role="alert">
@@ -142,7 +146,7 @@
             </div>
             <div class="col-md-4">
                 <div class="form-group mb-3" id="longitudeInput">
-                    {!! Form::label('title', __('longitude'),['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Longitude'),['class' => 'control-label']) !!}
                     <input type="text" name="longitude" id="edit_longitude" placeholder="11.9871371723" class="form-control" value="{{$vendor->longitude}}">
                     @if($errors->has('longitude'))
                     <span class="text-danger" role="alert">
@@ -154,11 +158,12 @@
         </div>
         <div class="row">
             <div class="col-md-6">
-                <div class="form-group">
-                    <label for="">{{ __('Website') }}</label>
-                    {!! Form::text('website', $vendor->website, ['class'=>'form-control']) !!}
+                <div class="form-group" id="descInput">
+                    {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
+                    {!! Form::textarea('desc', $vendor->desc, ['class' => 'form-control', 'rows' => '3']) !!}
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="row">
                     <div class="col-md-4">

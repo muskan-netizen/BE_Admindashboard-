@@ -317,14 +317,21 @@ class UserhomeController extends FrontController
 
         $recent_orders_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
 
-
-        $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
-            $q->where('language_id', $language_id);
-        }])->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->get();
-        foreach ($brands as $brand) {
-            $brand->redirect_url = route('brandDetail', $brand->id);
-            $brand->translation_title = $brand->translation->first() ? $brand->translation->first()->title : $brand->title;
+        $enable_layout = CabBookingLayout::where('is_active',1)->pluck('slug')->toArray();
+        $home_page_labels = HomePageLabel::with('translations')->get();
+        if (in_array('brands', $enable_layout)) {     # if enable brands section in
+            $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
+                $q->where('language_id', $language_id);
+            }])->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->get();
+            foreach ($brands as $brand) {
+                $brand->redirect_url = route('brandDetail', $brand->id);
+                $brand->translation_title = $brand->translation->first() ? $brand->translation->first()->title : $brand->title;
+            }
+        }else{
+            $brands = [];
         }
+        
+        
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
         $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
@@ -545,7 +552,7 @@ class UserhomeController extends FrontController
                 'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
         }
-        $home_page_labels = HomePageLabel::with('translations')->get();
+       
 
         $activeOrders = [];
 
@@ -602,7 +609,7 @@ class UserhomeController extends FrontController
             'brands' => $brands,
             'vendors' => $vendors,
             'new_products' => $new_products,
-             'homePageLabels' => $home_page_labels,
+            'homePageLabels' => $home_page_labels,
             'feature_products' => $feature_products,
             'on_sale_products' => $on_sale_products,
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,

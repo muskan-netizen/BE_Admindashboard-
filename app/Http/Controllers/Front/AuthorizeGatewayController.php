@@ -116,7 +116,7 @@ class AuthorizeGatewayController extends FrontController
                 }
                 if($request->come_from == 'app')
                 {
-                    $returnUrl = route('payment.gateway.return.response').'/?gateway=auth'.'&status=200&transaction_id='.$transactionId.'&order='.$order_number;
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net'.'&status=200&transaction_id='.$transactionId.'&order='.$order_number;
                 }else{
                     $returnUrl = route('order.return.success');
                 }
@@ -139,7 +139,12 @@ class AuthorizeGatewayController extends FrontController
             $request->request->add(['order_number' => $request->order_number, 'tip_amount' => $request->amount, 'transaction_id' => $transactionId]);
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
-            $returnUrl = route('user.orders');
+            if($request->come_from == 'app')
+            {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=authorize_net'.'&status=200&transaction_id='.$transactionId;
+            }else{
+                 $returnUrl = route('user.orders');
+            }
             return $returnUrl;
         }
         elseif($request->payment_from == 'subscription'){
