@@ -3,6 +3,7 @@ namespace App\Http\Traits;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use App\Models\PaymentOption;
+use Omnipay\Omnipay;
 use Log;
 trait AuthorizePaymentManager{
 
