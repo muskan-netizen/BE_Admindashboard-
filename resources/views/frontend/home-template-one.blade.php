@@ -74,7 +74,7 @@
 </script>
 <script type="text/template" id="products_template">
 	<% _.each(products, function(product, k){ %>
-		<div class="product-card-box position-relative">
+		<div class="product-card-box position-relative al">
 			<div class="add-to-fav 12">
 				<input id="fav_pro_one" type="checkbox">
 				<label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>

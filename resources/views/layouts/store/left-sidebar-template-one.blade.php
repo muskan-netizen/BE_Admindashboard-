@@ -5,6 +5,12 @@ $languageList = \App\Models\ClientLanguage::with('language')->where('is_active',
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 @endphp
+<style>
+.cab-booking-header .icon-ic_currency:before{color: var(--theme-deafult) !important;}
+.top-header li{padding: 0 20px 0 0;}
+.mobile-account{color: var(--theme-deafult) }
+@media(max-width:767px){.cab-booking-header.al a.navbar-brand.mr-0 {margin: 10px auto 0;text-align: center;display: block;}}
+</style>
 <header class="site-header @if($client_preference_detail->business_type == 'taxi') taxi-header @endif">
    @if(Auth::check())
    @include('layouts.store/topbar-auth-template-one')
@@ -12,7 +18,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
    @include('layouts.store/topbar-guest-template-one')
    @endif
         <!-- Start Cab Booking Header From Here -->
-        <div class="cab-booking-header">
+        <div class="cab-booking-header al">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-sm-3 col-md-2">
@@ -26,8 +32,6 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
                                 </a>
                                 <ul class="onhover-show-div">
-
-
                                     @foreach($pages as $page)
                                         @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
                                         @if(isset($last_mile_common_set) && $last_mile_common_set != false)
@@ -368,21 +372,21 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                </div>
                <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
                   @foreach($navCategories as $cate) @if($cate['name'])
-                  <li>
+                  <li class="al_main_category">
                      <a href="{{route('categoryDetail', $cate['slug'])}}">
                         @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
                         <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
                         @endif{{$cate['name']}}
                      </a>
                      @if(!empty($cate['children']))
-                     <ul>
+                     <ul class="al_main_category_list">
                         @foreach($cate['children'] as $childs)
                         <li>
                            <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a> @if(!empty($childs['children']))
-                           <ul>
+                           <ul class="al_main_category_sub_list">
                               @foreach($childs['children'] as $chld)
                               <li><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
-                              @endforeach
+                              @endforeach 
                            </ul>
                            @endif
                         </li>
@@ -404,7 +408,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
        <div class="mobile-back text-end">Back<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
    </li> -->
    <% _.each(nav_categories, function(category, key){ %>
-      <li> <a href="{{route('categoryDetail')}}/<%=category.slug %>"> @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif <%=category.name %> </a> <% if(category.children){%> <ul> <% _.each(category.children, function(childs, key1){%> <li> <a href="{{route('categoryDetail')}}/<%=childs.slug %>"><span class="new-tag"><%=childs.name %></span></a> <% if(childs.children){%> <ul> <% _.each(childs.children, function(chld, key2){%> <li><a href="{{route('categoryDetail')}}/<%=chld.slug %>"><%=chld.name %></a></li><%}); %> </ul> <%}%> </li><%}); %> </ul> <%}%> </li>
+      <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>"> @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif <%=category.name %> </a> <% if(category.children){%> <ul class="al_main_category_list"> <% _.each(category.children, function(childs, key1){%> <li> <a href="{{route('categoryDetail')}}/<%=childs.slug %>"><span class="new-tag"><%=childs.name %></span></a> <% if(childs.children){%> <ul class="al_main_category_sub_list"> <% _.each(childs.children, function(chld, key2){%> <li><a href="{{route('categoryDetail')}}/<%=chld.slug %>"><%=chld.name %></a></li><%}); %> </ul> <%}%> </li><%}); %> </ul> <%}%> </li>
    <% }); %>
 </script>
 <div class="modal fade edit_address" id="edit-address" tabindex="-1" aria-labelledby="edit-addressLabel" aria-hidden="true">
