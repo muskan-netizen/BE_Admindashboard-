@@ -9,8 +9,9 @@ jQuery(window).scroll(function() {
 
 // Material Select Initialization
 $(document).ready(function() {
-    $('.mdb-select').materialSelect();
-    });
+    //$('.mdb-select').materialSelect();
+
+});
 
 $(function() {
     document.ajax_loading = false;
@@ -636,7 +637,7 @@ $(document).ready(function() {
                 paymentViaPagarme('', '');
             }else if (payment_option_id == 17) {
                 paymentViaCheckout('', '');
-            }else if (payment_option_id == 18) { 
+            }else if (payment_option_id == 18) {
                 paymentViaAuthorize('', '');
             }
         } else {
@@ -679,7 +680,7 @@ $(document).ready(function() {
                     }
                     cartHeader();
                     cartTotalProductCount();
-                    
+
 
                     if ($('#show_plus_minus' + cartproduct_id).length != 0) {
                         if($('.addon_variant_quantity_' + cartproduct_id).closest('.customized_product_row').length > 0){
