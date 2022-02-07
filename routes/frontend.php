@@ -116,7 +116,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/pagarme/card','Front\PagarmeController@createPaymentCard')->name('payment.pagarme.createPaymentCard');
 
 	//Authorize.Net
-	Route::match(['get','post'],'payment/authorize/page','Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
+	Route::match(['get','post'],'payment/authorize_net/page','Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
 	Route::post('payment/authorize','Front\AuthorizeGatewayController@createPayment')->name('payment.authorize.createPayment');
 
 	// Checkout
@@ -126,6 +126,7 @@ Route::group(['middleware' => ['domain']], function () {
 	//Passbase 
 	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
 	Route::post('passbase/verify','Front\PassbaseController@store')->name('passbase.store');
+	Route::post('passbase/webhook','Front\PassbaseController@webhook')->name('passbase.webhook');
 
 
 
