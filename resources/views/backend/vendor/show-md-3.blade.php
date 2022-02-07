@@ -116,6 +116,10 @@
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if($vendor->return_request == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
                     <div class="col-md-12" id="auto_reject_timeInput" style="display:{{$vendor->auto_accept_order == 1 ? 'none' : 'block'}}">
                         <div class="form-group">
                             {!! Form::label('title', __('Auto Reject Time(In minutes, 0 for no rejection)'),['class' => 'control-label']) !!}
@@ -191,7 +195,7 @@
 
 
 @if(Auth::user()->is_superadmin == 1)
-@if(isset($checkShip) && !empty($checkShip))
+@if(isset($checkShip))
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">

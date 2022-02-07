@@ -32,27 +32,27 @@
             </div>
         </div>
 
-        <div class="row rowYK al_row_table">
+        <div class="row rowYK ">
             <div class="col-md-12">
                 <h5>{{ __("Variant Title") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
 
                 <table class="table table-borderless mb-0" id="banner-datatable" >
-                    <tr class="row">
+                    <tr >
                         @foreach($languages as $langs)
-                            <th class="col-md-6">{{$langs->language->name}}</th>
+                            <th>{{$langs->language->name}}</th>
                         @endforeach
                     </tr>
-                    <tr class="row">
+                    <tr>
                         @foreach($languages as $langs)
                             @if($langs->is_primary == 1)
-                                <td class="col-md-6">
+                                <td >
                                     {!! Form::hidden('language_id[]', $langs->language_id) !!}
                                     {!! Form::text('title[]', null, ['class' => 'form-control', 'required' => 'required']) !!}
                                 </td>
                             @else
-                                <td  class="col-md-6">
+                                <td >
                                     {!! Form::hidden('language_id[]', $langs->language_id) !!}
                                     {!! Form::text('title[]', null, ['class' => 'form-control']) !!}
                                 </td>
@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <div class="row rowYK al_row_table">
+        <div class="row rowYK ">
             <div class="col-md-12">
                 <h5>{{ __("Variant Options") }}</h5>
             </div>

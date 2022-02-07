@@ -278,7 +278,7 @@ function createSlug($str, $delimiter = '-'){
         {
             return 0;    
         }
-
+        
         $base_price = $base_price;
         $amount_per_km = $amount_per_km;
         $total = $base_price + ($distance * $amount_per_km);
@@ -513,21 +513,21 @@ function SplitTimeTemp($user_id, $myDate,$StartTime, $EndTime, $Duration="60",$d
 
 function findSlot($myDate = null,$vid,$type = 'delivery',$api = null)
 {
-  $myDate  = date('Y-m-d',strtotime('+1 day')); 
+  $myDate  = date('Y-m-d'); 
   $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
         $slots = showSlot($myDate,$vid,'delivery');
             if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+2 day')); 
+                $myDate  = date('Y-m-d',strtotime('+1 day')); 
                 $slots = showSlot($myDate,$vid,'delivery');
             }
            
             if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+3 day')); 
+                $myDate  = date('Y-m-d',strtotime('+2 day')); 
                 $slots = showSlot($myDate,$vid,'delivery');
             }
 
             if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+4 day')); 
+                $myDate  = date('Y-m-d',strtotime('+3 day')); 
                 $slots = showSlot($myDate,$vid,'delivery');
             }
         if(isset($slots) && count((array)$slots)>0){
@@ -648,3 +648,20 @@ function getDynamicTypeName($name)
     return $new_name;
 }
 
+function stripePaymentCredentials(){
+    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
+    $creds_arr = json_decode($stripe_creds->credentials);
+    $response = collect();
+    $response->secret_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+    return $response;
+}
+
+function stripeFPXPaymentCredentials(){
+    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_fpx')->where('status', 1)->first();
+    $creds_arr = json_decode($stripe_creds->credentials);
+    $response = collect();
+    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+    return $response;
+}

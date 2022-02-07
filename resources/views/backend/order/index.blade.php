@@ -64,20 +64,24 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% } %>
 
 
-                                                    <% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){ %>
-                                                        <% if(order.scheduled_slot == null){ %>
-                                                        <% if(order.scheduled_date_time){ %>
-                                                               <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %></span>
-                                                           <% } else { %>
-                                                               <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
-                                                           <% } %>
-                                                           <% }else{ %>
-                                                            <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
-                                                           <% } %>
+                                                    <% if(((vendor.delivery_fee > 0) || (order.scheduled_date_time))){ %>
+                                                        <% if(vendor.order_status != 'Rejected'){%>
+                                                            <% if(order.scheduled_slot == null){ %>
+                                                            <% if(order.scheduled_date_time){ %>
+                                                                   <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %></span>
+                                                               <% } else { %>
+                                                                   <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
+                                                               <% } %>
+                                                               <% }else{ %>
+                                                                <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
+                                                               <% } %>
+                                                        <% } else if(vendor.order_status == 'Rejected' && vendor.cancelled_by != null){%>
+                                                            <span class="ml-2 text-danger"><%= vendor.order_status %> by <%= vendor.cancelled_by.name %></span>
+                                                        <% }%>
 
                                                    <% } %>
 
-                                                </div>
+                                                </div> 
 
 
 
@@ -91,7 +95,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                 <ul class="status_box mt-1 pl-0">
                                                     <li>
                                                         <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
-                                                        <label class="m-0 in-progress"><%= vendor.order_status %></label>
+                                                        <label class="m-0 in-progress"><%= vendor.order_status %></label>                       
                                                     </li>
                                                 </ul>
                                             </div>
@@ -396,7 +400,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         }
     });
     $("#vendor_select_box").change(function() {
-      var typ=  $("a.nav-link.active").data('rel');
+      var typ=  $("a.nav-link.active").data('rel'); 
      //   alert(typ);
 
         init(typ, "{{ route('orders.filter') }}", '', false);
@@ -414,7 +418,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
     }
 
-    function init(filter_order_status, url, search_keyword = "", isOnload = false) {
+    function init(filter_order_status, url, search_keyword = "", isOnload = false) { 
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
         $.ajax({
@@ -467,7 +471,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
 
         
-    }
+    } 
     $(document).ready(function() {
 
         setTimeout(function() {
@@ -518,6 +522,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
 
         function openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id) {
+            var cancelled_by = "{{Auth::user()->id}}";
             // var that = document.getElementById('reject');
             //     var count = that.data("count");
             //     var full_div = that.data("full_div");
@@ -553,6 +558,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         "_token": "{{ csrf_token() }}",
                         status_option_id: status_option_id,
                         order_vendor_id: order_vendor_id,
+                        cancelled_by: cancelled_by,
                     },
 
                     success: function(response) {

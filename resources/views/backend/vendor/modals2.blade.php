@@ -274,7 +274,7 @@
     </div>
 </div>
 
-<div id="show-map-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+<div id="show-map-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-bs-backdrop="static" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-full-width">
         <div class="modal-content">
 
@@ -290,6 +290,7 @@
                             <div id="googleMap" style="height: 500px; min-width: 500px; width:100%"></div>
                             <input type="hidden" name="lat_input" id="lat_map" value="0" />
                             <input type="hidden" name="lng_input" id="lng_map" value="0" />
+                            <input type="hidden" name="address_map" id="address_map" value="" />
                             <input type="hidden" name="for" id="map_for" value="" />
                         </div>
                     </form>
