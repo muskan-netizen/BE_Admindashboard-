@@ -145,24 +145,48 @@ class StripeGatewayController extends FrontController
     public function createStripeFPXPaymentIntent(Request $request)
     {
         try{
+            ////// Create webhook Endpoint ///////
+            $secret_key = stripeFPXPaymentCredentials()->secret_key;
+            $stripe = new \Stripe\StripeClient($secret_key);
+
+            $res = $stripe->webhookEndpoints->create([
+                'url' => url('payment/webhook/stripe_fpx'),
+                'enabled_events' => [
+                    'payment_intent.succeeded',
+                    'payment_intent.payment_failed'
+                ]
+            ]);
+
             $user = Auth::user();
             $order_number = $request->order_number;
             $address_id = $request->address_id;
             $user_address = UserAddress::where('id', $address_id)->first();
+            $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
 
-            $secret_key = stripeFPXPaymentCredentials()->secret_key;
-            $stripe = new \Stripe\StripeClient($secret_key);
             $postdata = [
                 'payment_method_types' => ['fpx'],
                 'amount' => $request->amount * 100,
                 'currency' => 'myr', //$this->currency
                 'description' => 'Payment',
                 // 'customer' => $user->id,
-                'receipt_email' => 'preetinder.pal@codebrewinnovations.com', //$user->email ?? '',
+                'receipt_email' => $user->email ?? '',
                 'metadata' => [
+                    'cart_id' => $cart->id,
                     'order_number' => $order_number,
-                    'payment_type' => $request->payment_form
+                    'payment_form' => $request->payment_form
                 ],
+                // 'billing_details' => [
+                //     'name' => $user->name,
+                //     'email' => $user->email,
+                //     'phone' => $user->dial_code . $user->phone_number,
+                //     'address' => [
+                //         'line1' => $user_address->street,
+                //         'city' => $user_address->city,
+                //         'state' => $user_address->state,
+                //         'country' => $user_address->country,
+                //         'postal_code' => $user_address->pincode
+                //     ]
+                // ],
                 'shipping' => [
                     'name' => $user->name,
                     'phone' => $user->dial_code . $user->phone_number,
@@ -170,6 +194,7 @@ class StripeGatewayController extends FrontController
                         'line1' => $user_address->street,
                         'city' => $user_address->city,
                         'state' => $user_address->state,
+                        'country' => $user_address->country,
                         'postal_code' => $user_address->pincode
                     ]
                 ]
@@ -193,15 +218,19 @@ class StripeGatewayController extends FrontController
                     $payment_intent_id = $request->get('payment_intent');
                     $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
                     $charges = $intent->charges->data;
-                    $transactionId = '';
+                    $transactionId = $cart_id = $payment_form = $order_number = '';
+                    $amount = 0;
                     if(count($charges)){
                         $transactionId = $charges[0]->balance_transaction;
+                        $payment_form = $charges[0]->metadata->payment_form;
+                        $order_number = $charges[0]->metadata->order_number;
+                        $cart_id = $charges[0]->metadata->cart_id ?? '';
+                        $amount = $charges[0]->amount / 100;
                     }
                     
                     // dd($charges[0]);
 
-                    if($request->payment_form == 'cart'){
-                        $order_number = $request->order;
+                    if($payment_form == 'cart'){
                         $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                         if ($order) {
                             $order->payment_status = 1;
@@ -212,7 +241,7 @@ class StripeGatewayController extends FrontController
                                 $payment->date = date('Y-m-d');
                                 $payment->order_id = $order->id;
                                 $payment->transaction_id = $transactionId;
-                                $payment->balance_transaction = $request->amount;
+                                $payment->balance_transaction = $amount;
                                 $payment->type = 'cart';
                                 $payment->save();
         
@@ -221,11 +250,11 @@ class StripeGatewayController extends FrontController
                                 $orderController->autoAcceptOrderIfOn($order->id);
         
                                 // Remove cart
-                                Cart::where('id', $request->cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-                                CartAddon::where('cart_id', $request->cart_id)->delete();
-                                CartCoupon::where('cart_id', $request->cart_id)->delete();
-                                CartProduct::where('cart_id', $request->cart_id)->delete();
-                                CartProductPrescription::where('cart_id', $request->cart_id)->delete();
+                                Cart::where('id', $cart_id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
+                                CartAddon::where('cart_id', $cart_id)->delete();
+                                CartCoupon::where('cart_id', $cart_id)->delete();
+                                CartProduct::where('cart_id', $cart_id)->delete();
+                                CartProductPrescription::where('cart_id', $cart_id)->delete();
         
                                 // Send Notification
                                 if (!empty($order->vendors)) {
@@ -268,11 +297,67 @@ class StripeGatewayController extends FrontController
                         return Redirect::to(url($returnUrl));
                     }
                 }
-                // dd($transaction_id);
+                elseif($request->has('redirect_status') && ($request->redirect_status == 'failed')){
+                    if($request->has('order')){
+                        $order = Order::where('order_number', $request->order)->first();
+                        if($order){
+                            $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                            foreach($order_products as $order_prod){
+                                OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                            }
+                            OrderProduct::where('order_id', $order->id)->delete();
+                            OrderProductPrescription::where('order_id', $order->id)->delete();
+                            VendorOrderStatus::where('order_id', $order->id)->delete();
+                            OrderVendor::where('order_id', $order->id)->delete();
+                            OrderTax::where('order_id', $order->id)->delete();
+                            $order->delete();
+                            return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled');
+                        }
+                    }
+                }
             }
         }
         catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), $ex->getCode);
         }
+    }
+
+
+    public function webhook(Request $request)
+    {
+        $secret_key = stripeFPXPaymentCredentials()->secret_key;
+        \Stripe\Stripe::setApiKey($secret_key);
+
+        $payload = @file_get_contents('php://input');
+        $event = null;
+
+        try {
+            $event = \Stripe\Event::constructFrom(
+                json_decode($payload, true)
+            );
+        } catch(\UnexpectedValueException $e) {
+            // Invalid payload
+            http_response_code(400);
+            exit();
+        }
+
+        // Handle the event
+        switch ($event->type) {
+            case 'payment_intent.succeeded':
+                $paymentIntent = $event->data->object;
+                \Log::info($paymentIntent);
+                break;
+
+            case 'payment_intent.payment_failed':
+                $paymentIntent = $event->data->object;
+                \Log::info($paymentIntent);
+                break;
+
+            // ... handle other event types
+            default:
+                echo 'Received unknown event type ' . $event->type;
+        }
+        
+        http_response_code(200);
     }
 }
