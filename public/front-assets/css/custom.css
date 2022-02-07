@@ -61,7 +61,24 @@ font-size: 0;height: 20px;width: 20px;left: 0;position: absolute;-webkit-transfo
 background-size: 20px;top: 50%;-webkit-transform: translate(0, -50%) rotate(-90deg);transform: translate(0, -50%) rotate(-90deg);height: 20px;width: 20px;}
 body .pixelstrap li a, body .pixelstrap li a:hover {padding: 0;}
 .menu-slider .slick-prev{-webkit-transform: translate(0, -50%) rotate(90deg);transform: translate(0, -50%) rotate(90deg);}
-
+.al_count_tabs  .navigation-tab-item .nav-link.active{border:none}
+.search_bar .icon-nav .btn.btn-solid{border:none}
+.search_bar .icon-nav .btn.btn-solid:hover{background-color: #f7f7f7;}
+body .site-header .search_form input.form-control,
+body .site-header .search_form input.form-control::-webkit-input-placeholder,
+body .site-header .search_form input.form-control::placeholder{font-size: 12px;line-height: normal;font-weight: 300;}
+.al_search_viewall{font-size: 12px;color: var(--theme-deafult);}
+.search_box_main_div_template a:hover{text-decoration: none;}
+.al_search_results{font-size: 14px;color: #777;font-weight: 300;}
+.al_search_results:hover{background-color:#f7f7f7;text-decoration: none;color: var(--theme-deafult);}
+body img.loaded {
+    opacity: 1;
+}
+.img-small {
+    filter: blur(50px);
+    /* this is needed so Safari keeps sharp edges */
+    transform: scale(1);
+  }
 /* ------------------------------- al css start end ----------------------------- */
 
 /* Responsiveness Css Start From Here */
