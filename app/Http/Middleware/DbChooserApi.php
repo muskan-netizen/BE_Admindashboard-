@@ -30,7 +30,6 @@ class DbChooserApi
             return response()->json(['error' => 'Invalid Code', 'message' => 'Invalid Code'], 401);
         }
         $clientCode = $header['code'][0];
-        Log::info($clientCode);
         $existRedis = Redis::get($clientCode);
         if(!$existRedis){
         $client = Client::select('name', 'email', 'phone_number', 'is_deleted', 'is_blocked', 'logo', 'company_name', 'company_address', 'status', 'code', 'database_name', 'database_host', 'database_port', 'database_username', 'database_password')
