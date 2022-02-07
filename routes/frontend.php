@@ -119,6 +119,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/checkout', 'Front\CheckoutGatewayController@checkoutPurchase')->name('payment.checkoutPurchase');
 	Route::post('payment/checkout/notify', 'Front\CheckoutGatewayController@checkoutNotify')->name('payment.checkoutNotify');
 
+	//Passbase 
+	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
+	Route::post('passbase/verify','Front\PassbaseController@store')->name('passbase.store');
+
 
 
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
