@@ -386,7 +386,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                            <ul class="al_main_category_sub_list">
                               @foreach($childs['children'] as $chld)
                               <li><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
-                              @endforeach 
+                              @endforeach
                            </ul>
                            @endif
                         </li>
@@ -411,25 +411,29 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
       <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>"> @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif <%=category.name %> </a> <% if(category.children){%> <ul class="al_main_category_list"> <% _.each(category.children, function(childs, key1){%> <li> <a href="{{route('categoryDetail')}}/<%=childs.slug %>"><span class="new-tag"><%=childs.name %></span></a> <% if(childs.children){%> <ul class="al_main_category_sub_list"> <% _.each(childs.children, function(chld, key2){%> <li><a href="{{route('categoryDetail')}}/<%=chld.slug %>"><%=chld.name %></a></li><%}); %> </ul> <%}%> </li><%}); %> </ul> <%}%> </li>
    <% }); %>
 </script>
-<div class="modal fade edit_address" id="edit-address" tabindex="-1" aria-labelledby="edit-addressLabel" aria-hidden="true">
-   <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-         <div class="modal-body p-0">
-            <div id="address-map-container">
-               <div id="address-map"></div>
+@if( $client_preference_detail)
+    @if($client_preference_detail->is_hyperlocal == 1 )
+        <div class="modal fade edit_address" id="edit-address" tabindex="-1" aria-labelledby="edit-addressLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body p-0">
+                        <div id="address-map-container">
+                        <div id="address-map"></div>
+                        </div>
+                        <div class="delivery_address p-2 mb-2 position-relative">
+                        <button type="button" class="close edit-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <div class="form-group address-input-group">
+                            <label class="delivery-head mb-2">{{__('SELECT YOUR LOCATION')}}</label>
+                            <div class="address-input-field d-flex align-items-center justify-content-between"> <i class="fa fa-map-marker" aria-hidden="true"></i> <input class="form-control border-0 map-input" type="text" name="address-input" id="address-input" value="{{session('selectedAddress')}}"> <input type="hidden" name="address_latitude" id="address-latitude" value="{{session('latitude')}}"/> <input type="hidden" name="address_longitude" id="address-longitude" value="{{session('longitude')}}"/> <input type="hidden" name="address_place_id" id="address-place-id" value="{{session('selectedPlaceId')}}"/> </div>
+                        </div>
+                        <div class="text-center"> <button type="button" class="btn btn-solid ml-auto confirm_address_btn w-100">{{__('Confirm And Proceed')}}</button> </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="delivery_address p-2 mb-2 position-relative">
-               <button type="button" class="close edit-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-               <div class="form-group address-input-group">
-                  <label class="delivery-head mb-2">{{__('SELECT YOUR LOCATION')}}</label>
-                  <div class="address-input-field d-flex align-items-center justify-content-between"> <i class="fa fa-map-marker" aria-hidden="true"></i> <input class="form-control border-0 map-input" type="text" name="address-input" id="address-input" value="{{session('selectedAddress')}}"> <input type="hidden" name="address_latitude" id="address-latitude" value="{{session('latitude')}}"/> <input type="hidden" name="address_longitude" id="address-longitude" value="{{session('longitude')}}"/> <input type="hidden" name="address_place_id" id="address-place-id" value="{{session('selectedPlaceId')}}"/> </div>
-               </div>
-               <div class="text-center"> <button type="button" class="btn btn-solid ml-auto confirm_address_btn w-100">{{__('Confirm And Proceed')}}</button> </div>
-            </div>
-         </div>
-      </div>
-   </div>
-</div>
+        </div>
+    @endif
+@endif
 <div class="modal fade remove-cart-modal" id="remove_cart_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">

@@ -26,6 +26,28 @@
     font-size: 12px;
     font-weight: 900;
 }
+#addressInput .pac-container{top:65px!important;left:15px!important;}
+.dd-list .dd3-content img.rounded-circle.mr-1 {
+    height: 30px;
+}
+
+.al_details_vendor,
+.al_vendor_signup{background-color: #fff; border-radius: 15px;width: 100%;}
+.al_advanced_details {background-color: rgba(66,190,225,.09);border-radius: 2px;}
+body .switchery {height: 20px;width: 40px;box-shadow: none!important;}
+.nestable_list_1 {height: 400px;overflow-y: auto;}
+.dd {max-width: 100%!important;}
+.nestable_list_1>.dd-list {padding: 0;}
+.dd-list .dd3-item {margin: 5px 0;list-style: none;    width: 100%;}
+.dd-list .dd3-content {position: relative;padding: 8px 20px 8px 16px;font-weight: 400;height: auto;border: none;background: #f3f7f9;color: #6c757d;}
+.dd-list .dd3-content img.rounded-circle.mr-1 {height: 30px;}
+span.inner-div {float: right;}
+.action-icon {vertical-align: middle;}
+body .switchery>small {width: 20px;height: 20px;}
+.nestable_list_1 span.inner-div {position: absolute;right: 5px;top: 50%;-webkit-transform: translateY(-50%);-moz-transform: translateY(-50%);transform: translateY(-50%);}
+.nestable_list_1::-webkit-scrollbar-track{-webkit-box-shadow:inset 0 0 4px transparent;background-color:#fff;border-radius:5px}
+.nestable_list_1::-webkit-scrollbar{width:4px;background-color:#fff;border-radius:5px}
+.nestable_list_1::-webkit-scrollbar-thumb{background-color:#fff;border:2px solid #ddd;border-radius:5px}
 </style>
 <header>
     <div class="mobile-fix-option"></div>
@@ -165,9 +187,9 @@
                                         </div>
                                         <div class="col-md-12 " id="addressInput">
                                             <label for="validationCustom01">{{__('Address')}}</label>
-                                            <input type="text" class="form-control" name="address" value="" id="address">
-                                            <input type="hidden" class="form-control" name="longitude" value="" id="longitude">
-                                            <input type="hidden" class="form-control" name="latitude" value="" id="latitude">
+                                            <input type="text" class="form-control" name="address" value="" id="vendor_address">
+                                            <input type="hidden" class="form-control" name="longitude" value="" id="vendor_longitude">
+                                            <input type="hidden" class="form-control" name="latitude" value="" id="vendor_latitude">
                                             {{-- <input type="hidden" class="form-control" name="pincode" value="" id="pincode">
                                             <input type="hidden" class="form-control" name="city" value="" id="city">
                                             <input type="hidden" class="form-control" name="state" value="" id="state">
@@ -397,7 +419,7 @@
                                                         {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
                                                         <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if( (@$vendor->add_category == 1)) checked @endif >
                                                     </div>
-                                                    <div class="row">
+                                                    <div class="row m-0">
                                                         <div class="col-md-6 mb-3">
                                                             {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
                                                         </div>
@@ -502,14 +524,70 @@ function switchy(){
     });
 }
 
+    function vendorAddressInitialize() {
+        var addressInput = document.getElementById('vendor_address');
+        var autocomplete = new google.maps.places.Autocomplete(addressInput);
+        google.maps.event.addListener(autocomplete, 'place_changed', function() {
+            var place = autocomplete.getPlace();
+            document.getElementById('vendor_longitude').value = place.geometry.location.lng();
+            document.getElementById('vendor_latitude').value = place.geometry.location.lat();
+            for (let i = 1; i < place.address_components.length; i++) {
+                let mapAddress = place.address_components[i];
+                if (mapAddress.long_name != '') {
+                    let streetAddress = '';
+                    if (mapAddress.types[0] == "street_number") {
+                        streetAddress += mapAddress.long_name;
+                    }
+                    if (mapAddress.types[0] == "route") {
+                        streetAddress += mapAddress.short_name;
+                    }
+                    if ($('#street').length > 0) {
+                        document.getElementById('street').value = streetAddress;
+                    }
+                    if (mapAddress.types[0] == "locality") {
+                        document.getElementById('city').value = mapAddress.long_name;
+                    }
+                    if (mapAddress.types[0] == "administrative_area_level_1") {
+                        document.getElementById('state').value = mapAddress.long_name;
+                    }
+                    if (mapAddress.types[0] == "postal_code") {
+                        document.getElementById('pincode').value = mapAddress.long_name;
+                    } else {
+                        document.getElementById('pincode').value = '';
+                    }
+                    if (mapAddress.types[0] == "country") {
+                        document.getElementById('country').value = mapAddress.long_name.toUpperCase();
+                        // var country = document.getElementById('country');
+                        // for (let i = 0; i < country.options.length; i++) {
+                        //     if (country.options[i].text.toUpperCase() == mapAddress.long_name.toUpperCase()) {
+                        //         country.value = country.options[i].value;
+                        //         break;
+                        //     }
+                        // }
+                    }
+                }
+            }
+        });
+
+        setTimeout(function(){
+            $(".pac-container").appendTo('.vendor-signup #addressInput');
+        }, 300);
+    }
 
     var text_image = "{{url('images/104647.png')}}";
     $(document).ready(function() {
+
         switchy();
         @if($page_detail->primary->type_of_form == 1)
             @if($client_preference_detail->business_type != 'taxi')
                 vendorOrderTime();
             @endif
+            // $("").keypsress(function() {
+            //     vendorAddressInitialize();
+            // });
+            $(document).on('change', '#vendor_address', function(event){
+                vendorAddressInitialize();
+            });
         @endif
         const items = document.querySelectorAll(".accordion a");
 
@@ -577,50 +655,7 @@ function switchy(){
             });
         }
 
-        function initialize() {
-            var input = document.getElementById('address');
-            var autocomplete = new google.maps.places.Autocomplete(input);
-            google.maps.event.addListener(autocomplete, 'place_changed', function() {
-                var place = autocomplete.getPlace();
-                document.getElementById('longitude').value = place.geometry.location.lng();
-                document.getElementById('latitude').value = place.geometry.location.lat();
-                for (let i = 1; i < place.address_components.length; i++) {
-                    let mapAddress = place.address_components[i];
-                    if (mapAddress.long_name != '') {
-                        let streetAddress = '';
-                        if (mapAddress.types[0] == "street_number") {
-                            streetAddress += mapAddress.long_name;
-                        }
-                        if (mapAddress.types[0] == "route") {
-                            streetAddress += mapAddress.short_name;
-                        }
-                        if ($('#street').length > 0) {
-                            document.getElementById('street').value = streetAddress;
-                        }
-                        if (mapAddress.types[0] == "locality") {
-                            document.getElementById('city').value = mapAddress.long_name;
-                        }
-                        if (mapAddress.types[0] == "administrative_area_level_1") {
-                            document.getElementById('state').value = mapAddress.long_name;
-                        }
-                        if (mapAddress.types[0] == "postal_code") {
-                            document.getElementById('pincode').value = mapAddress.long_name;
-                        } else {
-                            document.getElementById('pincode').value = '';
-                        }
-                        if (mapAddress.types[0] == "country") {
-                            var country = document.getElementById('country');
-                            for (let i = 0; i < country.options.length; i++) {
-                                if (country.options[i].text.toUpperCase() == mapAddress.long_name.toUpperCase()) {
-                                    country.value = country.options[i].value;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
+
         $('.iti__country').click(function() {
             var code = $(this).attr('data-country-code');
             $('#countryData').val(code);
@@ -629,6 +664,12 @@ function switchy(){
         });
         $('#register_btn').click(function() {
             var that = $(this);
+            var categoryInput='';
+            $(".activeCategory:checkbox:checked").each(function(){
+                var category_id = $(this).data('category_id');
+                categoryInput+= "  <input type='hideen' name='category_ids[]' value='"+category_id+"' >";
+            });
+            $('#nestable_list_1').append(categoryInput);
             $(this).attr('disabled', true);
             $('#register_btn_loader').show();
             $('.form-control').removeClass("is-invalid");
