@@ -647,13 +647,14 @@ class CustomerAuthController extends FrontController
             if (empty($request->input('user_id'))) {
                 if ($vendor_registration_documents->count() > 0) {
                     $rules_array = [
+
                         'address' => 'required',
                         'full_name' => 'required',
                         'email' => 'required|email|unique:users',
                         // 'vendor_registration_document.*.did_visit' => 'required',
                         'password' => 'required|string|min:6|max:50',
                         'confirm_password' => 'required|same:password',
-                        'name' => 'required|string|max:150|unique:vendors',
+                        'name' => 'required|string|max:150', //|unique:vendors
                         'phone_number' => 'required|string|min:6|max:15|unique:users',
                         'check_conditions' => 'required',
                         'city' => 'required',
@@ -690,7 +691,7 @@ class CustomerAuthController extends FrontController
                             'email' => 'required|email|unique:users',
                             'password' => 'required|string|min:6|max:50',
                             'confirm_password' => 'required|same:password',
-                            'name' => 'required|string|max:150|unique:vendors',
+                            'name' => 'required|string|max:150',
                             'phone_number' => 'required|string|min:6|max:15|unique:users',
                             'check_conditions' => 'required',
                             'city' => 'required',
@@ -704,7 +705,7 @@ class CustomerAuthController extends FrontController
             } else {
                 $rules_array = [
                     'address' => 'required',
-                    'name' => 'required|string|max:150|unique:vendors',
+                    'name' => 'required|string|max:150',
                     'check_conditions' => 'required',
                     'city' => 'required',
                     'pincode' => 'required',
