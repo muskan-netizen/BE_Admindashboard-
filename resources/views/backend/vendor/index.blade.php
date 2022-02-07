@@ -255,7 +255,7 @@ $server = env('APP_ENV', 'development');
 <script type="text/template" id="user_id_section">
     <li class="d-flex justify-content-start align-items-center position-relative" id ="user_selected_<%= id %>" data-section_number="<%= id %>">
         <p class="al_checkbox m-0 py-2 ">
-            <input type="hidden" name="userIDs[]" value="<%= user_id %>" class="mt-2 mr-1">
+            <input type="hidden" class="user_hidden_ids" name="userIDs[]" value="<%= user_id %>" class="mt-2 mr-1">
             <img class="user_img mr-2" src="<%= image %>" alt="">
         </p>
         <p class="al_username m-0 py-2">

@@ -34,12 +34,11 @@ class DeliveryOptionController extends Controller
         try{
             //dd($request->input());
             $msg = 'Dunzo delivery details have been saved successfully!';
-            $id = base64_decode($request->method_id);
-            $method_name_arr = $request->input('method_name');
-            $active_arr = $request->input('active');
-            $base_active = $request->input('base_active');
-            $test_mode_arr = $request->input('sandbox');
-    
+            $id = $request->method_id;
+            $method_name_arr = $request->method_name;
+            $active_arr = $request->active;
+            $base_active = $request->base_active;
+            $test_mode_arr = $request->sandbox;
             
             $saved_creds = ShippingOption::select('credentials')->where('id', $id)->first();
             if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
@@ -52,20 +51,21 @@ class DeliveryOptionController extends Controller
                 $test_mode = 0;
                 if ((isset($active_arr)) && ($active_arr == 'on')) {
                     $status = 1;
-    
+                    
                     if ((isset($test_mode_arr)) && ($test_mode_arr == 'on')) {
                         $test_mode = 1;
                     }
     
-                    if ((isset($method_name_arr)) && (strtolower($method_name_arr) == 'lalamove')) {
+                    if ((isset($method_name_arr)) && (strtolower($method_name_arr) == 'dunzo')) {
                         $validatedData = $request->validate([
                             'api_key'               => 'required',
                             'app_url'               => 'required',
                         ]);
                         $json_creds = array(
                             'api_key'               => $request->api_key,
-                            'app_url'               => $request->app_url,
+                            'app_url'               => (($test_mode=='1')?'https://dev.adloggs.com/aa':'https://app.adloggs.com/aa'),
                         );
+                        //dd($json_creds);
     
                         if ((isset($base_active)) && ($base_active == 'on')) {
                             $json_creds['base_price'] = $request->base_price;
@@ -79,8 +79,9 @@ class DeliveryOptionController extends Controller
                         $json_creds = json_encode($json_creds);
                     }
                 }
-                ShippingOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
-                $toaster = $this->successToaster(__('Success'), $msg);
+              ShippingOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
+            
+              $toaster = $this->successToaster(__('Success'), $msg);
     
             }catch(\Exception $e)
             {
