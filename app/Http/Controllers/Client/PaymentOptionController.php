@@ -136,7 +136,18 @@ class PaymentOptionController extends BaseController
                         $json_creds = json_encode($stripe_arr);
                     }
                    
-                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'yoco')) {
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'stripe_fpx')) {
+                    $validatedData = $request->validate([
+                        'stripe_fpx_secret_key' => 'required',
+                        'stripe_fpx_secret_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'secret_key' => $request->stripe_fpx_secret_key,
+                        'publishable_key' => $request->stripe_fpx_publishable_key
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'yoco')) {
                     $validatedData = $request->validate([
                         'yoco_secret_key'        => 'required',
                         'yoco_public_key' => 'required'

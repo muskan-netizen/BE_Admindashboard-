@@ -956,6 +956,112 @@ $(document).ready(function() {
         return false;
     }
 
+    ///////////////////////////Stripe FPX payment Gateway //////////////////////////////
+    window.paymentViaStripeFPX = function paymentViaStripeFPX(address_id, payment_option_id, order) {
+        let total_amount = 0;
+        let tip = 0;
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_form = '';
+
+        let ajaxData = [];
+        if (cartElement.length > 0) {
+            total_amount = cartElement.val();
+            payment_form = 'cart';
+            ajaxData.push(
+                {name: 'address_id', value: address_id},
+                {name: 'order_number', value: order.order_number},
+                {name: 'payment_form', value: 'cart'}
+            );
+        } else if (walletElement.length > 0) {
+            total_amount = walletElement.val();
+            payment_form = 'wallet';
+            ajaxData.push({name: 'payment_form', value: 'wallet'});
+        } else if (subscriptionElement.length > 0) {
+            total_amount = subscriptionElement.val();
+            payment_form = 'subscription';
+            ajaxData = $("#subscription_payment_form").serializeArray();
+            ajaxData.push({name: 'payment_form', value: 'subscription'});
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            payment_form = 'tip';
+            ajaxData.push( 
+                {name: 'payment_form', value: 'tip'},
+                {name: 'order_number', value: order.order_number}
+            );
+        }
+        ajaxData.push({ name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id });
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: payment_create_stripe_fpx_url,
+            data: ajaxData,
+            success: function(resp) {
+                if (resp.status == 'Success') {
+                    const clientSecret = resp.data;
+                    const result = stripe_fpx.confirmFpxPayment(clientSecret, {
+                        payment_method: {
+                            fpx: fpxBank
+                        },
+                        // Return URL where the customer should be redirected after the authorization
+                        return_url: payment_retrive_stripe_fpx_url + '?amount='+total_amount+'&order=' + order.order_number + '&payment_form=' + payment_form,
+                    });
+                    if (result.error) {
+                        // Inform the customer that there was an error.
+                        if (path.indexOf("cart") !== -1) {
+                            success_error_alert('error', result.error.message, ".payment_response");
+                            $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                        } else if (path.indexOf("wallet") !== -1) {
+                            success_error_alert('error', result.error.message, "#wallet_topup_form .payment_response");
+                            $(".topup_wallet_confirm").removeAttr("disabled");
+                        } else if (path.indexOf("subscription") !== -1) {
+                            success_error_alert('error', result.error.message, "#subscription_payment_form .payment_response");
+                            $(".subscription_confirm_btn").removeAttr("disabled");
+                        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+                            success_error_alert('error', result.error.message, "#wallet_topup_form .payment_response");
+                            $(".topup_wallet_confirm").removeAttr("disabled");
+                        } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
+                            success_error_alert('error', result.error.message, "#wallet_topup_form .payment_response");
+                            $(".topup_wallet_confirm").removeAttr("disabled");
+                        }
+                    }
+                } else {
+                    if (path.indexOf("cart") !== -1) {
+                        success_error_alert('error', resp.message, ".payment_response");
+                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                    } else if (path.indexOf("wallet") !== -1) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    } else if (path.indexOf("subscription") !== -1) {
+                        success_error_alert('error', resp.message, "#subscription_payment_form .payment_response");
+                        $(".subscription_confirm_btn").removeAttr("disabled");
+                    } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
+                        success_error_alert('error', resp.message, "#wallet_topup_form .payment_response");
+                        $(".topup_wallet_confirm").removeAttr("disabled");
+                    }
+                }
+            },
+            error: function(error) {
+                var response = $.parseJSON(error.responseText);
+                if (path.indexOf("cart") !== -1) {
+                    success_error_alert('error', response.message, ".payment_response");
+                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                } else if (path.indexOf("wallet") !== -1) {
+                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                    $(".topup_wallet_confirm").removeAttr("disabled");
+                } else if (path.indexOf("subscription") !== -1) {
+                    success_error_alert('error', response.message, "#subscription_payment_form .payment_response");
+                    $(".subscription_confirm_btn").removeAttr("disabled");
+                }
+            }
+        });
+    }
+
 });
 
 

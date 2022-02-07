@@ -134,12 +134,14 @@
                                     <input class="form-control" id="edit_meta_title" name="meta_title" type="text">
                                 </div>
                                 <div class="col-6 mb-2">
-                                    <label for="title" class="control-label">{{ __("Attach Form") }}</label>
+                                    <label for="title" class="control-label">{{ __("Type") }}</label>
                                     <select class="form-control" name="type_of_form" id="type_of_form">
                                         <option value="0">{{__("None")}}</option>
                                         <option value="1">{{__("Vendor Registration")}}</option>
                                         <option value="2">{{__("Driver Registration")}}</option>
                                         <option value="3">{{__("Faq's")}}</option>
+                                        <option value="4">{{__("Privacy Policy")}}</option>
+                                        <option value="5">{{__("Terms & Conditions")}}</option>
                                     </select>
                                 </div>
                             </div>

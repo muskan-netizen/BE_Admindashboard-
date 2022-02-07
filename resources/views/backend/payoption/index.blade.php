@@ -125,6 +125,25 @@
                     </div>
                     @endif
 
+                    @if ( (strtolower($opt->code) == 'stripe_fpx') )
+                    <div class="mt-2" id="stripe_fpx_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_fpx_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="stripe_fpx_secret_key" id="stripe_fpx_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_fpx_publishable_key" class="mr-3">{{ __("Publishable Key") }}</label>
+                                    <input type="password" name="stripe_fpx_publishable_key" id="stripe_fpx_publishable_key" class="form-control" value="{{$publishable_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     @if ( (strtolower($opt->code) == 'paypal') )
                     <div class="mt-2" id="paypal_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">

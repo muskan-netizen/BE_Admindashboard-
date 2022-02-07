@@ -476,7 +476,11 @@ body .switchery>small {width: 20px;height: 20px;}
                                 <div class="form-row">
                                     <div class="col-12 checkbox-input">
                                         <input type="checkbox" id="html" name="check_conditions" value="1">
-                                        <label for="html">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy.')}}</a></label>
+                                        <label for="html">{{__('I accept the')}} <a href="{{ ($terms) ? route('extrapage',$terms->slug) : '#'}}" target="_blank">{{__('Terms And Conditions')}} </a> 
+                                            {{__('and have read the')}} 
+                                           <a href="{{ ($privacy) ? route('extrapage',$privacy->slug) : '#'}}" target="_blank"> 
+                                               {{__('Privacy Policy')}}.
+                                           </a></label>
                                         <span class="invalid-feedback" id="check_conditions_error"><strong></strong></span>
                                     </div>
                                 </div>
