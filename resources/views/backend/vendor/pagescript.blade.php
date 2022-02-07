@@ -684,6 +684,7 @@
     $(document).on('click', '#userList_model li', function(){
         $("#selected_user_ul").removeClass('active');
         $("#selected_user_ul").addClass('active');
+        $('#search_user_for_permission').val('');
        var user_id = $(this).attr('data-id');
        var name = $(this).attr('data-name');
        var image = $(this).attr('data-image');

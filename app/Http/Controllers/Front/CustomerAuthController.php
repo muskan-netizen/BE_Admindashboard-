@@ -22,8 +22,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, AppStylingOption, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page};
+use App\Models\{AppStyling, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,Permissions, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page};
 use Kutia\Larafirebase\Facades\Larafirebase;
+use App\Http\Controllers\Client\VendorController;
 use Math;
 class CustomerAuthController extends FrontController
 {
@@ -101,7 +102,7 @@ class CustomerAuthController extends FrontController
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
 
-       
+
 
         $privacy = Page::with(['translations' => function ($q) use($langId) {
             $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
@@ -115,7 +116,7 @@ class CustomerAuthController extends FrontController
             $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
         })->first();
 
-        
+
         if (!Session::get('referrer')) {
             return view('frontend.account.registernew')->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms]);
         } else {
@@ -640,6 +641,7 @@ class CustomerAuthController extends FrontController
 
     public function postVendorregister(Request $request, $domain = ''){
         try {
+            pr($request->all());
             DB::beginTransaction();
             $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
             if (empty($request->input('user_id'))) {
@@ -654,6 +656,10 @@ class CustomerAuthController extends FrontController
                         'name' => 'required|string|max:150|unique:vendors',
                         'phone_number' => 'required|string|min:6|max:15|unique:users',
                         'check_conditions' => 'required',
+                        'city' => 'required',
+                        'pincode' => 'required',
+                        'state' => 'required',
+                        'country' => 'required',
                     ];
                     foreach ($vendor_registration_documents as $vendor_registration_document) {
                         if($vendor_registration_document->is_required == 1){
@@ -687,6 +693,10 @@ class CustomerAuthController extends FrontController
                             'name' => 'required|string|max:150|unique:vendors',
                             'phone_number' => 'required|string|min:6|max:15|unique:users',
                             'check_conditions' => 'required',
+                            'city' => 'required',
+                        'pincode' => 'required',
+                        'state' => 'required',
+                        'country' => 'required',
                         ],
                         ['check_conditions.required' => __('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy')]
                     );
@@ -696,6 +706,10 @@ class CustomerAuthController extends FrontController
                     'address' => 'required',
                     'name' => 'required|string|max:150|unique:vendors',
                     'check_conditions' => 'required',
+                    'city' => 'required',
+                    'pincode' => 'required',
+                    'state' => 'required',
+                    'country' => 'required',
                 ];
                 foreach ($vendor_registration_documents as $vendor_registration_document) {
                     if($vendor_registration_document->is_required == 1){
@@ -707,6 +721,9 @@ class CustomerAuthController extends FrontController
                     ['check_conditions.required' => __('Please indicate that you have read and agree to the Terms and Conditions and Privacy Policy')]
                 );
             }
+
+
+
             $client_detail = Client::first();
             $client_preference = ClientPreference::first();
             if(!$request->user_id){
@@ -804,6 +821,9 @@ class CustomerAuthController extends FrontController
             foreach ($permission_details as $permission_detail) {
                 UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
             }
+            // vendor additional data
+            $this->addDataSaveVendor($request , $vendor->id);
+
             $content = '';
             $email_template = EmailTemplate::where('id', 1)->first();
             if($email_template){
@@ -870,6 +890,34 @@ class CustomerAuthController extends FrontController
                 'message' => $e->getMessage(),
             ]);
         }
+    }
+    public function addDataSaveVendor(Request $request, $vendor_id){
+
+        $vendor = Vendor::where('id', $vendor_id)->firstOrFail();
+        $VendorController = new VendorController();
+
+        $request->merge(["return_json"=>1]);
+        $VendorConfigrespons = $VendorController->updateConfig($request,'',$vendor_id)->getData();//$this->updateConfig($vendor_id);
+       // pr($VendorConfigrespons);
+        if($request->has('can_add_category')){
+            $vendor->add_category = $request->can_add_category == 'on' ? 1 : 0;
+        }
+        if ($request->has('assignTo')) {
+            $vendor->vendor_templete_id = $request->assignTo;
+        }
+
+        $vendor->save();
+        if($request->has('category_ids')){
+            foreach($request->category_ids as $category_id){
+                VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+            }
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Vendor created Successfully!',
+            'data' => $VendorConfigrespons
+        ]);
+        // pr($VendorConfigrespons);
     }
     public function logout(){
         Auth::logout();

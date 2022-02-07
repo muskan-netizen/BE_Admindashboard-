@@ -992,7 +992,7 @@ class VendorController extends BaseController
         $vendor->save();
         $return_json   = $request->has('return_json') && $request->return_json ? $request->return_json : 0;
         if($return_json ==  1 ){
-            return $this->successResponse($vendor, $msg);
+            return $this->successResponse($vendor,__("Vendor update successfully!"));
         }
         return redirect()->back()->with('success', $msg . ' updated successfully!');
     }

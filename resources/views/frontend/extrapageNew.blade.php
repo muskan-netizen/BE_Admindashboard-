@@ -156,21 +156,21 @@ body .switchery>small {width: 20px;height: 20px;}
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="col-md-4 mb-3" id="nameInput">
+                                    <div class="col-md-12 mb-3" id="nameInput">
                                         <label for="validationCustom01">{{getNomenclatureName('Vendors', true)}}{{--__('Vendor Name')--}}</label>
                                         <input type="text" class="form-control" name="name" value="">
                                         <span class="invalid-feedback" id="name_error"><strong></strong></span>
                                     </div>
-                                    <div class="col-md-4 mb-3" id="nameInput">
+                                    {{-- <div class="col-md-4 mb-3" id="nameInput">
                                         <label for="validationCustom01">{{__('Email')}}</label>
                                         <input type="text" class="form-control" name="email" value="">
-                                        <span class="invalid-feedback" id="name_error"><strong></strong></span>
+                                        <span class="invalid-feedback" id="email_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-4 mb-3" id="nameInput">
                                         <label for="validationCustom01">{{__('Phone Number')}}</label>
                                         <input type="text" class="form-control" name="phone_no" value="">
-                                        <span class="invalid-feedback" id="name_error"><strong></strong></span>
-                                    </div>
+                                        <span class="invalid-feedback" id="phone_no_error"><strong></strong></span>
+                                    </div> --}}
 
                                 </div>
                                 <div class="form-row">
@@ -202,7 +202,7 @@ body .switchery>small {width: 20px;height: 20px;}
                                     <div class="col-md-3 mb-3" >
                                         <label for="validationCustom01">{{__('Pincode')}}</label>
                                         <input type="text" class="form-control" id="pincode" name="pincode" value="">
-                                        <span class="invalid-feedback" id="name_error"><strong></strong></span>
+                                        <span class="invalid-feedback" id="pincode_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-3" >
                                         <label for="validationCustom01">{{__('City')}}</label>
@@ -414,25 +414,7 @@ body .switchery>small {width: 20px;height: 20px;}
                                                     </div>
                                                 @endif
                                                 <div class="col-md-4">
-                                                    @if($client_preference_detail->business_type != 'taxi')
-                                                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                                                        {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
-                                                        <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if( (@$vendor->add_category == 1)) checked @endif >
-                                                    </div>
-                                                    <div class="row m-0">
-                                                        <div class="col-md-6 mb-3">
-                                                            {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
-                                                        </div>
 
-                                                        <div class="col-md-6 mb-3">
-                                                            <select class="selectize-select form-control assignToSelect" name="assignTo" id="assignTo" >
-                                                                @foreach($templetes as $templete)
-                                                                    <option value="{{$templete->id}}" {{@$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{$templete->title}}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    @endif
                                                     <div class="col-md-12">
                                                         {!! Form::label('title', __('Vendor Category'),['class' => 'control-label']) !!}
                                                         <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
@@ -476,11 +458,7 @@ body .switchery>small {width: 20px;height: 20px;}
                                 <div class="form-row">
                                     <div class="col-12 checkbox-input">
                                         <input type="checkbox" id="html" name="check_conditions" value="1">
-                                        <label for="html">{{__('I accept the')}} <a href="{{ ($terms) ? route('extrapage',$terms->slug) : '#'}}" target="_blank">{{__('Terms And Conditions')}} </a> 
-                                            {{__('and have read the')}} 
-                                           <a href="{{ ($privacy) ? route('extrapage',$privacy->slug) : '#'}}" target="_blank"> 
-                                               {{__('Privacy Policy')}}.
-                                           </a></label>
+                                        <label for="html">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy.')}}</a></label>
                                         <span class="invalid-feedback" id="check_conditions_error"><strong></strong></span>
                                     </div>
                                 </div>
@@ -526,6 +504,13 @@ function switchy(){
     $('[data-plugin=\"switchery\"]').each(function (idx, obj) {
         new Switchery($(this)[0], $(this).data());
     });
+}
+function isNumberKey(evt) {
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    return true;
 }
 
     function vendorAddressInitialize() {
@@ -589,7 +574,7 @@ function switchy(){
             // $("").keypsress(function() {
             //     vendorAddressInitialize();
             // });
-            $(document).on('change', '#vendor_address', function(event){
+            $(document).on('input', '#vendor_address', function(event){
                 vendorAddressInitialize();
             });
         @endif
@@ -668,18 +653,17 @@ function switchy(){
         });
         $('#register_btn').click(function() {
             var that = $(this);
-            var categoryInput='';
+            var form = document.getElementById('vendor_signup_form');
+            var formData = new FormData(form);
             $(".activeCategory:checkbox:checked").each(function(){
                 var category_id = $(this).data('category_id');
-                categoryInput+= "  <input type='hideen' name='category_ids[]' value='"+category_id+"' >";
+                formData.append('selectedCategories[]', category_id);
             });
-            $('#nestable_list_1').append(categoryInput);
             $(this).attr('disabled', true);
             $('#register_btn_loader').show();
             $('.form-control').removeClass("is-invalid");
             $('.invalid-feedback').children("strong").html('');
-            var form = document.getElementById('vendor_signup_form');
-            var formData = new FormData(form);
+
             $.ajax({
                 type: "POST",
                 data: formData,
