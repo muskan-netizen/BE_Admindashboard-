@@ -992,7 +992,7 @@ class VendorController extends BaseController
         $vendor->save();
         $return_json   = $request->has('return_json') && $request->return_json ? $request->return_json : 0;
         if($return_json ==  1 ){
-            return $this->successResponse($vendor, $msg);
+            return $this->successResponse($vendor,__("Vendor update successfully!"));
         }
         return redirect()->back()->with('success', $msg . ' updated successfully!');
     }
@@ -1207,14 +1207,26 @@ class VendorController extends BaseController
 
         public function searchUserForPermission(Request $request)
             {
+                $user_id_array = new \Illuminate\Database\Eloquent\Collection;
                 $search = $request->get('query')??'';
                 $vendor_id = $request->get('vendor_id')??0;
-                $alreadyids = UserVendor::where('vendor_id', $vendor_id)->pluck('user_id');
+                $alreadyids = UserVendor::where('vendor_id', $vendor_id)->pluck('user_id') ?? array();
+
+                $userIDs = $request->has('user_ids') ? $request->user_ids : array();
+                  //pr($userIDs);
+                if($alreadyids){ //$user_id_array->merge()
+                    $user_id_array = $alreadyids->toArray();
+                }
+                if($userIDs){
+                     $user_id_array = array_merge($user_id_array,$userIDs);
+                }
+
                 if (isset($search)) {
+
                     if ($search == '') {
-                        $employees = User::orderby('name', 'asc')->select('id', 'name','email','phone_number','image')->where('is_superadmin','!=',1)->whereNotIn('id',$alreadyids)->limit(10)->get();
+                        $employees = User::orderby('name', 'asc')->select('id', 'name','email','phone_number','image')->where('is_superadmin','!=',1)->whereNotIn('id',$user_id_array)->limit(10)->get();
                     } else {
-                        $employees = User::orderby('name', 'asc')->select('id', 'name','email','phone_number','image')->where('is_superadmin','!=',1)->whereNotIn('id',$alreadyids)->where('name', 'LIKE', "%{$search}%")->limit(10)->get();
+                        $employees = User::orderby('name', 'asc')->select('id', 'name','email','phone_number','image')->where('is_superadmin','!=',1)->whereNotIn('id',$user_id_array)->where('name', 'LIKE', "%{$search}%")->limit(10)->get();
                     }
                     $output = '<ul class="dropdown-menu" id="sujesion_user_id" style="display:block; position:relative">';
                         foreach($employees as $row)

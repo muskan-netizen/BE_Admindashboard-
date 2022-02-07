@@ -632,6 +632,9 @@ function getDynamicTypeName($name)
     $new_name = ($new_name === $name) ? __($name) : $new_name;
     return $new_name;
 }
+<<<<<<< HEAD
+=======
+
 function stripePaymentCredentials(){
     $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
     $creds_arr = json_decode($stripe_creds->credentials);
@@ -647,6 +650,4 @@ function stripeFPXPaymentCredentials(){
     $response = collect();
     $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
     $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
-    return $response;
-}
-
+    return $response

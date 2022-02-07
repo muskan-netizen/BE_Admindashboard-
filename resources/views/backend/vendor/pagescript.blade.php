@@ -667,13 +667,23 @@
     $('#search_user_for_permission').keyup(function(){
         var query = $(this).val();
         var vendor_id = 0;
+        var userid =[];
+        $("#selected_user .user_hidden_ids").each(function(){
+            var id = $(this).val();
+            userid.push(id)
+
+        });
+        // if($("input[name='userIDs[]']").val()){
+        //   userid = $("input[name='userIDs[]']").val();
+        // }
+
         if(query != '')
         {
             var _token = $('input[name="_token"]').val();
             $.ajax({
             url:"{{ route('searchUserForPermission') }}",
             method:"POST",
-            data:{query:query, _token:_token, vendor_id:vendor_id},
+            data:{query:query, _token:_token, vendor_id:vendor_id,user_ids:userid},
             success:function(data){
             $('#userList_model').fadeIn();
             $('#userList_model').html(data);
@@ -684,6 +694,7 @@
     $(document).on('click', '#userList_model li', function(){
         $("#selected_user_ul").removeClass('active');
         $("#selected_user_ul").addClass('active');
+        $('#search_user_for_permission').val('');
        var user_id = $(this).attr('data-id');
        var name = $(this).attr('data-name');
        var image = $(this).attr('data-image');
