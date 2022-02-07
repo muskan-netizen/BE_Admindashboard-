@@ -347,6 +347,12 @@ class StripeGatewayController extends FrontController
                 $paymentIntent = $event->data->object;
                 \Log::info($paymentIntent);
                 break;
+
+            case 'payment_intent.payment_failed':
+                $paymentIntent = $event->data->object;
+                \Log::info($paymentIntent);
+                break;
+
             // ... handle other event types
             default:
                 echo 'Received unknown event type ' . $event->type;
