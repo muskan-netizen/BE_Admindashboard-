@@ -127,7 +127,7 @@ Route::group(['middleware' => ['domain']], function () {
 	//Passbase 
 	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
 	Route::post('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
-	Route::match(['get','post'],'passbase/webhook','Front\PassbaseController@webhook')->name('passbase.webhook');
+	Route::any('passbase/webhook','Front\PassbaseController@webhook')->name('passbase.webhook');
 
 
 
