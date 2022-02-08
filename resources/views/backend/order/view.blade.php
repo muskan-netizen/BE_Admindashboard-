@@ -243,7 +243,8 @@ $timezone = Auth::user()->timezone;
                                     $revenue += ($vendor->service_fee_percentage_amount + $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     <tr>
-                                        <th scope="row"><a href="{{ route('product.edit', $product->product->id) }}" target="_blank">{{$product->product_name}}</a>
+                                        <th scope="row">
+                                            <a href="{{ route('product.edit', @$product->product->id) }}" target="_blank">{{$product->product_name}}</a>
                                             <p class="p-0 m-0">
                                                 @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
                                             </p>
