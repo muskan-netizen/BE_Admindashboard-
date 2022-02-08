@@ -74,7 +74,6 @@
                 $('#review_table').DataTable({
                     "lengthChange": false,
                     "searching": false,
-
                     "destroy": true,
                     "scrollX": true,
                     "processing": true,
