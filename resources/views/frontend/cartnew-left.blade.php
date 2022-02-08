@@ -169,8 +169,8 @@
                         <span class="text-danger" id="country_error"></span>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="pincode">{{__('Zip Code')}}</label>
-                        <input type="text" class="form-control" id="pincode" placeholder="{{__('Zip Code')}}" value="">
+                        <label for="pincode">{{ getNomenclatureName('Zip Code', true) }}</label>
+                        <input type="text" class="form-control" id="pincode" placeholder="{{ getNomenclatureName('Zip Code', true) }}" value="">
                         <span class="text-danger" id="pincode_error"></span>
                     </div>
                     <div class="col-md-12 mb-3">

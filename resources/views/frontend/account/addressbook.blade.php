@@ -268,8 +268,8 @@
                                 <span class="text-danger" id="country_error"></span>
                             </div>
                             <div class="col-md-6 mb-2">
-                                <label for="pincode">{{ __('Zip Code') }}</label>
-                                <input type="text" class="form-control" id="pincode" name="pincode" placeholder="{{ __('Zip Code') }}" value="<%= ((typeof address != 'undefined') && (address.pincode != null)) ? address.pincode : ''%>" required="required">
+                                <label for="pincode">{{ getNomenclatureName('Zip Code', true) }}</label>
+                                <input type="text" class="form-control" id="pincode" name="pincode" placeholder="{{ getNomenclatureName('Zip Code', true) }}" value="<%= ((typeof address != 'undefined') && (address.pincode != null)) ? address.pincode : ''%>" required="required">
                                 <span class="text-danger" id="pincode_error"></span>
                             </div>
                             <div class="col-md-12 mb-2">

@@ -157,7 +157,7 @@ body .switchery>small {width: 20px;height: 20px;}
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-12 mb-3" id="nameInput">
-                                        <label for="validationCustom01">{{getNomenclatureName('Vendors', true)}}{{--__('Vendor Name')--}}</label>
+                                        <label for="validationCustom01">{{getNomenclatureName('Vendors', true)}}{{__(' Name')}}</label>
                                         <input type="text" class="form-control" name="name" value="">
                                         <span class="invalid-feedback" id="name_error"><strong></strong></span>
                                     </div>
