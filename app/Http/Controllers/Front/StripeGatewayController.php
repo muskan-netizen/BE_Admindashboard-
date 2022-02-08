@@ -463,7 +463,7 @@ class StripeGatewayController extends FrontController
                 }
 
                 if($payment_form == 'cart'){
-                    $order_number = $$meta->order_number;
+                    $order_number = $meta->order_number;
                     $order = Order::where('order_number', $order_number)->first();
                     if($order){
                         $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
