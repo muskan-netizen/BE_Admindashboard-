@@ -347,7 +347,7 @@ class StripeGatewayController extends FrontController
 
         $payload = @file_get_contents('php://input');
         $event = null;
-        // \Log::info($payload);
+        \Log::info($request->all());
         try {
             $event = \Stripe\Event::constructFrom(
                 json_decode($payload, true)
@@ -374,8 +374,6 @@ class StripeGatewayController extends FrontController
                     $payment_form = $charges[0]->metadata->payment_form;
                     $amount = $charges[0]->amount / 100;
                 }
-                
-                // dd($charges[0]);
 
                 if($payment_form == 'cart'){
                     $order_number = $charges[0]->metadata->order_number;
@@ -417,9 +415,6 @@ class StripeGatewayController extends FrontController
                             $super_admin = User::where('is_superadmin', 1)->pluck('id');
                             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                         }
-                        // $returnUrlParams = '';
-                        // $returnUrl = route('order.success', $order->id); // route('order.return.success');
-                        // return Redirect::to(url($returnUrl . $returnUrlParams));
     
                         // Send Email
                         //   $this->successMail();
@@ -428,23 +423,17 @@ class StripeGatewayController extends FrontController
                     $request->request->add(['wallet_amount' => $amount, 'transaction_id' => $transactionId]);
                     $walletController = new WalletController();
                     $walletController->creditWallet($request);
-                    // $returnUrl = route('user.wallet');
-                    // return Redirect::to(url($returnUrl));
                 }
                 elseif($payment_form == 'tip'){
                     $order_number = $charges[0]->metadata->order_number;
                     $request->request->add(['order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
                     $orderController = new OrderController();
                     $orderController->tipAfterOrder($request);
-                    // $returnUrl = route('user.orders');
-                    // return Redirect::to(url($returnUrl));
                 }
                 elseif($payment_form == 'subscription'){
                     $request->request->add(['payment_option_id' => 19, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
                     $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription);
-                    // $returnUrl = route('user.subscription.plans');
-                    // return Redirect::to(url($returnUrl));
                 }
                 break;
             
@@ -453,9 +442,7 @@ class StripeGatewayController extends FrontController
                 // \Log::info($paymentIntent);
 
                 $meta = $paymentIntent->metadata;
-                // $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
-                // $charges = $intent->charges->data;
-                \Log::info($meta);
+                // \Log::info($meta);
                 $payment_form = $order_number = '';
                 // $amount = $paymentIntent->amount / 100;
                 if($meta){
@@ -476,7 +463,6 @@ class StripeGatewayController extends FrontController
                         OrderVendor::where('order_id', $order->id)->delete();
                         OrderTax::where('order_id', $order->id)->delete();
                         $order->delete();
-                        // return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled');
                     }
                 }
                 break;
