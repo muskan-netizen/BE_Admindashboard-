@@ -89,6 +89,7 @@ $timezone = Auth::user()->timezone;
                                     @endphp
 
                                     <!-- List of completed order status -->
+                                @if(count($vendor_order_statuses))    
                                     @foreach ($vendor_order_statuses as $key => $vendor_order_status)
                                         @php
                                             $order_status = $order_status_options->where('id', $vendor_order_status->order_status_option_id)->pluck('title')->first();
@@ -112,6 +113,7 @@ $timezone = Auth::user()->timezone;
                                             </p>
                                         </li>
                                     @endforeach
+                                @endif    
 
                                     <!-- List of incomplete order status if order is not rejected -->
 
