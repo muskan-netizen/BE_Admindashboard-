@@ -244,7 +244,10 @@ $timezone = Auth::user()->timezone;
                                     @endphp
                                     <tr>
                                         <th scope="row">
-                                            <a href="{{ route('product.edit', @$product->product->id) }}" target="_blank">{{$product->product_name}}</a>
+
+                                            <a href="{{ isset($product->product) ? route('product.edit', @$product->product->id) : '#'}}" target="_blank">
+                                                {{$product->product_name}}
+                                            </a>
                                             <p class="p-0 m-0">
                                                 @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
                                             </p>
