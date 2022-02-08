@@ -14,10 +14,10 @@ use App\Models\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class DunzoController extends Controller
+class AhoyController extends Controller
 {
 	
-	use \App\Http\Traits\Dunzo;
+	use \App\Http\Traits\Ahoy;
 
     private $api_key;
     private $app_url;
@@ -28,12 +28,13 @@ class DunzoController extends Controller
 
     public function __construct()
     {
-        $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code', 'dunzo')->where('status', 1)->first();
+        $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code', 'ahoy')->where('status', 1)->first();
         if($simp_creds){
             $this->status = $simp_creds->status??'0';
             $creds_arr = json_decode($simp_creds->credentials);
             $this->api_key = $creds_arr->api_key??'';
-            $this->app_url = (($simp_creds->test_mode=='1')?'https://dev.adloggs.com/aa':'https://app.adloggs.com/aa'); //Live url - https://app.adloggs.com/aa
+            $this->app_url = (($simp_creds->test_mode=='1')?'https://ahoydev.azure-api.net':'https://ahoyapis.azure-api.net'); //Live url - https://ahoydev.azure-api.net
+            $this->test = $simp_creds->test_mode; 
             $this->base_price = $creds_arr->base_price ?? ''; 
             $this->distance = $creds_arr->distance ?? ''; 
             $this->amount_per_km = $creds_arr->amount_per_km ?? '';
@@ -44,18 +45,19 @@ class DunzoController extends Controller
 
 	public function configuration()
     {
-        $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code', 'dunzo')->where('status', 1)->first();
-        if($simp_creds){
-            $this->status = $simp_creds->status??'0';
-            $creds_arr = json_decode($simp_creds->credentials);
-            $this->api_key = $creds_arr->api_key??'';
-            $this->app_url = (($simp_creds->test_mode=='1')?'https://dev.adloggs.com/aa':'https://app.adloggs.com/aa'); //Live url - https://app.adloggs.com/aa
-            $this->base_price = $creds_arr->base_price ?? ''; 
-            $this->distance = $creds_arr->distance ?? ''; 
-            $this->amount_per_km = $creds_arr->amount_per_km ?? '';
-        }else{
-            return 0;
-        }
+        $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code', 'ahoy')->where('status', 1)->first();
+            if($simp_creds){
+                $this->status = $simp_creds->status??'0';
+                $creds_arr = json_decode($simp_creds->credentials);
+                $this->api_key = $creds_arr->api_key??'';
+                $this->app_url = (($simp_creds->test_mode=='1')?'https://ahoydev.azure-api.net':'https://ahoyapis.azure-api.net'); //Live url - https://ahoydev.azure-api.net
+                $this->test = $simp_creds->test_mode; 
+                $this->base_price = $creds_arr->base_price ?? ''; 
+                $this->distance = $creds_arr->distance ?? ''; 
+                $this->amount_per_km = $creds_arr->amount_per_km ?? '';
+            }else{
+                return 0;
+            }
       }
 
 
@@ -81,14 +83,12 @@ class DunzoController extends Controller
 
 
 		 # get delivery fee getDunzoBaseFee
-		 public function getDunzoBaseFee($vendorId,$distance = null)
+		 public function getDunzoBaseFee($vendorId)
 		 {	
 			$fees = 0;
 			$this->configuration();
 			if($this->status == 1 && $this->base_price>0){
-                    if(!$distance){
-				      $distance = $this->getDistance($vendorId);
-                    }
+				$distance = $this->getDistance($vendorId);
 				if($distance){
 					//Helper Function
 					$fees =   getBaseprice($distance,'dunzo');
@@ -98,33 +98,7 @@ class DunzoController extends Controller
 		}
 
 
-        # get delivery fee Dunzo Courier Service
-		public function getQuotations($vendor_id,$address)
-		{
-			$this->configuration();
-			$vendor_details = Vendor::find($vendor_id);
-            $data =array(
-                'pickup_lat'=>$vendor_details->latitude ?? '',
-                'pickup_long'=>$vendor_details->longitude ?? '',
-                'delivery_lat' => $address->latitude, //Required
-				'delivery_long' => $address->longitude, //Required
-            );
-			$status =  $this->getfees($data);
-			if($this->status){
-				if(($this->base_price>0) && $status->status == true){
-				return $this->getDunzoBaseFee($vendor_id,$status->data->distance);
-			}else{
-                    if($status->status){
-                        return $status->data->estimated_price??0;
-                    }
-                    return 0; 
-				}
-			}
-            return 0; 
-		}
-
-
-		# get delivery fee Courier Service
+		# get delivery fee Shiprocket Courier Service
 		public function getCourierService($vendorId)
 		{
 			$this->configuration();
@@ -147,7 +121,7 @@ class DunzoController extends Controller
 		}
 
 
-	public function createOrderRequestDunzo($user_id,$orderVendor)
+	public function createOrderPreRequestAhoy($user_id,$orderVendor)
     { 
 		$this->configuration();
 		if($this->status)
@@ -165,43 +139,98 @@ class DunzoController extends Controller
             }
 
 			$data = array (
-				'partner_order_id' => $orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id,
-				'pickup_contact_name' => $vendor_details->name ?? '',  
-				'pickup_contact_no' => $vendor_details->phone_no, 
-				'pickup_contact_email' => $vendor_details->email ?? '', 
+				'CompanyOrderTrackId' => $orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id,
+				'PickupLocationId' => $vendor_details->name ?? '',   //Required 
+				'CustomerAddressId' => '',  
+				'OrderLargeBoxQuantity' => $vendor_details->name ?? '',  
+				'OrderMidBoxQuantity' => $vendor_details->phone_no, 
+				'OrderSmallBoxQuantity' => $vendor_details->email ?? '', 
 				'pickup_address' => $vendor_details->address ?? '',  
-			    'pickup_date_time' => ($scheduledAt!='')? $scheduledAt : date('Y-m-d H:i',strtotime($order->created_at)),
-				'pickup_lat' => $vendor_details->latitude ?? '', //Required 
-				'pickup_long' => $vendor_details->longitude ?? '', //Required 
+			    'PickupTime' => ($scheduledAt!='')? strtotime($scheduledAt) : strtotime($order->created_at),  //If order to be scheduled, provide pickup time in UTC Unix millisecond. if the order is an immediate leave as 0
 				
-                'delivery_contact_name' => $customer->name,
-				'delivery_contact_no' => $customer->phone_number,
-				'delivery_contact_email' => $customer->email,
-                'delivery_address'=> $cus_address->address,
-				'delivery_lat' => $cus_address->latitude, //Required
-				'delivery_long' => $cus_address->longitude, //Required
-				'order_description' => '',
+                'CustomerName' => $customer->name,
+				'CustomerPhone' => $customer->phone_number,
+				'CustomerEmail' => $customer->email,
+                'CustomerAddress'=> $cus_address->address,
+				'CustomerLatitude' => $cus_address->latitude, //Required
+				'CustomerLongitude' => $cus_address->longitude, //Required
+				'IsCashPayment' =>  false,
+				'IsCardPayment' =>  false,
+				'CashAmount' => ($order->payment_option_id==1)?$order->total_amount : 0,
+				'CustomerAddressTypeId' => '1',
+				'CustomerAddressNote' => '',
+				'Area' => '1',
+				'Building' => '1',
+				'Floor' => '1',
+				'Unit' => '1',
+				'TemperatureTypeId' => 0,
 
-                //(( INTEGER )) - Timezone difference with UTC in minutes for e.g. India IND 330 , Cuba CDT -240
-				'utc_offset' => '330'
+
+            //     • CustomerAddressTypeId
+            //     ◦ 1 => Tower, (either office or apartment)
+            //     ◦ 2 => Building (villa, police station. etc)
+            //     ◦ 3 => Commercial (warehouse)
+            // • Area => Area
+            // • Building => “Building Name or Number”
+            // • Floor => “Floor Number”
+            // • Unit => “Apartment Number”.
+            // • TemperatureTypeId 
+            //     ◦ 0 => Normal
+            //     ◦ 1 => Cold
+            //     ◦ 2 => Warm
+
 			  );
 		}
-        //dd($data);
-    	$orderSuc = $this->createOrder($data);
+    	$orderSuc = $this->createPreOrder($data);
 		return $orderSuc;
 		//Response Result
-        // "status": true,
-        // "code": 200,
-        // "message": "Success",
-        // "data": {
-        //     "order_uuid": "f45d10c5-5edf-4ef4-aaaf-da4d96f1aebb",
-        //     "trackUrl": "https://erranderz.in/dev/trackorder?key=f45d10c5-5edf-4ef4-aaaf-da4d96f1aebb",
-        //     "partner_order_id": "100",
-        //     "meta_data": "{}"
-        // }
+        // "preOrderId": 220,
+        // "expiryTime": 1600352489947,
+        // "services": [{
+        //     "serviceName": "Bike",
+        //     "serviceDetails": "ETA 6:25 PM",
+        //     "numberOfVehicles": 1,
+        //     "unitPrice": 20.00,
+        //     "currency": "AED",
+        //     "serviceId": 5,
+        //     "serviceImageUrl": "https://ahoydelivery.blob.core.windows.net/icons/expressbike.png"
+        // }]
 
     }
 
+
+
+
+    public function confirmOrderPreRequestAhoy($order_id)
+    {
+		$this->configuration();
+		if($this->status){
+            $data =array('preOrderId',$order_id,'deliveryServiceTypeId'=>1);
+			return $order= $this->confirmPreOrder($data);
+		}
+    }
+
+
+    # get delivery fee createLocation Courier Service
+		public function createLocation($vendorId)
+		{
+			$this->configuration();
+            $vendor_details = Vendor::find($vendorId);
+            $data =array(
+                'locationName'=>$vendor_details->name ?? '',
+                'Address'=>$vendor_details->address ?? '',
+                'latitude'=>$vendor_details->latitude ?? '',
+                'longitude'=>$vendor_details->longitude ?? '',
+                'locationType'=>1,
+                'PhoneNumber'=>$vendor_details->phone_number ?? '',
+                'Email'=>$vendor_details->email ?? ''
+            );
+		
+            if($this->status){
+                return $this->createNewLocation($vendorId);
+            }
+            return 0; 
+		}
 
 
     public function cancelOrderRequestDunzo($order_id)
