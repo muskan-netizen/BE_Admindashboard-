@@ -425,27 +425,27 @@ class StripeGatewayController extends FrontController
                         //   $this->successMail();
                     }
                 } elseif($payment_form == 'wallet'){
-                    $request->request->add(['wallet_amount' => $request->amount, 'transaction_id' => $transactionId]);
+                    $request->request->add(['wallet_amount' => $amount, 'transaction_id' => $transactionId]);
                     $walletController = new WalletController();
                     $walletController->creditWallet($request);
                     // $returnUrl = route('user.wallet');
                     // return Redirect::to(url($returnUrl));
                 }
                 elseif($payment_form == 'tip'){
-                    $request->request->add(['order_number' => $request->order, 'tip_amount' => $request->amount, 'transaction_id' => $transactionId]);
+                    $order_number = $charges[0]->metadata->order_number;
+                    $request->request->add(['order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
                     $orderController = new OrderController();
                     $orderController->tipAfterOrder($request);
                     // $returnUrl = route('user.orders');
                     // return Redirect::to(url($returnUrl));
                 }
                 elseif($payment_form == 'subscription'){
-                    $request->request->add(['payment_option_id' => 9, 'transaction_id' => $transactionId]);
+                    $request->request->add(['payment_option_id' => 19, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
                     $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription);
                     // $returnUrl = route('user.subscription.plans');
                     // return Redirect::to(url($returnUrl));
                 }
-
                 break;
             
             case 'payment_intent.payment_failed':
@@ -464,7 +464,7 @@ class StripeGatewayController extends FrontController
 
                 if($payment_form == 'cart'){
                     $order_number = $charges[0]->metadata->order_number;
-                    $order = Order::where('order_number', $request->order)->first();
+                    $order = Order::where('order_number', $order_number)->first();
                     if($order){
                         $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
                         foreach($order_products as $order_prod){
@@ -479,7 +479,6 @@ class StripeGatewayController extends FrontController
                         // return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled');
                     }
                 }
-
                 break;
             
             // ... handle other event types
