@@ -450,21 +450,20 @@ class StripeGatewayController extends FrontController
             
             case 'payment_intent.payment_failed':
                 $paymentIntent = $event->data->object;
-                \Log::info($paymentIntent);
+                // \Log::info($paymentIntent);
 
-                $payment_intent_id = $paymentIntent->id;
-                $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
-                $charges = $intent->charges->data;
-                \Log::info($intent);
-                $cart_id = $payment_form = $order_number = '';
-                $amount = 0;
-                if(count($charges)){
-                    $payment_form = $charges[0]->metadata->payment_form;
-                    $amount = $charges[0]->amount / 100;
+                $meta = $paymentIntent->metadata;
+                // $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
+                // $charges = $intent->charges->data;
+                \Log::info($meta);
+                $payment_form = $order_number = '';
+                // $amount = $paymentIntent->amount / 100;
+                if($meta){
+                    $payment_form = $meta->payment_form;
                 }
 
                 if($payment_form == 'cart'){
-                    $order_number = $charges[0]->metadata->order_number;
+                    $order_number = $$meta->order_number;
                     $order = Order::where('order_number', $order_number)->first();
                     if($order){
                         $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
