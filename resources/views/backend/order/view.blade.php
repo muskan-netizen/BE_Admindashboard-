@@ -364,7 +364,7 @@ $timezone = Auth::user()->timezone;
                         @if(isset($order->address) && !empty($order->address->state))
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("State") }}:</span> {{ $order->address ? $order->address->state : ''}}</p>
                         @endif
-                        <p class="mb-0"><span class="fw-semibold me-2">{{ __("Zip Code") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
+                        <p class="mb-0"><span class="fw-semibold me-2">{{ getNomenclatureName('Zip Code', true) }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
                     </div>
                 </div>
             </div>
@@ -383,7 +383,7 @@ $timezone = Auth::user()->timezone;
                         @if(isset($order->address) && !empty($order->address->state))
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("State") }}:</span> {{ $order->address ? $order->address->state : ''}}</p>
                         @endif
-                        <p class="mb-0"><span class="fw-semibold me-2">{{ __("Zip Code") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
+                        <p class="mb-0"><span class="fw-semibold me-2">{{ getNomenclatureName('Zip Code', true) }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
 
                     </div>
                 </div>
