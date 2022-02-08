@@ -357,7 +357,7 @@
                                                 @csrf()
                                              <div class="row">
                                                 <div class="col-md-4">
-                                                {!! Form::label('title', 'Draw area with radius(Miles)',['class' => 'control-label']) !!}
+                                                {!! Form::label('title', 'Draw area with radius('.$client_preference_detail->distance_unit_for_time.')',['class' => 'control-label']) !!}
                                                 </div>
                                                 <div class="col-md-4">
 

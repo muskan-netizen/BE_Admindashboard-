@@ -2,7 +2,8 @@
 @section('css')
     <link href="{{ asset('assets/libs/dropzone/dropzone.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/dropify/dropify.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/libs/mohithg-switchery/mohithg-switchery.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/mohithg-switchery/mohithg-switchery.min.css') }}" rel="stylesheet"
+        type="text/css" />
     <link href="{{ asset('assets/libs/multiselect/multiselect.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/selectize/selectize.min.css') }}" rel="stylesheet" type="text/css" />
@@ -45,11 +46,12 @@
                             </div>
                             <div class="review-product-decsription">
                                 <h5><b>{{ __('Product name') }}:</b>
-                                    <span>{{ $product->translation_one->title }}</span></h5>
+                                    <span>{{ $product->translation_one->title ?? $product->sku }}</span>
+                                </h5>
                                 <h5><b>{{ __('Vendor name') }}:</b> <span>{{ $product->vendor->name }}</span>
                                 </h5>
                             </div>
-                          
+
 
                         </div>
                     </div>
@@ -58,13 +60,21 @@
         </div>
 
         <div class="container-fluid">
+            @if($message = Session::get('success'))
+                <div class="alert alert-success alert-block">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>{{ $message }}</strong>
+                </div>
+            @endif
+
             <div class="row">
                 <div class="col-12">
                     <div class="card review-table-responsive">
                         <div class="card-body position-relative">
-    
+
                             <div class="table-responsive ">
-                                <table id="review_table" class="table table-centered table-nowrap table-striped" width="100%">
+                                <table id="review_table" class="table table-centered table-nowrap table-striped"
+                                    width="100%">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -72,32 +82,48 @@
                                             <th>{{ __('Review') }}</th>
                                             <th>{{ __('Rating') }}</th>
                                             <th>{{ __('Images') }}</th>
-                                            {{-- <th>{{ __('Action') }}</th> --}}
+                                            <th>{{ __('Action') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody id="review_table_tbody_list">
                                         @foreach ($product->reviews as $key => $reviwe)
-                                        <tr>
-                                        <td>{{$key+1}}</td>
-                                        <td>{{ $reviwe->user->name }}</td>
-                                        <td>{{ $reviwe->review }}</td>
-                                        <td>
-                                             <i class="fa fa-star {{ $reviwe->rating >= 1 ? 'checked' : '' }}"></i>
-                                            <i class="fa fa-star {{ $reviwe->rating >= 2 ? 'checked' : '' }}"></i>
-                                            <i class="fa fa-star {{ $reviwe->rating >= 3 ? 'checked' : '' }}"></i>
-                                            <i class="fa fa-star {{ $reviwe->rating >= 4 ? 'checked' : '' }}"></i>
-                                            <i class="fa fa-star {{ $reviwe->rating >= 5 ? 'checked' : '' }}"></i>
-                                        </td>
-                                        <td>
-                                            <div class="file-outer">
-                                                @foreach ($reviwe->reviewFiles as $k => $image)
-                                                    <div class="review-images-file">
-                                                        <img src="{{ $image['file']['image_fit'] . '74/100' . $image['file']['image_path'] }}" />
-                                                    </div>    
-                                                @endforeach
-                                            </div>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>{{ $key + 1 }}</td>
+                                                <td>{{ $reviwe->user->name }}</td>
+                                                <td>{{ $reviwe->review }}</td>
+                                                <td>
+                                                    <i
+                                                        class="fa fa-star {{ $reviwe->rating >= 1 ? 'checked' : '' }}"></i>
+                                                    <i
+                                                        class="fa fa-star {{ $reviwe->rating >= 2 ? 'checked' : '' }}"></i>
+                                                    <i
+                                                        class="fa fa-star {{ $reviwe->rating >= 3 ? 'checked' : '' }}"></i>
+                                                    <i
+                                                        class="fa fa-star {{ $reviwe->rating >= 4 ? 'checked' : '' }}"></i>
+                                                    <i
+                                                        class="fa fa-star {{ $reviwe->rating >= 5 ? 'checked' : '' }}"></i>
+                                                </td>
+                                                <td>
+                                                    <div class="file-outer">
+                                                        @foreach ($reviwe->reviewFiles as $k => $image)
+                                                            <div class="review-images-file">
+                                                                <img
+                                                                    src="{{ $image['file']['image_fit'] . '74/100' . $image['file']['image_path'] }}" />
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class='form-ul'>
+                                                        <div class='inner-div'>
+                                                           <a href='{{ route('review.delete',[$reviwe->id]) }}' class='action-icon'>
+                                                               <i class='mdi mdi-delete' title='Delete review'></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+
+                                                </td>
+                                            </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
