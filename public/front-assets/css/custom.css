@@ -150,6 +150,8 @@ top: 60px;bottom: 0;right: 0;left: auto;height: 100%;max-height: 100%;min-height
         }
 }
 
+.al_main_category_list li:last-child{border:none;}
+
     @media (max-width: 576px){
         .top-header .header-dropdown .mobile-account .onhover-show-div, .top-header .header-dropdown .mobile-wishlist .onhover-show-div {
         top: 40px;bottom: 0;right: 0;left: auto;height: 100%;max-height: 100%;}

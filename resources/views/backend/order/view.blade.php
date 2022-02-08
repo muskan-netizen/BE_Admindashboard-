@@ -89,6 +89,7 @@ $timezone = Auth::user()->timezone;
                                     @endphp
 
                                     <!-- List of completed order status -->
+                                @if(count($vendor_order_statuses))    
                                     @foreach ($vendor_order_statuses as $key => $vendor_order_status)
                                         @php
                                             $order_status = $order_status_options->where('id', $vendor_order_status->order_status_option_id)->pluck('title')->first();
@@ -112,6 +113,7 @@ $timezone = Auth::user()->timezone;
                                             </p>
                                         </li>
                                     @endforeach
+                                @endif    
 
                                     <!-- List of incomplete order status if order is not rejected -->
 
@@ -242,7 +244,11 @@ $timezone = Auth::user()->timezone;
                                     $revenue += ($vendor->service_fee_percentage_amount + $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     <tr>
-                                        <th scope="row"><a href="{{ route('product.edit', $product->product->id) }}" target="_blank">{{$product->product_name}}</a>
+                                        <th scope="row">
+
+                                            <a href="{{ isset($product->product) ? route('product.edit', @$product->product->id) : '#'}}" target="_blank">
+                                                {{$product->product_name}}
+                                            </a>
                                             <p class="p-0 m-0">
                                                 @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
                                             </p>
