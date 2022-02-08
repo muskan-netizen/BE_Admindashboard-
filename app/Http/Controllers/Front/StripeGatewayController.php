@@ -455,7 +455,7 @@ class StripeGatewayController extends FrontController
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
                 $charges = $intent->charges->data;
-                \Log::info($charges);
+                \Log::info($intent);
                 $cart_id = $payment_form = $order_number = '';
                 $amount = 0;
                 if(count($charges)){
