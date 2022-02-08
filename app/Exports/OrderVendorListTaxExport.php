@@ -9,20 +9,57 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
 
+
 class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMapping{
     /**
     * @return \Illuminate\Support\Collection
     */
+
+    public $data;
+
+    public function __construct($request)
+    {
+        $this->data = (object)$request->input();
+    }
+
     public function collection(){
         $user = Auth::user();
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $vendor_orders =  OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment'])->orderBy('id', 'DESC');
-        if (Auth::user()->is_superadmin == 0) {
+        if (Auth::user()->is_superadmin == 0){
             $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
             });
         }
-        $vendor_orders = $vendor_orders->get();
+        if(isset($this->data->date_range)){
+            $date = explode(' to ',$this->data->date_range);
+            $dateF = $date[0];
+            $dateT = $date[1] ?? $date[0];
+            $vendor_orders = $vendor_orders->whereDate('created_at', '>=', $dateF)
+            ->whereDate('created_at', '<=', $dateT);
+        }
+        if(isset($this->data->vendor)){
+            $vendor = $this->data->vendor;
+            $vendor_orders = $vendor_orders->where('vendor_id',$vendor);
+        }
+        if(isset($this->data->order_status)){
+            $status = $this->data->order_status;
+            if($this->data->order_status =='Placed'){
+                $status = '1';
+            }elseif($this->data->order_status =='Accepted'){
+                $status = '2';
+            }elseif($this->data->order_status =='Out For Delivery'){
+                $status = '5';
+            }elseif($this->data->order_status =='Rejected'){
+                $status = '3';
+            }elseif($this->data->order_status =='Processing'){
+                $status = '4';
+            }elseif($this->data->order_status =='Delivered'){
+                $status = '6';
+            }
+            $vendor_orders = $vendor_orders->where('order_status_option_id',$status);
+        }
+        $vendor_orders = $vendor_orders->get();  
 
         foreach ($vendor_orders as $vendor_order) {
             $vendor_order->created_date = dateTimeInUserTimeZone($vendor_order->created_at, $timezone);
