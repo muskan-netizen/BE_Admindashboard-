@@ -15,22 +15,28 @@ use App\Models\VendorSlot;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
-function changeDateFormate($date,$date_format){
-    return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
+if (!function_exists('changeDateFormate')) {
+    function changeDateFormate($date,$date_format){
+        return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
+    }
 }
 
-function pr($var) {
-  	echo '<pre>';
-	print_r($var);
-  	echo '</pre>';
-    exit();
-}
-function http_check($url) {
-    $return = $url;
-    if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
-        $return = 'http://' . $url;
+if (!function_exists('pr')) {
+    function pr($var) {
+        echo '<pre>';
+        print_r($var);
+        echo '</pre>';
+        exit();
     }
-    return $return;
+}
+if (!function_exists('http_check')) {
+    function http_check($url) {
+        $return = $url;
+        if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+            $return = 'http://' . $url;
+        }
+        return $return;
+    }
 }
 function getUserDetailViaApi($user){
     $user_refferal = UserRefferal::where('user_id', $user->id)->first();
