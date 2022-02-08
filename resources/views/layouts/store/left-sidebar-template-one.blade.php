@@ -22,7 +22,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-sm-3 col-md-2">
-                         <a class="navbar-brand mr-0 placeholder" href="{{ route('userHome') }}"><img class="img-fluid img-small" alt="" src="{{$urlImg}}" ></a>
+                         <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     </div>
                     <div class="col-sm-9 col-md-10 top-header bg-transparent">
                         <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
@@ -131,11 +131,11 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
       <div class="container d-block">
          <div class="row align-items-center position-initial">
             <div class="col-lg-12">
-               <div class="row mobile-header align-items-center justify-content-between my-sm-2" style="min-height:80px;">
-                  <div class="logo @if($mod_count > 1) order-lg-2 @else order-lg-1 @endif">
+               <div class="row mobile-header align-items-center justify-content-between my-sm-2">
+                  <div class="logo ">
                      <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" href="{{route('userHome')}}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                   </div>
-                  <div class="al_count_tabs order-lg-1">
+                  <div class="al_count_tabs">
                      @if($mod_count > 1)
                      <ul class="nav nav-tabs navigation-tab nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
                         @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
@@ -150,7 +150,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                      @endif
                   </div>
 
-                  <div class=" ipad-view order-lg-3">
+                  <div class=" ipad-view">
                      <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                         @if( (Session::get('preferences'))) @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
                         <div class="location-bar d-none align-items-center justify-content-start ml-md-2 my-2 my-lg-0 dropdown-toggle" href="#edit-address" data-toggle="modal">
@@ -184,7 +184,13 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                            <ul class="d-flex align-items-center m-0">
                               <li class="mr-2 pl-0 d-ipad"> <span class="mobile-search-btn"><i class="fa fa-search" aria-hidden="true"></i></span> </li>
                               <li class="onhover-div pl-0 shake-effect">
-                                 @if($client_preference_detail) @if($client_preference_detail->cart_enable==1) <a class="btn btn-solid " href="{{route('showCart')}}"> <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i> <span>{{__('Cart')}}•</span> <span id="cart_qty_span"></span> </a> @endif @endif <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script>
+                                 @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
+                                 <a class="btn btn-solid d-flex align-items-center " href="{{route('showCart')}}">
+                                    <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i>
+                                    <span>{{__('Cart')}}•</span>
+                                    <span id="cart_qty_span"></span>
+                                 </a> @endif @endif
+                                 <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script>
                                  <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul>
                               </li>
                               <li class="mobile-menu-btn d-none">
@@ -364,7 +370,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
    </div>
    @endif
    {{--@if(count($navCategories) > 0)--}}
-   <div class="menu-navigation" style="min-height:80px">
+   <div class="menu-navigation">
       <div class="container-fluid">
          <div class="row">
             <div class="col-12">
@@ -383,18 +389,18 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                </div>
                <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
                   @foreach($navCategories as $cate) @if($cate['name'])
-                  <li>
+                  <li class="al_main_category">
                      <a href="{{route('categoryDetail', $cate['slug'])}}">
                         @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
                         <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
                         @endif{{$cate['name']}}
                      </a>
                      @if(!empty($cate['children']))
-                     <ul>
+                     <ul class="al_main_category_list">
                         @foreach($cate['children'] as $childs)
                         <li>
                            <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a> @if(!empty($childs['children']))
-                           <ul>
+                           <ul class="al_main_category_sub_list">
                               @foreach($childs['children'] as $chld)
                               <li><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
                               @endforeach
@@ -419,28 +425,32 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
        <div class="mobile-back text-end">Back<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
    </li> -->
    <% _.each(nav_categories, function(category, key){ %>
-      <li> <a href="{{route('categoryDetail')}}/<%=category.slug %>"> @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif <%=category.name %> </a> <% if(category.children){%> <ul> <% _.each(category.children, function(childs, key1){%> <li> <a href="{{route('categoryDetail')}}/<%=childs.slug %>"><span class="new-tag"><%=childs.name %></span></a> <% if(childs.children){%> <ul> <% _.each(childs.children, function(chld, key2){%> <li><a href="{{route('categoryDetail')}}/<%=chld.slug %>"><%=chld.name %></a></li><%}); %> </ul> <%}%> </li><%}); %> </ul> <%}%> </li>
+      <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>"> @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif <%=category.name %> </a> <% if(category.children){%> <ul class="al_main_category_list"> <% _.each(category.children, function(childs, key1){%> <li> <a href="{{route('categoryDetail')}}/<%=childs.slug %>"><span class="new-tag"><%=childs.name %></span></a> <% if(childs.children){%> <ul class="al_main_category_sub_list"> <% _.each(childs.children, function(chld, key2){%> <li><a href="{{route('categoryDetail')}}/<%=chld.slug %>"><%=chld.name %></a></li><%}); %> </ul> <%}%> </li><%}); %> </ul> <%}%> </li>
    <% }); %>
 </script>
-<div class="modal fade edit_address" id="edit-address" tabindex="-1" aria-labelledby="edit-addressLabel" aria-hidden="true">
-   <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-         <div class="modal-body p-0">
-            <div id="address-map-container">
-               <div id="address-map"></div>
+@if( $client_preference_detail)
+    @if($client_preference_detail->is_hyperlocal == 1 )
+        <div class="modal fade edit_address" id="edit-address" tabindex="-1" aria-labelledby="edit-addressLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body p-0">
+                        <div id="address-map-container">
+                        <div id="address-map"></div>
+                        </div>
+                        <div class="delivery_address p-2 mb-2 position-relative">
+                        <button type="button" class="close edit-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <div class="form-group address-input-group">
+                            <label class="delivery-head mb-2">{{__('SELECT YOUR LOCATION')}}</label>
+                            <div class="address-input-field d-flex align-items-center justify-content-between"> <i class="fa fa-map-marker" aria-hidden="true"></i> <input class="form-control border-0 map-input" type="text" name="address-input" id="address-input" value="{{session('selectedAddress')}}"> <input type="hidden" name="address_latitude" id="address-latitude" value="{{session('latitude')}}"/> <input type="hidden" name="address_longitude" id="address-longitude" value="{{session('longitude')}}"/> <input type="hidden" name="address_place_id" id="address-place-id" value="{{session('selectedPlaceId')}}"/> </div>
+                        </div>
+                        <div class="text-center"> <button type="button" class="btn btn-solid ml-auto confirm_address_btn w-100">{{__('Confirm And Proceed')}}</button> </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="delivery_address p-2 mb-2 position-relative">
-               <button type="button" class="close edit-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-               <div class="form-group address-input-group">
-                  <label class="delivery-head mb-2">{{__('SELECT YOUR LOCATION')}}</label>
-                  <div class="address-input-field d-flex align-items-center justify-content-between"> <i class="fa fa-map-marker" aria-hidden="true"></i> <input class="form-control border-0 map-input" type="text" name="address-input" id="address-input" value="{{session('selectedAddress')}}"> <input type="hidden" name="address_latitude" id="address-latitude" value="{{session('latitude')}}"/> <input type="hidden" name="address_longitude" id="address-longitude" value="{{session('longitude')}}"/> <input type="hidden" name="address_place_id" id="address-place-id" value="{{session('selectedPlaceId')}}"/> </div>
-               </div>
-               <div class="text-center"> <button type="button" class="btn btn-solid ml-auto confirm_address_btn w-100">{{__('Confirm And Proceed')}}</button> </div>
-            </div>
-         </div>
-      </div>
-   </div>
-</div>
+        </div>
+    @endif
+@endif
 <div class="modal fade remove-cart-modal" id="remove_cart_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">

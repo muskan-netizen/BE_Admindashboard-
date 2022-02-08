@@ -64,6 +64,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/stripe', 'Front\StripeGatewayController@postPaymentViaStripe')->name('payment.stripe');
 	Route::post('user/subscription/payment/stripe', 'Front\StripeGatewayController@subscriptionPaymentViaStripe')->name('user.subscription.payment.stripe');
 
+	// Stripe FPX
+	Route::post('payment/create/stripe_fpx', 'Front\StripeGatewayController@createStripeFPXPaymentIntent')->name('payment.create.stripe_fpx');
+	Route::get('payment/retrieve/stripe_fpx', 'Front\StripeGatewayController@retrieveStripeFPXPaymentIntent')->name('payment.retrieve.stripe_fpx');
+
 	// Paypal
 	Route::post('payment/paypal', 'Front\PaypalGatewayController@paypalPurchase')->name('payment.paypalPurchase');
 	Route::get('payment/paypal/CompletePurchase', 'Front\PaypalGatewayController@paypalCompletePurchase')->name('payment.paypalCompletePurchase');
@@ -110,6 +114,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::match(['get','post'],'payment/pagarme/page','Front\PagarmeController@beforePayment')->name('payment.pagarme.beforePayment');
 	Route::post('payment/pagarme','Front\PagarmeController@createPayment')->name('payment.pagarme.createPayment');
 	Route::post('payment/pagarme/card','Front\PagarmeController@createPaymentCard')->name('payment.pagarme.createPaymentCard');
+
+	//Authorize.Net
+	Route::match(['get','post'],'payment/authorize/page','Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
+	Route::post('payment/authorize','Front\AuthorizeGatewayController@createPayment')->name('payment.authorize.createPayment');
 
 	// Checkout
 	Route::post('payment/checkout', 'Front\CheckoutGatewayController@checkoutPurchase')->name('payment.checkoutPurchase');

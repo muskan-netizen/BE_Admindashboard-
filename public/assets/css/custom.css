@@ -119,10 +119,26 @@ body .dropify-wrapper .dropify-message p {font-size: 12px !important;line-height
 body .dropify-wrapper .dropify-message p.dropify-error {color: #f00;font-weight: 400;}
 body .dropify-wrapper .dropify-message span.file-icon{font-size: 30px;}
 body .menu-title+.nav-second-level>li>a span:first-child{vertical-align: top;}
-span.icon-customer.al img {width: 20px;margin-top: -4px;filter: grayscale(1);}
 .menu-title+.nav-second-level>li>a:hover img{filter: grayscale(0);}
-
-
-
+span.icon-payment-option_s.aldelivery svg {height: 16px;}
+.menu-title+.nav-second-level>li>a:hover .cls-2,
+.menu-title+.nav-second-level>li>a:hover .cls-1{fill: #43bee1 ;}
+p.position-absolute.al_switchery {
+right: 0;
+top: auto;
+bottom: 0;
+}
+.al_banner_drag.position-relative p{margin-bottom: 5px;}
+.al_banner_drag .dragula-handle::before {
+top: -2px;
+position: absolute;
+}
+.al_banner_drag span.dragula-handle {
+height: auto;
+width: auto;
+font-size: 24px;
+}
+.al_drag_border{border-radius: 5px;}
+.al_drag_drop .card-body .row:nth-child(even){background-color: #eee;;}
 @media(max-width:1499px){h1.control-label {font-size: 46px;}}
 @media(max-width:767px){.al_add_user{margin-top: 0;}}

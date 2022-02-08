@@ -80,6 +80,9 @@
                 $passphrase = (isset($creds->passphrase)) ? $creds->passphrase : '';
                 $merchant_account = (isset($creds->merchant_account)) ? $creds->merchant_account : '';
                 $multiplier = (isset($creds->multiplier)) ? $creds->multiplier : '';
+                $login_id = (isset($creds->login_id)) ? $creds->login_id : '';
+                $transaction_key = (isset($creds->transaction_key)) ? $creds->transaction_key : '';
+                $client_key = (isset($creds->client_key)) ? $creds->client_key : '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -116,6 +119,25 @@
                                 <div class="form-group mb-2">
                                     <label for="stripe_publishable_key" class="mr-3">{{ __("Publishable Key") }}</label>
                                     <input type="password" name="stripe_publishable_key" id="stripe_publishable_key" class="form-control" value="{{$publishable_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'stripe_fpx') )
+                    <div class="mt-2" id="stripe_fpx_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_fpx_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="stripe_fpx_secret_key" id="stripe_fpx_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="stripe_fpx_publishable_key" class="mr-3">{{ __("Publishable Key") }}</label>
+                                    <input type="password" name="stripe_fpx_publishable_key" id="stripe_fpx_publishable_key" class="form-control" value="{{$publishable_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>
@@ -402,6 +424,30 @@
                         </div>
                     </div>
                     @endif
+                    @if ( (strtolower($opt->code) == 'authorize_net') )
+                    <div class="mt-2" id="authorize_net_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="authorize_net_login_id" class="mr-3">{{ __("Login ID") }}</label>
+                                    <input type="text" name="authorize_net_login_id" id="authorize_net_login_id" class="form-control" value="{{$login_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="authorize_net_transaction_key" class="mr-3">{{ __("Transaction Key") }}</label>
+                                    <input type="password" name="authorize_net_transaction_key" id="authorize_net_transaction_key" class="form-control" value="{{$transaction_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="authorize_net_client_key" class="mr-3">{{ __("Public Client Key") }}</label>
+                                    <input type="text" name="authorize_net_client_key" id="authorize_net_client_key" class="form-control" value="{{$client_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
             @endforeach
@@ -425,7 +471,7 @@
         </div>
         <div class="row">
             @foreach($payoutOption as $key => $opt)
-            <div class="col-md-4 mb-3">
+            <div class="col-md-2 mb-3">
 
                 <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
                 <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">

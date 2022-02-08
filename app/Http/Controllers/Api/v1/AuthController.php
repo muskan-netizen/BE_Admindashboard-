@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
-use App\Models\{User, Client, ClientPreference, BlockedToken, Otp, Country, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate};
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate};
 use Log;
 
 class AuthController extends BaseController
@@ -134,7 +134,9 @@ class AuthController extends BaseController
         $data['auth_token'] =  $token;
         $data['source'] = $user->image;
         $data['verify_details'] = $verified;
-        $data['is_admin'] = $user->is_admin;
+        $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
+        $data['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+        //$data['is_admin'] = $user->is_admin;
         $data['client_preference'] = $prefer;
         $data['dial_code'] = $user->dial_code;
         $data['phone_number'] = $user->phone_number;
@@ -803,7 +805,9 @@ class AuthController extends BaseController
             $data['auth_token'] =  $token;
             $data['source'] = $user->image;
             $data['verify_details'] = $verified;
-            $data['is_admin'] = $user->is_admin;
+            $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
+            $data['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+            //$data['is_admin'] = $user->is_admin;
             $data['client_preference'] = $prefer;
             $data['dial_code'] = $user->dial_code;
             $data['phone_number'] = $user->phone_number;
@@ -1010,7 +1014,9 @@ class AuthController extends BaseController
                 $data['auth_token'] =  $token;
                 $data['source'] = $user->image;
                 $data['verify_details'] = $verified;
-                $data['is_admin'] = $user->is_admin;
+                $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
+                $data['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+                //$data['is_admin'] = $user->is_admin;
                 $data['client_preference'] = $prefer;
                 $data['dial_code'] = $user->dial_code;
                 $data['phone_number'] = $user->phone_number;

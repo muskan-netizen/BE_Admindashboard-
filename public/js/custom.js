@@ -7,31 +7,13 @@ jQuery(window).scroll(function() {
     }
 });
 
-window.onload = function() {
 
-    var placeholder = document.querySelector('.placeholder'),
-        small = placeholder.querySelector('.img-small')
-
-    // 1: load small image and show it
-    var img = new Image();
-    img.src = small.src;
-    img.onload = function () {
-     small.classList.add('loaded');
-    };
-
-    // 2: load large image
-    var imgLarge = new Image();
-    imgLarge.src = placeholder.dataset.large;
-    imgLarge.onload = function () {
-      imgLarge.classList.add('loaded');
-    };
-    placeholder.appendChild(imgLarge);
-  }
 
 // Material Select Initialization
 $(document).ready(function() {
-    $('.mdb-select').materialSelect();
-    });
+    //$('.mdb-select').materialSelect();
+
+});
 
 $(function() {
     document.ajax_loading = false;
@@ -516,8 +498,32 @@ $(document).ready(function() {
         card.mount('#stripe-card-element');
     }
 
+    function stripeFPXInitialize() {
+        stripe_fpx = Stripe(stripe_fpx_publishable_key);
+        var elements = stripe_fpx.elements();
+        var style = {
+            base: {
+              // Add your base input styles here. For example:
+              padding: '10px 12px',
+              color: '#32325d',
+              fontSize: '16px',
+            },
+        };
+        fpxBank = elements.create('fpxBank',
+            {
+              style: style,
+              accountHolderType: 'individual',
+            }
+        );
+        // Add an instance of the fpxBank Element into the container with id `fpx-bank-element`.
+        fpxBank.mount('#fpx-bank-element');
+    }
+
     if ($("#stripe-card-element").length > 0) {
         stripeInitialize();
+    }
+    if ($("#fpx-bank-element").length > 0) {
+        stripeFPXInitialize();
     }
 
     $(document).delegate(".subscribe_btn", "click", function() {
@@ -625,6 +631,8 @@ $(document).ready(function() {
                 paymentViaPagarme('', '');
             }else if (payment_option_id == 17) {
                 paymentViaCheckout('', '');
+            }else if (payment_option_id == 18) {
+                paymentViaAuthorize('', '');
             }
         } else {
             _this.attr("disabled", false);
@@ -833,7 +841,7 @@ $(document).ready(function() {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions:specific_instructions,task_type: task_type,schedule_dropoff:schedule_dropoff, schedule_pickup:schedule_pickup,schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor , delivery_type : delivery_type ,slot:slot},
+                data: { specific_instructions:specific_instructions,task_type: task_type,schedule_dropoff:schedule_dropoff, schedule_pickup:schedule_pickup,schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor , delivery_type : delivery_type ,slot:slot,address : address},
                 success: function(response) {
                     if (response.status == "Success") {
                         $.ajax({
@@ -852,6 +860,7 @@ $(document).ready(function() {
                                     $('#proceed_to_pay_modal').modal('show');
                                     $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
                                     stripeInitialize();
+                                    stripeFPXInitialize();
                                 }
                             },
                             error: function(error) {
@@ -1335,7 +1344,17 @@ $(document).ready(function() {
                     paymentViaStripe(result.token.id, address_id, payment_option_id,delivery_type);
                 }
             });
-        } else if (payment_option_id == 8) {
+        }
+        else if (payment_option_id == 19) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaStripeFPX(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
+        }
+        else if (payment_option_id == 8) {
             var order;
             inline.createToken().then(function(result) {
                 if (result.error) {
@@ -1419,6 +1438,14 @@ $(document).ready(function() {
             var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
             if (order != '') {
                 paymentViaCheckout(address_id, order);
+            } else {
+                return false;
+            }
+        }
+        else if (payment_option_id == 18) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaAuthorize(address_id, order);
             } else {
                 return false;
             }
@@ -1600,6 +1627,8 @@ $(document).ready(function() {
             paymentViaPagarme('', '');
         }else if (payment_option_id == 17) {
             paymentViaCheckout('', '');
+        }else if (payment_option_id == 18) {
+            paymentViaAuthorize('', '');
         }
     });
     $(document).on("click", ".remove_promo_code_btn", function() {

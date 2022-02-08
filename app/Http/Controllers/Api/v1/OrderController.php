@@ -402,6 +402,7 @@ class OrderController extends BaseController
                     $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                     $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                     $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
+                    $order->scheduled_slot = $cart->scheduled_slot ?? null;
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
                     $order->payable_amount = $payable_amount;
@@ -994,7 +995,7 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner'])
+        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request'])
             ->whereHas('orderDetail', function ($q1) {
                 $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1]);
                 $q1->orWhere(function ($q2) {
