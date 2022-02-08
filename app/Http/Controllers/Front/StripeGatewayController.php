@@ -149,13 +149,28 @@ class StripeGatewayController extends FrontController
             $secret_key = stripeFPXPaymentCredentials()->secret_key;
             $stripe = new \Stripe\StripeClient($secret_key);
 
-            $res = $stripe->webhookEndpoints->create([
-                'url' => url('payment/webhook/stripe_fpx'),
-                'enabled_events' => [
-                    'payment_intent.succeeded',
-                    'payment_intent.payment_failed'
-                ]
-            ]);
+            // $stripe->webhookEndpoints->delete(
+            //     'we_1KQXhFA3MquWN79FKLUy0Zzp',
+            //     []
+            // );
+            // $stripe->webhookEndpoints->delete(
+            //     'we_1KQXc3A3MquWN79FjGGWHT66',
+            //     []
+            // );
+            // $stripe->webhookEndpoints->delete(
+            //     'we_1KQX8gA3MquWN79FmZFGhD9G',
+            //     []
+            // );
+            // $res = $stripe->webhookEndpoints->all(['limit' => 3]);
+
+            // $res = $stripe->webhookEndpoints->create([
+            //     'url' => 'https://sales.alerthire.com/payment/webhook/stripe_fpx',
+            //     'enabled_events' => [
+            //         'payment_intent.succeeded',
+            //         'payment_intent.payment_failed'
+            //     ]
+            // ]);
+            // return response()->json($res);
 
             $user = Auth::user();
             $order_number = $request->order_number;
@@ -301,16 +316,16 @@ class StripeGatewayController extends FrontController
                     if($request->has('order')){
                         $order = Order::where('order_number', $request->order)->first();
                         if($order){
-                            $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-                            foreach($order_products as $order_prod){
-                                OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
-                            }
-                            OrderProduct::where('order_id', $order->id)->delete();
-                            OrderProductPrescription::where('order_id', $order->id)->delete();
-                            VendorOrderStatus::where('order_id', $order->id)->delete();
-                            OrderVendor::where('order_id', $order->id)->delete();
-                            OrderTax::where('order_id', $order->id)->delete();
-                            $order->delete();
+                            // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                            // foreach($order_products as $order_prod){
+                            //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                            // }
+                            // OrderProduct::where('order_id', $order->id)->delete();
+                            // OrderProductPrescription::where('order_id', $order->id)->delete();
+                            // VendorOrderStatus::where('order_id', $order->id)->delete();
+                            // OrderVendor::where('order_id', $order->id)->delete();
+                            // OrderTax::where('order_id', $order->id)->delete();
+                            // $order->delete();
                             return Redirect::to(route('showCart'))->with('error', 'Your order has been cancelled');
                         }
                     }
@@ -323,14 +338,14 @@ class StripeGatewayController extends FrontController
     }
 
 
-    public function webhook(Request $request)
+    public function stripeFPXWebhook(Request $request)
     {
         $secret_key = stripeFPXPaymentCredentials()->secret_key;
         \Stripe\Stripe::setApiKey($secret_key);
 
         $payload = @file_get_contents('php://input');
         $event = null;
-
+        \Log::info($payload);
         try {
             $event = \Stripe\Event::constructFrom(
                 json_decode($payload, true)
@@ -347,12 +362,12 @@ class StripeGatewayController extends FrontController
                 $paymentIntent = $event->data->object;
                 \Log::info($paymentIntent);
                 break;
-
+            
             case 'payment_intent.payment_failed':
                 $paymentIntent = $event->data->object;
                 \Log::info($paymentIntent);
                 break;
-
+            
             // ... handle other event types
             default:
                 echo 'Received unknown event type ' . $event->type;
