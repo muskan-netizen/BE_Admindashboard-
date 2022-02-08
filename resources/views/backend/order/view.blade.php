@@ -454,7 +454,7 @@ $timezone = Auth::user()->timezone;
 </div>
 
 <!-- Order Invoice Code -->
-<div style="display: block;">
+<div style="display: none;">
 @include('backend.order.print')
 </div>
 <!--End Order Invoice Code -->
