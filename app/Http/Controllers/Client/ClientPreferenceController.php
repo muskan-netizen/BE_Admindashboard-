@@ -12,8 +12,9 @@ use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
 class ClientPreferenceController extends BaseController{
-
+    use \App\Http\Traits\ClientPreferenceManager;
     use ApiResponser;
+
     public function index(){
         $client = Auth::user();
         $mapTypes = MapProvider::where('status', '1')->get();
@@ -320,10 +321,10 @@ class ClientPreferenceController extends BaseController{
                     $res = $client->post($url.'/api/check-dispatcher-keys');
                     $response = json_decode($res->getBody(), true);
                     if($response && $response['status'] == 400){
-                        return redirect()->route('configure.index')->with('error', 'Last Mile Delivery Keys incorrect !');
+                        return redirect()->back()->with('error', 'Last Mile Delivery Keys incorrect !');
                     }
                 }catch(\Exception $e){
-                    return redirect()->route('configure.index')->with('error', 'Invalid Last Mile Delivery Dispatcher URL !');
+                    return redirect()->back()->with('error', 'Invalid Last Mile Delivery Dispatcher URL !');
                 }
                 $preferenceset->need_delivery_service = ($request->has('need_delivery_service') && $request->need_delivery_service == 'on') ? 1 : 0;
                 $preferenceset->delivery_service_key_url = $request->delivery_service_key_url;
@@ -421,33 +422,6 @@ class ClientPreferenceController extends BaseController{
     }
 
 
-
-
-     # get last mile teams
-     public function getLastMileTeams(){
-        try {
-            $dispatch_domain = $this->checkIfLastMileOn();
-                if ($dispatch_domain && $dispatch_domain != false) {
-
-                    $unique = Auth::user()->code;
-
-                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key,
-                                                        'shortcode' => $dispatch_domain->delivery_service_key_code,
-                                                        'content-type' => 'application/json']
-                                                            ]);
-                            $url = $dispatch_domain->delivery_service_key_url;
-                            $res = $client->get($url.'/api/get-all-teams');
-                            $response = json_decode($res->getBody(), true);
-                            if($response && $response['message'] == 'success'){
-                                return $response['teams'];
-                            }
-
-                }
-            }
-            catch(\Exception $e){
-
-            }
-    }
     # get laundry teams
     public function getLaundryTeams(){
         try {
@@ -472,14 +446,6 @@ class ClientPreferenceController extends BaseController{
             catch(\Exception $e){
 
             }
-    }
-    # check if last mile delivery on
-    public function checkIfLastMileOn(){
-        $preference = ClientPreference::first();
-        if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
-            return $preference;
-        else
-            return false;
     }
 
 

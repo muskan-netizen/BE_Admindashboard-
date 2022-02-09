@@ -266,6 +266,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('deliveryoption', 'Client\DeliveryOptionController');
         Route::post('delivery/dunzo', 'Client\DeliveryOptionController@dunzo')->name('delivery.dunzo');
         Route::post('delivery/ahoy', 'Client\DeliveryOptionController@ahoy')->name('delivery.ahoy');
+        Route::post('delivery/last_mile_delivery','Client\DeliveryOptionController@last_mile_delivery')->name('delivery.last_mile_delivery');
         Route::resource('tools','Client\ToolsController');
         Route::post('tools/tax','Client\ToolsController@taxCopy')->name('tools.taxCopy');
         Route::post('tool/uploadImage','Client\ToolsController@uploadImage')->name('tools.uploadImage');
