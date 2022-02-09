@@ -965,6 +965,7 @@ $(document).ready(function() {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
+                        stripeFPXInitialize();
                     }
                 }
             },
