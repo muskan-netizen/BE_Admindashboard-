@@ -1035,7 +1035,7 @@ class CartController extends BaseController
                 $cart->wallet_amount_used = $wallet_amount_used;
             }
         }
-        if($delivery_status == 0 && $duration->closed_store_order_scheduled == 1)
+        if($delivery_status == 0 && @$duration->closed_store_order_scheduled == 1)
         {
             $cart->deliver_status = 1;
         }else{
