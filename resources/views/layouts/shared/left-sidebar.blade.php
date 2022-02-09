@@ -73,7 +73,7 @@
                         <!-- <span class="icon-orders"></span> -->
                         <span>{{ __('ORDERS') }}</span>
                     </a>
-                    <ul class="nav-second-level">
+                    <ul class="nav-second-level p-0 mx-2">
                             @if(in_array('dashboard',$allowed) || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="{{route('client.dashboard')}}">
