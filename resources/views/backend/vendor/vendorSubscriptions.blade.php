@@ -204,7 +204,7 @@
 
 <script type="text/template" id="payment_method_template">
     <% if(payment_options == '') { %>
-        <h6>Payment Options Not Avaialable</h6>
+        <h6>{{__('Payment Options Not Avaialable')}}</h6>
     <% }else{ %>
         <% _.each(payment_options, function(payment_option, k){%>
             <% if( (payment_option.slug != 'cash_on_delivery') && (payment_option.slug != 'loyalty_points') ) { %>

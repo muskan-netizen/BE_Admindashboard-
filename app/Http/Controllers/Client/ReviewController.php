@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
 
-use App\Models\{Product, ClientCurrency, ClientPreference, LoyaltyCard};
+use App\Models\{Product, ClientCurrency, ClientPreference, LoyaltyCard,OrderProductRating};
 
 class ReviewController extends BaseController
 {
@@ -51,7 +51,7 @@ class ReviewController extends BaseController
                 ->addColumn('product_name', function ($row) {
 
                     $view_url    =  route('review.show', [$row->sku]);
-                    $btn  = '<a href="'.$view_url.'" target="_blank" >'.$row->translation_one->title.'</a>';
+                    $btn  = '<a href="'.$view_url.'" target="_blank" >'.($row->translation_one->title ?? $row->sku ).'</a>';
 
                    // $btn  = $row->translation_one->title;
                     return $btn;
@@ -124,9 +124,11 @@ class ReviewController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($product_id,Request $request)
+    public function destroy(Request $request,$domain = '',$review_id)
     {
-   }
+        OrderProductRating::where('id',$review_id)->delete();
+        return redirect()->back()->with('success', __('Review deleted successfully!'));
+    }
 
       /**
      * update the specified country resource from storage.

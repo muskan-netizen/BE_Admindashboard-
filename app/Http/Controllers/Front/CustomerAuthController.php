@@ -641,7 +641,7 @@ class CustomerAuthController extends FrontController
 
     public function postVendorregister(Request $request, $domain = ''){
         try {
-            pr($request->all());
+            //pr($request->all());
             DB::beginTransaction();
             $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
             if (empty($request->input('user_id'))) {
