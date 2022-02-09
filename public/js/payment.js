@@ -968,7 +968,7 @@ $(document).ready(function() {
         let returnParams = '';
 
         let ajaxData = [];
-        if (cartElement.length > 0) {
+        if (path.indexOf("cart") !== -1) {
             total_amount = cartElement.val();
             payment_form = 'cart';
             ajaxData.push(
@@ -977,11 +977,11 @@ $(document).ready(function() {
                 {name: 'payment_form', value: 'cart'}
             );
             returnParams += 'order=' + order.order_number;
-        } else if (walletElement.length > 0) {
+        } else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
             payment_form = 'wallet';
             ajaxData.push({name: 'payment_form', value: 'wallet'});
-        } else if (subscriptionElement.length > 0) {
+        } else if (path.indexOf("subscription") !== -1) {
             total_amount = subscriptionElement.val();
             payment_form = 'subscription';
             ajaxData = $("#subscription_payment_form").serializeArray();
