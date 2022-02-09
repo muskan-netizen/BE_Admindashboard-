@@ -216,7 +216,7 @@
                         <select class="form-control {{ (!empty($vendor_registration_document->is_required))?'required':''}}" name="{{$vendor_registration_document->primary->slug}}"  id="input_file_selector_{{$vendor_registration_document->id}}">
                             <option value="" >{{__('Please Select '). ($vendor_registration_document->primary ? $vendor_registration_document->primary->name : '') }}</option>
                             @foreach ($vendor_registration_document->options as $key =>$value )
-                                <option value="{{$value->id}}">{{$value->translation? $value->translation->name: ""}}</option>
+                                <option value="{{$value->id}}" {{ ($value->id == $field_value) ? 'selected':'' }} >{{$value->translation? $value->translation->name: ""}}</option>
                             @endforeach
                         </select>
                         <span class="invalid-feedback" id="{{$vendor_registration_document->primary->slug}}_error"><strong></strong></span>

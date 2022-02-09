@@ -21,8 +21,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\ShiprocketController;
-use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout};
+use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout,VendorRegistrationSelectOption};
 use GuzzleHttp\Client as GCLIENT;
+use App\Exports\VendorSimpelExport;
 use DB;
 use App\Models\VendorRegistrationDocument;
 
@@ -1107,10 +1108,11 @@ class VendorController extends BaseController
                 $csv_vendor_import->save();
             }
             $data = Excel::import(new VendorImport($csv_vendor_import->id), $request->file('vendor_csv'));
-            return response()->json([
-                'status' => 'success',
-                'message' => 'File Successfully Uploaded!'
-            ]);
+            //pr($data);
+            // return response()->json([
+            //     'status' => 'success',
+            //     'message' => 'File Successfully Uploaded!'
+            // ]);
         }
         return response()->json([
             'status' => 'error',
@@ -1538,6 +1540,8 @@ class VendorController extends BaseController
                     }
 
         }
-
-
+        // this vendio export ony for get simel vendor ewport
+        public function export() {
+            return Excel::download(new VendorSimpelExport, 'vendor_simpel.xlsx');
+        }
 }

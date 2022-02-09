@@ -212,6 +212,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/updateSlot/{id}', 'Client\VendorSlotController@update')->name('vendor.updateSlot');
         Route::post('vendor/deleteSlot/{id}', 'Client\VendorSlotController@destroy')->name('vendor.deleteSlot');
         Route::post('vendor/importCSV', 'Client\VendorController@importCsv')->name('vendor.import');
+        Route::get('vendor/export/CSV', 'Client\VendorController@export')->name('vendor.export');
         Route::post('vendor/serviceArea/{vid}', 'Client\ServiceAreaController@store')->name('vendor.serviceArea');
         Route::post('vendor/editArea/{vid}', 'Client\ServiceAreaController@edit')->name('vendor.serviceArea.edit');
         Route::post('vendor/updateArea/{id}', 'Client\ServiceAreaController@update');
