@@ -656,3 +656,14 @@ function stripeFPXPaymentCredentials(){
     return $response;
 }
 
+function getServerURL(){
+    $client = ClientData::where('id', '>', 0)->first();
+    $domain = '';
+    if(!empty($client->custom_domain)){
+        $domain = $client->custom_domain;
+    }else{
+        $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+    }
+    $server_url = "https://".$domain."/";
+    return $server_url;
+}

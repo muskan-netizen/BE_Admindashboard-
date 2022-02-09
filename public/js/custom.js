@@ -664,6 +664,8 @@ $(document).ready(function() {
                 paymentViaCheckout('', '');
             }else if (payment_option_id == 18) {
                 paymentViaAuthorize('', '');
+            }else if (payment_option_id == 18) {
+                paymentViaStripeFPX('', 19, '');
             }
         } else {
             _this.attr("disabled", false);
