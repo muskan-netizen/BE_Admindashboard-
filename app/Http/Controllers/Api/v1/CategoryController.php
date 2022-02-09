@@ -20,7 +20,8 @@ class CategoryController extends BaseController
     public function categoryData(Request $request, $cid = 0)
     {
         try {
-            $paginate = $request->has('limit') ? $request->limit : 12;
+            $limit = $request->has('limit') ? $request->limit : 12;
+            $page = $request->has('page') ? $request->page : 1;
             $product_list = $request->has('product_list') ? $request->product_list : 'false';
             $mod_type = $request->has('type') ? $request->type : 'delivery';
             if ($cid == 0) {
@@ -68,14 +69,14 @@ class CategoryController extends BaseController
             $category->share_link = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/category/" . $category->slug;
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
-            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $paginate, $userid, $product_list, $mod_type, $mode_of_service);
+            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page);
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 
-    public function listData($langId, $category_id, $type = '', $limit = 12, $userid, $product_list, $mod_type, $mode_of_service = null)
+    public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1)
     {
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
 
@@ -117,7 +118,7 @@ class CategoryController extends BaseController
                 $vendorData = $vendorData->whereIn('id', $ses_vendors);
             }
 
-            $vendorData = $vendorData->where($mod_type, 1)->where('status', 1)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit);
+            $vendorData = $vendorData->where($mod_type, 1)->where('status', 1)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit, $page);
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
                 $vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
@@ -179,7 +180,7 @@ class CategoryController extends BaseController
                     $q->where('language_id', $langId);
                 }
             ])->select('products.category_id', 'products.id', 'mode_of_service', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
-                ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit);
+                ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
                     $product->vendor->is_vendor_closed = 0;
@@ -239,7 +240,7 @@ class CategoryController extends BaseController
                     });
                 }
             }
-            $vendorData = $vendorData->where('status', 1)->whereIn('id', $vendor_ids)->with('slot', 'products')->paginate($limit);
+            $vendorData = $vendorData->where('status', 1)->whereIn('id', $vendor_ids)->with('slot', 'products')->paginate($limit, $page);
             // $avgRating = $vendorData->products->avg('averageRating');
             // $vendorData->avgRating = "fmwjkenf";
             foreach ($vendorData as $vendor) {
@@ -304,7 +305,7 @@ class CategoryController extends BaseController
                     $q->where('language_id', $langId);
                 }
             ])->select('products.category_id', 'mode_of_service', 'products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
-                ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit);
+                ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
                     foreach ($product->addOn as $key => $value) {
@@ -381,7 +382,7 @@ class CategoryController extends BaseController
             ->wherehas('bc', function($q) use($category_id){
                 $q->where('category_id', $category_id);
             })
-            ->select('id', 'title', 'image', 'image_banner')->where('status', 1)->orderBy('position', 'asc')->paginate($limit);
+            ->select('id', 'title', 'image', 'image_banner')->where('status', 1)->orderBy('position', 'asc')->paginate($limit, $page);
             return $brands;
         }
         else {
