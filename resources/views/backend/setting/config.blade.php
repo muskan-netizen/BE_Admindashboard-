@@ -158,73 +158,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div>
          @endif
 
-         @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry')
-         <div class="col-lg-3 col-md-6 mb-3">
-            <!-- Last Mile Delivery section start -->
-            <div class="card-box h-100">
-               <div class="d-flex align-items-center justify-content-between mb-2">
-                  <h4 class="header-title mb-0">{{ __("Last Mile Delivery") }}</h4>
-                  <button class="btn btn-info d-block" type="submit" name="last_mile_submit_btn" value ="1"> {{ __("Save") }} </button>
-               </div>
-               <p class="sub-header">{{ __("Offer Last Mile Delivery with Dispatcher.") }}</p>
-               <div class="row">
-                  <div class="col-12">
-                     <div class="form-group mb-0">
-                        <div class="form-group mb-0 switchery-demo">
-                           <label for="need_delivery_service" class="mr-3">{{ __("Enable") }}</label>
-                           <input data-plugin="switchery" name="need_delivery_service" id="need_delivery_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_delivery_service == '1')) checked @endif >
-                        </div>
-                     </div>
-
-                     <div class="form-group mt-3 mb-0 deliveryServiceFields" style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
-                        <label for="delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
-                        <input type="text" name="delivery_service_key_url" id="delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('delivery_service_key_url', $preference->delivery_service_key_url ?? '')}}">
-                        @if($errors->has('delivery_service_key_url'))
-                        <span class="text-danger" role="alert">
-                           <strong>{{ $errors->first('delivery_service_key_url') }}</strong>
-                        </span>
-                        @endif
-                     </div>
-                     <div class="form-group mt-3 mb-0 deliveryServiceFields" style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
-                        <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
-                        <input type="text" name="delivery_service_key_code" id="delivery_service_key_code" placeholder="" class="form-control" value="{{ old('delivery_service_key_code', $preference->delivery_service_key_code ?? '')}}">
-                        @if($errors->has('delivery_service_key_code'))
-                        <span class="text-danger" role="alert">
-                           <strong>{{ $errors->first('delivery_service_key_code') }}</strong>
-                        </span>
-                        @endif
-                     </div>
-                     <div class="form-group mt-3 mb-0 deliveryServiceFields" style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
-                        <label for="delivery_service_key">{{ __("Dispatcher API key") }}</label>
-                        <input type="text" name="delivery_service_key" id="delivery_service_key" placeholder="" class="form-control" value="{{ old('delivery_service_key', $preference->delivery_service_key ?? '')}}">
-                        @if($errors->has('delivery_service_key'))
-                        <span class="text-danger" role="alert">
-                           <strong>{{ $errors->first('delivery_service_key') }}</strong>
-                        </span>
-                        @endif
-                     </div>
-
-                     @if($last_mile_teams != null && count($last_mile_teams))
-                     <div class="form-group mt-3 mb-0" style="{{(isset($preference) && $preference->need_delivery_service == '1') ? '' : 'display: none;'}}" id="lastMileTeamListDiv">
-                        <div class="form-group">
-                            {!! Form::label('title', __('Team Tag For Last Mile'),['class' => 'control-label']) !!}
-                            <select class="form-control" id="lastMileTeamList" name="last_mile_team" data-toggle="select2" >
-                              <option value="0">{{__('Select Team Tag')}}</option>
-                              @foreach($last_mile_teams as $nm)
-                                 <option value="{{$nm['name']}}" @if($preference->last_mile_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
-                              @endforeach
-
-                            </select>
-                        </div>
-                     </div>
-                     @endif
-
-
-                  </div>
-               </div>
-            </div><!-- Last Mile Delivery section end -->
-         </div>
-         @endif
 
 
 
@@ -2687,21 +2620,10 @@ $sms_crendential = json_decode($preference->sms_credentials);
          }
       }
 
-      var delivery_service = $('#need_delivery_service');
       var dispatcherDiv = $('#need_dispacher_ride');
       var need_dispacher_home_other_service = $('#need_dispacher_home_other_service');
       var laundry_service = $('#need_laundry_service');
 
-      if(delivery_service.length > 0){
-         delivery_service[0].onchange = function() {
-
-            if ($('#need_delivery_service:checked').length != 1) {
-               $('.deliveryServiceFields').hide();
-            } else {
-               $('.deliveryServiceFields').show();
-            }
-         }
-      }
 
       if(laundry_service.length > 0){
          laundry_service[0].onchange = function() {
