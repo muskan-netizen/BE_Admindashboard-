@@ -1141,13 +1141,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </span>
                      </div>
                   </div>
-                  <div class="col-md-4">
-                     <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="page_header" class="mr-2 mb-0">{{__('Tools')}}<small class="d-block pr-5"></small></label>
-                       <span> <input type="checkbox" data-plugin="switchery" name="tools_mode" id="tools_mode" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tools_mode == '1')) checked='checked' @endif>
-                        </span>
-                     </div>
-                  </div>
 
                      <div class="col-md-12">
                         <div class="form-group mb-0 text-md-left">
