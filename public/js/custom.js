@@ -110,7 +110,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider(){
     });
 }
 
-// loadMainMenuSlider();
+ loadMainMenuSlider();
 
 window.resizeMenuSlider = function resizeMenuSlider(){
     var windowWidth = $(window).width();
@@ -120,7 +120,7 @@ window.resizeMenuSlider = function resizeMenuSlider(){
         if(!$('.menu-slider').hasClass('slick-initialized')){
 
             setTimeout(function(){
-                loadMainMenuSlider();
+                //loadMainMenuSlider();
                 if ( $('#main-menu .slick-slide').length > 13 ) {
                     $('#main-menu').addClass('items-center');
                 }

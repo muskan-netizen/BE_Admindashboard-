@@ -66,7 +66,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                     <h4 class="mt-0">{{ __('Contact Us') }}</h4>
                                 </div>
                                 <div class="footer-contant">
-                                    <ul class="contact-list">
+                                    <ul class="contact-list al">
                                         <li class="pl-0"><i class="icon-location"></i> <span>{{$clientData ? ($clientData->contact_address ?? $clientData->company_address)  : ''}}</span></li>
                                         <li class="pl-0"><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? ($clientData->contact_phone_number ?? $clientData->phone_number) : ''}}"><span>{{$clientData ?  ($clientData->contact_phone_number ?? $clientData->phone_number) : ''}}</span></a></li>
                                         <li class="pl-0"><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}" style="text-transform:none"><span>{{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}</span></a></li>

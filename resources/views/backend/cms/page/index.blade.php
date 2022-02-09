@@ -17,7 +17,7 @@
         </div>
     </div>
     <div class="row cms-cols al_custom_cms_page">
-        <div class="col-lg-5 col-xl-3 mb-2">
+        <div class="col-md-5 col-xl-3 mb-2">
             <div class="card">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-3">
@@ -83,7 +83,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-7 col-xl-6 mb-2 cms-content">
+        <div class="col-md-7 col-xl-6 mb-2 cms-content">
             <div class="card">
                 <div class="card-body p-3" id="edit_page_content">
                     <div class="row">
@@ -94,7 +94,7 @@
                         </div>
                     </div>
                     <div class="row align-items-center">
-                        <div class="col-lg-6 mb-2">
+                        <div class="col-md-12 col-xl-6 mb-2">
                             <!-- <label for="title" class="control-label">{{ __("Title") }}</label> -->
                             <!-- <input class="form-control" id="edit_title" name="meta_title" type="text"> -->
                             <div class="site_link position-relative px-0">
@@ -117,7 +117,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 col-xl-2 mb-2">
+                        <div class="col-md-4  col-xl-2 mb-2">
                             <div class="form-group mb-0">
                                 <select class="form-control" id="published">
                                     <option value="0">{{ __("Draft") }}</option>

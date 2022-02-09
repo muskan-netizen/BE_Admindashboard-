@@ -373,8 +373,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
             @else
             <div class="row">
-                <div class="col-4">{{__('Specific instructions')}}</div>
-                <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions ?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions"></div>
+
+                <div class="col-12">
+                    {{__('Specific instructions')}}
+                    <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions ?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions">
+                </div>
             </div>
            @endif
 
@@ -659,7 +662,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <div class="pref-timing">
                                         <!--<span>5-10 min</span>-->
                                     </div>
-                                    <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
+                                    <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
                                 </div>
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing px-0">
@@ -710,7 +713,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                         <div class="pref-timing">
                                             <!--<span>5-10 min</span>-->
                                         </div>
-                                        <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
+                                        <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
                                 </div>
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing px-0">
