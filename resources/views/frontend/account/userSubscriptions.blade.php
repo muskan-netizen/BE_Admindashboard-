@@ -300,7 +300,7 @@
                     <span class="checkround"></span>
                 </label>
                 <% if(payment_option.slug == 'stripe') { %>
-                    <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper d-none">
+                    <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper option-wrapper d-none">
                         <div class="form-control">
                             <label class="d-flex flex-row pt-1 pb-1 mb-0">
                                 <div id="stripe-card-element"></div>
@@ -309,8 +309,21 @@
                         <span class="error text-danger" id="stripe_card_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'stripe_fpx') { %>
+                    <div class="col-md-12 mt-3 mb-3 stripe_fpx_element_wrapper option-wrapper d-none">
+                        <label for="fpx-bank-element">
+                            FPX Bank
+                        </label>
+                        <div class="form-control">
+                            <div id="fpx-bank-element">
+                              <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                        </div>
+                        <span class="error text-danger" id="stripe_fpx_error"></span>
+                    </div>
+                <% } %>
                 <% if(payment_option.slug == 'yoco') { %>
-                    <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper d-none">
+                    <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
                         <div class="form-control">
                             <div id="yoco-card-frame">
                             <!-- Yoco Inline form will be added here -->
@@ -320,7 +333,7 @@
                     </div>
                 <% } %>
                 <% if(payment_option.slug == 'checkout') { %>
-                    <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper d-none">
+                    <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper option-wrapper d-none">
                         <div class="form-control card-frame">
                             <!-- form will be added here -->
                         </div>
@@ -366,13 +379,17 @@
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();
-        if(method == 'stripe'){
-            $("#subscription_payment_methods .stripe_element_wrapper").removeClass('d-none');
-        }else{
-            $("#subscription_payment_methods .stripe_element_wrapper").addClass('d-none');
+        var code = method.replace('radio-', '');
+
+        if (code != '') {
+            $("#subscription_payment_methods .option-wrapper").addClass('d-none');
+            $("#subscription_payment_methods ."+code+"_element_wrapper").removeClass('d-none');
+        } else {
+            $("#subscription_payment_methods .option-wrapper").addClass('d-none');
         }
-        if (method == 'yoco') {
-            $("#subscription_payment_methods .yoco_element_wrapper").removeClass('d-none');
+        
+        if (code == 'yoco') {
+            // $("#subscription_payment_methods .yoco_element_wrapper").removeClass('d-none');
             // Create a new dropin form instance
 
             var yoco_amount_payable = $("input[name='subscription_amount']").val();
@@ -383,15 +400,18 @@
             });
             // this ID matches the id of the element we created earlier.
             inline.mount('#yoco-card-frame');
-        } else {
-            $("#subscription_payment_methods .yoco_element_wrapper").addClass('d-none');
         }
-        if (method == 'checkout') {
-            $("#subscription_payment_methods .checkout_element_wrapper").removeClass('d-none');
+        // else {
+        //     $("#subscription_payment_methods .yoco_element_wrapper").addClass('d-none');
+        // }
+
+        if (code == 'checkout') {
+            // $("#subscription_payment_methods .checkout_element_wrapper").removeClass('d-none');
             Frames.init(checkout_public_key);
-        } else {
-            $("#subscription_payment_methods .checkout_element_wrapper").addClass('d-none');
         }
+        // else {
+        //     $("#subscription_payment_methods .checkout_element_wrapper").addClass('d-none');
+        // }
     });
 
     $(document).on('click', '.cancel-subscription-link', function(){

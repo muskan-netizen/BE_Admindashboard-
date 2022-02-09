@@ -584,6 +584,7 @@ $(document).ready(function() {
                                 }
                                 $("#subscription_payment").modal("show");
                                 stripeInitialize();
+                                stripeFPXInitialize();
                             }
                         },
                         error: function(error) {
@@ -663,6 +664,8 @@ $(document).ready(function() {
                 paymentViaCheckout('', '');
             }else if (payment_option_id == 18) {
                 paymentViaAuthorize('', '');
+            }else if (payment_option_id == 18) {
+                paymentViaStripeFPX('', 19, '');
             }
         } else {
             _this.attr("disabled", false);
@@ -927,6 +930,7 @@ $(document).ready(function() {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
+                        stripeFPXInitialize();
                     }
                 }
             },
@@ -964,6 +968,7 @@ $(document).ready(function() {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
+                        stripeFPXInitialize();
                     }
                 }
             },
@@ -1375,15 +1380,6 @@ $(document).ready(function() {
                 }
             });
         }
-        else if (payment_option_id == 19) {
-            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-            if (order != '') {
-                paymentViaStripeFPX(address_id, payment_option_id, order);
-            }
-            else{
-                return false;
-            }
-        }
         else if (payment_option_id == 8) {
             var order;
             inline.createToken().then(function(result) {
@@ -1477,6 +1473,15 @@ $(document).ready(function() {
             if (order != '') {
                 paymentViaAuthorize(address_id, order);
             } else {
+                return false;
+            }
+        }
+        else if (payment_option_id == 19) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaStripeFPX(address_id, payment_option_id, order);
+            }
+            else{
                 return false;
             }
         }
@@ -1659,6 +1664,8 @@ $(document).ready(function() {
             paymentViaCheckout('', '');
         }else if (payment_option_id == 18) {
             paymentViaAuthorize('', '');
+        }else if (payment_option_id == 19) {
+            paymentViaStripeFPX('', payment_option_id, '');
         }
     });
     $(document).on("click", ".remove_promo_code_btn", function() {
