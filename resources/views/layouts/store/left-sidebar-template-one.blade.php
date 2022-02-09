@@ -507,7 +507,8 @@ $pages = \App\Models\Page::with([
             <div class="col-12">
                <div class="shimmer_effectx d-none">
                   <ul class="sm pixelstrap sm-horizontal menu-slider">
-                     @foreach($navCategories as $cate) @if($cate['name'])
+                     @foreach($navCategories as $cate) 
+                     @if($cate['name'])
                      <li>
                         <a href="{{route('categoryDetail', $cate['slug'])}}">
                            @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
@@ -515,22 +516,26 @@ $pages = \App\Models\Page::with([
                            @endif <span><span class="loading"></span></span>
                         </a>
                      </li>
-                     @endif @endforeach
+                     @endif 
+                     @endforeach
                   </ul>
                </div>
                <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
-                  @foreach($navCategories as $cate) @if($cate['name'])
+                  @foreach($navCategories as $cate) 
+                  @if($cate['name'])
                   <li class="al_main_category">
                      <a href="{{route('categoryDetail', $cate['slug'])}}">
                         @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
                         <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
-                        @endif{{$cate['name']}}
+                        @endif
+                        {{$cate['name']}}
                      </a>
                      @if(!empty($cate['children']))
                      <ul class="al_main_category_list">
                         @foreach($cate['children'] as $childs)
                         <li>
-                           <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a> @if(!empty($childs['children']))
+                           <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a>
+                            @if(!empty($childs['children']))
                            <ul class="al_main_category_sub_list">
                               @foreach($childs['children'] as $chld)
                               <li><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
@@ -540,6 +545,10 @@ $pages = \App\Models\Page::with([
                         </li>
                         @endforeach
                     </ul>
+                    @endif
+                  </li>
+                  @endif
+                  @endforeach
                 </div>
             </div>
         </div>
@@ -555,7 +564,7 @@ $pages = \App\Models\Page::with([
       <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>"> @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif <%=category.name %> </a> <% if(category.children){%> <ul class="al_main_category_list"> <% _.each(category.children, function(childs, key1){%> <li> <a href="{{route('categoryDetail')}}/<%=childs.slug %>"><span class="new-tag"><%=childs.name %></span></a> <% if(childs.children){%> <ul class="al_main_category_sub_list"> <% _.each(childs.children, function(chld, key2){%> <li><a href="{{route('categoryDetail')}}/<%=chld.slug %>"><%=chld.name %></a></li><%}); %> </ul> <%}%> </li><%}); %> </ul> <%}%> </li>
         <% }); %>
 </script>
-@if( $client_preference_detail)
+@if($client_preference_detail)
     @if($client_preference_detail->is_hyperlocal == 1 )
         <div class="modal fade edit_address" id="edit-address" tabindex="-1" aria-labelledby="edit-addressLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">

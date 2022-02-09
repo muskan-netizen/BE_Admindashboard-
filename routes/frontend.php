@@ -11,6 +11,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
 	Route::post('webhook/shiprocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
 	Route::post('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');
+	Route::post('webhook/ahoy','AhoyController@ahoyWebhook')->name('ahoyWebhook');
 
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
