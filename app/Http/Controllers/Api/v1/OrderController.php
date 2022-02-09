@@ -1388,13 +1388,13 @@ class OrderController extends BaseController
                         OrderProduct::where('order_id', $order->id)->delete();
                         OrderProductPrescription::where('order_id', $order->id)->delete();
                         OrderTax::where('order_id', $order->id)->delete();
-                        
+
                         $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                         $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-                        
+
                         $cart_products = TempCartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
                         $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
-                        
+
                         foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                             $delivery_fee = 0;
                             $deliver_charge = $delivery_fee_charges = 0.00;
@@ -1670,7 +1670,7 @@ class OrderController extends BaseController
                             $this->sendSuccessEmail($request, $order, $vendor_id);
                         }
                         $res = $this->sendSuccessEmail($request, $order);
-                        
+
                         $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
                         // if (!in_array($request->payment_option_id, $ex_gateways)) {
                         //     Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
@@ -1754,7 +1754,7 @@ class OrderController extends BaseController
                 DB::commit();
                 return $this->successResponse($cart, __('Order rejected successfully.'), 201);
             }
-        } 
+        }
         catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -1788,7 +1788,7 @@ class OrderController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-    
+
     public function postVendorOrderStatusUpdate(Request $request)
     {
         DB::beginTransaction();
@@ -1805,6 +1805,9 @@ class OrderController extends BaseController
                 $order_status_option_id = 3;
             }
             $vendor_order_status = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->first();
+            if ($vendor_order_status->order_status_option_id == 3 ) { //$request->status_option_id == 2){
+                return response()->json(['status' => 'error', 'message' => __('This Order has been rejected.')]);
+            }
             $vendor_order_status_detail = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->where('order_status_option_id', $order_status_option_id)->first();
             if (!$vendor_order_status_detail) {
                 $vendor_order_status = new VendorOrderStatus();

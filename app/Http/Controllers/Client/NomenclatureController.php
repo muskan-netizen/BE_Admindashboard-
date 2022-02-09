@@ -25,6 +25,7 @@ class NomenclatureController extends BaseController
         $wishlist_names = $request->wishlist_names;
         $dinein_names = $request->dinein_names;
         $delivery_names = $request->delivery_names;
+        $zipCode_names = $request->zipCode_name;
         NomenClature::updateOrCreate(['id' => 1], ['label' => 'vendors']);
         NomenClature::updateOrCreate(['id' => 2], ['label' => 'Loyalty Cards']);
         NomenClature::updateOrCreate(['id' => 3], ['label' => 'Takeaway']);
@@ -32,6 +33,7 @@ class NomenclatureController extends BaseController
         NomenClature::updateOrCreate(['id' => 5], ['label' => 'Wishlist']);
         NomenClature::updateOrCreate(['id' => 6], ['label' => 'Dine-In']);
         NomenClature::updateOrCreate(['id' => 7], ['label' => 'Delivery']);
+        NomenClature::updateOrCreate(['id' => 8], ['label' => 'Zip Code']);
         if (count($names) > 0) {
             $names_value_exists = [];
             foreach ($names as $name) {
@@ -39,6 +41,7 @@ class NomenclatureController extends BaseController
                     $names_value_exists[] = $name;
                 }
             }
+
             if (count($names_value_exists) > 0) {
                 $this->validate($request, [
                     'names.0' => 'required|string',
@@ -185,6 +188,28 @@ class NomenclatureController extends BaseController
                 }
             } else {
                 NomenclatureTranslation::where('nomenclature_id', 7)->delete();
+            }
+        }
+        if (count($zipCode_names) > 0) {
+            $names_value_exists = [];
+            foreach ($zipCode_names as $name) {
+                if ($name) {
+                    $names_value_exists[] = $name;
+                }
+            }
+            if (count($names_value_exists) > 0) {
+                $this->validate($request, [
+                    'zipCode_name.0' => 'required|string',
+                ]);
+                $zipCode_language_ids = $request->zipCode_language_ids;
+                foreach ($zipCode_names as $zipCode_key => $zipCode_name) {
+                    if ($zipCode_name) {
+                        $nomenclature = NomenClature::where('label', 'Zip Code')->first();
+                        NomenclatureTranslation::updateOrCreate(['language_id' => $zipCode_language_ids[$zipCode_key], 'nomenclature_id' => $nomenclature->id], ['name' => $zipCode_name]);
+                    }
+                }
+            } else {
+                NomenclatureTranslation::where('nomenclature_id', 8)->delete();
             }
         }
         return redirect()->route('configure.customize')->with('success', 'Nomenclature Saved Successfully!');

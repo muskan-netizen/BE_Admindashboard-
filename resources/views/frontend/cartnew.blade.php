@@ -264,7 +264,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <% } %>
                         </div>
                     </div>
-                    
+
                     <% if(product.delOptions) { %>
                         <div class="row mb-1">
                             <div class="col-5 text-lg-right">
@@ -486,12 +486,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
             <hr class="my-2">
 
-            {{-- Schedual code Start at down --}}
+
+
+        </div>
+        {{-- Schedual code Start at down --}}
 
             <% if(client_preference_detail.off_scheduling_at_cart != 1 && cart_details.vendorCnt==1) { %>
                 @if($client_preference_detail->business_type != 'laundry')
-            <div class="row d-flex align-items-center arabic-lng no-gutters mt-2 mb-md-4 mb-2 position-relative" id="dateredio">
-                <div class="col-md-12 mb-2 mb-md-0 text-right">
+            <div class="row col-md-12 d-flex p-0 justify-content-end arabic-lng mt-2 mb-md-4 mb-2 position-relative" id="dateredio">
+                <div class="col mb-2 mb-md-0 text-right p-0">
                     <div class="login-form">
                         <ul class="list-inline ml-auto d-flex align-items-center justify-content-end">
                             <li class="d-inline-block mr-1">
@@ -522,7 +525,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-7 datenow d-flex align-items-center justify-content-between" id="schedule_div" style="<%= ((cart_details.schedule_type != 'schedule' ) ? 'display:none!important' : '') %>">
+                <div class="col-md-6 datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="<%= ((cart_details.schedule_type != 'schedule' ) ? 'display:none!important' : '') %>">
                     <% if(cart_details.slotsCnt ==0) { %>
                     <% if(cart_details.delay_date != 0) { %>
                         <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>"
@@ -552,8 +555,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% } %>
 
             {{-- Schedual code end at down --}}
-
-        </div>
     </div>
 </script>
 
@@ -1330,7 +1331,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     $(document).delegate('#cart_payment_form input[name="cart_payment_method"]', 'change', function() {
         var method = $(this).attr('id');
         var code = method.replace('radio-', '');
-        
+
         if (code != '') {
             $("#cart_payment_form ."+code+"_element_wrapper").removeClass('d-none');
         } else {
@@ -1349,7 +1350,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             });
             // this ID matches the id of the element we created earlier.
             inline.mount('#yoco-card-frame');
-        } 
+        }
         // else {
         //     $("#cart_payment_form .yoco_element_wrapper").addClass('d-none');
         // }
@@ -1357,7 +1358,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         if (code == 'checkout') {
             $("#cart_payment_form .checkout_element_wrapper").removeClass('d-none');
             Frames.init(checkout_public_key);
-        } 
+        }
         // else {
         //     $("#cart_payment_form .checkout_element_wrapper").addClass('d-none');
         // }

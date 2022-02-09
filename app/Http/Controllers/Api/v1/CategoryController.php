@@ -267,7 +267,8 @@ class CategoryController extends BaseController
                     'id' => $category->id,
                     'name' => $category->translation->first() ? $category->translation->first()->name : $category->slug,
                     'icon' => $category->icon,
-                    'image' => $category->image
+                    'image' => $category->image,
+                    'redirect_to' => $category->type->redirect_to
                 );
             }
             return $category_details;
