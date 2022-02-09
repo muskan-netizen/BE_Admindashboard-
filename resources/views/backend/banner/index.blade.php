@@ -205,7 +205,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
     </div>
 
 
-    <div class="row al_drag_drop" >
+    {{-- <div class="row al_drag_drop" >
         <form name="saveOrder" id="saveOrder"> @csrf </form>
         <div class="card col-md-6" id="banner-datatable">
             <div class="card-body" id="post_list" >
@@ -271,7 +271,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                 @endforeach
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>
 
 @include('backend.banner.modals')
