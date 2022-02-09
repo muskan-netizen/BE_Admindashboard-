@@ -479,7 +479,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
 
             inline = sdk.inline({
                 layout: 'field',
-                amountInCents:  yoco_amount_payable*100,
+                amountInCents:  yoco_amount_payable * 100,
                 currency: 'ZAR'
             });
             // this ID matches the id of the element we created earlier.

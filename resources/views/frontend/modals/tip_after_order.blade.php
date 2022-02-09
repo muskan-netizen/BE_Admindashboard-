@@ -65,6 +65,19 @@
                           <span class="error text-danger" id="stripe_card_error"></span>
                       </div>
                   <% } %>
+                  <% if(payment_option.slug == 'stripe_fpx') { %>
+                    <div class="col-md-12 mt-3 mb-3 stripe_fpx_element_wrapper option-wrapper d-none">
+                        <label for="fpx-bank-element">
+                            FPX Bank
+                        </label>
+                        <div class="form-control">
+                            <div id="fpx-bank-element">
+                              <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                        </div>
+                        <span class="error text-danger" id="stripe_fpx_error"></span>
+                    </div>
+                <% } %>
                   <% if(payment_option.slug == 'yoco') { %>
                     <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper d-none">
                         <div class="form-control">
