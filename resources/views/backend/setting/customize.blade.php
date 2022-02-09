@@ -27,7 +27,7 @@
     </div>
     <div class="row col-spacing">
         <div class="col-lg-3 col-xl-3 mb-3">
-            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}"> 
                 @csrf
                 <!-- Panel Theme title -->
                 <div class="card-box mb-0 h-100 pb-0">
@@ -200,8 +200,9 @@
     <div class="row">
       <!-- User Authentication start-->
       <div class="col-xl-8 mb-3">
-         <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+        <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             <input type="hidden" name="verify_config" id="verify_config" value="1">
+            <input type="hidden" name="send_to" id="send_to" value="customize">
             @csrf
                <div class="row">
                   <div class="col-md-4">
