@@ -965,6 +965,7 @@ $(document).ready(function() {
         let subscriptionElement = $("input[name='subscription_amount']");
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
+        let returnParams = '';
 
         let ajaxData = [];
         if (cartElement.length > 0) {
@@ -975,6 +976,7 @@ $(document).ready(function() {
                 {name: 'order_number', value: order.order_number},
                 {name: 'payment_form', value: 'cart'}
             );
+            returnParams += 'order=' + order.order_number;
         } else if (walletElement.length > 0) {
             total_amount = walletElement.val();
             payment_form = 'wallet';
@@ -991,8 +993,10 @@ $(document).ready(function() {
                 {name: 'payment_form', value: 'tip'},
                 {name: 'order_number', value: order.order_number}
             );
+            returnParams += 'order=' + order.order_number;
         }
         ajaxData.push({ name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id });
+        returnParams += '&amount=' + total_amount + '&payment_form=' + payment_form;
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1006,7 +1010,7 @@ $(document).ready(function() {
                             fpx: fpxBank
                         },
                         // Return URL where the customer should be redirected after the authorization
-                        return_url: payment_retrive_stripe_fpx_url + '?amount='+total_amount+'&order=' + order.order_number + '&payment_form=' + payment_form,
+                        return_url: payment_retrive_stripe_fpx_url + '?' + returnParams,
                     });
                     if (result.error) {
                         // Inform the customer that there was an error.

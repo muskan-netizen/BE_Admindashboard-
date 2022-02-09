@@ -84,8 +84,7 @@ class LalaMovesController extends Controller
                         'drop_lng' => $cus_address->longitude,
                         'drop_address' => $cus_address->address,
                         'user_name' => $customer->name,
-                        'user_phone' => '3768865551',
-                        //'user_phone' => $customer->phone_number,
+                        'user_phone' => $customer->phone_number,
                         'remarks' => 'Delivery vendor message remarks'
                     );
             

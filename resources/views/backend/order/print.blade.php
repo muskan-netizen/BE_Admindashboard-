@@ -247,7 +247,7 @@
                                     <tr>
                                         <td align="left">
                                             <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
-                                            <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Zip Code") }} :</span> {{ $order->address ? $order->address->pincode : ''}}
+                                            <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ getNomenclatureName('Zip Code', true) }} :</span> {{ $order->address ? $order->address->pincode : ''}}
                                             </p>
                                         </td>
                                     </tr>
@@ -308,7 +308,7 @@
                                     <tr>
                                         <td align="left">
                                             <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
-                                            <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Zip Code") }} :</span> {{ $order->address ? $order->address->pincode : ''}}
+                                            <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ getNomenclatureName('Zip Code', true) }} :</span> {{ $order->address ? $order->address->pincode : ''}}
                                             </p>
                                         </td>
                                     </tr>

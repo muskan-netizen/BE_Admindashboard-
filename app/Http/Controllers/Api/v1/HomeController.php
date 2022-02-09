@@ -219,7 +219,7 @@ class HomeController extends BaseController
             if($venderFilterbest && ($venderFilterbest == 1) ){
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
-            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get();
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
 
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
@@ -248,8 +248,8 @@ class HomeController extends BaseController
                     $vendor->delaySlot = 0;
                     $vendor->closed_store_order_scheduled = 0;
                 }
-                
-                
+
+
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4) ? 1 : 0;
 
                 $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();
@@ -336,7 +336,7 @@ class HomeController extends BaseController
                     'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
                 );
             }
-            
+
             $isVendorArea = 0;
             $categories = $this->categoryNav($langId, $vends);
             $homeData['vendors'] = $vendorData;
