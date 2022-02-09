@@ -31,7 +31,7 @@
                 @csrf
                 <div class="card-box mb-0 h-100 pb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">{{ __("Admin") }}</h4>
+                        <h4 class="header-title mb-0">{{ __("Panel Theme") }}</h4>
                         <input type="hidden" name="send_to" id="send_to" value="customize">
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>

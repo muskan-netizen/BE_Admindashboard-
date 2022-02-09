@@ -13,10 +13,10 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
     }
 </style>
 
-<div class="top-header site-topbar">
+<div class="top-header site-topbar al">
     <div class="container">
         <div class="row align-items-center justify-content-between">
-            <div class="col-sm-6 mb-2 mb-sm-0">
+            <div class="col-sm-4 mb-2 mb-sm-0">
                 <div class="d-flex align-items-center justify-content-lg-start">
                     <a class="navbar-brand mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     @if( (Session::get('preferences')))
@@ -35,7 +35,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </div>
             </div>
 
-            <div class="col-6 d-none text-right pr-0">
+            <div class="col d-none text-right pr-0">
                 <div class="icon-nav">
                     <ul>
                         <li class="d-inline-block d-lg-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li>
@@ -43,7 +43,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </div>
             </div>
 
-            <div class="col-sm-6 text-right">
+            <div class="col-sm-8 text-right">
                 <div class="d-inline d-sm-none">
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
