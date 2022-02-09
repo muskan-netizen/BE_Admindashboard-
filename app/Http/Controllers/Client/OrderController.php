@@ -455,6 +455,7 @@ class OrderController extends BaseController
                         $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
                     }elseif($orderData->shipping_delivery_type=='DU'){
                         //Cancel Dunzo place order request for Dunzo
+                        \Log::info($currentOrderStatus->web_hook_code);
                         $ship = new DunzoController();
                         $order_ship = $ship->cancelOrderRequestDunzo($currentOrderStatus->web_hook_code);
                     }

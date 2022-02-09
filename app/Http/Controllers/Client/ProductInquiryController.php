@@ -48,8 +48,9 @@ class ProductInquiryController extends BaseController{
             });
         }
         $product_inquiries = $product_inquiries->get();
+        //return $product_inquiries;
         foreach ($product_inquiries as $product_inquiry) {
-            $product_inquiry->view_url = route('productDetail',[$product_inquiry->product->vendor->slug,$product_inquiry->product->sku]);
+            $product_inquiry->view_url = route('productDetail',[$product_inquiry->product->vendor->slug??null,$product_inquiry->product->sku??null]);
         }
         return Datatables::of($product_inquiries)
             ->addIndexColumn()
