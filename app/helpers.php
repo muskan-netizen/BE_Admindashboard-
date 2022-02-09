@@ -343,7 +343,7 @@ function createSlug($str, $delimiter = '-'){
     }
     
     $ReturnArray[] = date ("G:i", $StartTime).' - '.date ("G:i", $endtm);
-    $StartTime += $AddMins+60;
+    $StartTime += $AddMins;
     $endtm = 0;
     }
     return $ReturnArray;

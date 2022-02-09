@@ -14,6 +14,8 @@ use App\Models\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Log;
+use Carbon\Carbon;
+
 
 class DunzoController extends Controller
 {
@@ -159,11 +161,19 @@ class DunzoController extends Controller
 			$cus_address = UserAddress::find($order->address_id);
 			$orderProducts = OrderVendorProduct::where(['order_id'=>$orderVendor->order_id,'order_vendor_id'=>$orderVendor->id])->get();
             $scheduledAt = '';
+            $preTime = ($vendor_details->order_pre_time>0)?$vendor_details->order_pre_time:'10';
             if(isset($order->scheduled_date_time) && $order->scheduled_date_time){
                 $date = date('Y-m-d',strtotime($order->scheduled_date_time));
                 $time = date('H:i:s',strtotime($order->scheduled_date_time));
                 $scheduledAt = $date.' '.$time;
+                $date = Carbon::parse($scheduledAt,'UTC');
+                $date = $date->addMinutes($preTime);
+            }else{
+                $date = Carbon::parse($order->created_at, 'UTC');
+                $date = $date->addMinutes($preTime);
             }
+            $date->setTimezone($customer->timezone);
+            $dateT = $date->isoFormat('YYYY-MM-DD HH:mm:ss');
 
 			$data = array (
 				'partner_order_id' => $orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id,
@@ -171,7 +181,7 @@ class DunzoController extends Controller
 				'pickup_contact_no' => $vendor_details->phone_no, 
 				'pickup_contact_email' => $vendor_details->email ?? '', 
 				'pickup_address' => $vendor_details->address ?? '',  
-			    'pickup_date_time' => ($scheduledAt!='')? $scheduledAt : date('Y-m-d H:i',strtotime($order->created_at)),
+			    'pickup_date_time' => $dateT,
 				'pickup_lat' => $vendor_details->latitude ?? '', //Required 
 				'pickup_long' => $vendor_details->longitude ?? '', //Required 
 				
@@ -187,10 +197,7 @@ class DunzoController extends Controller
 				'utc_offset' => '330'
 			  );
 		}
-        //dd($data);
     	$orderSuc = $this->createOrder($data);
-
-        \Log::info(json_encode($orderSuc));
 		return $orderSuc;
 		//Response Result
         // "status": true,
