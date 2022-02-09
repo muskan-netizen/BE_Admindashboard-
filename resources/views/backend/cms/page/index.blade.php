@@ -63,14 +63,14 @@
                             <a herf="#" class="dd-handle dd3-handle d-block mr-auto" id="text_body_{{$page->id}}">
                                 {{$page->primary ? $page->primary->title : ''}}
 
-                                <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_BLANK">
-                                    <!-- <i class="mdi mdi-eye"></i> -->
-                                    <img src="https://img.icons8.com/clouds/30/000000/domain.png"/>
+                                <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_BLANK" class="mr-2">
+                                    <i class="mdi mdi-eye"></i>
+
                                 </a>
                                 @if(!in_array($page->id, [1,2,3]))
                                     <a class="text-body delete-page" href="javascript:void(0)" data-page_id="{{$page->id}}">
-                                        <!-- <i class="mdi mdi-delete"></i> -->
-                                        <img src="https://img.icons8.com/bubbles/30/000000/delete-forever.png"/>
+                                        <i class="mdi mdi-delete"></i>
+
                                     </a>
                                 @endif
                             </a>
@@ -134,12 +134,14 @@
                                     <input class="form-control" id="edit_meta_title" name="meta_title" type="text">
                                 </div>
                                 <div class="col-6 mb-2">
-                                    <label for="title" class="control-label">{{ __("Attach Form") }}</label>
+                                    <label for="title" class="control-label">{{ __("Type") }}</label>
                                     <select class="form-control" name="type_of_form" id="type_of_form">
                                         <option value="0">{{__("None")}}</option>
                                         <option value="1">{{__("Vendor Registration")}}</option>
                                         <option value="2">{{__("Driver Registration")}}</option>
                                         <option value="3">{{__("Faq's")}}</option>
+                                        <option value="4">{{__("Privacy Policy")}}</option>
+                                        <option value="5">{{__("Terms & Conditions")}}</option>
                                     </select>
                                 </div>
                             </div>

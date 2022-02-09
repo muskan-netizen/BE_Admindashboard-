@@ -18,7 +18,7 @@ use App\Http\Controllers\Client\TagController;
 use App\Http\Controllers\Client\ClientSlotController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
 use App\Http\Controllers\Client\ProductFaqController;
-use App\Http\Controllers\Client\EstimationController;   
+use App\Http\Controllers\Client\EstimationController;
 
 Route::get('email-test', function () {
     $details['email'] = 'testmail@yopmail.com';
@@ -312,6 +312,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         });
 
         Route::resource('review', 'Client\ReviewController');
+        Route::get('/review/delect/{id}', 'Client\ReviewController@destroy')->name('review.delete');
     });
 });
 

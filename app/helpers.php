@@ -15,22 +15,28 @@ use App\Models\VendorSlot;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
-function changeDateFormate($date,$date_format){
-    return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
+if (!function_exists('changeDateFormate')) {
+    function changeDateFormate($date,$date_format){
+        return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
+    }
 }
 
-function pr($var) {
-  	echo '<pre>';
-	print_r($var);
-  	echo '</pre>';
-    exit();
-}
-function http_check($url) {
-    $return = $url;
-    if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
-        $return = 'http://' . $url;
+if (!function_exists('pr')) {
+    function pr($var) {
+        echo '<pre>';
+        print_r($var);
+        echo '</pre>';
+        exit();
     }
-    return $return;
+}
+if (!function_exists('http_check')) {
+    function http_check($url) {
+        $return = $url;
+        if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+            $return = 'http://' . $url;
+        }
+        return $return;
+    }
 }
 function getUserDetailViaApi($user){
     $user_refferal = UserRefferal::where('user_id', $user->id)->first();
@@ -648,3 +654,20 @@ function getDynamicTypeName($name)
     return $new_name;
 }
 
+function stripePaymentCredentials(){
+    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
+    $creds_arr = json_decode($stripe_creds->credentials);
+    $response = collect();
+    $response->secret_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+    return $response;
+}
+
+function stripeFPXPaymentCredentials(){
+    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_fpx')->where('status', 1)->first();
+    $creds_arr = json_decode($stripe_creds->credentials);
+    $response = collect();
+    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+    return $response;
+}

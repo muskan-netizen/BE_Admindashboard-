@@ -36,6 +36,7 @@
     @endif
     var autocomplete_url = "{{ route('autocomplete') }}";
     let stripe_publishable_key = '{{ $stripe_publishable_key }}';
+    let stripe_fpx_publishable_key = '{{ $stripe_fpx_publishable_key }}';
     let yoco_public_key = '{{ $yoco_public_key }}';
     var login_url = "{{ route('customer.login') }}";
     if(currentRouteName == 'indexTemplateOne')
@@ -89,7 +90,7 @@
 
 /////////////Authorize Payment Routes
     var authorize_before_payment = "{{route('payment.authorize.beforePayment')}}";
-    var authorize_create_payment = "{{route('payment.authorize.createPayment')}}"; 
+    var authorize_create_payment = "{{route('payment.authorize.createPayment')}}";
 
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";
@@ -131,6 +132,8 @@
     if(!userLatitude ){
         userLatitude = "76.7794";
     }
+
+
     // if((home_page_url != window.location.href) && (home_page_url2 != window.location.href)){
     //     $('.vendor_mods').hide();}
     // else{
@@ -169,14 +172,17 @@
 <script type="text/javascript" src="{{$mapurl}}"></script>
 
 <script>
-      var bindLatlng = new google.maps.LatLng(userLatitude, userLongitude);
-      var bindmapProp = {
+    var bindLatlng, bindmapProp, bindMap = '';
+    function bindLatestCoords(userLatitude, userLongitude){
+        bindLatlng = new google.maps.LatLng(userLatitude, userLongitude);
+        bindmapProp = {
             center:bindLatlng,
             zoom:13,
             mapTypeId:google.maps.MapTypeId.ROADMAP
-
         };
-    var bindMap=new google.maps.Map(document.getElementById("nearmap"), bindmapProp);
+        bindMap=new google.maps.Map(document.getElementById("nearmap"), bindmapProp);
+    }
+    bindLatestCoords(userLatitude, userLongitude);
 </script>
 
 {{-- <script type="text/javascript" src="{{asset('front-assets/js/all-min.js')}}" defer></script> --}}

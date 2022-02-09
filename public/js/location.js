@@ -363,7 +363,7 @@ $(document).ready(function () {
             }
         });
     }
-    
+
 
 
 
@@ -406,6 +406,7 @@ $(document).ready(function () {
     $(document).delegate(".confirm_address_btn", "click", function () {
         let latitude = $("#address-latitude").val();
         let longitude = $("#address-longitude").val();
+        bindLatestCoords(latitude, longitude);
 
         $.ajax({
             type: "get",
@@ -564,7 +565,7 @@ $(document).ready(function () {
 
                 var path = window.location.pathname;
                 if (path == '/') {
-                   
+
                 }
                 else {
                     if ((latitude) && (longitude) && (selected_address)) {
@@ -635,7 +636,7 @@ function initMap() {
         const map = autocompletes[i].map;
         const marker = autocompletes[i].marker;
 
-        google.maps.event.addListener(autocomplete, 'place_changed', function () {         
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
             marker.setVisible(false);
             const place = autocomplete.getPlace();
 
@@ -665,7 +666,7 @@ function initMap() {
             marker.setVisible(true);
 
         });
-        setTimeout(function(){ 
+        setTimeout(function(){
             $(".pac-container").appendTo("#edit-address .address-input-group");
         }, 300);
     }
@@ -712,7 +713,7 @@ $(document).delegate("#edit-address #address-input", "focus", function(){
 
 
 
-  
+
 
 
 

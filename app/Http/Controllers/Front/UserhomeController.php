@@ -169,13 +169,44 @@ class UserhomeController extends FrontController
             $vendor_registration_documents = VendorRegistrationDocument::with(['primary','options','options.translation' => function($query) use($language_id) {
                 $query->where('language_id', session()->get('customerLanguage'));
             }])->get();
+            $builds = array();
+            $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+                                    ->where('id', '>', '1')
+                                    // ->where('is_core', 1)
+                                    ->whereNotIn('type_id', [4, 5])
+                                    ->where(function ($q) {
+                                        $q->whereNull('vendor_id');
+                                    })->orderBy('position', 'asc')
+                                    ->orderBy('id', 'asc')
+                                    ->where('status', 1)
+                                    ->orderBy('parent_id', 'asc')->get();
+            if ($categories) {
+                $builds = $this->buildTree($categories->toArray());
+            }
+
+            $VendorCategory =array();
+
+            $templetes  = \DB::table('vendor_templetes')->where('status', 1)->get();
                 $server = env('APP_ENV', 'development');
-                if($server == 'local')
-                {
-                    return view('frontend.extrapageNew', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents'));
-                }else{
-                    return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents'));
-                }
+                $langId = session()->get('customerLanguage');
+                $privacy = Page::with(['translations' => function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+                }])->whereHas('translations', function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+                })->first();
+
+                $terms = Page::with(['translations' => function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+                }])->whereHas('translations', function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+                })->first();
+
+                // if($server == 'local')
+                // {
+                    return view('frontend.extrapageNew', compact('page_detail','templetes','VendorCategory','builds','navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
+                // }else{
+                //     return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
+                // }
             } else {
             $tag = [];
             $showTag = implode(',', $tag);
@@ -330,8 +361,8 @@ class UserhomeController extends FrontController
         }else{
             $brands = [];
         }
-        
-        
+
+
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
         $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
@@ -552,7 +583,7 @@ class UserhomeController extends FrontController
                 'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
         }
-       
+
 
         $activeOrders = [];
 

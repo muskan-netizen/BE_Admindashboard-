@@ -60,7 +60,8 @@ class VendorController extends BaseController{
             $userid = $user->id;
             $latitude = $user->latitude;
             $longitude = $user->longitude;
-            $paginate = $request->has('limit') ? $request->limit : 12;
+            $limit = $request->has('limit') ? $request->limit : 12;
+            $page = $request->has('page') ? $request->page : 12;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $langId = $user->language;
@@ -305,7 +306,7 @@ class VendorController extends BaseController{
                         }
                     ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 'products.batch_count')
                     ->where('products.vendor_id', $vid)
-                    ->where('products.is_live', 1)->paginate($paginate);
+                    ->where('products.is_live', 1)->paginate($limit, $page);
                 if(!empty($products)){
                     foreach ($products as $key => $product) {
                         foreach ($product->addOn as $key => $value) {

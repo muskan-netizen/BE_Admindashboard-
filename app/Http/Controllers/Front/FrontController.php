@@ -818,8 +818,10 @@ class FrontController extends Controller
     }
 
     public function vendorTime($minutes){
-        $hours = intdiv($minutes, 60).':'. ($minutes % 60);
-
+        $hours = intdiv($minutes, 60);//.':'. ($minutes % 60);
+        if(($minutes % 60) > 30){
+            $hours = $hours+1;
+        }
         return $hours;
 
     }
