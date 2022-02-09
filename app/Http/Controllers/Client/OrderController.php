@@ -420,6 +420,7 @@ class OrderController extends BaseController
                 }
                 $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 if ($request->status_option_id == 2) {
+                    \Log::info('cancel order page');
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher
@@ -440,9 +441,8 @@ class OrderController extends BaseController
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]); 
 
-                if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
-
-                    if ($orderData->shipping_delivery_type=='D') {
+                if ($request->status_option_id == 3) {
+                    if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
                         $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                         $response = Http::get($dispatch_traking_url);
                     }elseif($orderData->shipping_delivery_type=='L'){
