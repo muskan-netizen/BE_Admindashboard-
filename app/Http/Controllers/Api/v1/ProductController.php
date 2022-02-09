@@ -236,6 +236,7 @@ class ProductController extends BaseController
                 }
             }
             $product->product_media = $data_image;
+            $product->share_link = getServerURL() . $product->vendor->slug . '/product/' . $product->url_slug;
             $response['products'] = $product;
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);
