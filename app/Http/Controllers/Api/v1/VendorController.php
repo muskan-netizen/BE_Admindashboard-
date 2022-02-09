@@ -1648,4 +1648,120 @@ class VendorController extends BaseController{
         }
     }
 
+    public function viewAll(Request $request)
+    {
+        $user = Auth::user();
+        $langId = $user->language;
+        $currency_id = $user->currency;
+        $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
+        $limit = $request->has('limit') ? $request->limit : 12;
+        $page = $request->has('page') ? $request->page : 1;
+
+        //filter
+        $venderFilterClose   = $request->has('close_vendor') && $request->close_vendor ? $request->close_vendor : null;
+        $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
+        $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
+        $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
+            
+        $type = 'delivery';
+        if ($request->has('type')) {
+            if (empty($request->type)) {
+                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
+            } else {
+                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($request->type, 1);
+                $type = $request->type;
+            }
+        } else {
+            $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','closed_store_order_scheduled')->withAvg('product', 'averageRating');
+        }
+
+        $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
+
+        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+            $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+            $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+            $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+            //3961 for miles and 6371 for kilometers
+            $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+            $vendorData = $vendorData->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                    cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                    sin( radians(' . $latitude . ') ) *
+                    sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
+            $vendorData = $vendorData->whereIn('id', $ses_vendors);
+            //if($venderFilternear && ($venderFilternear == 1) ){
+                //->orderBy('vendorToUserDistance', 'ASC')
+                $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
+            //}
+        }
+
+        //filter on ratings
+        if($venderFilterbest && ($venderFilterbest == 1) ){
+            $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
+        }
+        $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->paginate($limit, $page);
+
+        foreach ($vendorData as $vendor) {
+            unset($vendor->products);
+
+            $vendor->is_vendor_closed = 0;
+            if ($vendor->show_slot == 0) {
+                if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
+                    $vendor->is_vendor_closed = 1;
+                } else {
+                    $vendor->is_vendor_closed = 0;
+                    if ($vendor->slotDate->isNotEmpty()) {
+                        $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
+                        $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
+                    } elseif ($vendor->slot->isNotEmpty()) {
+                        $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
+                        $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
+                    }
+                }
+            }
+            $slotsDate = 0;
+            if($vendor->is_vendor_closed){
+                $slotsDate = findSlot('',$vendor->id,'');
+                $vendor->delaySlot = $slotsDate;
+                $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
+            }else{
+                $vendor->delaySlot = 0;
+                $vendor->closed_store_order_scheduled = 0;
+            }
+
+
+            $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4) ? 1 : 0;
+
+            $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();
+            $categoriesList = '';
+            foreach ($vendorCategories as $key => $category) {
+                if ($category->category) {
+                    $cat_name = isset($category->category->translation_one) ? $category->category->translation_one->name : $category->category->slug;
+                    $categoriesList = $categoriesList . $cat_name ?? '';
+                    if ($key !=  $vendorCategories->count() - 1) {
+                        $categoriesList = $categoriesList . ', ';
+                    }
+                }
+            }
+            $vendor->categoriesList = $categoriesList;
+
+            // $vends[] = $vendor->id;
+            if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences, $type);
+            }
+
+        }
+        //filter vendor
+        if($venderFilterClose && ($venderFilterClose == 1) ){
+            $vendorData =   $vendorData->where('is_vendor_closed',1)->values();
+        }
+        if($venderFilterOpen && ($venderFilterOpen == 1) ){
+            $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
+        }
+
+        return $this->successResponse($vendorData);
+    }
+
 }
