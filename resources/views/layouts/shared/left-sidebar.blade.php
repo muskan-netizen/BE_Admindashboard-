@@ -405,7 +405,7 @@
                                         <li>
                                             <a href="{{ route('celebrity.index') }}">
                                                 <span class="icon-celebrity"></span>
-                                                <span> {{ __("Celebrities") }} </span>
+                                                <span> {{ __("Influencer") }} </span>
                                             </a>
                                         </li>
                                     @endif
