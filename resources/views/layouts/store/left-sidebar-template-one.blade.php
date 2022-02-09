@@ -375,7 +375,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                   <li class="al_main_category">
                      <a href="{{route('categoryDetail', $cate['slug'])}}">
                         @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-                        <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
+                        <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
                         @endif{{$cate['name']}}
                      </a>
                      @if(!empty($cate['children']))
@@ -402,7 +402,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
    </div>
    {{--@endif--}}
 </header>
-<div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div>
+<div class=" @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset al_offset-top @else al_offset-top-home @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div>
 <script type="text/template" id="nav_categories_template">
    <!-- <li>
        <div class="mobile-back text-end">Back<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>

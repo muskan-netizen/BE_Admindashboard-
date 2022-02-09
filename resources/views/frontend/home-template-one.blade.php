@@ -441,7 +441,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
-						<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
+						<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
 					<div class="col-12">
 						<div class="suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 					</div>

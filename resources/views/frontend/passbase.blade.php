@@ -59,20 +59,21 @@
       });
 
       // Optional - Example to send identity access key to your backend
-      const sendAuthKeyToBackend = (identityAccessKey) => { 
+      const sendAuthKeyToBackend = (identityAccessKey) => {  
         const body = {
           identityAccessKey: identityAccessKey,
         };
         const requestOptions = {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(body),
         };
         fetch("{{route('passbase.store')}}", requestOptions) 
-          .then(() => {
+          .then((response) => {
             console.log("Success");
+            console.log(response);
           })
           .catch((error) => {
             console.log(error);
