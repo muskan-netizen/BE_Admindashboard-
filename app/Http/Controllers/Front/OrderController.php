@@ -1361,7 +1361,6 @@ class OrderController extends FrontController
         $checkOrder = Order::findOrFail($request->order_id);
             if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
                 $order_lalamove = $data->createOrderRequestDunzo($checkOrder->user_id,$checkdeliveryFeeAdded);
-                \Log::info($order_lalamove);
             }
 
             if ($order_lalamove->status){

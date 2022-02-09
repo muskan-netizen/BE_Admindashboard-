@@ -216,8 +216,6 @@ public function createOrder($data)
     CURLOPT_POSTFIELDS => $data,
     CURLOPT_HTTPHEADER => array(
         "apikey: {$this->api_key}",
-        "cache-control: no-cache",
-        "content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
     ),
     ));
 
@@ -227,8 +225,10 @@ public function createOrder($data)
     curl_close($curl);
 
     if ($err) {
+      \Log::info($err);
         return $err;
     } else {
+      \Log::info($response);
         return $response;
     }
 
