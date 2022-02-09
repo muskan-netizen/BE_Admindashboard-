@@ -594,10 +594,10 @@
 
                             <h5 class="d-inline-block mt-3">
                                 <span>{{ __('Webhook Url') }} : </span>
-                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('delivery.ahoy')}}</span></a>
+                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('ahoyWebhook')}}</span></a>
                             </h5>
                             <sup class="position-relative">
-                                <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('delivery.ahoy')}}" style="cursor:pointer;">
+                                <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('ahoyWebhook')}}" style="cursor:pointer;">
                                     <i class="fa fa-copy"></i>
                                 </a>
                                 <h6 id="copy_message2" class="copy-message mt-2"></h6>
