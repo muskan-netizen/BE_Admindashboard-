@@ -13,6 +13,7 @@ use App\Models\VendorOrderDispatcherStatus;
 use App\Models\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Log;
 
 class DunzoController extends Controller
 {
@@ -188,6 +189,8 @@ class DunzoController extends Controller
 		}
         //dd($data);
     	$orderSuc = $this->createOrder($data);
+
+        \Log::info(json_encode($orderSuc));
 		return $orderSuc;
 		//Response Result
         // "status": true,
