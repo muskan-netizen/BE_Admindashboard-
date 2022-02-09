@@ -233,7 +233,7 @@ class AhoyController extends Controller
 		}
 
 
-    public function cancelOrderRequestDunzo($order_id)
+    public function cancelOrderRequestAhoy($order_id)
     {
 		$this->configuration();
 		if($this->status){
@@ -243,7 +243,7 @@ class AhoyController extends Controller
     }
 
 
-	public function dunzoWebhook(Request $request)
+	public function ahoyWebhook(Request $request)
     {
 		//1-AWB Assigned
 		//2-Label Generated
@@ -287,7 +287,7 @@ class AhoyController extends Controller
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
         }
 
-        if($request && isset($json->shipment_status_id)){
+        if($request && isset($json)){
          Webhook::create(['tracking_order_id'=>(($json->awb)?$json->awb:''),'response'=>$request->getContent()]);
         }
 
