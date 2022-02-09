@@ -185,47 +185,53 @@ class StripeGatewayController extends FrontController
             // return $webhook_exists;
 
             $user = Auth::user();
-            $order_number = $request->order_number;
-            $address_id = $request->address_id;
-            $user_address = UserAddress::where('id', $address_id)->first();
-            $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+
+            $description = '';
+            $payment_form = $request->payment_form;
+            $amount = $this->getDollarCompareAmount($request->amount);
 
             $postdata = [
                 'payment_method_types' => ['fpx'],
-                'amount' => $request->amount * 100,
+                'amount' => $amount * 100,
                 'currency' => 'myr', //$this->currency
-                'description' => 'Payment',
-                // 'customer' => $user->id,
+                // 'customer' => '',
                 'receipt_email' => $user->email ?? '',
                 'metadata' => [
-                    'cart_id' => $cart->id,
-                    'order_number' => $order_number,
-                    'payment_form' => $request->payment_form
-                ],
-                // 'billing_details' => [
-                //     'name' => $user->name,
-                //     'email' => $user->email,
-                //     'phone' => $user->dial_code . $user->phone_number,
-                //     'address' => [
-                //         'line1' => $user_address->street,
-                //         'city' => $user_address->city,
-                //         'state' => $user_address->state,
-                //         'country' => $user_address->country,
-                //         'postal_code' => $user_address->pincode
-                //     ]
-                // ],
-                'shipping' => [
-                    'name' => $user->name,
-                    'phone' => $user->dial_code . $user->phone_number,
-                    'address' => [
-                        'line1' => $user_address->street,
-                        'city' => $user_address->city,
-                        'state' => $user_address->state,
-                        'country' => $user_address->country,
-                        'postal_code' => $user_address->pincode
-                    ]
+                    'user_id' => $user->id,
+                    'payment_form' => $payment_form
                 ]
             ];
+
+            if($payment_form == 'cart'){
+                $address_id = $request->address_id;
+                $user_address = UserAddress::where('id', $address_id)->first();
+                $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                $order_number = $request->order_number;
+
+                $postdata['description'] = 'Order Checkout';
+                $postdata['metadata']['cart_id'] = $cart->id;
+                $postdata['metadata']['order_number'] = $order_number;
+                $postdata['shipping']['name'] = $user->name;
+                $postdata['shipping']['phone'] = $user->dial_code . $user->phone_number;
+                $postdata['shipping']['address']['line1'] = $user_address->street;
+                $postdata['shipping']['address']['city'] = $user_address->city;
+                $postdata['shipping']['address']['state'] = $user_address->state;
+                $postdata['shipping']['address']['country'] = $user_address->country;
+                $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
+            }
+            elseif($payment_form == 'wallet'){
+                $postdata['description'] = 'Wallet Checkout';
+            }
+            if($payment_form == 'tip'){
+                $postdata['description'] = 'Tip Checkout';
+                $order_number = $request->order_number;
+                $postdata['metadata']['order_number'] = $order_number;
+            }
+            elseif($request->payment_form == 'subscription'){
+                $postdata['description'] = 'Subscription Checkout';
+                $postdata['metadata']['subscription_id'] = $request->subscription_id;
+            }
+                    
             $payment_intent = $stripe = $stripe->paymentIntents->create($postdata);
             
             return $this->successResponse($payment_intent->client_secret);
@@ -347,7 +353,7 @@ class StripeGatewayController extends FrontController
 
         $payload = @file_get_contents('php://input');
         $event = null;
-        \Log::info($request->all());
+        // \Log::info($payload);
         try {
             $event = \Stripe\Event::constructFrom(
                 json_decode($payload, true)
@@ -367,12 +373,13 @@ class StripeGatewayController extends FrontController
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
                 $charges = $intent->charges->data;
-                $transactionId = $cart_id = $payment_form = $order_number = '';
+                $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $amount = 0;
                 if(count($charges)){
                     $transactionId = $charges[0]->balance_transaction;
                     $payment_form = $charges[0]->metadata->payment_form;
                     $amount = $charges[0]->amount / 100;
+                    $user_id = $charges[0]->metadata->user_id;
                 }
 
                 if($payment_form == 'cart'){
@@ -420,20 +427,21 @@ class StripeGatewayController extends FrontController
                         //   $this->successMail();
                     }
                 } elseif($payment_form == 'wallet'){
-                    $request->request->add(['wallet_amount' => $amount, 'transaction_id' => $transactionId]);
+                    $request->request->add(['user_id' => $user_id, 'wallet_amount' => $amount, 'transaction_id' => $transactionId]);
                     $walletController = new WalletController();
                     $walletController->creditWallet($request);
                 }
                 elseif($payment_form == 'tip'){
                     $order_number = $charges[0]->metadata->order_number;
-                    $request->request->add(['order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
+                    $request->request->add(['user_id' => $user_id, 'order_number' => $order_number, 'tip_amount' => $amount, 'transaction_id' => $transactionId]);
                     $orderController = new OrderController();
                     $orderController->tipAfterOrder($request);
                 }
                 elseif($payment_form == 'subscription'){
-                    $request->request->add(['payment_option_id' => 19, 'transaction_id' => $transactionId]);
+                    $subscription = $charges[0]->metadata->subscription_id;
+                    $request->request->add(['user_id' => $user_id, 'payment_option_id' => 19, 'amount' => $amount, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
-                    $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription);
+                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
                 }
                 break;
             

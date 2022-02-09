@@ -123,7 +123,7 @@ class OrderController extends Controller{
             ->make(true);
     }
 
-    public function export() {
-        return Excel::download(new OrderVendorListTaxExport, 'order_list.xlsx');
+    public function export(Request $request) {
+        return Excel::download(new OrderVendorListTaxExport($request), 'order_list.xlsx');
     }
 }

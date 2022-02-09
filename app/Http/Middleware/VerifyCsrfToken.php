@@ -19,6 +19,8 @@ class VerifyCsrfToken extends Middleware
         'payment/webhook/stripe_fpx',
         'webhook/lalamove',
         'webhook/shiprocket',
+        'webhook/dunzo',
+        'webhook/ahoy',
 
         /** routes for edit order **/
         'edit-order/*'

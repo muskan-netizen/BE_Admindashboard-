@@ -20,7 +20,8 @@ class ShippingOptionSeeder extends Seeder
       	$shipping_options = array(
         	array('id' => '1', 'path' => '', 'code' => 'shiprocket',  'title' => 'ShipRocket', 'status' => '0','test_mode'=>'1'),
         	array('id' => '2', 'path' => '', 'code' => 'lalamove', 'title' => 'Lalamove', 'status' => '0','test_mode'=>'1'),
-        	array('id' => '3', 'path' => '', 'code' => 'dunzo', 'title' => 'Dunzo', 'status' => '0','test_mode'=>'1')
+        	array('id' => '3', 'path' => '', 'code' => 'dunzo', 'title' => 'Dunzo', 'status' => '0','test_mode'=>'1'),
+        	array('id' => '4', 'path' => '', 'code' => 'ahoy', 'title' => 'Ahoy', 'status' => '0','test_mode'=>'1'),
       	); 
 
       	if($option_count == 0)

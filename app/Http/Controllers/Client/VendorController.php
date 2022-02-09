@@ -998,6 +998,24 @@ class VendorController extends BaseController
         return redirect()->back()->with('success', $msg . ' updated successfully!');
     }
 
+    public function updateAhoyLocation(Request $request, $domain = '',  $id)
+    {
+        $vendor = Vendor::where('id', $id)->first();
+        $msg = 'Ahoy delivery location name added.';
+
+        if ($request->has('pickup_name')) {
+            $ship = new ShiprocketController();
+            $save = $ship->addShiprocketPickup($vendor,$request->shiprocket_pickup_name);
+             if(isset($save->success) && $save->success){
+                $vendor->shiprocket_pickup_name  = $save->address->pickup_code;
+                $vendor->save();
+                return redirect()->back()->with('success', $msg . ' successfully!');
+             }
+             return redirect()->back()->with('success',$save->errors->address[0]);
+        }
+
+    }
+
     public function updateLocation(Request $request, $domain = '',  $id)
     {
         $vendor = Vendor::where('id', $id)->first();

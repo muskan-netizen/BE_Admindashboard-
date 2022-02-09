@@ -95,6 +95,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('banner/saveOrder', 'Client\BannerController@saveOrder');
         Route::post('banner/changeValidity', 'Client\BannerController@validity');
         Route::post('vendor/saveLocation/{id}', 'Client\VendorController@updateLocation')->name('vendor.config.pickuplocation');
+        Route::post('vendor/ahoyLocation/{id}', 'Client\VendorController@updateAhoyLocation')->name('vendor.config.ahoy.pickuplocation');
         Route::post('banner/toggle', 'Client\BannerController@toggleAllBanner')->name('banner.toggle');
         Route::resource('mobilebanner', 'Client\MobileBannerController')->middleware('onlysuperadmin');
         Route::post('mobilebanner/saveOrder', 'Client\MobileBannerController@saveOrder');
@@ -265,6 +266,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('shipoption', 'Client\ShippingOptionController');
         Route::resource('deliveryoption', 'Client\DeliveryOptionController');
         Route::post('delivery/dunzo', 'Client\DeliveryOptionController@dunzo')->name('delivery.dunzo');
+        Route::post('delivery/ahoy', 'Client\DeliveryOptionController@ahoy')->name('delivery.ahoy');
         Route::resource('tools','Client\ToolsController');
         Route::post('tools/tax','Client\ToolsController@taxCopy')->name('tools.taxCopy');
         Route::post('tool/uploadImage','Client\ToolsController@uploadImage')->name('tools.uploadImage');
