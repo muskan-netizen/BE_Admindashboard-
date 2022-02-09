@@ -20,6 +20,7 @@ class VerifyCsrfToken extends Middleware
         'webhook/lalamove',
         'webhook/shiprocket',
         'passbase/webhook',
+        'webhook/dunzo',
 
         /** routes for edit order **/
         'edit-order/*'

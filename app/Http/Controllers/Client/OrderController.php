@@ -119,7 +119,6 @@ class OrderController extends BaseController
         }
         $vendors = $vendors->get();
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-
         return view('backend.order.index', compact('return_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors'));
     }
 

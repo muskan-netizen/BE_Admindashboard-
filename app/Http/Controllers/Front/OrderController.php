@@ -772,17 +772,8 @@ class OrderController extends FrontController
                     if ($action == 'delivery') {
                         $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {
-                            $OrderVendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type;
-                            $OrderVendor->courier_id = $deliver_fee_data->courier_id;
-
-                            //Add here Delivery option Lalamove and dispatcher
-
-                            // if($delType=='L'){
-                            //     $lala = new LalaMovesController();
-                            //     $delivery_fee = $lala->getDeliveryFeeLalamove($vendor_cart_product->vendor_id);
-                            // }else{
-                            //     $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
-                            // }
+                            $OrderVendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type??'D';
+                            $OrderVendor->courier_id = $deliver_fee_data->courier_id??0;
 
 
                             if($deliver_fee_data)
