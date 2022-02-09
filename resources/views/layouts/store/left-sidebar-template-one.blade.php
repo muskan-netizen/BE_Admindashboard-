@@ -161,14 +161,9 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                            <div class="down-icon"> <i class="fa fa-angle-down" aria-hidden="true"></i> </div>
                         </div>
                         @endif @endif
-                        <div class="radius-bar d-xl-inline al_custom_search">
-<<<<<<< HEAD
-                           <div class="search_form d-flex align-items-center justify-content-between"> <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button> @php $searchPlaceholder=getNomenclatureName('Search product, vendor, item', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off"> </div>
-                           <div style="height:auto;" class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
-=======
+                        <div class="radius-bar d-xl-inline al_custom_search mr-2">
                            <div class="search_form d-flex align-items-center justify-content-between"> <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button> @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off"> </div>
                            <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
->>>>>>> 7c8a5d9bc0465e06fc2af3558b5adffa897e5cd6
                         </div>
                         <script type="text/template" id="search_box_main_div_template">
                            <a class="text-right al_search_viewall d-block mr-2 mb-1" id="search_viewall" href="#">{{__("View All")}}</a>
@@ -182,7 +177,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                               </a> <%}); %>
                            </div>
                         </script> @if(auth()->user()) @if($client_preference_detail->show_wishlist==1)
-                        <div class="icon-nav mx-2 d-none d-sm-block"> <a class="fav-button" href="{{route('user.wishlists')}}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>
+                        <div class="icon-nav mr-2 d-none d-sm-block"> <a class="fav-button" href="{{route('user.wishlists')}}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>
                         @endif @endif
                         <div class="icon-nav d-none d-sm-inline-block">
                            <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}"> @csrf <input type="hidden" id="cliLang" name="cliLang" value="{{session('customerLanguage')}}"> <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}"> </form>
