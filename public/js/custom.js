@@ -584,6 +584,7 @@ $(document).ready(function() {
                                 }
                                 $("#subscription_payment").modal("show");
                                 stripeInitialize();
+                                stripeFPXInitialize();
                             }
                         },
                         error: function(error) {

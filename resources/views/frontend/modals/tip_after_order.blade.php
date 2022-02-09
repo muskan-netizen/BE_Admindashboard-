@@ -56,7 +56,7 @@
                       <span class="checkround"></span>
                   </label>
                   <% if(payment_option.slug == 'stripe') { %>
-                      <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper d-none">
+                      <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper option-wrapper d-none">
                           <div class="form-control">
                               <label class="d-flex flex-row pt-1 pb-1 mb-0">
                                   <div id="stripe-card-element"></div>
@@ -79,7 +79,7 @@
                     </div>
                 <% } %>
                   <% if(payment_option.slug == 'yoco') { %>
-                    <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper d-none">
+                    <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
                         <div class="form-control">
                             <div id="yoco-card-frame">
                             <!-- Yoco Inline form will be added here -->
@@ -89,7 +89,7 @@
                     </div>
                   <% } %>
                   <% if(payment_option.slug == 'checkout') { %>
-                    <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper d-none">
+                    <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper option-wrapper d-none">
                         <div class="form-control card-frame">
                             <!-- form will be added here -->
                         </div>
