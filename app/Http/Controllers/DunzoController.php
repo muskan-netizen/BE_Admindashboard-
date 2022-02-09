@@ -216,50 +216,45 @@ class DunzoController extends Controller
 
 	public function dunzoWebhook(Request $request)
     {
-		//1-AWB Assigned
-		//2-Label Generated
-		//3-Pickup Scheduled/Generated
-		//19-Out For Pickup 
-		//42-Picked Up 
-		//6-Shipped 
-		//7-Delivered 
-		//8-Cancelled 
-		//11-Pending 
-		//17-Out For Delivery 
-		//18-In Transit 
-		//38-Reached Destination Hub 
+        // "order_status_id": 4,
+        // "order_uuid":"4ed83e5d-ec49-44ef-a7ea-eba3cfd91416",
+        // "partner_order_id": "78954uigg",
+        // "deliveryStaffDetails": {
+        //     "name": "karthick",
+        //     "phone": "99999999999",
+        //     "currentLocation": {
+        //         "lat": 10.452855555,
+        //         "long": 11.55854455
+        //     }
+        // }
 
         $trackingId = '';
         $json = json_decode($request->getContent());
-        if(isset($json->shipment_status_id) && $json->shipment_status_id == '1')
+        if(isset($json->order_status_id) && $json->order_status_id == '3')
         {
-            $awb = $json->awb;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            $awb = $json->order_uuid;
+            $details = OrderVendor::where('web_hook_code',$awb)->first();
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'1']);
-        }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '3')
+        }elseif(isset($json->order_status_id) && $json->order_status_id == '4')
         {
-			$awb = $json->awb;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+			$awb = $json->web_hook_code;
+            $details = OrderVendor::where('web_hook_code',$awb)->first();
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'2']);
-        }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '19')
+        }elseif(isset($json->order_status_id) && $json->order_status_id == '8')
         {
-			$awb = $json->awb;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+			$awb = $json->web_hook_code;
+            $details = OrderVendor::where('web_hook_code',$awb)->first();
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
-        }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '42')
-        {
-			$awb = $json->awb;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
-        }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '7')
+        }elseif(isset($json->order_status_id) && $json->order_status_id == '5')
         {
-            $awb = $json->awb;
-            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            $awb = $json->web_hook_code;
+            $details = OrderVendor::where('web_hook_code',$awb)->first();
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
         }
 
-        if($request && isset($json->shipment_status_id)){
-         Webhook::create(['tracking_order_id'=>(($json->awb)?$json->awb:''),'response'=>$request->getContent()]);
+        if($request && isset($json->order_status_id)){
+         Webhook::create(['tracking_order_id'=>(($json->web_hook_code)?$json->web_hook_code:''),'response'=>$request->getContent()]);
         }
 
         return response([],200);

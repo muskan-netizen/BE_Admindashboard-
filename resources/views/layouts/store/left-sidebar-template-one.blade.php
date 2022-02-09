@@ -445,53 +445,6 @@ $pages = \App\Models\Page::with([
                         </div>
                      </div>
                   </div> -->
-<<<<<<< HEAD
-               </div>
-            </div>
-            <div class="col-lg-5 col-9 order-lg-2 order-1 position-initial"> </div>
-         </div>
-      </div>
-   </div>
-   @endif
-   {{--@if(count($navCategories) > 0)--}}
-   <div class="menu-navigation">
-      <div class="container-fluid">
-         <div class="row">
-            <div class="col-12">
-               <div class="shimmer_effectx d-none">
-                  <ul class="sm pixelstrap sm-horizontal menu-slider">
-                     @foreach($navCategories as $cate) @if($cate['name'])
-                     <li>
-                        <a href="{{route('categoryDetail', $cate['slug'])}}">
-                           @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-                           <div class="nav-cate-imgx loading"> </div>
-                           @endif <span><span class="loading"></span></span>
-                        </a>
-                     </li>
-                     @endif @endforeach
-                  </ul>
-               </div>
-               <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
-                  @foreach($navCategories as $cate) @if($cate['name'])
-                  <li class="al_main_category">
-                     <a href="{{route('categoryDetail', $cate['slug'])}}">
-                        @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-                        <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
-                        @endif{{$cate['name']}}
-                     </a>
-                     @if(!empty($cate['children']))
-                     <ul class="al_main_category_list">
-                        @foreach($cate['children'] as $childs)
-                        <li>
-                           <a href="{{route('categoryDetail', $childs['slug'])}}"><span class="new-tag">{{$childs['name']}}</span></a> @if(!empty($childs['children']))
-                           <ul class="al_main_category_sub_list">
-                              @foreach($childs['children'] as $chld)
-                              <li><a href="{{route('categoryDetail', $chld['slug'])}}">{{$chld['name']}}</a></li>
-                              @endforeach 
-                           </ul>
-                           @endif
-                        </li>
-=======
     </div>
     </div>
     <div class="col-lg-5 col-9 order-lg-2 order-1 position-initial"> </div>
@@ -551,7 +504,6 @@ $pages = \App\Models\Page::with([
                                     @endif
                                 </li>
                             @endif
->>>>>>> 49eb88390f49af312262072e9ca86e552903b094
                         @endforeach
                     </ul>
                 </div>
@@ -565,15 +517,9 @@ $pages = \App\Models\Page::with([
     <!-- <li>
        <div class="mobile-back text-end">Back<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
    </li> -->
-<<<<<<< HEAD
-   <% _.each(nav_categories, function(category, key){ %>
-      <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>"> @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif <%=category.name %> </a> <% if(category.children){%> <ul class="al_main_category_list"> <% _.each(category.children, function(childs, key1){%> <li> <a href="{{route('categoryDetail')}}/<%=childs.slug %>"><span class="new-tag"><%=childs.name %></span></a> <% if(childs.children){%> <ul class="al_main_category_sub_list"> <% _.each(childs.children, function(chld, key2){%> <li><a href="{{route('categoryDetail')}}/<%=chld.slug %>"><%=chld.name %></a></li><%}); %> </ul> <%}%> </li><%}); %> </ul> <%}%> </li>
-   <% }); %>
-=======
     <% _.each(nav_categories, function(category, key){ %>
       <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>"> @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif <%=category.name %> </a> <% if(category.children){%> <ul class="al_main_category_list"> <% _.each(category.children, function(childs, key1){%> <li> <a href="{{route('categoryDetail')}}/<%=childs.slug %>"><span class="new-tag"><%=childs.name %></span></a> <% if(childs.children){%> <ul class="al_main_category_sub_list"> <% _.each(childs.children, function(chld, key2){%> <li><a href="{{route('categoryDetail')}}/<%=chld.slug %>"><%=chld.name %></a></li><%}); %> </ul> <%}%> </li><%}); %> </ul> <%}%> </li>
         <% }); %>
->>>>>>> 49eb88390f49af312262072e9ca86e552903b094
 </script>
 <div class="modal fade edit_address" id="edit-address" tabindex="-1" aria-labelledby="edit-addressLabel"
     aria-hidden="true">
