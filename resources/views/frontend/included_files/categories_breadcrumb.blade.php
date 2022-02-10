@@ -11,12 +11,12 @@ do{
     $subParent = $subParent->allParentsAccount;
 } while(!empty($subParent));
 @endphp
-<div class="breadcrumb-section bg-transparent">
+<div class="breadcrumb-section bg-transparent pt-0">
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
                 <nav aria-label="breadcrumb" class="theme-breadcrumb">
-                    <ol class="breadcrumb p-0 mb-3">
+                    <ol class="breadcrumb p-0 mb-2">
                         {!! $breadcrumb !!}
                     </ol>
                 </nav>
