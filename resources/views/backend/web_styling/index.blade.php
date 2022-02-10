@@ -34,9 +34,9 @@
             <form id="favicon-form" method="post" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-8 ">
-                        <div class="row">
-                            <div class="col-md-12 col-xl-4 mb-3">
-                                <div class="card card-box h-100 ">
+                        <div class="card card-box ">
+                            <div class="row">
+                                <div class="col-md-4  mb-3">
                                     <h4 class="header-title">{{ __("Favicon") }}</h4>
                                     <div class="mb-0">
                                         <label>{{ __("Upload Favicon") }}</label>
@@ -47,25 +47,19 @@
                                         <label class="logo-size d-block text-center mt-1">{{ __("Icon Size") }} 32x32</label>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-12 col-xl-4 mb-3">
-                                <div class="card card-box h-100 ">
-                                    <div class="col">
-                                        <h4 class="header-title">{{ __("Color") }}</h4>
-                                        <div class="form-group">
-                                            <label for="primary_color">{{ __("Primary Color") }}</label>
-                                            <input type="text" id="primary_color_option" name="primary_color" class="form-control ss_form_submit" value="{{ old('primary_color', $client_preferences->web_color ?? 'cccccc')}}">
-                                        </div>
-                                        <div class="form-group mb-0">
-                                            <label>{{ __("Top Header Color") }}</label>
-                                            <input type="text" id="site_top_header_color" name="site_top_header_color" class="form-control ss_form_submit" value="{{ old('site_top_header_color', $client_preferences->site_top_header_color ?? '#4c4c4c')}}">
-                                        </div>
+                                <div class="col-md-4  mb-3">
+                                    <h4 class="header-title">{{ __("Color") }}</h4>
+                                    <div class="form-group">
+                                        <label for="primary_color">{{ __("Primary Color") }}</label>
+                                        <input type="text" id="primary_color_option" name="primary_color" class="form-control ss_form_submit" value="{{ old('primary_color', $client_preferences->web_color ?? 'cccccc')}}">
                                     </div>
-                                </div>
-                            </div>
-                            <div class="col-md-12 col-xl-4 mb-3">
-                                <div class="card card-box h-100 ">
-
+                                    <div class="form-group mb-0">
+                                        <label>{{ __("Top Header Color") }}</label>
+                                        <input type="text" id="site_top_header_color" name="site_top_header_color" class="form-control ss_form_submit" value="{{ old('site_top_header_color', $client_preferences->site_top_header_color ?? '#4c4c4c')}}">
+                                    </div>
+                                    </div>
+                                
+                                <div class="col-md-4  mb-0">
                                     <h4 class="header-title">{{ __("Show Dark Mode") }}</h4>
                                     <ul class="pl-0 mb-0">
                                         <li class="d-flex flex-column justify-content-start mt-2">
@@ -89,6 +83,7 @@
                                     </ul>
                                 </div>
                             </div>
+                            
                         </div>
                         <div class="row">
                             <div class="card ">
@@ -231,7 +226,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> 
             </form>
             @if($client_preference_detail->business_type != 'taxi')
             <div class="card card-box">
