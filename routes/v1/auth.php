@@ -72,6 +72,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('vendor-dasboard-data', 'Api\v1\RevenueController@getDashboardDetails');
         Route::post('get-vendor-profile', 'Api\v1\VendorController@getVendorDetails');
         Route::post('update-vendor-profile', 'Api\v1\VendorController@updateVendorDetails');
+        Route::post('get-vendor-transactions', 'Api\v1\VendorController@getVendorTransactions');
+        //Route::post('get-vendor-transactions', 'Api\v1\VendorController@getOrdersList');
         
       
         Route::get('payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
