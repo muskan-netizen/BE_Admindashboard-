@@ -199,13 +199,13 @@
 
     <div class="row">
       <!-- User Authentication start-->
-      <div class="col-md-8 mb-3">
+      <div class="col-md-6 mb-3">
         <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             <input type="hidden" name="verify_config" id="verify_config" value="1">
             <input type="hidden" name="send_to" id="send_to" value="customize">
             @csrf
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-8">
                      <!-- User Authentication start -->
                         <div class="card-box mb-2">
                             <h4 class="header-title text-uppercase">{{ __("User Authentication") }}</h4>
@@ -229,8 +229,7 @@
                                 </div>
                             </div>
                         </div><!-- User Authentication end -->
-                    </div>
-                    <div class="col-md-4">
+
 
                      @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
 
@@ -314,7 +313,7 @@
             </div>
          </form>
       </div><!-- User Authentication end-->
-      <div class="cal-md-4">
+      <div class="col-md-6">
          <!-- Vendor Registration Documents start -->
          <div class="card-box pb-2">
             <div class="d-flex align-items-center justify-content-between">
