@@ -27,8 +27,9 @@
     </div>
     <div class="row col-spacing">
         <div class="col-lg-3 col-xl-3 mb-3">
-            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}"> 
+            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
+                <!-- Panel Theme title -->
                 <div class="card-box mb-0 h-100 pb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <h4 class="header-title mb-0">{{ __("Panel Theme") }}</h4>
@@ -64,9 +65,11 @@
                             <input type="checkbox" id="android_app" data-plugin="switchery" name="show_contact_us" class="chk_box2" data-color="#43bee1">
                         </div> -->
                     </div>
-                </div>
+                </div><!-- Panel Theme end -->
             </form>
         </div>
+
+        <!-- Date & Time sec start -->
         <div class="col-lg-4 col-xl-3 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
@@ -119,7 +122,9 @@
                     </div>
                 </div>
             </form>
-        </div>
+        </div><!-- Date & Time sec end -->
+
+        <!-- Localization start -->
         <div class="col-lg-5 col-xl-6 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
@@ -188,129 +193,312 @@
                     </div>
                 </div>
             </form>
-        </div>
+        </div><!-- Localization end -->
+
     </div>
+
     <div class="row">
       <!-- User Authentication start-->
-      <div class="col-xl-8 mb-3">
+      <div class="col-md-8 mb-3">
         <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
             <input type="hidden" name="verify_config" id="verify_config" value="1">
             <input type="hidden" name="send_to" id="send_to" value="customize">
             @csrf
-               <div class="row">
-                  <div class="col-md-4 mb-3">
+                <div class="row">
+                    <div class="col-md-4">
                      <!-- User Authentication start -->
-                     <div class="card-box h-100 mb-0">
-                        <h4 class="header-title text-uppercase">{{ __("User Authentication") }}</h4>
-                        <div class="row align-items-center">
-                           <div class="col-sm-12">
-                              <div class="form-group switchery-demo">
-                                 <label for="verify_email" class="mr-3 mb-0">{{ __("Verify Email") }}</label>
-                                 <input type="checkbox" data-plugin="switchery" name="verify_email" id="verify_email" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_email == '1')) checked='checked' @endif>
-                              </div>
-                           </div>
-                           <div class="col-sm-12">
-                              <div class="form-group">
-                                 <label for="verify_phone" class="mr-3 mb-0">{{ __("Verify Phone") }}</label>
-                                 <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif>
-                              </div>
-                           </div>
-                           <div class="col-sm-12 mt-4">
-                              <div class="form-group mb-0">
-                                 <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                              </div>
-                           </div>
-                        </div>
-                     </div><!-- User Authentication end -->
-                  </div>
-                  @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
-                  <div class="col-md-4 mb-3">
-                     <!-- Vendor Switch start -->
-                     <div class="card-box h-100 mb-0">
-                        <h4 class="header-title text-uppercase">{{ __("Vendor Switch") }}</h4>
-                        <div class="row align-items-center">
-                           <div class="col-md-12">
-                              <div class="form-group">
-                                 <label for="dinein_check" class="mr-3 mb-0">{{getDynamicTypeName('Dine-In')}}</label>
-                                 <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
-                              </div>
-                           </div>
-                           <div class="col-md-12">
-                              <div class="form-group">
-                                 <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
-                                 <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
-                              </div>
-                           </div>
-                           <div class="col-md-12">
-                              <div class="form-group">
-                                 <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
-                                 <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
-                              </div>
-                           </div>
-                           <div class="col-md-12">
-                              <div class="form-group mb-0">
-                                 <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                              </div>
-                           </div>
-                        </div>
-                     </div><!-- Vendor Switch end -->
-                  </div>
-                  <div class="col-md-4 mb-3">
-                     <!-- EDIT ORDER BY start -->
-                     <div class="card-box h-100">
-                        <h4 class="header-title text-uppercase mb-2">{{ __("Edit Order By") }}</h4>
-                        <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-                           <input type="hidden" name="edit_order_modes" id="edit_order_modes" value="1">
-                           @csrf
-
-                           @php
-                              $vendormenu = getNomenclatureName('Vendors', true);
-                              $vendormenulabel = ($vendormenu=="Vendors")?__('Vendors'):$vendormenu;
-
-                           @endphp
-
-                           <div class="row">
-                              <!-- <div class="col-md-4">
-                                    <div class="form-group mb-3">
-                                       <label for="is_edit_order_admin" class="mr-2 mb-0"> {{ __("Admin") }}</label>
-                                       <input type="checkbox" data-plugin="switchery" name="is_edit_order_admin" id="is_edit_order_admin" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_edit_order_admin == '1')) checked='checked' @endif>
+                        <div class="card-box mb-2">
+                            <h4 class="header-title text-uppercase">{{ __("User Authentication") }}</h4>
+                            <div class="row align-items-start">
+                                <div class="col-sm-12">
+                                    <div class="form-group d-flex justify-content-between">
+                                        <label for="verify_email" class="mr-3 mb-0">{{ __("Verify Email") }}</label>
+                                        <input type="checkbox" data-plugin="switchery" name="verify_email" id="verify_email" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_email == '1')) checked='checked' @endif>
                                     </div>
-                                 </div>
-                                 <div class="col-md-4">
-                                    <div class="form-group mb-3">
-                                       <label for="is_edit_order_vendor" class="mr-2 mb-0">{{ $vendormenulabel }}</label>
-                                       <input type="checkbox" data-plugin="switchery" name="is_edit_order_vendor" id="is_edit_order_vendor" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_edit_order_vendor == '1')) checked='checked' @endif>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group d-flex justify-content-between">
+                                        <label for="verify_phone" class="mr-3 mb-0">{{ __("Verify Phone") }}</label>
+                                        <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif>
                                     </div>
-                                 </div> -->
-                                 <div class="col-md-12">
-                                    <div class="form-group mb-3">
-                                       <label for="is_edit_order_driver" class="mr-2 mb-0">{{ __("Driver") }}</label>
-                                       <input type="checkbox" data-plugin="switchery" name="is_edit_order_driver" id="is_edit_order_driver" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_edit_order_driver == '1')) checked='checked' @endif>
+                                </div>
+                                <div class="col-sm-12 mt-4">
+                                    <div class="form-group mb-0">
+                                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                                     </div>
-                                 </div>
+                                </div>
+                            </div>
+                        </div><!-- User Authentication end -->
+                    </div>
+                    <div class="col-md-4">
+
+                     @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+
+                        <!-- Vendor Switch start -->
+                        <div class="card-box mb-2">
+                            <h4 class="header-title text-uppercase">{{ __("Vendor Switch") }}</h4>
+                            <div class="row align-items-start">
+                            <div class="col-md-12">
+                                <div class="form-group d-flex justify-content-between">
+                                    <label for="dinein_check" class="mr-3 mb-0">{{getDynamicTypeName('Dine-In')}}</label>
+                                    <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group d-flex justify-content-between">
+                                    <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
+                                    <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group d-flex justify-content-between">
+                                    <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
+                                    <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group mb-0">
+                                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                                </div>
+                            </div>
+                            </div>
+                        </div><!-- Vendor Switch end -->
+                    </div>
+                    <div class="col-md-4">
+                        <!-- EDIT ORDER BY start -->
+                        <div class="card-box mb-0">
+                            <h4 class="header-title text-uppercase mb-2">{{ __("Edit Order By") }}</h4>
+                            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+                            <input type="hidden" name="edit_order_modes" id="edit_order_modes" value="1">
+                            @csrf
+
+                            @php
+                                $vendormenu = getNomenclatureName('Vendors', true);
+                                $vendormenulabel = ($vendormenu=="Vendors")?__('Vendors'):$vendormenu;
+
+                            @endphp
+
+                            <div class="row align-items-start">
+                                <!-- <div class="col-md-4">
+                                        <div class="form-group mb-3">
+                                        <label for="is_edit_order_admin" class="mr-2 mb-0"> {{ __("Admin") }}</label>
+                                        <input type="checkbox" data-plugin="switchery" name="is_edit_order_admin" id="is_edit_order_admin" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_edit_order_admin == '1')) checked='checked' @endif>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-3">
+                                        <label for="is_edit_order_vendor" class="mr-2 mb-0">{{ $vendormenulabel }}</label>
+                                        <input type="checkbox" data-plugin="switchery" name="is_edit_order_vendor" id="is_edit_order_vendor" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_edit_order_vendor == '1')) checked='checked' @endif>
+                                        </div>
+                                    </div> -->
+                                    <div class="col-md-12">
+                                        <div class="form-group d-flex justify-content-between mb-3">
+                                        <label for="is_edit_order_driver" class="mr-2 mb-0">{{ __("Driver") }}</label>
+                                        <input type="checkbox" data-plugin="switchery" name="is_edit_order_driver" id="is_edit_order_driver" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_edit_order_driver == '1')) checked='checked' @endif>
+                                        </div>
+                                    </div>
 
 
-                              <div class="col-md-12">
-                                 <div class="form-group mb-0 text-md-left">
-                                    <button class="btn btn-info d-block" type="submit">{{ __("Save") }}</button>
-                                 </div>
-                              </div>
-                           </div>
-                        </form>
-                     </div><!-- EDIT ORDER BY start -->
-                  </div>
-               @endif
+                                <div class="col-md-12">
+                                    <div class="form-group mb-0 text-md-left">
+                                        <button class="btn btn-info d-block" type="submit">{{ __("Save") }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                            </form>
+                        </div><!-- EDIT ORDER BY start -->
+
+                    @endif
+                </div>
+
             </div>
          </form>
       </div><!-- User Authentication end-->
+      <div class="cal-md-4">
+         <!-- Vendor Registration Documents start -->
+         <div class="card-box pb-2">
+            <div class="d-flex align-items-center justify-content-between">
+               <h4 class="header-title text-uppercase m-0">{{ __("Vendor Registration Documents") }}</h4>
+               <a class="btn btn-info d-block" id="add_vendor_registration_document_modal_btn">
+                  <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+               </a>
+            </div>
+            <div class="table-responsive mt-3 mb-1">
+               <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                  <thead>
+                     <tr>
+                        <th>{{ __("Name") }}</th>
+                        <th>{{ __("Type") }}</th>
+                        <th>{{ __("Is Required?") }}</th>
+                        <th>{{ __("Action") }}</th>
+                     </tr>
+                  </thead>
+                  <tbody id="post_list">
+                     @forelse($vendor_registration_documents as $vendor_registration_document)
+                     <tr>
+                        <td>
+                           <a class="edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">
+                              {{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}
+                           </a>
+                        </td>
+                        <td>{{$vendor_registration_document->file_type}}</td>
+                        <td>{{ ($vendor_registration_document->is_required == 1)?__('Yes'):__('No') }}</td>
+                        <td>
+                           <div>
+                              <div class="inner-div" style="float: left;">
+                                 <a class="action-icon edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">
+                                    <i class="mdi mdi-square-edit-outline"></i>
+                                 </a>
+                              </div>
+                              <div class="inner-div">
+                                 <button type="button" class="btn btn-primary-outline action-icon delete_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}">
+                                    <i class="mdi mdi-delete"></i>
+                                 </button>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     @empty
+                     <tr align="center">
+                        <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                     </tr>
+                     @endforelse
+                  </tbody>
+               </table>
+            </div>
+         </div><!-- Vendor Registration Documents end -->
+
+
+
+      </div>
    </div>
+
     <div class="row">
+        <div class="col-md-3 mb-3">
+            <!-- Refer and Earn start -->
+            <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
+                @csrf
+                <div class="card-box mb-0 pb-1">
+                    <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="header-title text-uppercase">Refer and Earn</h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="col-xl-12 my-2" id="addCur-160">
+                    <label class="primaryCurText">{{ __("Referred To Amount") }} = </label>
+                    <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', $reffer_to ?? '')}}" min="0">
+                    </div>
+                    <div class="col-xl-12 mb-2 mt-3" id="addCur-160">
+                    <label class="primaryCurText">{{ __("Referred By Amount") }} = </label>
+                    <input class="form-control" type="number" name="reffered_by_amount" id="reffered_by_amount" value="{{ old('reffered_by_amount', $reffer_by ?? '')}}" min="0">
+                    </div>
+                </div>
+            </form><!-- Refer and Earn end -->
+        </div>
+        <div class="col-md-3 mb-3">
+                <!-- Order Email Notification start -->
+                <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}">
+                    @csrf
+                    <div class="card-box pb-1">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4 class="header-title text-uppercase">{{ __('Order Email Notification') }}</h4>
+                            <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                        </div>
+                        <div class="col-xl-12 my-2" id="addCur-160">
+                            <label class="primaryCurText">{{ __('Email') }}</label>
+                            <input class="form-control" type="email" id="admin_email" name="admin_email" value="{{ old('admin_email', $preference->admin_email)}}">
+                        </div>
+                    </div>
+                </form><!-- Order Email Notification end -->
+        </div>
+        <div class="col-md-3 mb-3">
+            <!-- Distance to Time Calculator start -->
+            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}">
+                <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
+                @csrf
+                <div class="card-box mb-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="header-title mb-0">{{__('Distance to Time Calculator')}}</h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="row mt-2">
+                    <div class="col-12 mb-2">
+                        <label class="primaryCurText">{{__('Distance Unit')}}</label>
+                        <select class="form-control" id="distance_unit_for_time" name="distance_unit_for_time">
+                            <option value="">{{__('Select unit')}}</option>
+                            <option value="kilometer" @if((isset($preference) && $preference->distance_unit_for_time == 'kilometer')) selected @endif>{{__('Kilometer')}}</option>
+                            <option value="mile" @if((isset($preference) && $preference->distance_unit_for_time == 'mile')) selected @endif>{{__('Mile')}}</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="primaryCurText">{{__('Distance to Time Multiplier (Per 1 distance unit)')}}</label>
+                        <input class="form-control" type="number" id="distance_to_time_multiplier" name="distance_to_time_multiplier" value="{{ old('distance_to_time_multiplier', $preference->distance_to_time_multiplier  ?? '')}}" min="0">
+                    </div>
+                    </div>
+                </div>
+            </form><!-- Distance to Time Calculator end -->
 
+        </div>
+        <div class="col-md-3 mb-3">
+               <!-- Tags for Product start -->
+               <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
+                  @csrf
+                  <div class="card-box product-tags mb-0 pb-1">
+                     <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title text-uppercase">{{ __('Tags for Product')}}</h4>
+                        <a class="btn btn-info d-block" id="add_product_tag_modal_btn">
+                           <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+                        </a>
+                     </div>
+                     <div class="table-responsive mt-3 mb-1">
+                        <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                           <thead>
+                              <tr>
+                                 <th>{{ __("Icon") }}</th>
+                                 <th>{{ __("Name") }}</th>
+                                 <th>{{ __("Action") }}</th>
+                              </tr>
+                           </thead>
+                           <tbody id="post_list">
+                              @forelse($tags as $tag)
+                                 <tr>
+                                    <td>
+                                       @if(isset($tag->icon) && !empty($tag->icon)) <img src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}">@endif
+                                    </td>
+                                    <td>
+                                       <a class="edit_product_tag_btn" data-tag_id="{{$tag->id}}" href="javascript:void(0)">
+                                          {{$tag->primary ? $tag->primary->name : ''}}
+                                       </a>
+                                    </td>
+                                    <td>
+                                       <div>
+                                          <div class="inner-div" style="float: left;">
+                                             <a class="action-icon edit_product_tag_btn" data-tag_id="{{$tag->id}}" href="javascript:void(0)">
+                                                <i class="mdi mdi-square-edit-outline"></i>
+                                             </a>
+                                          </div>
+                                          <div class="inner-div">
+                                             <button type="button" class="btn btn-primary-outline action-icon delete_product_tag_btn" data-tag_id="{{$tag->id}}">
+                                                <i class="mdi mdi-delete"></i>
+                                             </button>
+                                          </div>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              @empty
+                                 <tr align="center">
+                                    <td colspan="4" style="padding: 20px 0">{{ __("Tags not found.") }}</td>
+                                 </tr>
+                              @endforelse
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+               </form><!-- Tags for Product end -->
 
+        </div>
+    </div>
 
-
-
-
+    <div class="row">
         <div class="col-lg-3 col-lg-3 mb-3">
             <form method="POST" class="h-100" action="{{route('client.updateDomain', Auth::user()->code)}}">
                 @csrf
@@ -346,6 +534,31 @@
                     </div>
                 </div>
             </form>
+            <!-- Android/IOS Link start -->
+            <div class="card-box pb-2">
+                  <div class="table-responsive mb-1">
+                     <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                        <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
+                        @csrf
+                        <div class="card-box mb-0 py-0 px-2">
+                           <div class="d-flex align-items-center justify-content-between">
+                              <h4 class="header-title mb-0">{{ __("Android/IOS Link") }}</h4>
+                              <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                           </div>
+                           <div class="row mt-2">
+                              <div class="col-12 mb-2">
+                                 <label class="primaryCurText">{{__('Android App Link')}}</label>
+                                 <input class="form-control" type="text" id="android_app_link" name="android_app_link" value="{{ old('android_app_link', $preference->android_app_link  ?? '')}}">
+                              </div>
+                              <div class="col-12">
+                                 <label class="primaryCurText">{{__('IOS App Link')}}</label>
+                                 <input class="form-control" type="text" id="ios_link" name="ios_link" value="{{ old('ios_link', $preference->ios_link  ?? '')}}" >
+                              </div>
+                           </div>
+                        </div>
+                     </form>
+                  </div>
+               </div><!-- Android/IOS Link end -->
         </div>
         <div class="col-lg-3 mb-3">
             <div class="card-box mb-0 h-100 pb-1">
