@@ -21,13 +21,13 @@ class PaymentOptionController extends BaseController{
 
     public function getPaymentOptions(Request $request, $page = ''){
         if($page == 'wallet'){
-            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout');
+            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net');
         }
         elseif($page == 'pickup_delivery'){
             $code = array('cod', 'razorpay');
         }
         else{
-            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout');
+            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net');
         }
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'title', 'off_site']);
         foreach($payment_options as $option){
@@ -46,7 +46,13 @@ class PaymentOptionController extends BaseController{
         if(!empty($gateway)){
             $code = $request->header('code');
             $client = Client::where('code',$code)->first();
-            $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/";
+            $domain = '';
+            if(!empty($client->custom_domain)){
+                $domain = $client->custom_domain;
+            }else{
+                $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+            }
+            $server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
             $function = 'postPaymentVia_'.$gateway;
@@ -114,6 +120,10 @@ class PaymentOptionController extends BaseController{
 
     public function postPaymentVia_checkout(Request $request){
         $gateway = new CheckoutGatewayController();
+        return $gateway->checkoutPurchase($request);
+    }
+    public function postPaymentVia_authorize_net(Request $request){
+        $gateway = new AuthorizeGatewayController();
         return $gateway->checkoutPurchase($request);
     }
 

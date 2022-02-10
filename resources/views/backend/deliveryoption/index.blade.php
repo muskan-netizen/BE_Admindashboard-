@@ -285,10 +285,10 @@
 
                             <h5 class="d-inline-block mt-3">
                                 <span>{{ __('Webhook Url') }} : </span>
-                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('carrier.webhook.shiprocket')}}</span></a>
+                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('webshiprocket')}}</span></a>
                             </h5>
                             <sup class="position-relative">
-                                <a class="copy-icon ml-2" id="copy_icon2" data-urls="{{route('carrier.webhook.shiprocket')}}" style="cursor:pointer;">
+                                <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('webshiprocket')}}" style="cursor:pointer;">
                                     <i class="fa fa-copy"></i>
                                 </a>
                                 <h6 id="copy_message2" class="copy-message mt-2"></h6>
@@ -386,6 +386,288 @@
 </div>
 @endif
 
+<!-- End Ship Rocket -->
+
+
+
+<!--- Ahoy Code -->
+
+@if($optDunzo)
+    <div class="col-md-6">
+    <form method="POST" id="payment_option_form" action="{{route('delivery.dunzo')}}" >
+        @csrf
+        @method('POST')
+        <div class="row">
+
+            <div class="col-12">
+
+                <input type="hidden" name="method_id" id="{{$optDunzo->id}}" value="{{$optDunzo->id}}">
+                <input type="hidden" name="method_name" id="{{$optDunzo->code}}" value="{{$optDunzo->code}}">
+
+                <?php
+                $creds = json_decode($optDunzo->credentials);
+                if($optDunzo->test_mode == 1){
+                    $app_url = 'https://dev.adloggs.com/aa';
+                }else{
+                    $app_url = 'https://app.adloggs.com/aa';
+                }
+                $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+
+
+                $base_price = (isset($creds->base_price)) ? $creds->base_price : '0';
+                $distance = (isset($creds->distance)) ? $creds->distance : '0';
+                $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
+                ?>
+
+                <div class="card-box h-100">
+                    <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h3 class="mb-1">{{$optDunzo->title}}</h3>
+                    </div>
+                    <div class="col-sm-4 text-right">
+                        <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                    </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-3">{{ __("Enable") }}</label>
+                                <input type="checkbox" data-id="{{$optDunzo->id}}" data-title="{{$optDunzo->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($optDunzo->status == 1) checked @endif>
+                            </div>
+                        </div>
+                        @if ( (strtolower($optDunzo->code) == 'dunzo'))
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
+                                <input type="checkbox" data-id="{{$optDunzo->id}}" data-title="{{$optDunzo->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($optDunzo->test_mode == 1) checked @endif>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
+                    <hr>
+
+                    @if ( (strtolower($optDunzo->code) == 'dunzo') )
+                    <div id="dunzo_fields_wrapper" @if($optDunzo->status != 1) style="display:none" @endif>
+
+                        <div class="col-12 mt-3">
+
+                            <h5 class="d-inline-block mt-3">
+                                <span>{{ __('Webhook Url') }} : </span>
+                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('dunzoWebhook')}}</span></a>
+                            </h5>
+                            <sup class="position-relative">
+                                <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('dunzoWebhook')}}" style="cursor:pointer;">
+                                    <i class="fa fa-copy"></i>
+                                </a>
+                                <h6 id="copy_message2" class="copy-message mt-2"></h6>
+                            </sup>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label for="dunzo_app_url" class="mr-3">{{ __("App Url") }}</label>
+                                    <input type="text" name="app_url" id="dunzo_app_url" class="form-control" value="{{$app_url}}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label for="dunzo_api_key" class="mr-3">{{ __("Api key") }}</label>
+                                    <input type="text" name="api_key" id="dunzo_api_key" class="form-control" value="{{$api_key}}" @if($optDunzo->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-12 ">
+                            <div class="form-group mt-2 switchery-demo">
+                                <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
+                                <input type="checkbox"  data-title="{{$optDunzo->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
+                            </div>
+                        <hr/>
+                        </div>
+
+
+                    <div class="row mt-3" id="dunzo_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
+
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="dunzo_base_price" class="mr-3">{{ __("Base Price") }}</label>
+                                <input type="text" name="base_price" id="dunzo_base_price" class="form-control" value="{{@$base_price}}" >
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="dunzo_distance" class="mr-3">{{ __("Distance") }}</label>
+                                <input type="text" name="distance" id="dunzo_distance" class="form-control" value="{{@$distance}}" >
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="dunzo_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
+                                <input type="text" name="amount_per_km" id="dunzo_amount_per_km" class="form-control" value="{{@$amount_per_km}}" >
+                            </div>
+                        </div>
+                    </div>
+
+                    </div>
+                    @endif
+
+
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@endif
+
+<!-- End Dunzo -->
+
+
+
+<!--- Ahoy masa Code -->
+
+@if($optAhoy)
+    <div class="col-md-6">
+    <form method="POST"  action="{{route('delivery.ahoy')}}" >
+        @csrf
+        @method('POST')
+        <div class="row">
+
+            <div class="col-12">
+
+                <input type="hidden" name="method_id" id="{{$optAhoy->id}}" value="{{$optAhoy->id}}">
+                <input type="hidden" name="method_name" id="{{$optAhoy->code}}" value="{{$optAhoy->code}}">
+
+                <?php
+                $creds = json_decode($optAhoy->credentials);
+                if($optAhoy->test_mode == 1){
+                    $app_url = 'https://ahoydev.azure-api.net';
+                }else{
+                    $app_url = 'https://ahoyapis.azure-api.net';
+                }
+                $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+
+                $base_price = (isset($creds->base_price)) ? $creds->base_price : '0';
+                $distance = (isset($creds->distance)) ? $creds->distance : '0';
+                $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
+                ?>
+
+                <div class="card-box h-100">
+                    <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h3 class="mb-1">{{$optAhoy->title}}</h3>
+                    </div>
+                    <div class="col-sm-4 text-right">
+                        <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                    </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-3">{{ __("Enable") }}</label>
+                                <input type="checkbox" data-id="{{$optAhoy->id}}" data-title="{{$optAhoy->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($optAhoy->status == 1) checked @endif>
+                            </div>
+                        </div>
+                        @if ( (strtolower($optAhoy->code) == 'ahoy'))
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
+                                <input type="checkbox" data-id="{{$optAhoy->id}}" data-title="{{$optAhoy->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($optAhoy->test_mode == 1) checked @endif>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
+                    <hr>
+
+                    @if ( (strtolower($optAhoy->code) == 'ahoy') )
+                    <div id="ahoy_fields_wrapper" @if($optAhoy->status != 1) style="display:none" @endif>
+
+                        <div class="col-12 mt-3">
+
+                            <h5 class="d-inline-block mt-3">
+                                <span>{{ __('Webhook Url') }} : </span>
+                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('ahoyWebhook')}}</span></a>
+                            </h5>
+                            <sup class="position-relative">
+                                <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('ahoyWebhook')}}" style="cursor:pointer;">
+                                    <i class="fa fa-copy"></i>
+                                </a>
+                                <h6 id="copy_message2" class="copy-message mt-2"></h6>
+                            </sup>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label for="ahoy_app_url" class="mr-3">{{ __("App Url") }}</label>
+                                    <input type="text" name="app_url" id="ahoy_app_url" class="form-control" value="{{$app_url}}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label for="ahoy_api_key" class="mr-3">{{ __("Api key") }}</label>
+                                    <input type="text" name="api_key" id="ahoy_api_key" class="form-control" value="{{$api_key}}" @if($optAhoy->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-12 ">
+                            <div class="form-group mt-2 switchery-demo">
+                                <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
+                                <input type="checkbox"  data-title="{{$optAhoy->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
+                            </div>
+                        <hr/>
+                        </div>
+
+
+                    <div class="row mt-3" id="ahoy_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
+
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="ahoy_base_price" class="mr-3">{{ __("Base Price") }}</label>
+                                <input type="text" name="base_price" id="ahoy_base_price" class="form-control" value="{{@$base_price}}" >
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="ahoy_distance" class="mr-3">{{ __("Distance") }}</label>
+                                <input type="text" name="distance" id="ahoy_distance" class="form-control" value="{{@$distance}}" >
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="ahoy_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
+                                <input type="text" name="amount_per_km" id="ahoy_amount_per_km" class="form-control" value="{{@$amount_per_km}}" >
+                            </div>
+                        </div>
+                    </div>
+
+                    </div>
+                    @endif
+
+
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@endif
+
+<!-- End Ahoy (Masa) -->
+
+
 </div>
 </div>
 
@@ -427,33 +709,21 @@
         }
     });
 
-
-
-    $("#copy_icon").click(function(){
+    $(".copy-icon").click(function(){
+        var url = $(this).attr('data-url');
+        console.log($(this));
         var temp = $("<input>");
-        var url = $(this).data('url');
         $("body").append(temp);
         temp.val(url).select();
         document.execCommand("copy");
         temp.remove();
-        $("#copy_message").text("{{ __('URL Copied!') }}").show();
+        $(this).closest('.copy-message').text("{{ __('URL Copied!') }}").show();
+        //$(".copy-message").text("{{ __('URL Copied!') }}").show();
         setTimeout(function(){
-            $("#copy_message").text('').hide();
+            $(this).closest('.copy-message').text('').hide();
         }, 3000);
     });
 
-    $("#copy_icon2").click(function(){
-        var temp = $("<input>");
-        var url = $(this).data('urls');
-        $("body").append(temp);
-        temp.val(url).select();
-        document.execCommand("copy");
-        temp.remove();
-        $("#copy_message2").text("{{ __('URL Copied!') }}").show();
-        setTimeout(function(){
-            $("#copy_message2").text('').hide();
-        }, 3000);
-    });
 
 </script>
 @endsection

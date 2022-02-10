@@ -66,7 +66,7 @@ class BaseController extends Controller{
                     if($node['parent_id'] != 1 && !empty($node['translation'][0]['name'])){
                         $parentCategory[] = $node['translation'][0]['name'];
                     }
-                    
+
                     // start including parent category
                     $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
                     $hierarchyName = $category; // assume first category is parent
@@ -99,7 +99,7 @@ class BaseController extends Controller{
         }
         return $this->categoryOptionData;
     }
-    
+
 	public function buildTree($elements, $parentId = 1) {
         $branch = array();
         foreach ($elements as $element) {
@@ -636,7 +636,7 @@ class BaseController extends Controller{
         }
         $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
         $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
-        $amount = number_format($amount, 2);
+        $amount = number_format($amount, 2,'.','');
         return $amount;
     }
 
@@ -707,16 +707,16 @@ class BaseController extends Controller{
     public function sendTestMail(){
         $after7days = Carbon::now()->addDays(7)->toDateString();
         $now = Carbon::now()->toDateString();
-    
+
         $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
 
             if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
                 $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-             
+
                 $client_name = $client->name;
                 $mail_from = 'dineshk@codebrewinnovations.com';
-                $sendto = 'dkdenni7@gmail.com'; 
+                $sendto = 'dkdenni7@gmail.com';
                 try{
                     // $data = [
                     //     'customer_name' => 'Test',
@@ -739,7 +739,7 @@ class BaseController extends Controller{
                     return response()->json(['data' => $e->getMessage()]);
                 }
             }
-        
+
     }
 
 }

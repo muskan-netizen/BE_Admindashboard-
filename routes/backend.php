@@ -95,6 +95,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('banner/saveOrder', 'Client\BannerController@saveOrder');
         Route::post('banner/changeValidity', 'Client\BannerController@validity');
         Route::post('vendor/saveLocation/{id}', 'Client\VendorController@updateLocation')->name('vendor.config.pickuplocation');
+        Route::post('vendor/ahoyLocation/{id}', 'Client\VendorController@updateAhoyLocation')->name('vendor.config.ahoy.pickuplocation');
         Route::post('banner/toggle', 'Client\BannerController@toggleAllBanner')->name('banner.toggle');
         Route::resource('mobilebanner', 'Client\MobileBannerController')->middleware('onlysuperadmin');
         Route::post('mobilebanner/saveOrder', 'Client\MobileBannerController@saveOrder');
@@ -212,6 +213,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('vendor/updateSlot/{id}', 'Client\VendorSlotController@update')->name('vendor.updateSlot');
         Route::post('vendor/deleteSlot/{id}', 'Client\VendorSlotController@destroy')->name('vendor.deleteSlot');
         Route::post('vendor/importCSV', 'Client\VendorController@importCsv')->name('vendor.import');
+        Route::get('vendor/export/CSV', 'Client\VendorController@export')->name('vendor.export');
         Route::post('vendor/serviceArea/{vid}', 'Client\ServiceAreaController@store')->name('vendor.serviceArea');
         Route::post('vendor/editArea/{vid}', 'Client\ServiceAreaController@edit')->name('vendor.serviceArea.edit');
         Route::post('vendor/updateArea/{id}', 'Client\ServiceAreaController@update');
@@ -230,6 +232,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('customer/account/{user}/{action}', 'Client\UserController@deleteCustomer')->name('customer.account.action');
         Route::get('customer/edit/{id}', 'Client\UserController@newEdit')->name('customer.new.edit');
         Route::post('customer/import', 'Client\UserController@importCsv')->name('customer.import');
+
         Route::put('newUpdate/edit/{id}', 'Client\UserController@newUpdate')->name('customer.new.update');
         Route::put('profile/{id}', 'Client\UserController@updateProfile')->name('client.profile.update');
         Route::post('password/update', 'Client\UserController@changePassword')->name('client.password.update');
@@ -262,6 +265,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('payoption', 'Client\PaymentOptionController');
         Route::resource('shipoption', 'Client\ShippingOptionController');
         Route::resource('deliveryoption', 'Client\DeliveryOptionController');
+        Route::post('delivery/dunzo', 'Client\DeliveryOptionController@dunzo')->name('delivery.dunzo');
+        Route::post('delivery/ahoy', 'Client\DeliveryOptionController@ahoy')->name('delivery.ahoy');
         Route::resource('tools','Client\ToolsController');
         Route::post('tools/tax','Client\ToolsController@taxCopy')->name('tools.taxCopy');
         Route::post('tool/uploadImage','Client\ToolsController@uploadImage')->name('tools.uploadImage');
@@ -315,6 +320,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::get('notification', 'Client\UserController@customNotification')->name('customer.notification');
         Route::post('sendnotification', 'Client\UserController@sendNotification')->name('send.notification');
+        Route::get('/review/delect/{id}', 'Client\ReviewController@destroy')->name('review.delete');
     });
 });
 

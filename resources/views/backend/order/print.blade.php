@@ -3,10 +3,13 @@
         <tr>
             <td>
                 <div class="al_print_header" style="width: 100%;">
-                    <h5 style="color: #000;margin: 0px;font-family: Lato,sans-serif;">{{ $vendor_data->name }}</h5>
+                    <h5 style="color: #000;margin: 0px;font-family: Lato,sans-serif;display: inline-block;vertical-align: middle;">
+                        <img style="margin-right: 10px;" src="{{@$vendor_data->logo['image_fit'].'32/32'.@$vendor_data->logo['image_path']}}" alt="product-img" height="20">
+                        <span style="color: #000;margin: 0px;margin-bottom: 10px; font-family: Lato,sans-serif;display: inline-block;vertical-align: middle;">{{ $vendor_data->name }}</span>
+                        </h5>
                         <ul style="padding: 0; margin: 0;">
                             @if($order->luxury_option_name != '')
-                                <li style="display: inline-block;vertical-align: middle;margin-right: 5px"><span style="font-family: Lato,sans-serif; background-color: #05C3DF;color: #fff;border-radius: 5px;font-size: 12px;padding: 2px 7px">Delivery</span></li>
+                                <li style="display: inline-block;vertical-align: middle;margin-right: 10px"><span style="font-family: Lato,sans-serif; background-color: #05C3DF;color: #fff;border-radius: 10px;font-size: 12px;padding: 2px 7px">Delivery</span></li>
                             @endif
                             <li style="display: inline-block;vertical-align: middle;"><span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Items from Order") }} #{{$order->order_number}}</span></li>
                         </ul>
@@ -53,26 +56,27 @@
                                     $sub_total += $product->total_amount;
                                 @endphp
                             <tr>
-                                <td scope="row" valign="top">
-                                    <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif;">{{$product->product_name}}</b></p>
-                                    <p class="p-0 m-0">
-                                        @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
+                                <td style="width: 30%" scope="row" valign="top">
+                                    <p style="vertical-align: top; font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif;">{{$product->product_name}}</b>
+
                                     </p>
-                                    @foreach($product->prescription as $pres)
-                                        <br><a target="_blank" href="{{ ($pres) ? @$pres->prescription['proxy_url'].'74/100'.@$pres->prescription['image_path'] : ''}}">{{($product->prescription) ? 'Prescription' : ''}}</a>
-                                    @endforeach
-                                    <p class="p-0 m-0">{{ substr($product->product_variant_sets, 0, -2) }}</p>
-                                    <!-- @if($product->addon && count($product->addon))
-                                        <hr class="my-2">
-                                        <h6 class="m-0 pl-0"><b>{{__('Add Ons')}}</b></h6>
-                                        @foreach($product->addon as $addon)
-                                            <p class="p-0 m-0">{{ $addon->option->translation_title }}</p>
-                                        @endforeach
-                                    @endif -->
+                                   
+                                    @if($product->product_variant_sets)
+                                    <p style="vertical-align: top; margin: 0;padding: 10px;">{{ substr($product->product_variant_sets, 0, -2) }}</p>
+                                    @endif
+
+                                    @php $add_count = count($product->addon); @endphp
+                                    @if($product->addon && $add_count)
+                                        <ul style="margin: 0;vertical-align: top;padding-top: 0px; padding-left: 30px;">
+                                            @foreach($product->addon as $key=>$addon)
+                                            <li style="font-size: 14px;font-family: Lato,sans-serif;">{{ $addon->option->translation_title }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
                                 </td>
 
                                 <td>
-                                    <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
+                                    <p style="font-size: 14px;vertical-align: top;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                     @if($product->image_path)
                                         <img style="height: 30px;" src="{{@$product->image_path['proxy_url'].'32/32'.@$product->image_path['image_path']}}" >
                                     @else
@@ -84,12 +88,21 @@
                                 <td>
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{ $product->quantity }}</p>
                                 </td>
-                                <td>
-                                    <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
-                                        {{$clientCurrency->currency->symbol}}@money($product->price)
-                                        @if($product->addon->isNotEmpty())
+                                <td style="width: 20%">
+                                    <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($product->price) </p>
+                                    @if($product->product_variant_sets)
+                                    <p style="vertical-align: top; margin: 0;padding: 10px;"></p>
+                                    @endif
+                                    @if($product->addon && $add_count) 
+                                        <ul style="padding-left: 10px;margin: 0;">
+                                            @foreach($product->addon as $key=>$addon)
+                                            <li style="list-style: none;font-size: 14px;font-family: Lato,sans-serif;">{{$clientCurrency->currency->symbol}}{{ $addon->option->price_in_cart }} </li>
+                                            @endforeach
+                                        </ul>                                           
+                                        
+                                        @endif
 
-                                    </p>
+                                   
                                 </td>
                                 <td>
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($product->total_amount)</p>
@@ -97,29 +110,6 @@
                             </tr>
                             @endif
 
-                            @if($product->addon && count($product->addon))
-                            <tr>
-
-                                <td style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px" align="top" scope="row" colspan="3">
-                                    <span style="font-size: 14px;display:inline-block; font-family: Lato,sans-serif;margin: 0;padding: 10px">{{__('Add Ons')}}
-                                    <br>
-                                        @foreach($product->addon as $addon)
-                                        <small style="margin font-size: 12px;font-family: Lato,sans-serif;margin: 0;padding: 5px;background-color: #000;color: #fff">{{ $addon->option->translation_title }}</small>
-                                        @endforeach
-                                    </span>
-                                </td>
-
-                                <td style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
-                                    <ul class="d-inline-flex p-0">
-                                        @foreach($product->addon as $addon)
-                                            <li class="p-0 m-0 " style="margin-right:3px; list-style:none;">{{$clientCurrency->currency->symbol}}{{ $addon->option->price_in_cart }} , </li>
-                                        @endforeach
-                                        @endif
-                                    </ul>
-                                </td>
-                                <td style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"></td>
-                            </tr>
-                            @endif
                             @endforeach
                             <tr>
                                 <td scope="row" colspan="4">
@@ -165,12 +155,14 @@
                                 </td>
                                 <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue)</p></td>
                             </tr> -->
+                            @if($vendor->reject_reason)
                             <tr>
                                 <td scope="row" colspan="4">
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif; width:200px;">{{ __("Reject Reason") }} :</b></p>
                                 </td>
                                 <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$vendor->reject_reason}}</p></td>
                             </tr>
+                            @endif
                             <tr>
                                 <td scope="row" colspan="4">
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Total") }} :</b></p>
@@ -191,34 +183,36 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <th align="left"><p style="font-size: 18px;font-family: Lato,sans-serif;margin: 0;padding: 5px"> {{ __("Delivery Information") }}</p> </th>
+                                        <th align="left"><p style="font-size: 18px;font-family: Lato,sans-serif;margin: 0;padding: 10px"> {{ __("Delivery Information") }}</p> </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                                 <b style="font-size: 14px;font-family: Lato,sans-serif;">{{$order->user->name}}</b>
                                             </p>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                                 <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Email") }} :</span> {{ $order->user->email ? $order->user->email : ''}}
                                             </p>
                                         </td>
                                     </tr>
+                                    @if(!is_null($order->user) && isset($order->user->phone_number))
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __('Phone')}} :</span> {{'+'.$order->user->dial_code.$order->user->phone_number}}
                                             </p>
                                         </td>
                                     </tr>
+                                    @endif
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Address") }} :</span> {{ $order->address->house_number ? $order->address->house_number."," : ''}} {{ $order->address ? $order->address->address : ''}}
                                             </p>
                                         </td>
@@ -226,30 +220,34 @@
                                     @if(isset($order->address) && !empty($order->address->street))
                                      <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{__('Street')}} :</span> {{ $order->address ? $order->address->street : ''}}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    @endif
+                                    @if(isset($order->address) && !empty($order->address->city))
+                                    <tr>
+                                        <td align="left">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
+                                            <span style="font-size: 14px;font-family: Lato,sans-serif;">{{__('City')}} :</span> {{ $order->address ? $order->address->city : ''}}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    @endif
+                                    @if(isset($order->address) && !empty($order->address->state))
+                                    <tr>
+                                        <td align="left">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
+                                            <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("State") }} :</span> {{ $order->address ? $order->address->state : ''}}
                                             </p>
                                         </td>
                                     </tr>
                                     @endif
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
-                                            <span style="font-size: 14px;font-family: Lato,sans-serif;">{{__('City')}} :</span> {{ $order->address ? $order->address->city : ''}}
-                                            </p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
-                                            <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("State") }} :</span> {{ $order->address ? $order->address->state : ''}}
-                                            </p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
-                                            <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Zip Code") }} :</span> {{ $order->address ? $order->address->pincode : ''}}
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
+                                            <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ getNomenclatureName('Zip Code', true) }} :</span> {{ $order->address ? $order->address->pincode : ''}}
                                             </p>
                                         </td>
                                     </tr>
@@ -259,27 +257,27 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <th align="left"><p style="font-size: 18px;font-family: Lato,sans-serif;margin: 0;padding: 5px"> {{ __("User Information") }}</p> </th>
+                                        <th align="left"><p style="font-size: 18px;font-family: Lato,sans-serif;margin: 0;padding: 10px"> {{ __("User Information") }}</p> </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                                 <b style="font-size: 14px;font-family: Lato,sans-serif;">{{$order->user->name}}</b>
                                             </p>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                                 <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Address") }} :</span> {{ $order->user->address->first() ? $order->user->address->first()->address : __('Not Available')}}
                                             </p>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Mobile") }} :</span> {{$order->user->phone_number ? $order->user->phone_number : __('Not Available')}}
                                             </p>
                                         </td>
@@ -287,7 +285,7 @@
                                     @if(isset($order->address) && !empty($order->address->street))
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{__('Street')}} :</span> {{ $order->address ? $order->address->street : ''}}
                                             </p>
                                         </td>
@@ -295,22 +293,22 @@
                                     @endif
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{__('City')}} :</span> {{ $order->address ? $order->address->city : ''}}
                                             </p>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("State") }} :</span> {{ $order->address ? $order->address->state : ''}}
                                             </p>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
-                                            <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Zip Code") }} :</span> {{ $order->address ? $order->address->pincode : ''}}
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
+                                            <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ getNomenclatureName('Zip Code', true) }} :</span> {{ $order->address ? $order->address->pincode : ''}}
                                             </p>
                                         </td>
                                     </tr>
@@ -323,13 +321,13 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <th align="left"><p style="font-size: 18px;font-family: Lato,sans-serif;margin: 0;padding: 5px"> {{ __('Payment Information') }}</p> </th>
+                                        <th align="left"><p style="font-size: 18px;font-family: Lato,sans-serif;margin: 0;padding: 10px"> {{ __('Payment Information') }}</p> </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __('Payment By') }} :</span> {{ $order->paymentOption  ? $order->paymentOption->title : ''}}
                                             </p>
                                         </td>
@@ -337,7 +335,7 @@
                                     @if($order->payment)
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __('Transaction Id') }} :</span> {{ $order->payment  ? $order->payment->transaction_id : ''}}
                                             </p>
                                         </td>
@@ -352,14 +350,14 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <th align="left"><p style="font-size: 18px;font-family: Lato,sans-serif;margin: 0;padding: 5px"> {{ __('Comment/Schedule Information') }}</p> </th>
+                                        <th align="left"><p style="font-size: 18px;font-family: Lato,sans-serif;margin: 0;padding: 10px"> {{ __('Comment/Schedule Information') }}</p> </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @if($order->comment_for_pickup_driver)
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __('Comment for Pickup Driver') }} :</span> {{ $order->comment_for_pickup_driver ?? ''}}
                                             </p>
                                         </td>
@@ -368,7 +366,7 @@
                                     @if($order->comment_for_dropoff_driver)
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __('Comment for Dropoff Driver') }} :</span> {{ $order->comment_for_dropoff_driver ?? ''}}
                                             </p>
                                         </td>
@@ -377,7 +375,7 @@
                                     @if($order->comment_for_vendor)
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __('Comment for Vendor') }} :</span> {{ $order->comment_for_vendor ?? ''}}
                                             </p>
                                         </td>
@@ -386,7 +384,7 @@
                                     @if($order->schedule_pickup)
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __('Schedule Pickup') }} :</span> {{dateTimeInUserTimeZone($order->schedule_pickup, $timezone)}}
                                             </p>
                                         </td>
@@ -395,7 +393,7 @@
                                     @if($order->schedule_dropoff)
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __('Schedule Dropoff') }} :</span> {{dateTimeInUserTimeZone($order->schedule_dropoff, $timezone)}}
                                             </p>
                                         </td>
@@ -404,7 +402,7 @@
                                     @if($order->specific_instructions)
                                     <tr>
                                         <td align="left">
-                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 5px">
+                                            <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
                                             <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __('Specific instructions') }} :</span> {{ $order->specific_instructions ?? ''}}
                                             </p>
                                         </td>

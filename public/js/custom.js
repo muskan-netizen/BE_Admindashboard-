@@ -9,8 +9,9 @@ jQuery(window).scroll(function() {
 
 // Material Select Initialization
 $(document).ready(function() {
-    $('.mdb-select').materialSelect();
-    });
+    //$('.mdb-select').materialSelect();
+
+});
 
 $(function() {
     document.ajax_loading = false;
@@ -144,7 +145,7 @@ if ($(window).width() < 767) {
 
 window.initializeSlider = function initializeSlider() {
     $(".slide-6").slick({
-        arrows: false,
+        arrows: true,
         dots: false,
         infinite: true,
         speed: 300,
@@ -162,12 +163,12 @@ window.initializeSlider = function initializeSlider() {
     $(".product-4").slick({
         dots: false,
         infinite: true,
-        dots: false,
         speed: 300,
         slidesToShow: 4,
         centerMode: true,
         centerPadding: '60px',
         slidesToScroll: 4,
+        arrows: true,
         responsive: [
             { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
             { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
@@ -176,7 +177,7 @@ window.initializeSlider = function initializeSlider() {
     });
 
     $(".recent-orders").slick({
-        arrows: false,
+        arrows: true,
         dots: false,
         infinite: true,
         speed: 300,
@@ -192,28 +193,27 @@ window.initializeSlider = function initializeSlider() {
         ]
     });
     $(".brand-slider").slick({
-        arrows: false,
-        dots: !1,
-        infinite: !1,
+        arrows: true,
+        dots: false,
+        infinite: true,
         speed: 300,
         slidesToShow: 4,
         slidesToScroll: 3,
         responsive: [
-            {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,arrows: false,infinite: true}},
-            {breakpoint: 991,settings: {slidesToShow: 3,arrows: false,slidesToScroll: 1}},
-            {breakpoint: 767,settings: {slidesToShow: 2,arrows: false,slidesToScroll: 1}},
-            {breakpoint: 360,settings: {slidesToShow: 1,arrows: false,slidesToScroll: 1}}
+            {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 1}},
+            {breakpoint: 767,settings: {slidesToShow: 2,slidesToScroll: 1}},
+            {breakpoint: 360,settings: {slidesToShow: 1,slidesToScroll: 1}}
         ]
     });
     $('.suppliers-slider').slick({
-        dots: false,
         infinite: true,
         speed: 300,
         slidesToShow: 6,
         slidesToScroll: 1,
         centerMode: false,
         centerPadding: '60px',
-        arrows: false,
+        arrows: true,
         dots: false,
         responsive: [{
                 breakpoint: 1199,
@@ -255,6 +255,7 @@ window.initializeSlider = function initializeSlider() {
         ]
     });
     $(".product-5").slick({
+        arrows: true,
         dots: false,
         infinite: true,
         dots: false,
@@ -271,7 +272,7 @@ window.initializeSlider = function initializeSlider() {
     $('.vendor-product').slick({
         infinite: true,
         speed: 300,
-        arrows: false,
+        arrows: true,
         dots: false,
         slidesToShow: 4,
         slidesToScroll: 2,
@@ -298,7 +299,8 @@ window.initializeSlider = function initializeSlider() {
 
 
     $(".booking-time").slick({
-        dots: !1,
+        dots: false,
+        arrows: true,
         infinite: !0,
         speed: 300,
         slidesToShow: 3,
@@ -526,8 +528,32 @@ $(document).ready(function() {
         card.mount('#stripe-card-element');
     }
 
+    function stripeFPXInitialize() {
+        stripe_fpx = Stripe(stripe_fpx_publishable_key);
+        var elements = stripe_fpx.elements();
+        var style = {
+            base: {
+              // Add your base input styles here. For example:
+              padding: '10px 12px',
+              color: '#32325d',
+              fontSize: '16px',
+            },
+        };
+        fpxBank = elements.create('fpxBank',
+            {
+              style: style,
+              accountHolderType: 'individual',
+            }
+        );
+        // Add an instance of the fpxBank Element into the container with id `fpx-bank-element`.
+        fpxBank.mount('#fpx-bank-element');
+    }
+
     if ($("#stripe-card-element").length > 0) {
         stripeInitialize();
+    }
+    if ($("#fpx-bank-element").length > 0) {
+        stripeFPXInitialize();
     }
 
     $(document).delegate(".subscribe_btn", "click", function() {
@@ -558,6 +584,7 @@ $(document).ready(function() {
                                 }
                                 $("#subscription_payment").modal("show");
                                 stripeInitialize();
+                                stripeFPXInitialize();
                             }
                         },
                         error: function(error) {
@@ -635,6 +662,10 @@ $(document).ready(function() {
                 paymentViaPagarme('', '');
             }else if (payment_option_id == 17) {
                 paymentViaCheckout('', '');
+            }else if (payment_option_id == 18) {
+                paymentViaAuthorize('', '');
+            }else if (payment_option_id == 19) {
+                paymentViaStripeFPX('', 19, '');
             }
         } else {
             _this.attr("disabled", false);
@@ -676,7 +707,7 @@ $(document).ready(function() {
                     }
                     cartHeader();
                     cartTotalProductCount();
-                    
+
 
                     if ($('#show_plus_minus' + cartproduct_id).length != 0) {
                         if($('.addon_variant_quantity_' + cartproduct_id).closest('.customized_product_row').length > 0){
@@ -843,7 +874,7 @@ $(document).ready(function() {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions:specific_instructions,task_type: task_type,schedule_dropoff:schedule_dropoff, schedule_pickup:schedule_pickup,schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor , delivery_type : delivery_type ,slot:slot},
+                data: { specific_instructions:specific_instructions,task_type: task_type,schedule_dropoff:schedule_dropoff, schedule_pickup:schedule_pickup,schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor , delivery_type : delivery_type ,slot:slot,address : address},
                 success: function(response) {
                     if (response.status == "Success") {
                         $.ajax({
@@ -862,6 +893,7 @@ $(document).ready(function() {
                                     $('#proceed_to_pay_modal').modal('show');
                                     $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
                                     stripeInitialize();
+                                    stripeFPXInitialize();
                                 }
                             },
                             error: function(error) {
@@ -898,6 +930,7 @@ $(document).ready(function() {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
+                        stripeFPXInitialize();
                     }
                 }
             },
@@ -935,6 +968,7 @@ $(document).ready(function() {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
+                        stripeFPXInitialize();
                     }
                 }
             },
@@ -1345,7 +1379,8 @@ $(document).ready(function() {
                     paymentViaStripe(result.token.id, address_id, payment_option_id,delivery_type);
                 }
             });
-        } else if (payment_option_id == 8) {
+        }
+        else if (payment_option_id == 8) {
             var order;
             inline.createToken().then(function(result) {
                 if (result.error) {
@@ -1430,6 +1465,23 @@ $(document).ready(function() {
             if (order != '') {
                 paymentViaCheckout(address_id, order);
             } else {
+                return false;
+            }
+        }
+        else if (payment_option_id == 18) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaAuthorize(address_id, order);
+            } else {
+                return false;
+            }
+        }
+        else if (payment_option_id == 19) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaStripeFPX(address_id, payment_option_id, order);
+            }
+            else{
                 return false;
             }
         }
@@ -1610,6 +1662,10 @@ $(document).ready(function() {
             paymentViaPagarme('', '');
         }else if (payment_option_id == 17) {
             paymentViaCheckout('', '');
+        }else if (payment_option_id == 18) {
+            paymentViaAuthorize('', '');
+        }else if (payment_option_id == 19) {
+            paymentViaStripeFPX('', payment_option_id, '');
         }
     });
     $(document).on("click", ".remove_promo_code_btn", function() {

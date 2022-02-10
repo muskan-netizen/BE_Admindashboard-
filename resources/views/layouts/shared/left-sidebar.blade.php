@@ -191,7 +191,7 @@
                             @endif
                              <li>
                                 <a href="{{route('review.index')}}">
-                                    <span class="icon-customer-2"></span>
+                                    <span class="icon-customer al"><img src="https://img.icons8.com/external-xnimrodx-lineal-gradient-xnimrodx/64/000000/external-review-customer-review-xnimrodx-lineal-gradient-xnimrodx-3.png"/></span>
                                     <span> {{ __('Product Reviews') }} </span>
                                 </a>
                             </li>
@@ -286,7 +286,7 @@
                             </li>
                         @endif
 
-                        @if($client_preference_detail->get_estimations == 1)    
+                        @if($client_preference_detail->get_estimations == 1)
                             <li>
                                 <a href="{{route('estimations.index')}}">
                                     <span class="icon-configuration"></span>
@@ -311,17 +311,17 @@
                                 </a>
                             </li>
                         @endif
-                        
+
 
                         @if(in_array('DeliveryOption',$allowed) || Auth::user()->is_superadmin == 1)
                         <li>
                             <a href="{{route('deliveryoption.index')}}">
-                                <span class="icon-payment-options"></span>
+                                <span class="icon-customer al"><img src="https://img.icons8.com/external-kiranshastry-gradient-kiranshastry/64/000000/external-delivery-truck-automobile-kiranshastry-gradient-kiranshastry.png"/></span>
                                 <span> {{ __('Delivery Options') }} </span>
                             </a>
                         </li>
                         @endif
-                        @if(in_array('vendors',$allowed) || (Auth::user()->is_superadmin == 1 && $client_preference_detail->tools_mode == 1)) 
+                        @if(in_array('vendors',$allowed) || (Auth::user()->is_superadmin == 1 && $client_preference_detail->tools_mode == 1))
                         <li>
                             <a href="{{route('tools.index')}}">
                                 <span class="icon-settings-1-1"></span>
@@ -344,17 +344,17 @@
                         <li>
                             <a href="#sidebarbanner" data-toggle="collapse">
                                 <span class="icon-styling"></span>
-                                <span> {{ __('Banner') }} </span>
+                                <span> {{ __('Banners') }} </span>
                             </a>
                             <div class="collapse" id="sidebarbanner">
                                 <ul class="nav-second-level">
                                         @if($client_preference_detail->business_type != 'taxi')
                                         <li>
-                                            <a href="{{route('banner.index')}}">{{ __('Banner') }}</a>
+                                            <a href="{{route('banner.index')}}">{{ __('Web Banners') }}</a>
                                         </li>
                                         @endif
                                          <li>
-                                            <a href="{{route('mobilebanner.index')}}">{{ __('Mobile Banner') }}</a>
+                                            <a href="{{route('mobilebanner.index')}}">{{ __('Mobile Banners') }}</a>
                                         </li>
                                 </ul>
                             </div>

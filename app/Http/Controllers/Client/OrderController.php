@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
+use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
 use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency};
 use DB;
@@ -118,7 +119,6 @@ class OrderController extends BaseController
         }
         $vendors = $vendors->get();
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-
         return view('backend.order.index', compact('return_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors'));
     }
 
@@ -198,13 +198,13 @@ class OrderController extends BaseController
                 case 'orders_history':
                     $order_status_options = [6, 3];
                     $orders = $orders->with('vendors', function ($query) use ($order_status_options) {
-                        $query->whereIn('order_status_option_id', $order_status_options);
+                        $query->whereIn('order_status_option_id', $order_status_options); 
                     })->whereHas('vendors', function ($query) use ($order_status_options, $request) {
                         $query->whereIn('order_status_option_id', $order_status_options);
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    });
+                    })->with('vendors.cancelledBy');
 
                     break;
             }
@@ -243,7 +243,7 @@ class OrderController extends BaseController
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
             $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
             foreach ($order->vendors as $vendor) {
-                $vendor->vendor_detail_url = route('order.show.detail', [$order->id, $vendor->vendor_id]);
+                $vendor->vendor_detail_url = route('order.show.detail', [$order->id, @$vendor->vendor_id]);
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
@@ -400,13 +400,14 @@ class OrderController extends BaseController
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
+
             if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 2) { //$request->status_option_id == 3){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been accepted!!!')]);
             }
             if ($currentOrderStatus->order_status_option_id == 3 && $request->status_option_id == 3) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
             }
-            if (!$vendor_order_status_check) {
+            if (!$vendor_order_status_check) { 
                 $vendor_order_status = new VendorOrderStatus();
                 $vendor_order_status->order_id = $request->order_id;
                 $vendor_order_status->vendor_id = $request->vendor_id;
@@ -431,10 +432,13 @@ class OrderController extends BaseController
                         $order_lalamove = $this->placeOrderRequestlalamove($request);
                     }elseif($orderData->shipping_delivery_type=='SR'){
                         //Create Shipping place order request for Shiprocket
-                        $order_lalamove = $this->placeOrderRequestShiprocket($request);
+                        $order_ship = $this->placeOrderRequestShiprocket($request);
+                    }elseif($orderData->shipping_delivery_type=='DU'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_dunzo = $this->placeOrderRequestDunzo($request);
                     }
                 }
-                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason]);
+                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]); 
 
                 if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
 
@@ -447,8 +451,12 @@ class OrderController extends BaseController
                         $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
                     }elseif($orderData->shipping_delivery_type=='SR'){
                         //Cancel Shipping place order request for Shiprocket
-                        $lala = new ShiprocketController();
-                        $order_lalamove = $lala->cancelOrderRequestShiprocket($currentOrderStatus->web_hook_code);
+                        $ship = new ShiprocketController();
+                        $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
+                    }elseif($orderData->shipping_delivery_type=='DU'){
+                        //Cancel Dunzo place order request for Dunzo
+                        $ship = new DunzoController();
+                        $order_ship = $ship->cancelOrderRequestDunzo($currentOrderStatus->web_hook_code);
                     }
 
                 }
@@ -549,6 +557,30 @@ class OrderController extends BaseController
                     'ship_shipment_id' => $order_ship->shipment_id,
                     'ship_awb_id' => $order_ship->awb_code
                     ]);
+                return 1;
+            }
+
+        return 2;
+    }
+
+    public function placeOrderRequestDunzo($request)
+    {
+
+        $data = new DunzoController();
+        //Create Shipping place order request for Dunzo
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+                $order_lalamove = $data->createOrderRequestDunzo($checkOrder->user_id,$checkdeliveryFeeAdded);
+            }
+
+            if ($order_lalamove->status){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'web_hook_code' => $order_lalamove->data->order_uuid,
+                    'lalamove_tracking_url'=>$order_lalamove->data->trackUrl
+                ]);
+
                 return 1;
             }
 

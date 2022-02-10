@@ -266,62 +266,18 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     </div>
                     
                     <% if(product.delOptions) { %>
-                        <div class="row mb-1">
+                        <div class="row mb-1 d-flex align-items-center">
                             <div class="col-5 text-lg-right">
-                            </div>
-                            <div class="col-md-7">
-                                <label class="radio pull-right">
+                                <label class="m-0 radio">
                                     {{__('Delivery Fee')}} :</label>
+                                </div>
+                            <div class="col-md-7">
                                         <%= product.delOptions %>
                             </div>
                         </div>
                     <% } %>
 
-                    <% if(product.delivery_fee_charges > 0 ) { %>
-                        <div class="row mb-1">
-                            <div class="col-8 text-lg-right">
-                                <label class="radio pull-right">
-                                    {{__('Dispatcher')}} :
-                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee radio" value="<%= Helper.formatPrice(product.delivery_fee_charges) %>" data-dcode="D" data-id="<%= product.vendor.id %>" <%= (cart_details.delivery_type == 'D')?'checked':'' %>  />
-                                    <span class="checkround"></span>
-                                </label>
-                            </div>
-                            <div class="col-4 text-right  <%= ((product.promo_free_deliver)?'discard_price':'') %>">
-                                {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges) %>
-                            </div>
-                        </div>
-                    <% } %>
-
-
-                    <% if(product.delivery_fee_charges_lalamove > 0) { %>
-                        <div class="row mb-1">
-                            <div class="col-8 text-lg-right">
-                                <label class="radio pull-right">
-                                    {{__('Lalamove')}} :
-                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee radio" value="<%= Helper.formatPrice(product.delivery_fee_charges_lalamove) %>"  data-dcode="L" data-id="<%= product.vendor.id %>" <%= (cart_details.delivery_type == 'L')?'checked':'' %> />
-                                    <span class="checkround"></span>
-                                </label>
-                            </div>
-                            <div class="col-4 text-right <%= ((product.promo_free_deliver)?'discard_price':'') %> ">
-                                {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges_lalamove) %>
-                            </div>
-                        </div>
-                    <% } %>
-
-                    <% if(product.delivery_fee_charges_ship > 0) { %>
-                        <div class="row mb-1">
-                            <div class="col-8 text-lg-right">
-                                <label class="radio pull-right">
-                                    {{__('Shiprocket')}} :
-                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee radio" value="<%= Helper.formatPrice(product.delivery_fee_charges_ship) %>"  data-dcode="SR" data-id="<%= product.vendor.id %>" <%= (cart_details.delivery_type == 'SR')?'checked':'' %> />
-                                    <span class="checkround"></span>
-                                </label>
-                            </div>
-                            <div class="col-4 text-right <%= ((product.promo_free_deliver)?'discard_price':'') %>">
-                                {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges_ship) %>
-                            </div>
-                        </div>
-                    <% } %>
+                   
 
                     <div class="row">
                         <div class="col-12 text-right">
@@ -479,7 +435,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.total_payable_amount) %></p>
                     <div>
                         <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
-                        <input type="hidden" name="cart_total_payable_amount" value="<%= cart_details.total_payable_amount %>">
+                        <input type="hidden" name="cart_total_payable_amount" value="<%= cart_details.total_payable_amount %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
                         <input type="hidden" name="cart_payable_amount_original" id="cart_payable_amount_original" data-curr="{{Session::get('currencySymbol')}}" value="<%= cart_details.total_payable_amount %>">
                     </div>
                 </div>
@@ -827,7 +783,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <span class="checkround"></span>
                         </label>
                         <% if(payment_option.slug == 'stripe') { %>
-                            <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper d-none">
+                            <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper option-wrapper d-none">
                                 <div class="form-control">
                                     <label class="d-flex flex-row pt-1 pb-1 mb-0">
                                         <div id="stripe-card-element"></div>
@@ -836,8 +792,21 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                 <span class="error text-danger" id="stripe_card_error"></span>
                             </div>
                         <% } %>
+                        <% if(payment_option.slug == 'stripe_fpx') { %>
+                            <div class="col-md-12 mt-3 mb-3 stripe_fpx_element_wrapper option-wrapper d-none">
+                                <label for="fpx-bank-element">
+                                    FPX Bank
+                                </label>
+                                <div class="form-control">
+                                    <div id="fpx-bank-element">
+                                      <!-- A Stripe Element will be inserted here. -->
+                                    </div>
+                                </div>
+                                <span class="error text-danger" id="stripe_fpx_error"></span>
+                            </div>
+                        <% } %>
                         <% if(payment_option.slug == 'yoco') { %>
-                            <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper d-none">
+                            <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
                                 <div class="form-control">
                                     <div id="yoco-card-frame">
                                     <!-- Yoco Inline form will be added here -->
@@ -847,7 +816,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </div>
                         <% } %>
                         <% if(payment_option.slug == 'checkout') { %>
-                            <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper d-none">
+                            <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper option-wrapper d-none">
                                 <div class="form-control card-frame">
                                     <!-- form will be added here -->
                                 </div>
@@ -1178,10 +1147,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
 
 <script type="text/javascript">
-   var guest_cart = {{ $guest_user ? 1 : 0 }};
+    var stripe_fpx = '';
+    var fpxBank = '';
+    var guest_cart = {{ $guest_user ? 1 : 0 }};
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
+    var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
+    var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var user_store_address_url = "{{route('address.store')}}";
     var promo_code_remove_url = "{{ route('remove.promocode') }}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
@@ -1312,13 +1285,17 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 
     $(document).delegate('#cart_payment_form input[name="cart_payment_method"]', 'change', function() {
         var method = $(this).attr('id');
-        if (method.replace('radio-', '') == 'stripe') {
-            $("#cart_payment_form .stripe_element_wrapper").removeClass('d-none');
+        var code = method.replace('radio-', '');
+        
+        if (code != '') {
+            $("#cart_payment_form .option-wrapper").addClass('d-none');
+            $("#cart_payment_form ."+code+"_element_wrapper").removeClass('d-none');
         } else {
-            $("#cart_payment_form .stripe_element_wrapper").addClass('d-none');
+            $("#cart_payment_form .option-wrapper").addClass('d-none');
         }
-        if (method.replace('radio-', '') == 'yoco') {
-            $("#cart_payment_form .yoco_element_wrapper").removeClass('d-none');
+
+        if (code == 'yoco') {
+            // $("#cart_payment_form .yoco_element_wrapper").removeClass('d-none');
             // Create a new dropin form instance
 
             var yoco_amount_payable = $("input[name='cart_total_payable_amount']").val();
@@ -1329,16 +1306,18 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             });
             // this ID matches the id of the element we created earlier.
             inline.mount('#yoco-card-frame');
-        } else {
-            $("#cart_payment_form .yoco_element_wrapper").addClass('d-none');
-        }
+        } 
+        // else {
+        //     $("#cart_payment_form .yoco_element_wrapper").addClass('d-none');
+        // }
 
-        if (method.replace('radio-', '') == 'checkout') {
-            $("#cart_payment_form .checkout_element_wrapper").removeClass('d-none');
+        if (code == 'checkout') {
+            // $("#cart_payment_form .checkout_element_wrapper").removeClass('d-none');
             Frames.init(checkout_public_key);
-        } else {
-            $("#cart_payment_form .checkout_element_wrapper").addClass('d-none');
-        }
+        } 
+        // else {
+        //     $("#cart_payment_form .checkout_element_wrapper").addClass('d-none');
+        // }
     });
 
     $(document).delegate('#login_modal', 'shown.bs.modal', function() {

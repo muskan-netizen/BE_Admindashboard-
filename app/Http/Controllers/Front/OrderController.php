@@ -72,7 +72,7 @@ class OrderController extends FrontController
         $pastOrders = Order::with([
             'vendors' => function ($q) {
                 $q->where('order_status_option_id', 6);
-            },
+            },'vendors.vendor',
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'products.productRating', 'user', 'address'
@@ -241,8 +241,6 @@ class OrderController extends FrontController
                 }
             }
         }
-        // pr($rejectedOrders->toArray());
-        // exit();
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
 
@@ -251,9 +249,7 @@ class OrderController extends FrontController
         }
 
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
-
         //   dd($activeOrders->toArray());
-
         return view('frontend/account/orders')->with(['payments' => $payments, 'rejectedOrders' => $rejectedOrders, 'navCategories' => $navCategories, 'activeOrders' => $activeOrders, 'pastOrders' => $pastOrders, 'returnOrders' => $returnOrders, 'clientCurrency' => $clientCurrency]);
     }
 
@@ -685,6 +681,8 @@ class OrderController extends FrontController
             $order->order_number = generateOrderNo();
             if (($request->has('address_id')) && ($request->address_id > 0)) {
                 $order->address_id = $request->address_id;
+            }else{
+                $order->address_id = $cart->address_id??null;
             }
             $order->payment_option_id = $request->payment_option_id;
             $order->comment_for_pickup_driver = $cart->comment_for_pickup_driver ?? null;
@@ -774,17 +772,8 @@ class OrderController extends FrontController
                     if ($action == 'delivery') {
                         $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {
-                            $OrderVendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type;
-                            $OrderVendor->courier_id = $deliver_fee_data->courier_id;
-                            
-                            //Add here Delivery option Lalamove and dispatcher
-
-                            // if($delType=='L'){
-                            //     $lala = new LalaMovesController();
-                            //     $delivery_fee = $lala->getDeliveryFeeLalamove($vendor_cart_product->vendor_id);
-                            // }else{
-                            //     $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
-                            // }
+                            $OrderVendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type??'D';
+                            $OrderVendor->courier_id = $deliver_fee_data->courier_id??0;
 
 
                             if($deliver_fee_data)
@@ -1000,8 +989,6 @@ class OrderController extends FrontController
 
 
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
-
-
             $order->scheduled_slot = (($cart->scheduled_slot)?$cart->scheduled_slot:null);
             $order->luxury_option_id = $luxury_option->id;
             $order->payable_amount = $payable_amount;
@@ -1014,7 +1001,7 @@ class OrderController extends FrontController
             }
             // $this->sendOrderNotification($user->id, $vendor_ids);
             $this->sendSuccessEmail($request, $order);
-            $ex_gateways = [7, 8, 9, 10, 17]; //  mobbex, yoco, pointcheckout, razorpay, checkout
+            $ex_gateways = [7, 8, 9, 10, 17, 19]; //  mobbex, yoco, pointcheckout, razorpay, checkout, stripe_fpx
             if (!in_array($request->payment_option_id, $ex_gateways)) {
                 Cart::where('id', $cart->id)->update([
                     'schedule_type' => null, 'scheduled_date_time' => null,
@@ -1276,6 +1263,11 @@ class OrderController extends FrontController
             $q->where('auto_accept_order', 1);
         })->get();
         $orderData = Order::find($order_id);
+        $user = Auth::user();
+        if(!$user){
+            $user_id = $orderData->user_id;
+            $user = User::find($user_id);
+        }
         //  Log::info($order_vendors);
         foreach ($order_vendors as $ov) {
             //     Log::info($ov);
@@ -1314,13 +1306,19 @@ class OrderController extends FrontController
                    }elseif($orderData->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
                         $order_lalamove = $this->placeOrderRequestlalamove($request);
+                    }elseif($orderData->shipping_delivery_type=='SR'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_ship = $this->placeOrderRequestShiprocket($request);
+                    }elseif($orderData->shipping_delivery_type=='DU'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_ship = $this->placeOrderRequestDunzo($request);
                     }
 
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id]);
                 $this->ProductVariantStock($order_id);
                 DB::commit();
-                $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
+                $this->sendSuccessNotification($user->id, $request->vendor_id);
             }
             // } catch(\Exception $e){
             // DB::rollback();
@@ -1332,6 +1330,52 @@ class OrderController extends FrontController
 
     /// ******************  check If any Product Last Mile on   ************************ ///////////////
 
+    public function placeOrderRequestShiprocket($request)
+    {
+        $ship = new ShiprocketController();
+        //Create Shipping place order request for Shiprocket
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            $order_ship = $ship->createOrderRequestShiprocket($checkOrder->user_id,$checkdeliveryFeeAdded);
+            }
+            if ($order_ship->order_id){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'ship_order_id' => $order_ship->order_id,
+                    'ship_shipment_id' => $order_ship->shipment_id,
+                    'ship_awb_id' => $order_ship->awb_code
+                    ]);
+                return 1;
+            }
+
+        return 2;
+    }
+
+    public function placeOrderRequestDunzo($request)
+    {
+
+        $data = new DunzoController();
+        //Create Shipping place order request for Dunzo
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+                $order_lalamove = $data->createOrderRequestDunzo($checkOrder->user_id,$checkdeliveryFeeAdded);
+            }
+
+            if ($order_lalamove->status){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'web_hook_code' => $order_lalamove->data->order_uuid,
+                    'lalamove_tracking_url'=>$order_lalamove->data->trackUrl
+                ]);
+
+                return 1;
+            }
+
+        return 2;
+    }
+    
 
     public function placeOrderRequestlalamove($request)
     {

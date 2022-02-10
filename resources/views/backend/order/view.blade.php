@@ -34,7 +34,7 @@ $timezone = Auth::user()->timezone;
                                     <p>#{{$order->order_number}}</p>
                                 </div>
                             </div>
-                             @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->shipping_delivery_type=='D')
+                             @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->vendors->first()->shipping_delivery_type=='D')
                              <div class='inner-div d-inline-block' style="float: right;">
                                 <form method='POST' action='"+full.destroy_url+"'>
 
@@ -89,6 +89,7 @@ $timezone = Auth::user()->timezone;
                                     @endphp
 
                                     <!-- List of completed order status -->
+                                @if(count($vendor_order_statuses))    
                                     @foreach ($vendor_order_statuses as $key => $vendor_order_status)
                                         @php
                                             $order_status = $order_status_options->where('id', $vendor_order_status->order_status_option_id)->pluck('title')->first();
@@ -112,6 +113,7 @@ $timezone = Auth::user()->timezone;
                                             </p>
                                         </li>
                                     @endforeach
+                                @endif    
 
                                     <!-- List of incomplete order status if order is not rejected -->
 
@@ -137,9 +139,11 @@ $timezone = Auth::user()->timezone;
                                                     @if( ($order_status_option->id == 5) && (($order->luxury_option_id == 2) || ($order->luxury_option_id == 3)) )
                                                         <h5 class="mt-0 mb-1">{{__('Order Prepared')}}</h5>
                                                     @elseif($order_status_option->id == 2)
-                                                        <h5 style="padding: 2px 10px;" class="mt-0 mb-1  btn btn-info ">{{$order_status_option->title}}</h5>
+                                                        <h5 style="padding: 2px 10px;" class="mt-0 mb-1 text-info">
+                                                           {{$order_status_option->title}}</h5>
                                                     @elseif($order_status_option->id == 3)
-                                                    <h5 style="padding: 2px 10px;" class="mt-0 mb-1  btn btn-danger ">{{$order_status_option->title}}</h5>
+                                                    <h5 style="padding: 2px 10px;" class="mt-0 mb-1 text-danger">
+                                                       {{$order_status_option->title}} </h5>
                                                     @else
                                                     <h5 class="mt-0 mb-1">{{$order_status_option->title}}</h5>
                                                     @endif
@@ -221,7 +225,6 @@ $timezone = Auth::user()->timezone;
                                         <th>{{ __("Product") }}</th>
                                         <th>{{ __("Quantity") }}</th>
                                         <th>{{ __("Price") }}</th>
-
                                         <th>{{ __("Total") }}</th>
                                     </tr>
                                 </thead>
@@ -241,7 +244,11 @@ $timezone = Auth::user()->timezone;
                                     $revenue += ($vendor->service_fee_percentage_amount + $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     <tr>
-                                        <th scope="row"><a href="{{ route('product.edit', $product->product->id) }}" target="_blank">{{$product->product_name}}</a>
+                                        <th scope="row">
+
+                                            <a href="{{ isset($product->product) ? route('product.edit', @$product->product->id) : '#'}}" target="_blank">
+                                                {{$product->product_name}}
+                                            </a>
                                             <p class="p-0 m-0">
                                                 @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
                                             </p>
@@ -273,7 +280,6 @@ $timezone = Auth::user()->timezone;
                                                 <hr class="my-2">
                                                 @foreach($product->addon as $addon)
                                                     <p class="p-0 m-0">{{$clientCurrency->currency->symbol}}{{ $addon->option->price_in_cart }}</p>
-                                                    {{-- <p class="p-0 m-0">${{ $addon->option->quantity_price }}</p> --}}
                                                 @endforeach
                                             @endif
                                         </td>
@@ -317,14 +323,18 @@ $timezone = Auth::user()->timezone;
                                         <td>{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)</td>
                                     </tr>
                                     @endif
+                                    @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Redemmed Loyality Points") }} :</th>
                                         <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}@money($vendor->orderDetail->loyalty_amount_saved??0.00))</td>
                                     </tr>
+                                    @endif
+                                    @if($vendor->reject_reason)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Reject Reason") }} :</th>
                                         <td style="width:200px;">{{$vendor->reject_reason}}</td>
                                     </tr>
+                                    @endif
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
@@ -349,14 +359,18 @@ $timezone = Auth::user()->timezone;
                         <h4 class="header-title mb-3">{{ __("Delivery Information") }}</h4>
                         <h5 class="font-family-primary fw-semibold">{{$order->user->name}}</h5>
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("Email") }}:</span> {{ $order->user->email ? $order->user->email : ''}}</p>
+                        @if(!is_null($order->user) && isset($order->user->phone_number))
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __('Phone')}}:</span> {{'+'.$order->user->dial_code.$order->user->phone_number}}</p>
+                        @endif
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("Address") }}:</span> {{ $order->address->house_number ? $order->address->house_number."," : ''}} {{ $order->address ? $order->address->address : ''}}</p>
                         @if(isset($order->address) && !empty($order->address->street))
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('Street')}}:</span> {{ $order->address ? $order->address->street : ''}}</p>
                         @endif
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('City')}}:</span> {{ $order->address ? $order->address->city : ''}}</p>
+                        @if(isset($order->address) && !empty($order->address->state))
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("State") }}:</span> {{ $order->address ? $order->address->state : ''}}</p>
-                        <p class="mb-0"><span class="fw-semibold me-2">{{ __("Zip Code") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
+                        @endif
+                        <p class="mb-0"><span class="fw-semibold me-2">{{ getNomenclatureName('Zip Code', true) }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
                     </div>
                 </div>
             </div>
@@ -372,8 +386,10 @@ $timezone = Auth::user()->timezone;
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('Street')}}:</span> {{ $order->address ? $order->address->street : ''}}</p>
                         @endif
                         <p class="mb-2"><span class="fw-semibold me-2">{{__('City')}}:</span> {{ $order->address ? $order->address->city : ''}}</p>
+                        @if(isset($order->address) && !empty($order->address->state))
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("State") }}:</span> {{ $order->address ? $order->address->state : ''}}</p>
-                        <p class="mb-0"><span class="fw-semibold me-2">{{ __("Zip Code") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
+                        @endif
+                        <p class="mb-0"><span class="fw-semibold me-2">{{ getNomenclatureName('Zip Code', true) }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
 
                     </div>
                 </div>
@@ -448,7 +464,7 @@ $timezone = Auth::user()->timezone;
 </div>
 
 <!-- Order Invoice Code -->
-<div style="display: block;">
+<div style="display: none;">
 @include('backend.order.print')
 </div>
 <!--End Order Invoice Code -->

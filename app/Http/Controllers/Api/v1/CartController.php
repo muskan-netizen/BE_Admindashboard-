@@ -118,7 +118,7 @@ class CartController extends BaseController
 
             if ($product->category->categoryDetail->type_id == 8) {
             } else {
-                if ( ($product->sell_when_out_of_stock == 0) && ($productVariant->quantity < $request->quantity) ) {
+                if ( ($product->sell_when_out_of_stock == 0) && ($productVariant->quantity < $request->quantity && $product->has_inventory == 1) ) {
                     return $this->errorResponse('You Can not order more than ' . $productVariant->quantity . ' quantity.', 404);
                 }
             }
@@ -960,12 +960,13 @@ class CartController extends BaseController
                     }
                 }
                 $vendorData->is_promo_code_available = $is_promo_code_available;
+                $slotsDate = findSlot('',$vendorData->vendor->id,'','api');
+                $vendorData->delaySlot = $slotsDate;
             }
             ++$vondorCnt;
         }//End cart Vendor loop
 
-        $slotsDate = findSlot('',$vendorData->vendor->id,'','api');
-        $vendorData->delaySlot = $slotsDate;
+        
 
         $cart_product_luxury_id = CartProduct::where('cart_id', $cartID)->select('luxury_option_id', 'vendor_id')->first();
         if ($cart_product_luxury_id) {
@@ -992,6 +993,7 @@ class CartController extends BaseController
                 $cart->closed_store_order_scheduled = 0;
             }
         }else{
+            $duration = (object)['closed_store_order_scheduled'=>'0'];
             $slots = [];
             $cart->slots = [];
             $cart->closed_store_order_scheduled = 0;
@@ -1033,7 +1035,7 @@ class CartController extends BaseController
                 $cart->wallet_amount_used = $wallet_amount_used;
             }
         }
-        if($delivery_status == 0 && $duration->closed_store_order_scheduled == 1)
+        if($delivery_status == 0 && @$duration->closed_store_order_scheduled == 1)
         {
             $cart->deliver_status = 1;
         }else{
@@ -1681,18 +1683,18 @@ class CartController extends BaseController
                 $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
                 if($request->task_type!='now'){
-                    if(isset($request->slot))
-                    {
-                        $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                        if(isset($request->slot))
+                        {
+                        //$request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                            $time = $request->schedule_dt;
+                            $slot = $request->slot;
+                        }else{
+                            $time = $request->schedule_dt;
+                            $slot = null;
+                        }
+                    }else{
                         $time = $request->schedule_dt;
-                        $slot = $request->slot;
-                    }else{
-                    $time = $request->schedule_dt;
-                    $slot = null;
-                    }
-                    }else{
-                    $time = null;
-                    $slot = null;
+                        $slot = null;
                     }
 
                 Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions ?? null,

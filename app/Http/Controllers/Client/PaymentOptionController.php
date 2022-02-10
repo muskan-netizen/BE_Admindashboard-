@@ -29,7 +29,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net');
         $payout_codes = array('cash', 'stripe');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -136,7 +136,18 @@ class PaymentOptionController extends BaseController
                         $json_creds = json_encode($stripe_arr);
                     }
                    
-                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'yoco')) {
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'stripe_fpx')) {
+                    $validatedData = $request->validate([
+                        'stripe_fpx_secret_key' => 'required',
+                        'stripe_fpx_secret_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'secret_key' => $request->stripe_fpx_secret_key,
+                        'publishable_key' => $request->stripe_fpx_publishable_key
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'yoco')) {
                     $validatedData = $request->validate([
                         'yoco_secret_key'        => 'required',
                         'yoco_public_key' => 'required'
@@ -254,6 +265,18 @@ class PaymentOptionController extends BaseController
                     $json_creds = json_encode(array(
                         'secret_key' => $request->checkout_secret_key,
                         'public_key' => $request->checkout_public_key
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'authorize_net')) {
+                    $validatedData = $request->validate([
+                        'authorize_net_login_id' => 'required',
+                        'authorize_net_transaction_key' => 'required',
+                        'authorize_net_client_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'login_id' => $request->authorize_net_login_id,
+                        'transaction_key' => $request->authorize_net_transaction_key,
+                        'client_key' => $request->authorize_net_client_key
                     ));
                 }
             }

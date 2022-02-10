@@ -13,12 +13,14 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
+use App\Http\Controllers\DunzoController;
 use App\Http\Controllers\ShiprocketController;
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot};
 use Log;
 class CartController extends FrontController
 {
     use ApiResponser,CartManager;
+
 
     private function randomString()
     {
@@ -741,15 +743,15 @@ class CartController extends FrontController
                         if($prod->product->dropoff_delay_hrs_min > $delay_date)
                         $dropoff_delay_date = $prod->product->dropoff_delay_hrs_min;
                     }
-
+                    $select = '';
+                      
                     if($action == 'delivery'){
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
                         $deliveryCharges = 0;
-                        $select = '';
-                        $code = (($code)?$code:$cart->shipping_delivery_type);
+                         $code = (($code)?$code:$cart->shipping_delivery_type);
                         if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
-                            $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount);
+                            $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address);
                            if(isset($deliveries[0]))
                            {
                             $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">'; 
@@ -1411,7 +1413,7 @@ class CartController extends FrontController
 
 
         //Fetch all delivery fee option
-        public function getDeliveryOptions($vendorData,$preferences,$payable_amount)
+        public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address)
         {
             $option = array(); 
             $delivery_count = 0;
@@ -1460,14 +1462,38 @@ class CartController extends FrontController
             }
             //End Lalamove Delivery changes code
 
-            //getShiprocketFee Delivery changes code
-            $ship = new ShiprocketController();
-            $deliver_ship_fee = $ship->getCourierService($vendorData->vendor_id);
-            //dd($deliver_ship_fee);
-            if($deliver_ship_fee)
-            {  
-                $option = array_merge($option,$deliver_ship_fee);
+            
+            if($vendorData->vendor->shiprocket_pickup_name){
+                //getShiprocketFee Delivery changes code
+                $ship = new ShiprocketController();
+                $deliver_ship_fee = $ship->getCourierService($vendorData->vendor_id);
+                if($deliver_ship_fee)
+                {  
+                    $option = array_merge($option,$deliver_ship_fee);
+                }
             }
+
+                //getDunzo Delivery fee changes code
+                $dunzo = new DunzoController();
+                if($dunzo->status){
+                    $deliver_dunzo_fee = $dunzo->getQuotations($vendorData->vendor_id,$address);
+                    if($deliver_dunzo_fee>0)
+                    { 
+                        $deliver_charge_dunzo = number_format($deliver_dunzo_fee, 2, '.', '');
+                        $optionDunzo[] = array(
+                            'type'=>'DU',
+                            'courier_name'=>__('Dunzo'),
+                            'rate' => $deliver_charge_dunzo,
+                            'courier_company_id' => 0,
+                            'etd' => 0,
+                            'etd_hours' => 0,
+                            'estimated_delivery_days' => 0,
+                            'code' => 'DU_0'
+                        );
+                        $option = array_merge($option,$optionDunzo);
+                    }
+                }
+
             
         }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
              # for static fees 
@@ -1626,6 +1652,7 @@ class CartController extends FrontController
 
                 $cart_detail = $cart_detail->update(['specific_instructions' => $request->specific_instructions??null,
                 'schedule_type' => $request->task_type,
+                'address_id' => $request->address,
                 'scheduled_date_time' => $time??null,
                 'scheduled_slot' => $slot??null,
                 'shipping_delivery_type' => $request->delivery_type??'D',

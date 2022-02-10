@@ -15,22 +15,28 @@ use App\Models\VendorSlot;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
-function changeDateFormate($date,$date_format){
-    return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
+if (!function_exists('changeDateFormate')) {
+    function changeDateFormate($date,$date_format){
+        return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
+    }
 }
 
-function pr($var) {
-  	echo '<pre>';
-	print_r($var);
-  	echo '</pre>';
-    exit();
-}
-function http_check($url) {
-    $return = $url;
-    if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
-        $return = 'http://' . $url;
+if (!function_exists('pr')) {
+    function pr($var) {
+        echo '<pre>';
+        print_r($var);
+        echo '</pre>';
+        exit();
     }
-    return $return;
+}
+if (!function_exists('http_check')) {
+    function http_check($url) {
+        $return = $url;
+        if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+            $return = 'http://' . $url;
+        }
+        return $return;
+    }
 }
 function getUserDetailViaApi($user){
     $user_refferal = UserRefferal::where('user_id', $user->id)->first();
@@ -278,7 +284,7 @@ function createSlug($str, $delimiter = '-'){
         {
             return 0;    
         }
-
+        
         $base_price = $base_price;
         $amount_per_km = $amount_per_km;
         $total = $base_price + ($distance * $amount_per_km);
@@ -513,21 +519,21 @@ function SplitTimeTemp($user_id, $myDate,$StartTime, $EndTime, $Duration="60",$d
 
 function findSlot($myDate = null,$vid,$type = 'delivery',$api = null)
 {
-  $myDate  = date('Y-m-d',strtotime('+1 day')); 
+  $myDate  = date('Y-m-d'); 
   $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
         $slots = showSlot($myDate,$vid,'delivery');
             if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+2 day')); 
+                $myDate  = date('Y-m-d',strtotime('+1 day')); 
                 $slots = showSlot($myDate,$vid,'delivery');
             }
            
             if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+3 day')); 
+                $myDate  = date('Y-m-d',strtotime('+2 day')); 
                 $slots = showSlot($myDate,$vid,'delivery');
             }
 
             if(count((array)$slots) == 0){
-                $myDate  = date('Y-m-d',strtotime('+4 day')); 
+                $myDate  = date('Y-m-d',strtotime('+3 day')); 
                 $slots = showSlot($myDate,$vid,'delivery');
             }
         if(isset($slots) && count((array)$slots)>0){
@@ -648,3 +654,32 @@ function getDynamicTypeName($name)
     return $new_name;
 }
 
+function stripePaymentCredentials(){
+    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
+    $creds_arr = json_decode($stripe_creds->credentials);
+    $response = collect();
+    $response->secret_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+    return $response;
+}
+
+function stripeFPXPaymentCredentials(){
+    $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe_fpx')->where('status', 1)->first();
+    $creds_arr = json_decode($stripe_creds->credentials);
+    $response = collect();
+    $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
+    $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
+    return $response;
+}
+
+function getServerURL(){
+    $client = ClientData::where('id', '>', 0)->first();
+    $domain = '';
+    if(!empty($client->custom_domain)){
+        $domain = $client->custom_domain;
+    }else{
+        $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+    }
+    $server_url = "https://".$domain."/";
+    return $server_url;
+}

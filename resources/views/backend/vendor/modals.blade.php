@@ -3,17 +3,19 @@
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 @php
-                    $vendor = getNomenclatureName('vendors', false);
-                    $vendor = ($vendor === 'Vendor') ? __('Vendor') : $vendor ;
+                    $vendor_name = getNomenclatureName('vendors', false);
+                    $vendor_name = ($vendor_name === 'Vendor') ? __('Vendor') : $vendor_name ;
                 @endphp
-                <h4 class="modal-title">{{ __("Add") }} {{ $vendor }}</h4>
+                <h4 class="modal-title">{{ __("Add") }} {{ $vendor_name }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_banner_form" class="al_overall_form" method="post" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="new_model" value="1">
                 <div class="modal-body" >
                     <div class="row">
                         <div class="col-md-8">
+
                             <div class="row mb-2">
                                 <div class="col-md-3">
                                     <label>{{ __('Upload Logo') }} </label>
@@ -27,7 +29,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="form-group" id="nameInput">
                                         {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                                         {!! Form::text('name', null, ['class'=>'form-control']) !!}
@@ -36,10 +38,7 @@
                                         </span>
                                     </div>
                                 </div>
-
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group" id="emailInput">
                                         <label for="">{{ __('Email') }}</label>
                                         {!! Form::text('email', null, ['class'=>'form-control']) !!}
@@ -48,6 +47,10 @@
                                         </span>
                                     </div>
                                 </div>
+
+                            </div>
+                            <div class="row">
+
                                 <div class="col-md-4">
                                     <div class="form-group" id="phone_noInput">
                                         <label for="">{{ __('Phone Number') }}</label>
@@ -63,13 +66,24 @@
                                         <input class="form-control" type="text" name="website">
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3" >
+                                        {!! Form::label('title', __('Pincode'),['class' => 'control-label']) !!}
+                                        <input type="text" name="pincode" id="pincode" placeholder="" class="form-control" value="{{@$vendor->pincode}}">
+                                        @if($errors->has('Pincode'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('Pincode') }}</strong>
+                                        </span>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
                             <div class="row" id="add">
                                 <div class="col-md-4">
                                     <div class="form-group mb-3" id="addressInput">
                                         {!! Form::label('title', __('Address'),['class' => 'control-label']) !!}
                                         <div class="input-group">
-                                            <input type="text" name="address" id="add-address" placeholder="Delhi, India" class="form-control">
+                                            <input type="text" name="address" id="add-address" onkeyup="checkAddressString(this,'add')" placeholder="" class="form-control">
                                             <div class="input-group-append">
                                                 <button class="btn btn-xs btn-dark waves-effect waves-light showMap" type="button" num="add"> <i class="mdi mdi-map-marker-radius"></i></button>
                                             </div>
@@ -83,7 +97,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group mb-3" id="latitudeInput">
                                         {!! Form::label('title', __('Latitude'),['class' => 'control-label']) !!}
-                                        <input type="text" name="latitude" id="add_latitude" placeholder="24.9876755" class="form-control" value="">
+                                        <input type="text" name="latitude" id="add_latitude" placeholder="" class="form-control" value="">
                                         @if($errors->has('latitude'))
                                         <span class="text-danger" role="alert">
                                             <strong>{{ $errors->first('latitude') }}</strong>
@@ -94,12 +108,41 @@
                                 <div class="col-md-4">
                                     <div class="form-group mb-3" id="longitudeInput">
                                         {!! Form::label('title', __('Longitude'),['class' => 'control-label']) !!}
-                                        <input type="text" name="longitude" id="add_longitude" placeholder="11.9871371723" class="form-control" value="">
+                                        <input type="text" name="longitude" id="add_longitude" placeholder="" class="form-control" value="">
                                         @if($errors->has('longitude'))
                                         <span class="text-danger" role="alert">
                                             <strong>{{ $errors->first('longitude') }}</strong>
                                         </span>
                                         @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3" id="cityInput">
+                                        {!! Form::label('title', __('City'),['class' => 'control-label']) !!}
+                                        <input type="text" name="city" id="city" placeholder="" class="form-control" value="{{@$vendor->city}}">
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3" id="stateInput">
+                                        {!! Form::label('title', __('State'),['class' => 'control-label']) !!}
+                                        <input type="text" name="state" id="state" placeholder="" class="form-control" value="{{@$vendor->state}}">
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3" id="countryInput" >
+                                        {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
+                                        <input type="text" name="country" id="country" placeholder="" class="form-control" value="{{@$vendor->country}}">
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -153,63 +196,45 @@
                             <div class="form-group">
                                 <div class="btn-group w-100">
                                     {{-- data-toggle="dropdown" aria-haspopup="true" --}}
-                                    <input type="text" id="search_user_for_permission" class="dropdown-toggle form-control w-100" value="" name="user_search_name" autocomplete="off" aria-expanded="false" placeholder="search user">
-
-                                    <div class="dropdown-menu w-100" id="userList">
-                                        <!-- <p class="d-flex justify-content-start pt-1 pb-1 al_select_user">
-                                            <span><input class="mt-1 mr-1" type="checkbox"></span>
-                                            <span>Select All</span>
-                                            <sup>Clear All</sup>
-                                        </p> -->
-                                        <ul>
-                                            <li class="d-flex justify-content-start align-items-center">
-                                                <p class="al_checkbox">
-                                                    <input type="checkbox" class="mt-2 mr-1">
-                                                    <img class="user_img mr-2" src="https://imgproxy.royoorders.com/insecure/fill/90/90/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/vendor/cEXYgrL4KBhUCu8ZpE9FkVq7C605d5usO2CBEUHL.jpg@webp" alt="">
-                                                </p>
-                                                <p class="al_username">
-                                                    <span> Amit </span>
-                                                    <small>amit@gmail.com</small>
-                                                </p>
-                                                <sup>&#128473;</sup>
-                                            </li>
-                                            <li class="d-flex justify-content-start align-items-center border-top">
-                                                <p class="al_checkbox">
-                                                    <input type="checkbox" class="mt-2 mr-1">
-                                                    <img class="user_img mr-2" src="https://imgproxy.royoorders.com/insecure/fill/90/90/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/vendor/cEXYgrL4KBhUCu8ZpE9FkVq7C605d5usO2CBEUHL.jpg@webp" alt="">
-                                                </p>
-                                                <p class="al_username">
-                                                    <span> Amit </span>
-                                                    <small>amit@gmail.com</small>
-                                                </p>
-                                                <sup>&#128473;</sup>
-                                            </li>
-
-
+                                    <input type="text" id="search_user_for_permission" class="dropdown-toggle d-block form-control w-100" value="" name="user_search_name" autocomplete="off" aria-expanded="false" placeholder="search user">
+                                </div>
+                                <div id="userList_model"></div>
+                                    <div class="dropdown-menu_al w-100" id="selected_user_ul" >
+                                        <ul id="selected_user" class="pl-2 ">
                                         </ul>
                                     </div>
-                                </div>
                             </div>
-                            <h5>ADD USER </h5>
+                            <h5>{{__('ADD USER')}} </h5>
+                            <div id="adduesr_error"></div>
                             <div class="form-group">
-                                <label for="title" class="control-label">Name</label>
-                                <input class="form-control" name="name" type="text">
+                                <label for="title" class="control-label">{{__("Name")}}</label>
+                                <input class="form-control" name="user_name" id="new_user_name" type="text">
                             </div>
                             <div class="row">
-                                <div class="col-md-6 form-group">
+                                <div class="col-md-12 form-group">
                                     <label for="title" class="control-label">Email</label>
-                                    <input class="form-control" name="email" type="text">
+                                    <input class="form-control" name="user_email" id="new_user_email" type="email">
                                 </div>
-                                <div class="col-md-6 form-group">
+                                <div class="col-md-12 form-group" id="phone_numberInput">
+                                    {!! Form::label('title', __('Phone Number'),['class' => 'control-label']) !!}
+                                    <input type="tel" class="form-control phone" id="new_user_phone_number" placeholder={{ __("Phone Number") }} name="phone_number" value="{{ old('full_number')}}">
+                                    <input type="hidden" id="countryCode" name="country" value="{{ old('countryData') ? old('countryData') : 'us'}}">
+                                    <input type="hidden" id="dialCode" name="dial_code" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode',1) }}">
+
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong></strong>
+                                    </span>
+                                </div>
+                                {{-- <div class="col-md-6 form-group">
                                     <label for="title" class="control-label">Phone Number</label>
-                                    <input class="form-control" name="phone_number" type="tel">
-                                </div>
+                                    <input class="form-control" name="phone_number" id="new_user_phone_number" type="tel">
+                                </div> --}}
                             </div>
                             <div class="form-group">
                                 <label for="title" class="control-label">Password</label>
-                                <input type="password" class="form-control" id="password" placeholder="Password" required="" name="password" value="">
+                                <input type="password" class="form-control" id="new_user_password"  placeholder="Password" required="" name="password" value="">
                             </div>
-                            <button type="button" class="btn w-100 btn-info waves-effect waves-light submitAddForm">ADD NEW USER</button>
+                            <a  id="addUserAddForm" class="btn w-100 btn-info waves-effect waves-light " data-url="{{route('customer.store')}}">{{__('ADD NEW USER')}}</a>
 
                         </div>
                     </div><!-- al_add_user end -->
@@ -217,156 +242,170 @@
                     <div class="row">
                         <!-- al_custom_modal start ADVANCED DETAILS -->
                         <div class="al_custom_modal col-md-12 pt-2 border-top">
-                                <h5 class="mb-2">ADVANCED DETAILS</h5>
+                                <h5 class="mb-2">{{__('ADVANCED DETAILS')}}</h5>
 
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="al_advanced_details p-2">
-                                            <p class="al_custom_title mb-1">Configuration</p>
-                                            <form action="">
-                                                <div class="form-group">
-                                                    <label for="title" class="">Order Prepare Time(In minutes)</label>
-                                                    <div class="position-relative">
-                                                        <input class="form-control" onkeypress="return isNumberKey(event)" name="order_pre_time" id="Vendor_order_pre_time" type="text" value="0">
-                                                        <div class="time-sloat d-flex align-items-center"><span class="" id="Vendor_order_pre_time_show">0 Min</span> </div>
-                                                    </div>
-                                                </div>
+                                            <p class="al_custom_title mb-1">{{__('Configuration')}}</p>
+                                                 @if($client_preference_detail->business_type != 'taxi')
+                                                    <div class="form-group">
 
+                                                        {!! Form::label('title', __('Order Prepare Time(In minutes)'),['class' => 'control-label']) !!}
+                                                        <div class="position-relative">
+                                                            <input class="form-control" onkeypress="return isNumberKey(event)" name="order_pre_time" id="Vendor_order_pre_time" type="text" value="{{ (isset($vendor)) ? @$vendor->order_pre_time : 0 }}" {{(isset($vendor)) ? (($vendor->status ?? 0) == 1 ? '' : 'disabled') : ''}}>
+                                                            <div class="time-sloat d-flex align-items-center"><span class="" id="Vendor_order_pre_time_show" ></span> </div>
+                                                        </div>
+
+                                                    </div>
+                                                @endif
                                                 <div class="row">
-                                                    <div class="col-md-4">
+
+                                                    @if($client_preference_detail->business_type != 'taxi')
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <label for="">24 * 7 Availability</label>
+                                                            {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
                                                             <div class="mt-md-1">
-                                                                <input type="checkbox" data-plugin="switchery" name="dine_in" class="form-control validity" data-color="#43bee1" checked='checked'>
+                                                                <input type="checkbox" data-plugin="switchery" name="show_slot" class="form-control" data-color="#43bee1" @if(@$vendor->show_slot == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
                                                             </div>
 
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4">
+
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <label for="">Auto Accept Order</label>
+
+                                                            {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                                                             <div class="mt-md-1">
-                                                                <input type="checkbox" data-plugin="switchery" name="takeaway" class="form-control validity" data-color="#43bee1" checked='checked'>
+                                                                <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if(@$vendor->auto_accept_order == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+
+                                                            {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}
+                                                            <div class="mt-md-1">
+                                                                <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if(@$vendor->return_request == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                                    @if(Auth::user()->is_superadmin == 1)
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            {!! Form::label('title', __('Show Profile Details'),['class' => 'control-label']) !!}
+                                                            <div class="mt-md-1">
+                                                                <input type="checkbox" data-plugin="switchery" name="is_show_vendor_details" class="form-control" data-color="#43bee1" @if(@$vendor->is_show_vendor_details == 1) checked @endif {{($vendor ?? false) ? ($vendor->status == 1 ? '' : 'disabled') : ''}}>
+
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="">Show Profile Details</label>
-                                                            <div class="mt-md-1">
-                                                                <input type="checkbox" data-plugin="switchery" name="delivery" class="form-control validity" data-color="#43bee1" checked='checked'>
-                                                            </div>
-                                                        </div>
+                                                    @endif
+                                                </div>
+                                                @if($client_preference_detail->business_type != 'taxi')
+                                                    <div class="form-group">
+                                                        {!! Form::label('title', __('Auto Reject Time(In minutes, 0 for no rejection)'),['class' => 'control-label']) !!}
+                                                        <input class="form-control" name="auto_reject_time" type="number" value="{{@$vendor->auto_reject_time}}" min="0" {{(isset($vendor)) ? (($vendor->status ?? 0) == 1 ? '' : 'disabled') : ''}} >
+
                                                     </div>
-                                                </div>
 
-                                                <div class="form-group">
-                                                    <label for="">Auto reject time (In minutes, 0 for no rejection)</label>
-                                                    <input type="text" class="form-control">
-                                                </div>
+                                                    <div class="form-group">
+                                                        {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
+                                                        <select class="form-control" name="slot_minutes">
+                                                            <option value="">{{__('Slot Duration')}}</option>
+                                                            <option value="15" {{ isset($vendor) ? ($vendor->slot_minutes == '15'? 'selected':'') : ''}}>15 {{__(' Minutes')}}</option>
+                                                            <option value="30" {{ isset($vendor) ? ($vendor->slot_minutes == '30'? 'selected':'') : ''}}>30 {{__(' Minutes')}}</option>
+                                                            <option value="45" {{ isset($vendor) ? ($vendor->slot_minutes == '45'? 'selected':'') : ''}}>45 {{__(' Minutes')}}</option>
+                                                            @for($i=1;$i<=8;$i++)
+                                                                <option value="{{$i*60}}" {{ isset($vendor) ? ($vendor->slot_minutes == ($i*60)? 'selected':'') : ''}}>{{ $i. __(' Hour')}}</option>
+                                                            @endfor
+                                                        </select>
+                                                    </div>
 
-                                                <div class="form-group">
-                                                    <label for="">Auto reject time (In minutes, 0 for no rejection)</label>
-                                                    <select class= "form-control" id="assignTo">
-                                                        <option value="1" selected="&quot;selected&quot;">Only Product</option>
-                                                        <option value="2">Only Category</option>
-                                                        <option value="5">Product with Category</option>
-                                                    </select>
-                                                </div>
-                                            </form>
+                                                        <div class="form-group" id="order_min_amountInput">
+                                                            {!! Form::label('title', 'Absolute Min Order Value [AMOV]',['class' => 'control-label']) !!}
+                                                            <input class="form-control" onkeypress="return isNumberKey(event)" name="order_min_amount" type="text" value="{{@$vendor->order_min_amount}}" {{(isset($vendor)) ? (($vendor->status ?? 0) == 1 ? '' : 'disabled') : ''}}>
+                                                        </div>
+
+                                                @endif
                                         </div>
                                     </div>
+                                    @if(Auth::user()->is_superadmin == 1)
+                                        <div class="col-md-4">
+                                            <div class="al_advanced_details p-2">
+                                                <p class="al_custom_title mb-1"><span class="">{{ __("Commission") }}</span> ({{ __("Visible For Admin") }})</p>
 
-                                    <div class="col-md-4">
-                                        <div class="al_advanced_details p-2">
-                                            <p class="al_custom_title mb-1">Commission(Visible for Admin)</p>
-                                            <form action="">
-                                                <div class="form-group">
-                                                    <label for="">Commission percentage</label>
-                                                    <input type="text" class="form-control">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="">Service fee percent</label>
-                                                    <input type="text" class="form-control">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="">Commission fixed per order</label>
-                                                    <input type="text" class="form-control">
-                                                </div>
-                                            </form>
+                                                    <div class="form-group">
+                                                        {!! Form::label('title', __('Commission Percent'),['class' => 'control-label']) !!}
+                                                        <input class="form-control" name="commission_percent" type="text" value="{{@$vendor->commission_percent}}" onkeypress="return isNumberKey(event)"  onkeydown="if(this.value.length > 6) return false;">
+
+                                                    </div>
+                                                    <div class="form-group">
+                                                        {!! Form::label('title', __('Commission Fixed Per Order'),['class' => 'control-label']) !!}
+                                                        <input class="form-control" name="commission_fixed_per_order" type="text" value="{{@$vendor->commission_fixed_per_order}}" onkeypress="return isNumberKey(event)">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        {!! Form::label('title', __('Service Fee Percent'),['class' => 'control-label']) !!}
+                                                        <input class="form-control" name="service_fee_percent" type="text" min="0" maxlength="5" value="{{@$vendor->service_fee_percent}}" onkeypress="return isNumberKey(event)" onkeydown="if(this.value.length > 6) return false;">
+
+                                                    </div>
+
+                                            </div>
                                         </div>
-                                    </div>
-
+                                    @endif
                                     <div class="col-md-4">
-                                        <div class="al_advanced_details p-2">
-                                            <p class="al_custom_title mb-1">Category Setup (Visible For Admin)</p>
-                                            <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                                                <label for="title" class="control-label">Can Add Category</label>
-                                                <input type="checkbox" data-plugin="switchery" name="takeaway" class="form-control validity" data-color="#43bee1" checked='checked'>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <label for="title" class="control-label">Vendor Category</label>
-                                                <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
-                                                    <ol class="dd-list">
-                                                        <li class="dd-item dd3-item" data-category_id="3">
-                                                            <div class="dd3-content">
-                                                                <img class="rounded-circle mr-1" src="https://imgproxy.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/Iw9YXkwmqOmxvSQlnYrkLNvte6slEQNcYPBsw8xH.svg"> Restaurants
-                                                                <span class="inner-div text-right">
-                                                                    <a class="action-icon" data-id="3" href="javascript:void(0)">
-                                                                    <input type="checkbox" data-plugin="switchery" name="takeaway" class="form-control validity" data-color="#43bee1" checked='checked'><input type="hidden" value="3">
-                                                                    </a>
-                                                                </span>
-                                                            </div>
-                                                            <ol class="dd-list">
-                                                                <li class="dd-item dd3-item" data-id="20">
-                                                                    <div class="dd3-content">
-                                                                        <img class="rounded-circle mr-1" src="https://imgproxy.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/vveRdzXKw6cl7O8CUu89sxA57idFXLAqI9bj3deY.jpg">
-                                                                        Venezia
-                                                                        <span class="inner-div text-right">
-                                                                            <a class="action-icon" data-id="6" href="javascript:void(0)">
-                                                                            <input type="checkbox" data-plugin="switchery" name="takeaway" class="form-control validity" data-color="#43bee1" checked='checked'>
-                                                                            </a>
-                                                                        </span>
-                                                                    </div>
-                                                                </li>
-                                                                <li class="dd-item dd3-item" data-id="20">
-                                                                    <div class="dd3-content">
-                                                                        <img class="rounded-circle mr-1" src="https://imgproxy.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/vveRdzXKw6cl7O8CUu89sxA57idFXLAqI9bj3deY.jpg">
-                                                                        Venezia
-                                                                        <span class="inner-div text-right">
-                                                                            <a class="action-icon" data-id="6" href="javascript:void(0)">
-                                                                            <input type="checkbox" data-plugin="switchery" name="takeaway" class="form-control validity" data-color="#43bee1" checked='checked'>
-                                                                            </a>
-                                                                        </span>
-                                                                    </div>
-                                                                </li>
-                                                                <li class="dd-item dd3-item" data-id="20">
-                                                                    <div class="dd3-content">
-                                                                        <img class="rounded-circle mr-1" src="https://imgproxy.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/vveRdzXKw6cl7O8CUu89sxA57idFXLAqI9bj3deY.jpg">
-                                                                        Venezia
-                                                                        <span class="inner-div text-right">
-                                                                            <a class="action-icon" data-id="6" href="javascript:void(0)">
-                                                                            <input type="checkbox" data-plugin="switchery" name="takeaway" class="form-control validity" data-color="#43bee1" checked='checked'>
-                                                                            </a>
-                                                                        </span>
-                                                                    </div>
-                                                                </li>
-                                                            </ol>
-                                                        </li>
-                                                        <li class="dd-item dd3-item" data-category_id="3">
-                                                            <div class="dd3-content">
-                                                                <img class="rounded-circle mr-1" src="https://imgproxy.royoorders.com/insecure/fill/30/30/ce/0/plain/https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/category/icon/Iw9YXkwmqOmxvSQlnYrkLNvte6slEQNcYPBsw8xH.svg"> Restaurants
-                                                                <span class="inner-div text-right">
-                                                                    <a class="action-icon" data-id="3" href="javascript:void(0)">
-                                                                    <input type="checkbox" data-plugin="switchery" name="takeaway" class="form-control validity" data-color="#43bee1" checked='checked'><input type="hidden" value="3">
-                                                                    </a>
-                                                                </span>
-                                                            </div>
-                                                        </li>
-                                                    </ol>
-                                                </div>
+                                        @if($client_preference_detail->business_type != 'taxi')
+                                        <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                                            {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
+                                            <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if( (@$vendor->add_category == 1)) checked @endif >
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
                                             </div>
 
+                                            <div class="col-md-6 mb-3">
+                                                <select class="selectize-select form-control assignToSelect" name="assignTo" id="assignTo" >
+                                                    @foreach($templetes as $templete)
+                                                        <option value="{{$templete->id}}" {{@$vendor->vendor_templete_id == $templete->id ? 'selected="selected"' : ''}}>{{$templete->title}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        @endif
+                                        <div class="col-md-12">
+                                            {!! Form::label('title', __('Vendor Category'),['class' => 'control-label']) !!}
+                                            <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
+                                                <ol class="dd-list">
+                                                    @forelse($builds as $build)
+                                                    @if($build['translation_one'])
+                                                    <li class="dd-item dd3-item" data-category_id="{{$build['id']}}">
+                                                        <div class="dd3-content">
+                                                            <img class="rounded-circle mr-1" src="{{$build['icon']['proxy_url']}}30/30{{$build['icon']['image_path']}}"> {{$build['translation_one']['name']}}
+                                                            <span class="inner-div text-right">
+                                                                <a class="action-icon" data-id="3" href="javascript:void(0)">
+                                                                    @if(in_array($build['id'], $VendorCategory))
+                                                                        <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1" class="form-control activeCategory" data-plugin="switchery" checked >
+                                                                    @else
+                                                                        <input type="checkbox" data-category_id="{{ $build['id'] }}" data-color="#43bee1" class="form-control activeCategory" data-plugin="switchery" >
+                                                                    @endif
+                                                                    <input type="hidden" value="{{ $build['id'] }}">
+                                                                </a>
+                                                            </span>
+                                                        </div>
+                                                        @if(isset($build['children']))
+                                                            <x-category :categories="$build['children']" :vendorcategory="$VendorCategory" :vendor="@$vendor"/>
+                                                        @endif
+                                                        </li>
+                                                    </li>
+                                                    @endif
+                                                    @empty
+                                                    @endforelse
+                                                </ol>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -414,7 +453,7 @@
                             @endforeach
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        {{-- <div class="col-md-6">
                             <div class="form-group">
                                 <label for="">Dummy 1</label>
                                 <input type="text" class="w-100 form-control">
@@ -423,12 +462,12 @@
                                 <label for="">Dummy 2</label>
                                 <input type="text" class="w-100 form-control">
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info waves-effect waves-light submitAddForm">{{ __('Submit') }}</button>
+                    <button type="button" class="btn btn-info waves-effect waves-light " submitEditForm id="add_vendor_form">{{ __('Submit') }}</button>
                 </div>
             </form>
         </div>
@@ -438,21 +477,21 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">{{ __('Import') }} {{ $vendor }}</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">{{ __('Import') }} {{ $vendor_name }}</h4>
+                <button type="button" class="close " data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form method="post" enctype="multipart/form-data" id="save_imported_vendors">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
                     <div class="col-md-12 text-center">
-                            <a href="{{url('file-download'.'/sample_vendor.csv')}}">{{ __("Download Sample file here!") }}</a>
+                            <a as="{{url('file-download'.'/sample_vendor.csv')}}" href="{{ route('vendor.export') }}">{{ __("Download Sample file here!") }}</a>
                         </div>
                         <div class="col-md-12">
                             <div class="row mb-2">
                                 <div class="col-md-12">
                                     <input type="file" accept=".csv" onchange="submitImportForm()" data-plugins="dropify" name="vendor_csv" class="dropify" data-default-file="" required/>
-                                    <p class="text-muted text-center mt-2 mb-0">{{ __("Upload") }} {{ $vendor }} CSV</p>
+                                    <p class="text-muted text-center mt-2 mb-0">{{ __("Upload") }} {{ $vendor_name }} CSV</p>
                                 </div>
                             </div>
                         </div>
@@ -504,13 +543,14 @@
         </div>
     </div>
 </div>
+
 <div id="show-map-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-full-width">
         <div class="modal-content">
 
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __("Select Location") }}</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <button type="button" class="close remove-modal-open" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body p-4">
 
@@ -520,13 +560,14 @@
                             <div id="googleMap" style="height: 500px; min-width: 500px; width:100%"></div>
                             <input type="hidden" name="lat_input" id="lat_map" value="0" />
                             <input type="hidden" name="lng_input" id="lng_map" value="0" />
+                            <input type="hidden" name="address_map" id="address_map" value="" />
                             <input type="hidden" name="for" id="map_for" value="" />
                         </div>
                     </form>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-info waves-effect waves-light selectMapLocation">Ok</button>
+                <button type="submit" class="btn btn-info waves-effect waves-light remove-modal-open selectMapLocation">Ok</button>
                 <!--<button type="Cancel" class="btn btn-info waves-effect waves-light cancelMapLocation">cancel</button>-->
             </div>
         </div>

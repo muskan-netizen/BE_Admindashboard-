@@ -293,12 +293,13 @@
                                                                                                 <a href="{{ route('front.booking.details', $order->order_number) }}"
                                                                                                     target="_blank">{{ __('Details') }}</a>
                                                                                             @endif
+                                                                                            @if ($vendor->order_status_option_id==1)
                                                                                             <h6 class="m-0">
                                                                                                 <label class="rating-star cancel_order"  data-order_vendor_id="{{$vendor->vendor_id??0}}" data-id="{{$vendor->id??0}}">
                                                                                                     {{ __('Cancel Order') }}
                                                                                                 </label>
                                                                                             </h6>
-
+                                                                                            @endif
                                                                                             @if ($vendor->dineInTable)
                                                                                                 <li>
                                                                                                     <h5 class="mb-1">
@@ -733,7 +734,8 @@
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)</span>
                                                                                             </li>
-                                                                                            @if (isset($hidereturn) && $hidereturn != 1)
+                                                                                           
+                                                                                            @if (isset($hidereturn) && $hidereturn != 1 && $vendor->vendor->return_request)
                                                                                                 <button
                                                                                                     class="return-order-product btn btn-solid"
                                                                                                     data-id="{{ $order->id ?? 0 }}"
@@ -1691,6 +1693,8 @@
         var ajaxCall = 'ToCancelPrevReq';
         var credit_tip_url = "{{ route('user.tip_after_order') }}";
         var payment_stripe_url = "{{ route('payment.stripe') }}";
+        var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
+        var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
         var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";
         var payment_yoco_url = "{{ route('payment.yocoPurchase') }}";
         var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";

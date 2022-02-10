@@ -24,7 +24,7 @@
                         </div>
 
                         <div class="col-md-6 slotForDiv">
-                            {!! Form::label('title', 'Slot For',['class' => 'control-label']) !!} 
+                            {!! Form::label('title', 'Slot For',['class' => 'control-label']) !!}
                             <div class="form-group">
                                 <ul class="list-inline">
                                     <li class="d-inline-block ml-3 mb-1 custom-radio-design">
@@ -40,7 +40,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="">
-                                {!! Form::label('title', __('Slot Type'),['class' => 'control-label']) !!} 
+                                {!! Form::label('title', __('Slot Type'),['class' => 'control-label']) !!}
                             </div>
                             @if($vendor->dine_in == 1)
                                 <div class="checkbox checkbox-success form-check pl-0 mb-1"  @if($client_preferences->dinein_check == 0) style="display: none;" @endif>
@@ -65,7 +65,7 @@
                     <div class="row mb-2 weekDays">
                         <div class="col-md-12">
                             <div class="">
-                            {!! Form::label('title', __('Select days of week'),['class' => 'control-label']) !!} 
+                            {!! Form::label('title', __('Select days of week'),['class' => 'control-label']) !!}
                             </div>
                             <div class="checkbox checkbox-success form-check pl-0 mb-1">
                                 <input name="week_day[]" type="checkbox" id="day_1" value="1">
@@ -119,7 +119,7 @@
                             </div>
                         </div> -->
                     </div>
-                    <div class="row mt-2">                        
+                    <div class="row mt-2">
                         <div class="col-12 d-sm-flex justify-content-between">
                             <button type="button" class="btn btn-light mr-1" data-dismiss="modal">{{ __('Close') }}</button>
                             <button type="submit" class="btn btn-info" id="btn-save-slot">{{ __('Save') }}</button>
@@ -145,7 +145,7 @@
                         <input type="hidden" name="slot_type" id="deleteSlotType" value="" >
                         <input type="hidden" name="old_slot_type" id="deleteSlotTypeOld" value="" >
                         <input type="hidden" name="slot_date" id="deleteSlotDate" value="" >
-                       <button type="button" class="btn btn-primary-outline action-icon" style="display: none;"></button> 
+                       <button type="button" class="btn btn-primary-outline action-icon" style="display: none;"></button>
                     </div>
                 </form>
             </div>
@@ -168,7 +168,7 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-12 slotForDiv">
-                            {!! Form::label('title', __('Slot For'),['class' => 'control-label']) !!} 
+                            {!! Form::label('title', __('Slot For'),['class' => 'control-label']) !!}
                             <div class="form-group">
                                 <ul class="list-inline">
                                     <li class="d-block pl-1 ml-3 mb-1 custom-radio-design">
@@ -187,7 +187,7 @@
                     <div class="row mb-2">
                         <div class="col-md-12 weekDays">
                             <div class="">
-                            {!! Form::label('title', __('Slot Type'),['class' => 'control-label']) !!} 
+                            {!! Form::label('title', __('Slot Type'),['class' => 'control-label']) !!}
                             </div>
                             @if($vendor->dine_in == 1)
                             <div class="checkbox checkbox-success form-check pl-1 mb-1">
@@ -210,9 +210,9 @@
                         </div>
                     </div>
                     <!--<div class="row mb-2 weekDaysEdit">
-                        <div class="col-md-12"> 
+                        <div class="col-md-12">
                             <div class="">
-                            {!! Form::label('title', 'Select days of week',['class' => 'control-label']) !!} 
+                            {!! Form::label('title', 'Select days of week',['class' => 'control-label']) !!}
                             </div>
                             <div class="checkbox checkbox-success form-check-inline">
                                 <input name="week_day[]" type="checkbox" id="edit_day_1" value="1">
@@ -259,7 +259,7 @@
 
                     <div class="row mt-2">
                         <div class="col-12 mb-2">
-                            <button type="button" class="btn btn-danger w-100" id="deleteSlotBtn">{{ __("Delete Slot") }}</button> 
+                            <button type="button" class="btn btn-danger w-100" id="deleteSlotBtn">{{ __("Delete Slot") }}</button>
                         </div>
                         <div class="col-12 d-sm-flex justify-content-between">
                             <button type="button" class="btn btn-light mr-1" data-dismiss="modal">{{ __("Close") }}</button>
@@ -272,29 +272,30 @@
     </div>
 </div>
 
-<div id="show-map-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+<div id="show-map-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-bs-backdrop="static" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-full-width">
         <div class="modal-content">
 
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __("Select Location") }}</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <button type="button" class="close remove-modal-open" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body p-4">
-                
+
                 <div class="row">
                     <form id="task_form" action="#" method="POST" style="width: 100%">
                         <div class="col-md-12">
                             <div id="googleMap" style="height: 500px; min-width: 500px; width:100%"></div>
                             <input type="hidden" name="lat_input" id="lat_map" value="0" />
                             <input type="hidden" name="lng_input" id="lng_map" value="0" />
+                            <input type="hidden" name="address_map" id="address_map" value="" />
                             <input type="hidden" name="for" id="map_for" value="" />
                         </div>
                     </form>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-info waves-effect waves-light selectMapLocation">{{ __('Ok') }}</button>
+                <button type="submit" class="btn btn-info waves-effect waves-light remove-modal-open selectMapLocation">{{ __('Ok') }}</button>
                 <!--<button type="Cancel" class="btn btn-info waves-effect waves-light cancelMapLocation">cancel</button>-->
             </div>
         </div>
@@ -312,7 +313,7 @@
             <form id="edit-area-form" action="{{ route('vendor.serviceArea', $vendor->id) }}" method="POST">
                 @csrf
                 <div class="modal-body" id="editAreaBox">
-                       
+
                 </div>
 
                 <div class="modal-footer">
@@ -326,7 +327,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </form>
         </div>
     </div>
