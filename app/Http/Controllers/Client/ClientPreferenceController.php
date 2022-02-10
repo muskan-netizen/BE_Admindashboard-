@@ -30,16 +30,6 @@ class ClientPreferenceController extends BaseController{
         $file_types_driver = ['image/*' => 'Image', '.pdf' => 'Pdf','.txt'=>'Text'];
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         $driver_registration_documents = DriverRegistrationDocument::with('primary')->get();
-        if($preference->reffered_by_amount == null){
-            $reffer_by = 0;
-        }else{
-            $reffer_by = $preference->reffered_by_amount;
-        }
-        if($preference->reffered_to_amount == null){
-            $reffer_to = 0;
-        }else{
-            $reffer_to = $preference->reffered_to_amount;
-        }
 
         $last_mile_teams = [];
         $laundry_teams = [];
@@ -56,7 +46,7 @@ class ClientPreferenceController extends BaseController{
 
         $tags = Tag::with('primary')->get();
         $slots = ClientSlot::get();
-        return view('backend/setting/config')->with(['tags' => $tags,'slots'=>$slots,'laundry_teams' => $laundry_teams,'last_mile_teams' => $last_mile_teams,'client' => $client, 'preference' => $preference, 'mapTypes'=> $mapTypes, 'smsTypes' => $smsTypes, 'client_languages' => $client_languages, 'file_types' => $file_types, 'vendor_registration_documents' => $vendor_registration_documents, 'driver_registration_documents' => $driver_registration_documents, 'reffer_by' => $reffer_by, 'reffer_to' => $reffer_to, 'file_types_driver' => $file_types_driver]);
+        return view('backend/setting/config')->with(['tags' => $tags,'slots'=>$slots,'laundry_teams' => $laundry_teams,'last_mile_teams' => $last_mile_teams,'client' => $client, 'preference' => $preference, 'mapTypes'=> $mapTypes, 'smsTypes' => $smsTypes, 'client_languages' => $client_languages, 'file_types' => $file_types, 'vendor_registration_documents' => $vendor_registration_documents, 'driver_registration_documents' => $driver_registration_documents, 'file_types_driver' => $file_types_driver]);
     }
 
     public function getCustomizePage(ClientPreference $clientPreference){
@@ -86,12 +76,22 @@ class ClientPreferenceController extends BaseController{
         }
         $tags = Tag::with('primary')->get();
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
+        if($preference->reffered_by_amount == null){
+            $reffer_by = 0;
+        }else{
+            $reffer_by = $preference->reffered_by_amount;
+        }
+        if($preference->reffered_to_amount == null){
+            $reffer_to = 0;
+        }else{
+            $reffer_to = $preference->reffered_to_amount;
+        }
         $client_languages = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
                     ->where('client_languages.client_code', Auth::user()->code)
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
-        return view('backend.setting.customize', compact('client','nomenclature_value','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents'));
+        return view('backend.setting.customize', compact('client','nomenclature_value','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to'));
     }
 
     public function referandearnUpdate(Request $request, $code){
@@ -101,7 +101,7 @@ class ClientPreferenceController extends BaseController{
             $preference->reffered_to_amount = $request->reffered_to_amount;
             $preference->reffered_by_amount = $request->reffered_by_amount;
             $preference->save();
-            return redirect()->route('configure.index')->with('success', 'Client configurations updated successfully!');
+            return redirect()->route('configure.customize')->with('success', 'Client Customization updated successfully!');
         }
     }
 
