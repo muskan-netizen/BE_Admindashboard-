@@ -35,8 +35,8 @@
                 <div class="row">
                     <div class="col-md-8 ">
                         <div class="row">
-                            <div class="col-md-12 col-xl-4">
-                                <div class="card card-box">
+                            <div class="col-md-12 col-xl-4 mb-3">
+                                <div class="card card-box h-100 ">
                                     <h4 class="header-title">{{ __("Favicon") }}</h4>
                                     <div class="mb-0">
                                         <label>{{ __("Upload Favicon") }}</label>
@@ -48,8 +48,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-12 col-xl-4">
-                                <div class="card card-box">
+                            <div class="col-md-12 col-xl-4 mb-3">
+                                <div class="card card-box h-100 ">
                                     <div class="col">
                                         <h4 class="header-title">{{ __("Color") }}</h4>
                                         <div class="form-group">
@@ -63,22 +63,23 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-12 col-xl-4">
-                                <div class="card card-box">
+                            <div class="col-md-12 col-xl-4 mb-3">
+                                <div class="card card-box h-100 ">
+
+                                    <h4 class="header-title">{{ __("Show Dark Mode") }}</h4>
                                     <ul class="pl-0 mb-0">
                                         <li class="d-flex flex-column justify-content-start mt-2">
-                                            <h4 class="header-title mb-2">{{ __("Show Dark Mode") }}</h4>
                                             <div class="form-group">
                                                 <ul class="list-inline">
-                                                    <li class="d-inline-block ml-3 mr-2">
+                                                    <li class="d-block ml-3 mr-2 mb-1">
                                                         <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('0')" id="option1" name="show_dark_mode" {{$client_preferences->show_dark_mode == 0 ? 'checked' : ''}}>
                                                         <label class="custom-control-label" for="option1">{{ __("Day") }}</label>
                                                     </li>
-                                                    <li class="d-inline-block ml-3 mr-2 mb-2 mb-lg-0">
+                                                    <li class="d-block ml-3 mr-2 mb-1">
                                                         <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('1')" id="option2" name="show_dark_mode" {{$client_preferences->show_dark_mode == 1 ? 'checked' : ''}}>
                                                         <label class="custom-control-label" for="option2">{{ __("Night") }}</label>
                                                     </li>
-                                                    <li class="d-inline-block ml-3">
+                                                    <li class="d-block ml-3 mr-2 mb-1">
                                                         <input type="radio" class="custom-control-input check" onchange="submitDarkMmode('2')" id="option3" name="show_dark_mode" {{$client_preferences->show_dark_mode == 2 ? 'checked' : ''}}>
                                                         <label class="custom-control-label" for="option3">{{ __("Day with Toggle") }}</label>
                                                     </li>
@@ -90,8 +91,8 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="card">
-                                    <div class="card-body">
+                            <div class="card ">
+                                    <div class="card-body ">
                                         <h4 class="header-title">{{ __("Home Page Style") }}</h4>
                                         <div class="row">
                                             @foreach($homepage_style_options as $homepage_style)
@@ -117,9 +118,9 @@
                     </div>
 
                     <div class="col-md-4">
-                        <div class="row">
+                        <div class="row h-100">
                             <div class="col-md-12 ">
-                                <div class="card card-box">
+                                <div class="card card-box h-100">
                                     <ul class="pl-0 mb-0">
                                         @if($client_preference_detail->business_type != 'taxi')
                                             <li class="d-flex align-items-center justify-content-between">
