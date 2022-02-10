@@ -383,45 +383,43 @@
                 </li>
                 @endif
 
-                @if(count(array_intersect($extra_permissions, $allowed)) || Auth::user()->is_superadmin == 1)
-                    @if($client_preference->celebrity_check == 1 || $client_preference->enquire_mode == 1)
-                        <li>
-                            <a class="menu-title pl-1">
-                                <!-- <span class="icon-extra"></span> -->
-                                <span>{{ __("EXTRA") }}</span>
-                            </a>
-                            <ul class="nav-second-level">
-                                @if(Auth::user()->is_superadmin == 1 && $client_preference->celebrity_check == 1)
-                                    @if(in_array('celebrity',$allowed) || Auth::user()->is_superadmin == 1)
-                                        <li>
-                                            <a href="{{ route('celebrity.index') }}">
-                                                <span class="icon-celebrity"></span>
-                                                <span> {{ __("Celebrities") }} </span>
-                                            </a>
-                                        </li>
-                                    @endif
+                @if(count(array_intersect($extra_permissions, $allowed)) || Auth::user()->is_superadmin == 1 || in_array('tools',$allowed))
+                    <li>
+                        <a class="menu-title pl-1">
+                            <!-- <span class="icon-extra"></span> -->
+                            <span>{{ __("EXTRA") }}</span>
+                        </a>
+                        <ul class="nav-second-level">
+                            @if(Auth::user()->is_superadmin == 1 && $client_preference->celebrity_check == 1)
+                                @if(in_array('celebrity',$allowed) || Auth::user()->is_superadmin == 1)
+                                    <li>
+                                        <a href="{{ route('celebrity.index') }}">
+                                            <span class="icon-celebrity"></span>
+                                            <span> {{ __("Celebrities") }} </span>
+                                        </a>
+                                    </li>
                                 @endif
-                                @if(!empty($client_preference) && $client_preference->enquire_mode == 1)
-                                    @if(in_array('inquiries',$allowed) || Auth::user()->is_superadmin == 1)
-                                        <li>
-                                            <a href="{{ route('inquiry.index') }}">
-                                                <span class="icon-question"></span>
-                                                <span> {{ __("Inquiries") }} </span>
-                                            </a>
-                                        </li>
-                                    @endif
+                            @endif
+                            @if(!empty($client_preference) && $client_preference->enquire_mode == 1)
+                                @if(in_array('inquiries',$allowed) || Auth::user()->is_superadmin == 1)
+                                    <li>
+                                        <a href="{{ route('inquiry.index') }}">
+                                            <span class="icon-question"></span>
+                                            <span> {{ __("Inquiries") }} </span>
+                                        </a>
+                                    </li>
                                 @endif
-                                @if(in_array('tools',$allowed) || Auth::user()->is_superadmin == 1)
-                                <li>
-                                    <a href="{{route('tools.index')}}">
-                                        <span class="icon-settings-1-1"></span>
-                                        <span> {{ __('Tools') }} </span>
-                                    </a>
-                                </li>
-                                @endif
-                            </ul>
-                        </li>
-                    @endif
+                            @endif
+                            @if(in_array('tools',$allowed) || Auth::user()->is_superadmin == 1)
+                            <li>
+                                <a href="{{route('tools.index')}}">
+                                    <span class="icon-settings-1-1"></span>
+                                    <span> {{ __('Tools') }} </span>
+                                </a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
                 @endif
             </ul>
         </div>
