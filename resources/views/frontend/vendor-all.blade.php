@@ -31,8 +31,9 @@
                <div class="supplier-rating">
                   <h6 class="mb-1 ellips">{{$vendor->name}}</h6>
                   <span class="rating-number">2.0</span>
-                  <p title="{{$vendor->categoriesList}}" class="vendor-cate border-bottom pb-1 mb-1 ellips">{{$vendor->categoriesList}}</p>
+                  <p title="{{$vendor->categoriesList}}" class="vendor-cate {{$vendor->is_show_vendor_details == 1 ? ' border-bottom':''}} pb-1 mb-1 ellips">{{$vendor->categoriesList}}</p>
                   <div class="product-timing">
+                    @if ($vendor->is_show_vendor_details == 1)
                      <small title="{{$vendor->address}}" class="ellips d-block">
                      <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                          width="20px" height="20px" viewBox="0 0 368.666 368.666" style="enable-background:new 0 0 368.666 368.666;" xml:space="preserve">
@@ -53,6 +54,7 @@
                         </g>
                         </svg>
                         {{$vendor->address}}</small>
+                    @endif
                      @if(isset($vendor->timeofLineOfSightDistance))
                      <ul class="timing-box">
                         <li>
