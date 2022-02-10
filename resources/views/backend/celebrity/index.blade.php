@@ -30,7 +30,7 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-                <h4 class="page-title">{{ __('Influencer Mod') }}</h4>
+                <h4 class="page-title">{{ __('Influencer') }}</h4>
             </div>
         </div>
         <div class="col-sm-6 text-right">
