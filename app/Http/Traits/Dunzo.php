@@ -228,7 +228,6 @@ public function createOrder($data)
       \Log::info($err);
         return $err;
     } else {
-      \Log::info($response);
         return $response;
     }
 
