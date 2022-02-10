@@ -71,7 +71,7 @@ class CMSPageController extends BaseController
         $page_detail->primary = $page_detail->translation;
         if ($page_detail->translation->type_of_form != 2) {
             if($page_detail->primary->type_of_form == 3){
-                $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', session()->get('customerLanguage'))->get();
+                $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', $langId)->get();
                 $data['faq_data'] = $faq;
             }
             $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
