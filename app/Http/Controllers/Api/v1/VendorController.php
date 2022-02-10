@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, Permissions, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country};
+use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, Permissions, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption};
 
 class VendorController extends BaseController{
     use ApiResponser;
@@ -1642,6 +1642,297 @@ class VendorController extends BaseController{
             }else{
                 return $this->errorResponse('Vendor not found', 422);
             }
+        } catch (Exception $e) {            
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+    
+    // public function getVendorTransactions(Request $request)
+    // {
+    //     try {
+	// 		$validator = Validator::make($request->all(), [
+	// 			'vendor_id' => 'required',	
+	// 		]);
+
+	// 		if ($validator->fails()) {			
+	// 			return $this->errorResponse($validator->errors()->first(), 422);
+	// 		}
+    //         $start_date = $request->start_date;
+    //         $end_date = $request->end_date;
+    //         $filter_order_status = $request->filter_order_status;
+
+    //         $user = Auth::user();
+    //         $langId = 1;
+    //         $filter_order_status = $request->filter_order_status;
+    //         $orders = Order::with(['vendors.products', 'vendors.status', 'orderStatusVendor'])->orderBy('id', 'DESC');
+    //         if (Auth::user()->is_superadmin == 0) {
+    //             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
+    //                 $query->where('user_id', Auth::user()->id);
+    //             });
+    //         }
+    //         // if (!empty($request->search_keyword)) {
+    //         //     $orders = $orders->where('order_number', 'like', '%' . $request->search_keyword . '%');
+    //         // }
+
+
+
+    //         $order_count = Order::with('vendors')->where(function ($q1) {
+    //             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+    //             $q1->orWhere(function ($q2) {
+    //                 $q2->where('payment_option_id', 1);
+    //             });
+    //         })->orderBy('id', 'asc');
+    //         if (Auth::user()->is_superadmin == 0) {
+    //             $order_count = $order_count->whereHas('vendors.vendor.permissionToUser', function ($query) {
+    //                 $query->where('user_id', Auth::user()->id);
+    //             });
+    //         }
+    //         //filer bitween date
+    //         // if (!empty($request->get('date_filter'))) {
+    //         //     $date_date_filter = explode(' to ', $request->get('date_filter'));
+    //         //     $to_date = (!empty($date_date_filter[1])) ? $date_date_filter[1] : $date_date_filter[0];
+    //         //     $from_date = $date_date_filter[0];
+
+    //         //     $orders->between($from_date . " 00:00:00", $to_date . " 23:59:59");
+
+    //         //     //order_count
+    //         //     $order_count->between($from_date . " 00:00:00", $to_date . " 23:59:59");
+    //         // }
+    //         //get by vendor
+    //         if (!empty($request->get('vendor_id'))) {
+    //             $order_count->whereHas('vendors', function ($query)  use ($request) {
+    //                 $query->where('vendor_id', $request->get('vendor_id'));
+    //             });
+    //         }
+    //         $pending_orders = clone $order_count;
+    //         $active_orders = clone $order_count;
+    //         $orders_history = clone $order_count;
+
+    //         if ($filter_order_status) {
+    //             switch ($filter_order_status) {
+    //                 case 'pending_orders':
+    //                     $orders = $orders->with('vendors', function ($query) {
+    //                         $query->where('order_status_option_id', 1);
+    //                     })->whereHas('vendors', function ($query) use ($request) {
+    //                         $query->where('order_status_option_id', 1);
+    //                         if (!empty($request->get('vendor_id'))) {
+    //                             $query->where('vendor_id', $request->get('vendor_id'));
+    //                         }
+    //                     });
+
+    //                     break;
+    //                 case 'active_orders':
+    //                     $order_status_options = [2, 4, 5];
+    //                     $orders = $orders->with('vendors', function ($query) use ($order_status_options) {
+    //                         $query->whereIn('order_status_option_id', $order_status_options);
+    //                     })->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+    //                         $query->whereIn('order_status_option_id', $order_status_options);
+    //                         if (!empty($request->get('vendor_id'))) {
+    //                             $query->where('vendor_id', $request->get('vendor_id'));
+    //                         }
+    //                     });
+
+    //                     break;
+    //                 case 'orders_history':
+    //                     $order_status_options = [6, 3];
+    //                     $orders = $orders->with('vendors', function ($query) use ($order_status_options) {
+    //                         $query->whereIn('order_status_option_id', $order_status_options);
+    //                     })->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+    //                         $query->whereIn('order_status_option_id', $order_status_options);
+    //                         if (!empty($request->get('vendor_id'))) {
+    //                             $query->where('vendor_id', $request->get('vendor_id'));
+    //                         }
+    //                     });
+
+    //                     break;
+    //             }
+    //         }
+    //         $orders = $orders->whereHas('vendors')->where(function ($q1) {
+    //             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+    //             $q1->orWhere(function ($q2) {
+    //                 $q2->where('payment_option_id', 1);
+    //             });
+    //         })->select('*', 'id as total_discount_calculate')->paginate(30);
+
+
+    //         $pending_orders = $pending_orders->with('vendors', function ($query) {
+    //             $query->where('order_status_option_id', 1);
+    //         })->whereHas('vendors', function ($query) {
+    //             $query->where('order_status_option_id', 1);
+    //         })->count();
+
+    //         $order_status_optionsa = [2, 4, 5];
+    //         $active_orders = $active_orders->with('vendors', function ($query) use ($order_status_optionsa) {
+    //             $query->whereIn('order_status_option_id', $order_status_optionsa);
+    //         })->whereHas('vendors', function ($query) use ($order_status_optionsa) {
+    //             $query->whereIn('order_status_option_id', $order_status_optionsa);
+    //         })->count();
+
+    //         $order_status_optionsd = [6, 3];
+    //         $orders_history = $orders_history->with('vendors', function ($query) use ($order_status_optionsd) {
+    //             $query->whereIn('order_status_option_id', $order_status_optionsd);
+    //         })->whereHas('vendors', function ($query) use ($order_status_optionsd) {
+    //             $query->whereIn('order_status_option_id', $order_status_optionsd);
+    //         })->count();
+
+
+    //         foreach ($orders as $key => $order) {
+    //             // $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, h:i A');
+    //             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+    //             $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
+    //             foreach ($order->vendors as $vendor) {
+    //                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
+    //                 $vendor->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
+    //                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
+    //                 $vendor->vendor_name = $vendor ? $vendor->vendor->name : '';
+    //                 $product_total_count = 0;
+    //                 foreach ($vendor->products as $product) {
+    //                     $product_total_count += $product->quantity * $product->price;
+    //                     $product->image_path  = $product->media->first() ? $product->media->first()->image->path : getDefaultImagePath();
+    //                 }
+
+    //                 if ($vendor->delivery_fee > 0) {
+    //                     $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
+    //                     $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
+    //                     $ETA = $order_pre_time + $user_to_vendor_time;
+    //                     // $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : convertDateTimeInTimeZone($vendor->created_at, $user->timezone, 'h:i A');
+    //                     $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : dateTimeInUserTimeZone($vendor->created_at, $user->timezone);
+    //                     //$order->converted_scheduled_date_time = $order->scheduled_date_time;
+    //                     $order->converted_scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
+    //                 }
+
+    //                 $vendor->product_total_count = $product_total_count;
+    //                 $vendor->final_amount = $vendor->taxable_amount + $product_total_count;
+    //             }
+    //             $luxury_option_name = '';
+    //             if ($order->luxury_option_id > 0) {
+    //                 $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+    //                 if ($luxury_option->title == 'takeaway') {
+    //                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
+    //                 } elseif ($luxury_option->title == 'dine_in') {
+    //                     $luxury_option_name = 'Dine-In';
+    //                 } else {
+    //                     $luxury_option_name = 'Delivery';
+    //                 }
+    //             }
+    //             $order->luxury_option_name = __($luxury_option_name);
+    //             if ($order->vendors->count() == 0) {
+    //                 $orders->forget($key);
+    //             }
+    //         }
+
+    //         return $data = array('orders' => $orders, 'pending_orders' => $pending_orders, 'active_orders' => $active_orders, 'orders_history' => $orders_history);
+            
+        
+    //     } catch (Exception $e) {            
+    //         return $this->errorResponse($e->getMessage(), $e->getCode());
+    //     }
+    // }
+
+    public function getVendorTransactions(Request $request)
+    {
+        try {
+			$validator = Validator::make($request->all(), [
+				'vendor_id' => 'required',	
+			]);
+
+			if ($validator->fails()) {			
+				return $this->errorResponse($validator->errors()->first(), 422);
+			}
+            // $start_date = $request->start_date;
+            // $end_date = $request->end_date;
+            //$filter_order_status = $request->filter_order_status;
+            $user = Auth::user();
+            $order_status_options = [];            
+            $type = $request->has('type') ? $request->type : 'active';
+            // $orders = OrderVendor::where('user_id', $user->id)->orderBy('id', 'DESC');
+            $total_amount = 0;
+            $orders = OrderVendor::where('vendor_id', $request->vendor_id)->orderBy('id', 'DESC');
+            $allorders = $orders->whereNotIn('order_status_option_id', [1,2,4,5,6])->sum('payable_amount');
+            
+            switch ($type) {
+                case 'complete':
+                    $orders->whereNotIn('order_status_option_id', [6]);
+                    break;
+                case 'pending':
+                    $orders->whereIn('order_status_option_id', [1,2,4,5]);
+                    break;
+                case 'refund':
+                    $order_status_options = [3];
+                    $orders->whereHas('status', function ($query) use ($order_status_options) {
+                        $query->whereIn('order_status_option_id', $order_status_options);
+                    });
+                    break;
+            }
+            $orders = $orders->with(['orderDetail'])
+                ->whereHas('orderDetail', function ($q1) {
+                    $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1]);
+                    $q1->orWhere(function ($q2) {
+                        $q2->where('orders.payment_option_id', 1);
+                    });
+                })
+                ->get();
+            foreach ($orders as $order) {
+                $total_amount = $total_amount + $order->payable_amount;
+                $order_item_count = 0;
+                $order->user_name = $user->name;
+                $order->user_image = $user->image;
+                $order->date_time = dateTimeInUserTimeZone($order->orderDetail->created_at, $user->timezone);
+                $order->payment_option_title = __($order->orderDetail->paymentOption->title ?? '');
+                $order->order_number = $order->orderDetail->order_number;
+                $product_details = [];
+                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->orderDetail->id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
+                if ($vendor_order_status) {
+                    $order_sts = OrderStatusOption::where('id',$order->order_status_option_id)->first();
+                // $order->order_status =  ['current_status' => ['id' => $vendor_order_status->OrderStatusOption->id, 'title' => __($vendor_order_status->OrderStatusOption->title)]];
+                    $order->order_status =  ['current_status' => ['id' => $order_sts->id, 'title' => __($order_sts->title)]];
+                } else {
+                    $order->current_status = null;
+                }
+                foreach ($order->products as $product) {
+                    $order_item_count += $product->quantity;
+                    $product_details[] = array(
+                        'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
+                        'price' => $product->price,
+                        'qty' => $product->quantity,
+                        'category_type' => $product->product->category->categoryDetail->type->title ?? '',
+                        'product_id' => $product->product_id,
+                        'title' => $product->product_name,
+                    );
+                }
+                if ($order->delivery_fee > 0) {
+                    $order_pre_time = ($order->order_pre_time > 0) ? $order->order_pre_time : 0;
+                    $user_to_vendor_time = ($order->user_to_vendor_time > 0) ? $order->user_to_vendor_time : 0;
+                    $ETA = $order_pre_time + $user_to_vendor_time;
+                    $order->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $order->created_at, $order->orderDetail->scheduled_date_time) : dateTimeInUserTimeZone($order->created_at, $user->timezone);
+                }
+                if (!empty($order->orderDetail->scheduled_date_time)) {
+                    $order->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
+                }
+                $luxury_option_name = '';
+                if ($order->orderDetail->luxury_option_id > 0) {
+                    $luxury_option = LuxuryOption::where('id', $order->orderDetail->luxury_option_id)->first();
+                    if ($luxury_option->title == 'takeaway') {
+                        $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
+                    } elseif ($luxury_option->title == 'dine_in') {
+                        $luxury_option_name = __('Dine-In');
+                    } else {
+                        $luxury_option_name = __('Delivery');
+                    }
+                }
+                $order->luxury_option_name = $luxury_option_name;
+                $order->product_details = $product_details;
+                $order->item_count = $order_item_count;
+                unset($order->user);
+                unset($order->products);
+                unset($order->paymentOption);
+                unset($order->payment_option_id);
+                unset($order->orderDetail);
+            }
+
+            $data = array('totalEarning'=>$allorders, 'filter_total'=>$total_amount,'orders'=>$orders);
+            return $this->successResponse($data, '', 201);
+
         } catch (Exception $e) {            
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
