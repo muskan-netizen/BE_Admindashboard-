@@ -438,9 +438,10 @@ class StripeGatewayController extends FrontController
                     $orderController->tipAfterOrder($request);
                 }
                 elseif($payment_form == 'subscription'){
-                    $request->request->add(['user_id' => $user_id, 'payment_option_id' => 19, 'transaction_id' => $transactionId]);
+                    $subscription = $charges[0]->metadata->subscription_id;
+                    $request->request->add(['user_id' => $user_id, 'payment_option_id' => 19, 'amount' => $amount, 'transaction_id' => $transactionId]);
                     $subscriptionController = new UserSubscriptionController();
-                    $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription);
+                    $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription);
                 }
                 break;
             

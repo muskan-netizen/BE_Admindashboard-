@@ -56,6 +56,7 @@ trait smsManager{
 
     public function unifonic($recipient,$message,$crendentials)
     {   try{
+
             $crendential = [
                 'app_id' =>$crendentials->unifonic_app_id,
                 'account_email' => $crendentials->unifonic_account_email,
@@ -64,13 +65,11 @@ trait smsManager{
             config(['services.unifonic' => $crendential]);
             $to_number = substr($recipient, 1);
             $respont = Unifonic::send( $to_number,  $message, $senderID = null);
-         //   Log::info($respont);
-         //   Log::info("unifonic sms respont ");
             return 1;
         }catch(Exception $e) {
             return $e->getMessage();
         }
-        
+
     }
     private function postCurl($data,$token=null):object{
         $ch = curl_init();

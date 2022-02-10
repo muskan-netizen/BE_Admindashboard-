@@ -1650,6 +1650,7 @@ class VendorController extends BaseController{
 
     public function viewAll(Request $request)
     {
+        // return $request->all();
         $user = Auth::user();
         $langId = $user->language;
         $currency_id = $user->currency;
@@ -1700,6 +1701,18 @@ class VendorController extends BaseController{
         //filter on ratings
         if($venderFilterbest && ($venderFilterbest == 1) ){
             $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
+        }
+        if($venderFilterClose && ($venderFilterClose == 1) ){
+            $vendorData =   $vendorData->where('show_slot', 0)->whereDoesntHave('slot')->whereDoesntHave('slotDate');
+        }
+        if($venderFilterOpen && ($venderFilterOpen == 1) ){
+            $vendorData =   $vendorData->where('show_slot', 1)
+            ->orWhere(function($q) {
+                $q->where('show_slot', 0)
+                ->where(function($q1){
+                    $q1->whereHas('slot')->orWhereHas('slotDate');
+                });
+            });
         }
         $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->paginate($limit, $page);
 
@@ -1754,12 +1767,12 @@ class VendorController extends BaseController{
 
         }
         //filter vendor
-        if($venderFilterClose && ($venderFilterClose == 1) ){
-            $vendorData =   $vendorData->where('is_vendor_closed',1)->values();
-        }
-        if($venderFilterOpen && ($venderFilterOpen == 1) ){
-            $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
-        }
+        // if($venderFilterClose && ($venderFilterClose == 1) ){
+        //     $vendorData =   $vendorData->where('is_vendor_closed',1)->values();
+        // }
+        // if($venderFilterOpen && ($venderFilterOpen == 1) ){
+        //     $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
+        // }
 
         return $this->successResponse($vendorData);
     }

@@ -1288,13 +1288,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         var code = method.replace('radio-', '');
         
         if (code != '') {
+            $("#cart_payment_form .option-wrapper").addClass('d-none');
             $("#cart_payment_form ."+code+"_element_wrapper").removeClass('d-none');
         } else {
-            $("#cart_payment_form .option_wrapper").addClass('d-none');
+            $("#cart_payment_form .option-wrapper").addClass('d-none');
         }
 
         if (code == 'yoco') {
-            $("#cart_payment_form .yoco_element_wrapper").removeClass('d-none');
+            // $("#cart_payment_form .yoco_element_wrapper").removeClass('d-none');
             // Create a new dropin form instance
 
             var yoco_amount_payable = $("input[name='cart_total_payable_amount']").val();
@@ -1311,7 +1312,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         // }
 
         if (code == 'checkout') {
-            $("#cart_payment_form .checkout_element_wrapper").removeClass('d-none');
+            // $("#cart_payment_form .checkout_element_wrapper").removeClass('d-none');
             Frames.init(checkout_public_key);
         } 
         // else {

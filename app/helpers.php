@@ -344,6 +344,7 @@ function createSlug($str, $delimiter = '-')
     $StartTime += $AddMins;
     $endtm = 0;
     }
+}
     
 function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60")
 {
