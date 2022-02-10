@@ -20,4 +20,7 @@ class VendorRegistrationDocument extends Model
     public function options(){
         return $this->hasMany('App\Models\VendorRegistrationSelectOption', 'vendor_registration_documents_id','id');
     }
+    public function option(){
+        return $this->hasOne('App\Models\VendorRegistrationSelectOption', 'vendor_registration_documents_id','id');
+    }
 }

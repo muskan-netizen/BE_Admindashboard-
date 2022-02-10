@@ -485,7 +485,7 @@
                 <div class="modal-body">
                     <div class="row">
                     <div class="col-md-12 text-center">
-                            <a href="{{url('file-download'.'/sample_vendor.csv')}}">{{ __("Download Sample file here!") }}</a>
+                            <a as="{{url('file-download'.'/sample_vendor.csv')}}" href="{{ route('vendor.export') }}">{{ __("Download Sample file here!") }}</a>
                         </div>
                         <div class="col-md-12">
                             <div class="row mb-2">
