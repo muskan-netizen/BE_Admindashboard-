@@ -225,7 +225,6 @@ public function createOrder($data)
     curl_close($curl);
 
     if ($err) {
-      \Log::info($err);
         return $err;
     } else {
         return $response;

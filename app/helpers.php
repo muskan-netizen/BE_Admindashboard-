@@ -344,6 +344,8 @@ function createSlug($str, $delimiter = '-')
     $StartTime += $AddMins;
     $endtm = 0;
     }
+        
+    return $ReturnArray;
 }
     
 function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60")
@@ -361,11 +363,9 @@ function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60")
         $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
     }
     $mytime =$mytime->dayOfWeek+1;
-    $slots = VendorSlot::where('vendor_id', $vid)
-->whereHas('days', function ($q) use ($mytime, $type) {
-    return $q->where('day', $mytime)->where($type, '1');
-})
-->get();
+    $slots = VendorSlot::with('days')->where('vendor_id', $vid)->whereHas('days', function ($q) use ($mytime, $type) {
+        return $q->where('day', $mytime)->where($type, '1');
+    })->get();
     $min[] = '';
     $cart = CartProduct::where('vendor_id', $vid)->get();
     if (isset($cart) && $cart->count()>0) {
@@ -384,10 +384,12 @@ function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60")
                 $slotss[] = [];
             }
         }
+        //dd($slotss);
 
         $arr = array();
         $count = count($slotss);
         for ($i=0;$i<$count;$i++) {
+            if(!empty($slotss[$i]) && count($slotss[$i])>0)
             $arr = array_merge($arr, $slotss[$i]);
         }
 

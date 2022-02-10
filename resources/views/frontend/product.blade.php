@@ -404,7 +404,8 @@
                                     </div>
                                     @endif
                                     @php
-                                    $checkSlot = findSlot('',$product->vendor->id,'');    
+                                    $checkSlot = findSlot('',$product->vendor->id,'');  
+                                   // dd($checkSlot);  
                                     @endphp
                                     <div class="product-buttons">
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)

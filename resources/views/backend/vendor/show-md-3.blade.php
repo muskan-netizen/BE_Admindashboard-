@@ -196,7 +196,7 @@
 
 @if(Auth::user()->is_superadmin == 1)
 
-@if(isset($checkShip))
+@if(isset($checkAhoyShip))
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -223,7 +223,7 @@
                     </div>
                     
                     <div class="col-12">
-                        <button class="btn btn-info waves-effect waves-light w-100" {{(($vendor->shiprocket_pickup_name)? 'disabled' :'')}}>{{ __("Save") }}</button>
+                        <button class="btn btn-info waves-effect waves-light w-100" >{{ __("Save") }}</button>
                     </div>
                 </div>
             </form>
