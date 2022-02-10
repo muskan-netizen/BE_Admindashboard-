@@ -466,19 +466,19 @@ class StripeGatewayController extends FrontController
                         $wallet_amount_used = $order->wallet_amount_used;
                         if($wallet_amount_used > 0){
                             $wallet = $user->wallet;
-                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for order cancellation']);
+                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
                         }
 
-                        $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-                        foreach($order_products as $order_prod){
-                            OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
-                        }
-                        OrderProduct::where('order_id', $order->id)->delete();
-                        OrderProductPrescription::where('order_id', $order->id)->delete();
-                        VendorOrderStatus::where('order_id', $order->id)->delete();
-                        OrderVendor::where('order_id', $order->id)->delete();
-                        OrderTax::where('order_id', $order->id)->delete();
-                        $order->delete();
+                        // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                        // foreach($order_products as $order_prod){
+                        //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                        // }
+                        // OrderProduct::where('order_id', $order->id)->delete();
+                        // OrderProductPrescription::where('order_id', $order->id)->delete();
+                        // VendorOrderStatus::where('order_id', $order->id)->delete();
+                        // OrderVendor::where('order_id', $order->id)->delete();
+                        // OrderTax::where('order_id', $order->id)->delete();
+                        // $order->delete();
                     }
                 }
                 break;
