@@ -34,37 +34,13 @@
             <form id="favicon-form" method="post" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-6 ">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="header-title">{{ __("Home Page Style") }}</h4>
-                                <div class="row">
-                                    @foreach($homepage_style_options as $homepage_style)
-                                    <div class="col-sm-6">
-                                        <div class="card mb-0">
-                                            <div class="card-body p-2">
-                                                <div class="row">
-                                                    <div class="col-sm-12 custom-control custom-radio radio_new p-0">
-                                                        <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
-                                                        <label class="custom-control-label" for="{{$homepage_style->id}}">
-                                                            <img class="card-img-top img-fluid" src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap">
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="row">
                             <div class="col-md-12 col-xl-6">
                                 <div class="card card-box">
                                     <h4 class="header-title">{{ __("Favicon") }}</h4>
                                     <div class="mb-0">
                                         <label>{{ __("Upload Favicon") }}</label>
-                                        <input type="file" accept="image/*" data-default-file="{{$client_preferences->favicon ? $client_preferences->favicon['proxy_url'].'600/400'.$client_preferences->favicon['image_path'] : ''}}" data-plugins="dropify" name="favicon" class="dropify" id="image" />
+                                        <input type="file" accept="image/*" data-default-file="{{$client_preferences->favicon ? $client_preferences->favicon['proxy_url'].'600/400'.$client_preferences->favicon['image_path'] : ''}}" data-plugins="dropify" name="favicon" class="dropify ss_form_submit" id="image" />
                                         <span class="invalid-feedback" role="alert">
                                             <strong></strong>
                                         </span>
@@ -78,35 +54,21 @@
                                         <h4 class="header-title">{{ __("Color") }}</h4>
                                         <div class="form-group">
                                             <label for="primary_color">{{ __("Primary Color") }}</label>
-                                            <input type="text" id="primary_color_option" name="primary_color" class="form-control" value="{{ old('primary_color', $client_preferences->web_color ?? 'cccccc')}}">
+                                            <input type="text" id="primary_color_option" name="primary_color" class="form-control ss_form_submit" value="{{ old('primary_color', $client_preferences->web_color ?? 'cccccc')}}">
                                         </div>
                                         <div class="form-group mb-0">
                                             <label>{{ __("Top Header Color") }}</label>
-                                            <input type="text" id="site_top_header_color" name="site_top_header_color" class="form-control" value="{{ old('site_top_header_color', $client_preferences->site_top_header_color ?? '#4c4c4c')}}">
+                                            <input type="text" id="site_top_header_color" name="site_top_header_color" class="form-control ss_form_submit" value="{{ old('site_top_header_color', $client_preferences->site_top_header_color ?? '#4c4c4c')}}">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
 
                     <div class="col-md-6">
                         <div class="row">
                             <div class="col-md-12 col-xl-6">
-                                @if($client_preference_detail->business_type != 'taxi')
-                                <div class="card card-box">
-                                    <div class="d-flex align-items-center justify-content-between mb-3">
-                                        <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
-                                        <div class="mb-0">
-                                            <input type="checkbox" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box1" data-color="#43bee1" {{$client_preferences->age_restriction == 1 ? 'checked' : ''}}>
-                                        </div>
-                                    </div>
-                                    <label for="">{{ __('Title') }}</label>
-                                    <input type="text" class="form-control" id="age_restriction_title" name="age_restriction_title" value="{{ old('age_restriction_title', $client_preferences->age_restriction_title ?? '')}}">
-                                </div>
-                                @endif
                                 <div class="card card-box">
                                     <ul class="pl-0 mb-0">
                                         <li class="d-flex flex-column justify-content-start mt-2">
@@ -133,6 +95,18 @@
                                         </li>
                                     </ul>
                                 </div>
+                                @if($client_preference_detail->business_type != 'taxi')
+                                <div class="card card-box">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
+                                        <div class="mb-0">
+                                            <input type="checkbox" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box1 ss_form_submit" data-color="#43bee1" {{$client_preferences->age_restriction == 1 ? 'checked' : ''}}>
+                                        </div>
+                                    </div>
+                                    <label for="">{{ __('Title') }}</label>
+                                    <input type="text" class="form-control" id="age_restriction_title" name="age_restriction_title" value="{{ old('age_restriction_title', $client_preferences->age_restriction_title ?? '')}}">
+                                </div>
+                                @endif
                             </div>
 
                             <div class="col-md-12 col-xl-6">
@@ -142,19 +116,19 @@
                                             <li class="d-flex align-items-center justify-content-between">
                                                 <h4 class="header-title mb-2">{{ __("Show Wishlist Icon") }}</h4>
                                                 <div class="mb-0">
-                                                    <input type="checkbox" id="show_wishlist" data-plugin="switchery" name="show_wishlist" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_wishlist == 1 ? 'checked' : ''}}>
+                                                    <input type="checkbox" id="show_wishlist" data-plugin="switchery" name="show_wishlist" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->show_wishlist == 1 ? 'checked' : ''}}>
                                                 </div>
                                             </li>
                                             <li class="d-flex align-items-center justify-content-between mt-2">
                                                 <h4 class="header-title mb-2">{{ __("Show Ratings") }}</h4>
                                                 <div class="mb-0">
-                                                    <input type="checkbox" id="rating_enable" data-plugin="switchery" name="rating_enable" class="chk_box2" data-color="#43bee1" {{$client_preferences->rating_check == 1 ? 'checked' : ''}}>
+                                                    <input type="checkbox" id="rating_enable" data-plugin="switchery" name="rating_enable" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->rating_check == 1 ? 'checked' : ''}}>
                                                 </div>
                                             </li>
                                             <li class="d-flex align-items-center justify-content-between mt-2">
                                                 <h4 class="header-title mb-2">{{ __("Show Cart Icon") }}</h4>
                                                 <div class="mb-0">
-                                                    <input type="checkbox" id="cart_enable" data-plugin="switchery" name="cart_enable" class="chk_box1" data-color="#43bee1" {{$client_preferences->cart_enable == 1 ? 'checked' : ''}}>
+                                                    <input type="checkbox" id="cart_enable" data-plugin="switchery" name="cart_enable" class="chk_box1 ss_form_submit" data-color="#43bee1" {{$client_preferences->cart_enable == 1 ? 'checked' : ''}}>
                                                 </div>
                                             </li>
                                         @endif
@@ -162,36 +136,67 @@
                                         <li class="d-flex align-items-center justify-content-between mt-2">
                                             <h4 class="header-title mb-2">{{ __("Show Contact Us") }}</h4>
                                             <div class="mb-0">
-                                                <input type="checkbox" id="show_contact_us" data-plugin="switchery" name="show_contact_us" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_contact_us == 1 ? 'checked' : ''}}>
+                                                <input type="checkbox" id="show_contact_us" data-plugin="switchery" name="show_contact_us" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->show_contact_us == 1 ? 'checked' : ''}}>
                                             </div>
                                         </li>
                                         @if($client_preference_detail->business_type != 'taxi')
                                         <li class="d-flex align-items-center justify-content-between mt-2">
                                             <h4 class="header-title mb-2">{{ __("Show Icons in navigation") }}</h4>
                                             <div class="mb-0">
-                                                <input type="checkbox" id="show_icons" data-plugin="switchery" name="show_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_icons == 1 ? 'checked' : ''}}>
+                                                <input type="checkbox" id="show_icons" data-plugin="switchery" name="show_icons" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->show_icons == 1 ? 'checked' : ''}}>
                                             </div>
                                         </li>
                                         @endif
                                         <li class="d-flex align-items-center justify-content-between mt-2">
                                             <h4 class="header-title mb-2">{{ __("Show Payment Icons") }}</h4>
                                             <div class="mb-0">
-                                                <input type="checkbox" id="show_payment_icons" data-plugin="switchery" name="show_payment_icons" class="chk_box2" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
+                                                <input type="checkbox" id="show_payment_icons" data-plugin="switchery" name="show_payment_icons" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->show_payment_icons == 1 ? 'checked' : ''}}>
                                             </div>
                                         </li>
                                         @if($client_preference_detail->business_type != 'taxi')
                                         <li class="d-flex align-items-center justify-content-between mt-2">
                                             <h4 class="header-title mb-2">{{ __('Hide Nav Bar') }}</h4>
                                             <div class="mb-0">
-                                                <input type="checkbox" id="hide_nav_bar" data-plugin="switchery" name="hide_nav_bar" class="chk_box2" data-color="#43bee1" {{$client_preferences->hide_nav_bar == 1 ? 'checked' : ''}}>
+                                                <input type="checkbox" id="hide_nav_bar" data-plugin="switchery" name="hide_nav_bar" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->hide_nav_bar == 1 ? 'checked' : ''}}>
+                                            </div>
+                                        </li> 
+                                        @endif
+                                        <li class="d-flex align-items-center justify-content-between mt-2">
+                                            <h4 class="header-title mb-2">{{ __("Quick Link in Header") }}</h4>
+                                            <div class="mb-0">
+                                                <input type="checkbox" id="header_quick_link" data-plugin="switchery" name="header_quick_link" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->header_quick_link == 1 ? 'checked' : ''}}>
                                             </div>
                                         </li>
-                                        @endif
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="row">
+                    <div class="card">
+                            <div class="card-body">
+                                <h4 class="header-title">{{ __("Home Page Style") }}</h4>
+                                <div class="row">
+                                    @foreach($homepage_style_options as $homepage_style)
+                                    <div class="col-sm-6">
+                                        <div class="card mb-0">
+                                            <div class="card-body p-2">
+                                                <div class="row">
+                                                    <div class="col-sm-12 custom-control custom-radio radio_new p-0">
+                                                        <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
+                                                        <label class="custom-control-label" for="{{$homepage_style->id}}">
+                                                            <img class="card-img-top img-fluid" src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap">
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
                 </div>
             </form>
         </div>
@@ -557,26 +562,6 @@ $(document).on('click', '.deletePickupSection', function() {
     $(document).ready(function() {
         var color1 = new jscolor('#site_top_header_color', options);
     });
-
-    $("#primary_color_option, #site_top_header_color").change(function() {
-        submitData();
-    });
-
-    $("#show_contact_us").change(function() {
-        submitData();
-    });
-    $("#show_icons").change(function() {
-        submitData();
-    });
-    $("#show_wishlist").change(function() {
-        submitData();
-    });
-    $("#show_payment_icons").change(function() {
-        submitData();
-    });
-    $("#hide_nav_bar").change(function() {
-        submitData();
-    });
     $("#save_home_page").click(function(event) {
         event.preventDefault();
         submitData();
@@ -585,19 +570,44 @@ $(document).on('click', '.deletePickupSection', function() {
         event.preventDefault();
         submitDataNewPickup();
     });
-    $("#cart_enable").change(function() {
+     $("#age_restriction_title").keyup(function() {
         submitData();
     });
-    $("#rating_enable").change(function() {
-        submitData();
-    });
-    $("#age_restriction").change(function() {
-        submitData();
-    });
-    $("#age_restriction_title").keyup(function() {
-        submitData();
-    });
-    $("#image").change(function() {
+
+    // $("#primary_color_option, #site_top_header_color").change(function() {
+    //     submitData();
+    // });
+    // $("#show_contact_us").change(function() {
+    //     submitData();
+    // });
+    // $("#show_icons").change(function() {
+    //     submitData();
+    // });
+    // $("#show_wishlist").change(function() {
+    //     submitData();
+    // });
+    // $("#show_payment_icons").change(function() {
+    //     submitData();
+    // });
+    // $("#hide_nav_bar").change(function() {
+    //     submitData();
+    // });
+    // $("#header_quick_link").change(function() {
+    //     submitData();
+    // });
+    // $("#cart_enable").change(function() {
+    //     submitData();
+    // });
+    // $("#rating_enable").change(function() {
+    //     submitData();
+    // });
+    // $("#age_restriction").change(function() {
+    //     submitData();
+    // });
+    // $("#image").change(function() {
+    //     submitData();
+    // });
+    $('.ss_form_submit').change(function() {
         submitData();
     });
 
