@@ -38,7 +38,7 @@
             </div>
             <div class="row custom-cols">
                 <div class="col col-md-4 col-lg-3 col-xl">
-                    <div class="widget-rounded-circle card">
+                    <div class="widget-rounded-circle card al_color_box al_card_color_a">
                         <div class="card-body p-2">
                             <div class="row align-items-center">
                                 <div class="col-8">
@@ -57,7 +57,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="widget-rounded-circle card">
+                    <div class="widget-rounded-circle card al_color_box al_card_color_b">
                         <div class="card-body p-2">
                             <div class="row align-items-center">
                             <div class="col-8">
@@ -77,7 +77,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="widget-rounded-circle card">
+                    <div class="widget-rounded-circle card al_color_box al_card_color_c">
                         <div class="card-body p-2">
                             <div class="row align-items-center">
                                 <div class="col-8">
@@ -96,7 +96,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="widget-rounded-circle card">
+                    <div class="widget-rounded-circle card al_color_box al_card_color_d">
                         <div class="card-body p-2">
                             <div class="row align-items-center">
                                 <div class="col-8">
@@ -115,7 +115,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="widget-rounded-circle card">
+                    <div class="widget-rounded-circle card al_color_box al_card_color_e">
                         <div class="card-body p-2">
                             <div class="row align-items-center">
                                 <div class="col-8">
@@ -135,7 +135,7 @@
                 </div>
                 <br>
                 <div class="col">
-                    <div class="widget-rounded-circle card">
+                    <div class="widget-rounded-circle card al_color_box al_card_color_e">
                         <div class="card-body p-2">
                             <div class="row align-items-center">
                                 <div class="col-8">
@@ -154,7 +154,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="widget-rounded-circle card">
+                    <div class="widget-rounded-circle card al_color_box al_card_color_d">
                         <div class="card-body p-2">
                             <div class="row align-items-center">
                             <div class="col-8">
@@ -173,7 +173,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="widget-rounded-circle card">
+                    <div class="widget-rounded-circle card al_color_box al_card_color_c">
                         <div class="card-body p-2">
                             <div class="row align-items-center">
                                 <div class="col-8">
@@ -192,7 +192,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="widget-rounded-circle card">
+                    <div class="widget-rounded-circle card al_color_box al_card_color_b">
                         <div class="card-body p-2">
                             <div class="row align-items-center">
                                 <div class="col-8">
@@ -211,7 +211,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="widget-rounded-circle card">
+                    <div class="widget-rounded-circle card al_color_box al_card_color_a">
                         <div class="card-body p-2">
                             <div class="row align-items-center">
                                 <div class="col-8">
@@ -275,7 +275,7 @@
                              <img class="img-fluid" src="{{asset('assets/images/Dashboard _ Royo.png')}}" alt="">
                          </div>
                          <div id="cardCollpase4" class="collapse show pt-3">
-                            <div id="apexchartsfwg700r2" class="apexcharts-canvas apexchartsfwg700r2 apexcharts-theme-light" style="height: 433px"></div>
+                            <div id="apexchartsfwg700r2" class="apexcharts-canvas apexchartsfwg700r2 apexcharts-theme-light" style="height: 100%"></div>
                          </div>
                         </div>
                     </div>
