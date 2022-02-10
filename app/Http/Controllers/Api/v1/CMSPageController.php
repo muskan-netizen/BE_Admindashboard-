@@ -6,7 +6,7 @@ use Auth;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Client, ClientPreference, Page, PageTranslation, VendorRegistrationDocument};
+use App\Models\{Client, ClientPreference,FaqTranslations, Page, PageTranslation, VendorRegistrationDocument};
 
 class CMSPageController extends BaseController
 {
@@ -72,6 +72,9 @@ class CMSPageController extends BaseController
         if ($page_detail->translation->type_of_form != 2) {
             $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
             $data['vendor_registration_documents'] = $vendor_registration_documents;
+        }elseif($page_detail->translation->type_of_form == 3){
+            $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', $langId)->get();
+            $data['faq_data'] = $faq;
         }
         else {
             $driver_types = array(
