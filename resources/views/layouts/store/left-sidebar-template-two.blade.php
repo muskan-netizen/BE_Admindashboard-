@@ -21,20 +21,18 @@ $pages = \App\Models\Page::with([
     ->orderBy('order_by', 'ASC')
     ->get();
 @endphp
+
+
 <header class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
     @if (Auth::check())
-        @include('layouts.store/topbar-auth-template-one')
+        @include('layouts.store/topbar-auth-template-two')
     @else
-        @include('layouts.store/topbar-guest-template-one')
+        @include('layouts.store/topbar-guest-template-two')
     @endif
     <!-- Start Cab Booking Header From Here -->
     <div class="cab-booking-header">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-sm-3 col-md-2">
-                    <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt=""
-                            src="{{ $urlImg }}"></a>
-                </div>
                 <div class="col-sm-9 col-md-10 top-header bg-transparent">
                     <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
                         @if ($client_preference_detail->header_quick_link == 1)
@@ -43,8 +41,6 @@ $pages = \App\Models\Page::with([
                                 <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
                                 </a>
                                 <ul class="onhover-show-div">
-
-
                                     @foreach ($pages as $page)
                                         @if (isset($page->primary->type_of_form) && $page->primary->type_of_form == 2)
                                             @if (isset($last_mile_common_set) && $last_mile_common_set != false)
@@ -151,9 +147,6 @@ $pages = \App\Models\Page::with([
          <div class="row align-items-center position-initial">
             <div class="col-lg-12">
                <div class="row mobile-header align-items-center justify-content-between my-sm-2">
-                  <div class="logo ">
-                     <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" href="{{route('userHome')}}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
-                  </div>
                   <div class="al_count_tabs">
                      @if($mod_count > 1)
                      <ul class="nav nav-tabs navigation-tab nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
@@ -171,7 +164,8 @@ $pages = \App\Models\Page::with([
 
                   <div class=" ipad-view">
                      <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
-                        @if( (Session::get('preferences'))) @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
+                        @if( (Session::get('preferences')))
+                        @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
                         <div class="location-bar d-none align-items-center justify-content-start ml-md-2 my-2 my-lg-0 dropdown-toggle" href="#edit-address" data-toggle="modal">
                            <div class="map-icon mr-md-1"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
                            <div class="homepage-address text-left">
@@ -179,11 +173,8 @@ $pages = \App\Models\Page::with([
                            </div>
                            <div class="down-icon"> <i class="fa fa-angle-down" aria-hidden="true"></i> </div>
                         </div>
-                        @endif @endif
-                        <div class="radius-bar d-xl-inline al_custom_search mr-2">
-                           <div class="search_form d-flex align-items-center justify-content-between"> <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button> @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off"> </div>
-                           <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
-                        </div>
+                        @endif
+                        @endif
                         <script type="text/template" id="search_box_main_div_template">
                            <a class="text-right al_search_viewall d-block mr-2 mb-1" id="search_viewall" href="#">{{__("View All")}}</a>
                            <div class="row mx-0">
@@ -308,17 +299,17 @@ $pages = \App\Models\Page::with([
             <li class="mr-2 pl-0 d-ipad"> <span class="mobile-search-btn"><i class="fa fa-search"
                         aria-hidden="true"></i></span> </li>
             <li class="onhover-div pl-0 shake-effect">
-                @if($client_preference_detail) 
-                    @if($client_preference_detail->cart_enable==1) 
-                    <a class="btn btn-solid d-flex align-items-center " href="{{route('showCart')}}"> 
+                @if($client_preference_detail)
+                    @if($client_preference_detail->cart_enable==1)
+                    <a class="btn btn-solid d-flex align-items-center " href="{{route('showCart')}}">
                         <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i> <span>{{__('Cart')}}•</span>
                         <span id="cart_qty_span">
-                        </span> 
-                    </a> 
-                    @endif 
+                        </span>
+                    </a>
+                    @endif
                 @endif
                 <script type="text/template" id="header_cart_template">
-                    <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{ __('Subtotal') }}: <span id='totalCart'>{{ Session::get('currencySymbol') }}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{ __('View Cart') }}</a> 
+                    <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{ __('Subtotal') }}: <span id='totalCart'>{{ Session::get('currencySymbol') }}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{ __('View Cart') }}</a>
                 </script>
                 <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul>
             </li>
@@ -448,7 +439,7 @@ $pages = \App\Models\Page::with([
                               <li class="mr-2 pl-0 d-ipad"> <span class="mobile-search-btn"><i class="fa fa-search" aria-hidden="true"></i></span> </li>
                               <li class="onhover-div pl-0 shake-effect">
                                  <script type="text/template" id="header_cart_template">
-                                     <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{ __('Subtotal') }}: <span id='totalCart'>{{ Session::get('currencySymbol') }}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{ __('View Cart') }}</a> 
+                                     <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{ __('Subtotal') }}: <span id='totalCart'>{{ Session::get('currencySymbol') }}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{ __('View Cart') }}</a>
                                  </script>
                                  <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul>
                               </li>
@@ -517,14 +508,13 @@ $pages = \App\Models\Page::with([
       </div>
    </div>
    @endif
-   {{--@if(count($navCategories) > 0)--}}
    <div class="menu-navigation">
       <div class="container-fluid">
          <div class="row">
             <div class="col-12">
                <div class="shimmer_effectx d-none">
                   <ul class="sm pixelstrap sm-horizontal menu-slider">
-                     @foreach($navCategories as $cate) 
+                     @foreach($navCategories as $cate)
                      @if($cate['name'])
                      <li>
                         <a href="{{route('categoryDetail', $cate['slug'])}}">
@@ -533,12 +523,12 @@ $pages = \App\Models\Page::with([
                            @endif <span><span class="loading"></span></span>
                         </a>
                      </li>
-                     @endif 
+                     @endif
                      @endforeach
                   </ul>
                </div>
                <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
-                  @foreach($navCategories as $cate) 
+                  @foreach($navCategories as $cate)
                   @if($cate['name'])
                   <li class="al_main_category">
                      <a href="{{route('categoryDetail', $cate['slug'])}}">

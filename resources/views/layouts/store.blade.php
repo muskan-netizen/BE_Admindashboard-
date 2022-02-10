@@ -60,6 +60,8 @@ else if($client_preference_detail->show_dark_mode == 2){
   @include('layouts.store/footer-content-template-one')
   @elseif(isset($set_template)  && $set_template->template_id == 2)
   @include('layouts.store/footer-content')
+  @elseif(isset($set_template)  && $set_template->template_id == 3)
+  @include('layouts.store/footer-content-template-two')
   @else
   @endif
   @include('layouts.store/footer')
@@ -85,12 +87,17 @@ else if($client_preference_detail->show_dark_mode == 2){
   @endif
    <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
-<script>
+<script type="text/javascript">
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5LPF1QP3Y3');
+
+  $(document).ready(function() {
+    $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
+    $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight() + 78});
+  });
 </script>
 
 </body>

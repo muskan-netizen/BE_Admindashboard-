@@ -295,12 +295,16 @@ class UserhomeController extends FrontController
             $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
 
             // $last_mile = $this->checkIfLastMileDeliveryOn();
-            if (isset($set_template)  && $set_template->template_id == 1)
-                return view('frontend.home-template-one')->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
-            if (isset($set_template)  && $set_template->template_id == 2)
-                return view('frontend.home')->with(['home' => $home, 'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
-            else
-            return view('frontend.home-template-one')->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+            $view_page ="home-template-one";
+            if (isset($set_template)  && $set_template->template_id == 1){
+                $view_page = 'home-template-one';
+            }elseif(isset($set_template)  && $set_template->template_id == 2){
+                $view_page = "home";
+            }elseif(isset($set_template)  && $set_template->template_id == 3){
+                 $view_page = "home-template-two";
+            }
+            return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+
         } catch (Exception $e) {
             pr($e->getCode());
             die;

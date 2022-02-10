@@ -30,7 +30,7 @@
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="page-title-box">
-                <h4 class="page-title">{{ __('Celebrities') }}</h4>
+                <h4 class="page-title">{{ __('Influencer') }}</h4>
             </div>
         </div>
         <div class="col-sm-6 text-right">
@@ -59,7 +59,7 @@
                                 @endif
                             </div>
                         </div>
-                        
+
                     </div>
 
                     <div class="table-responsive">
@@ -81,13 +81,13 @@
 
                                 <tr data-row-id="{{$celeb->id}}">
                                     <!-- <td class="draggableTd"><span class="dragula-handle"></span></td> -->
-                                    <td> 
+                                    <td>
                                         <img class="rounded-circle" src="{{$celeb->avatar['proxy_url'].'60/60'.$celeb->avatar['image_path']}}" alt="{{$celeb->id}}" >
                                     </td>
                                     <td><a class="openEditModal text-capitalize" loyaltyID="{{$celeb->id}}" href="#">{{ $celeb->name }}</a> </td>
                                     <td class="descript"> <span>{{ $celeb->description }} </span></td>
                                     <td> {{ (!empty($celeb->country)) ? ucwords(strtolower($celeb->country->name)) : '' }} </td>
-                                    <!-- <td> 
+                                    <!-- <td>
                                         @if(!empty($celeb->brands))
                                             @foreach($celeb->brands as $kb => $brand)
                                                     <span class="badge bg-soft-warning text-warning">{{$brand->title}}</span>
@@ -96,20 +96,20 @@
                                             N/A
                                         @endif
                                     </td> -->
-                                    <td> 
+                                    <td>
                                         <input type="checkbox" bid="{{$celeb->id}}" id="activeCheck" data-plugin="switchery" name="validity_index" class="chk_box" data-color="#43bee1" {{($celeb->status == '1') ? 'checked' : ''}} >
                                      </td>
-                                    <td> 
+                                    <td>
                                         <div class="form-ul" style="width: 60px;">
                                             <div class="inner-div" style="float: left;">
-                                                <a class="action-icon openEditModal" loyaltyID="{{$celeb->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a> 
+                                                <a class="action-icon openEditModal" loyaltyID="{{$celeb->id}}" href="#"><i class="mdi mdi-square-edit-outline"></i></a>
                                             </div>
                                             <div class="inner-div">
                                                 <form method="POST" action="{{ route('celebrity.destroy', $celeb->id) }}" id="deleteCelebrity">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                       <button type="button" id="deleteCelebrityButton" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button> 
+                                                       <button type="button" id="deleteCelebrityButton" class="btn btn-primary-outline action-icon"><i class="mdi mdi-delete"></i></button>
 
                                                     </div>
                                                 </form>
