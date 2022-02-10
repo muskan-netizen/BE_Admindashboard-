@@ -377,6 +377,7 @@
             <!-- Refer and Earn start -->
             <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
                 @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
                 <div class="card-box mb-0 pb-1">
                     <div class="d-flex align-items-center justify-content-between">
                     <h4 class="header-title text-uppercase">Refer and Earn</h4>
@@ -499,9 +500,9 @@
 
     <div class="row">
         <div class="col-lg-3 col-lg-3 mb-3">
-            <form method="POST" class="h-100" action="{{route('client.updateDomain', Auth::user()->code)}}">
+            <form method="POST" action="{{route('client.updateDomain', Auth::user()->code)}}">
                 @csrf
-                <div class="card-box mb-0 h-100">
+                <div class="card-box mb-0 ">
                     <div class="d-flex align-items-center justify-content-between">
                         <h4 class="header-title mb-0">{{ __("Custom Domain") }}</h4>
                         <input type="hidden" name="send_to" id="send_to" value="customize">
@@ -533,12 +534,13 @@
                     </div>
                 </div>
             </form>
-            <!-- Android/IOS Link start -->
-            <div class="card-box pb-2">
+                        <!-- Android/IOS Link start -->
+            <div class="card-box pb-2 mt-3">
                   <div class="table-responsive mb-1">
                      <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                         <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
                         @csrf
+                        <input type="hidden" name="send_to" id="send_to" value="customize">
                         <div class="card-box mb-0 py-0 px-2">
                            <div class="d-flex align-items-center justify-content-between">
                               <h4 class="header-title mb-0">{{ __("Android/IOS Link") }}</h4>

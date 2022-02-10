@@ -34,30 +34,6 @@
             <form id="favicon-form" method="post" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-6 ">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="header-title">{{ __("Home Page Style") }}</h4>
-                                <div class="row">
-                                    @foreach($homepage_style_options as $homepage_style)
-                                    <div class="col-sm-6">
-                                        <div class="card mb-0">
-                                            <div class="card-body p-2">
-                                                <div class="row">
-                                                    <div class="col-sm-12 custom-control custom-radio radio_new p-0">
-                                                        <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
-                                                        <label class="custom-control-label" for="{{$homepage_style->id}}">
-                                                            <img class="card-img-top img-fluid" src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap">
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="row">
                             <div class="col-md-12 col-xl-6">
                                 <div class="card card-box">
@@ -88,25 +64,11 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
 
                     <div class="col-md-6">
                         <div class="row">
                             <div class="col-md-12 col-xl-6">
-                                @if($client_preference_detail->business_type != 'taxi')
-                                <div class="card card-box">
-                                    <div class="d-flex align-items-center justify-content-between mb-3">
-                                        <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
-                                        <div class="mb-0">
-                                            <input type="checkbox" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box1 ss_form_submit" data-color="#43bee1" {{$client_preferences->age_restriction == 1 ? 'checked' : ''}}>
-                                        </div>
-                                    </div>
-                                    <label for="">{{ __('Title') }}</label>
-                                    <input type="text" class="form-control" id="age_restriction_title" name="age_restriction_title" value="{{ old('age_restriction_title', $client_preferences->age_restriction_title ?? '')}}">
-                                </div>
-                                @endif
                                 <div class="card card-box">
                                     <ul class="pl-0 mb-0">
                                         <li class="d-flex flex-column justify-content-start mt-2">
@@ -133,6 +95,18 @@
                                         </li>
                                     </ul>
                                 </div>
+                                @if($client_preference_detail->business_type != 'taxi')
+                                <div class="card card-box">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
+                                        <div class="mb-0">
+                                            <input type="checkbox" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box1 ss_form_submit" data-color="#43bee1" {{$client_preferences->age_restriction == 1 ? 'checked' : ''}}>
+                                        </div>
+                                    </div>
+                                    <label for="">{{ __('Title') }}</label>
+                                    <input type="text" class="form-control" id="age_restriction_title" name="age_restriction_title" value="{{ old('age_restriction_title', $client_preferences->age_restriction_title ?? '')}}">
+                                </div>
+                                @endif
                             </div>
 
                             <div class="col-md-12 col-xl-6">
@@ -198,6 +172,31 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="row">
+                    <div class="card">
+                            <div class="card-body">
+                                <h4 class="header-title">{{ __("Home Page Style") }}</h4>
+                                <div class="row">
+                                    @foreach($homepage_style_options as $homepage_style)
+                                    <div class="col-sm-6">
+                                        <div class="card mb-0">
+                                            <div class="card-body p-2">
+                                                <div class="row">
+                                                    <div class="col-sm-12 custom-control custom-radio radio_new p-0">
+                                                        <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
+                                                        <label class="custom-control-label" for="{{$homepage_style->id}}">
+                                                            <img class="card-img-top img-fluid" src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap">
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
                 </div>
             </form>
         </div>

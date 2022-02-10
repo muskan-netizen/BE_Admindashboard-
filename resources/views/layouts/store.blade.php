@@ -60,6 +60,8 @@ else if($client_preference_detail->show_dark_mode == 2){
   @include('layouts.store/footer-content-template-one')
   @elseif(isset($set_template)  && $set_template->template_id == 2)
   @include('layouts.store/footer-content')
+  @elseif(isset($set_template)  && $set_template->template_id == 3)
+  @include('layouts.store/footer-content-template-two')
   @else
   @endif
   @include('layouts.store/footer')
