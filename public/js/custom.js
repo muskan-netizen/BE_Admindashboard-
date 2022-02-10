@@ -634,7 +634,7 @@ $(document).ready(function() {
                 paymentViaCheckout('', '');
             }else if (payment_option_id == 18) {
                 paymentViaAuthorize('', '');
-            }else if (payment_option_id == 18) {
+            }else if (payment_option_id == 19) {
                 paymentViaStripeFPX('', 19, '');
             }
         } else {
