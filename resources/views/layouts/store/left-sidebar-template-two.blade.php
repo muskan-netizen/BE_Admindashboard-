@@ -25,18 +25,14 @@ $pages = \App\Models\Page::with([
 
 <header class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
     @if (Auth::check())
-        @include('layouts.store/topbar-auth-template-one')
+        @include('layouts.store/topbar-auth-template-two')
     @else
-        @include('layouts.store/topbar-guest-template-one')
+        @include('layouts.store/topbar-guest-template-two')
     @endif
     <!-- Start Cab Booking Header From Here -->
     <div class="cab-booking-header">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-sm-3 col-md-2">
-                    <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt=""
-                            src="{{ $urlImg }}"></a>
-                </div>
                 <div class="col-sm-9 col-md-10 top-header bg-transparent">
                     <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
                         @if ($client_preference_detail->header_quick_link == 1)
@@ -45,8 +41,6 @@ $pages = \App\Models\Page::with([
                                 <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
                                 </a>
                                 <ul class="onhover-show-div">
-
-
                                     @foreach ($pages as $page)
                                         @if (isset($page->primary->type_of_form) && $page->primary->type_of_form == 2)
                                             @if (isset($last_mile_common_set) && $last_mile_common_set != false)
@@ -153,9 +147,6 @@ $pages = \App\Models\Page::with([
          <div class="row align-items-center position-initial">
             <div class="col-lg-12">
                <div class="row mobile-header align-items-center justify-content-between my-sm-2">
-                  <div class="logo ">
-                     <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" href="{{route('userHome')}}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
-                  </div>
                   <div class="al_count_tabs">
                      @if($mod_count > 1)
                      <ul class="nav nav-tabs navigation-tab nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
@@ -173,7 +164,8 @@ $pages = \App\Models\Page::with([
 
                   <div class=" ipad-view">
                      <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
-                        @if( (Session::get('preferences'))) @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
+                        @if( (Session::get('preferences')))
+                        @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
                         <div class="location-bar d-none align-items-center justify-content-start ml-md-2 my-2 my-lg-0 dropdown-toggle" href="#edit-address" data-toggle="modal">
                            <div class="map-icon mr-md-1"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
                            <div class="homepage-address text-left">
@@ -181,11 +173,8 @@ $pages = \App\Models\Page::with([
                            </div>
                            <div class="down-icon"> <i class="fa fa-angle-down" aria-hidden="true"></i> </div>
                         </div>
-                        @endif @endif
-                        <div class="radius-bar d-xl-inline al_custom_search mr-2">
-                           <div class="search_form d-flex align-items-center justify-content-between"> <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button> @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off"> </div>
-                           <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
-                        </div>
+                        @endif
+                        @endif
                         <script type="text/template" id="search_box_main_div_template">
                            <a class="text-right al_search_viewall d-block mr-2 mb-1" id="search_viewall" href="#">{{__("View All")}}</a>
                            <div class="row mx-0">
@@ -519,7 +508,6 @@ $pages = \App\Models\Page::with([
       </div>
    </div>
    @endif
-   {{--@if(count($navCategories) > 0)--}}
    <div class="menu-navigation">
       <div class="container-fluid">
          <div class="row">
