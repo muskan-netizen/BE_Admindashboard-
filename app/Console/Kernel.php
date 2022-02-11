@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('cart:reminder')->hourly();
         $schedule->command('auto:reject_order')->everyMinute();
         $schedule->command('set_default_dummy:data')->dailyAt('00:30');
+        $schedule->command('send_campaign:notification')->everyMinute();
         // $schedule->command('inspire')->hourly();
     }
 

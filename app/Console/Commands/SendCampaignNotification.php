@@ -3,15 +3,21 @@
 namespace App\Console\Commands;
 
 use App\Models\Client;
-use Illuminate\Console\Command;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Console\Command;
+use App\Models\ClientPreference;
+use App\Models\Campaign;
+use App\Models\CampaignRoster;
+// use App\Models\OrderVendor;
+// use App\Models\Vendor;
+use App\Models\UserDevice;
+use App\Models\User;
+// use App\Models\NotificationTemplate;
+// use App\Models\AutoRejectOrderCron;
 use Log;
-use App\Models\{AddonOption, AddonOptionTranslation, AddonSet, AddonSetTranslation, OrderVendorProduct, Banner, MobileBanner, Brand, BrandCategory, BrandTranslation, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, Category, CategoryHistory, CategoryTranslation, Celebrity, CsvProductImport, CsvVendorImport, LoyaltyCard, Order, OrderProductAddon, OrderProductPrescription, OrderProductRating, OrderProductRatingFile, OrderReturnRequest, OrderReturnRequestFile, OrderTax, OrderVendor, Payment, PaymentOption, Product, ProductAddon, ProductCategory, ProductCelebrity, ProductCrossSell, ProductImage, ProductInquiry, ProductRelated, ProductTranslation, ProductUpSell, ProductVariant, ProductVariantImage, ProductVariantSet, Promocode, PromoCodeDetail, PromocodeRestriction, ServiceArea, SlotDay, SocialMedia, Transaction, User, UserAddress, UserDevice, UserLoyaltyPoint, UserPermissions, UserRefferal, UserVendor, UserWishlist, Variant, VariantCategory, VariantOption, VariantOptionTranslation, VariantTranslation, Vendor, VendorCategory, VendorMedia, VendorOrderStatus, VendorSlot, VendorSlotDate, Wallet,CabBookingLayout,CabBookingLayoutCategory,CabBookingLayoutTranslation,ClientPreference,AppStyling,AppStylingOption,Tag,TagTranslation,ProductTag};
-use Exception;
-use Spatie\DbDumper\Databases\MySql;
-use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+// use App\Models\Order;
 
 class SendCampaignNotification extends Command
 {
@@ -20,14 +26,14 @@ class SendCampaignNotification extends Command
      *
      * @var string
      */
-    protected $signature = 'set_default_dummy:data';
+    protected $signature = 'send_campaign:notification';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'set default dummy';
+    protected $description = 'Send Campaign notifications at schedules time';
 
     /**
      * Create a new command instance.
@@ -45,143 +51,148 @@ class SendCampaignNotification extends Command
      * @return int
      */
     public function handle()
-    {   
-        $code_array = ['2f3120','d1b1a0','d2cca0','638bd1','d8473d','574467','c8fbba','fb78f0','6865aa','2d98b5'];
-        $domain_array = ['grub','gusto','punnet','suel','voltaic','elixir','homeric','gokab','zest','ace'];
-        $clients = Client::select('database_name', 'sub_domain')->whereIN('code',$code_array)->whereIN('sub_domain',$domain_array)->get();
-        foreach ($clients as $client) {
-                $this->migrateDefaultDataDaily($client);
-            }
-        
-    }
-
-    /////////////// *********************** migrate Default data daily********************************* ////////////////////////////////////////
-
-    public function migrateDefaultDataDaily($client)
     {
-        try {
+        $clients = Client::select('database_name', 'sub_domain')->get();
+        $intervalTime = Carbon::now();
+        foreach ($clients as $client) {
             $database_name = 'royo_' . $client->database_name;
             // Log::info("checking cart start: {$database_name}!");
             $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
             $db = DB::select($query, [$database_name]);
             if ($db) {
-                $schemaName = 'royo_' . $client->database_name;
-                $database_host = !empty($client->database_host) ? $client->database_host : env('DB_HOST', '127.0.0.1');
-                $database_port = !empty($client->database_port) ? $client->database_port : env('DB_PORT', '3306');
-                $database_username = !empty($client->database_username) ? $client->database_username : env('DB_USERNAME', 'root');
-                $database_password = !empty($client->database_password) ? $client->database_password : env('DB_PASSWORD', '');
-
                 $default = [
-                'driver' => env('DB_CONNECTION', 'mysql'),
-                'host' => $database_host,
-                'port' => $database_port,
-                'database' => $schemaName,
-                'username' => $database_username,
-                'password' => $database_password,
-                'charset' => 'utf8mb4',
-                'collation' => 'utf8mb4_unicode_ci',
-                'prefix' => '',
-                'prefix_indexes' => true,
-                'strict' => false,
-                'engine' => null
+                    'prefix' => '',
+                    'engine' => null,
+                    'strict' => false,
+                    'charset' => 'utf8mb4',
+                    'host' => env('DB_HOST'),
+                    'port' => env('DB_PORT'),
+                    'prefix_indexes' => true,
+                    'database' => $database_name,
+                    'username' => env('DB_USERNAME'),
+                    'password' => env('DB_PASSWORD'),
+                    'collation' => 'utf8mb4_unicode_ci',
+                    'driver' => env('DB_CONNECTION', 'mysql'),
                 ];
-           
-                Config::set("database.connections.$schemaName", $default);
-                config(["database.connections.mysql.database" => $schemaName]);
-            
-                DB::connection($schemaName)->beginTransaction();
-                DB::connection($schemaName)->statement("SET foreign_key_checks=0");
-                Cart::on($schemaName)->truncate();
-                Brand::on($schemaName)->truncate();
-                Order::on($schemaName)->truncate();
-                Banner::on($schemaName)->truncate();
-                MobileBanner::on($schemaName)->truncate();
-                Vendor::on($schemaName)->truncate();
-                SlotDay::on($schemaName)->truncate();
-                Payment::on($schemaName)->truncate();
-                Variant::on($schemaName)->truncate();
-                Product::on($schemaName)->truncate();
-                AddonSet::on($schemaName)->truncate();
-                Category::on($schemaName)->truncate();
-                OrderTax::on($schemaName)->truncate();
-                Promocode::on($schemaName)->truncate();
-                CartAddon::on($schemaName)->truncate();
-                Celebrity::on($schemaName)->truncate();
-                VendorSlot::on($schemaName)->truncate();
-                CartCoupon::on($schemaName)->truncate();
-                AddonOption::on($schemaName)->truncate();
-                LoyaltyCard::on($schemaName)->truncate();
-                ServiceArea::on($schemaName)->truncate();
-                VendorMedia::on($schemaName)->truncate();
-                CartProduct::on($schemaName)->truncate();
-                SocialMedia::on($schemaName)->truncate();
-                Transaction::on($schemaName)->truncate();
-                OrderVendor::on($schemaName)->truncate();
-                ProductAddon::on($schemaName)->truncate();
-                ProductImage::on($schemaName)->truncate();
-                ProductUpSell::on($schemaName)->truncate();
-                VariantOption::on($schemaName)->truncate();
-                BrandCategory::on($schemaName)->truncate();
-                VendorSlotDate::on($schemaName)->truncate();
-                VendorCategory::on($schemaName)->truncate();
-                ProductRelated::on($schemaName)->truncate();
-                ProductVariant::on($schemaName)->truncate();
-                ProductInquiry::on($schemaName)->truncate();
-                ProductCategory::on($schemaName)->truncate();
-                CsvVendorImport::on($schemaName)->truncate();
-                VariantCategory::on($schemaName)->truncate();
-                PromoCodeDetail::on($schemaName)->truncate();
-                CategoryHistory::on($schemaName)->truncate();
-                CsvProductImport::on($schemaName)->truncate();
-                BrandTranslation::on($schemaName)->truncate();
-                ProductCelebrity::on($schemaName)->truncate();
-                ProductCrossSell::on($schemaName)->truncate();
-                ProductVariantSet::on($schemaName)->truncate();
-                VendorOrderStatus::on($schemaName)->truncate();
-                OrderProductAddon::on($schemaName)->truncate();
-                OrderProductRating::on($schemaName)->truncate();
-                ProductTranslation::on($schemaName)->truncate();
-                VariantTranslation::on($schemaName)->truncate();
-                OrderVendorProduct::on($schemaName)->truncate();
-                OrderReturnRequest::on($schemaName)->truncate();
-                AddonSetTranslation::on($schemaName)->truncate();
-                CategoryTranslation::on($schemaName)->truncate();
-                ProductVariantImage::on($schemaName)->truncate();
-                PromocodeRestriction::on($schemaName)->truncate();
-                AddonOptionTranslation::on($schemaName)->truncate();
-                OrderProductRatingFile::on($schemaName)->truncate();
-                OrderReturnRequestFile::on($schemaName)->truncate();
-                CartProductPrescription::on($schemaName)->truncate();
-                CartProductPrescription::on($schemaName)->truncate();
-                VariantOptionTranslation::on($schemaName)->truncate();
-                OrderProductPrescription::on($schemaName)->truncate();
-                CabBookingLayout::on($schemaName)->truncate();
-                CabBookingLayoutCategory::on($schemaName)->truncate();
-                CabBookingLayoutTranslation::on($schemaName)->truncate();
-                AppStyling::on($schemaName)->truncate();
-                AppStylingOption::on($schemaName)->truncate();
-                Tag::on($schemaName)->truncate();
-                TagTranslation::on($schemaName)->truncate();
-                ProductTag::on($schemaName)->truncate();
-                $sql_file = $client->database_name.".sql";
-                //  DB::connection($schemaName)->unprepared(file_get_contents((asset('sql_files/'.$sql_file))));
-                DB::connection($schemaName)->unprepared(file_get_contents((public_path('sql_files/'.$sql_file))));
-                DB::connection($schemaName)->commit();
-                DB::connection($schemaName)->statement("SET foreign_key_checks=1");
-                $email = "admin@".$client->sub_domain.".com";
-                $password = "admin@".$client->sub_domain;
-                User::on($schemaName)->where('id', 1)->where('is_superadmin', 1)->update(['email' =>  $email ,'password' => Hash::make($password)]);
-                ClientPreference::on($schemaName)->where('id', 1)->update(['is_hyperlocal' => 0]);
+                Config::set("database.connections.$database_name", $default);
+                DB::setDefaultConnection($database_name);
+                $client_preferences = ClientPreference::first();   
+                $from = $client_preferences->fcm_server_key;
+                $headers = [
+                    'Authorization: key=' . $from,
+                    'Content-Type: application/json',
+                ];             
+                $notifications = CampaignRoster::where('notification_time', '<=', $intervalTime)->where('status',0)->with('campaign','user')->get();
+                if($notifications)
+                {
+                    foreach($notifications as $singlenotification)
+                    {
+                        $type = $singlenotification->notofication_type;
+                        //	type => 1 sms, 2 email, 3 push notification
+                        switch ($type) {
+                            case '1':
+                                //send sms
+                                try {
+                                    $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+                                    if ($singlenotification->user->dial_code == "971") {
+                                        $to = '+' . $singlenotification->user->dial_code . "0" . $singlenotification->user->phone_number;
+                                    } else {
+                                        $to = '+' . $singlenotification->user->dial_code . $singlenotification->user->phone_number;
+                                    }
+                                    $provider = $client_preferences->sms_provider;
+                                    $body = "Hi " . $singlenotification->user->name . ", " . $singlenotification->campaign->sms_text;
+                                    if (!empty($client_preferences->sms_provider)) {
+                                        $send = $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
+                                    }
+                                    
+                                } catch (\Exception $ex) {
+                                }
+                                break;
+                            case '2':
+                                //send email
+                                break;
+                            case '3':
+                                //send push                                
+                                //$redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/viewcart";
+                                $redirect_URL = $singlenotification->campaign->push_url_option_value;
+                                $data = [
+                                    "registration_ids" => $singlenotification->device_token,
+                                    "notification" => [
+                                        'title' => $singlenotification->campaign->push_title,
+                                        'body'  => $singlenotification->campaign->push_message_body,
+                                        'sound' => "default",
+                                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                                        'click_action' => $redirect_URL,
+                                        "android_channel_id" => "default-channel-id"
+                                    ],
+                                    "data" => [
+                                        'title' => $singlenotification->campaign->push_title,
+                                        'body'  => $singlenotification->campaign->push_message_body,
+                                        'type' => "reminder_notification"
+                                    ],
+                                    "priority" => "high"
+                                ];
+                                $dataString = $data;
+                                $ch = curl_init();
+                                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+                                curl_setopt($ch, CURLOPT_POST, true);
+                                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
+                                $result = curl_exec($ch);
+                                // Log::info($result);
+                                curl_close($ch);
+
+                                //change status if failed
+                                CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+
+                                //remove notification if success
+                                CampaignRoster::where('id',$singlenotification->id)->delete();
+                            
+                            break;
+                        }
+
+                    }
+                }               
                 
-                DB::disconnect($schemaName);
-              //  Log::info("import dummy data: {$schemaName}!");
+                DB::disconnect($database_name);
+                // Log::info("checking cart end: {$database_name}!");
+            } else {
+                DB::disconnect($database_name);
+                // Log::info("checking cart  end: {$database_name}!");
             }
-        } catch (\PDOException $e) {
-            DB::connection($schemaName)->rollBack();
-          //  Log::info("import dummy data: {$schemaName}!{$e->getMessage()}");
-            
         }
-            
-            
     }
+
+
+    // protected function sendSms($provider, $sms_key, $sms_secret, $sms_from, $to, $body){
+    //     try{
+    //         $client_preference =  getClientPreferenceDetail();
+    //         if($client_preference->sms_provider == 1)
+    //         {
+    //             $client = new TwilioClient($sms_key, $sms_secret);
+    //             $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+    //         }elseif($client_preference->sms_provider == 2) //for mtalkz gateway
+    //         {
+    //             $crendentials = json_decode($client_preference->sms_credentials);
+    //             $send = $this->mTalkz_sms($to,$body,$crendentials);
+    //         }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
+    //         {
+    //             $crendentials = json_decode($client_preference->sms_credentials);
+    //             $send = $this->mazinhost_sms($to,$body,$crendentials);
+    //         }elseif($client_preference->sms_provider == 4) //for unifonic gateway
+    //         {
+    //             $crendentials = json_decode($client_preference->sms_credentials);
+    //             $send = $this->unifonic($to,$body,$crendentials);
+    //         }else{
+    //             $client = new TwilioClient($sms_key, $sms_secret);
+    //             $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+    //         }
+    //     }
+    //     catch(\Exception $e){
+    //         return '2';
+    //     }
+    //     return '1';
+	// }
 }
