@@ -318,7 +318,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     </div>
 </div>
 <script type="text/template" id="no_order_template">
-    <div class="error-msg ">
+    <div class="error-msg mt-3">
         <img class="mb-2" src="{{asset('images/no-order.svg')}}">
         <p>{{ __("You don't have orders right now.") }}</p>
     </div>
