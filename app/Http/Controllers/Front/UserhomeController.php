@@ -162,9 +162,8 @@ class UserhomeController extends FrontController
         }])->where('slug', $request->slug)->firstOrFail();
         if ($page_detail->primary->type_of_form != 2) {
             if($page_detail->primary->type_of_form == 3){
-             $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', session()->get('customerLanguage'))->get();
+             $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', $language_id)->get();
              $page_detail->faqs_details = $faq;
-
             }
             $vendor_registration_documents = VendorRegistrationDocument::with(['primary','options','options.translation' => function($query) use($language_id) {
                 $query->where('language_id', session()->get('customerLanguage'));
@@ -200,7 +199,7 @@ class UserhomeController extends FrontController
                 }])->whereHas('translations', function ($q) use($langId) {
                     $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
                 })->first();
-
+                //pr($page_detail->faqs_details->toArray());
                 // if($server == 'local')
                 // {
                     return view('frontend.extrapageNew', compact('page_detail','templetes','VendorCategory','builds','navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
@@ -295,12 +294,16 @@ class UserhomeController extends FrontController
             $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
 
             // $last_mile = $this->checkIfLastMileDeliveryOn();
-            if (isset($set_template)  && $set_template->template_id == 1)
-                return view('frontend.home-template-one')->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
-            if (isset($set_template)  && $set_template->template_id == 2)
-                return view('frontend.home')->with(['home' => $home, 'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
-            else
-            return view('frontend.home-template-one')->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+            $view_page ="home-template-one";
+            if (isset($set_template)  && $set_template->template_id == 1){
+                $view_page = 'home-template-one';
+            }elseif(isset($set_template)  && $set_template->template_id == 2){
+                $view_page = "home";
+            }elseif(isset($set_template)  && $set_template->template_id == 3){
+                 $view_page = "home-template-two";
+            }
+            return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+
         } catch (Exception $e) {
             pr($e->getCode());
             die;

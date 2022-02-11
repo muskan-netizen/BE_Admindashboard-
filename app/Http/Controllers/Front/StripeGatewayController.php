@@ -451,26 +451,34 @@ class StripeGatewayController extends FrontController
 
                 $meta = $paymentIntent->metadata;
                 // \Log::info($meta);
-                $payment_form = $order_number = '';
+                $user_id = $payment_form = $order_number = '';
                 // $amount = $paymentIntent->amount / 100;
                 if($meta){
                     $payment_form = $meta->payment_form;
+                    $user_id = $meta->user_id;
                 }
+                $user = User::find($user_id);
 
                 if($payment_form == 'cart'){
                     $order_number = $meta->order_number;
                     $order = Order::where('order_number', $order_number)->first();
                     if($order){
-                        $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-                        foreach($order_products as $order_prod){
-                            OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                        $wallet_amount_used = $order->wallet_amount_used;
+                        if($wallet_amount_used > 0){
+                            $wallet = $user->wallet;
+                            $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
                         }
-                        OrderProduct::where('order_id', $order->id)->delete();
-                        OrderProductPrescription::where('order_id', $order->id)->delete();
-                        VendorOrderStatus::where('order_id', $order->id)->delete();
-                        OrderVendor::where('order_id', $order->id)->delete();
-                        OrderTax::where('order_id', $order->id)->delete();
-                        $order->delete();
+
+                        // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
+                        // foreach($order_products as $order_prod){
+                        //     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
+                        // }
+                        // OrderProduct::where('order_id', $order->id)->delete();
+                        // OrderProductPrescription::where('order_id', $order->id)->delete();
+                        // VendorOrderStatus::where('order_id', $order->id)->delete();
+                        // OrderVendor::where('order_id', $order->id)->delete();
+                        // OrderTax::where('order_id', $order->id)->delete();
+                        // $order->delete();
                     }
                 }
                 break;

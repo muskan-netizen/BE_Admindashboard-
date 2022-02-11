@@ -14,7 +14,7 @@ class AuthorizeGatewayController extends BaseController
 {
 	use \App\Http\Traits\ApiResponser;
 
-    public function authorize_netPurchase(Request $request)
+    public function authorizePurchase(Request $request)
     {
         $user = Auth::user();
         $amount = $request->amount;

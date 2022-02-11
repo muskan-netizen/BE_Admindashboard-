@@ -217,10 +217,12 @@
                                                                     <div class="d-flex align-items-center justify-content-between">
                                                                         <h6 class="mb-1 ellips">{{$data->name}}</h6>
                                                                     </div>
-                                                                    <p title="{{$data->categoriesList}}" class="vendor-cate border-bottom pb-1 mb-1 ellips">{{$data->categoriesList}}</p>
+                                                                    <p title="{{$data->categoriesList}}" class="vendor-cate {{ (($client_preference_detail->rating_check ==1) || ($data->is_show_vendor_details == 1) ) ? 'border-bottom' : '' }} pb-1 mb-1 ellips">{{$data->categoriesList}}</p>
                                                                     <!-- <h6 class="mb-1">{{$data->name}}</h6> -->
                                                                     <div class="product-timing">
+                                                                        @if ($data->is_show_vendor_details == 1)
                                                                         <small title="{{$data->address}}" class="ellips d-block"><span class="icon-location2"></span> {{$data->address}}</small>
+                                                                        @endif
                                                                         @if(isset($data->timeofLineOfSightDistance))
                                                                             <ul class="timing-box mb-1">
                                                                                 <li>

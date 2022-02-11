@@ -7,6 +7,8 @@ jQuery(window).scroll(function() {
     }
 });
 
+
+
 // Material Select Initialization
 $(document).ready(function() {
     //$('.mdb-select').materialSelect();
@@ -108,7 +110,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider(){
     });
 }
 
-// loadMainMenuSlider();
+ loadMainMenuSlider();
 
 window.resizeMenuSlider = function resizeMenuSlider(){
     var windowWidth = $(window).width();
@@ -118,7 +120,7 @@ window.resizeMenuSlider = function resizeMenuSlider(){
         if(!$('.menu-slider').hasClass('slick-initialized')){
 
             setTimeout(function(){
-                loadMainMenuSlider();
+                //loadMainMenuSlider();
                 if ( $('#main-menu .slick-slide').length > 13 ) {
                     $('#main-menu').addClass('items-center');
                 }
@@ -209,49 +211,17 @@ window.initializeSlider = function initializeSlider() {
     $('.suppliers-slider').slick({
         infinite: true,
         speed: 300,
-        slidesToShow: 6,
+        slidesToShow: 4,
         slidesToScroll: 1,
         centerMode: false,
         centerPadding: '60px',
         arrows: true,
         dots: false,
-        responsive: [{
-                breakpoint: 1199,
-                settings: {
-                    slidesToShow: 4,
-                    slidesToScroll: 3,
-                    infinite: true,
-                    dots: false,
-                    centerMode: false,
-                }
-            },
-            {
-                breakpoint: 991,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 3,
-                    dots: false,
-                    centerMode: true,
-                }
-            },
-            {
-                breakpoint: 767,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    dots: false,
-                    centerMode: true,
-                }
-            },
-            {
-                breakpoint: 576,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    dots: false,
-                    centerMode: true,
-                }
-            }
+        responsive: [
+            {breakpoint: 1199,settings: {slidesToShow: 4,slidesToScroll: 3,infinite: true,dots: false,centerMode: false,}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 3,dots: false,centerMode: true,}},
+            {breakpoint: 767,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}},
+            {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
         ]
     });
     $(".product-5").slick({
