@@ -24,9 +24,7 @@ class PassbaseController extends Controller
     public function storeAuthkey(Request $request)
     {
     	$response = $this->getIdentity($request->identityAccessKey);
-
-    	dd($request->all(),$response);
-
+    	return $response;
     }
     public function webhook(Request $request)
     {

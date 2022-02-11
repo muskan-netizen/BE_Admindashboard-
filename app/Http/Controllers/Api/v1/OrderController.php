@@ -471,13 +471,14 @@ class OrderController extends BaseController
                         // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id], $code);
                     }
 
+                    DB::commit();
+
                     # if payment type cash on delivery or payment status is 'Paid'
                     if (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                         # if vendor selected auto accept
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
 
-                    DB::commit();
                     $this->sendSuccessSMS($request, $order);
 
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
