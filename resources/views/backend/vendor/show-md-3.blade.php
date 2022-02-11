@@ -215,15 +215,15 @@
                         <div class="form-group w-100">
                             <label class="radio">{{__('Location Type')}}</label>
                         <select class="form-control" name="location_type">
-                            <option value="1" {{(json_decode($vendor->ahoy_location)->locationType =='1')?'Selected':''}}>Tower, (either office or apartment)</option>
-                            <option value="2" {{(json_decode($vendor->ahoy_location)->locationType =='2')?'Selected':''}}>Building (villa, police station. etc)</option>
-                            <option value="3" {{(json_decode($vendor->ahoy_location)->locationType =='3')?'Selected':''}}>Commercial (warehouse)</option>
+                            <option value="1" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationType =='1')?'Selected':'' : ''}}>Tower, (either office or apartment)</option>
+                            <option value="2" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationType =='2')?'Selected':'' : ''}}>Building (villa, police station. etc)</option>
+                            <option value="3" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationType =='3')?'Selected':'' : ''}}>Commercial (warehouse)</option>
                         </select>
                         </div>
                     </div>
                     
                     <div class="col-12">
-                        <button class="btn btn-info waves-effect waves-light w-100" {{(json_decode($vendor->ahoy_location)->locationName)?'disabled':''}} >{{ __("Save") }}</button>
+                        <button class="btn btn-info waves-effect waves-light w-100" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationName)?'disabled':'' : ''}} >{{ __("Save") }}</button>
                     </div>
                 </div>
             </form>
