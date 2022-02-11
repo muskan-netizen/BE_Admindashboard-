@@ -1297,19 +1297,19 @@ class OrderController extends FrontController
 
                 if ($request->status_option_id == 2) {
 
-                    if ($orderData->shipping_delivery_type=='D') {
+                    if ($request->shipping_delivery_type=='D') {
                     //             Log::info($request->status_option_id);
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if ($order_dispatch && $order_dispatch == 1) {
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
                     }
-                   }elseif($orderData->shipping_delivery_type=='L'){
+                   }elseif($request->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
                         $order_lalamove = $this->placeOrderRequestlalamove($request);
-                    }elseif($orderData->shipping_delivery_type=='SR'){
+                    }elseif($request->shipping_delivery_type=='SR'){
                         //Create Shipping place order request for Shiprocket
                         $order_ship = $this->placeOrderRequestShiprocket($request);
-                    }elseif($orderData->shipping_delivery_type=='DU'){
+                    }elseif($request->shipping_delivery_type=='DU'){
                         //Create Shipping place order request for Shiprocket
                         $order_ship = $this->placeOrderRequestDunzo($request);
                     }
