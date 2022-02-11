@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use App\Models\{Brand, Category, ClientLanguage, CategoryTranslation, CsvProductImport, Product, ProductCategory, ProductTranslation, ProductVariant, ProductVariantSet, TaxCategory, Variant, VariantOption, VendorCategory, VendorMedia, ProductImage,Client};
+use App\Models\{Brand, Category,AddonSet ,ClientLanguage, CategoryTranslation, CsvProductImport, Product, ProductCategory, ProductTranslation, ProductVariant, ProductVariantSet, TaxCategory, Variant, VariantOption, VendorCategory, VendorMedia, ProductImage,Client};
 
 class ProductsImport implements ToCollection{
     private $folderName = 'prods';
@@ -27,7 +27,7 @@ class ProductsImport implements ToCollection{
             $variant_exist = 0;
             try {
                 foreach ($rows as $row) {
-
+                    pr($row);
                     $checker = 0;
                     if ($row[0] != "Handle") { //header of excel check
 
@@ -50,13 +50,13 @@ class ProductsImport implements ToCollection{
                         if ($row[4] != "") {
                             $category = $row[4];
                             $vendorCategoryExists = VendorCategory::with('category.translation')
-                            ->whereHas('category.translation', function($q)use($category){
-                                $q->select('category_translations.name')
-                                ->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')
-                                ->join('languages', 'category_translations.language_id', 'languages.id')
-                                ->where('cl.is_active', 1)
-                                ->where('category_translations.name', 'LIKE', $category);
-                            })->where('vendor_id', $this->vendor_id)->first();
+                                                ->whereHas('category.translation', function($q)use($category){
+                                                    $q->select('category_translations.name')
+                                                    ->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')
+                                                    ->join('languages', 'category_translations.language_id', 'languages.id')
+                                                    ->where('cl.is_active', 1)
+                                                    ->where('category_translations.name', 'LIKE', $category);
+                                                })->where('vendor_id', $this->vendor_id)->first();
 
                             if (!$vendorCategoryExists) { //check if category doesn't exist
                                 $error[] = "Row " . $i . " : Category doesn't exist";
@@ -227,10 +227,26 @@ class ProductsImport implements ToCollection{
                                 $checker = 1;
                             }
                         }
+                        // if($row[28] != ""){
+
+                        //     foreach (explode(',', $row[28]) as $titleKey => $Addontitle) {
+                        //         $vendorAddonSetExists =AddonSet::where('title', "LIKE", $Addontitle)->first();
+                        //         if(!$vendorAddonSetExists){
+                        //             $error[] = "Row " . $i . " : Addon doesn't exist";
+                        //             $checker = 1;
+                        //            // brack;
+                        //         }
+                        //     }
+                        // }
+
+
+                        //}
+
 
                         if ($checker == 0) {
                             $data[] = $row;
                         }
+
                     }
                     $i++;
                 }

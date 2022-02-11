@@ -281,10 +281,10 @@
             contentType: false,
             processData: false,
             success: function(response) {
-                location.reload();
+               // location.reload();
                 if (response.status == 'success') {
                     $(".modal .close").click();
-                    location.reload();
+                   // location.reload();
                 } else {
 
                     $(".show_all_error.invalid-feedback").show();
