@@ -1806,8 +1806,9 @@ class OrderController extends BaseController
                 $order_status_option_id = 3;
             }
             $vendor_order_status = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->first();
-            echo $vendor_order_status->order_status_option_id ;
-            exit();
+
+            Log::info(($vendor_order_status ? $vendor_order_status->order_status_option_id : 'no'));
+
             if ($vendor_order_status->order_status_option_id == 3 ) { //$request->status_option_id == 2){
 
                 return response()->json(['status' => 'error', 'message' => __('This Order has been rejected.')]);

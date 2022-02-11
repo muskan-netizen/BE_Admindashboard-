@@ -184,7 +184,7 @@
             <form method="POST" action="{{route('web.styling.update_contact_up')}}">
                 @csrf
                 <div class="row h-100">
-                    <div class="col-12">
+                    <div class="col-9">
                         <div class="card-box">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <h4 class="header-title mb-0">{{ __("Contact Us") }}</h4>
@@ -229,15 +229,19 @@
                 </div> 
             </form>
             @if($client_preference_detail->business_type != 'taxi')
-            <div class="card card-box">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
-                    <div class="mb-0">
-                        <input type="checkbox" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box1 ss_form_submit" data-color="#43bee1" {{$client_preferences->age_restriction == 1 ? 'checked' : ''}}>
+            <div class="row h-100">
+                <div class="col-9">
+                    <div class="card card-box">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h4 class="header-title mb-0">{{ __("Age Restriction Popup") }}</h4>
+                            <div class="mb-0">
+                                <input type="checkbox" id="age_restriction" data-plugin="switchery" name="age_restriction" class="chk_box1 ss_form_submit" data-color="#43bee1" {{$client_preferences->age_restriction == 1 ? 'checked' : ''}}>
+                            </div>
+                        </div>
+                        <label for="">{{ __('Title') }}</label>
+                        <input type="text" class="form-control" id="age_restriction_title" name="age_restriction_title" value="{{ old('age_restriction_title', $client_preferences->age_restriction_title ?? '')}}">
                     </div>
                 </div>
-                <label for="">{{ __('Title') }}</label>
-                <input type="text" class="form-control" id="age_restriction_title" name="age_restriction_title" value="{{ old('age_restriction_title', $client_preferences->age_restriction_title ?? '')}}">
             </div>
             @endif
         </div>
