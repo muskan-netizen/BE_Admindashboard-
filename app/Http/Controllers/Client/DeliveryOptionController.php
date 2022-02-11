@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Client\BaseController;
 use App\Http\Traits\ToasterResponser;
 use App\Models\{Client, ClientPreference,ShippingOption};
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; 
+use GuzzleHttp\Client as GCLIENT;
+use Auth;
 
 class DeliveryOptionController extends Controller
 {
-    
+    use \App\Http\Traits\ClientPreferenceManager;
     use ToasterResponser;
 
     public function index()
@@ -19,13 +21,20 @@ class DeliveryOptionController extends Controller
         $shipingOption = ShippingOption::where('code', 'shiprocket')->first();
         $dunzoOption = ShippingOption::where('code', 'dunzo')->first();
         $ahoyOption = ShippingOption::where('code', 'ahoy')->first();
+        $preference = ClientPreference::select('id','need_delivery_service','delivery_service_key_url','delivery_service_key_code','delivery_service_key')->first();
+        # if last mile on
+        $last_mile_teams = [];
+        if(isset($preference) && $preference->need_delivery_service == '1') {
+            $last_mile_teams = $this->getLastMileTeams();
 
-        return view('backend/deliveryoption/index')->with(['delOption' => $delOption,'opt'=>$shipingOption,'optDunzo'=>$dunzoOption,'optAhoy'=>$ahoyOption]);
+        }
+
+        return view('backend/deliveryoption/index')->with(['delOption' => $delOption,'opt'=>$shipingOption,'optDunzo'=>$dunzoOption,'optAhoy'=>$ahoyOption,'last_mile_teams'=>$last_mile_teams,'preference'=>$preference]);
     }
     
      //Set new dunzo configuration details function
-     public function dunzo(Request $request)
-     {
+    public function dunzo(Request $request)
+    {
         
          try{
              //dd($request->input());
@@ -221,6 +230,34 @@ class DeliveryOptionController extends Controller
         }
 
         return redirect()->back()->with('toaster', $toaster);
+    }
+
+    //Set Last Mile Delivery Configuration Detail
+    public function last_mile_delivery(Request $request)
+    {
+        $preferenceset = ClientPreference::where('client_code', Auth::user()->code)->first();
+        if(isset($request->need_delivery_service) && !empty($request->need_delivery_service)){
+            try {
+                $client = new GClient(['headers' => ['personaltoken' => $request->delivery_service_key,'shortcode' => $request->delivery_service_key_code,'content-type' => 'application/json']]);
+                $url = $request->delivery_service_key_url;
+                $res = $client->post($url.'/api/check-dispatcher-keys');
+                $response = json_decode($res->getBody(), true);
+                if($response && $response['status'] == 400){
+                    return redirect()->back()->with('error', 'Last Mile Delivery Keys incorrect !');
+                }
+            }catch(\Exception $e){
+                return redirect()->back()->with('error', 'Invalid Last Mile Delivery Dispatcher URL !');
+            }
+            $preferenceset->need_delivery_service = ($request->has('need_delivery_service') && $request->need_delivery_service == 'on') ? 1 : 0;
+            $preferenceset->delivery_service_key_url = $request->delivery_service_key_url;
+            $preferenceset->delivery_service_key_code = $request->delivery_service_key_code;
+            $preferenceset->delivery_service_key = $request->delivery_service_key;
+            $preferenceset->last_mile_team = $request->last_mile_team;
+        }else{
+            $preferenceset->need_delivery_service =  ($request->has('need_delivery_service') && $request->need_delivery_service == 'on') ? 1 : 0;
+        }
+        $preferenceset->save();
+        return redirect()->back()->with('success', 'Client configurations updated successfully!');
     }
 
 

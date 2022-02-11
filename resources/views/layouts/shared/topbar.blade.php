@@ -10,7 +10,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 </audio>
 <div class="navbar-custom">
 
-    <div class="container-fluid d-flex align-items-center justify-content-between justify-content-lg-end">
+    <div class="col d-flex align-items-center justify-content-between justify-content-lg-end">
 
         <ul class="top-site-links d-flex align-items-center p-0 mb-0 mr-lg-2 mr-auto">
             <li class="d_none">

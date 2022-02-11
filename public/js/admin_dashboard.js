@@ -27,7 +27,7 @@ $(document).ready(function () {
         $flatpickr.clear();
         getDashboardData(dashboard_filter_url, 'weekly');
     });
-    function getDashboardData(dashboard_filter_url, type = 'monthly'){
+    function getDashboardData(dashboard_filter_url, type = 'yearly'){
         var date_filter = $('#range-datepicker').val();
         $.getJSON(dashboard_filter_url,{type:type,date_filter:date_filter}, function (response) {
             if(response.status == 'Success'){
