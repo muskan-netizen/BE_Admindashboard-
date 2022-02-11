@@ -461,7 +461,7 @@
                                     <form method="post" enctype="multipart/form-data" id="save_imported_products">
                                         @csrf
                                         <a
-                                            href="{{ url('file-download' . '/sample_product.csv') }}">{{ __('Download Sample file here!') }}</a>
+                                            href="{{ url('file-download' . '/sample_product_3.csv') }}">{{ __('Download Sample file here!') }}</a>
                                         <input type="hidden" value="{{ $vendor->id }}" name="vendor_id" />
                                         <input type="file" accept=".csv" onchange="submitProductImportForm()"
                                             data-plugins="dropify" name="product_excel" class="dropify" />
