@@ -50,12 +50,6 @@
 .faq-collapse {
     background: #fff;
 }
-#faq-accordion .card-header button[aria-expanded="true"]:after{
-    content: "\f101";
-}
-#faq-accordion .card-header button[aria-expanded="false"]:after{
-    content: "\f103";
-}
 
 /*end here-------------*/
 #addressInput .pac-container{top:65px!important;left:15px!important;}
@@ -510,7 +504,7 @@ body .switchery>small {width: 20px;height: 20px;}
                 <div class="card faq-card">
                     <div class="card-header faq-header" id="heading_{{$key}}">
                       <h2 class="mb-0">
-                        <button class="btn btn-link btn-block text-left collase1" type="button" data-toggle="collapse" data-target="#collapse_{{$key}}" aria-expanded="true" aria-controls="collapseOne">
+                        <button class="btn btn-link btn-block text-left collase1" type="button" data-toggle="collapse" data-target="#collapse_{{$key}}" aria-expanded="false" aria-controls="collapseOne">
                             {{$value->question}}
                         </button>
                       </h2>
@@ -625,14 +619,6 @@ function isNumberKey(evt) {
                 vendorAddressInitialize();
             });
         @endif
-        const items = document.querySelectorAll(".accordion a");
-
-        function toggleAccordion(){
-            this.classList.toggle('active');
-            this.nextElementSibling.classList.toggle('active');
-        }
-
-        items.forEach(item => item.addEventListener('click', toggleAccordion));
 
         $.ajaxSetup({
             headers: {
