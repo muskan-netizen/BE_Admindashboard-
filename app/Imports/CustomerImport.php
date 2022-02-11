@@ -75,8 +75,8 @@ class CustomerImport implements ToCollection
                             $user = User::find($id);
                             if(isset($da[4]) && $da[4]>0){
                                 $wallet = $user->wallet;
-                                $wallet->depositFloat($da[4], ['Wallet has been <b>Credited</b> for Import User Sheet ']);
-                            }
+                                $wallet->depositFloat($da[4], ['Wallet has been <b>Credited</b>  by Admin']);
+                            }   
                         }
                     }
 
