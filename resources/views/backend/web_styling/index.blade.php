@@ -666,6 +666,8 @@ $(document).on('click', '.deletePickupSection', function() {
         CKEDITOR.instances[instance].updateElement();
         }
         var formData = new FormData(form);
+        formData.append('age_restriction', $('#age_restriction').val());
+        formData.append('age_restriction_title', $('#age_restriction_title').val());
         var data_uri = "{{route('styling.updateWebStyles')}}";
         $.ajaxSetup({
             headers: {
