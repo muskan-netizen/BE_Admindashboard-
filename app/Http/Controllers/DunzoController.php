@@ -247,24 +247,24 @@ class DunzoController extends Controller
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'1']);
         }elseif(isset($json->order_status_id) && $json->order_status_id == '4')
         {
-			$awb = $json->web_hook_code;
+			$awb = $json->order_uuid;
             $details = OrderVendor::where('web_hook_code',$awb)->first();
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'2']);
         }elseif(isset($json->order_status_id) && $json->order_status_id == '8')
         {
-			$awb = $json->web_hook_code;
+			$awb = $json->order_uuid;
             $details = OrderVendor::where('web_hook_code',$awb)->first();
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
         }elseif(isset($json->order_status_id) && $json->order_status_id == '5')
         {
-            $awb = $json->web_hook_code;
+            $awb = $json->order_uuid;
             $details = OrderVendor::where('web_hook_code',$awb)->first();
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
         }
 
         if($request && isset($json->order_status_id)){
-         Webhook::create(['tracking_order_id'=>(($json->web_hook_code)?$json->web_hook_code:''),'response'=>$request->getContent()]);
+         Webhook::create(['tracking_order_id'=>(($json->order_uuid)?$json->order_uuid:''),'response'=>$request->getContent()]);
         }
 
         return response([],200);

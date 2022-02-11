@@ -420,7 +420,6 @@ class OrderController extends BaseController
                 }
                 $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 if ($request->status_option_id == 2) {
-                    \Log::info('cancel order page');
                     //Check Order delivery type
                     if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher

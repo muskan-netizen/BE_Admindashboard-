@@ -282,14 +282,22 @@ function createSlug($str, $delimiter = '-')
             $lalamove_status = $simp_creds->status??'';
         }
         $distance = $dist;
-        if($distance < 1 || $base_price < 1)
-        {
+ ($distance < 1 || $base_price < 1) {
             return 0;
+>>>>>>> 2a433f90c9e547e2d3f3a19e072164704187a428
         }
+        
         $base_price = $base_price;
         $amount_per_km = $amount_per_km;
         $total = $base_price + ($distance * $amount_per_km);
         return  $total;
+<<<<<<< HEAD
+        
+    // + ($paid_duration * $pricingRule->duration_price);
+
+=======
+        // + ($paid_duration * $pricingRule->duration_price);
+>>>>>>> 2a433f90c9e547e2d3f3a19e072164704187a428
     }
 
 
@@ -618,6 +626,8 @@ function GoogleDistanceMatrix($latitude, $longitude)
     }
     return $send;
 }
+<<<<<<< HEAD
+=======
 function getDynamicMail()
 {
     $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
@@ -635,14 +645,14 @@ function getDynamicMail()
     \Config::set('mail.mailers.smtp', $config);
     return 2;
 }
-
+>>>>>>> 2a433f90c9e547e2d3f3a19e072164704187a428
 function getDynamicTypeName($name)
 {
     $new_name = getNomenclatureName($name, true);
     $new_name = ($new_name === $name) ? __($name) : $new_name;
     return $new_name;
 }
-
+<<<<<<< HEAD
 function stripePaymentCredentials(){
     $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
     $creds_arr = json_decode($stripe_creds->credentials);
@@ -661,8 +671,12 @@ function stripeFPXPaymentCredentials(){
     return $response;
 }
 
+function getServerURL(){
+=======
+
 function getServerURL()
 {
+>>>>>>> 2a433f90c9e547e2d3f3a19e072164704187a428
     $client = ClientData::where('id', '>', 0)->first();
     $domain = '';
     if (!empty($client->custom_domain)) {
