@@ -198,7 +198,7 @@ class OrderController extends BaseController
                 case 'orders_history':
                     $order_status_options = [6, 3];
                     $orders = $orders->with('vendors', function ($query) use ($order_status_options) {
-                        $query->whereIn('order_status_option_id', $order_status_options); 
+                        $query->whereIn('order_status_option_id', $order_status_options);
                     })->whereHas('vendors', function ($query) use ($order_status_options, $request) {
                         $query->whereIn('order_status_option_id', $order_status_options);
                         if (!empty($request->get('vendor_id'))) {
@@ -404,10 +404,10 @@ class OrderController extends BaseController
             if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 2) { //$request->status_option_id == 3){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been accepted!!!')]);
             }
-            if ($currentOrderStatus->order_status_option_id == 3 && $request->status_option_id == 3) { //$request->status_option_id == 2){
+            if ($currentOrderStatus->order_status_option_id == 3) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
             }
-            if (!$vendor_order_status_check) { 
+            if (!$vendor_order_status_check) {
                 $vendor_order_status = new VendorOrderStatus();
                 $vendor_order_status->order_id = $request->order_id;
                 $vendor_order_status->vendor_id = $request->vendor_id;
@@ -438,7 +438,7 @@ class OrderController extends BaseController
                         $order_dunzo = $this->placeOrderRequestDunzo($request);
                     }
                 }
-                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]); 
+                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
 
                 if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
 
