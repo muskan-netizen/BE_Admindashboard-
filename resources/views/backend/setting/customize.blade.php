@@ -56,14 +56,6 @@
                             </span>
                             @endif
                         </div>
-                        <!-- <div class="col-12 d-flex align-items-center justify-content-between mt-2">
-                            <label class="cursor" for="ios_app">iOS App Link</label>
-                            <input type="checkbox" id="ios_app" data-plugin="switchery" name="show_contact_us" class="chk_box2" data-color="#43bee1">
-                        </div>
-                        <div class="col-12 d-flex align-items-center justify-content-between mt-2">
-                            <label class="cursor" for="android_app">android App Link</label>
-                            <input type="checkbox" id="android_app" data-plugin="switchery" name="show_contact_us" class="chk_box2" data-color="#43bee1">
-                        </div> -->
                     </div>
                 </div><!-- Panel Theme end -->
             </form>
@@ -87,7 +79,7 @@
 
         <!-- Date & Time sec start -->
         <div class="col-lg-4 col-xl-3 mb-3">
-            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <div class="card-box mb-0 h-100 pb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
@@ -138,7 +130,35 @@
                     </div>
                 </div>
             </form>
-        </div><!-- Date & Time sec end -->
+            <!-- Date & Time sec end -->
+            <!-- Distance to Time Calculator start -->
+            <form method="POST" class="mt-2" action="{{route('configure.update', Auth::user()->code)}}">
+                <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box mb-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="header-title mb-0">{{__('Distance to Time Calculator')}}</h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="row mt-2">
+                    <div class="col-12 mb-2">
+                        <label class="primaryCurText">{{__('Distance Unit')}}</label>
+                        <select class="form-control" id="distance_unit_for_time" name="distance_unit_for_time">
+                            <option value="">{{__('Select unit')}}</option>
+                            <option value="kilometer" @if((isset($preference) && $preference->distance_unit_for_time == 'kilometer')) selected @endif>{{__('Kilometer')}}</option>
+                            <option value="mile" @if((isset($preference) && $preference->distance_unit_for_time == 'mile')) selected @endif>{{__('Mile')}}</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="primaryCurText">{{__('Distance to Time Multiplier (Per 1 distance unit)')}}</label>
+                        <input class="form-control" type="number" id="distance_to_time_multiplier" name="distance_to_time_multiplier" value="{{ old('distance_to_time_multiplier', $preference->distance_to_time_multiplier  ?? '')}}" min="0">
+                    </div>
+                    </div>
+                </div>
+            </form>
+            <!-- Distance to Time Calculator end -->
+        </div>
 
         <!-- Localization start -->
         <div class="col-lg-5 col-xl-6 mb-3">
@@ -415,64 +435,6 @@
       </div>
    </div>
     <div class="row">
-        <div class="col-md-3 mb-3">
-            <!-- Refer and Earn start -->
-            <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}"> 
-                @csrf
-                <input type="hidden" name="send_to" id="send_to" value="customize">
-                <div class="card-box mb-0 pb-1">
-                    <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="header-title">Refer and Earn</h4>
-                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                    </div>
-                    <div class="col-xl-12 my-2" id="addCur-160">
-                    <label class="primaryCurText">{{ __("Referred To Amount") }} = </label>
-                    <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', $reffer_to ?? '')}}" min="0">
-                    </div>
-                    <div class="col-xl-12 mb-2 mt-3" id="addCur-160">
-                    <label class="primaryCurText">{{ __("Referred By Amount") }} = </label>
-                    <input class="form-control" type="number" name="reffered_by_amount" id="reffered_by_amount" value="{{ old('reffered_by_amount', $reffer_by ?? '')}}" min="0">
-                    </div>
-                </div>
-            </form><!-- Refer and Earn end -->
-        </div>
-        <div class="col-md-3 mb-3">
-            <!-- Distance to Time Calculator start -->
-            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}">
-                <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
-                @csrf
-                <input type="hidden" name="send_to" id="send_to" value="customize">
-                <div class="card-box mb-2">
-                    <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="header-title mb-0">{{__('Distance to Time Calculator')}}</h4>
-                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                    </div>
-                    <div class="row mt-2">
-                    <div class="col-12 mb-2">
-                        <label class="primaryCurText">{{__('Distance Unit')}}</label>
-                        <select class="form-control" id="distance_unit_for_time" name="distance_unit_for_time">
-                            <option value="">{{__('Select unit')}}</option>
-                            <option value="kilometer" @if((isset($preference) && $preference->distance_unit_for_time == 'kilometer')) selected @endif>{{__('Kilometer')}}</option>
-                            <option value="mile" @if((isset($preference) && $preference->distance_unit_for_time == 'mile')) selected @endif>{{__('Mile')}}</option>
-                        </select>
-                    </div>
-                    <div class="col-12">
-                        <label class="primaryCurText">{{__('Distance to Time Multiplier (Per 1 distance unit)')}}</label>
-                        <input class="form-control" type="number" id="distance_to_time_multiplier" name="distance_to_time_multiplier" value="{{ old('distance_to_time_multiplier', $preference->distance_to_time_multiplier  ?? '')}}" min="0">
-                    </div>
-                    </div>
-                </div>
-            </form>
-            <!-- Distance to Time Calculator end -->
-
-        </div>
-        <div class="col-md-3 mb-3">
-               <!-- Tags for Product start -->
-               
-        </div>
-    </div>
-
-    <div class="row">
         <div class="col-lg-3 col-lg-3 mb-3">
             <form method="POST" action="{{route('client.updateDomain', Auth::user()->code)}}">
                 @csrf
@@ -533,7 +495,28 @@
                         </div>
                      </form>
                   </div>
-               </div><!-- Android/IOS Link end -->
+               </div>
+               <!-- Android/IOS Link end -->
+               <!-- Refer and Earn start -->
+                <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}"> 
+                    @csrf
+                    <input type="hidden" name="send_to" id="send_to" value="customize">
+                    <div class="card-box mb-0 pb-1">
+                        <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title">Refer and Earn</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                        </div>
+                        <div class="col-xl-12 my-2" id="addCur-160">
+                        <label class="primaryCurText">{{ __("Referred To Amount") }} = </label>
+                        <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', $reffer_to ?? '')}}" min="0">
+                        </div>
+                        <div class="col-xl-12 mb-2 mt-3" id="addCur-160">
+                        <label class="primaryCurText">{{ __("Referred By Amount") }} = </label>
+                        <input class="form-control" type="number" name="reffered_by_amount" id="reffered_by_amount" value="{{ old('reffered_by_amount', $reffer_by ?? '')}}" min="0">
+                        </div>
+                    </div>
+                </form>
+                <!-- Refer and Earn end -->
         </div>
         <div class="col-lg-3 mb-3">
             <div class="card-box mb-0 h-100 pb-1">
