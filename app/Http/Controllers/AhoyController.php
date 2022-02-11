@@ -221,10 +221,10 @@ class AhoyController extends Controller
                 'latitude'=>$vendor_details->latitude ?? '',
                 'longitude'=>$vendor_details->longitude ?? '',
                 'locationType'=>$request->location_type??1,
-                'PhoneNumber'=>$vendor_details->phone_number ?? '',
+                'PhoneNumber'=>$vendor_details->phone_no ?? '',
                 'Email'=>$vendor_details->email ?? ''
             );
-		
+            //dd($data);
             if($this->status){
                 return $this->createNewLocation($data);
             }

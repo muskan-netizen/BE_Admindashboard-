@@ -1004,18 +1004,21 @@ class VendorController extends BaseController
     public function updateAhoyLocation(Request $request, $domain = '',  $id)
     {
         $vendor = Vendor::where('id', $id)->first();
-        //dd($vendor);
         $msg = 'Ahoy delivery location name added.';
 
         if ($request->has('location_name')) {
             $ship = new AhoyController();
             $save = (object)$ship->createLocation($vendor,$request);
+            //dd($save);
              if(isset($save) && $save->code=='200'){
-                $vendor->shiprocket_pickup_name  = $save->response->id;
+                $vendor->ahoy_location  = json_encode($save->response);
                 $vendor->save();
                 return redirect()->back()->with('success', $msg . ' successfully!');
-             }
-             return redirect()->back()->with('success',$save->response->error);
+                }elseif(isset($save) && $save->code=='401'){
+                    return redirect()->back()->with('success',$save->response->message);
+                }else{
+                    return redirect()->back()->with('error_delete',$save->response->error);
+                }
         }
 
     }
@@ -1033,7 +1036,7 @@ class VendorController extends BaseController
                 $vendor->save();
                 return redirect()->back()->with('success', $msg . ' successfully!');
              }
-             return redirect()->back()->with('success',$save->errors->address[0]);
+             return redirect()->back()->with('error_delete',$save->errors->address[0]);
         }
 
     }
