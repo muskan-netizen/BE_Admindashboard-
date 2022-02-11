@@ -237,9 +237,9 @@
                         <div class="card-body p-2">
                             <div class="card-widgets d-flex align-items-center select-date">
                                 <div class="btn-group mb-0 mx-2">
-                                    <button type="button" class="btn btn-xs btn-light yearSales">{{ __('Yearly') }}</button>
+                                    <button type="button" class="btn btn-xs btn-secondary yearSales">{{ __('Yearly') }}</button>
                                     <button type="button" class="btn btn-xs btn-light weeklySales">{{ __('Weekly') }}</button>
-                                    <button type="button" class="btn btn-xs btn-secondary monthlySales">{{ __('Monthly') }}</button>
+                                    <button type="button" class="btn btn-xs btn-light monthlySales">{{ __('Monthly') }}</button>
                                 </div>
                             </div>
                             <h4 class="header-title mb-0">{{ __('Sales Analytics') }}</h4>
