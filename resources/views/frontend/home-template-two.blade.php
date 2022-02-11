@@ -1,4 +1,5 @@
 @extends('layouts.store', ['title' => __('Home')])
+
 @section('content')
 <header>
 	<div class="mobile-fix-option"></div>
@@ -15,5 +16,6 @@
 <!-- footer code in layouts.store/footercontent-template-two -->
 @endsection
 @section('script')
+
 
 @endsection
