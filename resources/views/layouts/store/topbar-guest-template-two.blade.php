@@ -88,8 +88,8 @@ h2.homepage-address {
                             </div>
                             <div class="col d-inline-flex align-items-center justify-content-start p-0">
                                 <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
-                                        @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp
-                                    <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off">
+                                    @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp
+                                <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off">
                             </div>
 
 
