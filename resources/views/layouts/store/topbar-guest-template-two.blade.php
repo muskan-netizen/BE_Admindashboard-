@@ -51,13 +51,17 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         border-style: solid;
         border-color: #000 transparent transparent;
         right: 20px;
-        top: 10px;
+        top: 15px;
         color: #000;
         margin-left: 0;
         content: "";
     }
     .location-bar.d-inline-flex.align-items-center.position-relative {
     width: 100%;
+    border-right: 1px solid;
+}
+.al_custom_head_map_box button.btn {
+    padding-right: 0;
 }
 h2.homepage-address {
     text-overflow: ellipsis;
@@ -73,19 +77,19 @@ h2.homepage-address {
 <div class="top-header site-topbar al_custom_head">
     <div class="container">
         <div class="row d-flex align-items-center justify-content-between">
-
-
             <div class="col-6 d-flex align-items-center justify-content-start">
-                <a class="navbar-brand mr-3" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
+                <a class="navbar-brand mr-3" style="min-width:150px;" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                 <div class=" al_custom_head_map_box p-2 d-inline-flex align-items-center justify-content-start">
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
-                            <div class="location-bar d-inline-flex align-items-center position-relative" href="#edit-address" data-toggle="modal">
+                            <div class=" col location-bar d-inline-flex align-items-center position-relative p-0" href="#edit-address" data-toggle="modal">
                                     <i class="fa fa-map-marker mr-2" aria-hidden="true"></i>
                                     <h2 class="homepage-address"><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
-                                    <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                            <div class="col d-inline-flex align-items-center justify-content-start p-0">
+                                <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
                                         @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp
-                                        <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off">
+                                    <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off">
                             </div>
 
 

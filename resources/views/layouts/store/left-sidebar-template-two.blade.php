@@ -21,7 +21,41 @@ $pages = \App\Models\Page::with([
     ->orderBy('order_by', 'ASC')
     ->get();
 @endphp
-
+<style>
+    .al_count_tabs_new_design ul#top-tab {
+    border-bottom: 1px solid #eee;
+}
+.al_count_tabs_new_design li.navigation-tab-item {
+    width: auto;
+    border-radius: 0;
+    margin-right: 40px;
+}
+.al_count_tabs_new_design li.navigation-tab-item span {
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    background-color: #eee;
+    display: inline-block;
+    padding: 0 12px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+.al_count_tabs_new_design li.navigation-tab-item a {
+    font-size: 20px;
+    color: #696969;
+}
+.al_count_tabs_new_design li.navigation-tab-item a.nav-link.active {
+    border-bottom: 2px solid;
+    color:#000;
+}
+.al_count_tabs_new_design li.navigation-tab-item a.nav-link.active img{
+    filter: grayscale(0);
+}
+.al_count_tabs_new_design li.navigation-tab-item span img {
+    filter: grayscale(1);
+}
+</style>
 
 <header class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
     {{-- @if (Auth::check())
@@ -148,24 +182,30 @@ $pages = \App\Models\Page::with([
          <div class="row align-items-center justify-content-center position-initial">
             <div class="col-lg-12">
                <div class="row mobile-header align-items-center justify-content-between my-sm-2">
-                  <div class="al_count_tabs">
+                  <div class="al_count_tabs_new_design">
                      @if($mod_count > 1)
                      <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
                         @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
-                        <li class="navigation-tab-item" role="presentation">
-                            <img src="{{asset('images/al_custom3.png')}}" alt="">
-                            <a class="nav-link {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">{{$Delivery}}</a>
+                        <li class="navigation-tab-item " role="presentation">
+                            <a class="nav-link {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
+                                <span><img src="{{asset('images/al_custom3.png')}}" alt=""></span>
+                                {{$Delivery}}
+                            </a>
                         </li>
                         @endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
-                        <li class="navigation-tab-item" role="presentation">
-                            <img src="{{asset('images/al_custom1.png')}}" alt="">
-                            <a class="nav-link {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">{{$Dine_In}}</a>
+                        <li class="navigation-tab-item " role="presentation">
+                            <a class="nav-link {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
+                                <span><img src="{{asset('images/al_custom1.png')}}" alt=""></span>
+                                {{$Dine_In}}
+                            </a>
                         </li>
                         @endif @if($client_preference_detail->takeaway_check==1)
-                        <li class="navigation-tab-item" role="presentation">
+                        <li class="navigation-tab-item " role="presentation">
                             @php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
-                            <img src="{{asset('images/al_custom2.png')}}" alt="">
-                            <a class="nav-link{{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">{{$Takeaway}}</a>
+                            <a class="nav-link{{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
+                                <span><img src="{{asset('images/al_custom2.png')}}" alt=""></span>
+                                {{$Takeaway}}
+                            </a>
                         </li>
                         @endif
                         <div class="navigation-tab-overlay"></div>
