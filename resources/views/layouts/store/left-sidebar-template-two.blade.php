@@ -145,12 +145,12 @@ $pages = \App\Models\Page::with([
    @if($client_preference_detail->business_type != 'taxi')
    <div class="main-menu">
       <div class="container d-block">
-         <div class="row align-items-center position-initial">
+         <div class="row align-items-center justify-content-center position-initial">
             <div class="col-lg-12">
                <div class="row mobile-header align-items-center justify-content-between my-sm-2">
                   <div class="al_count_tabs">
                      @if($mod_count > 1)
-                     <ul class="nav nav-tabs navigation-tab nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
+                     <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
                         @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                         <li class="navigation-tab-item" role="presentation">
                             <img src="{{asset('images/al_custom3.png')}}" alt="">
