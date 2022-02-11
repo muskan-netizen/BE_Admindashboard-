@@ -124,7 +124,7 @@ class PaymentOptionController extends BaseController{
     }
     public function postPaymentVia_authorize_net(Request $request){
         $gateway = new AuthorizeGatewayController();
-        return $gateway->checkoutPurchase($request);
+        return $gateway->authorizePurchase($request); 
     }
 
     public function postPaymentVia_paypal(Request $request){

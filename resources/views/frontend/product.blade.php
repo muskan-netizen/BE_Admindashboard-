@@ -404,13 +404,12 @@
                                     </div>
                                     @endif
                                     @php
-                                    $checkSlot = findSlot('',$product->vendor->id,'');  
-                                   // dd($checkSlot);  
+                                    $checkSlot = findSlot('',$product->vendor->id,'');
                                     @endphp
                                     <div class="product-buttons">
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                         @if($is_inwishlist_btn && $is_available)
-                                        <button type="button" class="btn btn-solid addWishList" proSku="{{$product->sku}}">
+                                        <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}">
                                             {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
                                         </button>
                                         @endif

@@ -323,21 +323,21 @@
             contentType: false,
             processData: false,
             success: function(response) {
-               // location.reload();
+                location.reload();
                 if (response.status == 'success') {
-                    // $("#import-form").modal('hide');
+                     $("#import-form").modal('hide');
                     $('#p-message').empty();
                     $('#p-message').append('Document uploaded Successfully!');
-                    // setTimeout(function() {
-                    //     location.reload();
-                    // }, 2000);
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
 
                 } else {
                     $('#p-message').empty();
                     $('#p-message').append('Document uploading Failed!');
-                    // setTimeout(function() {
-                    //     location.reload();
-                    // }, 2000);
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
                     $(".show_all_error.invalid-feedback").show();
                     $(".show_all_error.invalid-feedback").text(response.message);
 
@@ -348,18 +348,18 @@
                 $('#p-message').empty();
                 $('#p-message').append('Document uploading!');
 
-                // setTimeout(function() {
-                //     location.reload();
-                // }, 2000);
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
 
                 $(".loader_box").show();
             },
             complete: function() {
                 $('#p-message').empty();
                 $('#p-message').append('Document uploading!');
-                // setTimeout(function() {
-                //     location.reload();
-                // }, 2000);
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
 
 
                 $(".loader_box").hide();
