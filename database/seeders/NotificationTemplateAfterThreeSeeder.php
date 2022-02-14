@@ -22,5 +22,6 @@ class NotificationTemplateAfterThreeSeeder extends Seeder
         NotificationTemplate::updateOrCreate(['id' => 8],['label' => "Out of delivery (Customer)", 'slug' => 'order-out-of-delivery', 'subject' => "Out of delivery", 'content' => "Your order ({order_id}) has been reached to you soon", 'tags' => "{order_id}"]);
         NotificationTemplate::updateOrCreate(['id' => 9],['label' => "Order Delivered (Customer)", 'slug' => 'order-delivered', 'subject' => "Order Delivered", 'content' => "Your order ({order_id}) has delivered", 'tags' => "{order_id}"]);
         NotificationTemplate::updateOrCreate(['id' => 10],['label' => "Place Order Reminder (Customer)", 'slug' => 'place-order-reminder', 'subject' => "Don't wait too much", 'content' => "Place your order before it's too late", "tags" => ""]);
+        NotificationTemplate::updateOrCreate(['id' => 11],['label' => "Order Rejecte (Vendor)", 'slug' => 'order-rejected-vendor', 'subject' => "Order Rejecting", 'content' => "Your order ({order_id}) has been rejecting after 5 min", 'tags' => "{order_id}"]);
     }
 }
