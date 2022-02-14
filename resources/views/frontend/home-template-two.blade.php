@@ -11,11 +11,10 @@
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
-<section class="home-slider-wrapper pt-md-3" style="min-height:300px">
+<section class="home-slider-wrapper pt-md-3" style="min-height:300px;" data-aos="zoom-in">
 	<div class="container">
 		<div id="myCarousel" class="carousel slide" data-ride="carousel">
 			<div class="carousel-inner">
-
 				@foreach($banners as $key => $banner)
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item @if($key == 0) active @endif">
@@ -35,22 +34,17 @@
 				<span class="sr-only">Next</span>
 			</a>
 		</div>
-      <!-- <div class="shimmer_effect">
-         <div class="loading"></div>
-      </div>
-      <div class="home-banner-slider">
-		  @foreach($banners as $banner) @php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp @if($url) <a class="banner-img-outer" href="{{$url}}"> @endif <img alt="" title="" class="blur-up lazyload" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}"> @if($url) </a> @endif @endforeach
-		</div> -->
 	</div>
 </section>
  @endif
-<script type="text/template" id="vendors_template">
+
+<script type="text/template" id="vendors_template" >
 	<% _.each(vendors, function(vendor, k){%>
 		<div class="product-card-box position-relative">
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative">
 					<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
-						<%}else{%> <img class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+						<%}else{%> <img data-aos="zoom-in"  class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 							<%}%>
 								<% if(vendor.timeofLineOfSightDistance !=undefined){%>
 									<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
@@ -69,7 +63,7 @@
 		</div>
 		<% }); %>
 </script>
-<script type="text/template" id="banner_template">
+<script type="text/template" id="banner_template" data-aos="zoom-in">
 	<% _.each(brands, function(brand, k){%>
 		<div>
 			<a class="brand-box d-block black-box" href="<%=brand.redirect_url %>">
@@ -78,7 +72,7 @@
 		</div>
 		<% }); %>
 </script>
-<script type="text/template" id="products_template">
+<script type="text/template" id="products_template" data-aos="zoom-in">
 	<% _.each(products, function(product, k){ %>
 		<div class="product-card-box position-relative al">
 			<div class="add-to-fav 12">
@@ -105,7 +99,6 @@
 								<%=product.category %></span>
 							</p>
 							<div class="d-flex align-items-center justify-content-between al_clock"> <b><% if(product.inquiry_only==0){%> <%=product.price %> <%}%></b>
-								<!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->
 							</div>
 						</div>
 					</div>
@@ -114,7 +107,7 @@
 		</div>
 		<% }); %>
 </script>
-<script type="text/template" id="trending_vendors_template">
+<script type="text/template" id="trending_vendors_template" data-aos="zoom-in">
 	<% _.each(trending_vendors, function(vendor, k){%>
 		<div class="product-card-box position-relative">
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
@@ -139,7 +132,7 @@
 		</div>
 		<% }); %>
 </script>
-<script type="text/template" id="recent_orders_template">
+<script type="text/template" id="recent_orders_template" data-aos="zoom-in">
 	<% _.each(recent_orders, function(order, k){ %>
 		<% subtotal_order_price = total_order_price = total_tax_order_price = 0; %>
 			<% _.each(order.vendors, function(vendor, k){ %>
@@ -214,7 +207,7 @@
 					<% }); %>
 						<% }); %>
 </script>
-<section class="section-b-space p-t-0 pt-4 ratio_asos shimmer_effect">
+<section class="section-b-space p-t-0 pt-4 ratio_asos shimmer_effect" >
 	<div class="container mb-5">
 		<div class="row">
 			<div class="col-12 cards">
@@ -406,18 +399,9 @@
 	</div>
 	</div>
 </section>
-<section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div">
+<section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div" data-aos="zoom-in">
 	<div class="vendors"> @foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery') @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page') @elseif($homePageLabel->slug == 'brands')
 		<section class="popular-brands left-shape_ position-relative">
-			<!-- <div class="container ">
-				<div class="row align-items-center">
-					<div class="col-lg-2 cw top-heading pr-0 text-center text-lg-left mb-3 mb-lg-0">
-						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2> </div>
-					<div class="col-lg-10 al_custom_brand">
-						<div class="brand-slider render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
-					</div>
-				</div>
-			</div> -->
 			<div class="container ">
 				<div class="al_top_heading col-md-12">
 					<div class="row d-flex justify-content-between">
@@ -467,7 +451,7 @@
 			</div>
 		</section> @endif @endforeach </div>
 </section>
-<section class="no-store-wrapper mb-3">
+<section class="no-store-wrapper mb-3" data-aos="zoom-in">
 	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
 		<div class="row">
 			<div class="col-12 text-center"> <img class="no-store-image mt-2 mb-2 blur-up lazyload" data-src="{{getImageUrl(asset('images/no-stores.svg'),'250/250')}}" style="max-height: 250px;"> </div>

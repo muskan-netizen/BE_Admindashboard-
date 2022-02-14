@@ -21,44 +21,11 @@ $pages = \App\Models\Page::with([
     ->orderBy('order_by', 'ASC')
     ->get();
 @endphp
-<style>
-    .al_count_tabs_new_design ul#top-tab {
-    border-bottom: 1px solid #eee;
-}
-.al_count_tabs_new_design li.navigation-tab-item {
-    width: auto;
-    border-radius: 0;
-    margin-right: 40px;
-}
-.al_count_tabs_new_design li.navigation-tab-item span {
-    width: 60px;
-    height: 60px;
-    text-align: center;
-    line-height: 60px;
-    background-color: #eee;
-    display: inline-block;
-    padding: 0 12px;
-    margin-right: 10px;
-    border-radius: 50%;
-}
-.al_count_tabs_new_design li.navigation-tab-item a {
-    font-size: 20px;
-    color: #696969;
-    border-bottom: 2px solid transparent !important ;
-}
-.al_count_tabs_new_design li.navigation-tab-item a.nav-link.active {
-    border-bottom: 2px solid #000 !important;
-    color:#000;
-}
-.al_count_tabs_new_design li.navigation-tab-item a.nav-link.active img{
-    filter: grayscale(0);
-}
-.al_count_tabs_new_design li.navigation-tab-item span img {
-    filter: grayscale(1);
-}
-</style>
+@section('css')
 
-<header class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
+@endsection
+
+<header id="al_new_design" class="site-header @if ($client_preference_detail->business_type == 'taxi') taxi-header @endif">
     {{-- @if (Auth::check())
         @include('layouts.store/topbar-auth-template-two')
     @else
@@ -179,23 +146,23 @@ $pages = \App\Models\Page::with([
    <!-- End Cab Booking Header From Here -->
    @if($client_preference_detail->business_type != 'taxi')
     <div class="main-menu">
-        <div class="container d-block">
+        <div class="container_fluid_al d-block" >
             <div class="row align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
-                <div class="row mobile-header align-items-center justify-content-between my-sm-2">
-                    <div class="al_count_tabs_new_design">
+                <div class="container mobile-header d-flex align-items-center justify-content-between">
+                    <div class="al_count_tabs_new_design" data-aos="zoom-in">
                         @if($mod_count > 1)
                         <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
                             @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
                             <li class="navigation-tab-item " role="presentation">
-                                <a class="nav-link {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
+                                <a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
                                     <span><img src="{{asset('images/al_custom3.png')}}" alt=""></span>
                                     {{$Delivery}}
                                 </a>
                             </li>
                             @endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
                             <li class="navigation-tab-item " role="presentation">
-                                <a class="nav-link {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
+                                <a class="nav-link al_dinein {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
                                     <span><img src="{{asset('images/al_custom1.png')}}" alt=""></span>
                                     {{$Dine_In}}
                                 </a>
@@ -203,7 +170,7 @@ $pages = \App\Models\Page::with([
                             @endif @if($client_preference_detail->takeaway_check==1)
                             <li class="navigation-tab-item " role="presentation">
                                 @php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
-                                <a class="nav-link{{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
+                                <a class="nav-link al_takeway {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
                                     <span><img src="{{asset('images/al_custom2.png')}}" alt=""></span>
                                     {{$Takeaway}}
                                 </a>
@@ -214,16 +181,16 @@ $pages = \App\Models\Page::with([
                         @endif
                     </div>
 
-                    <div class=" ipad-view">
+                    <div class="al_new_ipad_view ipad-view" data-aos="zoom-in">
                         <div class="search_bar menu-right d-sm-flex d-block align-items-center justify-content-end w-100">
                             @if( (Session::get('preferences')))
                             @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
                             <div class="location-bar d-none align-items-center justify-content-start ml-md-2 my-2 my-lg-0 dropdown-toggle" href="#edit-address" data-toggle="modal">
-                            <div class="map-icon mr-md-1"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
-                            <div class="homepage-address text-left">
-                                <h2><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
-                            </div>
-                            <div class="down-icon"> <i class="fa fa-angle-down" aria-hidden="true"></i> </div>
+                                <div class="map-icon mr-md-1"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
+                                <div class="homepage-address text-left">
+                                    <h2><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
+                                </div>
+                                <div class="down-icon"> <i class="fa fa-angle-down" aria-hidden="true"></i> </div>
                             </div>
                             @endif
                             @endif
@@ -239,17 +206,23 @@ $pages = \App\Models\Page::with([
                                 </a> <%}); %>
                             </div>
                             </script> @if(auth()->user()) @if($client_preference_detail->show_wishlist==1)
-                            <div class="icon-nav mr-2 d-none d-sm-block"> <a class="fav-button" href="{{route('user.wishlists')}}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>
+                            <div class="icon-nav mr-2 d-none d-sm-block"> <a class="fav-button" href="{{route('user.wishlists')}}">
+                                <!-- <i class="fa fa-heart" aria-hidden="true"></i>  -->
+                                <img class="al_img_opacity" src="https://img.icons8.com/material-outlined/24/000000/like--v1.png"/>
+                            </a> </div>
                             @endif @endif
                             <div class="icon-nav d-none d-sm-inline-block">
                             <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}"> @csrf <input type="hidden" id="cliLang" name="cliLang" value="{{session('customerLanguage')}}"> <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}"> </form>
                             <ul class="d-flex align-items-center m-0">
-                                <li class="mr-2 pl-0 d-ipad"> <span class="mobile-search-btn"><i class="fa fa-search" aria-hidden="true"></i></span> </li>
+                                <!-- <li class="mr-2 pl-0 d-ipad"> <span class="mobile-search-btn">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </span> </li> -->
                                 <li class="onhover-div pl-0 shake-effect">
                                     @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
                                     <a class="btn btn-solid d-flex align-items-center " href="{{route('showCart')}}">
-                                        <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i>
-                                        <span>{{__('Cart')}}•</span>
+                                        <!-- <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i> -->
+                                        <img class="al_img_opacity" src="https://img.icons8.com/material-outlined/24/000000/fast-cart.png"/>
+                                        <!-- <span>{{__('Cart')}}•</span> -->
                                         <span id="cart_qty_span"></span>
                                     </a> @endif @endif
                                     <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script>
@@ -428,7 +401,7 @@ $pages = \App\Models\Page::with([
             </div>
         </div>
     </div>
-    <div class="menu-navigation al">
+    <div class="menu-navigation_al">
       <div class="container-fluid">
          <div class="row">
             <div class="col-12">
@@ -447,10 +420,10 @@ $pages = \App\Models\Page::with([
                      @endforeach
                   </ul>
                </div>
-               <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider">
+               <ul id="main-menu" class="sm d-flex justify-content-center pixelstrap sm-horizontal menu-slider" data-aos="zoom-in">
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
-                  <li class="al_main_category">
+                  <li class="al_main_category" data-aos="zoom-in">
                      <a href="{{route('categoryDetail', $cate['slug'])}}">
                         @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
                         <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
@@ -483,6 +456,7 @@ $pages = \App\Models\Page::with([
 
     {{-- @endif --}}
 </header>
+
 <div class=" @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset al_offset-top @else al_offset-top-home @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div>
 <script type="text/template" id="nav_categories_template">
     <!-- <li>

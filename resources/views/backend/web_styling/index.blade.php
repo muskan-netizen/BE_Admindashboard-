@@ -58,7 +58,7 @@
                                         <input type="text" id="site_top_header_color" name="site_top_header_color" class="form-control ss_form_submit" value="{{ old('site_top_header_color', $client_preferences->site_top_header_color ?? '#4c4c4c')}}">
                                     </div>
                                     </div>
-                                
+
                                 <div class="col-md-4  mb-0">
                                     <h4 class="header-title">{{ __("Show Dark Mode") }}</h4>
                                     <ul class="pl-0 mb-0">
@@ -83,7 +83,7 @@
                                     </ul>
                                 </div>
                             </div>
-                            
+
                         </div>
                         <div class="row">
                             <div class="card ">
@@ -164,7 +164,7 @@
                                             <div class="mb-0">
                                                 <input type="checkbox" id="hide_nav_bar" data-plugin="switchery" name="hide_nav_bar" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->hide_nav_bar == 1 ? 'checked' : ''}}>
                                             </div>
-                                        </li> 
+                                        </li>
                                         @endif
                                         <li class="d-flex align-items-center justify-content-between mt-2">
                                             <h4 class="header-title mb-2">{{ __("Quick Link in Header") }}</h4>
@@ -226,7 +226,7 @@
                             </div>
                         </div>
                     </div>
-                </div> 
+                </div>
             </form>
             @if($client_preference_detail->business_type != 'taxi')
             <div class="card card-box">
@@ -250,7 +250,7 @@
 <!-- cab booking template -->
 <form id="favicon-form-pickup" method="post" enctype="multipart/form-data">
 <div class="row" >
-    <div class="col-xl-9" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <div class="col-md-9" ondrop="drop(event)" ondragover="allowDrop(event)">
         <div class="card-box home-options-list">
             <div class="row mb-2">
                 <div class="col-sm-8">
@@ -361,7 +361,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3">
+    <div class="col-md-3">
         <div class="card-box home-options-list">
             <div class="row mb-2">
                 <div class="col-sm-12">

@@ -15,6 +15,7 @@ $set_common_business_type = $client_preference_detail->business_type??'';
     a {color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;}
   </style>
    @yield('css')
+
 </head>
 @php
 $dark_mode = '';
@@ -55,12 +56,19 @@ else if($client_preference_detail->show_dark_mode == 2){
  </style>
 @endif
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
-  @yield('content')
+@if(isset($set_template)  && $set_template->template_id == 3)
+
+  <article class="al_mew_wrapper_design">
+
+
+  @endif
+@yield('content')
   @if(isset($set_template)  && $set_template->template_id == 1)
   @include('layouts.store/footer-content-template-one')
   @elseif(isset($set_template)  && $set_template->template_id == 2)
   @include('layouts.store/footer-content')
   @elseif(isset($set_template)  && $set_template->template_id == 3)
+
   @include('layouts.store/footer-content-template-two')
   @else
   @endif

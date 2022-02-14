@@ -6,78 +6,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 
 @endphp
-<style>
-	.top-header.site-topbar.al_custom_head {
-        background-color: #fff;
-    }
-    .al_custom_head_map_box{
-        background: rgb(255, 255, 255);
-        border-radius: 0.8rem;
-        box-shadow: rgb(28 28 28 / 8%) 0px 2px 8px;
-        border: 1px solid rgb(232, 232, 232);
-    }
-    .al_custom_head.site-topbar .location-bar i{
-        color: #000 !important;
-    }
-    .al_custom_head.site-topbar .location-bar h2 {
-        color: #000;
-        font-size: 14px !important;
-        width: 100%;
-        padding-right: 40px;
-    }
-    .al_custom_head.site-topbar .location-bar span {
-        color: #000 !important;
-        border-right: 1px solid #777;
-    }
-
-    .al_custom_head .onhover-dropdown span:before,
-    .al_custom_head.top-header .header-dropdown li a,
-    .al_custom_head.top-header .header-dropdown li{
-        color: #777;
-    }
-    .al_custom_head.site-topbar .location-bar h2:after {
-        color: #000;
-        margin-left: 0;
-        position: absolute;
-        right: 0;
-    }
-    .al_custom_head .homepage-address {
-        position: relative;
-        width: calc(100% - 146px);
-    }
-    .al_custom_head.site-topbar .location-bar h2:after {
-        position: absolute;
-        border-width: 7px;
-        border-style: solid;
-        border-color: #000 transparent transparent;
-        right: 20px;
-        top: 15px;
-        color: #000;
-        margin-left: 0;
-        content: "";
-    }
-    .location-bar.d-inline-flex.align-items-center.position-relative {
-    width: 100%;
-    border-right: 1px solid;
-}
-.al_custom_head_map_box button.btn {
-    padding-right: 0;
-}
-h2.homepage-address {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    font-size: 14px;
-    line-height: 50px;
-    margin: 0;
-    cursor: pointer!important;
-}
-
-</style>
 <div class="top-header site-topbar al_custom_head">
     <div class="container">
         <div class="row d-flex align-items-center justify-content-between">
-            <div class="col-6 d-flex align-items-center justify-content-start">
+            <div class="col-6 d-flex align-items-center justify-content-start"  data-aos="fade-right">
                 <a class="navbar-brand mr-3" style="min-width:150px;" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                 <div class=" al_custom_head_map_box p-2 d-inline-flex align-items-center justify-content-start">
                     @if( (Session::get('preferences')))
@@ -91,15 +23,9 @@ h2.homepage-address {
                                     @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp
                                 <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off">
                             </div>
-
-
                         @endif
                     @endif
                 </div>
-                <!-- <div class="radius-bar d-xl-inline al_custom_search mr-2">
-
-                           <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
-                        </div> -->
             </div>
 
             <div class="col-4 d-none text-right pr-0">
@@ -109,7 +35,7 @@ h2.homepage-address {
                     </ul>
                 </div>
             </div>
-            <div class="col-6 text-right d-sm-inline d-none">
+            <div class="col-6 text-right d-sm-inline al_z_index d-none" data-aos="zoom-in">
             @php
             $applocale = 'en';
             if(session()->has('applocale')){
@@ -197,7 +123,7 @@ h2.homepage-address {
         </div>
     </div>
 
-    <div class="mobile-menu main-menu d-block d-sm-none">
+    <div class="mobile-menu main-menu d-block d-sm-none" >
         <div class="menu-right">
             <ul class="header-dropdown icon-nav">
                 <li class="onhover-div mobile-setting">
