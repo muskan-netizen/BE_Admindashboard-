@@ -17,6 +17,7 @@ use App\Models\User;
 // use App\Models\AutoRejectOrderCron;
 use Log;
 use Carbon\Carbon;
+use Twilio\Rest\Client as TwilioClient;
 // use App\Models\Order;
 
 class SendCampaignNotification extends Command
@@ -166,33 +167,33 @@ class SendCampaignNotification extends Command
     }
 
 
-    // protected function sendSms($provider, $sms_key, $sms_secret, $sms_from, $to, $body){
-    //     try{
-    //         $client_preference =  getClientPreferenceDetail();
-    //         if($client_preference->sms_provider == 1)
-    //         {
-    //             $client = new TwilioClient($sms_key, $sms_secret);
-    //             $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
-    //         }elseif($client_preference->sms_provider == 2) //for mtalkz gateway
-    //         {
-    //             $crendentials = json_decode($client_preference->sms_credentials);
-    //             $send = $this->mTalkz_sms($to,$body,$crendentials);
-    //         }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
-    //         {
-    //             $crendentials = json_decode($client_preference->sms_credentials);
-    //             $send = $this->mazinhost_sms($to,$body,$crendentials);
-    //         }elseif($client_preference->sms_provider == 4) //for unifonic gateway
-    //         {
-    //             $crendentials = json_decode($client_preference->sms_credentials);
-    //             $send = $this->unifonic($to,$body,$crendentials);
-    //         }else{
-    //             $client = new TwilioClient($sms_key, $sms_secret);
-    //             $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
-    //         }
-    //     }
-    //     catch(\Exception $e){
-    //         return '2';
-    //     }
-    //     return '1';
-	// }
+    protected function sendSms($provider, $sms_key, $sms_secret, $sms_from, $to, $body){
+        try{
+            $client_preference =  getClientPreferenceDetail();
+            if($client_preference->sms_provider == 1)
+            {
+                $client = new TwilioClient($sms_key, $sms_secret);
+                $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+            }elseif($client_preference->sms_provider == 2) //for mtalkz gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mTalkz_sms($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->mazinhost_sms($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 4) //for unifonic gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->unifonic($to,$body,$crendentials);
+            }else{
+                $client = new TwilioClient($sms_key, $sms_secret);
+                $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+            }
+        }
+        catch(\Exception $e){
+            return '2';
+        }
+        return '1';
+	}
 }
