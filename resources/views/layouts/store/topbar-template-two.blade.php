@@ -112,17 +112,26 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <li class="onhover-dropdown mobile-account"> <i class="fa fa-user" aria-hidden="true"></i>
                         {{__('My Account')}}
                         <ul class="onhover-show-div">
-                            @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
+                            @if(Auth::user())
+                                @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
+                                    <li>
+                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                    </li>
+                                @endif
                                 <li>
-                                    <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                    <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
                                 </li>
+                                <li>
+                                    <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
+                                </li>
+                            @else
+                             <li>
+                                <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
+                            </li>
+                            <li>
+                                <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
+                            </li>
                             @endif
-                            <li>
-                                <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
-                            </li>
-                            <li>
-                                <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
-                            </li>
                         </ul>
                     </li>
                 </ul>

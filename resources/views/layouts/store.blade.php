@@ -62,6 +62,18 @@ else if($client_preference_detail->show_dark_mode == 2){
 
 
   @endif
+<header>
+    <div class="mobile-fix-option"></div>
+    @if(isset($set_template)  && $set_template->template_id == 1)
+    @include('layouts.store/left-sidebar-template-one')
+    @elseif(isset($set_template)  && $set_template->template_id == 2)
+    @include('layouts.store/left-sidebar')
+    @elseif(isset($set_template)  && $set_template->template_id == 3)
+    @include('layouts.store/left-sidebar-template-two')
+    @else
+    @include('layouts.store/left-sidebar-template-one')
+    @endif
+</header>
 @yield('content')
   @if(isset($set_template)  && $set_template->template_id == 1)
   @include('layouts.store/footer-content-template-one')
