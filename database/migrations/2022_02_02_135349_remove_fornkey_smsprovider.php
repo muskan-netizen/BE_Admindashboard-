@@ -14,11 +14,14 @@ class RemoveFornkeySmsprovider extends Migration
     public function up()
     {
         $keyExists = DB::select( DB::raw("SHOW KEYS FROM client_preferences WHERE Key_name='sms_provider'") );
-if ($keyExists){
-Schema::table('client_preferences', function (Blueprint $table) {
-$table->dropForeignIfExists(['sms_provider']);
-});
-}
+
+        if ($keyExists){
+            Schema::table('client_preferences', function (Blueprint $table) {
+                $table->dropForeignIfExists(['sms_provider']);
+            });
+        }
+
+
     }
 
     /**
