@@ -237,6 +237,7 @@ class DispatcherController extends FrontController
                     })
                     ->where('user_id', $user->id)->where('id', $order_id)->select('*','id as total_discount_calculate')->first();
                 }
+                $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
                 if ($order) {
                     $order->user_name = $order->user->name;
                     $order->user_image = $order->user->image;
@@ -275,12 +276,24 @@ class DispatcherController extends FrontController
                             }
                             $product->variant_options = $variant_options;
                             if (!empty($product->addon)) {
-                                foreach ($product->addon as $addon) {
-                                    $product_addons[] = array(
-                                        'addon_id' =>  $addon->addon_id,
-                                        'addon_title' =>  $addon->set->title,
-                                        'option_title' =>  $addon->option->title,
-                                    );
+                                foreach ($product->addon as $k => $addon) {
+                                    // $product_addons[] = array(
+                                    //     'addon_id' =>  $addon->addon_id,
+                                    //     'addon_title' =>  $addon->set->title,
+                                    //     'option_title' =>  $addon->option->title,
+                                    // );
+                                    $opt_quantity_price = 0;
+                                    $opt_price_in_currency = $addon->option ? $addon->option->price : 0;
+                                    $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                                    $opt_quantity_price = $opt_price_in_doller_compare * $product->quantity;
+                                    $product_addons[$k]['quantity'] = $product->quantity;
+                                    $product_addons[$k]['addon_id'] = $addon->addon_id;
+                                    $product_addons[$k]['option_id'] = $addon->option_id;
+                                    $product_addons[$k]['price'] = $opt_price_in_currency;
+                                    $product_addons[$k]['addon_title'] = $addon->set->title;
+                                    $product_addons[$k]['quantity_price'] = $opt_quantity_price;
+                                    $product_addons[$k]['option_title'] = $addon->option ? $addon->option->title : 0;
+                                    // $product_addons[$k]['multiplier'] = $clientCurrency->doller_compare;
                                 }
                             }
                             $product->product_addons = $product_addons;
