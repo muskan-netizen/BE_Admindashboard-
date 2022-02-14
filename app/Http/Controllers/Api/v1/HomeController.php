@@ -219,7 +219,7 @@ class HomeController extends BaseController
             if($venderFilterbest && ($venderFilterbest == 1) ){
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
-            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get();
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
 
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);

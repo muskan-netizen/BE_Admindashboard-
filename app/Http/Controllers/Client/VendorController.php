@@ -21,8 +21,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\ShiprocketController;
-use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout};
+use App\Http\Controllers\AhoyController;
+use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout,VendorRegistrationSelectOption};
 use GuzzleHttp\Client as GCLIENT;
+use App\Exports\VendorSimpelExport;
 use DB;
 use App\Models\VendorRegistrationDocument;
 
@@ -656,9 +658,11 @@ class VendorController extends BaseController
         $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
         $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
         $ship_creds = ShippingOption::select('status', 'test_mode')->where('code', 'shiprocket')->where('status', 1)->first();
+        $ahoys = ShippingOption::select('status', 'test_mode')->where('code', 'ahoy')->where('status', 1)->first();
         $checkShip = ($ship_creds->status) ?? 0;
+        $checkAhoyShip = ($ahoys->status) ?? 0;
 
-        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip]);
+        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip]);
     }
 
     /**   show vendor page - payout tab      */
@@ -997,6 +1001,28 @@ class VendorController extends BaseController
         return redirect()->back()->with('success', $msg . ' updated successfully!');
     }
 
+    public function updateAhoyLocation(Request $request, $domain = '',  $id)
+    {
+        $vendor = Vendor::where('id', $id)->first();
+        $msg = 'Ahoy delivery location name added.';
+
+        if ($request->has('location_name')) {
+            $ship = new AhoyController();
+            $save = (object)$ship->createLocation($vendor,$request);
+            //dd($save);
+             if(isset($save) && $save->code=='200'){
+                $vendor->ahoy_location  = json_encode($save->response);
+                $vendor->save();
+                return redirect()->back()->with('success', $msg . ' successfully!');
+                }elseif(isset($save) && $save->code=='401'){
+                    return redirect()->back()->with('success',$save->response->message);
+                }else{
+                    return redirect()->back()->with('error_delete',$save->response->error);
+                }
+        }
+
+    }
+
     public function updateLocation(Request $request, $domain = '',  $id)
     {
         $vendor = Vendor::where('id', $id)->first();
@@ -1010,7 +1036,7 @@ class VendorController extends BaseController
                 $vendor->save();
                 return redirect()->back()->with('success', $msg . ' successfully!');
              }
-             return redirect()->back()->with('success',$save->errors->address[0]);
+             return redirect()->back()->with('error_delete',$save->errors->address[0]);
         }
 
     }
@@ -1107,10 +1133,11 @@ class VendorController extends BaseController
                 $csv_vendor_import->save();
             }
             $data = Excel::import(new VendorImport($csv_vendor_import->id), $request->file('vendor_csv'));
-            return response()->json([
-                'status' => 'success',
-                'message' => 'File Successfully Uploaded!'
-            ]);
+            //pr($data);
+            // return response()->json([
+            //     'status' => 'success',
+            //     'message' => 'File Successfully Uploaded!'
+            // ]);
         }
         return response()->json([
             'status' => 'error',
@@ -1538,6 +1565,8 @@ class VendorController extends BaseController
                     }
 
         }
-
-
+        // this vendio export ony for get simel vendor ewport
+        public function export() {
+            return Excel::download(new VendorSimpelExport, 'vendor_simpel.xlsx');
+        }
 }

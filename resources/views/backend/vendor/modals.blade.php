@@ -67,14 +67,12 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="form-group mb-3" >
+                                    <div class="form-group mb-3"  id="pincodeInput">
                                         {!! Form::label('title', __('Pincode'),['class' => 'control-label']) !!}
                                         <input type="text" name="pincode" id="pincode" placeholder="" class="form-control" value="{{@$vendor->pincode}}">
-                                        @if($errors->has('Pincode'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('Pincode') }}</strong>
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
                                         </span>
-                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -485,7 +483,7 @@
                 <div class="modal-body">
                     <div class="row">
                     <div class="col-md-12 text-center">
-                            <a href="{{url('file-download'.'/sample_vendor.csv')}}">{{ __("Download Sample file here!") }}</a>
+                            <a as="{{url('file-download'.'/sample_vendor.csv')}}" href="{{ route('vendor.export') }}">{{ __("Download Sample file here!") }}</a>
                         </div>
                         <div class="col-md-12">
                             <div class="row mb-2">

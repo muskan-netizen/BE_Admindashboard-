@@ -54,49 +54,14 @@ trait Dunzo{
 
 
   //Quotation Function Api
-  public function getQuotations($data)
+  public function getfees($data)
   {
     $this->configDetails();
-    
-    $method = 'POST';
-    $path = '/v2/quotations';
-    $body = $this->getQuotationBody($data);
-    $token = $this->token($method,$path,$body);
-  
     $curl = curl_init();
-    curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->app_url.$path,
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => '',
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 3,
-      CURLOPT_FOLLOWLOCATION => true,
-      CURLOPT_HEADER => false, // Enable this option if you want to see what headers Lalamove API returning in response
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS => $body,
-      CURLOPT_HTTPHEADER => array(
-          "Content-type: application/json; charset=utf-8",
-          "Authorization: hmac ".$token, // A unique Signature Hash has to be generated for EVERY API call at the time of making such call.
-          "Accept: application/json",
-          "X-LLM-Market: {$this->region}" // Please note to which city are you trying to make API call
-      ),
-  ));
-  
-  $response = curl_exec($curl);
-  $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-  curl_close($curl);
-  return array('code'=>$httpCode,'response'=>$response);
-}
-
-
-public function createOrder($data)
-{
-    $this->configDetails();
-    $curl = curl_init();
+    //dd($data);
 
     curl_setopt_array($curl, array(
-    CURLOPT_URL => $this->app_url."/oporder/create",
+    CURLOPT_URL => $this->app_url."/oporder/quote",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => "",
     CURLOPT_MAXREDIRS => 10,
@@ -105,9 +70,7 @@ public function createOrder($data)
     CURLOPT_CUSTOMREQUEST => "POST",
     CURLOPT_POSTFIELDS => $data,
     CURLOPT_HTTPHEADER => array(
-        "apikey: {$this->api_key}",
-        "cache-control: no-cache",
-        "content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"
+        "apikey: {$this->api_key}"
     ),
     ));
 
@@ -119,7 +82,48 @@ public function createOrder($data)
     if ($err) {
     return  $err;
     } else {
-    return $response;
+    return json_decode($response);
+    }
+
+
+  //"status": true,
+  // "code": 200,
+  // "message": "Success",
+  // "data": {
+  //     "distance": 15,
+  //     "estimated_price": 204
+  // }
+
+}
+
+
+public function createOrder($data)
+{
+    $this->configDetails();
+    $curl = curl_init();
+    //dd($data);
+    curl_setopt_array($curl, array(
+    CURLOPT_URL => $this->app_url."/oporder/create",
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => "",
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 30,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => "POST",
+    CURLOPT_POSTFIELDS => $data,
+    CURLOPT_HTTPHEADER => array(
+        "apikey: {$this->api_key}"
+    ),
+    ));
+
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+
+    curl_close($curl);
+    if ($err) {
+    return  $err;
+    } else {
+    return json_decode($response);
     }
 
 } 
@@ -140,9 +144,7 @@ public function createOrder($data)
     CURLOPT_CUSTOMREQUEST => "POST",
     CURLOPT_POSTFIELDS => $data,
     CURLOPT_HTTPHEADER => array(
-        "apikey: {$this->api_key}",
-        "cache-control: no-cache",
-        "content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"
+        "apikey: {$this->api_key}"
     ),
     ));
 
@@ -175,11 +177,8 @@ public function createOrder($data)
         CURLOPT_CUSTOMREQUEST => "POST",
         CURLOPT_POSTFIELDS => $data,
         CURLOPT_HTTPHEADER => array(
-            "apikey: ".$this->api_key,
-            "cache-control: no-cache",
-            "content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
-            "postman-token: a044fdc2-2ad4-5ce8-504c-fd5e9b2773e1"
-        ),
+            "apikey: ".$this->api_key
+            ),
         ));
 
         $response = curl_exec($curl);
@@ -217,8 +216,6 @@ public function createOrder($data)
     CURLOPT_POSTFIELDS => $data,
     CURLOPT_HTTPHEADER => array(
         "apikey: {$this->api_key}",
-        "cache-control: no-cache",
-        "content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
     ),
     ));
 

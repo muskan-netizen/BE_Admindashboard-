@@ -250,84 +250,42 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     @endif
                 </div>
                 <div class="col-lg-6">
-                    <div class="row mb-1">
-                        <div class="col-8 text-lg-right">
-                            <% if(product.coupon_amount_used > 0) { %>
-                            <p class="total_amt m-0">{{__('Coupon Discount')}} :</p>
-                            <% } %>
-                            {{-- <p class="total_amt mt-2">{{__('Delivery Fee')}}</p> --}}
 
+                    <% if(product.delOptions) { %>
+                        <div class="row mb-1 d-flex align-items-center">
+                            <div class="col-5 text-lg-right">
+                                <label class="m-0 radio">
+                                    {{__('Delivery Fee')}} :</label>
+                                </div>
+                            <div class="col-md-7">
+                                <%= product.delOptions %>
+                            </div>
                         </div>
-                        <div class="col-4 text-right">
+                    <% } %>
+                    
+                    <div class="row mb-1">
+                        <div class="col-5 text-lg-right">
+                            <% if(product.coupon_amount_used > 0) { %>
+                                <label class="m-0 radio">{{__('Coupon Discount')}} :</label>
+                            <% } %>
+                        </div>
+                        <div class="col-7 text-right">
                             <% if(product.coupon_amount_used > 0) { %>
                                 <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.coupon_amount_used) %></p>
                                 <% } %>
                         </div>
                     </div>
 
-                    <% if(product.delOptions) { %>
-                        <div class="row mb-1">
-                            <div class="col-5 text-lg-right">
-                            </div>
-                            <div class="col-md-7">
-                                <label class="radio pull-right">
-                                    {{__('Delivery Fee')}} :</label>
-                                        <%= product.delOptions %>
-                            </div>
-                        </div>
-                    <% } %>
-
-                    <% if(product.delivery_fee_charges > 0 ) { %>
-                        <div class="row mb-1">
-                            <div class="col-8 text-lg-right">
-                                <label class="radio pull-right">
-                                    {{__('Dispatcher')}} :
-                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee radio" value="<%= Helper.formatPrice(product.delivery_fee_charges) %>" data-dcode="D" data-id="<%= product.vendor.id %>" <%= (cart_details.delivery_type == 'D')?'checked':'' %>  />
-                                    <span class="checkround"></span>
-                                </label>
-                            </div>
-                            <div class="col-4 text-right  <%= ((product.promo_free_deliver)?'discard_price':'') %>">
-                                {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges) %>
-                            </div>
-                        </div>
-                    <% } %>
-
-
-                    <% if(product.delivery_fee_charges_lalamove > 0) { %>
-                        <div class="row mb-1">
-                            <div class="col-8 text-lg-right">
-                                <label class="radio pull-right">
-                                    {{__('Lalamove')}} :
-                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee radio" value="<%= Helper.formatPrice(product.delivery_fee_charges_lalamove) %>"  data-dcode="L" data-id="<%= product.vendor.id %>" <%= (cart_details.delivery_type == 'L')?'checked':'' %> />
-                                    <span class="checkround"></span>
-                                </label>
-                            </div>
-                            <div class="col-4 text-right <%= ((product.promo_free_deliver)?'discard_price':'') %> ">
-                                {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges_lalamove) %>
-                            </div>
-                        </div>
-                    <% } %>
-
-                    <% if(product.delivery_fee_charges_ship > 0) { %>
-                        <div class="row mb-1">
-                            <div class="col-8 text-lg-right">
-                                <label class="radio pull-right">
-                                    {{__('Shiprocket')}} :
-                                    <input type="radio" name="deliveryFee[<%= product.vendor.id %>]" class="delivery-fee radio" value="<%= Helper.formatPrice(product.delivery_fee_charges_ship) %>"  data-dcode="SR" data-id="<%= product.vendor.id %>" <%= (cart_details.delivery_type == 'SR')?'checked':'' %> />
-                                    <span class="checkround"></span>
-                                </label>
-                            </div>
-                            <div class="col-4 text-right <%= ((product.promo_free_deliver)?'discard_price':'') %>">
-                                {{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.delivery_fee_charges_ship) %>
-                            </div>
-                        </div>
-                    <% } %>
-
                     <div class="row">
-                        <div class="col-12 text-right">
-
-                            <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.product_total_amount) %></p>
-                        </div>
+                        <% if(cart_details.vendorCnt>1) { %>
+                            <div class="col-5 text-lg-right">
+                                <label class="m-0 radio">{{__('Sub Total')}} :</label>
+                            </div>
+                            <div class="col-md-7 text-right"> 
+                                <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.product_total_amount) %></p> 
+                            </div>
+                       
+                            <% } %>
                     </div>
 
                 </div>
@@ -384,7 +342,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         </div>
         <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">
             <div class="row">
-                <div class="col-6">{{__('Sub Total')}}</div>
+                <div class="col-6">{{__('Total')}}</div>
                 <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
             </div>
             <hr class="my-2">
@@ -1336,13 +1294,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         var code = method.replace('radio-', '');
 
         if (code != '') {
+            $("#cart_payment_form .option-wrapper").addClass('d-none');
             $("#cart_payment_form ."+code+"_element_wrapper").removeClass('d-none');
         } else {
-            $("#cart_payment_form .option_wrapper").addClass('d-none');
+            $("#cart_payment_form .option-wrapper").addClass('d-none');
         }
 
         if (code == 'yoco') {
-            $("#cart_payment_form .yoco_element_wrapper").removeClass('d-none');
+            // $("#cart_payment_form .yoco_element_wrapper").removeClass('d-none');
             // Create a new dropin form instance
 
             var yoco_amount_payable = $("input[name='cart_total_payable_amount']").val();
@@ -1359,7 +1318,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         // }
 
         if (code == 'checkout') {
-            $("#cart_payment_form .checkout_element_wrapper").removeClass('d-none');
+            // $("#cart_payment_form .checkout_element_wrapper").removeClass('d-none');
             Frames.init(checkout_public_key);
         }
         // else {

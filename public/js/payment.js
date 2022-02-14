@@ -957,7 +957,7 @@ $(document).ready(function() {
     }
 
     ///////////////////////////Stripe FPX payment Gateway //////////////////////////////
-    window.paymentViaStripeFPX = function paymentViaStripeFPX(address_id, payment_option_id, order) {
+    window.paymentViaStripeFPX = function paymentViaStripeFPX(address_id='', payment_option_id='', order='') {
         let total_amount = 0;
         let tip = 0;
         let cartElement = $("input[name='cart_total_payable_amount']");
@@ -968,7 +968,7 @@ $(document).ready(function() {
         let returnParams = '';
 
         let ajaxData = [];
-        if (cartElement.length > 0) {
+        if (path.indexOf("cart") !== -1) {
             total_amount = cartElement.val();
             payment_form = 'cart';
             ajaxData.push(
@@ -977,11 +977,11 @@ $(document).ready(function() {
                 {name: 'payment_form', value: 'cart'}
             );
             returnParams += 'order=' + order.order_number;
-        } else if (walletElement.length > 0) {
+        } else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
             payment_form = 'wallet';
             ajaxData.push({name: 'payment_form', value: 'wallet'});
-        } else if (subscriptionElement.length > 0) {
+        } else if (path.indexOf("subscription") !== -1) {
             total_amount = subscriptionElement.val();
             payment_form = 'subscription';
             ajaxData = $("#subscription_payment_form").serializeArray();
@@ -991,9 +991,9 @@ $(document).ready(function() {
             payment_form = 'tip';
             ajaxData.push( 
                 {name: 'payment_form', value: 'tip'},
-                {name: 'order_number', value: order.order_number}
+                {name: 'order_number', value: $("#order_number").val()}
             );
-            returnParams += 'order=' + order.order_number;
+            returnParams += 'order=' + $("#order_number").val();
         }
         ajaxData.push({ name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id });
         returnParams += '&amount=' + total_amount + '&payment_form=' + payment_form;

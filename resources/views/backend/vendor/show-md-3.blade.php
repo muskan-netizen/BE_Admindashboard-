@@ -195,6 +195,43 @@
 
 
 @if(Auth::user()->is_superadmin == 1)
+
+@if(isset($checkAhoyShip))
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.ahoy.pickuplocation', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Add Pickup Location Ahoy Delivery") }}</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        <input type="text" name="location_name" class="form-control" value="{{@$vendor->ahoy_location? json_decode($vendor->ahoy_location)->locationName :''}}" {{(($vendor->ahoy_location)? 'disabled' :'')}} placeholder="{{__('Location Name')}}" required>
+                    </div>
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        <div class="form-group w-100">
+                            <label class="radio">{{__('Location Type')}}</label>
+                        <select class="form-control" name="location_type">
+                            <option value="1" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationType =='1')?'Selected':'' : ''}}>Tower, (either office or apartment)</option>
+                            <option value="2" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationType =='2')?'Selected':'' : ''}}>Building (villa, police station. etc)</option>
+                            <option value="3" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationType =='3')?'Selected':'' : ''}}>Commercial (warehouse)</option>
+                        </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationName)?'disabled':'' : ''}} >{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+
 @if(isset($checkShip))
 <div class="card-box">
     <div class="row text-left">

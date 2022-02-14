@@ -8,8 +8,10 @@ Route::get('/debug-sentry', function () {
 
 
 Route::group(['middleware' => ['domain']], function () {
-	Route::any('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
-	Route::any('webhook/shiprocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
+	Route::post('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
+	Route::post('webhook/shiprocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
+	Route::post('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');
+	Route::post('webhook/ahoy','AhoyController@ahoyWebhook')->name('ahoyWebhook');
 
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
@@ -117,12 +119,17 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/pagarme/card','Front\PagarmeController@createPaymentCard')->name('payment.pagarme.createPaymentCard');
 
 	//Authorize.Net
-	Route::match(['get','post'],'payment/authorize/page','Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
+	Route::match(['get','post'],'payment/authorize_net/page','Front\AuthorizeGatewayController@beforePayment')->name('payment.authorize.beforePayment');
 	Route::post('payment/authorize','Front\AuthorizeGatewayController@createPayment')->name('payment.authorize.createPayment');
 
 	// Checkout
 	Route::post('payment/checkout', 'Front\CheckoutGatewayController@checkoutPurchase')->name('payment.checkoutPurchase');
 	Route::post('payment/checkout/notify', 'Front\CheckoutGatewayController@checkoutNotify')->name('payment.checkoutNotify');
+
+	//Passbase 
+	Route::get('passbase/page','Front\PassbaseController@index')->name('passbase.page');
+	Route::get('passbase/store','Front\PassbaseController@storeAuthkey')->name('passbase.store');
+	Route::any('passbase/webhook','Front\PassbaseController@webhook')->name('passbase.webhook');
 
 
 

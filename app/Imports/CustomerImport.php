@@ -70,13 +70,19 @@ class CustomerImport implements ToCollection
                         }
 
                         if (!User::where('phone_number',$da[1])->orWhere('email',$da[2])->exists()) {
-                            $newusers[] = $insert_vendor_details;
+                            //$newusers[] = $insert_vendor_details;
+                            $id = User::insertGetId($insert_vendor_details);
+                            $user = User::find($id);
+                            if(isset($da[4]) && $da[4]>0){
+                                $wallet = $user->wallet;
+                                $wallet->depositFloat($da[4], ['Wallet has been <b>Credited</b>  by Admin']);
+                            }   
                         }
                     }
 
                     if(isset($newusers) && count($newusers)>0)
                     {
-                        User::insert($newusers);
+                       // User::insert($newusers);
                     }
 
                 }
