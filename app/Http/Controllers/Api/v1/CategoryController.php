@@ -89,7 +89,7 @@ class CategoryController extends BaseController
                     $vendor_ids[] = $vendor_category->vendor_id;
                 }
             }
-            $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
+            $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude', 'max_safety');
             $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
 
             // if (($preferences) && ($preferences->is_hyperlocal == 1)) {
