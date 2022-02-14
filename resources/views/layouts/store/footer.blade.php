@@ -195,11 +195,9 @@
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
-
+<script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
 @if(isset($set_template)  && $set_template->template_id ==3)
 <script type="text/javascript" src="{{asset('js/custom_page_two.js')}}"></script>
-@else
-<script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
 @endif
 <script type="text/javascript" src="{{asset('js/location.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>
