@@ -68,7 +68,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 <div class="footer-contant">
                                     <ul class="contact-list al">
                                         <li class="pl-0">
-                                        <i class="fa-solid fa-location-dot"></i>
+                                            <i class="fa fa-map-marker" aria-hidden="true"></i>
                                             <span>{{$clientData ? ($clientData->contact_address ?? $clientData->company_address)  : ''}}</span>
                                         </li>
                                         <li class="pl-0">
