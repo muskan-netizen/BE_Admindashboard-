@@ -292,8 +292,9 @@ class StoreController extends BaseController{
 			if ($product_categories) {
 				foreach($product_categories as $pc){
 					$p_categories->push($pc->category);
-				}
-				$product_categories_build = $this->buildTree($p_categories->toArray());
+				}				
+				$product_categories_build = $this->buildTree(array_filter($p_categories->toArray()));
+
 				$product_categories_hierarchy = $this->printCategoryOptionsHeirarchy($product_categories_build);
 				foreach($product_categories_hierarchy as $k => $cat){
 					$myArr = array(1,3,7,8,9);
