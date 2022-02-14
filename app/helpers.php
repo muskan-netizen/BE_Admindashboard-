@@ -265,51 +265,50 @@ function createSlug($str, $delimiter = '-'){
 
 }
 
-    function getBaseprice($dist,$option = 'lalamove')
-    {
-        $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code',$option)->where('status', 1)->first();
-        if($simp_creds && $simp_creds->credentials){
-            $creds_arr = json_decode($simp_creds->credentials);
-            $base_price = $creds_arr->base_price??'0';
-            if($base_price>0)
-            {
-                $distance = $creds_arr->distance??'0';
-                $amount_per_km = $creds_arr->amount_per_km??'0';
-
-            }
-            $lalamove_status = $simp_creds->status??'';
-        }
-         $distance = $dist;  
-        if($distance < 1 || $base_price < 1)
+function getBaseprice($dist,$option = 'lalamove')
+{
+    $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code',$option)->where('status', 1)->first();
+    if($simp_creds && $simp_creds->credentials){
+        $creds_arr = json_decode($simp_creds->credentials);
+        $base_price = $creds_arr->base_price??'0';
+        if($base_price>0)
         {
-            return 0;    
+            $distance = $creds_arr->distance??'0';
+            $amount_per_km = $creds_arr->amount_per_km??'0';
+
         }
-        
-        $base_price = $base_price;
-        $amount_per_km = $amount_per_km;
-        $total = $base_price + ($distance * $amount_per_km);
-        return  $total;
-    // + ($paid_duration * $pricingRule->duration_price);
+        $lalamove_status = $simp_creds->status??'';
     }
-
-
-    function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 0)
+        $distance = $dist;  
+    if($distance < 1 || $base_price < 1)
     {
+        return 0;    
+    }
+    
+    $base_price = $base_price;
+    $amount_per_km = $amount_per_km;
+    $total = $base_price + ($distance * $amount_per_km);
+    return  $total;
+// + ($paid_duration * $pricingRule->duration_price);
+}
+
+
+function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 0)
+{
     $Duration = (($Duration==0)?'60':$Duration);
 
     $user = Auth::user();
-    if(isset($user->timezone) && !empty($user->timezone))
-    $timezoneset = $user->timezone;
-    else
-    {   
+    if(isset($user->timezone) && !empty($user->timezone)){
+        $timezoneset = $user->timezone;
+    }
+    else{   
         $client = ClientData::orderBy('id','desc')->select('id','timezone')->first();
 
         if(isset($client->timezone) && !empty($client->timezone))
-        $timezoneset = $client->timezone;
+            $timezoneset = $client->timezone;
         else
-        $timezoneset = 'Asia/Kolkata';
+            $timezoneset = 'Asia/Kolkata';
     }
-    
 
     $cr = Carbon::now()->addMinutes($delayMin);
     $now = dateTimeInUserTimeZone24($cr, $timezoneset);
@@ -317,16 +316,13 @@ function createSlug($str, $delimiter = '-'){
     $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
     $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
     $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
-    if($nowT > $nowE)
-    {
-    return [];
-    }elseif($nowT>$nowS)
-    {
-    $StartTime = date('H:i',strtotime($now));
+    if($nowT > $nowE){
+        return [];
+    }elseif($nowT>$nowS){
+        $StartTime = date('H:i',strtotime($now));
     }else{
-    $StartTime = date('H:i',strtotime($nowA));
+        $StartTime = date('H:i',strtotime($nowA));
     }
-    
     
     $ReturnArray = array ();
     $StartTime = strtotime ($StartTime); //Get Timestamp
@@ -336,118 +332,65 @@ function createSlug($str, $delimiter = '-'){
     
     while ($StartTime <= $EndTime)
     {
-    $endtm = $StartTime + $AddMins;
-    if($endtm>$EndTime)
-    {
-    $endtm = $EndTime;
-    }
-    
-    $ReturnArray[] = date ("G:i", $StartTime).' - '.date ("G:i", $endtm);
-    $StartTime += $AddMins+60;
-    $endtm = 0;
+        $endtm = $StartTime + $AddMins;
+        if($endtm>$EndTime){
+            $endtm = $EndTime;
+        }
+        $ReturnArray[] = date ("G:i", $StartTime).' - '.date ("G:i", $endtm);
+        $StartTime += $AddMins+60;
+        $endtm = 0;
     }
     return $ReturnArray;
 }
     
 function showSlot($myDate = null,$vid,$type = 'delivery',$duration="60")
 {
-$slotDuration = Vendor::select('slot_minutes')->where('id',$vid)->first();
-$duration = ($slotDuration->slot_minutes) ?? $duration;
-$type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
-//type must be a : delivery , takeaway,dine_in
-$client = ClientData::select('timezone')->first();
-$viewSlot = array();
-if(!empty($myDate))
-{ $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
-}else{
-$myDate = date('Y-m-d');
-$mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
-}
-$mytime =$mytime->dayOfWeek+1;
-$slots = VendorSlot::where('vendor_id',$vid)
-->whereHas('days',function($q)use($mytime,$type){
-return $q->where('day',$mytime)->where($type,'1');
-})
-->get();
-$min[] = '';
-$cart = CartProduct::where('vendor_id',$vid)->get();
-if(isset($cart) && $cart->count()>0){
-foreach($cart as $product)
-{
-    $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
-    $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
-    $min[] = (($delayHr * 60) + $delayMin);
-}
-}
-
-if(isset($slots) && count($slots)>0){
-foreach($slots as $slott){
-if(isset($slott->days->id))
-{
-$slotss[] = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
-}else{
-$slotss[] = [];
-}
-}
-
-$arr = array();
-$count = count($slotss);
-for($i=0;$i<$count;$i++){
-$arr = array_merge($arr,$slotss[$i]);
-}
-
-if(isset($arr)){
-foreach($arr as $k=> $slt)
-{
-$sl = explode(' - ',$slt);
-$viewSlot[$k]['name'] = date('h:i:A',strtotime($sl[0])).' - '.date('h:i:A',strtotime($sl[1]));
-$viewSlot[$k]['value'] = $slt;
-}
-}
-}
-
-return $viewSlot;
-}
-
-function showSlotTemp($myDate = null, $vid, $user_id, $type = 'delivery',$duration="60")
-{
-    //   $type = $type;
+    $slotDuration = Vendor::select('slot_minutes')->where('id',$vid)->first();
+    $duration = ($slotDuration->slot_minutes) ?? $duration;
+    $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
     //type must be a : delivery , takeaway,dine_in
     $client = ClientData::select('timezone')->first();
     $viewSlot = array();
-    if(!empty($myDate)){
+    if(!empty($myDate))
+    {
         $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
     }else{
-        $myDate  = date('Y-m-d'); 
+        $myDate = date('Y-m-d');
         $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
     }
     $mytime =$mytime->dayOfWeek+1;
     $slots = VendorSlot::where('vendor_id',$vid)
-        ->whereHas('days',function($q)use($mytime,$type){
-            return $q->where('day',$mytime)->where($type,'1');
-        })->get();
-    
+    ->whereHas('days',function($q)use($mytime,$type){
+        return $q->where('day',$mytime)->where($type,'1');
+    })
+    ->get();
     $min[] = '';
-    $cart = TempCartProduct::where('vendor_id',$vid)->get();
-    foreach($cart as $product){
-       $min[] = (($product->product->delay_order_hrs * 60) + $product->product->delay_order_min);
+    $cart = CartProduct::where('vendor_id',$vid)->get();
+    if(isset($cart) && $cart->count()>0){
+        foreach($cart as $product)
+        {
+            $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
+            $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
+            $min[] = (($delayHr * 60) + $delayMin);
+        }
     }
 
     if(isset($slots) && count($slots)>0){
-        foreach($slots as $slot){
-            //  echo '=h-='.$slot->dayOne->id;
-            if(isset($slot->dayOne->id) && ($slot->dayOne->id > 0))
-            {   
-               $slotss[] = SplitTimeTemp($user_id, $myDate, $slot->start_time, $slot->end_time, $duration, max($min));
+        foreach($slots as $slott){
+            if(isset($slott->days->id))
+            {
+                $slotss[] = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
             }else{
                 $slotss[] = [];
             }
         }
+
         $arr = array();
         $count = count($slotss);
         for($i=0;$i<$count;$i++){
             $arr = array_merge($arr,$slotss[$i]);
         }
+
         if(isset($arr)){
             foreach($arr as $k=> $slt)
             {
@@ -457,25 +400,87 @@ function showSlotTemp($myDate = null, $vid, $user_id, $type = 'delivery',$durati
             }
         }
     }
+
     return $viewSlot;
 }
 
-function SplitTimeTemp($user_id, $myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 5)
+function showSlotTemp($myDate = null, $vid, $user_id, $type = 'delivery',$duration="60")
+{
+    $slotDuration = Vendor::select('slot_minutes')->where('id',$vid)->first();
+    $duration = ($slotDuration->slot_minutes) ?? $duration;
+    
+    //type must be a : delivery , takeaway,dine_in
+    $client = ClientData::select('timezone')->first();
+    $viewSlot = array();
+    if(!empty($myDate))
+    {
+        $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
+    }else{
+        $myDate = date('Y-m-d');
+        $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
+    }
+    $mytime =$mytime->dayOfWeek+1;
+    $slots = VendorSlot::where('vendor_id',$vid)
+    ->whereHas('days',function($q)use($mytime,$type){
+        return $q->where('day',$mytime)->where($type,'1');
+    })
+    ->get();
+    $min[] = '';
+    $cart = TempCartProduct::where('vendor_id',$vid)->get();
+    if(isset($cart) && $cart->count()>0){
+        foreach($cart as $product)
+        {
+            $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
+            $delayMin= isset($product->product->delay_order_min) ? ($product->product->delay_order_min) : 0;
+            $min[] = (($delayHr * 60) + $delayMin);
+        }
+    }
+
+    if(isset($slots) && count($slots)>0){
+        foreach($slots as $slott){
+            if(isset($slott->days->id))
+            {
+                $slotss[] = SplitTime($myDate,$slott->start_time,$slott->end_time,$duration,max($min));
+            }else{
+                $slotss[] = [];
+            }
+        }
+
+        $arr = array();
+        $count = count($slotss);
+        for($i=0;$i<$count;$i++){
+            $arr = array_merge($arr,$slotss[$i]);
+        }
+
+        if(isset($arr)){
+            foreach($arr as $k=> $slt)
+            {
+                $sl = explode(' - ',$slt);
+                $viewSlot[$k]['name'] = date('h:i:A',strtotime($sl[0])).' - '.date('h:i:A',strtotime($sl[1]));
+                $viewSlot[$k]['value'] = $slt;
+            }
+        }
+    }
+
+    return $viewSlot;
+}
+
+function SplitTimeTemp($user_id, $myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 0)
 {
     $Duration = (($Duration==0)?'60':$Duration);
+
     $user = Auth::user();
-    if(isset($user->timezone) && !empty($user->timezone))
-    $timezoneset = $user->timezone;
-    else
-    {   
+    if(isset($user->timezone) && !empty($user->timezone)){
+        $timezoneset = $user->timezone;
+    }
+    else{   
         $client = ClientData::orderBy('id','desc')->select('id','timezone')->first();
 
         if(isset($client->timezone) && !empty($client->timezone))
-        $timezoneset = $client->timezone;
+            $timezoneset = $client->timezone;
         else
-        $timezoneset = 'Asia/Kolkata';
+            $timezoneset = 'Asia/Kolkata';
     }
-    
 
     $cr = Carbon::now()->addMinutes($delayMin);
     $now = dateTimeInUserTimeZone24($cr, $timezoneset);
@@ -483,37 +488,30 @@ function SplitTimeTemp($user_id, $myDate,$StartTime, $EndTime, $Duration="60",$d
     $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
     $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
     $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
-    if($nowT > $nowE)
-    {
+    if($nowT > $nowE){
         return [];
-    }elseif($nowT>$nowS)
-    {
+    }elseif($nowT>$nowS){
         $StartTime = date('H:i',strtotime($now));
     }else{
         $StartTime = date('H:i',strtotime($nowA));
     }
-
-
+    
     $ReturnArray = array ();
-    $StartTime    = strtotime ($StartTime); //Get Timestamp
-    $EndTime      = strtotime ($EndTime); //Get Timestamp
-    $AddMins  = $Duration * 60;
+    $StartTime = strtotime ($StartTime); //Get Timestamp
+    $EndTime = strtotime ($EndTime); //Get Timestamp
+    $AddMins = $Duration * 60;
     $endtm = 0;
-
-    while ($StartTime <= $EndTime) 
+    
+    while ($StartTime <= $EndTime)
     {
         $endtm = $StartTime + $AddMins;
-        if($endtm>$EndTime)
-        {
-         $endtm =  $EndTime;
+        if($endtm>$EndTime){
+            $endtm = $EndTime;
         }
-
         $ReturnArray[] = date ("G:i", $StartTime).' - '.date ("G:i", $endtm);
-        $StartTime += $AddMins+60; 
+        $StartTime += $AddMins+60;
         $endtm = 0;
     }
-    //dd($ReturnArray);
-    
     return $ReturnArray;
 }
 
