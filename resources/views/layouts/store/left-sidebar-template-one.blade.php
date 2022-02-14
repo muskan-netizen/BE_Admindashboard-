@@ -129,7 +129,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
    @if($client_preference_detail->business_type != 'taxi')
    <div class="main-menu">
       <div class="container d-block">
-         <div class="row align-items-center position-initial">
+         <div class="row align-items-center position-initial justify-content-center">
             <div class="col-lg-12">
                <div class="row mobile-header align-items-center justify-content-between my-sm-2">
                   <div class="logo ">
