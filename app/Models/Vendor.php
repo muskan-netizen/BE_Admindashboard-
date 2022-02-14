@@ -111,6 +111,9 @@ class Vendor extends Model{
   public function getAllCategory(){
     return $this->hasMany('App\Models\VendorCategory');
   }
+  public function getCustomCategory(){
+    return $this->hasMany('App\Models\Category','vendor_id','id');
+  }
 
   public function getById($id){
     return self::where('id',$id)->first();

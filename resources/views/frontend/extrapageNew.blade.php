@@ -12,7 +12,7 @@
 @endsection
 @section('content')
 <style>
-  .accordion a{position:relative;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;width:100%;padding:1rem 3rem 1rem 1rem;color:#7288a2;font-size:1.15rem;font-weight:400;border-bottom:1px solid #e5e5e5}.accordion a:hover,.accordion a:hover::after{cursor:pointer;color:#ff5353}.accordion a:hover::after{border:1px solid #ff5353}.accordion a.active{color:#ff5353;border-bottom:1px solid #ff5353}.accordion a::after{font-family:Ionicons;content:'\f218';position:absolute;float:right;right:1rem;font-size:1rem;color:#7288a2;padding:5px;width:30px;height:30px;-webkit-border-radius:50%;-moz-border-radius:50%;border-radius:50%;border:1px solid #7288a2;text-align:center}.accordion a.active::after{font-family:Ionicons;content:'\f209';color:#ff5353;border:1px solid #ff5353}.accordion .content{opacity:0;padding:0 1rem;max-height:0;border-bottom:1px solid #e5e5e5;overflow:hidden;clear:both;-webkit-transition:all .2s ease .15s;-o-transition:all .2s ease .15s;transition:all .2s ease .15s}.accordion .content p{font-size:1rem;font-weight:300}.accordion .content.active{opacity:1;padding:1rem;max-height:100%;-webkit-transition:all .35s ease .15s;-o-transition:all .35s ease .15s;transition:all .35s ease .15s}
+   /* .accordion a{position:relative;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;width:100%;padding:1rem 3rem 1rem 1rem;color:#7288a2;font-size:1.15rem;font-weight:400;border-bottom:1px solid #e5e5e5}.accordion a:hover,.accordion a:hover::after{cursor:pointer;color:#ff5353}.accordion a:hover::after{border:1px solid #ff5353}.accordion a.active{color:#ff5353;border-bottom:1px solid #ff5353}.accordion a::after{font-family:Ionicons;content:'\f218';position:absolute;float:right;right:1rem;font-size:1rem;color:#7288a2;padding:5px;width:30px;height:30px;-webkit-border-radius:50%;-moz-border-radius:50%;border-radius:50%;border:1px solid #7288a2;text-align:center}.accordion a.active::after{font-family:Ionicons;content:'\f209';color:#ff5353;border:1px solid #ff5353}.accordion .content{opacity:0;padding:0 1rem;max-height:0;border-bottom:1px solid #e5e5e5;overflow:hidden;clear:both;-webkit-transition:all .2s ease .15s;-o-transition:all .2s ease .15s;transition:all .2s ease .15s}.accordion .content p{font-size:1rem;font-weight:300}.accordion .content.active{opacity:1;padding:1rem;max-height:100%;-webkit-transition:all .35s ease .15s;-o-transition:all .35s ease .15s;transition:all .35s ease .15s} */
   input[data-plugin=switchery] {
     display: none!important;
 }
@@ -26,6 +26,32 @@
     font-size: 12px;
     font-weight: 900;
 }
+/*collapse css here--*/
+#faq-accordion .collase1 {
+    background: #fff !important;
+    padding: 14px 19px !important;
+    margin-bottom: 0px;
+    font-size: 14px;
+    border-color: var(--theme-deafult);
+}
+.faq-collapse .open {
+    font-size: 13px;
+    line-height: 20px;
+}
+.faq-card {
+    margin-bottom: 10px;
+}
+.faq-header {
+    padding: 0px 0px;
+}
+.faq-card {
+    background-color: #f4f4f4 !important;
+}
+.faq-collapse {
+    background: #fff;
+}
+
+/*end here-------------*/
 #addressInput .pac-container{top:65px!important;left:15px!important;}
 .dd-list .dd3-content img.rounded-circle.mr-1 {
     height: 30px;
@@ -473,16 +499,31 @@ body .switchery>small {width: 20px;height: 20px;}
             </form>
 
         @elseif ($page_detail->primary->type_of_form == 3)
-            <div class="accordion">
+            <div class="accordion" id="faq-accordion">
                 @foreach ($page_detail->faqs_details as $key =>$value)
+                <div class="card faq-card">
+                    <div class="card-header faq-header" id="heading_{{$key}}">
+                      <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collase1" type="button" data-toggle="collapse" data-target="#collapse_{{$key}}" aria-expanded="false" aria-controls="collapseOne">
+                            {{$value->question}}
+                        </button>
+                      </h2>
+                    </div>
 
+                    <div id="collapse_{{$key}}" class="collapse faq-collapse" aria-labelledby="heading_{{$key}}" data-parent="#accordionExample_{{$key}}">
+                      <div class="card-body open">
+                        {{$value->answer}}
+                      </div>
+                    </div>
+                  </div>
 
-                        <div class="accordion-item">
-                        <a>{{$value->question}}</a>
-                        <div class="content">
-                            <p>{{$value->answer}}</p>
-                        </div>
-                        </div>
+                        {{-- <div class="accordion-item">
+                            <a>{{$value->question}}</a>
+                            <div class="content">
+                                <p>{{$value->answer}}</p>
+                            </div>
+                        </div> --}}
+
 
 
                 @endforeach
@@ -578,14 +619,6 @@ function isNumberKey(evt) {
                 vendorAddressInitialize();
             });
         @endif
-        const items = document.querySelectorAll(".accordion a");
-
-        function toggleAccordion(){
-            this.classList.toggle('active');
-            this.nextElementSibling.classList.toggle('active');
-        }
-
-        items.forEach(item => item.addEventListener('click', toggleAccordion));
 
         $.ajaxSetup({
             headers: {

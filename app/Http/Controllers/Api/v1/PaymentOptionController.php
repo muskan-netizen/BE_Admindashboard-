@@ -75,6 +75,11 @@ class PaymentOptionController extends BaseController{
         return $gateway->stripePurchase($request);
     }
 
+    public function postPaymentVia_stripe_fpx(Request $request){
+        $gateway = new StripeGatewayController();
+        return $gateway->createStripeFPXPaymentIntent($request);
+    }
+
     public function postPaymentVia_paystack(Request $request){
         $gateway = new PaystackGatewayController();
         return $gateway->paystackPurchase($request);
@@ -124,7 +129,7 @@ class PaymentOptionController extends BaseController{
     }
     public function postPaymentVia_authorize_net(Request $request){
         $gateway = new AuthorizeGatewayController();
-        return $gateway->checkoutPurchase($request);
+        return $gateway->authorizePurchase($request); 
     }
 
     public function postPaymentVia_paypal(Request $request){

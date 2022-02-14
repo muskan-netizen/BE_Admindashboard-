@@ -5,6 +5,9 @@
 }.order-page .card-box {padding: 20px 20px 5px !important;}.progress-order {width: calc(100% + 48px);margin: -24px 0 20px;background: #00000012;
 color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;border-top-left-radius: 15px;border-top-right-radius: 15px;padding: 5px 0;
 }
+.error-msg {
+    font-size: 20px;
+}
 </style>
 
 <script type="text/template" id="order_page_template">
@@ -315,7 +318,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     </div>
 </div>
 <script type="text/template" id="no_order_template">
-    <div class="error-msg"><p>{{ __("You don't have orders right now.") }}</p></div>
+    <div class="error-msg mt-3">
+        <img class="mb-2" src="{{asset('images/no-order.svg')}}">
+        <p>{{ __("You don't have orders right now.") }}</p>
+    </div>
     </script>
 <div class="loader" id="order_list_order">
     <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
@@ -344,8 +350,8 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         </ul>
         <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
             <div class="tab-pane fade past-order show active" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
-            <div class="tab-pane fade" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
-            <div class="tab-pane fade past-order" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
+            <div class="tab-pane fade " id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
+            <div class="tab-pane fade past-order " id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
                 <div class="error-msg">
                     <p>{{ __('You have not any order yet now.') }}</p>
                 </div>

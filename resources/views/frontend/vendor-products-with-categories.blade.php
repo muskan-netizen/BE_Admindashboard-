@@ -460,9 +460,9 @@
                                                         @elseif($vendor->closed_store_order_scheduled == 1 && $checkSlot != 0)
                                                         <span class="badge badge-danger">Closed</span>
                                                         {{__('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.
-                                                            
+
                                                         @else
-                                                            <span class="badge badge-danger">Closed</span> 
+                                                            <span class="badge badge-danger">Closed</span>
                                                         @endif
                                                         </span>
                                                         {{-- <span data-toggle="tooltip" data-placement="right" title="Tooltip on right"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></span>
@@ -531,9 +531,8 @@
                             <div class="col-md-4"></div>
                             <div class="col-md-8"></div>
                             <div class="col-12">
-                                <hr>
                                 <div class="row vendor-products-wrapper">
-                                    <div class="col-sm-4 col-lg-3 border-right">
+                                    <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
                                         <nav class="scrollspy-menu">
                                             <ul>
                                                 @forelse($listData as $key => $data)
@@ -561,13 +560,13 @@
                                             @endif
                                         </div>
                                         @forelse($listData as $key => $data)
-                                            <section class="scrolling_section" id="{{ $data->category->slug }}">
+                                            <section class="scrolling_section " id="{{ $data->category->slug }}">
                                                 @if (!empty($data->products))
-                                                    <h2 class="category-head mt-0 mb-3">
+                                                    <h2 class="category-head mt-0 mb-3 pl-2">
                                                         {{ $data->category->translation_one->name }}
                                                         ({{ $data->products_count }})</h2>
                                                     @forelse($data->products as $prod)
-                                                        <div class="row cart-box-outer product_row classes_wrapper no-gutters mb-3"
+                                                        <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-gutters mb-3 p-2"
                                                             data-p_sku="{{ $prod->sku }}"
                                                             data-slug="{{ $prod->url_slug }}">
                                                             <div class="col-2">
