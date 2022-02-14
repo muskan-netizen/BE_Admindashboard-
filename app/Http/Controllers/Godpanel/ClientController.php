@@ -462,14 +462,13 @@ class ClientController extends Controller{
      }
 
      public function exportDb(Request $request,$databaseName){
-
         $client = Client::where('database_name',$databaseName)->first(['name', 'email', 'password', 'phone_number', 'database_host','database_path', 'database_name', 'database_username', 'database_password', 'logo', 'company_name', 'company_address', 'custom_domain', 'status', 'code', 'country_id', 'sub_domain'])->toarray();
         $check_if_already = 0;
-        $request->dump_into = 'PROD';
+        $stage = $request->dump_into??'PROD';
         $data = $request->all();
         if($client){
             
-            $check_if_already = Client::on($request->dump_into)->where(['database_name' => $client['database_name']])->orWhere(['sub_domain' => $client['sub_domain']])->count();
+            $check_if_already = Client::on($stage)->where(['database_name' => $client['database_name']])->where(['sub_domain' => $client['sub_domain']])->count();
             if($check_if_already == 0){
                 $clientData = array();
 
@@ -493,8 +492,7 @@ class ClientController extends Controller{
                 }
 
                 try {
-                   DB::connection($request->dump_into)->table('clients')->insert($clientData);
-               
+                    DB::connection($stage)->table('clients')->insert($clientData);
                     return redirect()->route('client.index')->with('success', 'Client Migrated!');
                 } catch (Exception $ex) {
                     return redirect()->route('client.index')->with('error', $ex->getMessage());
@@ -507,7 +505,6 @@ class ClientController extends Controller{
         }else{
             return redirect()->route('client.index')->with('error', 'This client not exist!!');
         }
-
 
     }
      
