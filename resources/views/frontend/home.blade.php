@@ -461,9 +461,5 @@
     // $(".mobile-back").on("click", function() {
     //     $(".sm-horizontal").css("right", "-410px");
     // });
-    $(document).ready(function() {
-    $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
-    $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight() + 78});
-  });
 </script>
 @endsection

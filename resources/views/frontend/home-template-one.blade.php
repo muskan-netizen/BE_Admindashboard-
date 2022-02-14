@@ -494,10 +494,4 @@
 @endsection @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-<script type="text/javascript">
-	$(document).ready(function() {
-    $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
-    $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight() + 78});
-  });
-</script>
 @endsection
