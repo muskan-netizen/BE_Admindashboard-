@@ -1,5 +1,5 @@
 <div id="user-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __("Add Customer") }}</h4>
@@ -264,7 +264,7 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="row mb-2">
-                                    <div class="col-md-12">            
+                                    <div class="col-md-12">
                                         <input type="file" accept=".csv" onchange="submitImportUserForm()" data-plugins="dropify" name="customer_csv" class="dropify" data-default-file="" required/>
                                         <p class="text-muted text-center mt-2 mb-0">{{ __("Upload") }} CSV</p>
                                     </div>
@@ -319,5 +319,5 @@
         </div>
     </div>
 
- 
+
 
