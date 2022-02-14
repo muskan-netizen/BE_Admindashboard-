@@ -9,7 +9,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
 <div class="top-header site-topbar al_custom_head">
     <div class="container">
         <div class="row d-flex align-items-center justify-content-between">
-            <div class="col-6 d-flex align-items-center justify-content-start"  data-aos="fade-right">
+            <div class="col-6 d-flex align-items-center justify-content-start"  data-aos="zoom-in">
                 <a class="navbar-brand mr-3" style="min-width:150px;" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                 <div class=" al_custom_head_map_box p-2 d-inline-flex align-items-center justify-content-start">
                     @if( (Session::get('preferences')))
@@ -123,7 +123,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         </div>
     </div>
 
-    <div class="mobile-menu main-menu d-block d-sm-none" >
+    <div class="mobile-menu main-menu d-block d-sm-none" data-aos="zoom-in">
         <div class="menu-right">
             <ul class="header-dropdown icon-nav">
                 <li class="onhover-div mobile-setting">

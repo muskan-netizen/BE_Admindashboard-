@@ -6,8 +6,6 @@
 	<!-- header, category  in layouts.store/left-sidebar-template-two-->
 	@include('layouts.store/left-sidebar-template-two')
 </header>
-
-
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
@@ -38,7 +36,8 @@
 </section>
  @endif
 
-<script type="text/template" id="vendors_template" >
+ <!-- vendors_template start -->
+<script type="text/template" id="vendors_template" data-aos="zoom-in">
 	<% _.each(vendors, function(vendor, k){%>
 		<div class="product-card-box position-relative">
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
@@ -62,7 +61,9 @@
 			</a>
 		</div>
 		<% }); %>
-</script>
+</script><!-- vendors_template end -->
+
+<!-- banner_template start -->
 <script type="text/template" id="banner_template" data-aos="zoom-in">
 	<% _.each(brands, function(brand, k){%>
 		<div>
@@ -71,7 +72,9 @@
 				<h6><%=brand.translation_title %></h6> </a>
 		</div>
 		<% }); %>
-</script>
+</script><!-- banner_template end -->
+
+<!-- products_template start -->
 <script type="text/template" id="products_template" data-aos="zoom-in">
 	<% _.each(products, function(product, k){ %>
 		<div class="product-card-box position-relative al">
@@ -83,22 +86,25 @@
 				<div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="<%=product.image_url %>" alt="" title="">
 					<div class="pref-timing"> </div>
 				</div>
-				<div class="media-body align-self-center">
+				<div class="media-body align-self-start">
 					<div class="inner_spacing px-0">
 						<div class="product-description">
 							<div class="d-flex align-items-center justify-content-between">
 								<h6 class="card_title mb-1 ellips"><%=product.title %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
 								<% if(product.averageRating > 0){%> <span class="rating-number"><%=product.averageRating %></span>
 									<%}%> @endif @endif </div>
-							<p>
-								<%=product.vendor_name %>
-							</p>
-							<p class="border-bottom pb-1">
-								<span>
-							{{__('In')}}
-								<%=product.category %></span>
-							</p>
-							<div class="d-flex align-items-center justify-content-between al_clock"> <b><% if(product.inquiry_only==0){%> <%=product.price %> <%}%></b>
+							<div class="product-description_list d-flex justify-content-between border-bottom">
+								<p>
+									<%=product.vendor_name %>
+								</p>
+								<p class="al_product_category">
+									<span>
+								{{__('In')}}
+									<%=product.category %></span>
+								</p>
+							</div>
+							<div class="d-flex align-items-center justify-content-between al_clock pt-2">
+								<b><% if(product.inquiry_only==0){%> <%=product.price %> <%}%></b>
 							</div>
 						</div>
 					</div>
@@ -106,10 +112,12 @@
 			</a>
 		</div>
 		<% }); %>
-</script>
+</script><!-- products_template end -->
+
+<!-- trending_vendors_template start -->
 <script type="text/template" id="trending_vendors_template" data-aos="zoom-in">
 	<% _.each(trending_vendors, function(vendor, k){%>
-		<div class="product-card-box position-relative">
+		<div class="product-card-box position-relative ">
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative">
 					<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
@@ -131,7 +139,9 @@
 			</a>
 		</div>
 		<% }); %>
-</script>
+</script><!-- trending_vendors_template end -->
+
+<!-- recent_orders_template start -->
 <script type="text/template" id="recent_orders_template" data-aos="zoom-in">
 	<% _.each(recent_orders, function(order, k){ %>
 		<% subtotal_order_price = total_order_price = total_tax_order_price = 0; %>
@@ -206,7 +216,9 @@
 					</div>
 					<% }); %>
 						<% }); %>
-</script>
+</script><!-- recent_orders_template end -->
+
+<!-- shimmer_effect start -->
 <section class="section-b-space p-t-0 pt-4 ratio_asos shimmer_effect" >
 	<div class="container mb-5">
 		<div class="row">
@@ -398,7 +410,9 @@
 		</div>
 	</div>
 	</div>
-</section>
+</section><!-- shimmer_effect end -->
+
+<!-- our_vendor_main_div start -->
 <section class="section-b-space ratio_asos d-none pt-0 mt-0 pb-0" id="our_vendor_main_div" data-aos="zoom-in">
 	<div class="vendors"> @foreach($homePageLabels as $key => $homePageLabel) @if($homePageLabel->slug == 'pickup_delivery') @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page') @elseif($homePageLabel->slug == 'brands')
 		<section class="popular-brands left-shape_ position-relative">
@@ -450,7 +464,9 @@
 					<div class="product-4 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@endif </div>
 			</div>
 		</section> @endif @endforeach </div>
-</section>
+</section><!-- our_vendor_main_div end -->
+
+<!-- no-store-wrapper start -->
 <section class="no-store-wrapper mb-3" data-aos="zoom-in">
 	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
 		<div class="row">
@@ -460,7 +476,9 @@
 			<div class="col-12 text-center mt-2">
 				<h4>{{__('There are no stores available in your area currently.')}}</h4> </div>
 		</div> @endif </div>
-</section>
+</section><!-- no-store-wrapper end -->
+
+<!-- age-restriction star -->
 <div class="modal age-restriction fade" id="age_restriction" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
@@ -480,7 +498,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div><!-- age-restriction end -->
 
 
 

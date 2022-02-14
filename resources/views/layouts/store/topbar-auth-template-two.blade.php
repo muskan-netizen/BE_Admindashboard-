@@ -6,9 +6,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 
 @endphp
-<style>
-
-</style>
 <div class="top-header site-topbar al_custom_head">
     <div class="container">
         <div class="row align-items-center justify-content-center">
