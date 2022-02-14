@@ -168,11 +168,11 @@ window.initializeSlider = function initializeSlider() {
         speed: 300,
         slidesToShow: 3,
         centerMode: true,
-        centerPadding: '60px',
+        centerPadding: '20px',
         slidesToScroll: 1,
         arrows: true,
         responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3, arrows: true, } },
             { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
             { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]

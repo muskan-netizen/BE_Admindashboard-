@@ -93,7 +93,7 @@
 								<h6 class="card_title mb-1 ellips"><%=product.title %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
 								<% if(product.averageRating > 0){%> <span class="rating-number"><%=product.averageRating %></span>
 									<%}%> @endif @endif </div>
-							<div class="product-description_list d-flex justify-content-between border-bottom">
+							<div class="product-description_list border-bottom">
 								<p>
 									<%=product.vendor_name %>
 								</p>
@@ -459,9 +459,9 @@
 			</div>
 			<div class="row">
 				<div class="col-12"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
-					<div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@elseif($homePageLabel->slug=='recent_orders')
-					<div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@else
-					<div class="product-4 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@endif </div>
+					<div class="product-5 product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@elseif($homePageLabel->slug=='recent_orders')
+					<div class="recent-orders product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@else
+					<div class="product-4 product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>@endif </div>
 			</div>
 		</section> @endif @endforeach </div>
 </section><!-- our_vendor_main_div end -->
