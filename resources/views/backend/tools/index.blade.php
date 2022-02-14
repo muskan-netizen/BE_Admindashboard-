@@ -127,7 +127,7 @@
             </form>
         </div>
         @endif
-        <div class="col-md-6">
+        <div class="col-md-3">
             <form method="POST" id="upload_image_tool" action="{{route('tools.uploadImage')}}">
             @csrf
             @method('POST')
@@ -253,10 +253,10 @@ $(document).ready(function() {
 
     function copyUrl(obj)
     {
-        var $temp = $("<input>"); 
+        var $temp = $("<input>");
         $("body").append($temp);
         var image_id = $(obj).data('image_id');
-        $temp.val($('#image_'+image_id).text()).select(); 
+        $temp.val($('#image_'+image_id).text()).select();
         document.execCommand("copy");
         $temp.remove();
         $("#show_copy_msg_on_click_copy").show();

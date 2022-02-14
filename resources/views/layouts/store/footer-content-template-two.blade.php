@@ -72,13 +72,11 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                             <span>{{$clientData ? ($clientData->contact_address ?? $clientData->company_address)  : ''}}</span>
                                         </li>
                                         <li class="pl-0">
-                                            <!-- <i class="icon-ic_call"></i>  -->
-                                            <svg style="height:20px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><defs><style>.cls-1{fill:#777;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path id="call" class="cls-1" d="M21.14,24c-.51-.05-1-.08-1.52-.14a21.74,21.74,0,0,1-9.22-3.21,22,22,0,0,1-7.7-8.16A21.44,21.44,0,0,1,.33,5.7,22.71,22.71,0,0,1,0,2.11,2,2,0,0,1,2.07,0h4.1A1.92,1.92,0,0,1,8.25,2a15.17,15.17,0,0,0,.66,4.13,2,2,0,0,1-.41,2C7.83,9,7.22,9.83,6.59,10.68a.3.3,0,0,0,0,.26A14.5,14.5,0,0,0,11,16.15c.66.46,1.37.87,2.07,1.29a.25.25,0,0,0,.22,0c.89-.66,1.78-1.32,2.65-2A1.9,1.9,0,0,1,17.63,15c.69.15,1.37.37,2.06.49a11.86,11.86,0,0,0,2,.2A2.08,2.08,0,0,1,24,17.44v4.87a7,7,0,0,1-.41.92,1.91,1.91,0,0,1-1.28.77Z"/></g></g></svg>
+                                            <i class="fa fa-phone"></i>
                                             <a href="tel: {{$clientData ? ($clientData->contact_phone_number ?? $clientData->phone_number) : ''}}"><span>{{$clientData ?  ($clientData->contact_phone_number ?? $clientData->phone_number) : ''}}</span></a>
                                         </li>
                                         <li class="pl-0">
-                                            <!-- <i class="icon-ic_mail"></i>  -->
-                                            <svg style="height:20px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27.96 24"><defs><style>.cls-1{fill:#777;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><g id="mail"><path class="cls-1" d="M27.9.17Q20,8.49,12,16.84L21.42,24Q24.71,12.06,28,.21Z"/><path class="cls-1" d="M26.3.06l0-.06L0,9.67l.28.18C2.69,11.24,5.09,12.62,7.49,14A.49.49,0,0,0,8.15,14L22.9,2.66Z"/><path class="cls-1" d="M11.3,16.47,22.85,4.32c.6-.62,1.19-1.25,1.78-1.88l-.05,0-.25.18L21.11,5,8.54,14.65a.47.47,0,0,0-.22.52c.22,1.57.42,3.14.63,4.7.11.84.23,1.67.34,2.5A.7.7,0,0,0,9.46,22q.77-2.52,1.54-5A1.46,1.46,0,0,1,11.3,16.47Z"/><path class="cls-1" d="M10.15,22.53l0,0,3.14-3.73-1.67-1.27Z"/></g></g></g></svg>
+                                            <i class="fa fa-envelope"></i>
                                             <a href="mailto: {{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}" style="text-transform:none"><span>{{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}</span></a>
                                         </li>
                                     </ul>

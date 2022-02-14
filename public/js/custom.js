@@ -168,7 +168,7 @@ window.initializeSlider = function initializeSlider() {
         speed: 300,
         slidesToShow: 4,
         centerMode: true,
-        centerPadding: '60px',
+        centerPadding: '20px',
         slidesToScroll: 4,
         arrows: true,
         responsive: [
@@ -983,7 +983,7 @@ $(document).ready(function() {
             total_amount = cartElement.val();
             tip = tipElement.val();
             ajaxData.push(
-                { name: 'tip', value: tip }, 
+                { name: 'tip', value: tip },
                 {name: 'order_number', value: order.order_number}
             );
         } else if ( (path.indexOf("wallet") !== -1)  ||  ((typeof cabbookingwallet !== 'undefined') && (cabbookingwallet == 1)) ) {
@@ -996,14 +996,14 @@ $(document).ready(function() {
         } else if ((typeof tip_for_past_order !== 'undefined') && (tip_for_past_order == 1)) {
             total_amount = walletElement.val();
             payment_form = 'tip';
-            ajaxData.push( 
+            ajaxData.push(
                 {name: 'order_number', value: $("#order_number").val()}
             );
         }
         ajaxData.push(
             { name: 'payment_form', value: payment_form },
-            { name: 'stripe_token', value: stripe_token }, 
-            { name: 'amount', value: total_amount }, 
+            { name: 'stripe_token', value: stripe_token },
+            { name: 'amount', value: total_amount },
             { name: 'payment_option_id', value: payment_option_id }
         );
         $.ajax({
