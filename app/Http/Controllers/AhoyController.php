@@ -212,24 +212,23 @@ class AhoyController extends Controller
 
 
     # get delivery fee createLocation Courier Service
-		public function createLocation($vendorId)
+		public function createLocation($vendor_details,$request)
 		{
 			$this->configuration();
-            $vendor_details = Vendor::find($vendorId);
             $data =array(
-                'locationName'=>$vendor_details->name ?? '',
+                'locationName'=>$request->location_name ?? '',
                 'Address'=>$vendor_details->address ?? '',
                 'latitude'=>$vendor_details->latitude ?? '',
                 'longitude'=>$vendor_details->longitude ?? '',
-                'locationType'=>1,
-                'PhoneNumber'=>$vendor_details->phone_number ?? '',
+                'locationType'=>$request->location_type??1,
+                'PhoneNumber'=>$vendor_details->phone_no ?? '',
                 'Email'=>$vendor_details->email ?? ''
             );
-		
+            //dd($data);
             if($this->status){
-                return $this->createNewLocation($vendorId);
+                return $this->createNewLocation($data);
             }
-            return 0; 
+            return false; 
 		}
 
 

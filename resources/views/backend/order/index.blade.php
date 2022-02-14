@@ -318,7 +318,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     </div>
 </div>
 <script type="text/template" id="no_order_template">
-    <div class="error-msg ">
+    <div class="error-msg mt-3">
         <img class="mb-2" src="{{asset('images/no-order.svg')}}">
         <p>{{ __("You don't have orders right now.") }}</p>
     </div>
@@ -349,9 +349,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             </li>
         </ul>
         <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
-            <div class="tab-pane fade past-order show active h-100 d-flex justify-content-center align-items-center" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
-            <div class="tab-pane fade h-100 d-flex justify-content-center align-items-center" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
-            <div class="tab-pane fade past-order h-100 d-flex justify-content-center align-items-center" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
+            <div class="tab-pane fade past-order show active" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
+            <div class="tab-pane fade " id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
+            <div class="tab-pane fade past-order " id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
                 <div class="error-msg">
                     <p>{{ __('You have not any order yet now.') }}</p>
                 </div>

@@ -233,7 +233,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4 mb-3">
+                <div class="col-xl-6 col-lg-12 mb-3">
                     <div class="card mb-0">
                         <div class="card-body p-2">
                             <div class="card-widgets d-flex align-items-center select-date">
@@ -257,7 +257,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5 mb-3">
+                <div class="col-xl-4 col-lg-6 mb-3">
                     <div class="card">
                         <div class="card-body">
                          <h4 class="header-title mb-0">{{ __('Revenue By Location') }}</h4>
@@ -267,7 +267,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-xl-2 col-lg-6 mb-3">
                     <div class="card">
                         <div class="card-body">
                          <h4 class="header-title mb-0 pb-2">{{ __("Orders (Top Categories)") }}</h4>

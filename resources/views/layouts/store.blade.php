@@ -101,11 +101,6 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5LPF1QP3Y3');
-
-  $(document).ready(function() {
-    $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
-    $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight() + 78});
-  });
 </script>
 
 </body>
