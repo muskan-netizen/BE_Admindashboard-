@@ -5,11 +5,11 @@ $languageList = \App\Models\ClientLanguage::with('language')->where('is_active',
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 
-@endphp 
+@endphp
 <div class="top-header site-topbar al_custom_head">
     <div class="container">
         <div class="row d-flex align-items-center justify-content-between">
-            <div class="col-6 d-flex align-items-center justify-content-start"  data-aos="fade-right">
+            <div class="col-6 d-flex align-items-center justify-content-start"  data-aos="zoom-in">
                 <a class="navbar-brand mr-3" style="min-width:150px;" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                 <div class=" al_custom_head_map_box p-2 d-inline-flex align-items-center justify-content-start">
                     @if( (Session::get('preferences')))
@@ -124,7 +124,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         </div>
     </div>
 
-    <div class="mobile-menu main-menu d-block d-sm-none" >
+    <div class="mobile-menu main-menu d-block d-sm-none" data-aos="zoom-in">
         <div class="menu-right">
             <ul class="header-dropdown icon-nav">
                 <li class="onhover-div mobile-setting">
