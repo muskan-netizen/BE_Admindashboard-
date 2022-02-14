@@ -50,8 +50,10 @@ class RejectOrderNotification extends Command
      */
     public function handle()
     {
-        $intervalTime = Carbon::now()->subMinutes(5);
-        $databases = AutoRejectOrderCron::where('auto_reject_time', '==', $intervalTime)->groupBy('database_name')->get();
+
+        $intervalTime = Carbon::now()->addMinutes(5);
+        $intervalTime2 = $intervalTime->addSeconds(40);
+        $databases = AutoRejectOrderCron::whereBetween('auto_reject_time',[$intervalTime,$intervalTime2])->groupBy('database_name')->get();
         foreach ($databases as $client) {
             $database_name = 'royo_' . $client->database_name;
             $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
@@ -75,7 +77,7 @@ class RejectOrderNotification extends Command
                 // DB::setDefaultConnection($database_name);
                 $client_preferences = ClientPreference::on($database_name)->first();
                 $notification_content = NotificationTemplate::on($database_name)->where(['id' => 11])->first();
-                $selected_database_orders = AutoRejectOrderCron::where('auto_reject_time', '==', $intervalTime)->where(['database_name' => $client->database_name])->get();
+                $selected_database_orders = AutoRejectOrderCron::whereBetween('auto_reject_time',[$intervalTime,$intervalTime2])->where(['database_name' => $client->database_name])->get();
                 foreach ($selected_database_orders as $order_key => $order_value) {
                     $orderVendorDetail = OrderVendor::on($database_name)->find($order_value->order_vendor_id);
                     $orderDetail = Order::on($database_name)->find($orderVendorDetail->order_id);
