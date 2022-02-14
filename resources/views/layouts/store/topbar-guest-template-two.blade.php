@@ -18,13 +18,14 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                     <i class="fa fa-map-marker mr-2" aria-hidden="true"></i>
                                     <h2 class="homepage-address"><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
                             </div>
-                            <div class="col d-inline-flex align-items-center justify-content-start p-0">
-                                <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
-                                    @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp
-                                <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off">
-                            </div>
                         @endif
                     @endif
+                    <div class="col d-inline-flex align-items-center justify-content-start p-0">
+                        <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            @php $searchPlaceholder=getNomenclatureName('Search', true); $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ? __('Search product, vendor, item') : $searchPlaceholder; @endphp
+                        <input class="form-control border-0 typeahead" type="search" placeholder="{{$searchPlaceholder}}" id="main_search_box" autocomplete="off"> 
+                    </div>
+                    <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
                 </div>
             </div>
 

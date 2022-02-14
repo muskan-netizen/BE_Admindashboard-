@@ -234,7 +234,7 @@
             </div>
             <div class="row">
                 <div class="col-xl-6 col-lg-12 mb-3">
-                    <div class="card mb-0">
+                    <div class="card mb-0 h-100">
                         <div class="card-body p-2">
                             <div class="card-widgets d-flex align-items-center select-date">
                                 <div class="btn-group mb-0 mx-2">
@@ -257,8 +257,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-4 col-lg-6 mb-3">
-                    <div class="card">
+                <div class="col-xl-4 col-lg-8 mb-3">
+                    <div class="card h-100">
                         <div class="card-body">
                          <h4 class="header-title mb-0">{{ __('Revenue By Location') }}</h4>
                          <div id="cardCollpase3" class="collapse pt-3 show">
@@ -267,8 +267,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-2 col-lg-6 mb-3">
-                    <div class="card">
+                <div class="col-xl-2 col-lg-4 mb-3">
+                    <div class="card h-100">
                         <div class="card-body">
                          <h4 class="header-title mb-0 pb-2">{{ __("Orders (Top Categories)") }}</h4>
                          <div class="gray-placeholder-img text-center py-5 my-2 hide" id="empty_card_collpase4">
