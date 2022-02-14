@@ -149,9 +149,9 @@ $(document).ready(function () {
                 series: series,
                 labels: labels,
                 chart: {
-                    width: 550,
+                    width: 320,
                     type: 'donut',
-                    offsetX: -100,
+                    offsetX: -130,
                 },
                 dataLabels: {
                     enabled: false
@@ -169,8 +169,8 @@ $(document).ready(function () {
                 }],
                 legend: {
                     position: 'bottom',
-                    offsetX: 0,
-                    height: 130,
+                    height: 150,
+                    width : 240
                 },
                 noData: {
                     text: "No Data Found",

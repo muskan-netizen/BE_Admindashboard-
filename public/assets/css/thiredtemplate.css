@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&family=Work+Sans:wght@400;500;600&display=swap');
+
+html,
+body,
+.al_mew_wrapper_design{
+    /* font-family: 'Work Sans', sans-serif !important; */
+    font-family: 'Varela Round', sans-serif !important;
+}
+.header-dropdown li {margin: 0;}
+.onhover-dropdown .onhover-show-div {display: none;}
+.top-header .header-dropdown .onhover-dropdown .onhover-show-div li {background-color: #fff;}
+.top-header .header-dropdown .onhover-dropdown .onhover-show-div li:first-child a {margin-top: 5px;}
+.onhover-dropdown:hover .onhover-show-div {display: block;}
+.al_count_tabs_new_design {position: relative;}
+.nav-tabs.navigation-tab_al{border:none;}
+.al_count_tabs_new_design li.navigation-tab-item {width: auto;border-radius: 0;padding-right: 40px;}
+.al_count_tabs_new_design li a.nav-link:focus,
+.al_count_tabs_new_design li a.nav-link:hover {border-color: transparent;outline: none;}
+.al_count_tabs_new_design li span {width: 60px;height: 60px;text-align: center;line-height: 60px;background-color: #eee;display: inline-block;
+padding: 0 12px;margin-right: 10px;border-radius: 50%;margin-bottom: 10px;}
+.al_count_tabs_new_design li a.nav-link {font-size: 20px;color: #888;border-bottom: 2px solid transparent !important;font-weight: 400;
+border-top: 0;border-left: 0;border-radius: 0;border-right: 0;}
+.al_count_tabs_new_design li a.nav-link.active {border-bottom: 2px solid var(--theme-deafult) !important;color: var(--theme-deafult);}
+.al_img_opacity{opacity: .4;}
+.al_count_tabs_new_design li a.nav-link.active img{filter: grayscale(0);}
+.al_count_tabs_new_design li span img {filter: grayscale(1);}
+.al_count_tabs_new_design li a.nav-link.active.al_delivery span{background-color: #fef4a5}
+.al_count_tabs_new_design li a.nav-link.active.al_dinein span{background-color: #f5f5ff}
+.al_count_tabs_new_design li a.nav-link.active.al_takeway span{background-color: #ffebdd}
+.al_new_ipad_view a.fav-button {font-size: 20px;margin-right: 10px;}
+.container_fluid_al{max-width:100%;width: 100%;}
+.menu-navigation_al {width: 100%;background-color: #f5f5f5;padding-top: 20px;padding-bottom: 20px;border-top: 1px solid #ddd;}
+.menu-navigation_al li.al_main_category {margin: 0 20px;}
+.al_new_ipad_view i.fa.fa-shopping-cart.mr-1 {font-size: 20px;}
+.menu-navigation_al li.al_main_category a .nav-cate-img {margin-bottom: 10px;}
+header#al_new_design.site-header.fixed-bar {box-shadow: 0 0 8px rgb(0 0 0 / 30%);}
+header#al_new_design.site-header.fixed-bar .menu-navigation_al {padding-top: 10px;padding-bottom: 10px;}
+.menu-navigation_al .al_main_category li:last-child{border:none;}
+.top-header.site-topbar.al_custom_head {background-color: #fff;}
+.al_custom_head_map_box{background: rgb(255, 255, 255);border-radius: 0.8rem;box-shadow: rgb(28 28 28 / 8%) 0px 2px 8px;border: 1px solid rgb(232, 232, 232);}
+.al_custom_head.site-topbar .location-bar i{color: #bbb !important;font-size: 18px;}
+.al_custom_head.site-topbar .location-bar h2 {color: #bbb;
+    font-size: 12px !important;
+    width: 100%;
+    padding-right: 40px;
+    line-height: 1.2;
+    font-weight: 300;
+    text-transform: capitalize;}
+.al_custom_head.site-topbar .location-bar span {color: #bbb !important;border-right: 1px solid #bbb;}
+.al_custom_head_map_box i.fa.fa-search {color: #bbb;}
+.al_custom_head .onhover-dropdown span:before,
+.al_custom_head.top-header .header-dropdown li a,
+.al_custom_head.top-header .header-dropdown li{color: #bbb;}
+.al_custom_head.site-topbar .location-bar h2:after {color: #000;margin-left: 0;position: absolute;right: 0;}
+.al_custom_head .homepage-address {position: relative;width: calc(100% - 146px);}
+.al_custom_head.site-topbar .location-bar h2:after {position: absolute;border-width: 7px;border-style: solid;border-color: #bbb transparent transparent;
+right: 20px;top: 4px;margin-left: 0;content: "";}
+.location-bar.d-inline-flex.align-items-center.position-relative {width: 100%;border-right: 1px solid;}
+.al_custom_head_map_box button.btn {padding-right: 0;}
+h2.homepage-address {text-overflow: ellipsis;white-space: nowrap;overflow: hidden;font-size: 14px;line-height: 50px;margin: 0;cursor: pointer!important;}
+.search_bar .icon-nav .btn.btn-solid {border: 0;min-width: auto;background-image: none;color: #777!important;padding: 0;}
+#al_new_design .pixelstrap a,
+#al_new_design .pixelstrap a:active,
+#al_new_design .pixelstrap a:hover {padding: 0;}
+#al_new_design .pixelstrap a,
+#al_new_design .pixelstrap a:active,
+#al_new_design .pixelstrap a:hover,
+#al_new_design .pixelstrap li a {padding: 0;width: auto;}
+#al_new_design .al_main_category_list li a{padding-left: 10px !important;text-align: left;}
+#al_new_design .pixelstrap ul {
+    padding: 5px 0 5px 0;
+    background: #fff;
+}
+#al_new_design .pixelstrap ul a:hover {
+    border-color: var(--theme-deafult)!important;
+    background: linear-gradient(90deg,#f7ebec 0,rgba(251,246,247,0) 92.47%);
+}
+#al_new_design .pixelstrap ul a.highlighted:hover:before,
+#al_new_design .pixelstrap ul a:active:hover:before,
+#al_new_design .pixelstrap ul a:focus:hover:before,
+#al_new_design .pixelstrap ul a:hover:before,
+#al_new_design .pixelstrap ul a:hover:hover:before {
+    width: 0;
+}
+.al_mew_wrapper_design .site-header .nav-cate-img{-webkit-transition: 0.5s;transition: 0.5s;}
+.al_mew_wrapper_design .site-header.fixed-bar .nav-cate-img{display: none;-webkit-transition: 0.5s;transition: 0.5s;}
+#al_new_design .pixelstrap li a {-webkit-transform: scale(1);transform: scale(1);}
+.al_mew_wrapper_design #myCarousel{border-radius: 40px;overflow: hidden;}
+.menu-navigation_al li.al_main_category a .nav-cate-img img {height: 80px;}
+.al_custom_head .al_z_index{z-index: 999;}
+.al_mew_wrapper_design h2.h2-heading {
+    text-transform: capitalize;
+    font-size: 32px;
+    letter-spacing: 0;
+    font-weight: 500;
+    color: #1c1c1c;
+}
+.al_mew_wrapper_design .footer-theme .sub-title li a:before{display: none;}
+.al_mew_wrapper_design .footer-theme .sub-title .payment-card-bottom li{display: inline-block;}
+.product-card-box.position-relative.al{
+    padding: 10px;
+    border-radius: 15px;
+    background-color: #fff;
+    border:1px solid transparent;
+}
+.product-card-box.position-relative.al:hover {
+    border-color: rgb(232, 232, 232);
+    box-shadow: rgb(28 28 28 / 12%) 0px 0.4rem 1.8rem;
+    box-sizing: border-box;
+    border:1px solid rgb(232, 232, 232);
+}
+.al_mew_wrapper_design .render_featured_products .slick-slide{padding: 30px 0;}

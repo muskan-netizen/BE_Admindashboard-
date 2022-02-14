@@ -50,6 +50,7 @@
                                 <div class="col-4 text-md-right">
                                     <div class="avatar-lg rounded-circle ml-auto">
                                         <i class="fe-heart_ font-22 avatar-title"><svg style="height:24px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M32 432C32 458.5 53.49 480 80 480h352c26.51 0 48-21.49 48-48V160H32V432zM160 236C160 229.4 165.4 224 172 224h168C346.6 224 352 229.4 352 236v8C352 250.6 346.6 256 340 256h-168C165.4 256 160 250.6 160 244V236zM480 32H32C14.31 32 0 46.31 0 64v48C0 120.8 7.188 128 16 128h480C504.8 128 512 120.8 512 112V64C512 46.31 497.7 32 480 32z"/></svg></i>
+
                                     </div>
                                 </div>
                             </div>
@@ -232,7 +233,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-12 mb-3">
+                <div class="col-xl-6 col-lg-12 mb-3">
                     <div class="card mb-0">
                         <div class="card-body p-2">
                             <div class="card-widgets d-flex align-items-center select-date">
@@ -256,9 +257,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-8 mb-3">
+                <div class="col-xl-4 col-lg-6 mb-3">
                     <div class="card">
                         <div class="card-body">
                          <h4 class="header-title mb-0">{{ __('Revenue By Location') }}</h4>
@@ -268,7 +267,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 mb-3">
+                <div class="col-xl-2 col-lg-6 mb-3">
                     <div class="card">
                         <div class="card-body">
                          <h4 class="header-title mb-0 pb-2">{{ __("Orders (Top Categories)") }}</h4>
@@ -276,7 +275,7 @@
                              <img class="img-fluid" src="{{asset('assets/images/Dashboard _ Royo.png')}}" alt="">
                          </div>
                          <div id="cardCollpase4" class="collapse show pt-3">
-                            <div id="apexchartsfwg700r2" class="apexcharts-canvas apexchartsfwg700r2 apexcharts-theme-light" style="height: 100%"></div>
+                            <div id="apexchartsfwg700r2" class="apexcharts-canvas apexchartsfwg700r2 apexcharts-theme-light"></div>
                          </div>
                         </div>
                     </div>

@@ -65,7 +65,6 @@ trait smsManager{
             config(['services.unifonic' => $crendential]);
             $to_number = substr($recipient, 1);
             $respont = Unifonic::send( $to_number,  $message, $senderID = null);
-
             return 1;
         }catch(Exception $e) {
             return $e->getMessage();

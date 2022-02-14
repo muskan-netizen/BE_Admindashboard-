@@ -67,14 +67,12 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="form-group mb-3" >
+                                    <div class="form-group mb-3"  id="pincodeInput">
                                         {!! Form::label('title', __('Pincode'),['class' => 'control-label']) !!}
                                         <input type="text" name="pincode" id="pincode" placeholder="" class="form-control" value="{{@$vendor->pincode}}">
-                                        @if($errors->has('Pincode'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('Pincode') }}</strong>
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
                                         </span>
-                                        @endif
                                     </div>
                                 </div>
                             </div>

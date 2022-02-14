@@ -4,6 +4,7 @@ namespace App\Http\Traits;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use App\Models\ShippingOption;
+use Log;
 
 trait Ahoy{
 
@@ -140,12 +141,12 @@ public function confirmPreOrder($data)
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     $result = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if (curl_errno($ch)) {
         $httpCode =  curl_error($ch);
     }
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($curl);
-    return array('code'=>$httpCode,'response'=>$response);
+    curl_close($ch);
+    return array('code'=>$httpCode,'response'=>json_decode($result));
 } 
 
 
@@ -156,8 +157,7 @@ public function confirmPreOrder($data)
         $end_url = 'https://ahoydev.azure-api.net/merchant/newLocaion?Subscriptionkey='.$this->api_key;
     }else{
         $end_url = 'https://ahoyapis.azure-api.net/merchant/newLocaion?Subscriptionkey='.$this->api_key;
-    }
-
+    }   
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $end_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -171,13 +171,13 @@ public function confirmPreOrder($data)
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     $result = curl_exec($ch);
-    if (curl_errno($ch)) {
-        $httpCode =  curl_error($ch);
-    }
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($curl);
-    return array('code'=>$httpCode,'response'=>$response);
-
+    if (curl_errno($ch)) {
+        \Log::info(curl_error($ch));
+        $return =  curl_error($ch);
+    }
+    curl_close($ch);
+    return array('code'=>$httpCode,'response'=>json_decode($result));
   }
 
 
