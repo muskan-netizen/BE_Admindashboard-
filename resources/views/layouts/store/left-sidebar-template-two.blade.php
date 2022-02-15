@@ -140,7 +140,7 @@ $pages = \App\Models\Page::with([
    </div>
    <!-- End Cab Booking Header From Here -->
    @if($client_preference_detail->business_type != 'taxi')
-    <div class="main-menu @if((\Request::route()->getName() != 'userHome') no-category-image @endif">
+    <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif">
         <div class="container_fluid_al d-block" >
             <div class="row align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
