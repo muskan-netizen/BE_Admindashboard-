@@ -418,6 +418,15 @@
                                 </a>
                             </li>
                             @endif
+
+                            @if(Auth::user()->is_superadmin == 1)
+                                <li>
+                                    <a href="{{ route('campaign.index')}}">
+                                        <span class="icon-celebrity"></span>
+                                        <span> {{ __("Campaigns") }} </span>
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
                     </li>
                 @endif

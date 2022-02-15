@@ -1114,8 +1114,15 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="page_header" class="mr-2 mb-0">{{__('Get Estimations')}}<small class="d-block pr-5">Enable to create product catalog to get estimations based on Auto String Matching or Bidding across Vendors.</small></label>
+                        <label for="get_estimations" class="mr-2 mb-0">{{__('Get Estimations')}}<small class="d-block pr-5">Enable to create product catalog to get estimations based on Auto String Matching or Bidding across Vendors.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="get_estimations" id="get_estimations" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->get_estimations == '1')) checked='checked' @endif>
+                        </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="max_safety_mod" class="mr-2 mb-0">{{__('Max Safety')}}<small class="d-block pr-5">Enable to give max safety option to vendors.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="max_safety_mod" id="max_safety_mod" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->max_safety_mod == '1')) checked='checked' @endif>
                         </span>
                      </div>
                   </div>
