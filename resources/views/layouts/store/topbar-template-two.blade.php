@@ -11,7 +11,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         <div class="row d-flex align-items-center justify-content-between">
             <div class="col-6 d-flex align-items-center justify-content-start"  data-aos="zoom-in">
                 <a class="navbar-brand mr-3" style="min-width:150px;" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
-                <div class=" al_custom_head_map_box p-2 d-inline-flex align-items-center justify-content-start">
+                <div class=" al_custom_head_map_box px-2 py-1 d-inline-flex align-items-center justify-content-start">
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
                             <div class=" col location-bar d-inline-flex align-items-center position-relative p-0 mr-2" href="#edit-address" data-toggle="modal">
