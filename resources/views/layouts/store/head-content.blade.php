@@ -8,7 +8,6 @@
 
 {{--<link rel="stylesheet" type="text/css" media="all" href="{{asset('css/waitMe.min.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('css/sweetalert2.min.css')}}">--}}
-<link rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
 @if(isset($set_template)  && $set_template->template_id == 3 && \Request::route()->getName() == 'userHome')
 @else
 <link rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
@@ -17,4 +16,4 @@
 <link href="{{asset('assets/css/thiredtemplate.css')}}" rel="stylesheet" type="text/css" />
 @endif
 <meta name="_token" content="{{ csrf_token() }}">
-@yield('css')
+@yield('css-links')
