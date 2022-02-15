@@ -1,14 +1,3 @@
-// jQuery(window).scroll(function() {
-//     var scroll = jQuery(window).scrollTop();
-//     if (scroll <= 50) {
-//         jQuery(".site-header").removeClass("fixed-bar");
-//     } else {
-//         jQuery(".site-header").addClass("fixed-bar");
-//     }
-// });
-
-
-
 // Material Select Initialization
 $(document).ready(function() {
     //$('.mdb-select').materialSelect();

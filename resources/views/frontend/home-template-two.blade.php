@@ -1,6 +1,6 @@
 @extends('layouts.store', ['title' => __('Home')])
 @section('css-links')
-<script src="{{asset('css/aos.css')}}"></script>
+<link rel="stylesheet"  src="{{asset('css/aos.css')}}">
 @endsection
 
 @section('content')
@@ -442,7 +442,7 @@
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between mb-2">
 						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2> <a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a> </div>
 					<div class="col-12">
-						<div class="suppliers-slider  al_suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
+						<div class=" al_t2_suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 					</div>
 				</div>
 			</div>
@@ -453,7 +453,7 @@
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
 						<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
 					<div class="col-12">
-						<div class="suppliers-slider al_suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
+						<div class=" al_t2_suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 					</div>
 				</div>
 			</div>
@@ -515,23 +515,5 @@
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script src="{{asset('js/aos.js')}}"></script>
-<script>
 
-    $('.al_suppliers-slider').slick({
-        infinite: true,
-        speed: 300,
-        slidesToShow: 6,
-        slidesToScroll: 1,
-        centerMode: false,
-        centerPadding: '60px',
-        arrows: true,
-        dots: false,
-        responsive: [
-            {breakpoint: 1199,settings: {slidesToShow: 4,slidesToScroll: 3,infinite: true,dots: false,centerMode: false,}},
-            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 3,dots: false,centerMode: true,}},
-            {breakpoint: 767,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}},
-            {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
-        ]
-    });
-</script>
 @endsection

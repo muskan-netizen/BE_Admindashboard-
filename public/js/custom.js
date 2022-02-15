@@ -224,6 +224,22 @@ window.initializeSlider = function initializeSlider() {
             {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
         ]
     });
+    $('.al_t2_suppliers-slider').slick({
+        infinite: true,
+        speed: 300,
+        slidesToShow: 6,
+        slidesToScroll: 1,
+        centerMode: false,
+        centerPadding: '60px',
+        arrows: true,
+        dots: false,
+        responsive: [
+            {breakpoint: 1199,settings: {slidesToShow: 4,slidesToScroll: 3,infinite: true,dots: false,centerMode: false,}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 3,dots: false,centerMode: true,}},
+            {breakpoint: 767,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}},
+            {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
+        ]
+    });
     $(".product-5").slick({
         arrows: true,
         dots: false,
@@ -284,7 +300,7 @@ window.initializeSlider = function initializeSlider() {
     });
 
     if ($('body').attr('dir') == 'rtl') {
-        $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
+        $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .al_t2_suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
     }
 }
 
