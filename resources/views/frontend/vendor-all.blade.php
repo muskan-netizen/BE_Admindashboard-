@@ -1,7 +1,6 @@
 @extends('layouts.store', ['title' => __('All Vendors')])
 @section('css-links')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
-<link rel="stylesheet" href="{{asset('css/aos.css')}}">
 @endsection
 @section('content')
 
@@ -197,9 +196,7 @@
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-<script src="{{asset('js/aos.js')}}"></script>
 <script type="text/javascript">
-  AOS.init();
    var text_image = "{{url('images/104647.png')}}";
    $(document).ready(function() {
        $.ajaxSetup({

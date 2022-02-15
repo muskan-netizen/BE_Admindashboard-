@@ -12,8 +12,11 @@
 @else
 <link rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
 @endif
-@if(isset($set_template)  && $set_template->template_id == 3)
+@if(isset($set_template)  && $set_template->template_id == 1)
+<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom-template-one.css')}}">
+@elseif(isset($set_template)  && $set_template->template_id == 3)
 <link href="{{asset('assets/css/thiredtemplate.css')}}" rel="stylesheet" type="text/css" />
+<link rel="stylesheet"  href="{{asset('css/aos.css')}}">
 @endif
 <meta name="_token" content="{{ csrf_token() }}">
 @yield('css-links')
