@@ -481,7 +481,7 @@ class ClientController extends Controller{
 
 
                     if($key == 'database_host'){
-                        $clientData[$key] = env('DB_HOST_PROD');
+                        $clientData[$key] = env('DB_HOST_'.$stage);
                     }
 
                     if($key == 'custom_domain'){
