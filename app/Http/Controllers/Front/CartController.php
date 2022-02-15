@@ -802,6 +802,9 @@ class CartController extends FrontController
                         ->where('is_live', 1)
                         ->first();
                     $doller_compare = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
+
+                    $up_prods = '';
+                    if(!empty($product->upSell))
                     $up_prods = $this->metaProduct($langId, $doller_compare, 'upSell', $product->upSell);
                     if($up_prods){
                         $upSell_products->push($up_prods);
