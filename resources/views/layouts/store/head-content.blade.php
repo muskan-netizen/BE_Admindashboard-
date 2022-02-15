@@ -8,13 +8,9 @@
 
 {{--<link rel="stylesheet" type="text/css" media="all" href="{{asset('css/waitMe.min.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('css/sweetalert2.min.css')}}">--}}
+<link rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
 @if(isset($set_template)  && $set_template->template_id == 3)
 <link href="{{asset('assets/css/thiredtemplate.css')}}" rel="stylesheet" type="text/css" />
-<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-
-@else
-<link rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
 @endif
 <meta name="_token" content="{{ csrf_token() }}">
 @yield('css')

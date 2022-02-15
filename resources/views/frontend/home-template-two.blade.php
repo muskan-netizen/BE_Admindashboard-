@@ -1,4 +1,7 @@
 @extends('layouts.store', ['title' => __('Home')])
+@section('css') 
+<script src="{{asset('css/aos.css')}}"></script>
+@endsection
 
 @section('content')
 <header>
@@ -508,4 +511,5 @@
 @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script src="{{asset('js/aos.js')}}"></script>
 @endsection
