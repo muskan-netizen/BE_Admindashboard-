@@ -510,7 +510,7 @@
                             <select class="form-control " id="typeSelectBox" name="tax_category">
                                 <option value="">Select</option>
                                 @foreach($taxCate as $cate)
-                                <option value="{{$cate->id}}" @if($product->variant[0]->tax_category_id == $cate->id) selected @endif>{{$cate->title??null}}</option>
+                                <option value="{{$cate->id}}" {{ $product->tax_category_id == $cate->id ? 'selected' : ''}} >{{$cate->title??null}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -628,7 +628,6 @@
                                 <option value="{{$coun->id}}" @if($product->country_origin_id == $coun->id) selected @endif>{{$coun->name}}</option>
                                 @endforeach
                             </select>
-
                         </div>
                     </div> -->
 
@@ -785,11 +784,7 @@
                                    </table>
                                 </div>
                              </div>
-
-
                           </div>
-
-
                  </div>
                  @endif
                  <!-- end product faqs -->
