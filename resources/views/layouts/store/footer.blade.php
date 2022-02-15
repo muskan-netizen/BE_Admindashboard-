@@ -194,7 +194,6 @@
 <script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
 @if(isset($set_template)  && $set_template->template_id ==3)
-<script type="text/javascript" src="{{asset('js/custom_page_two.js')}}"></script>
 <script src="{{asset('js/aos.js')}}"></script>
 <script type="text/javascript">
      AOS.init();
