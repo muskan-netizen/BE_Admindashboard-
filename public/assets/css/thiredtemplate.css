@@ -100,13 +100,10 @@ h2.homepage-address {text-overflow: ellipsis;white-space: nowrap;overflow: hidde
 .al_mew_wrapper_design .product-description_list p span {font-weight: 100;font-size: 12px;}
 .al_mew_wrapper_design .vendors section{padding-bottom: 0;}
 .al_mew_wrapper_design .social-links li {margin: 0 10px;}
-.al_mew_wrapper_design .social-links li i {
-    font-size: 24px;
-    background-color: transparent;
-    box-shadow: none;
-    color: #777;width: auto;
-    height: auto;
-}
+.al_mew_wrapper_design .social-links li i {font-size: 24px;background-color: transparent;box-shadow: none;color: #777;width: auto;height: auto;}
+.no-category-image .menu-navigation_al {padding: 0;}
+.al_mew_wrapper_design header#al_new_design.site-header.fixed-bar .no-category-image .menu-navigation_al {padding-top: 0;padding-bottom: 0;}
+.al_mew_wrapper_design .section-b-space {padding-top: 20px !important;}
 .al_mew_wrapper_design .main-menu{z-index: -1;}
 .al_mew_wrapper_design  .top-header .header-dropdown .onhover-dropdown .onhover-show-div li{font-size: 14px;}
 .al_mew_wrapper_design .footer-theme .sub-title .contact-list li {line-height: 1.5;padding-top: 0;margin-bottom: 10px;padding-left: 40px !important;}
@@ -124,6 +121,48 @@ h2.homepage-address {text-overflow: ellipsis;white-space: nowrap;overflow: hidde
 .al_mew_wrapper_design .slick-next:before,
 .al_mew_wrapper_design .slick-prev::before {border-left: 2px solid transparent;border-right: 2px solid #000;border-bottom: 2px solid transparent;border-top: 2px solid #000;font-size: 10px;left: 10px;position: absolute;top: 16px;}
 .al_custom_head_map_box .form-control{padding: 0 10px;}
+.al_mew_wrapper_design .top-banner-wrapper {
+    background-color: transparent;
+    box-shadow: none;
+    border-radius: 0;
+}
+.al_mew_wrapper_design .common-product-box, .al_mew_wrapper_design .product-box, .al_mew_wrapper_design .product-card-box, .al_mew_wrapper_design .suppliers-box {
+    position: relative;
+    border-radius: 5px;
+    overflow: hidden;
+    background: transparent;
+    box-shadow: none;
+    border:1px solid transparent
+}
+.al_mew_wrapper_design .common-product-box:hover, .al_mew_wrapper_design .product-box:hover, .al_mew_wrapper_design .product-card-box:hover, .al_mew_wrapper_design.suppliers-box:hover {
+    box-shadow: none;box-shadow: rgb(28 28 28 / 12%) 0px 0.4rem 1.8rem;
+    box-sizing: border-box;
+    border: 1px solid rgb(232, 232, 232);
+}
+.al_mew_wrapper_design .common-product-box:hover img, .al_mew_wrapper_design .product-box:hover img, .al_mew_wrapper_design .product-card-box:hover img, .al_mew_wrapper_design .suppliers-box:hover img {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+}
+body .al_mew_wrapper_design .collection-filter .theme-card .offer-slider img{padding: 0;}
+.al_mew_wrapper_design .scale-effect .inner_spacing {
+    width: 100%;
+}
+.al_mew_wrapper_design .collection-product-wrapper .product-top-filter{margin-bottom: 10px;}
+.al_mew_wrapper_design .breadcrumb-section .breadcrumb{margin-top: 10px;margin-bottom:  0 !important;}
+.al_mew_wrapper_design  .scale-effect {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    transition-duration: 1s;
+    border:1px solid transparent
+}
+.al_mew_wrapper_design .scale-effect:hover {
+    box-shadow: rgb(28 28 28 / 12%) 0px 0.4rem 1.8rem;
+    box-sizing: border-box;
+    border: 1px solid rgb(232, 232, 232);
+}
+.al_mew_wrapper_design .scale-effect .img-outer-box.position-relative{height: auto;width: auto;}
+.al_mew_wrapper_design .main-menu .menu-right .icon-nav .onhover-div .show-div.shopping-cart li .media .media-body h4 {color: #777;font-size: 12px;margin: 0 0 10px;padding-right: 15px;}
 /* top header search result list-box css start */
 .list-box {box-shadow: 0 16px 32px 0 rgb(0,0,0 ,.5)!important;
 border-radius: 0 0 10px 10px!important;padding: 10px 0;

@@ -124,6 +124,9 @@ body .form-control, body .custom-select {height: 40px;}
 #sidebar-menu .menuitem-active a.active::before{border: 1px solid #fff;}
 /* .al_banner_drag p.position-absolute.al_switchery{right:0;top:auto;bottom:0}.al_banner_drag.position-relative p{margin-bottom:5px}.al_banner_drag .dragula-handle::before{top:-2px;position:absolute}.al_banner_drag span.dragula-handle{height:auto;width:auto;font-size:24px}.al_drag_border{border-radius:5px}.al_drag_drop .card-body .row:nth-child(even){background-color:#f3f7f9} */
 .navbar-custom {border-radius: 0 0 0 10px;}
+.editVariantBox .selectize-input .item {
+    white-space: nowrap;
+}
 body .content-page .btn.btn-info {background-color: transparent;color: #43bee1;border-width: 2px;font-family: 'Cera Round Pro Medium';padding-top: 5px;padding-bottom: 5px;}
 body label{font-family: 'Cera Round Pro Regular';}
 .menu-title+.nav-second-level>li>a {-webkit-transition: 0.5s;transition: 0.5s;}
