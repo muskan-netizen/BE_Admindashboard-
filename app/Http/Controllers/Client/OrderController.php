@@ -466,6 +466,7 @@ class OrderController extends BaseController
                     $this->ProductVariantStock($request->order_id);
                 }
                 DB::commit();
+                $orderData = Order::find($request->order_id);
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
                 $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
                 return response()->json([

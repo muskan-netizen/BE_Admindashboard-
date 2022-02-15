@@ -13,16 +13,6 @@
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
 @if(!empty($category))
 @include('frontend.included_files.categories_breadcrumb')
 @endif
@@ -62,7 +52,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="collection-filter col-lg-3">
+                <div class="collection-filter col-lg-3 al">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
@@ -73,22 +63,22 @@
                         <div class="offer-slider">
                             @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
-                                    <div>
+                                    <div class="col-12">
                                     @foreach($newProds as $new)
                                         <?php $imagePath = '';
                                         foreach ($new['media'] as $k => $v) {
                                             $imagePath = $v['image']['path']['proxy_url'].'300/300'.$v['image']['path']['image_path'];
                                         } ?>
 
-                                        <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                            <div class="img-outer-box position-relative">
-                                                <img class="blur-up lazyload" data-src="{{$imagePath}}" alt="">
+                                        <a class="row common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                            <div class="col-sm-4 img-outer-box position-relative">
+                                                <img class="blur-up lazyload w-100" data-src="{{$imagePath}}" alt="">
                                                 <div class="pref-timing">
                                                     <!--<span>5-10 min</span>-->
                                                 </div>
                                                 {{--<i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>--}}
                                             </div>
-                                            <div class="media-body align-self-center">
+                                            <div class="media-body align-self-center col-sm-8">
                                                 <div class="inner_spacing px-0">
                                                     <div class="product-description">
                                                         <div class="d-flex align-items-center justify-content-between">
@@ -180,8 +170,8 @@
                                             <div class="row margin-res">
                                                 @if(!empty($category->childs) && count($category->childs) > 0)
                                                     @foreach($category->childs->toArray() as $cate)
-                                                    <div class="col-xl-3 col-6 col-grid-box mt-3">
-                                                        <a href="{{route('categoryDetail', $cate['slug'])}}"  class="product-box scale-effect mt-3">
+                                                    <div class="col-xl-3 col-6 col-grid-box">
+                                                        <a href="{{route('categoryDetail', $cate['slug'])}}"  class="product-box scale-effect m-0">
                                                             <div class="product-image p-0"><img width="100%" alt="" class="blur-up lazyload" data-src="{{$cate['icon']['proxy_url'] . '500/500' . $cate['icon']['image_path']}}" ></div>
                                                             <div class="media-body align-self-center">
                                                                 <div class="inner_spacing w-100">

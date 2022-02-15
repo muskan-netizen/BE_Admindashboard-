@@ -74,16 +74,7 @@
 </style>
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template) && $set_template->template_id == 1)
-    @include('layouts.store/left-sidebar-template-one')
-    @elseif(isset($set_template) && $set_template->template_id == 2)
-    @include('layouts.store/left-sidebar')
-    @else
-    @include('layouts.store/left-sidebar-template-one')
-    @endif
-</header>
+
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
 
 @if(count($banners))
@@ -460,7 +451,7 @@
 @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-<script>
+<script type="text/javascript">
     $(document).ready(function() {
         $("#doneeee").click(function() {
             console.log("nejhbfe");

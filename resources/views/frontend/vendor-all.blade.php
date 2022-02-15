@@ -1,29 +1,20 @@
 @extends('layouts.store', ['title' => __('All Vendors')])
-@section('css')
+@section('css-links')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
-<header>
-   <div class="mobile-fix-option"></div>
-   @if(isset($set_template)  && $set_template->template_id == 1)
-   @include('layouts.store/left-sidebar-template-one')
-   @elseif(isset($set_template)  && $set_template->template_id == 2)
-   @include('layouts.store/left-sidebar')
-   @else
-   @include('layouts.store/left-sidebar-template-one')
-   @endif
-</header>
+
 @if(count($vendors) > 0)
 <section class="section-b-space new-pages pb-265 ad">
    <div class="container">
       <div class="row">
-         <div class="col-12">
-            <h2 class="mb-3">{{__('All Vendors')}}</h2>
+         <div class="col-12" data-aos="zoom-in">
+            <h2 class="mb-3 mt-3">{{__('All Vendors')}}</h2>
          </div>
       </div>
       <div class="row margin-res">
          @foreach($vendors as $vendor)
-         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-2">
+         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-3" data-aos="zoom-in">
             <a class="suppliers-box d-block" href="{{route('vendorDetail', $vendor->slug)}}">
                <div class="suppliers-img-outer">
                   <img class="fluid-img mx-auto blur-up lazyload" data-src="{{$vendor->logo['image_fit']}}200/200{{$vendor->logo['image_path']}}" alt="">
@@ -168,7 +159,7 @@
             </div>
          </div>--}}
          @endforeach
-         <div class="col-12">
+         <div class="col-12" data-aos="zoom-in">
             <div class="pagination pagination-rounded justify-content-end mb-0">
                @if(!empty($vendors))
                {{ $vendors->links() }}

@@ -41,7 +41,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-7 col-xl-9 mb-2">
+        <div class="col-md-7 col-xl-6 mb-2 al_cms_notification">
             <div class="card">
                 <div class="card-body p-3" id="edit_page_content">
                     <div class="row">
