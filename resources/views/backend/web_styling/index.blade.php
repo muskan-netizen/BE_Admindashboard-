@@ -274,7 +274,7 @@
             <div class="custom-dd-empty dd" id="pickup_datatable">
                 <ol class="dd-list p-0" id="pickup_ol" >
                     @foreach($cab_booking_layouts as $key => $home_page_label)
-                    <div id="al_web_styling" class="row dd-item dd3-item on_click{{$home_page_label->slug}}" data-id="1" data-row-id="{{$home_page_label->id}}">
+                    <div id="al_web_styling" class="item_dev_row row dd-item dd3-item on_click{{$home_page_label->slug}}" data-id="1" data-row-id="{{$home_page_label->id}}">
                         <div class="col-md-6">
                             <div class="row d-flex align-items-center">
                                 <div class="col-md-5 p-0">
@@ -715,9 +715,10 @@ $(document).on('click', '.deletePickupSection', function() {
          placeholder: "ui-state-highlight",
         update: function(event, ui) {
             var post_order_ids = new Array();
-            $('#pickup_ol li').each(function() {
+            $('#pickup_ol .item_dev_row').each(function() {
                 post_order_ids.push($(this).data("row-id"));
             });
+            console.log(post_order_ids);
             saveOrderPickup(post_order_ids);
 
         }
