@@ -1,4 +1,7 @@
 @extends('layouts.store', ['title' => __('Change Password')])
+@section('css-links')
+<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
+@endsection
 @section('css')
 <style type="text/css">
     .main-menu .brand-logo {
@@ -59,7 +62,6 @@
         display: block;
     }
 </style>
-<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
 
