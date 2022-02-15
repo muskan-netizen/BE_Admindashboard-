@@ -1,6 +1,6 @@
 @extends('layouts.store', ['title' => __('Home')])
 @section('css-links')
-<link rel="stylesheet"  src="{{asset('css/aos.css')}}">
+<link rel="stylesheet"  href="{{asset('css/aos.css')}}">
 @endsection
 
 @section('content')
@@ -515,5 +515,9 @@
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script src="{{asset('js/aos.js')}}"></script>
+<script type="text/javascript">
+	 AOS.init();
+</script>
+
 
 @endsection

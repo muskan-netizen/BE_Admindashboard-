@@ -190,9 +190,6 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         </div>
     </div>
 </footer>
-<script>
-  AOS.init();
-</script>
 </article>
 <div class="modal fade single-vendor-order-modal" id="single_vendor_order_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="s_vendor_remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
     <div class="modal-dialog modal-dialog-centered">
