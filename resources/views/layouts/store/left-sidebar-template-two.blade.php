@@ -421,7 +421,7 @@ $pages = \App\Models\Page::with([
                   <li class="al_main_category" data-aos="zoom-in">
                      <a href="{{route('categoryDetail', $cate['slug'])}}">
                         @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-                        <div class="nav-cate-img" > <img class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" alt=""> </div>
+                        <div class="nav-cate-img" > <img style="height:150px;" class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
                         @endif{{$cate['name']}}
                      </a>
                      @if(!empty($cate['children']))

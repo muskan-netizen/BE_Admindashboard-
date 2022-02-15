@@ -1,5 +1,5 @@
 @extends('layouts.store', ['title' => __('Home')])
-@section('css-links') 
+@section('css-links')
 <script src="{{asset('css/aos.css')}}"></script>
 @endsection
 
@@ -42,22 +42,24 @@
  <!-- vendors_template start -->
 <script type="text/template" id="vendors_template" data-aos="zoom-in">
 	<% _.each(vendors, function(vendor, k){%>
-		<div class="product-card-box position-relative">
+		<div class="product-card-box position-relative text-center al_custom_vendors_sec">
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
-				<div class="suppliers-img-outer position-relative">
-					<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
-						<%}else{%> <img data-aos="zoom-in"  class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
-							<%}%>
-								<% if(vendor.timeofLineOfSightDistance !=undefined){%>
-									<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
-									<%}%>
+				<div class="suppliers-img-outer position-relative ">
+					<% if(vendor.is_vendor_closed==1){%>
+						<img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+					<%}else{%>
+						<img  class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+					<%}%>
+					<% if(vendor.timeofLineOfSightDistance !=undefined){%>
+					<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
+					<%}%>
 				</div>
 				<div class="supplier-rating">
-					<div class="d-flex align-items-center justify-content-between">
+
 						<h6 class="mb-1 ellips"><%=vendor.name %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
 						<% if(vendor.vendorRating > 0){%> <span class="rating-number"><%=vendor.vendorRating %></span>
-							<%}%> @endif @endif </div>
-					<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips">
+							<%}%> @endif @endif
+					<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
 						<%=vendor.categoriesList %>
 					</p>
 				</div>
@@ -120,22 +122,23 @@
 <!-- trending_vendors_template start -->
 <script type="text/template" id="trending_vendors_template" data-aos="zoom-in">
 	<% _.each(trending_vendors, function(vendor, k){%>
-		<div class="product-card-box position-relative ">
+		<div class="product-card-box position-relative text-center al_custom_vendors_sec">
 			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
-				<div class="suppliers-img-outer position-relative">
+				<div class="suppliers-img-outer position-relative ">
 					<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
-						<%}else{%> <img class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
+						<%}else{%> <img class="fluid-img mx-auto blur-up lazyload w-100" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 							<%}%>
 								<% if(vendor.timeofLineOfSightDistance !=undefined){%>
 									<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
 									<%}%>
 				</div>
 				<div class="supplier-rating">
-					<div class="d-flex align-items-center justify-content-between">
-						<h6 class="mb-1 ellips"><%=vendor.name %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-						<% if(vendor.vendorRating > 0){%> <span class="rating-number"><%=vendor.vendorRating %></span>
-							<%}%> @endif @endif </div>
-					<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips">
+					<h6 class="mb-1 ellips"><%=vendor.name %></h6>
+					@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+						<% if(vendor.vendorRating > 0){%>
+						<span class="rating-number"><%=vendor.vendorRating %></span>
+						<%}%> @endif @endif
+					<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
 						<%=vendor.categoriesList %>
 					</p>
 				</div>
@@ -439,7 +442,7 @@
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between mb-2">
 						<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2> <a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a> </div>
 					<div class="col-12">
-						<div class="suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
+						<div class="suppliers-slider  al_suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 					</div>
 				</div>
 			</div>
@@ -450,7 +453,7 @@
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
 						<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
 					<div class="col-12">
-						<div class="suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
+						<div class="suppliers-slider al_suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 					</div>
 				</div>
 			</div>
@@ -512,4 +515,23 @@
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
 <script src="{{asset('js/aos.js')}}"></script>
+<script>
+
+    $('.al_suppliers-slider').slick({
+        infinite: true,
+        speed: 300,
+        slidesToShow: 6,
+        slidesToScroll: 1,
+        centerMode: false,
+        centerPadding: '60px',
+        arrows: true,
+        dots: false,
+        responsive: [
+            {breakpoint: 1199,settings: {slidesToShow: 4,slidesToScroll: 3,infinite: true,dots: false,centerMode: false,}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 3,dots: false,centerMode: true,}},
+            {breakpoint: 767,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}},
+            {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
+        ]
+    });
+</script>
 @endsection
