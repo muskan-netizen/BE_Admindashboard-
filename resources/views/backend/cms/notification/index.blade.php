@@ -2,6 +2,11 @@
 @section('css')
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.8.0/bootstrap-tagsinput.css" rel="stylesheet">
+<style>
+    textarea.form-control {
+    height: auto !important;
+}
+</style>
 @endsection
 @section('content')
 <div class="container-fluid">
@@ -101,7 +106,7 @@
                         $('#edit_page_content #subject').val(response.data.subject);
                         $('#edit_page_content #content').val(response.data.content);
                         //CKEDITOR.instances.content.setData(response.data.content);
-                         $('#edit_page_content #content').summernote({'height':450});
+                         //$('#edit_page_content #content').summernote({'height':450});
                     }else{
                       $(':input:text').val('');
                       $('textarea').val('');
