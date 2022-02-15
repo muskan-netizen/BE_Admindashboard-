@@ -6,7 +6,7 @@ body,
     /* font-family: 'Work Sans', sans-serif !important; */
     font-family: 'Varela Round', sans-serif !important;
 }
-.al_mew_wrapper_design .container {max-width: 1170px;}
+/* .al_mew_wrapper_design .container {max-width: 1170px;} */
 .header-dropdown li {margin: 0;}
 .onhover-dropdown .onhover-show-div {display: none;}
 .top-header .header-dropdown .onhover-dropdown .onhover-show-div li {background-color: #fff;}
