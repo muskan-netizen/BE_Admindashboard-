@@ -74,16 +74,15 @@ class AhoyController extends Controller
 
 			$longitude[] =  $vendor_details->longitude ?? 76.803508700000;
 			$longitude[] =  $cus_address->longitude ?? 76.803508700000;
-
-			$distance =  GoogleDistanceMatrix($latitude,$longitude);
+            $distance =  GoogleDistanceMatrix($latitude,$longitude);
 			return $distance['distance'];
 		}
 		return false;
     }
 
 
-		 # get delivery fee getDunzoBaseFee
-		 public function getDunzoBaseFee($vendorId)
+		 # get delivery fee getAhoyBaseFee
+		 public function getAhoyBaseFee($vendorId)
 		 {	
 			$fees = 0;
 			$this->configuration();
@@ -91,37 +90,14 @@ class AhoyController extends Controller
 				$distance = $this->getDistance($vendorId);
 				if($distance){
 					//Helper Function
-					$fees =   getBaseprice($distance,'dunzo');
+					$fees =   getBaseprice($distance,'ahoy');
 				}
 			}
 			return $fees;
 		}
 
 
-		# get delivery fee Shiprocket Courier Service
-		public function getCourierService($vendorId)
-		{
-			$this->configuration();
-            $vendor_details = Vendor::find($vendorId);
-            $data =array(
-                'pickup_lat'=>$vendor_details->latitude ?? '',
-                'pickup_long'=>$vendor_details->longitude ?? ''
-            );
-			$status =  $this->checkAvilabilty($data);
-			if($this->status == 1){
-				if(($this->base_price>0) && $status->status == true){
-				return $this->getDunzoBaseFee($vendorId);
-			}else{
-                    if($status->status){
-                        return $this->getDunzoBaseFee($vendorId);
-                    }
-                    return 0; 
-				}
-			}
-		}
-
-
-	public function createOrderPreRequestAhoy($user_id,$orderVendor)
+	public function createPreOrderRequestAhoy($user_id,$orderVendor)
     { 
 		$this->configuration();
 		if($this->status)
@@ -133,20 +109,18 @@ class AhoyController extends Controller
 			$orderProducts = OrderVendorProduct::where(['order_id'=>$orderVendor->order_id,'order_vendor_id'=>$orderVendor->id])->get();
             $scheduledAt = '';
             if(isset($order->scheduled_date_time) && $order->scheduled_date_time){
-                $date = date('Y-m-d',strtotime($order->scheduled_date_time));
-                $time = date('H:i:s',strtotime($order->scheduled_date_time));
-                $scheduledAt = $date.' '.$time;
+                $scheduledAt = strtotime($order->scheduled_date_time);
             }
 
 			$data = array (
 				'CompanyOrderTrackId' => $orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id,
-				'PickupLocationId' => $vendor_details->name ?? '',   //Required 
+				'PickupLocationId' => $vendor_details->ahoy_location ? json_decode($vendor_details->ahoy_location)->id : '',   //Required 
 				'CustomerAddressId' => '',  
 				'OrderLargeBoxQuantity' => $vendor_details->name ?? '',  
 				'OrderMidBoxQuantity' => $vendor_details->phone_no, 
 				'OrderSmallBoxQuantity' => $vendor_details->email ?? '', 
 				'pickup_address' => $vendor_details->address ?? '',  
-			    'PickupTime' => ($scheduledAt!='')? strtotime($scheduledAt) : strtotime($order->created_at),  //If order to be scheduled, provide pickup time in UTC Unix millisecond. if the order is an immediate leave as 0
+			    'PickupTime' => ($scheduledAt!='')? $scheduledAt : '0',  //If order to be scheduled, provide pickup time in UTC Unix millisecond. if the order is an immediate leave as 0
 				
                 'CustomerName' => $customer->name,
 				'CustomerPhone' => $customer->phone_number,

@@ -309,8 +309,6 @@ function createSlug($str, $delimiter = '-'){
         else
         $timezoneset = 'Asia/Kolkata';
     }
-    
-
     $cr = Carbon::now()->addMinutes($delayMin);
     $now = dateTimeInUserTimeZone24($cr, $timezoneset);
     $nowT = strtotime($now);
@@ -343,7 +341,7 @@ function createSlug($str, $delimiter = '-'){
     }
     
     $ReturnArray[] = date ("G:i", $StartTime).' - '.date ("G:i", $endtm);
-    $StartTime += $AddMins+60;
+    $StartTime += $AddMins;
     $endtm = 0;
     }
     return $ReturnArray;
