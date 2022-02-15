@@ -63,14 +63,48 @@
     }
 </style>
 @endsection
-@section('content')
-
-<section class="register-page section-b-space">
+@section('content') 
+<section class="section-b-space">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-xl-4">
-                <h3>{{__('Change Password')}}</h3>
-                  <div class="outer-box"> 
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-sm-left">
+                    @if (\Session::has('success'))
+                        <div class="alert alert-success">
+                            <span>{!! \Session::get('success') !!}</span>
+                        </div>
+                    @endif
+                    @if ( ($errors) && (count($errors) > 0) )
+                        <div class="alert alert-danger">
+                            <ul class="m-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
+                <div class="dashboard-left">
+                    <div class="collection-mobile-back">
+                        <span class="filter-back d-lg-none d-inline-block">
+                            <i class="fa fa-angle-left" aria-hidden="true"></i>{{ __('Back') }}
+                        </span>
+                    </div>
+                    @include('layouts.store/profile-sidebar')
+                </div>
+            </div>
+            <div class="col-lg-5 offset-lg-2">
+                <div class="dashboard-right">
+                    <div class="dashboard">
+                        <div class="page-title">
+                            <h2>{{__('Change Password')}}</h2>
+                        </div>
+                        <div class="outer-box"> 
                     <form name="register" id="register" action="{{route('user.submitChangePassword')}}" class="theme-form" method="post"> @csrf
                         <div class="form-row mb-2">
                             <div class="col-md-12 mb-3">
@@ -102,6 +136,8 @@
                             <div class="col-md-12"><button type="submit" class="btn btn-solid submitRegister w-100">{{__('Submit')}}</button></div>
                         </div>
                     </form>
+                </div>
+                    </div>
                 </div>
             </div>
         </div>
