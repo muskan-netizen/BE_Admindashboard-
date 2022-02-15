@@ -210,7 +210,7 @@
                             </div>
 
                             <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text">
-                                <div class="product-right inner_spacing">
+                                <div class="product-right inner_spacing pl-3">
                                     <h2 class="mb-0">
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                     </h2>
