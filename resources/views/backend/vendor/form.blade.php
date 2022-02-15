@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row al">
     <div class="col-md-12">
         <div class="row mb-2">
             <div class="col-md-3">
@@ -131,8 +131,6 @@
                     @endif
                 </div>
             </div>
-        </div>
-        <div class="row mb-2" >
             <div class="col-md-4">
                 <div class="form-group mb-3" id="latitudeInput">
                     {!! Form::label('title', __('Latitude'),['class' => 'control-label']) !!}

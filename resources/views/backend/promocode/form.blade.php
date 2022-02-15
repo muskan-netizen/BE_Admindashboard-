@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="row">
-            <div class="col-md-6" id="imageInput">
+            <div class="col-md-12" id="imageInput">
                 <label>{{ __("Upload PromoCode image") }}</label>
                 @if(isset($promo->id))
                     <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$promo->image['proxy_url'].'600/400'.$promo->image['image_path']}}" />

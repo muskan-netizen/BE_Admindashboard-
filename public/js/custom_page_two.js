@@ -1,14 +1,3 @@
-jQuery(window).scroll(function() {
-    var scroll = jQuery(window).scrollTop();
-    if (scroll <= 50) {
-        jQuery(".site-header").removeClass("fixed-bar");
-    } else {
-        jQuery(".site-header").addClass("fixed-bar");
-    }
-});
-
-
-
 // Material Select Initialization
 $(document).ready(function() {
     //$('.mdb-select').materialSelect();
@@ -166,13 +155,13 @@ window.initializeSlider = function initializeSlider() {
         dots: false,
         infinite: true,
         speed: 300,
-        slidesToShow: 4,
+        slidesToShow: 3,
         centerMode: true,
         centerPadding: '20px',
-        slidesToScroll: 4,
+        slidesToScroll: 1,
         arrows: true,
         responsive: [
-            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3, arrows: true, } },
             { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
             { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
@@ -212,22 +201,6 @@ window.initializeSlider = function initializeSlider() {
         infinite: true,
         speed: 300,
         slidesToShow: 4,
-        slidesToScroll: 1,
-        centerMode: false,
-        centerPadding: '60px',
-        arrows: true,
-        dots: false,
-        responsive: [
-            {breakpoint: 1199,settings: {slidesToShow: 4,slidesToScroll: 3,infinite: true,dots: false,centerMode: false,}},
-            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 3,dots: false,centerMode: true,}},
-            {breakpoint: 767,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}},
-            {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
-        ]
-    });
-    $('.al_t2_suppliers-slider').slick({
-        infinite: true,
-        speed: 300,
-        slidesToShow: 6,
         slidesToScroll: 1,
         centerMode: false,
         centerPadding: '60px',
@@ -300,7 +273,7 @@ window.initializeSlider = function initializeSlider() {
     });
 
     if ($('body').attr('dir') == 'rtl') {
-        $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .al_t2_suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
+        $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
     }
 }
 
@@ -607,7 +580,7 @@ $(document).ready(function() {
                         $("#card_last_four_digit").val(result.token.card.last4);
                         $("#card_expiry_month").val(result.token.card.exp_month);
                         $("#card_expiry_year").val(result.token.card.exp_year);
-                        paymentViaStripe(result.token.id, '', payment_option_id, '', '');
+                        paymentViaStripe(result.token.id, '', payment_option_id);
                     }
                 });
             } else if (payment_option_id == 3) {
@@ -984,44 +957,26 @@ $(document).ready(function() {
 
 
 
-    function paymentViaStripe(stripe_token, address_id, payment_option_id, delivery_type = 'D', order='') {
+    function paymentViaStripe(stripe_token, address_id, payment_option_id, delivery_type = 'D') {
         let total_amount = 0;
         let tip = 0;
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
         let subscriptionElement = $("input[name='subscription_amount']");
         let tipElement = $("#cart_tip_amount");
-        let payment_form = '';
 
         let ajaxData = [];
-        if (path.indexOf("cart") !== -1) {
-            payment_form = 'cart';
+        if (cartElement.length > 0) {
             total_amount = cartElement.val();
             tip = tipElement.val();
-            ajaxData.push(
-                { name: 'tip', value: tip },
-                {name: 'order_number', value: order.order_number}
-            );
-        } else if ( (path.indexOf("wallet") !== -1)  ||  ((typeof cabbookingwallet !== 'undefined') && (cabbookingwallet == 1)) ) {
-            payment_form = 'wallet';
+            ajaxData.push({ name: 'tip', value: tip });
+        } else if (walletElement.length > 0) {
             total_amount = walletElement.val();
-        } else if (path.indexOf("subscription") !== -1) {
-            payment_form = 'subscription';
+        } else if (subscriptionElement.length > 0) {
             total_amount = subscriptionElement.val();
             ajaxData = $("#subscription_payment_form").serializeArray();
-        } else if ((typeof tip_for_past_order !== 'undefined') && (tip_for_past_order == 1)) {
-            total_amount = walletElement.val();
-            payment_form = 'tip';
-            ajaxData.push(
-                {name: 'order_number', value: $("#order_number").val()}
-            );
         }
-        ajaxData.push(
-            { name: 'payment_form', value: payment_form },
-            { name: 'stripe_token', value: stripe_token },
-            { name: 'amount', value: total_amount },
-            { name: 'payment_option_id', value: payment_option_id }
-        );
+        ajaxData.push({ name: 'stripe_token', value: stripe_token }, { name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id });
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1030,22 +985,21 @@ $(document).ready(function() {
             success: function(resp) {
                 if (resp.status == 'Success') {
                     if (path.indexOf("cart") !== -1) {
-                        // placeOrder(address_id, payment_option_id, resp.data.id, tip,delivery_type);
+                        placeOrder(address_id, payment_option_id, resp.data.id, tip,delivery_type);
                     } else if (path.indexOf("wallet") !== -1) {
-                        // creditWallet(total_amount, payment_option_id, resp.data.id);
+                        creditWallet(total_amount, payment_option_id, resp.data.id);
                     } else if (path.indexOf("subscription") !== -1) {
-                        // userSubscriptionPurchase(total_amount, payment_option_id, resp.data.id);
+                        userSubscriptionPurchase(total_amount, payment_option_id, resp.data.id);
                     } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
 
-                        // let order_number = $("#order_number").val();
-                        // if (order_number.length > 0) {
-                        //     order_number = order_number;
-                        // }
-                        // creditTipAfterOrder(total_amount, payment_option_id, resp.data.id, order_number);
+                        let order_number = $("#order_number").val();
+                        if (order_number.length > 0) {
+                            order_number = order_number;
+                        }
+                        creditTipAfterOrder(total_amount, payment_option_id, resp.data.id, order_number);
                     } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
-                        // creditWallet(total_amount, payment_option_id, resp.data.id);
+                        creditWallet(total_amount, payment_option_id, resp.data.id);
                     }
-                    window.location.href = resp.data;
                 } else {
                     if (path.indexOf("cart") !== -1) {
                         success_error_alert('error', resp.message, ".payment_response");
@@ -1381,12 +1335,7 @@ $(document).ready(function() {
                     $('#stripe_card_error').html(result.error.message);
                     $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
                 } else {
-                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                    if (order != '') {
-                        paymentViaStripe(result.token.id, address_id, payment_option_id,delivery_type, order);
-                    } else {
-                        return false;
-                    }
+                    paymentViaStripe(result.token.id, address_id, payment_option_id,delivery_type);
                 }
             });
         }
@@ -1627,7 +1576,7 @@ $(document).ready(function() {
                     $('#stripe_card_error').html(result.error.message);
                     $(".topup_wallet_confirm").attr("disabled", false);
                 } else {
-                    paymentViaStripe(result.token.id, '', payment_option_id, '', '');
+                    paymentViaStripe(result.token.id, '', payment_option_id);
                 }
             });
         } else if (payment_option_id == 3) {

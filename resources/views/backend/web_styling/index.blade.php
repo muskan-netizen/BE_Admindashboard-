@@ -254,7 +254,7 @@
 <!-- cab booking template -->
 <form id="favicon-form-pickup" method="post" enctype="multipart/form-data">
 <div class="row" >
-    <div class="col-xl-9" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <div class="col-md-9" ondrop="drop(event)" ondragover="allowDrop(event)">
         <div class="card-box home-options-list">
             <div class="row mb-2">
                 <div class="col-sm-8">
@@ -365,7 +365,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3">
+    <div class="col-md-3">
         <div class="card-box home-options-list">
             <div class="row mb-2">
                 <div class="col-sm-12">
@@ -670,7 +670,7 @@ $(document).on('click', '.deletePickupSection', function() {
         CKEDITOR.instances[instance].updateElement();
         }
         var formData = new FormData(form);
-        formData.append('age_restriction', $('#age_restriction').val());
+        formData.append('age_restriction', $('#age_restriction').prop('checked') == true ? 'on' : 'off');
         formData.append('age_restriction_title', $('#age_restriction_title').val());
         var data_uri = "{{route('styling.updateWebStyles')}}";
         $.ajaxSetup({
