@@ -76,14 +76,14 @@
 		<% }); %>
 </script><!-- banner_template end -->
 
-<!-- products_template start -->
+<!-- products_template start --> 
 <script type="text/template" id="products_template" data-aos="zoom-in">
 	<% _.each(products, function(product, k){ %>
 		<div class="product-card-box position-relative al">
-			<div class="add-to-fav 12">
+			{{--<div class="add-to-fav 12">
 				<input id="fav_pro_one" type="checkbox">
 				<label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
-			</div>
+			</div>--}}
 			<a class="common-product-box text-center" href="<%=product.vendor.slug %>/product/<%=product.url_slug %>">
 				<div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="<%=product.image_url %>" alt="" title="">
 					<div class="pref-timing"> </div>
@@ -113,8 +113,8 @@
 				</div>
 			</a>
 		</div>
-		<% }); %>
-</script><!-- products_template end -->
+		<% }); %> 
+</script><!-- products_template end --> 
 
 <!-- trending_vendors_template start -->
 <script type="text/template" id="trending_vendors_template" data-aos="zoom-in">
