@@ -20,6 +20,7 @@ class StripeGatewayController extends BaseController{
     use ToasterResponser;
     public $gateway;
     public $currency;
+    public $currency_id;
     public $payout_secret_key;
     public $payout_client_id;
 
@@ -38,7 +39,8 @@ class StripeGatewayController extends BaseController{
         $this->payout_client_id = (isset($payout_creds_arr->client_id)) ? $payout_creds_arr->client_id : '';
 
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : '';
+        $this->currency_id = (isset($primaryCurrency->currency_id)) ? $primaryCurrency->currency_id : '';
     }
 
     public function subscriptionPaymentViaStripe(request $request)
@@ -46,6 +48,7 @@ class StripeGatewayController extends BaseController{
         try{
             $user = Auth::user();
             $token = $request->stripe_token;
+            $amount = getDollarCompareAmount($request->amount, $this->currency_id);
             $plan = SubscriptionPlansVendor::where('slug',$request->subscription_id)->firstOrFail();
             $request->request->add(['user_id' => $user->id]); //add request
             $saved_payment_method = $this->getSavedVendorPaymentMethod($request);
@@ -70,15 +73,15 @@ class StripeGatewayController extends BaseController{
             //     'plan' => 'Basic Plan',
             // ))->send();
             $authorizeResponse = $this->gateway->authorize([
-                'amount' => $request->amount,
-                'currency' => 'INR', //$this->currency
+                'amount' => $amount,
+                'currency' => $this->currency,
                 'description' => 'This is a subscription purchase transaction.',
                 'customerReference' => $customer_id
             ])->send();
             if ($authorizeResponse->isSuccessful()) {
                 $purchaseResponse = $this->gateway->purchase([
-                    'currency' => 'INR',
-                    'amount' => $request->amount,
+                    'currency' => $this->currency,
+                    'amount' => $amount,
                     'metadata' => ['user_id'=>$user->id, 'vendor_id' => $request->vendor_id, 'plan_id' => $plan->id],
                     'description' => 'This is a subscription purchase transaction.',
                     'customerReference' => $customer_id
@@ -283,14 +286,14 @@ class StripeGatewayController extends BaseController{
         return Redirect::To(route('vendor.payout', $vendor))->with('toaster', $toaster);
     }
 
-    public function vendorPayoutViaStripe(request $request, $domain='', $id)
+    public function vendorPayoutViaStripe(request $request, $domain='')
     {
         try{
             $user = Auth::user();
-            $connected_account = VendorConnectedAccount::where('vendor_id', $id)->first();
+            $connected_account = VendorConnectedAccount::where('vendor_id', $request->vendor_id)->first();
             if($connected_account && (!empty($connected_account->account_id))){
 
-                $stripe = new \Stripe\StripeClient($this->payout_secret_key);
+                // $stripe = new \Stripe\StripeClient($this->payout_secret_key);
                 // $payment_intent = $stripe->paymentIntents->create([
                 //     'payment_method_types' => ['card'],
                 //     'amount' => $request->amount * 100,
@@ -301,15 +304,34 @@ class StripeGatewayController extends BaseController{
                 // ]);
                 // $charge_id = $payment_intent->id;
 
-                $response = $stripe->transfers->create([
-                    'amount' => $request->amount * 100,
-                    'currency' => 'INR', //$this->currency
-                    // 'source_transaction' => $charge_id,
-                    'destination' => $connected_account->account_id,
-                    // 'transfer_group' => $charge_id,
-                ]);
+                // $response = $stripe->transfers->create([
+                //     'amount' => $request->amount * 100,
+                //     'currency' => 'USD', //$this->currency
+                //     // 'source_transaction' => $charge_id,
+                //     'destination' => $connected_account->account_id,
+                //     // 'transfer_group' => $charge_id,
+                // ]);
+                
+                $amount = getDollarCompareAmount($request->amount, $this->currency_id);
+                \Stripe\Stripe::setApiKey($this->payout_secret_key);
 
-                return $this->errorResponse('You are not connected to stripe', 400);
+                // Create a PaymentIntent:
+                $paymentIntent = \Stripe\PaymentIntent::create([
+                    'amount' => $amount * 100,
+                    'currency' => $this->currency,
+                    'payment_method_types' => ['card'],
+                    'transfer_group' => 'vendor_payout',
+                ]);
+                
+                // Create a Transfer to a connected account (later):
+                $transfer = \Stripe\Transfer::create([
+                    'amount' => $amount * 100,
+                    'currency' => $this->currency,
+                    'destination' => $connected_account->account_id,
+                    'transfer_group' => 'vendor_payout',
+                ]);
+                $transactionReference = $transfer->balance_transaction;
+                return $this->successResponse($transactionReference, 'Payout is completed successfully', 200);
 
             }else{
                 return $this->errorResponse('You are not connected to stripe', 400);

@@ -136,10 +136,12 @@
                 <h4 class="modal-title">Payout</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div> --}}
-            <form id="payout_form_final" method="POST" action="">
+            <form id="payout_form_final" method="POST" action="{{url('client/account/vendor/payout/request/complete')}}">
                 @csrf
                 <div>
                     <input type="hidden" name="amount" id="payout_amount" value="">
+                    <input type="hidden" name="payout_id" id="payout_id" value="">
+                    <input type="hidden" name="payout_option_id" id="payout_method" value="">
                 </div>
                 <div class="modal-body px-3">
                     <div class="row">
@@ -227,14 +229,25 @@
             $("#payout-confirm-modal #payout-vendor").html('<b>'+vendor+'</b>');
             $("#payout-confirm-modal #payout-amount-final").text('{{$currency_symbol}}' + amount);
             $("#payout-confirm-modal #payout_amount").val(amount);
+            $("#payout-confirm-modal #payout_id").val(dataid);
+            $("#payout-confirm-modal #payout_method").val(payout_method);
             $("#payout-confirm-modal").modal('show');
-            if(payout_method == 1){
-                $("#payout_form_final").attr('action', "{{url('client/account/vendor/payout/request/complete')}}"+'/'+dataid);
-            }
-            else if(payout_method == 2){
-                $("#payout_form_final").attr('action', "{{url('client/vendor/payout/stripe')}}"+'/'+vendor_id);
-            }
+            // if(payout_method == 1){
+            //     $("#payout_form_final").attr('action', "{{url('client/account/vendor/payout/request/process')}}");
+            // }
         });
+
+        // $(document).on('submit', '#payout_form_final', function(e){
+        //     e.preventDefault();
+        //     var amount = $("#payout-confirm-modal #payout_amount").val();
+        //     var payout_method = $("#payout-confirm-modal #payout_method").val();
+        //     if(payout_method == 1){
+        //         $(this).trigger("submit");
+        //     }
+        //     else if(payout_method == 2){
+        //         payoutViaStripe(amount, payout_method);
+        //     }
+        // });
 
         // function payoutViaStripe(amount, payment_option_id) {
         //     let ajaxData = {};
