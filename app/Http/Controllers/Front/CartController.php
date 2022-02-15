@@ -809,6 +809,8 @@ class CartController extends FrontController
                     if($up_prods){
                         $upSell_products->push($up_prods);
                     }
+                    $cross_prods = '';
+                    if(!empty($product->crossSell))
                     $cross_prods = $this->metaProduct($langId, $doller_compare, 'crossSell', $product->crossSell);
                     if($cross_prods){
                         $crossSell_products->push($cross_prods);
