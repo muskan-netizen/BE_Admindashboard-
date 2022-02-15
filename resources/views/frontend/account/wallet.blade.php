@@ -14,16 +14,7 @@ $user = Auth::user();
 $timezone = $user->timezone;
 $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurrency->doller_compare) : 0;
 @endphp
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
+
 <style type="text/css">
     .productVariants .firstChild {
         min-width: 150px;
@@ -135,17 +126,19 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($user_transactions as $ut)
-                                        <?php $reason = json_decode($ut->meta) ?>
-                                        @php
-                                        $amount = ($ut->amount / 100) * $clientCurrency->doller_compare;
-                                        @endphp
-                                          <tr>
-                                              <td> {{dateTimeInUserTimeZone($ut->created_at, $timezone)}}</td>
-                                              <td  class="name_">{!!$reason[0]!!}</td>
-                                              <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}@money(sprintf("%.2f",$amount))</b></td>
-                                          </tr>
-                                        @endforeach
+                                    @forelse($user_transactions as $ut)
+                                    @php
+                                    $reason = json_decode($ut->meta);
+                                    $amount = ($ut->amount / 100) * $clientCurrency->doller_compare;
+                                    @endphp
+                                    <tr>
+                                        <td> {{dateTimeInUserTimeZone($ut->created_at, $timezone)}}</td>
+                                        <td  class="name_">{!!$reason[0]!!}</td>
+                                        <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}@money(sprintf("%.2f",$amount))</b></td>
+                                    </tr>
+                                    @empty
+                                    <tr><td align="center" colspan="4">{{__('No Transaction history exists')}}</td></tr>
+                                    @endforelse
                                     </tbody>
                                   </table>
                                 </div>

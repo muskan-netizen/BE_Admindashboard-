@@ -35,16 +35,6 @@ $languageList = \App\Models\ClientLanguage::with('language')->where('is_active',
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
 
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template) && $set_template->template_id == 1)
-    @include('layouts.store/left-sidebar-template-one')
-    @elseif(isset($set_template) && $set_template->template_id == 2)
-    @include('layouts.store/left-sidebar')
-    @else
-    @include('layouts.store/left-sidebar-template-one')
-    @endif
-</header>
 <script type="text/template" id="address_template">
     <div class="col-md-12">
         <div class="delivery_box p-0 mb-3">
@@ -128,13 +118,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <div id="tbody_<%= product.vendor.id %>">
             <% _.each(product.vendor_products, function(vendor_product, vp){%>
                 <div class="row align-items-md-center vendor_products_tr" id="tr_vendor_products_<%= vendor_product.id %>">
-                    <div class="product-img col-4 col-md-2 pr-0">
+                    <div class="product-img col-4 col-md-2 pr-0 al">
                         <% if(vendor_product.pvariant.media_one) { %>
-                            <img class='blur-up lazyload' data-src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
+                            <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
                         <% }else if(vendor_product.pvariant.media_second){ %>
-                            <img class='blur-up lazyload' data-src="<%= vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_second.image.path.image_path %>">
+                            <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_second.image.path.image_path %>">
                         <% }else{ %>
-                            <img class='blur-up lazyload' data-src="<%= vendor_product.image_url %>">
+                            <img class='blur-up lazyload w-100' data-src="<%= vendor_product.image_url %>">
                         <% } %>
                     </div>
                     <div class="col-8 col-md-10">
@@ -262,7 +252,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             </div>
                         </div>
                     <% } %>
-                    
+
                     <div class="row mb-1">
                         <div class="col-5 text-lg-right">
                             <% if(product.coupon_amount_used > 0) { %>
@@ -281,10 +271,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                             <div class="col-5 text-lg-right">
                                 <label class="m-0 radio">{{__('Sub Total')}} :</label>
                             </div>
-                            <div class="col-md-7 text-right"> 
-                                <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.product_total_amount) %></p> 
+                            <div class="col-md-7 text-right">
+                                <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.product_total_amount) %></p>
                             </div>
-                       
+
                             <% } %>
                     </div>
 
@@ -611,7 +601,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <h3 class="mb-2 mt-4">{{__('Frequently bought together')}}</h3>
             <div class="row">
                 <div class="col-12 p-0">
-                    <div class="product-4 product-m no-arrow">
+                    <div class="product-4 product-m">
                         <% _.each(cart_details.upSell_products, function(product, key){%>
 
                             <a class="common-product-box scale-effect text-center" href="<%= product.vendor.slug %>/product/<%= product.url_slug %>">
@@ -662,7 +652,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <h3 class="mb-2 mt-3">{{__('You might be interested in')}}</h3>
             <div class="row">
                 <div class="col-12 p-0">
-                    <div class="product-4 product-m no-arrow">
+                    <div class="product-4 product-m">
                         <% _.each(cart_details.crossSell_products, function(product, key){%>
 
                             <a class="common-product-box scale-effect text-center" href="<%= product.vendor.slug %>/product/<%= product.url_slug %>">

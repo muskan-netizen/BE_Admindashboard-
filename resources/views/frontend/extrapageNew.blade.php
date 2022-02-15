@@ -75,16 +75,6 @@ body .switchery>small {width: 20px;height: 20px;}
 .nestable_list_1::-webkit-scrollbar{width:4px;background-color:#fff;border-radius:5px}
 .nestable_list_1::-webkit-scrollbar-thumb{background-color:#fff;border:2px solid #ddd;border-radius:5px}
 </style>
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
 @php
     $user = Auth::user();
 @endphp

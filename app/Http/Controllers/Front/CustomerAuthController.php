@@ -352,6 +352,7 @@ class CustomerAuthController extends FrontController
                 }
             }
             $this->checkCookies($userid);
+
             $user_cart = Cart::where('user_id', $userid)->first();
             if ($user_cart) {
                 $unique_identifier_cart = Cart::where('unique_identifier', session()->get('_token'))->first();
@@ -480,6 +481,7 @@ class CustomerAuthController extends FrontController
                 $username = str_ireplace(' ', '', $username);
                 if (Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1])) {
                     $userid = Auth::id();
+                    $Authuser = Auth::user();
                     if($request->has('access_token')){
                         if($request->access_token){
                             $user_device = UserDevice::where('user_id', $userid)->where('device_token', $request->access_token)->first();
@@ -491,6 +493,10 @@ class CustomerAuthController extends FrontController
                                 $user_device->save();
                             }
                         }
+                    }
+                    if($Authuser->is_superadmin == 1 || $Authuser->is_admin == 1){
+                        Auth::logout();
+                        Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1]);
                     }
                     $this->checkCookies($userid);
                     $user_cart = Cart::where('user_id', $userid)->first();
