@@ -159,4 +159,5 @@ body .switchery>small {width: 20px;height: 20px;}
 .nestable_list_1::-webkit-scrollbar{width:4px;background-color:#fff;border-radius:5px}
 .nestable_list_1::-webkit-scrollbar-thumb{background-color:#fff;border:2px solid #ddd;border-radius:5px}
 .price_head h5.mt-0 { word-break: break-all;}
+.list-view .common-product-box {display: flex!important;align-items: center; margin-bottom: 15px;}
 
