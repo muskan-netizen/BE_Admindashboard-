@@ -1,5 +1,5 @@
 @extends('layouts.store', ['title' => __('Home')])
-@section('css') 
+@section('css-links') 
 <script src="{{asset('css/aos.css')}}"></script>
 @endsection
 
