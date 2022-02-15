@@ -127,7 +127,7 @@
             </form>
         </div>
         @endif
-        <div class="col-md-3">
+        <div class="col-md-6">
             <form method="POST" id="upload_image_tool" action="{{route('tools.uploadImage')}}">
             @csrf
             @method('POST')
