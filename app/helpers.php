@@ -337,7 +337,7 @@ function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 0)
             $endtm = $EndTime;
         }
         $ReturnArray[] = date ("G:i", $StartTime).' - '.date ("G:i", $endtm);
-        $StartTime += $AddMins+60;
+        $StartTime += $AddMins;
         $endtm = 0;
     }
     return $ReturnArray;
