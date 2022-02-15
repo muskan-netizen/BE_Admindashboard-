@@ -493,4 +493,5 @@
 </div>
 @endsection @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script src="{{asset('front-assets/js/fly-cart.js')}}"></script> @endsection
+<script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+@endsection

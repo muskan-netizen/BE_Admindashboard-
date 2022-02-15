@@ -75,16 +75,6 @@ body .switchery>small {width: 20px;height: 20px;}
 .nestable_list_1::-webkit-scrollbar{width:4px;background-color:#fff;border-radius:5px}
 .nestable_list_1::-webkit-scrollbar-thumb{background-color:#fff;border:2px solid #ddd;border-radius:5px}
 </style>
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
 @php
     $user = Auth::user();
 @endphp
@@ -103,7 +93,7 @@ body .switchery>small {width: 20px;height: 20px;}
                     <div class="col-lg-10">
                         <div class="alert alert-success" role="alert" id="success_msg" style="display:none;"></div>
 
-                        <h2>{{__('Personal Details.')}}</h2>
+                        <h2>{{__('Personal Details')}}</h2>
 
                         <div class="needs-validation vendor-signup ">
                             <div class="al_vendor_signup col-md-12 mt-3 p-3 mb-3">
@@ -150,7 +140,7 @@ body .switchery>small {width: 20px;height: 20px;}
                             </div>
 
 
-                            <h2 class="mb-3">{{getNomenclatureName('Vendors', true) . __(' Details.')}}</h2>
+                            <h2 class="mb-3">{{getNomenclatureName('Vendors', true) .' '. __('Details')}}</h2>
                             <div class="al_details_vendor p-3 mb-3">
                                 <div class="form-row">
                                     <div class="col-md-4 mb-3">
@@ -183,7 +173,7 @@ body .switchery>small {width: 20px;height: 20px;}
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-12 mb-3" id="nameInput">
-                                        <label for="validationCustom01">{{getNomenclatureName('Vendors', true)}}{{__(' Name')}}</label>
+                                        <label for="validationCustom01">{{getNomenclatureName('Vendors', true) .' '. __('Name')}}</label>
                                         <input type="text" class="form-control" name="name" value="">
                                         <span class="invalid-feedback" id="name_error"><strong></strong></span>
                                     </div>
@@ -226,7 +216,7 @@ body .switchery>small {width: 20px;height: 20px;}
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-3 mb-3" >
-                                        <label for="validationCustom01">{{__('Pincode')}}</label>
+                                        <label for="validationCustom01">{{__('Zip Code')}}</label>
                                         <input type="text" class="form-control" id="pincode" name="pincode" value="">
                                         <span class="invalid-feedback" id="pincode_error"><strong></strong></span>
                                     </div>

@@ -314,6 +314,13 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         });
 
         Route::resource('review', 'Client\ReviewController');
+
+        Route::resource('campaign', 'Client\CampaignController');
+        // Route::post('celebrity/changeStatus', 'Client\CelebrityController@changeStatus')->name('celebrity.changeStatus');
+        // Route::post('celebrity/getBrands', 'Client\CelebrityController@getBrandList')->name('celebrity.getBrands');
+
+        Route::get('notification', 'Client\UserController@customNotification')->name('customer.notification');
+        Route::post('sendnotification', 'Client\UserController@sendNotification')->name('send.notification');
         Route::get('/review/delect/{id}', 'Client\ReviewController@destroy')->name('review.delete');
     });
 });

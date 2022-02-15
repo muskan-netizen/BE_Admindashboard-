@@ -67,9 +67,18 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 </div>
                                 <div class="footer-contant">
                                     <ul class="contact-list al">
-                                        <li class="pl-0"><i class="icon-location"></i> <span>{{$clientData ? ($clientData->contact_address ?? $clientData->company_address)  : ''}}</span></li>
-                                        <li class="pl-0"><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? ($clientData->contact_phone_number ?? $clientData->phone_number) : ''}}"><span>{{$clientData ?  ($clientData->contact_phone_number ?? $clientData->phone_number) : ''}}</span></a></li>
-                                        <li class="pl-0"><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}" style="text-transform:none"><span>{{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}</span></a></li>
+                                        <li class="pl-0">
+                                            <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                            <span>{{$clientData ? ($clientData->contact_address ?? $clientData->company_address)  : ''}}</span>
+                                        </li>
+                                        <li class="pl-0">
+                                            <i class="fa fa-phone"></i>
+                                            <a href="tel: {{$clientData ? ($clientData->contact_phone_number ?? $clientData->phone_number) : ''}}"><span>{{$clientData ?  ($clientData->contact_phone_number ?? $clientData->phone_number) : ''}}</span></a>
+                                        </li>
+                                        <li class="pl-0">
+                                            <i class="fa fa-envelope"></i>
+                                            <a href="mailto: {{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}" style="text-transform:none"><span>{{$clientData ? ($clientData->contact_email ??$clientData->email) : ''}}</span></a>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -181,6 +190,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         </div>
     </div>
 </footer>
+</article>
 <div class="modal fade single-vendor-order-modal" id="single_vendor_order_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="s_vendor_remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
