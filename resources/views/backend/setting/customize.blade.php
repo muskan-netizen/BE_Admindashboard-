@@ -320,7 +320,7 @@
                 </form>
             </div>
             <!-- EDIT ORDER BY start -->
-            @endif    
+            @endif
         </form>
     </div><!-- User Authentication end-->
     <div class="col-md-5">
@@ -498,7 +498,7 @@
                </div>
                <!-- Android/IOS Link end -->
                <!-- Refer and Earn start -->
-                <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}"> 
+                <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
                     @csrf
                     <input type="hidden" name="send_to" id="send_to" value="customize">
                     <div class="card-box mb-0 pb-1">
@@ -776,9 +776,9 @@
 </div>
 <!-- Add Vendor Registration Document Modal -->
 <div id="add_vendor_registration_document_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
-            <div class="modal-header border-bottom">
+            <div class="modal-header border-bottom al">
                <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Vendor Registration Document") }}</h4>
                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
