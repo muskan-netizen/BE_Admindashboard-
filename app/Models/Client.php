@@ -128,4 +128,9 @@ class Client extends Authenticatable
       return self::latest()->first();
     }
 
+    public function getTimezone()
+    {
+      return $this->hasOne('App\Models\Timezone','timezone','timezone');
+    }
+
 }
