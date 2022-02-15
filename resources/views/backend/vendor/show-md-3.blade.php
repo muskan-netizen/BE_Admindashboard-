@@ -135,6 +135,10 @@
                         </div>
                     </div>
 
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Max Safety'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="max_safety" class="form-control" data-color="#43bee1" @if($vendor->max_safety == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
 
                     @if($client_preference_detail->static_delivey_fee == 1)
                     <div class="col-md-12">
@@ -196,7 +200,7 @@
 
 @if(Auth::user()->is_superadmin == 1)
 
-@if(isset($checkAhoyShip))
+@if(isset($checkAhoyShip) && $checkAhoyShip != 0)
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -232,7 +236,7 @@
 </div>
 @endif
 
-@if(isset($checkShip))
+@if(isset($checkShip) && $checkShip != 0)
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">

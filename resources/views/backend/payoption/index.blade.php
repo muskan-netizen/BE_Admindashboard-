@@ -453,7 +453,7 @@
             @endforeach
         </div>
     </form>
-
+@if(count($payoutOption) > 0)
     <form method="POST" id="payout_option_form" action="{{route('payoutOption.payoutUpdateAll')}}">
         @csrf
         @method('POST')
@@ -533,6 +533,7 @@
             @endforeach
         </div>
     </form>
+@endif
 
 </div>
 

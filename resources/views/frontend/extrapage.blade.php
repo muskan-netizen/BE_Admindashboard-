@@ -82,16 +82,6 @@
   transition: all 0.35s ease 0.15s;
 }
 </style>
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
 <section class="section-b-space new-pages pb-265">
     <div class="container">
         <div class="row">

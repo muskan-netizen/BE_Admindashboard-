@@ -74,16 +74,7 @@
 </style>
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template) && $set_template->template_id == 1)
-    @include('layouts.store/left-sidebar-template-one')
-    @elseif(isset($set_template) && $set_template->template_id == 2)
-    @include('layouts.store/left-sidebar')
-    @else
-    @include('layouts.store/left-sidebar-template-one')
-    @endif
-</header>
+
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
 
 @if(count($banners))
@@ -470,9 +461,5 @@
     // $(".mobile-back").on("click", function() {
     //     $(".sm-horizontal").css("right", "-410px");
     // });
-    $(document).ready(function() {
-    $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
-    $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight() + 78});
-  });
 </script>
 @endsection

@@ -11,7 +11,7 @@ use App\Models\Page;
 use App\Models\Client;
 use App\Models\SocialMedia;
 use Illuminate\Http\Request;
-use App\Models\{ClientPreference, PaymentOption};
+use App\Models\{ClientPreference, PaymentOption,WebStylingOption};
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
@@ -79,6 +79,7 @@ class AppServiceProvider extends ServiceProvider
         
         $last_mile_common_set = $this->checkIfLastMileDeliveryOn();
         $client_payment_options = PaymentOption::where('status', 1)->pluck('code')->toArray();
+        $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
 
 
         view()->share('last_mile_common_set', $last_mile_common_set);
@@ -93,6 +94,7 @@ class AppServiceProvider extends ServiceProvider
         view()->share('checkout_public_key', $checkout_public_key);
         view()->share('client_preference_detail', $client_preference_detail);
         view()->share('client_payment_options', $client_payment_options);
+        view()->share('set_template', $set_template);
        
        
     }

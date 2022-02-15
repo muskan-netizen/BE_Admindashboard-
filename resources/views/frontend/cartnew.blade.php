@@ -35,16 +35,6 @@ $languageList = \App\Models\ClientLanguage::with('language')->where('is_active',
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
 
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template) && $set_template->template_id == 1)
-    @include('layouts.store/left-sidebar-template-one')
-    @elseif(isset($set_template) && $set_template->template_id == 2)
-    @include('layouts.store/left-sidebar')
-    @else
-    @include('layouts.store/left-sidebar-template-one')
-    @endif
-</header>
 <script type="text/template" id="address_template">
     <div class="col-md-12">
         <div class="delivery_box p-0 mb-3">
