@@ -218,6 +218,7 @@
 @if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+
 <script>
 
     // var tag = document.createElement('script');
