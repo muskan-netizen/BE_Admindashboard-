@@ -99,10 +99,7 @@ if (Session::has('toaster')) {
 @if((!empty(Auth::user())))
 <script>
       $(document).ready(function() {
-          console.log("{{Session::get('current_fcm_token')}}");
-          console.log("{{session()->has('preferences')}}");
-          console.log("{{!empty(@Session::get('preferences')['fcm_api_key'])}}");
-          console.log("{{@Session::get('preferences')['fcm_api_key']}}");
+
         // Audio.prototype.play = (function(play) {
 
         //     return function() {
@@ -210,7 +207,7 @@ if (Session::has('toaster')) {
 
     const messaging = firebase.messaging();
     function initFirebaseMessagingRegistration() {
-        @if(empty(Session::get('current_fcm_token')))
+
         messaging.requestPermission().then(function() {
             return messaging.getToken()
         }).then(function(token) {
@@ -230,7 +227,8 @@ if (Session::has('toaster')) {
         }).catch(function(err) {
             console.log(`Token Error :: ${err}`);
         });
-        @endif
+        //  @if(empty(Session::get('current_fcm_token')))
+       // @endif
     }
 
     initFirebaseMessagingRegistration();
