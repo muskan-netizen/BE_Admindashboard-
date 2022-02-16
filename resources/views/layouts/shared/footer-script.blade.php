@@ -99,6 +99,7 @@ if (Session::has('toaster')) {
 @if((!empty(Auth::user())))
 <script>
       $(document).ready(function() {
+          console.log("{{Session::get('current_fcm_token')}}");
         // Audio.prototype.play = (function(play) {
 
         //     return function() {
