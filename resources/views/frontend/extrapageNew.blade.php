@@ -78,7 +78,7 @@ body .switchery>small {width: 20px;height: 20px;}
 @php
     $user = Auth::user();
 @endphp
-<section class="section-b-space new-pages pb-265">
+<section class="section-b-space new-pages">
     <div class="container">
         <div class="row">
             <div class="col-12 py-2">

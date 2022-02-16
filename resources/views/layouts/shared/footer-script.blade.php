@@ -42,7 +42,7 @@ if (Session::has('toaster')) {
     let stripe_publishable_key = "{{ $stripe_publishable_key }}";
     let is_hyperlocal = 0;
     var business_type = '';
-    
+
     @if($client_preference_detail)
         @if((isset($client_preference_detail->is_hyperlocal)) && ($client_preference_detail->is_hyperlocal == 1))
             is_hyperlocal = 1;
@@ -98,6 +98,34 @@ if (Session::has('toaster')) {
 @if(!str_contains(url()->current(), '/godpanel'))
 @if((!empty(Auth::user())))
 <script>
+      $(document).ready(function() {
+
+        // Audio.prototype.play = (function(play) {
+
+        //     return function() {
+        //         var audio = this,
+        //             args = arguments,
+        //             promise = play.apply(audio, args);
+        //             console.log('as');
+        //         if (promise !== undefined) {
+        //             promise.catch(_ => {
+        //                 // Autoplay was prevented. This is optional, but add a button to start playing.
+        //                 var el = document.createElement("button");
+        //                 el.innerHTML = "Play";
+        //                 el.addEventListener("click", function() {
+        //                     play.apply(audio, args);
+        //                 });
+        //                 this.parentNode.insertBefore(el, this.nextSibling)
+        //             });
+        //         }
+        //     };
+        // })(Audio.prototype.play);
+    //     var x = document.getElementById("orderAudio");
+    //     console.log(x);
+    //    x.play();
+          //alert('hllo');
+         //get_latest_order_socket('54855119');
+      });
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('input[name="_token"]').val()
@@ -116,6 +144,7 @@ if (Session::has('toaster')) {
     // });
 
     function get_latest_order_socket(order_number){
+        console.log(order_number);
         Audio.prototype.play = (function(play) {
             return function() {
                 var audio = this,
@@ -161,7 +190,7 @@ if (Session::has('toaster')) {
         });
     }
 </script>
-@if(Session::has('preferences') && !empty(Session::get('preferences')->fcm_api_key))
+@if(@Session::has('preferences') && !empty(@Session::get('preferences')['fcm_api_key']))
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
     var firebaseConfig = {
@@ -178,10 +207,11 @@ if (Session::has('toaster')) {
 
     const messaging = firebase.messaging();
     function initFirebaseMessagingRegistration() {
-        @if(empty(Session::get('current_fcm_token')))
+
         messaging.requestPermission().then(function() {
             return messaging.getToken()
         }).then(function(token) {
+
             $.ajax({
                 url: "{{ route('client.save_fcm') }}",
                 type: "POST",
@@ -198,6 +228,7 @@ if (Session::has('toaster')) {
         }).catch(function(err) {
             console.log(`Token Error :: ${err}`);
         });
+         @if(empty(Session::get('current_fcm_token')))
         @endif
     }
 
@@ -205,10 +236,13 @@ if (Session::has('toaster')) {
     messaging.onMessage(function(payload) {
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
-        } else if (Notification.permission === "granted") {
+        }
+        else if (Notification.permission === "granted") {
             if(payload && payload.data && payload.data.data){
                 if(payload.data.type && payload.data.type=="order_created"){
                     var payload_data = JSON.parse(payload.data.data);
+                    console.log('firepase msg order number');
+                    console.log(payload_data.order_number);
                     get_latest_order_socket(payload_data.order_number);
                 }
             }

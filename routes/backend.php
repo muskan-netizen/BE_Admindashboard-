@@ -73,7 +73,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         // Route::get('account/vendor/payout/filter', [VendorPayoutController::class, 'filter'])->name('account.vendor.payout.filter');
         Route::get('account/vendor/payout/requests', [VendorPayoutController::class, 'vendorPayoutRequests'])->name('account.vendor.payout.requests');
         Route::get('account/vendor/payout/requests/filter', [VendorPayoutController::class, 'vendorPayoutRequestsFilter'])->name('account.vendor.payout.requests.filter');
-        Route::post('account/vendor/payout/request/complete/{id}', [VendorPayoutController::class, 'vendorPayoutRequestComplete'])->name('account.vendor.payout.request.complete');
+        Route::post('account/vendor/payout/request/complete', [VendorPayoutController::class, 'vendorPayoutRequestComplete'])->name('account.vendor.payout.request.complete');
         Route::get('account/tax/filter', [TaxController::class, 'filter'])->name('account.tax.filter');
         Route::get('account/tax/export', [TaxController::class, 'export'])->name('account.tax.export');
         Route::get('account/vendor/filter', [VendorController::class, 'filter'])->name('account.vendor.filter');
@@ -301,7 +301,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('subscription/payment/stripe', 'Client\StripeGatewayController@subscriptionPaymentViaStripe')->name('subscription.payment.stripe');
         Route::get('verify/oauth/token/stripe', 'Client\StripeGatewayController@verifyOAuthToken')->name('verify.oauth.token.stripe');
         Route::get('create/custom/connected-account/stripe/{vendor_id}', 'Client\StripeGatewayController@createCustomConnectedAccount')->name('create.custom.connected-account.stripe');
-        Route::post('vendor/payout/stripe/{id}', 'Client\StripeGatewayController@vendorPayoutViaStripe')->name('vendor.payout.stripe');
+        Route::post('vendor/payout/stripe', 'Client\StripeGatewayController@vendorPayoutViaStripe')->name('vendor.payout.stripe');
 
         Route::get('/admin/signup', 'Client\AdminSignUpController@index')->name('admin.signup');
         Route::post('save_fcm_token', 'Client\UserController@save_fcm')->name('client.save_fcm');
