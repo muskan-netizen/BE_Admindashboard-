@@ -91,7 +91,7 @@ h2.homepage-address {text-overflow: ellipsis;white-space: nowrap;overflow: hidde
 .al_mew_wrapper_design .social-links li i {font-size: 24px;background-color: transparent;box-shadow: none;color: #777;width: auto;height: auto;}
 .no-category-image .menu-navigation_al {padding: 0;}
 .al_mew_wrapper_design header#al_new_design.site-header.fixed-bar .no-category-image .menu-navigation_al {padding-top: 0;padding-bottom: 0;}
-.al_mew_wrapper_design .section-b-space {padding-top: 20px !important;}
+.al_mew_wrapper_design .section-b-space {padding-top: 50px !important;}
 .al_mew_wrapper_design .main-menu{z-index: -1;}
 .al_mew_wrapper_design  .top-header .header-dropdown .onhover-dropdown .onhover-show-div li{font-size: 14px;}
 .al_mew_wrapper_design .footer-theme .sub-title .contact-list li {line-height: 1.5;padding-top: 0;margin-bottom: 10px;padding-left: 40px !important;}
@@ -182,18 +182,5 @@ button.close {padding: 5px 10px 0 4px;text-align: right;}
 .al_mew_wrapper_design .al_custom_brand .brand-box h6{font-size: 18px;color: #000;}
 .al_mew_wrapper_design .al_custom_brand .brand-box{text-align: center;}
 .al_mew_wrapper_design .al_custom_brand .brand-box .brand-ing{
-height: 200px;
-width: 200px;
-text-align: center;
-border-radius: 50%;
-overflow: hidden;
-background-color: rgb(255, 255, 255);
-box-shadow: rgba(0,0,0,.3) 0px 3px 12px;
-margin: 0 auto 20px;
-}
-.al_mew_wrapper_design .al_custom_brand .brand-box .brand-ing img{
-object-fit: cover;
-margin: 0 auto;
-width: 100%;
-height: 100%;
-}
+height: 200px;width: 200px;text-align: center;border-radius: 50%;overflow: hidden;background-color: rgb(255, 255, 255);box-shadow: rgba(0,0,0,.3) 0px 3px 12px;margin: 0 auto 20px;}
+.al_mew_wrapper_design .al_custom_brand .brand-box .brand-ing img{object-fit: cover;margin: 0 auto;width: 100%;height: 100%;}
