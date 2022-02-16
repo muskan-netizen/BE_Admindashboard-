@@ -1,11 +1,6 @@
 @extends('layouts.store', ['title' => __('Home')])
 
 @section('content')
-<header>
-	<div class="mobile-fix-option"></div>
-	<!-- header, category  in layouts.store/left-sidebar-template-two-->
-	@include('layouts.store/left-sidebar-template-two')
-</header>
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
@@ -76,7 +71,7 @@
 		<% }); %>
 </script><!-- banner_template end -->
 
-<!-- products_template start --> 
+<!-- products_template start -->
 <script type="text/template" id="products_template" data-aos="zoom-in">
 	<% _.each(products, function(product, k){ %>
 		<div class="product-card-box position-relative al">
@@ -113,8 +108,8 @@
 				</div>
 			</a>
 		</div>
-		<% }); %> 
-</script><!-- products_template end --> 
+		<% }); %>
+</script><!-- products_template end -->
 
 <!-- trending_vendors_template start -->
 <script type="text/template" id="trending_vendors_template" data-aos="zoom-in">
@@ -458,7 +453,7 @@
 		<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="row">
 				<div class="col-12 top-heading d-flex align-items-center justify-content-between">
-					<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
+				<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
 			</div>
 			<div class="row">
 				<div class="col-12"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
@@ -511,4 +506,10 @@
 @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+	  $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
+	  $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight()});
+	});
+</script>
 @endsection

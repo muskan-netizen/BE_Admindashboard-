@@ -58,7 +58,7 @@ else if($client_preference_detail->show_dark_mode == 2){
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
 @if(isset($set_template)  && $set_template->template_id == 3)
 
-  <article class="al_mew_wrapper_design">
+  <article class="al_new_wrapper_design">
 
 
   @endif
@@ -108,19 +108,16 @@ else if($client_preference_detail->show_dark_mode == 2){
    <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
 <script type="text/javascript">
-  var extra_height = 80;
-  @if(isset($set_template)  && $set_template->template_id == 3)
-    extra_height = 0;
-  @endif
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5LPF1QP3Y3');
-$(document).ready(function() {
-  $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
-  $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight() + extra_height});
-});
+// $(document).ready(function() {
+//   alert($('.site-header').innerHeight());
+//   $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
+//   $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight()});
+// });
 </script>
 
 </body>
