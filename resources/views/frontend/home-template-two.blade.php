@@ -50,19 +50,20 @@
 					<%}else{%>
 						<img  class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 					<%}%>
-					<% if(vendor.timeofLineOfSightDistance !=undefined){%>
-					<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
-					<%}%>
+
 				</div>
 				<div class="supplier-rating">
-
-						<h6 class="mb-1 ellips"><%=vendor.name %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-						<% if(vendor.vendorRating > 0){%> <span class="rating-number"><%=vendor.vendorRating %></span>
-							<%}%> @endif @endif
+					<h6 class="mb-1 ellips"><%=vendor.name %></h6>
 					<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
 						<%=vendor.categoriesList %>
 					</p>
+						<% if(vendor.timeofLineOfSightDistance !=undefined){%>
+							<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
+						<%}%>
 				</div>
+				@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+				<% if(vendor.vendorRating > 0){%> <span class="rating-number"><%=vendor.vendorRating %> </span>
+				<%}%> @endif @endif
 			</a>
 		</div>
 		<% }); %>
@@ -123,25 +124,26 @@
 <script type="text/template" id="trending_vendors_template" data-aos="zoom-in">
 	<% _.each(trending_vendors, function(vendor, k){%>
 		<div class="product-card-box position-relative text-center al_custom_vendors_sec">
-			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
+			<a class="suppliers-box al_vendors_template2 d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative ">
 					<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 						<%}else{%> <img class="fluid-img mx-auto blur-up lazyload w-100" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 							<%}%>
-								<% if(vendor.timeofLineOfSightDistance !=undefined){%>
-									<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
-									<%}%>
 				</div>
 				<div class="supplier-rating">
 					<h6 class="mb-1 ellips"><%=vendor.name %></h6>
-					@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-						<% if(vendor.vendorRating > 0){%>
-						<span class="rating-number"><%=vendor.vendorRating %></span>
-						<%}%> @endif @endif
 					<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
 						<%=vendor.categoriesList %>
 					</p>
+
+						<% if(vendor.timeofLineOfSightDistance !=undefined){%>
+									<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
+									<%}%>
 				</div>
+				@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+						<% if(vendor.vendorRating > 0){%>
+						<span class="rating-number"><%=vendor.vendorRating %> </span>
+						<%}%> @endif @endif
 			</a>
 		</div>
 		<% }); %>
