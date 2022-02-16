@@ -252,6 +252,7 @@
                             <div class="col-md-6 mb-2">
                                 <label for="country">{{ __('Country') }}</label>
                                 <select name="country" id="country" class="form-control" value="<%= ((typeof address != 'undefined') && (address.country_id != null)) ? address.country_id : '' %>" required="required">
+                                    <option value="">{{__('Selece country')}}</option>
                                     @foreach($countries as $co)
                                         <option value="{{$co->id}}" <%= ((typeof address != 'undefined') && (address.country_id == {{$co->id}})) ? 'selected="selected"' : '' %>>{{$co->name}}</option>
                                     @endforeach
@@ -552,10 +553,10 @@
             }
         });
 
-        setTimeout(function(){ 
+        setTimeout(function(){
             $(".pac-container").appendTo("#add_new_address_form .address-input-group");
         }, 300);
-        
+
     }
 </script>
 @endsection
