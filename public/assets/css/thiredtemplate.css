@@ -206,3 +206,59 @@ button.close {padding: 5px 10px 0 4px;text-align: right;}
 .divider-line {border-bottom: 1px solid #ddd;position: relative;margin: 25px 0;}
 .divider-line span {position: absolute;left: 0;right: 0;top: -14px;margin: auto;background: #fff;width: 30px;text-align: center;height: 30px;border-radius: 50px;margin-top: 0;display: block;}
 /*Login popup css end*/
+.p-64 {
+    padding: 64px!important;
+}
+.cab-banner-area .card-box {
+    padding: 48px;
+    border-radius: 20px;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-color: rgba(255,255,255,.5);
+}
+.cab-input {
+    margin: 31px 0 13px;
+    position: relative;
+}
+.cab-footer {
+    margin: 19px 0 0;
+}
+.input-line {
+    width: 1px;
+    height: 46px;
+    background: #000;
+    position: absolute;
+    top: 33px;
+    left: 22px;
+}
+.cab-footer .btn.btn-solid:last-child {
+    margin-right: 0;
+}
+.input-line:before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border: 1px solid #000;
+    border-radius: 50%;
+    position: absolute;
+    top: -10px;
+    left: -3px;
+}
+.input-line:after {
+    width: 7px;
+    height: 7px;
+    border: 1px solid #000;
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: -3px;
+}
+.cab-input input.form-control {
+    background-color: #f6f6f6;
+    padding: 11px 30px 11px 40px;
+    height: auto;
+    min-height: 52px;
+    border: 0;
+    border-radius: 0!important;
+    font-size: 16px;
+}
