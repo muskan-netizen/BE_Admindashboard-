@@ -320,6 +320,7 @@ class StripeGatewayController extends BaseController{
                     'amount' => $amount * 100,
                     'currency' => $this->currency,
                     'payment_method_types' => ['card'],
+                    'on_behalf_of' => $connected_account->account_id,
                     'transfer_group' => 'vendor_payout',
                 ]);
                 

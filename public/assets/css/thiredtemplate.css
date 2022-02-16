@@ -134,7 +134,7 @@ h2.homepage-address {text-overflow: ellipsis;white-space: nowrap;overflow: hidde
     box-shadow: none;
     border:1px solid transparent
 }
-.al_mew_wrapper_design .common-product-box:hover, .al_mew_wrapper_design .product-box:hover, .al_mew_wrapper_design .product-card-box:hover, .al_mew_wrapper_design.suppliers-box:hover {
+.al_mew_wrapper_design .common-product-box:hover, .al_mew_wrapper_design .product-box:hover, .al_mew_wrapper_design.suppliers-box:hover {
     box-shadow: none;box-shadow: rgb(28 28 28 / 12%) 0px 0.4rem 1.8rem;
     box-sizing: border-box;
     border: 1px solid rgb(232, 232, 232);
