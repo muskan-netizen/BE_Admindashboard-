@@ -179,3 +179,21 @@ button.close {padding: 5px 10px 0 4px;text-align: right;}
 .input-line:after {width: 7px;height: 7px;border: 1px solid #000;content: "";position: absolute;bottom: -10px;left: -3px;}
 .cab-input input.form-control {background-color: #f6f6f6;padding: 11px 30px 11px 40px;height: auto;min-height: 52px;border: 0;border-radius: 0!important;font-size: 16px;}
 /* car bar css end */
+.al_mew_wrapper_design .al_custom_brand .brand-box h6{font-size: 18px;color: #000;}
+.al_mew_wrapper_design .al_custom_brand .brand-box{text-align: center;}
+.al_mew_wrapper_design .al_custom_brand .brand-box .brand-ing{
+height: 200px;
+width: 200px;
+text-align: center;
+border-radius: 50%;
+overflow: hidden;
+background-color: rgb(255, 255, 255);
+box-shadow: rgba(0,0,0,.3) 0px 3px 12px;
+margin: 0 auto 20px;
+}
+.al_mew_wrapper_design .al_custom_brand .brand-box .brand-ing img{
+object-fit: cover;
+margin: 0 auto;
+width: 100%;
+height: 100%;
+}
