@@ -201,7 +201,7 @@ color: white;
 text-align: center;
 padding-right: 10px;
 }
-span.rating-number:before {
+.al_new_wrapper_design span.rating-number:before {
 content: "\f005";
 position: absolute;
 font-family: 'FontAwesome';
@@ -212,4 +212,19 @@ font-size: 12px;
 .al_new_wrapper_design .site-header.fixed-bar .nav-cate-img img{height: 0 !important;}
 .top-header .header-dropdown li:hover i {
     color: #777;
+}
+.al_new_wrapper_design .new-pages a.suppliers-box.d-block .supplier-rating h6.mb-1.ellips {
+    color: #000;
+    font-size: 18px;
+}
+.al_new_wrapper_design .new-pages a.suppliers-box.d-block .supplier-rating .product-timing{margin-bottom: 0;}
+.al_new_wrapper_design .new-pages a.suppliers-box.d-block .supplier-rating .vendor-cate{font-size: 14px;}
+.al_new_wrapper_design .new-pages a.suppliers-box.d-block .supplier-rating ul.timing-box small{
+    color: #777;
+}
+.al_new_wrapper_design .new-pages a.suppliers-box.d-block .supplier-rating ul.timing-box small svg{
+    fill: var(--theme-deafult);
+}
+.al_new_wrapper_design .new-pages a.suppliers-box.d-block .supplier-rating ul.timing-box small.d-block.mx-1 svg{
+    fill: green;
 }
