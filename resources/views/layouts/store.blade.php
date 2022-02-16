@@ -113,11 +113,11 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5LPF1QP3Y3');
-$(document).ready(function() {
-  alert($('.site-header').innerHeight());
-  $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
-  $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight()});
-});
+// $(document).ready(function() {
+//   alert($('.site-header').innerHeight());
+//   $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
+//   $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight()});
+// });
 </script>
 
 </body>
