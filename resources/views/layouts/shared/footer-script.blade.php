@@ -123,7 +123,7 @@ if (Session::has('toaster')) {
     //     console.log(x);
     //    x.play();
           //alert('hllo');
-         get_latest_order_socket('54855119');
+         //get_latest_order_socket('54855119');
       });
     $.ajaxSetup({
         headers: {
