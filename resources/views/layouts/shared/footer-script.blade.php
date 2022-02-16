@@ -100,7 +100,7 @@ if (Session::has('toaster')) {
 <script>
       $(document).ready(function() {
           console.log("{{Session::get('current_fcm_token')}}");
-         // console.log("{{session()->has('preferences')}}");
+          console.log("{{session()->has('preferences')}}");
         // Audio.prototype.play = (function(play) {
 
         //     return function() {
