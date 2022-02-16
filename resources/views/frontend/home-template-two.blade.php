@@ -1,11 +1,6 @@
 @extends('layouts.store', ['title' => __('Home')])
 
 @section('content')
-<header>
-	<div class="mobile-fix-option"></div>
-	<!-- header, category  in layouts.store/left-sidebar-template-two-->
-	@include('layouts.store/left-sidebar-template-two')
-</header>
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
@@ -511,4 +506,10 @@
 @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+	  $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
+	  $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight()});
+	});
+</script>
 @endsection

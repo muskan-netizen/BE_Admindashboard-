@@ -459,8 +459,39 @@ $pages = \App\Models\Page::with([
        <div class="mobile-back text-end">Back<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
    </li> -->
     <% _.each(nav_categories, function(category, key){ %>
-      <li class="al_main_category" data-aos="zoom-in"> <a href="{{route('categoryDetail')}}/<%=category.slug %>"> @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif <%=category.name %> </a> <% if(category.children){%> <ul class="al_main_category_list"> <% _.each(category.children, function(childs, key1){%> <li> <a href="{{route('categoryDetail')}}/<%=childs.slug %>"><span class="new-tag"><%=childs.name %></span></a> <% if(childs.children){%> <ul class="al_main_category_sub_list"> <% _.each(childs.children, function(chld, key2){%> <li><a href="{{route('categoryDetail')}}/<%=chld.slug %>"><%=chld.name %></a></li><%}); %> </ul> <%}%> </li><%}); %> </ul> <%}%> </li>
-        <% }); %>
+    <li class="al_main_category" data-aos="zoom-in">
+        <a href="{{route('categoryDetail')}}/<%=category.slug %>">
+            @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
+            <div class="nav-cate-img">
+                <img style="height:150px;" class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="">
+            </div>
+            @endif
+            <%=category.name %>
+        </a>
+        <% if(category.children){%>
+        <ul class="al_main_category_list">
+            <% _.each(category.children, function(childs, key1){%>
+            <li>
+                <a href="{{route('categoryDetail')}}/<%=childs.slug %>">
+                    <span class="new-tag"><%=childs.name %></span>
+                </a>
+                <% if(childs.children){%>
+                <ul class="al_main_category_sub_list">
+                    <% _.each(childs.children, function(chld, key2){%>
+                    <li>
+                        <a href="{{route('categoryDetail')}}/<%=chld.slug %>">
+                            <%=chld.name %>
+                        </a>
+                    </li>
+                    <%}); %>
+                </ul>
+                <%}%>
+            </li>
+            <%}); %>
+        </ul>
+        <%}%>
+    </li>
+    <% }); %>
 </script>
 @if($client_preference_detail)
     @if($client_preference_detail->is_hyperlocal == 1 )
