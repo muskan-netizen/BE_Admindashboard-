@@ -12,8 +12,9 @@ use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
 class ClientPreferenceController extends BaseController{
-
+    use \App\Http\Traits\ClientPreferenceManager;
     use ApiResponser;
+
     public function index(){
         $client = Auth::user();
         $mapTypes = MapProvider::where('status', '1')->get();
@@ -29,16 +30,6 @@ class ClientPreferenceController extends BaseController{
         $file_types_driver = ['image/*' => 'Image', '.pdf' => 'Pdf','.txt'=>'Text'];
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         $driver_registration_documents = DriverRegistrationDocument::with('primary')->get();
-        if($preference->reffered_by_amount == null){
-            $reffer_by = 0;
-        }else{
-            $reffer_by = $preference->reffered_by_amount;
-        }
-        if($preference->reffered_to_amount == null){
-            $reffer_to = 0;
-        }else{
-            $reffer_to = $preference->reffered_to_amount;
-        }
 
         $last_mile_teams = [];
         $laundry_teams = [];
@@ -55,7 +46,7 @@ class ClientPreferenceController extends BaseController{
 
         $tags = Tag::with('primary')->get();
         $slots = ClientSlot::get();
-        return view('backend/setting/config')->with(['tags' => $tags,'slots'=>$slots,'laundry_teams' => $laundry_teams,'last_mile_teams' => $last_mile_teams,'client' => $client, 'preference' => $preference, 'mapTypes'=> $mapTypes, 'smsTypes' => $smsTypes, 'client_languages' => $client_languages, 'file_types' => $file_types, 'vendor_registration_documents' => $vendor_registration_documents, 'driver_registration_documents' => $driver_registration_documents, 'reffer_by' => $reffer_by, 'reffer_to' => $reffer_to, 'file_types_driver' => $file_types_driver]);
+        return view('backend/setting/config')->with(['tags' => $tags,'slots'=>$slots,'laundry_teams' => $laundry_teams,'last_mile_teams' => $last_mile_teams,'client' => $client, 'preference' => $preference, 'mapTypes'=> $mapTypes, 'smsTypes' => $smsTypes, 'client_languages' => $client_languages, 'file_types' => $file_types, 'vendor_registration_documents' => $vendor_registration_documents, 'driver_registration_documents' => $driver_registration_documents, 'file_types_driver' => $file_types_driver]);
     }
 
     public function getCustomizePage(ClientPreference $clientPreference){
@@ -72,7 +63,9 @@ class ClientPreferenceController extends BaseController{
         $currencies = Currency::where('id', '>', '0')->get();
         $curtableData = array_chunk($currencies->toArray(), 2);
         $primaryCurrency = ClientCurrency::where('is_primary', 1)->first();
-        $ClientPreference = ClientPreference::with('language', 'primarylang', 'domain', 'currency.currency', 'primary.currency')->select('client_code', 'theme_admin', 'distance_unit', 'date_format', 'time_format', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'verify_email', 'verify_phone', 'web_template_id', 'app_template_id', 'primary_color', 'secondary_color', 'reffered_by_amount', 'reffered_to_amount')->where('client_code', $client->code)->first();
+        $ClientPreference = ClientPreference::where('client_code', $client->code)
+        // ->with('language', 'primarylang', 'domain', 'currency.currency', 'primary.currency')->select('client_code', 'theme_admin', 'distance_unit', 'date_format', 'time_format', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'verify_email', 'verify_phone', 'web_template_id', 'app_template_id', 'primary_color', 'secondary_color', 'reffered_by_amount', 'reffered_to_amount')
+        ->first();
         $preference = $ClientPreference ? $ClientPreference : new ClientPreference();
         $nomenclature_value = Nomenclature::first();
         foreach ($preference->currency as $value) {
@@ -81,12 +74,24 @@ class ClientPreferenceController extends BaseController{
         foreach ($preference->language as $value) {
             $cli_langs[] = $value->language_id;
         }
+        $tags = Tag::with('primary')->get();
+        $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
+        if($preference->reffered_by_amount == null){
+            $reffer_by = 0;
+        }else{
+            $reffer_by = $preference->reffered_by_amount;
+        }
+        if($preference->reffered_to_amount == null){
+            $reffer_to = 0;
+        }else{
+            $reffer_to = $preference->reffered_to_amount;
+        }
         $client_languages = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
                     ->where('client_languages.client_code', Auth::user()->code)
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
-        return view('backend.setting.customize', compact('client','nomenclature_value','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages'));
+        return view('backend.setting.customize', compact('client','nomenclature_value','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to'));
     }
 
     public function referandearnUpdate(Request $request, $code){
@@ -96,7 +101,7 @@ class ClientPreferenceController extends BaseController{
             $preference->reffered_to_amount = $request->reffered_to_amount;
             $preference->reffered_by_amount = $request->reffered_by_amount;
             $preference->save();
-            return redirect()->route('configure.index')->with('success', 'Client configurations updated successfully!');
+            return redirect()->route('configure.customize')->with('success', 'Client Customization updated successfully!');
         }
     }
 
@@ -211,9 +216,8 @@ class ClientPreferenceController extends BaseController{
             $preference->pickup_delivery_service_area = ($request->has('pickup_delivery_service_area') && $request->pickup_delivery_service_area == 'on') ? 1 : 0;
             $preference->minimum_order_batch = ($request->has('minimum_order_batch') && $request->minimum_order_batch == 'on') ? 1 : 0;
             $preference->static_delivey_fee = ($request->has('static_delivey_fee') && $request->static_delivey_fee == 'on') ? 1 : 0;
-            $preference->header_quick_link = ($request->has('header_quick_link') && $request->header_quick_link == 'on') ? 1 : 0;
             $preference->get_estimations = ($request->has('get_estimations') && $request->get_estimations == 'on') ? 1 : 0;
-            $preference->tools_mode = ($request->has('tools_mode') && $request->tools_mode == 'on') ? 1 : 0;
+            $preference->max_safety_mod = ($request->has('max_safety_mod') && $request->max_safety_mod == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
@@ -320,10 +324,10 @@ class ClientPreferenceController extends BaseController{
                     $res = $client->post($url.'/api/check-dispatcher-keys');
                     $response = json_decode($res->getBody(), true);
                     if($response && $response['status'] == 400){
-                        return redirect()->route('configure.index')->with('error', 'Last Mile Delivery Keys incorrect !');
+                        return redirect()->back()->with('error', 'Last Mile Delivery Keys incorrect !');
                     }
                 }catch(\Exception $e){
-                    return redirect()->route('configure.index')->with('error', 'Invalid Last Mile Delivery Dispatcher URL !');
+                    return redirect()->back()->with('error', 'Invalid Last Mile Delivery Dispatcher URL !');
                 }
                 $preferenceset->need_delivery_service = ($request->has('need_delivery_service') && $request->need_delivery_service == 'on') ? 1 : 0;
                 $preferenceset->delivery_service_key_url = $request->delivery_service_key_url;
@@ -421,33 +425,6 @@ class ClientPreferenceController extends BaseController{
     }
 
 
-
-
-     # get last mile teams
-     public function getLastMileTeams(){
-        try {
-            $dispatch_domain = $this->checkIfLastMileOn();
-                if ($dispatch_domain && $dispatch_domain != false) {
-
-                    $unique = Auth::user()->code;
-
-                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key,
-                                                        'shortcode' => $dispatch_domain->delivery_service_key_code,
-                                                        'content-type' => 'application/json']
-                                                            ]);
-                            $url = $dispatch_domain->delivery_service_key_url;
-                            $res = $client->get($url.'/api/get-all-teams');
-                            $response = json_decode($res->getBody(), true);
-                            if($response && $response['message'] == 'success'){
-                                return $response['teams'];
-                            }
-
-                }
-            }
-            catch(\Exception $e){
-
-            }
-    }
     # get laundry teams
     public function getLaundryTeams(){
         try {
@@ -472,14 +449,6 @@ class ClientPreferenceController extends BaseController{
             catch(\Exception $e){
 
             }
-    }
-    # check if last mile delivery on
-    public function checkIfLastMileOn(){
-        $preference = ClientPreference::first();
-        if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
-            return $preference;
-        else
-            return false;
     }
 
 

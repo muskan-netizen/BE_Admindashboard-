@@ -453,7 +453,7 @@
             @endforeach
         </div>
     </form>
-
+@if(count($payoutOption) > 0)
     <form method="POST" id="payout_option_form" action="{{route('payoutOption.payoutUpdateAll')}}">
         @csrf
         @method('POST')
@@ -471,7 +471,7 @@
         </div>
         <div class="row">
             @foreach($payoutOption as $key => $opt)
-            <div class="col-md-4 mb-3">
+            <div class="col-md-2 mb-3">
 
                 <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
                 <input type="hidden" name="method_name[]" id="{{$opt->code}}" value="{{$opt->code}}">
@@ -533,6 +533,7 @@
             @endforeach
         </div>
     </form>
+@endif
 
 </div>
 

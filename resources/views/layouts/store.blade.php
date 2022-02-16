@@ -15,6 +15,7 @@ $set_common_business_type = $client_preference_detail->business_type??'';
     a {color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;}
   </style>
    @yield('css')
+
 </head>
 @php
 $dark_mode = '';
@@ -55,11 +56,32 @@ else if($client_preference_detail->show_dark_mode == 2){
  </style>
 @endif
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
-  @yield('content')
+@if(isset($set_template)  && $set_template->template_id == 3)
+
+  <article class="al_new_wrapper_design">
+
+
+  @endif
+<header>
+    <div class="mobile-fix-option"></div>
+    @if(isset($set_template)  && $set_template->template_id == 1)
+    @include('layouts.store/left-sidebar-template-one')
+    @elseif(isset($set_template)  && $set_template->template_id == 2)
+    @include('layouts.store/left-sidebar')
+    @elseif(isset($set_template)  && $set_template->template_id == 3)
+    @include('layouts.store/left-sidebar-template-two')
+    @else
+    @include('layouts.store/left-sidebar-template-one')
+    @endif
+</header>
+@yield('content')
   @if(isset($set_template)  && $set_template->template_id == 1)
   @include('layouts.store/footer-content-template-one')
   @elseif(isset($set_template)  && $set_template->template_id == 2)
   @include('layouts.store/footer-content')
+  @elseif(isset($set_template)  && $set_template->template_id == 3)
+
+  @include('layouts.store/footer-content-template-two')
   @else
   @endif
   @include('layouts.store/footer')
@@ -85,12 +107,17 @@ else if($client_preference_detail->show_dark_mode == 2){
   @endif
    <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LPF1QP3Y3"></script>
-<script>
+<script type="text/javascript">
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5LPF1QP3Y3');
+// $(document).ready(function() {
+//   alert($('.site-header').innerHeight());
+//   $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
+//   $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight()});
+// });
 </script>
 
 </body>

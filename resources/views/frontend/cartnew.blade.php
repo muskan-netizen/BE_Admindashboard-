@@ -35,16 +35,6 @@ $languageList = \App\Models\ClientLanguage::with('language')->where('is_active',
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 @endphp
 
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template) && $set_template->template_id == 1)
-    @include('layouts.store/left-sidebar-template-one')
-    @elseif(isset($set_template) && $set_template->template_id == 2)
-    @include('layouts.store/left-sidebar')
-    @else
-    @include('layouts.store/left-sidebar-template-one')
-    @endif
-</header>
 <script type="text/template" id="address_template">
     <div class="col-md-12">
         <div class="delivery_box p-0 mb-3">
@@ -128,13 +118,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <div id="tbody_<%= product.vendor.id %>">
             <% _.each(product.vendor_products, function(vendor_product, vp){%>
                 <div class="row align-items-md-center vendor_products_tr" id="tr_vendor_products_<%= vendor_product.id %>">
-                    <div class="product-img col-4 col-md-2 pr-0">
+                    <div class="product-img col-4 col-md-2 pr-0 al">
                         <% if(vendor_product.pvariant.media_one) { %>
-                            <img class='blur-up lazyload' data-src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
+                            <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_one.pimage.image.path.image_path %>">
                         <% }else if(vendor_product.pvariant.media_second){ %>
-                            <img class='blur-up lazyload' data-src="<%= vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_second.image.path.image_path %>">
+                            <img class='blur-up lazyload w-100' data-src="<%= vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%= vendor_product.pvariant.media_second.image.path.image_path %>">
                         <% }else{ %>
-                            <img class='blur-up lazyload' data-src="<%= vendor_product.image_url %>">
+                            <img class='blur-up lazyload w-100' data-src="<%= vendor_product.image_url %>">
                         <% } %>
                     </div>
                     <div class="col-8 col-md-10">
@@ -250,21 +240,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                     @endif
                 </div>
                 <div class="col-lg-6">
-                    <div class="row mb-1">
-                        <div class="col-8 text-lg-right">
-                            <% if(product.coupon_amount_used > 0) { %>
-                            <p class="total_amt m-0">{{__('Coupon Discount')}} :</p>
-                            <% } %>
-                            {{-- <p class="total_amt mt-2">{{__('Delivery Fee')}}</p> --}}
 
-                        </div>
-                        <div class="col-4 text-right">
-                            <% if(product.coupon_amount_used > 0) { %>
-                                <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.coupon_amount_used) %></p>
-                                <% } %>
-                        </div>
-                    </div>
-                    
                     <% if(product.delOptions) { %>
                         <div class="row mb-1 d-flex align-items-center">
                             <div class="col-5 text-lg-right">
@@ -272,18 +248,34 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     {{__('Delivery Fee')}} :</label>
                                 </div>
                             <div class="col-md-7">
-                                        <%= product.delOptions %>
+                                <%= product.delOptions %>
                             </div>
                         </div>
                     <% } %>
 
-                   
+                    <div class="row mb-1">
+                        <div class="col-5 text-lg-right">
+                            <% if(product.coupon_amount_used > 0) { %>
+                                <label class="m-0 radio">{{__('Coupon Discount')}} :</label>
+                            <% } %>
+                        </div>
+                        <div class="col-7 text-right">
+                            <% if(product.coupon_amount_used > 0) { %>
+                                <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.coupon_amount_used) %></p>
+                                <% } %>
+                        </div>
+                    </div>
 
                     <div class="row">
-                        <div class="col-12 text-right">
+                        <% if(cart_details.vendorCnt>1) { %>
+                            <div class="col-5 text-lg-right">
+                                <label class="m-0 radio">{{__('Sub Total')}} :</label>
+                            </div>
+                            <div class="col-md-7 text-right">
+                                <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.product_total_amount) %></p>
+                            </div>
 
-                            <p class="total_amt m-0">{{Session::get('currencySymbol')}} <%= Helper.formatPrice(product.product_total_amount) %></p>
-                        </div>
+                            <% } %>
                     </div>
 
                 </div>
@@ -329,15 +321,18 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
             @else
             <div class="row">
-                <div class="col-4">{{__('Specific instructions')}}</div>
-                <div class="col-8"><input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions ?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions"></div>
+
+                <div class="col-12">
+                    {{__('Specific instructions')}}
+                    <input class="form-control" type="text"  placeholder="{{__('Do you want to add any instructions ?')}}" id="specific_instructions" value ="{{$cart->specific_instructions??''}}"  name="specific_instructions">
+                </div>
             </div>
            @endif
 
         </div>
         <div class="offset-lg-5 col-lg-7 offset-xl-6 col-xl-6 mt-3">
             <div class="row">
-                <div class="col-6">{{__('Sub Total')}}</div>
+                <div class="col-6">{{__('Total')}}</div>
                 <div class="col-6 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(cart_details.gross_amount) %></div>
             </div>
             <hr class="my-2">
@@ -442,12 +437,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             </div>
             <hr class="my-2">
 
-            {{-- Schedual code Start at down --}}
+
+
+        </div>
+        {{-- Schedual code Start at down --}}
 
             <% if(client_preference_detail.off_scheduling_at_cart != 1 && cart_details.vendorCnt==1) { %>
                 @if($client_preference_detail->business_type != 'laundry')
-            <div class="row d-flex align-items-center arabic-lng no-gutters mt-2 mb-md-4 mb-2 position-relative" id="dateredio">
-                <div class="col-md-12 mb-2 mb-md-0 text-right">
+            <div class="row col-md-12 d-flex p-0 justify-content-end arabic-lng mt-2 mb-md-4 mb-2 position-relative" id="dateredio">
+                <div class="col mb-2 mb-md-0 text-right p-0">
                     <div class="login-form">
                         <ul class="list-inline ml-auto d-flex align-items-center justify-content-end">
                             <li class="d-inline-block mr-1">
@@ -478,7 +476,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-7 datenow d-flex align-items-center justify-content-between" id="schedule_div" style="<%= ((cart_details.schedule_type != 'schedule' ) ? 'display:none!important' : '') %>">
+                <div class="col-md-6 datenow d-flex align-items-center justify-content-end text-right" id="schedule_div" style="<%= ((cart_details.schedule_type != 'schedule' ) ? 'display:none!important' : '') %>">
                     <% if(cart_details.slotsCnt ==0) { %>
                     <% if(cart_details.delay_date != 0) { %>
                         <input type="datetime-local" id="schedule_datetime" class="form-control" placeholder="Inline calendar" value="<%= ((cart_details.schedule_type == 'schedule') ? cart_details.scheduled_date_time : '') %>"
@@ -508,8 +506,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <% } %>
 
             {{-- Schedual code end at down --}}
-
-        </div>
     </div>
 </script>
 
@@ -605,7 +601,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <h3 class="mb-2 mt-4">{{__('Frequently bought together')}}</h3>
             <div class="row">
                 <div class="col-12 p-0">
-                    <div class="product-4 product-m no-arrow">
+                    <div class="product-4 product-m">
                         <% _.each(cart_details.upSell_products, function(product, key){%>
 
                             <a class="common-product-box scale-effect text-center" href="<%= product.vendor.slug %>/product/<%= product.url_slug %>">
@@ -614,7 +610,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                     <div class="pref-timing">
                                         <!--<span>5-10 min</span>-->
                                     </div>
-                                    <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
+                                    <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
                                 </div>
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing px-0">
@@ -656,7 +652,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <h3 class="mb-2 mt-3">{{__('You might be interested in')}}</h3>
             <div class="row">
                 <div class="col-12 p-0">
-                    <div class="product-4 product-m no-arrow">
+                    <div class="product-4 product-m">
                         <% _.each(cart_details.crossSell_products, function(product, key){%>
 
                             <a class="common-product-box scale-effect text-center" href="<%= product.vendor.slug %>/product/<%= product.url_slug %>">
@@ -665,7 +661,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                                         <div class="pref-timing">
                                             <!--<span>5-10 min</span>-->
                                         </div>
-                                        <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>
+                                        <i class="fa fa-heart-o fav-heart position-absolute" aria-hidden="true"></i>
                                 </div>
                                 <div class="media-body align-self-center">
                                     <div class="inner_spacing px-0">
@@ -1286,7 +1282,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     $(document).delegate('#cart_payment_form input[name="cart_payment_method"]', 'change', function() {
         var method = $(this).attr('id');
         var code = method.replace('radio-', '');
-        
+
         if (code != '') {
             $("#cart_payment_form .option-wrapper").addClass('d-none');
             $("#cart_payment_form ."+code+"_element_wrapper").removeClass('d-none');
@@ -1306,7 +1302,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             });
             // this ID matches the id of the element we created earlier.
             inline.mount('#yoco-card-frame');
-        } 
+        }
         // else {
         //     $("#cart_payment_form .yoco_element_wrapper").addClass('d-none');
         // }
@@ -1314,7 +1310,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         if (code == 'checkout') {
             // $("#cart_payment_form .checkout_element_wrapper").removeClass('d-none');
             Frames.init(checkout_public_key);
-        } 
+        }
         // else {
         //     $("#cart_payment_form .checkout_element_wrapper").addClass('d-none');
         // }

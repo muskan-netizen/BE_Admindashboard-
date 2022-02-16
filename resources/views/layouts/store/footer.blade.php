@@ -21,9 +21,6 @@
     \Session::forget('success');
 @endphp
 
-@if(isset($set_template)  && $set_template->template_id == 1)
-<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom-template-one.css')}}">
-@endif
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
 <script type="text/javascript">
@@ -196,6 +193,12 @@
 <script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
+@if(isset($set_template)  && $set_template->template_id ==3)
+<script src="{{asset('js/aos.js')}}"></script>
+<script type="text/javascript">
+     AOS.init();
+</script>
+@endif
 <script type="text/javascript" src="{{asset('js/location.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/bootstrap-colorpicker/bootstrap-colorpicker.min.js')}}"></script>
@@ -215,6 +218,7 @@
 @if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+
 <script>
 
     // var tag = document.createElement('script');

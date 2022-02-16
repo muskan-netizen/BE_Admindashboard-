@@ -19,16 +19,7 @@
     $now = \Carbon\Carbon::now()->toDateString();
     $after7days = \Carbon\Carbon::now()->addDays(7)->toDateString();
 @endphp
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
+
 <style type="text/css">
     .invalid-feedback {
         display: block;
@@ -372,7 +363,7 @@
     var subscription_payment_options_url = "{{route('user.subscription.plan.select', ':id')}}";
     var user_subscription_purchase_url = "{{route('user.subscription.plan.purchase', ':id')}}";
     var user_subscription_cancel_url = "{{route('user.subscription.plan.cancel', ':id')}}";
-    var payment_stripe_url = "{{route('user.subscription.payment.stripe')}}";
+    var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";

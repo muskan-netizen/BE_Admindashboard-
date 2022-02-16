@@ -13,7 +13,7 @@ use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderVendorListExport;
-use App\Http\Controllers\Client\BaseController;
+use App\Http\Controllers\Client\{BaseController, StripeGatewayController};
 use App\Models\{User, Vendor, OrderVendor, PaymentOption, PayoutOption, VendorConnectedAccount, VendorPayout, ClientCurrency};
 
 class VendorPayoutController extends BaseController{
@@ -203,12 +203,14 @@ class VendorPayoutController extends BaseController{
             })->make(true);
     }
 
-    public function vendorPayoutRequestComplete(Request $request, $domain = '', $id){
+    public function vendorPayoutRequestComplete(Request $request, $domain = ''){
         try{
-            DB::beginTransaction();
-            $payout = VendorPayout::where('id', $id)->first();
             $user = Auth::user();
+            $id = $request->payout_id;
+            $payout_option_id = $request->payout_option_id;
+            $payout = VendorPayout::where('id', $id)->first();
             $vendor_id = $payout->vendor_id;
+            $request->request->add(['vendor_id' => $vendor_id]);
 
             $total_delivery_fees = OrderVendor::where('vendor_id', $vendor_id)->orderBy('id','desc');
             if ($user->is_superadmin == 0) {
@@ -253,20 +255,47 @@ class VendorPayoutController extends BaseController{
             $past_payout_value = $vendor_payouts;
             $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value;
 
+            // Check if requested amount is valid
             if($request->amount > $available_funds){
                 $toaster = $this->errorToaster('Error', __('Payout amount is greater than vendor available funds'));
                 return Redirect()->back()->with('toaster', $toaster);
             }
+            
+            // Payout via stripe
+            if($payout_option_id == 2){
+                $stripeController = new StripeGatewayController();
+                $response = $stripeController->vendorPayoutViaStripe($request)->getData();
+                if($response->status != 'Success'){
+                    $toaster = $this->errorToaster('Error', __($response->message));
+                    return Redirect()->back()->with('toaster', $toaster);
+                }
+                $request->request->add(['transaction_id' => $response->data]);
+            }
+            
+            // update payout request
+            $request->request->add(['status' => 1]);
+            $this->updateVendorPayoutRequest($request, $payout);
 
-            $payout->status = 1;
-            $payout->save();
-            DB::commit();
             $toaster = $this->successToaster(__('Success'), __('Payout has been completed successfully'));
         }
         catch(Exception $ex){
-            DB::rollback();
             $toaster = $this->errorToaster(__('Errors'), $ex->message());
         }
         return Redirect()->back()->with('toaster', $toaster);
+    }
+
+    public function updateVendorPayoutRequest($request, $payout=''){
+        try{
+            DB::beginTransaction();
+            $payout->transaction_id = $request->transaction_id;
+            $payout->status = $request->status;
+            $payout->update();
+            DB::commit();
+            return $this->successResponse('', __('Payout has been completed successfully'), 200);
+        }
+        catch(\Exception $ex){
+            DB::rollback();
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
     }
 }

@@ -471,13 +471,14 @@ class OrderController extends BaseController
                         // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id], $code);
                     }
 
+                    DB::commit();
+
                     # if payment type cash on delivery or payment status is 'Paid'
                     if (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                         # if vendor selected auto accept
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
 
-                    DB::commit();
                     $this->sendSuccessSMS($request, $order);
 
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
@@ -1184,12 +1185,24 @@ class OrderController extends BaseController
                         }
                         $product->variant_options = $variant_options;
                         if (!empty($product->addon)) {
-                            foreach ($product->addon as $addon) {
-                                $product_addons[] = array(
-                                    'addon_id' =>  $addon->addon_id,
-                                    'addon_title' =>  $addon->set->title,
-                                    'option_title' =>  $addon->option->title,
-                                );
+                            foreach ($product->addon as $k => $addon) {
+                                // $product_addons[] = array(
+                                //     'addon_id' =>  $addon->addon_id,
+                                //     'addon_title' =>  $addon->set->title,
+                                //     'option_title' =>  $addon->option->title,
+                                // );
+                                $opt_quantity_price = 0;
+                                $opt_price_in_currency = $addon->option ? $addon->option->price : 0;
+                                $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                                $opt_quantity_price = $opt_price_in_doller_compare * $product->quantity;
+                                $product_addons[$k]['quantity'] = $product->quantity;
+                                $product_addons[$k]['addon_id'] = $addon->addon_id;
+                                $product_addons[$k]['option_id'] = $addon->option_id;
+                                $product_addons[$k]['price'] = $opt_price_in_currency;
+                                $product_addons[$k]['addon_title'] = $addon->set->title;
+                                $product_addons[$k]['quantity_price'] = $opt_quantity_price;
+                                $product_addons[$k]['option_title'] = $addon->option ? $addon->option->title : 0;
+                                // $product_addons[$k]['multiplier'] = $clientCurrency->doller_compare;
                             }
                         }
                         $product->product_addons = $product_addons;
@@ -1804,8 +1817,12 @@ class OrderController extends BaseController
             } else if ($order_status_option_id == 8) {
                 $order_status_option_id = 3;
             }
-            $vendor_order_status = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->first();
-            if ($vendor_order_status->order_status_option_id == 3 ) { //$request->status_option_id == 2){
+           // $vendor_order_status = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->first();
+            $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
+            Log::info(($currentOrderStatus ? $currentOrderStatus->order_status_option_id : 'no'));
+
+            if ($currentOrderStatus->order_status_option_id == 3 ) { //$request->status_option_id == 2){
+
                 return response()->json(['status' => 'error', 'message' => __('This Order has been rejected.')]);
             }
             $vendor_order_status_detail = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->where('order_status_option_id', $order_status_option_id)->first();

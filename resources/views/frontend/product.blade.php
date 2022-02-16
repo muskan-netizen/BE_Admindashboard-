@@ -47,16 +47,7 @@
 @endsection
 
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
+
 @if(!empty($category))
 @include('frontend.included_files.products_breadcrumb')
 @endif
@@ -219,7 +210,7 @@
                             </div>
 
                             <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text">
-                                <div class="product-right inner_spacing">
+                                <div class="product-right inner_spacing pl-3">
                                     <h2 class="mb-0">
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                     </h2>
@@ -404,12 +395,12 @@
                                     </div>
                                     @endif
                                     @php
-                                    $checkSlot = findSlot('',$product->vendor->id,'');    
+                                    $checkSlot = findSlot('',$product->vendor->id,'');
                                     @endphp
                                     <div class="product-buttons">
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                         @if($is_inwishlist_btn && $is_available)
-                                        <button type="button" class="btn btn-solid addWishList" proSku="{{$product->sku}}">
+                                        <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}">
                                             {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
                                         </button>
                                         @endif
