@@ -211,6 +211,7 @@ if (Session::has('toaster')) {
         messaging.requestPermission().then(function() {
             return messaging.getToken()
         }).then(function(token) {
+
             $.ajax({
                 url: "{{ route('client.save_fcm') }}",
                 type: "POST",
@@ -227,15 +228,16 @@ if (Session::has('toaster')) {
         }).catch(function(err) {
             console.log(`Token Error :: ${err}`);
         });
-        //  @if(empty(Session::get('current_fcm_token')))
-       // @endif
+         @if(empty(Session::get('current_fcm_token')))
+        @endif
     }
 
     initFirebaseMessagingRegistration();
     messaging.onMessage(function(payload) {
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
-        } else if (Notification.permission === "granted") {
+        }
+        else if (Notification.permission === "granted") {
             if(payload && payload.data && payload.data.data){
                 if(payload.data.type && payload.data.type=="order_created"){
                     var payload_data = JSON.parse(payload.data.data);
