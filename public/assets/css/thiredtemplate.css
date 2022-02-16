@@ -27,12 +27,12 @@ border-top: 0;border-left: 0;border-radius: 0;border-right: 0;}
 .al_count_tabs_new_design li a.nav-link.active.al_takeway span{background-color: #ffebdd}
 .al_new_ipad_view a.fav-button {font-size: 20px;margin-right: 10px;}
 .container_fluid_al{max-width:100%;width: 100%;}
-.menu-navigation_al {width: 100%;background-color: #f5f5f5;padding-top: 20px;padding-bottom: 20px;border-top: 1px solid #ddd;}
+.menu-navigation_al {width: 100%;background-color: #f5f5f5;padding-top: 20px;padding-bottom: 20px;border-top: 1px solid #ddd;-webkit-transition: 0.5s;transition: 0.5s;}
 .menu-navigation_al li.al_main_category {margin: 0 20px;}
 .al_new_ipad_view i.fa.fa-shopping-cart.mr-1 {font-size: 20px;}
 .menu-navigation_al li.al_main_category a .nav-cate-img {margin-bottom: 10px;}
 header#al_new_design.site-header.fixed-bar {box-shadow: 0 0 8px rgb(0 0 0 / 30%);}
-header#al_new_design.site-header.fixed-bar .menu-navigation_al {padding-top: 10px;padding-bottom: 10px;}
+header#al_new_design.site-header.fixed-bar .menu-navigation_al {padding-top: 10px;padding-bottom: 10px;-webkit-transition: 0.5s;transition: 0.5s;}
 .menu-navigation_al .al_main_category li:last-child{border:none;}
 .top-header.site-topbar.al_custom_head {background-color: #fff;}
 .al_custom_head_map_box{background: rgb(255, 255, 255);border-radius: 0.8rem;box-shadow: rgb(28 28 28 / 8%) 0px 2px 8px;border: 1px solid rgb(232, 232, 232);}
@@ -46,7 +46,7 @@ header#al_new_design.site-header.fixed-bar .menu-navigation_al {padding-top: 10p
 .al_custom_head.site-topbar .location-bar h2:after {color: #000;margin-left: 0;position: absolute;right: 0;}
 .al_custom_head .homepage-address {position: relative;width: calc(100% - 146px);}
 .al_custom_head.site-topbar .location-bar h2:after {position: absolute;border-width: 7px;border-style: solid;border-color: #bbb transparent transparent;
-right: 20px;top: 4px;margin-left: 0;content: "";}
+right: 20px;top: 10px;margin-left: 0;content: "";}
 .location-bar.d-inline-flex.align-items-center.position-relative {width: 100%;border-right: 1px solid;}
 .al_custom_head_map_box button.btn {padding-right: 0;padding-left: 0;}
 h2.homepage-address {text-overflow: ellipsis;white-space: nowrap;overflow: hidden;font-size: 14px;line-height: 50px;margin: 0;cursor: pointer!important;}
@@ -67,10 +67,10 @@ h2.homepage-address {text-overflow: ellipsis;white-space: nowrap;overflow: hidde
 #al_new_design .pixelstrap ul a:hover:before,
 #al_new_design .pixelstrap ul a:hover:hover:before {    width: 0;}
 .al_new_wrapper_design .site-header .nav-cate-img{-webkit-transition: 0.5s;transition: 0.5s;}
-.al_new_wrapper_design .site-header.fixed-bar .nav-cate-img{display: none;-webkit-transition: 0.5s;transition: 0.5s;}
+.al_new_wrapper_design .site-header.fixed-bar .nav-cate-img{-webkit-transition: 0.5s;transition: 0.5s;}
 #al_new_design .pixelstrap li a {-webkit-transform: scale(1);transform: scale(1);}
 .al_new_wrapper_design #myCarousel{border-radius: 40px;overflow: hidden;}
-.menu-navigation_al li.al_main_category a .nav-cate-img img {height: 100%; width: auto;}
+.menu-navigation_al li.al_main_category a .nav-cate-img img {height: 100%; width: auto; -webkit-transition: 0.1s;transition: 0.1s;}
 .al_custom_head .al_z_index{z-index: 999;}
 .al_new_wrapper_design h2 {text-transform: capitalize;font-size: 32px;letter-spacing: 0;font-weight: 500;color: #1c1c1c;}
 .al_new_wrapper_design .footer-theme .sub-title li a:before{display: none;}
@@ -92,6 +92,8 @@ h2.homepage-address {text-overflow: ellipsis;white-space: nowrap;overflow: hidde
 .no-category-image .menu-navigation_al {padding: 0;}
 .al_new_wrapper_design header#al_new_design.site-header.fixed-bar .no-category-image .menu-navigation_al {padding-top: 0;padding-bottom: 0;}
 .al_new_wrapper_design .section-b-space {padding-top: 50px !important;}
+.al_new_wrapper_design  #our_vendor_main_div.section-b-space,
+.al_new_wrapper_design .footer-light .section-b-space {padding-top: 0 !important;}
 .al_new_wrapper_design .main-menu{z-index: -1;}
 .al_new_wrapper_design  .top-header .header-dropdown .onhover-dropdown .onhover-show-div li{font-size: 14px;}
 .al_new_wrapper_design .footer-theme .sub-title .contact-list li {line-height: 1.5;padding-top: 0;margin-bottom: 10px;padding-left: 40px !important;}
@@ -110,8 +112,8 @@ h2.homepage-address {text-overflow: ellipsis;white-space: nowrap;overflow: hidde
 .al_new_wrapper_design .slick-prev::before {border-left: 2px solid transparent;border-right: 2px solid #000;border-bottom: 2px solid transparent;border-top: 2px solid #000;font-size: 10px;left: 10px;position: absolute;top: 16px;}
 .al_custom_head_map_box .form-control{padding: 0 10px;}
 .al_new_wrapper_design .top-banner-wrapper {background-color: transparent;box-shadow: none;border-radius: 0;}
-.al_new_wrapper_design .common-product-box, .al_new_wrapper_design .product-box, .al_new_wrapper_design .product-card-box, .al_new_wrapper_design .suppliers-box {
-position: relative;border-radius: 5px;overflow: hidden;background: transparent;box-shadow: none;border:1px solid transparent}
+ .al_new_wrapper_design .product-box, .al_new_wrapper_design .product-card-box, .al_new_wrapper_design .suppliers-box {
+    display: block; position: relative;border-radius: 5px;overflow: hidden;background: transparent;box-shadow: none;border:1px solid transparent}
 .al_new_wrapper_design .common-product-box:hover, .al_new_wrapper_design .product-box:hover, .al_new_wrapper_design.suppliers-box:hover {
 box-shadow: none;box-shadow: rgb(28 28 28 / 12%) 0px 0.4rem 1.8rem;box-sizing: border-box;border: 1px solid rgb(232, 232, 232);}
 .al_new_wrapper_design .common-product-box:hover img, .al_new_wrapper_design .product-box:hover img, .al_new_wrapper_design .product-card-box:hover img, .al_new_wrapper_design .suppliers-box:hover img {
@@ -139,7 +141,7 @@ z-index: 9999999999;left: 0;width: 100%;display: block;height: auto;max-height: 
 body p:empty{display: none !important;}
 .al_new_wrapper_design .top-banner-wrapper.text-center .common-banner{min-height: 300px;border-radius: 40px;overflow: hidden;}
 ul.social-links {width: max-content;}
-.al_custom_vendors_sec .suppliers-img-outer {height: 200px;width: 200px;text-align: center;border-radius: 50%;overflow: hidden;background-color: rgb(255, 255, 255);padding: 10px;box-shadow: rgb(0 0 0 / 8%) 0px 3px 12px;margin: 0 auto 20px;}
+.al_custom_vendors_sec .suppliers-img-outer {height: 200px;width: 200px;text-align: center;border-radius: 50%;overflow: hidden;background-color: rgb(255, 255, 255);padding: 0;box-shadow: rgb(0 0 0 / 8%) 0px 3px 12px;margin: 0 auto 20px;}
 .al_custom_vendors_sec  .suppliers-img-outer img {width: 100%;height: 100%;object-fit: none;transform: none;opacity: 1;will-change: transform, opacity;border-radius: inherit;filter: unset;transition: opacity 0.25s ease 0s, transform 0.25s ease 0s;}
 .al_custom_vendors_sec h6{color: #000;font-size: 16px; text-transform: capitalize;}
 .al_new_wrapper_design .new-pages a.suppliers-box.d-block{padding: 12px;border-radius: 12px;background-color: #fff;border: 1px solid transparent;box-shadow: none;}
@@ -184,3 +186,30 @@ button.close {padding: 5px 10px 0 4px;text-align: right;}
 .al_new_wrapper_design .al_custom_brand .brand-box .brand-ing{
 height: 200px;width: 200px;text-align: center;border-radius: 50%;overflow: hidden;background-color: rgb(255, 255, 255);box-shadow: rgba(0,0,0,.3) 0px 3px 12px;margin: 0 auto 20px;}
 .al_new_wrapper_design .al_custom_brand .brand-box .brand-ing img{object-fit: cover;margin: 0 auto;width: 100%;height: 100%;}
+.al_new_wrapper_design .product-description  span.rating-number,
+.al_new_wrapper_design .suppliers-box span.rating-number {
+top: 12px;
+position: absolute;
+right: 12px;
+height: 30px;
+width: 50px;
+background-color: #409a40;
+line-height: 30px;
+border-radius: 6px;
+box-shadow: 0 0 10px rgb(0 0 0 / 5%);
+color: white;
+text-align: center;
+padding-right: 10px;
+}
+span.rating-number:before {
+content: "\f005";
+position: absolute;
+font-family: 'FontAwesome';
+right: 5px;
+font-size: 12px;
+}
+.al_new_wrapper_design .site-header.fixed-bar .nav-cate-img{height: 0;margin: 0;}
+.al_new_wrapper_design .site-header.fixed-bar .nav-cate-img img{height: 0 !important;}
+.top-header .header-dropdown li:hover i {
+    color: #777;
+}

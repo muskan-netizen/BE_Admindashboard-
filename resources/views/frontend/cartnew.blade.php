@@ -514,7 +514,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
         <div class="col-lg-6 mt-3">
             <div class="coupon-code mt-0">
                 <div class="p-2">
-                    <img class="blur-up lazyload" data-src="<%= promo_code.image.proxy_url %>100/35<%= promo_code.image.image_path %>" alt="">
+                    <img class="blur-up lazyload p-1" data-src="<%= promo_code.image.proxy_url %>100/70<%= promo_code.image.image_path %>" alt="">
                     <h6 class="mt-0"><%= promo_code.title %></h6>
                 </div>
                 <hr class="m-0">
