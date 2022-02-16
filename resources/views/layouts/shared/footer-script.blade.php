@@ -100,6 +100,7 @@ if (Session::has('toaster')) {
 <script>
       $(document).ready(function() {
           console.log("{{Session::get('current_fcm_token')}}");
+         // console.log("{{session()->has('preferences')}}");
         // Audio.prototype.play = (function(play) {
 
         //     return function() {
@@ -190,7 +191,7 @@ if (Session::has('toaster')) {
         });
     }
 </script>
-@if(Session::has('preferences') && !empty(Session::get('preferences')->fcm_api_key))
+@if(@Session::has('preferences') && !empty(@Session::get('preferences')['fcm_api_key']))
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
     var firebaseConfig = {
