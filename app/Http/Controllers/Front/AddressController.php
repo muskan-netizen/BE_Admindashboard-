@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Models\{Country, UserWishlist, User, Product, UserAddress};
-use Illuminate\Http\Request;
-use App\Http\Controllers\Front\FrontController;
-use Carbon\Carbon;
 use Auth;
 use Session;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Front\FrontController;
+use App\Models\{Country, UserWishlist, User,CarImages ,Product, UserAddress};
 
 class AddressController extends FrontController{
     /**
@@ -42,6 +44,8 @@ class AddressController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, $domain = ''){
+
+       
         $validatedData = $request->validate([
                 'type' => 'required',
                 // 'city' => 'required',
@@ -56,6 +60,8 @@ class AddressController extends FrontController{
             'state.required' => __('The state field is required.'),
             'pincode.required' => __('The zip code field is required.'),
         ]);
+        $client = getClientPreferenceDetail();
+
         $country = Country::select('code', 'name')->where('id', $request->country)->first();
         $address = new UserAddress;
         $address->type = $request->type;
@@ -72,10 +78,21 @@ class AddressController extends FrontController{
         $address->house_number = $request->house_number??"";
         $address->extra_instruction = $request->extra_instruction??"";
         $address->save();
+        // car check and save
+        // if($client->address_is_car == 1){
+        //     $request->merge(['car_id'=>$address->id]);
+        //     //save car details
+        //     CarDetails::saveCarDetail($request);
+        //     //car images
+        //     if ($request->hasFile('image')) {
+        //         CarImages::saveImage($request);
+        //     }
+        // }
+        $msg = $client->address_is_car == 1 ? __('Car Has Been Added Successfully') : __('Address Has Been Added Successfully');
         if($request->ajax()){
-            return response()->json(['status' => 'success', 'message' => __('Address Has Been Added Successfully'), 'address' => $address]);
+            return response()->json(['status' => 'success', 'message' => $msg, 'address' => $address]);
         }else{
-            return redirect()->route('user.addressBook')->with('success', __('Address Has Been Added Successfully'));
+            return redirect()->route('user.addressBook')->with('success', $msg);
         }
     }
 

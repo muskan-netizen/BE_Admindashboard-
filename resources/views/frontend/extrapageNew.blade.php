@@ -78,7 +78,7 @@ body .switchery>small {width: 20px;height: 20px;}
 @php
     $user = Auth::user();
 @endphp
-<section class="section-b-space new-pages pb-265">
+<section class="section-b-space new-pages">
     <div class="container">
         <div class="row">
             <div class="col-12 py-2">
@@ -216,7 +216,7 @@ body .switchery>small {width: 20px;height: 20px;}
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-3 mb-3" >
-                                        <label for="validationCustom01">{{__('Zip Code')}}</label>
+                                        <label for="validationCustom01">{{getNomenclatureName('Zip Code', true) }}</label>
                                         <input type="text" class="form-control" id="pincode" name="pincode" value="">
                                         <span class="invalid-feedback" id="pincode_error"><strong></strong></span>
                                     </div>
@@ -325,7 +325,7 @@ body .switchery>small {width: 20px;height: 20px;}
                                 <div class="row">
                                     <!-- al_custom_modal start ADVANCED DETAILS -->
                                     <div class="al_custom_modal col-md-12 pt-2 border-top">
-                                            <h5 class="mb-2">{{__('ADVANCED DETAILS')}}</h5>
+                                            <h5 class="mb-2">{{__('ADVANCED DETAILS').' ('.__('Optional').')'}}</h5>
 
                                             <div class="row">
                                                 <div class="col-md-4">
@@ -432,7 +432,7 @@ body .switchery>small {width: 20px;height: 20px;}
                                                 <div class="col-md-4">
 
                                                     <div class="col-md-12">
-                                                        {!! Form::label('title', __('Vendor Category'),['class' => 'control-label']) !!}
+                                                        {!! Form::label('title', getNomenclatureName('Vendors', true) .' '. __('Category') ,['class' => 'control-label']) !!}
                                                         <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
                                                             <ol class="dd-list">
                                                                 @forelse($builds as $build)

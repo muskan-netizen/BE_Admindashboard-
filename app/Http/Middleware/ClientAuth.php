@@ -28,12 +28,13 @@ class ClientAuth{
                 Auth::logout();
                 return redirect('login')->with(['account_blocked' => 'Your account has been blocked by admin. Please contact administration.']);
             }
+
             if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1){
                                 $route_name = $request->route()->getName();
                                 $currentPath = \Request::path();
                                 $per_url = explode('/', $currentPath);
-                               
-                                   
+
+
                                 if (Auth::user()->is_superadmin == 0) {
                                     if ($route_name == 'customer.edit') {
                                         return Redirect::route('client.profile');
@@ -63,8 +64,8 @@ class ClientAuth{
                                         else {
                                             $sub_admin_per = true;
                                         }
-                                            
-                    
+
+
                                         if ($sub_admin_per == false) {
                                             return Redirect::route('client.profile');
                                         }
@@ -87,11 +88,11 @@ class ClientAuth{
                 $countryCode = '';
                 $phoneCode = '';
               }
-    
+
               Session::put('default_country_code', $countryCode);
               Session::put('default_country_phonecode', $phoneCode);
         }
         return redirect('user/login');
-        
+
     }
 }
