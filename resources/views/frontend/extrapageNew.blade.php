@@ -78,7 +78,7 @@ body .switchery>small {width: 20px;height: 20px;}
 @php
     $user = Auth::user();
 @endphp
-<section class="section-b-space new-pages pb-265">
+<section class="section-b-space new-pages">
     <div class="container">
         <div class="row">
             <div class="col-12 py-2">
@@ -216,7 +216,7 @@ body .switchery>small {width: 20px;height: 20px;}
                                 </div>
                                 <div class="form-row">
                                     <div class="col-md-3 mb-3" >
-                                        <label for="validationCustom01">{{__('Zip Code')}}</label>
+                                        <label for="validationCustom01">{{getNomenclatureName('Zip Code', true) }}</label>
                                         <input type="text" class="form-control" id="pincode" name="pincode" value="">
                                         <span class="invalid-feedback" id="pincode_error"><strong></strong></span>
                                     </div>

@@ -99,7 +99,7 @@ if (Session::has('toaster')) {
 @if((!empty(Auth::user())))
 <script>
       $(document).ready(function() {
-          console.log("{{Session::get('current_fcm_token')}}");
+
         // Audio.prototype.play = (function(play) {
 
         //     return function() {
@@ -190,7 +190,7 @@ if (Session::has('toaster')) {
         });
     }
 </script>
-@if(Session::has('preferences') && !empty(Session::get('preferences')->fcm_api_key))
+@if(@Session::has('preferences') && !empty(@Session::get('preferences')['fcm_api_key']))
 <script>
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
     var firebaseConfig = {
@@ -207,10 +207,11 @@ if (Session::has('toaster')) {
 
     const messaging = firebase.messaging();
     function initFirebaseMessagingRegistration() {
-        @if(empty(Session::get('current_fcm_token')))
+
         messaging.requestPermission().then(function() {
             return messaging.getToken()
         }).then(function(token) {
+
             $.ajax({
                 url: "{{ route('client.save_fcm') }}",
                 type: "POST",
@@ -227,6 +228,7 @@ if (Session::has('toaster')) {
         }).catch(function(err) {
             console.log(`Token Error :: ${err}`);
         });
+         @if(empty(Session::get('current_fcm_token')))
         @endif
     }
 
@@ -234,7 +236,8 @@ if (Session::has('toaster')) {
     messaging.onMessage(function(payload) {
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
-        } else if (Notification.permission === "granted") {
+        }
+        else if (Notification.permission === "granted") {
             if(payload && payload.data && payload.data.data){
                 if(payload.data.type && payload.data.type=="order_created"){
                     var payload_data = JSON.parse(payload.data.data);

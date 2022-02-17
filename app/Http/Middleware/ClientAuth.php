@@ -28,10 +28,7 @@ class ClientAuth{
                 Auth::logout();
                 return redirect('login')->with(['account_blocked' => 'Your account has been blocked by admin. Please contact administration.']);
             }
-            if(Session::has('preferences') && !empty(Session::get('preferences')) ){
-                $ClientPreference  = getClientPreferenceDetail();
-                Session::put('preferences',$ClientPreference);
-            }
+
             if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1){
                                 $route_name = $request->route()->getName();
                                 $currentPath = \Request::path();
