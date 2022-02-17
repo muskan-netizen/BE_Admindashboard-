@@ -1,4 +1,4 @@
-@extends('layouts.store', ['title' => 'Address Book'])
+@extends('layouts.store', ['title' => ($client_preference_detail->address_is_car == 1 ? __('Car') : __('Address Book') )  ])
 @section('css')
 <style type="text/css">
     .main-menu .brand-logo {
@@ -9,16 +9,7 @@
 </style>
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
+
 <style type="text/css">
     .productVariants .firstChild{
         min-width: 150px;
@@ -105,14 +96,25 @@
                 <div class="dashboard-right">
                     <div class="dashboard">
                         <div class="page-title">
-                            <h2>{{ __('Address Book') }}</h2>
+                            @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
+                                <h2>{{ __('Cars') }}</h2>
+                                {{-- <p>{{ __('Here Are All Your Previous Cars') }}</p> --}}
+                            @else
+                                <h2>{{ __('Address Book') }}</h2>
+                            @endif
                         </div>
                         <div class="box-account box-info order-address">
                             <div class="row">
                                 <div class="col-xl-4 col-md-6 text-center mt-3">
                                     <a class="outer-box border-dashed d-flex align-items-center justify-content-center add_edit_address_btn" href="javascript:void(0)" data-toggle="modal" data-target="#add_edit_address">
                                         <i class="fa fa-plus-circle d-block mb-1" aria-hidden="true"></i>
-                                        <h6 class="m-0">{{ __('Add New Address') }}</h6>
+                                        <h6 class="m-0">
+                                        @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
+                                            {{ __('Add New Cars') }}
+                                        @else
+                                            {{ __('Add New Address') }}
+                                        @endif
+                                        </h6>
                                     </a>
                                 </div>
                                 @foreach($useraddress as $add)
@@ -153,13 +155,25 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header border-bottom">
-        <h5 class="modal-title" id="remove_addressLabel">{{ __('Delete Address') }}</h5>
+        <h5 class="modal-title" id="remove_addressLabel">
+            @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
+                {{ __('Delete Car') }}
+            @else
+            {{ __('Delete Address') }}
+            @endif
+        </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
       </div>
       <div class="modal-body">
-        <h6 class="m-0">{{ __('Do you really want to delete this address ?') }}</h6>
+        <h6 class="m-0">
+            @if( (isset($client_preference_detail->address_is_car)) && ($client_preference_detail->address_is_car == 1) )
+                {{ __('Do you really want to delete this Car ?') }}
+            @else
+                {{ __('Do you really want to delete this address ?') }}
+            @endif
+        </h6>
       </div>
       <div class="modal-footer flex-nowrap justify-content-center align-items-center">
         <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{ __('Cancel') }}</button>
@@ -170,16 +184,16 @@
 </div>
 <script type="text/template" id="add_address_template">
     <div class="modal-header border-bottom">
-        <h5 class="modal-title" id="addedit-addressLabel"><%= title %> Address</h5>
+        <h5 class="modal-title" id="addedit-addressLabel"><%= title %> {{(@$client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
     </div>
     <div class="modal-body">
         <% if(title == 'Edit') { %>
-            <form id="add_edit_address_form" method="post" action="{{route('address.update')}}/<%= address.id %>">
+            <form id="add_edit_address_form" method="post"  enctype="multipart/form-data" action="{{route('address.update')}}/<%= address.id %>">
         <% }else{ %>
-            <form id="add_edit_address_form" method="post" action="{{route('address.store')}}">
+            <form id="add_edit_address_form" method="post"  enctype="multipart/form-data" action="{{route('address.store')}}">
         <% } %>
         @csrf
         <div class="outer-box border-0 p-0">
@@ -218,6 +232,7 @@
                         <input type="hidden" name="latitude" id="latitude" value="<%= (typeof address != 'undefined') ? address.latitude : '' %>">
                         <input type="hidden" name="longitude" id="longitude" value="<%= (typeof address != 'undefined') ? address.longitude : '' %>">
                         <div class="form-row">
+
                             <div class="col-md-12 mb-2">
                                 <label for="address">{{ __('Address') }}</label>
                                 <div class="input-group address-input-group">
@@ -230,6 +245,14 @@
                                 </div>
                                 <span class="text-danger" id="address_error"></span>
                             </div>
+                            {{-- <div class="col-md-12 mb-2">
+                                <label for="address">{{ __('image') }}</label>
+                                <div class="input-group address-input-group">
+                                    <input type="file" name="image" class="form-control" id="address" placeholder="{{ __('Address') }}" >
+
+                                </div>
+                                <span class="text-danger" id="address_error"></span>
+                            </div> --}}
                         </div>
                         <div class="form-row">
                             <div class="col-md-6 mb-2">
@@ -261,6 +284,7 @@
                             <div class="col-md-6 mb-2">
                                 <label for="country">{{ __('Country') }}</label>
                                 <select name="country" id="country" class="form-control" value="<%= ((typeof address != 'undefined') && (address.country_id != null)) ? address.country_id : '' %>" required="required">
+                                    <option value="">{{__('Select country')}}</option>
                                     @foreach($countries as $co)
                                         <option value="{{$co->id}}" <%= ((typeof address != 'undefined') && (address.country_id == {{$co->id}})) ? 'selected="selected"' : '' %>>{{$co->name}}</option>
                                     @endforeach
@@ -278,7 +302,7 @@
                                 <span class="text-danger" id="extra_instruction_error"></span>
                             </div>
                             <div class="col-md-12 mt-2">
-                                <button type="submit" class="btn btn-solid" id="<%= ((typeof address !== 'undefined') && (address !== false)) ? 'updateAddress' : 'saveAddress' %>">{{__('Save Address')}}</button>
+                                <button type="submit" class="btn btn-solid" id="<%= ((typeof address !== 'undefined') && (address !== false)) ? 'updateAddress' : 'saveAddress' %>">{{(@$client_preference_detail->address_is_car == 1) ? __('Save Car') : __('Save Address') }}</button>
                                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
                             </div>
                         </div>
@@ -561,10 +585,10 @@
             }
         });
 
-        setTimeout(function(){ 
+        setTimeout(function(){
             $(".pac-container").appendTo("#add_new_address_form .address-input-group");
         }, 300);
-        
+
     }
 </script>
 @endsection

@@ -1,4 +1,9 @@
-@extends('layouts.store', ['title' => $category->translation_name])
+@extends('layouts.store', [
+'title' => $category->translation_name,
+'meta_title'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_title:'',
+'meta_keyword'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_keyword:'',
+'meta_description'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_description:'',
+])
 
 @section('css')
 <style type="text/css">
@@ -16,16 +21,6 @@
 
 @section('content')
 
- <header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
 @if(!empty($category))
 @include('frontend.included_files.categories_breadcrumb')
 @endif
@@ -67,7 +62,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="collection-filter col-lg-3">
+                <div class="collection-filter col-lg-3 al">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
                             <span>{{__('New Product')}}</span>
@@ -79,7 +74,7 @@
                             @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
 
-                                <div>
+                                <div class="col-12">
                                     @foreach($newProds as $new)
                                         <?php $imagePath = '';
                                         foreach ($new['media'] as $k => $v) {
@@ -87,15 +82,15 @@
                                         } ?>
 
 
-                                        <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                            <div class="img-outer-box position-relative">
-                                                <img  class="blur-up lazyload" data-src="{{$imagePath}}" alt="">
+                                        <a class="row common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                            <div class="img-outer-box position-relative col-sm-3">
+                                                <img  class="blur-up lazyload w-100" data-src="{{$imagePath}}" alt="">
                                                 <div class="pref-timing">
                                                     <!--<span>5-10 min</span>-->
                                                 </div>
                                                 {{-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> --}}
                                             </div>
-                                            <div class="media-body align-self-center">
+                                            <div class="media-body align-self-center col-sm-9">
                                                 <div class="inner_spacing px-0">
                                                     <div class="product-description">
                                                         <div class="d-flex align-items-center justify-content-between">
@@ -211,7 +206,7 @@
                                                             </div>
                                                             <a class="suppliers-box d-block" href="{{$vendor_url}}">
                                                                 <div class="suppliers-img-outer">
-                                                                    <img class="img-fluid mx-auto blur-up lazyload" data-src="{{$imagePath}}" alt="">
+                                                                    <img class="w-100 img-fluid mx-auto blur-up lazyload" data-src="{{$imagePath}}" alt="">
                                                                 </div>
                                                                 <div class="supplier-rating">
                                                                     <div class="d-flex align-items-center justify-content-between">

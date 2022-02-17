@@ -58,7 +58,7 @@
                                         <input type="text" id="site_top_header_color" name="site_top_header_color" class="form-control ss_form_submit" value="{{ old('site_top_header_color', $client_preferences->site_top_header_color ?? '#4c4c4c')}}">
                                     </div>
                                     </div>
-                                
+
                                 <div class="col-md-4  mb-0">
                                     <h4 class="header-title">{{ __("Show Dark Mode") }}</h4>
                                     <ul class="pl-0 mb-0">
@@ -83,7 +83,7 @@
                                     </ul>
                                 </div>
                             </div>
-                            
+
                         </div>
                         <div class="row">
                             <div class="card ">
@@ -164,7 +164,7 @@
                                             <div class="mb-0">
                                                 <input type="checkbox" id="hide_nav_bar" data-plugin="switchery" name="hide_nav_bar" class="chk_box2 ss_form_submit" data-color="#43bee1" {{$client_preferences->hide_nav_bar == 1 ? 'checked' : ''}}>
                                             </div>
-                                        </li> 
+                                        </li>
                                         @endif
                                         <li class="d-flex align-items-center justify-content-between mt-2">
                                             <h4 class="header-title mb-2">{{ __("Quick Link in Header") }}</h4>
@@ -226,7 +226,7 @@
                             </div>
                         </div>
                     </div>
-                </div> 
+                </div>
             </form>
             @if($client_preference_detail->business_type != 'taxi')
             <div class="row h-100">
@@ -254,7 +254,7 @@
 <!-- cab booking template -->
 <form id="favicon-form-pickup" method="post" enctype="multipart/form-data">
 <div class="row" >
-    <div class="col-xl-9" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <div class="col-md-9" ondrop="drop(event)" ondragover="allowDrop(event)">
         <div class="card-box home-options-list">
             <div class="row mb-2">
                 <div class="col-sm-8">
@@ -274,7 +274,7 @@
             <div class="custom-dd-empty dd" id="pickup_datatable">
                 <ol class="dd-list p-0" id="pickup_ol" >
                     @foreach($cab_booking_layouts as $key => $home_page_label)
-                    <div id="al_web_styling" class="row dd-item dd3-item on_click{{$home_page_label->slug}}" data-id="1" data-row-id="{{$home_page_label->id}}">
+                    <div id="al_web_styling" class="item_dev_row row dd-item dd3-item on_click{{$home_page_label->slug}}" data-id="1" data-row-id="{{$home_page_label->id}}">
                         <div class="col-md-6">
                             <div class="row d-flex align-items-center">
                                 <div class="col-md-5 p-0">
@@ -365,7 +365,7 @@
         </div>
     </div>
 
-    <div class="col-xl-3">
+    <div class="col-md-3">
         <div class="card-box home-options-list">
             <div class="row mb-2">
                 <div class="col-sm-12">
@@ -670,7 +670,7 @@ $(document).on('click', '.deletePickupSection', function() {
         CKEDITOR.instances[instance].updateElement();
         }
         var formData = new FormData(form);
-        formData.append('age_restriction', $('#age_restriction').val());
+        formData.append('age_restriction', $('#age_restriction').prop('checked') == true ? 'on' : 'off');
         formData.append('age_restriction_title', $('#age_restriction_title').val());
         var data_uri = "{{route('styling.updateWebStyles')}}";
         $.ajaxSetup({
@@ -715,9 +715,10 @@ $(document).on('click', '.deletePickupSection', function() {
          placeholder: "ui-state-highlight",
         update: function(event, ui) {
             var post_order_ids = new Array();
-            $('#pickup_ol li').each(function() {
+            $('#pickup_ol .item_dev_row').each(function() {
                 post_order_ids.push($(this).data("row-id"));
             });
+            console.log(post_order_ids);
             saveOrderPickup(post_order_ids);
 
         }

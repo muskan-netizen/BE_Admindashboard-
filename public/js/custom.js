@@ -168,7 +168,7 @@ window.initializeSlider = function initializeSlider() {
         speed: 300,
         slidesToShow: 4,
         centerMode: true,
-        centerPadding: '60px',
+        centerPadding: '20px',
         slidesToScroll: 4,
         arrows: true,
         responsive: [
@@ -212,6 +212,22 @@ window.initializeSlider = function initializeSlider() {
         infinite: true,
         speed: 300,
         slidesToShow: 4,
+        slidesToScroll: 1,
+        centerMode: false,
+        centerPadding: '60px',
+        arrows: true,
+        dots: false,
+        responsive: [
+            {breakpoint: 1199,settings: {slidesToShow: 4,slidesToScroll: 3,infinite: true,dots: false,centerMode: false,}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 3,dots: false,centerMode: true,}},
+            {breakpoint: 767,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}},
+            {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
+        ]
+    });
+    $('.al_t2_suppliers-slider').slick({
+        infinite: true,
+        speed: 300,
+        slidesToShow: 6,
         slidesToScroll: 1,
         centerMode: false,
         centerPadding: '60px',
@@ -284,7 +300,7 @@ window.initializeSlider = function initializeSlider() {
     });
 
     if ($('body').attr('dir') == 'rtl') {
-        $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
+        $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .al_t2_suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
     }
 }
 
@@ -983,7 +999,7 @@ $(document).ready(function() {
             total_amount = cartElement.val();
             tip = tipElement.val();
             ajaxData.push(
-                { name: 'tip', value: tip }, 
+                { name: 'tip', value: tip },
                 {name: 'order_number', value: order.order_number}
             );
         } else if ( (path.indexOf("wallet") !== -1)  ||  ((typeof cabbookingwallet !== 'undefined') && (cabbookingwallet == 1)) ) {
@@ -996,14 +1012,14 @@ $(document).ready(function() {
         } else if ((typeof tip_for_past_order !== 'undefined') && (tip_for_past_order == 1)) {
             total_amount = walletElement.val();
             payment_form = 'tip';
-            ajaxData.push( 
+            ajaxData.push(
                 {name: 'order_number', value: $("#order_number").val()}
             );
         }
         ajaxData.push(
             { name: 'payment_form', value: payment_form },
-            { name: 'stripe_token', value: stripe_token }, 
-            { name: 'amount', value: total_amount }, 
+            { name: 'stripe_token', value: stripe_token },
+            { name: 'amount', value: total_amount },
             { name: 'payment_option_id', value: payment_option_id }
         );
         $.ajax({

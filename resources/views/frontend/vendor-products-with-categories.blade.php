@@ -6,23 +6,6 @@
             padding-top: 20px;
             padding-bottom: 20px;
         }
-
-    </style>
-    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}">
-
-@endsection
-@section('content')
-    <header>
-        <div class="mobile-fix-option"></div>
-        @if (isset($set_template) && $set_template->template_id == 1)
-            @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template) && $set_template->template_id == 2)
-            @include('layouts.store/left-sidebar')
-        @else
-            @include('layouts.store/left-sidebar-template-one')
-        @endif
-    </header>
-    <style type="text/css">
         .productVariants .firstChild {
             min-width: 150px;
             text-align: left !important;
@@ -42,7 +25,6 @@
             border: 1px solid #f7f7f7;
             text-align: center;
         }
-
         .productVariants .otherSize {
             height: auto !important;
             width: auto !important;
@@ -393,6 +375,11 @@
         }
 
     </style>
+@endsection
+@section('css-links')
+<link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}"> 
+@endsection
+@section('content')
     <!-- section start -->
     <section class="section-b-space ratio_asos">
         <div class="collection-wrapper">
@@ -536,8 +523,7 @@
                                         <nav class="scrollspy-menu">
                                             <ul>
                                                 @forelse($listData as $key => $data)
-                                                    <li><a href="#{{ $data->category->slug }}">{{ $data->category->translation_one->name }}
-                                                            ({{ $data->products_count }})</a></li>
+                                                <li><a href="#{{ $data->category->slug }}">{{ $data->category->translation_one->name }}({{ $data->products_count }})</a></li>
                                                 @empty
                                                 @endforelse
                                             </ul>
@@ -814,28 +800,6 @@
                             <div class="circle-core"></div>
                         </div>
                     </div>
-                    <!-- <div class="p-2 border-top">
-                                                                <h5>Cottonworth Classic Cuvée 75cl</h5>
-                                                                <div class="qty-box mt-3 mb-2">
-                                                                    <div class="input-group">
-                                                                        <span class="input-group-prepend">
-                                                                            <button type="button" class="btn quantity-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
-                                                                            </button>
-                                                                        </span>
-                                                                        <input type="text" name="quantity" id="quantity" class="form-control input-qty-number quantity_count" value="1">
-                                                                        <span class="input-group-prepend quant-plus">
-                                                                            <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="">
-                                                                                <i class="ti-angle-right"></i>
-                                                                            </button>
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="cart-sub-total d-flex align-items-center justify-content-between">
-                                                                <span>Subtotalll</span>
-                                                                <span>£ 10.50</span>
-                                                            </div> -->
-
                     <div class="show-div shopping-cart flex-fill w-100" id="header_cart_main_ul_ondemand"></div>
                 </div>
             </div>

@@ -8,13 +8,14 @@ $set_common_business_type = $client_preference_detail->business_type??'';
   <style>
     body{font-size:16px;position:initial}.site-header{width:100%;top:0;left:0;background:#fff;position:fixed;-webkit-transition:all .5s ease-in-out;-moz-transition:all .5s ease-in-out;-ms-transition:all .5s ease-in-out;-o-transition:all .5s ease-in-out;transition:all .5s ease-in-out;z-index:11}.top-header.site-topbar{background:var(--top-header-color);padding:5px 0;display:list-item}.top-header .header-dropdown li{padding:0 20px 0 0}.onhover-dropdown .onhover-show-div{display:none}.top-header .header-dropdown li{padding:0 20px 0 0}.shimmer_effect{overflow:hidden}.menu-slider.items-center .slick-track{justify-content:space-between}.menu-slider .slick-track{max-width:100vw!important;width:100%!important;display:flex;justify-content:center;margin:auto!important}.pixelstrap li a,.product-card-box{position:relative;-webkit-transform:scale(.95);transform:scale(.95);-webkit-transition:.3s ease-in-out;transition:.3s ease-in-out}.pixelstrap a,.pixelstrap a:active,.pixelstrap a:hover,.pixelstrap li>a{padding:0 7px 10px;text-align:center;width:100px;white-space:normal}
   </style>
-  @include('layouts.store.title-meta', ['title' => $title])
+  @include('layouts.store.title-meta')
   @include('layouts.store.head-content', ["demo" => "creative"])
   <style>
     :root {--theme-deafult: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;--top-header-color: <?= ($client_preference_detail) ? $client_preference_detail->site_top_header_color : '#4c4c4c' ?>;}
     a {color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;}
   </style>
    @yield('css')
+
 </head>
 @php
 $dark_mode = '';
@@ -55,12 +56,31 @@ else if($client_preference_detail->show_dark_mode == 2){
  </style>
 @endif
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
-  @yield('content')
+@if(isset($set_template)  && $set_template->template_id == 3)
+
+  <article class="al_new_wrapper_design">
+
+
+  @endif
+<header>
+    <div class="mobile-fix-option"></div>
+    @if(isset($set_template)  && $set_template->template_id == 1)
+    @include('layouts.store/left-sidebar-template-one')
+    @elseif(isset($set_template)  && $set_template->template_id == 2)
+    @include('layouts.store/left-sidebar')
+    @elseif(isset($set_template)  && $set_template->template_id == 3)
+    @include('layouts.store/left-sidebar-template-two')
+    @else
+    @include('layouts.store/left-sidebar-template-one')
+    @endif
+</header>
+@yield('content')
   @if(isset($set_template)  && $set_template->template_id == 1)
   @include('layouts.store/footer-content-template-one')
   @elseif(isset($set_template)  && $set_template->template_id == 2)
   @include('layouts.store/footer-content')
   @elseif(isset($set_template)  && $set_template->template_id == 3)
+
   @include('layouts.store/footer-content-template-two')
   @else
   @endif
@@ -93,11 +113,11 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-5LPF1QP3Y3');
-
-  $(document).ready(function() {
-    $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
-    $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight() + 78});
-  });
+// $(document).ready(function() {
+//   alert($('.site-header').innerHeight());
+//   $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
+//   $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight()});
+// });
 </script>
 
 </body>
