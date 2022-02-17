@@ -172,11 +172,10 @@
                             <span class="text-danger error-text updatedescrpitionError"></span>
                         </div>
                         <div class="col-md-12 d-none" id="faqSection">
-                            <div class="card">
-                                <div class="card-body p-3">
-                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="card_">
+                                <div class="card-body_ p-0">
+                                    <div class="d-flex align-items-center justify-content-between mb-3 px-2">
                                         <h4>{{ __("Faq's") }}</h4>
-
                                     </div>
                                     <div class="faq_section" id ="faq_show_section"></div>
                                 </div>
@@ -190,20 +189,25 @@
 </div>
 <script type="text/template" id="faq_template">
     <div class ="option_section" id ="option_section_<%= id %>" data-section_number="<%= id %>">
-        <div class="form-group">
-            <label for="option_title_<%= id %>">{{__('Question')}}</label>
-            <input type="hidden" name="question_id[]"  id="option_id<%= id %>" data-id ="<%= id %>" value ="<%= data?data.id:'' %>">
-
-            <input type="text" name="question[]" class="form-control option_title" requrid id="question<%= id %>" placeholder="{{__('Enter question')}}" data-id ="<%= id %>" value ="<%= data?data.question:'' %>">
+        <div class="form-group px-2">
+            <div class="px-2">
+                <label for="option_title_<%= id %>">{{__('Question')}}</label>
+                <input type="hidden" name="question_id[]"  id="option_id<%= id %>" data-id ="<%= id %>" value ="<%= data?data.id:'' %>">
+                <input type="text" name="question[]" class="form-control option_title" requrid id="question<%= id %>" placeholder="{{__('Enter question')}}" data-id ="<%= id %>" value ="<%= data?data.question:'' %>">
+            </div>
         </div>
-        <div class="form-group">
-            <label for="answer<%= id %>">{{__('Answer')}}</label>
-            <input type="text" name="answer[]" class="form-control answer" requrid id="answer<%= id %>" placeholder="{{__('Enter Answer')}}" data-id ="<%= id %>" value ="<%= data?data.answer:'' %>">
+        <div class="form-group px-2">
+            <div class="px-2">
+                <label for="answer<%= id %>">{{__('Answer')}}</label>
+                <input type="text" name="answer[]" class="form-control answer" requrid id="answer<%= id %>" placeholder="{{__('Enter Answer')}}" data-id ="<%= id %>" value ="<%= data?data.answer:'' %>">
+            </div>
         </div>
-        <button type="button" class="btn btn-primary add_more_button mb-3" id ="add_button_<%= id %>" data-id ="<%= id %>" style=" margin-top: 17px;"> + {{__('Add Question')}}</button>
-        <% if(id > 1) { %>
-        <button type="button" class="btn btn-danger remove_more_button mb-3" id ="remove_button_<%= id %>" data-id ="<%= id %>" style=" margin-top: 17px;"> - {{__('Remove Question')}}</button>
-        <% } %>
+        <div class="px-2">
+            <button type="button" class="btn btn-primary add_more_button mb-3" id ="add_button_<%= id %>" data-id ="<%= id %>" style=" margin-top: 17px;"> + {{__('Add Question')}}</button>
+            <% if(id > 1) { %>
+            <button type="button" class="btn btn-danger remove_more_button mb-3" id ="remove_button_<%= id %>" data-id ="<%= id %>" style=" margin-top: 17px;"> - {{__('Remove Question')}}</button>
+            <% } %>
+        </div>
     </div>
     </script>
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
