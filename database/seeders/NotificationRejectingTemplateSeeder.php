@@ -16,7 +16,11 @@ class NotificationRejectingTemplateSeeder extends Seeder
     public function run()
     {
         if(!NotificationTemplate::find(11)){
-            NotificationTemplate::updateOrCreate(['id' => 11],['label' => "Order Rejecte (Vendor)", 'slug' => 'order-rejected-vendor', 'subject' => "Order Rejecting", 'content' => "Your order ({order_id}) has been rejecting after 5 min", 'tags' => "{order_id}"]);
+            NotificationTemplate::updateOrCreate(['id' => 11],['label' => "Order Reject (Vendor)", 'slug' => 'order-rejected-vendor', 'subject' => "Order Rejecting", 'content' => "Your order ({order_id}) has been rejecting after 5 min", 'tags' => "{order_id}"]);
+        }
+
+        if(!NotificationTemplate::find(12)){
+            NotificationTemplate::updateOrCreate(['id' => 12],['label' => "Order Modified (Customer)", 'slug' => 'order-modified-customer', 'subject' => "Order Modified", 'content' => "Your order ({order_id}) has been modified", 'tags' => "{order_id}"]);
         }
 
     }

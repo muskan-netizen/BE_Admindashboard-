@@ -78,7 +78,7 @@ class SendCampaignNotification extends Command
                 Config::set("database.connections.$database_name", $default);
                 DB::setDefaultConnection($database_name);
                 $client_preferences = ClientPreference::first();   
-                $from = $client_preferences->fcm_server_key;
+                $from = $client_preferences->fcm_server_key ?? "";
                 $headers = [
                     'Authorization: key=' . $from,
                     'Content-Type: application/json',
