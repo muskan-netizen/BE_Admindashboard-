@@ -182,6 +182,7 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts px-0">
+
                                         <div class="product-wrapper-grid">
                                             <div class="row margin-res">
                                             @if($listData->isNotEmpty())
