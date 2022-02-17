@@ -1010,7 +1010,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                </div>
                <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
-               
+
                <div class="row align-items-start">
                   @if($client_preference_detail->business_type != 'taxi')
 
@@ -1126,6 +1126,14 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </span>
                      </div>
                   </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="address_is_car" class="mr-2 mb-0">{{__('Car Mode')}}<small class="d-block pr-5">{{__('Enable to change addres into car details.')}}</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="address_is_car" id="address_is_car" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->address_is_car == '1')) checked='checked' @endif>
+                        </span>
+                     </div>
+                  </div>
+
                </div>
             </div>
          </form>
