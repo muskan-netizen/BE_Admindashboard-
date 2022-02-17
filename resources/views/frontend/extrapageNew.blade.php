@@ -93,10 +93,10 @@ body .switchery>small {width: 20px;height: 20px;}
                     <div class="col-lg-10">
                         <div class="alert alert-success" role="alert" id="success_msg" style="display:none;"></div>
 
-                        <h2>{{__('Personal Details')}}</h2>
+                        <h2 class="mb-0">{{__('Personal Details')}}</h2>
 
                         <div class="needs-validation vendor-signup ">
-                            <div class="al_vendor_signup col-md-12 mt-3 p-3 mb-3">
+                            <div class="al_vendor_signup col-md-12 p-3 mb-3">
                                 <input type="hidden" name="user_id" value="{{$user ? $user->id : ''}}">
                                 <div class="form-row">
                                     <div class="col-md-3 mb-2" id="full_nameInput">
@@ -140,7 +140,7 @@ body .switchery>small {width: 20px;height: 20px;}
                             </div>
 
 
-                            <h2 class="mb-3">{{getNomenclatureName('Vendors', true) .' '. __('Details')}}</h2>
+                            <h2 class="mb-0">{{getNomenclatureName('Vendors', true) .' '. __('Details')}}</h2>
                             <div class="al_details_vendor p-3 mb-3">
                                 <div class="form-row">
                                     <div class="col-md-4 mb-3">
