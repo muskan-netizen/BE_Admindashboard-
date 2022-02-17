@@ -14,7 +14,7 @@ class CarImages extends Model
             $filePath ='car_imges' . '/' . Str::random(40);
             $file = $request->file('image');
             $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
-            
+
             $newCarImage = new CarImages();
             $newCarImage->image =  $file_name;
             $newCarImage->car_id =  $request->car_id;
@@ -23,7 +23,7 @@ class CarImages extends Model
         }
     }
 
-    public function getPathAttribute($value)
+    public function getImageAttribute($value)
     {
       $values = array();
       $img = 'default/default_image.png';

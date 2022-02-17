@@ -245,14 +245,14 @@
                                 </div>
                                 <span class="text-danger" id="address_error"></span>
                             </div>
-                            <div class="col-md-12 mb-2">
+                            {{-- <div class="col-md-12 mb-2">
                                 <label for="address">{{ __('image') }}</label>
                                 <div class="input-group address-input-group">
                                     <input type="file" name="image" class="form-control" id="address" placeholder="{{ __('Address') }}" >
 
                                 </div>
                                 <span class="text-danger" id="address_error"></span>
-                            </div>
+                            </div> --}}
                         </div>
                         <div class="form-row">
                             <div class="col-md-6 mb-2">
