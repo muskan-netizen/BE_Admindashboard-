@@ -764,7 +764,7 @@
                                 <div class="row">
                                     <!-- al_custom_modal start ADVANCED DETAILS -->
                                     <div class="al_custom_modal col-md-12 pt-2 border-top">
-                                            <h5 class="mb-2">{{__('ADVANCED DETAILS')}}</h5>
+                                            <h5 class="mb-2">{{__('ADVANCED DETAILS').' ('.__('Optional').')'}}</h5>
 
                                             <div class="row">
                                                 <div class="col-md-4">
@@ -871,7 +871,7 @@
                                                 <div class="col-md-4">
 
                                                     <div class="col-md-12">
-                                                        {!! Form::label('title', __('Vendor Category'),['class' => 'control-label']) !!}
+                                                        {!! Form::label('title', getNomenclatureName('Vendors', true) .' '. __('Category') ,['class' => 'control-label']) !!}
                                                         <div class="custom-dd dd nestable_list_1" id="nestable_list_1">
                                                             <ol class="dd-list">
                                                                 @forelse($builds as $build)

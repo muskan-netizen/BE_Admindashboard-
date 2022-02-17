@@ -285,3 +285,6 @@ font-size: 12px;
 .vendor-signup .al_count_tabs_new_design .file>label {
     height: 145px;
 }
+.timing-box_al{display: flex;justify-content: space-between;}
+.timing-box_al li{margin-right: 10px; font-size: 10px;line-height: normal;color: #777;}
+.timing-box_al li:last-child{margin-right: 0; }
