@@ -86,8 +86,17 @@ class SendCampaignNotification extends Command
                 $notifications = CampaignRoster::where('notification_time', '<=', $intervalTime)->where('status',0)->with('campaign','user')->get();
                 if($notifications)
                 {
+                    // $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+                    //     $to = '+919996687653';
+                    //     $provider = $client_preferences->sms_provider;
+                    //     $body = "Hi ".$client_preferences->sms_key;
+                    //     if (!empty($client_preferences->sms_provider)) {
+                    //         $send = $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
+                    //     }
                     foreach($notifications as $singlenotification)
                     {
+                        
+
                         $type = $singlenotification->notofication_type;
                         //	type => 1 sms, 2 email, 3 push notification
                         switch ($type) {
