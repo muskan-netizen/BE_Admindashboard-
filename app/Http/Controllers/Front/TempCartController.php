@@ -10,9 +10,7 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Traits\{ApiResponser,CartManager};
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Front\FrontController;
-use App\Http\Controllers\Front\PromoCodeController;
-use App\Http\Controllers\Front\LalaMovesController;
+use App\Http\Controllers\Front\{FrontController, LalaMovesController, OrderController, PromoCodeController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, TempCart, TempCartAddon, TempCartProduct, TempCartCoupon, TempCartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot, UserDevice, NotificationTemplate};
 use Log;
 class TempCartController extends FrontController
@@ -830,7 +828,7 @@ class TempCartController extends FrontController
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
-            $notification_content = NotificationTemplate::where('id', 4)->first();
+            $notification_content = NotificationTemplate::where('id', 12)->first();
             if ($notification_content) {
                 $headers = [
                     'Authorization: key=' . $from,
@@ -850,7 +848,7 @@ class TempCartController extends FrontController
                         'title' => $notification_content->subject,
                         'body'  => $notification_content->content,
                         'data' => $orderData,
-                        'type' => "order_created"
+                        'type' => "order_modified"
                     ],
                     "priority" => "high"
                 ];
@@ -885,6 +883,16 @@ class TempCartController extends FrontController
                 $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
                 $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
                 $cartData = $this->getCart($cart, $langId, $currId, '');
+
+                // Send notification to customer
+                $order_vendor = OrderVendor::select('order_id', 'vendor_id')->where('id', $cart->order_vendor_id)->first();
+                $order_id = $order_vendor->order_id;
+                $vendor_id = $order_vendor->vendor_id;
+                $orderController = new OrderController();
+                $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order_id, $vendor_id);
+                $this->sendEditedOrderPushNotification([$cart->user_id], $vendor_order_detail);
+                
+
                 return $this->successResponse($cartData, 'Order has been submitted successfully.', 200);
             } else {
                 return $this->errorResponse('Order cannot be submitted.', 422);
