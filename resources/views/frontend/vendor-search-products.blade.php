@@ -1,4 +1,4 @@
-@if($listData->isNotEmpty())
+{{--@if($listData->isNotEmpty()) --}}
 <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
     <nav class="scrollspy-menu">
         <ul>
@@ -262,7 +262,7 @@
 <h4 class="mt-3 mb-3 text-center">No product found</h4>
 @endforelse
 </div>
-@endif
+{{--@endif--}}
         <div class="col-12 col-lg-3 d-lg-inline-block d-none">
             <div class="card-box p-0 cart-main-box">
                 <div class="p-2 d-flex align-items-center justify-content-between border-bottom">
