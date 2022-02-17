@@ -14,16 +14,21 @@ body,
 .al_count_tabs_new_design li.navigation-tab-item {width: auto;border-radius: 0;padding-right: 40px;}
 .al_count_tabs_new_design li a.nav-link:focus,
 .al_count_tabs_new_design li a.nav-link:hover {border-color: transparent;outline: none;}
-.al_count_tabs_new_design li span {width: 60px;height: 60px;text-align: center;line-height: 60px;background-color: #eee;display: inline-block;
+.al_count_tabs_new_design li a.nav-link span {width: 60px;height: 60px;text-align: center;line-height: 60px;background-color: #eee;display: inline-block;
 padding: 0 12px;margin-right: 10px;border-radius: 50%;margin-bottom: 10px;}
 .al_count_tabs_new_design li a.nav-link {font-size: 20px;color: #888;border-bottom: 2px solid transparent !important;font-weight: 400;
 border-top: 0;border-left: 0;border-radius: 0;border-right: 0;}
+.al_count_tabs_new_design li a.nav-link:hover,
 .al_count_tabs_new_design li a.nav-link.active {border-bottom: 2px solid var(--theme-deafult) !important;color: var(--theme-deafult);}
 .al_img_opacity{opacity: .4;}
+.al_count_tabs_new_design li a.nav-link:hover img,
 .al_count_tabs_new_design li a.nav-link.active img{filter: grayscale(0);}
-.al_count_tabs_new_design li span img {filter: grayscale(1);}
+.al_count_tabs_new_design li a.nav-link img {filter: grayscale(1);}
+.al_count_tabs_new_design li a.nav-link.al_delivery:hover span,
 .al_count_tabs_new_design li a.nav-link.active.al_delivery span{background-color: #fef4a5}
+.al_count_tabs_new_design li a.nav-link.al_dinein:hover span,
 .al_count_tabs_new_design li a.nav-link.active.al_dinein span{background-color: #f5f5ff}
+.al_count_tabs_new_design li a.nav-link.al_takeway:hover span,
 .al_count_tabs_new_design li a.nav-link.active.al_takeway span{background-color: #ffebdd}
 .al_new_ipad_view a.fav-button {font-size: 20px;margin-right: 10px;}
 .container_fluid_al{max-width:100%;width: 100%;}
@@ -246,3 +251,37 @@ font-size: 12px;
     margin-right: 0;
 }
 .al_new_all_venders .supplier-rating {padding: 0;}
+/* vender page css  */
+.vendor-signup h2 {background-color: #eee;padding: 20px;border-radius: 15px 15px 0 0;}
+.al_count_tabs_new_design .al_advanced_details{background-color: transparent; border-radius: 0;}
+.vendor-signup .al_vendor_signup,
+.vendor-signup .al_details_vendor {border: 1px solid #eee; border-radius: 0 0 15px 15px;}
+.vendor-signup .al_count_tabs_new_design .al_vendor_advancedtab,
+.vendor-signup .al_count_tabs_new_design .al_vendor_signup,
+.vendor-signup .al_count_tabs_new_design .al_details_vendor{border-radius: 15px;box-shadow: 0 0 5px rgba(0,0,0,.2);}
+.al_new_vendor_form .al_count_tabs_new_design li .al_vendor_box{
+    height: 80px;
+    width: 80px;
+    line-height: 80px;
+}
+.al_new_vendor_form .al_count_tabs_new_design li .nav-link.al_vendor_details:hover .al_vendor_box,
+.al_new_vendor_form .al_count_tabs_new_design li .nav-link.al_vendor_details.active .al_vendor_box{
+    background-color: #fed3de;
+}
+.al_new_vendor_form .al_count_tabs_new_design li .al_vendor_address:hover .al_vendor_box,
+.al_new_vendor_form .al_count_tabs_new_design li .al_vendor_address.active .al_vendor_box{
+    background-color: #ffe0d0;
+}
+.al_new_vendor_form .al_count_tabs_new_design li .al_vendor_advanced:hover .al_vendor_box,
+.al_new_vendor_form .al_count_tabs_new_design li .al_vendor_advanced.active .al_vendor_box{
+    background-color: #bcd3ff;
+}
+.al_count_tabs_new_design .al_custom_title {
+    color: #000;
+}
+.al_count_tabs_new_design .form-control{
+    height: 50px;
+}
+.vendor-signup .al_count_tabs_new_design .file>label {
+    height: 145px;
+}
