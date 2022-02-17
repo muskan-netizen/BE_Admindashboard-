@@ -246,3 +246,6 @@ font-size: 12px;
     margin-right: 0;
 }
 .al_new_all_venders .supplier-rating {padding: 0;}
+.timing-box_al{display: flex;justify-content: space-between;}
+.timing-box_al li{margin-right: 10px; font-size: 10px;line-height: normal;color: #777;}
+.timing-box_al li:last-child{margin-right: 0; }
