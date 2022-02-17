@@ -8,7 +8,7 @@ $set_common_business_type = $client_preference_detail->business_type??'';
   <style>
     body{font-size:16px;position:initial}.site-header{width:100%;top:0;left:0;background:#fff;position:fixed;-webkit-transition:all .5s ease-in-out;-moz-transition:all .5s ease-in-out;-ms-transition:all .5s ease-in-out;-o-transition:all .5s ease-in-out;transition:all .5s ease-in-out;z-index:11}.top-header.site-topbar{background:var(--top-header-color);padding:5px 0;display:list-item}.top-header .header-dropdown li{padding:0 20px 0 0}.onhover-dropdown .onhover-show-div{display:none}.top-header .header-dropdown li{padding:0 20px 0 0}.shimmer_effect{overflow:hidden}.menu-slider.items-center .slick-track{justify-content:space-between}.menu-slider .slick-track{max-width:100vw!important;width:100%!important;display:flex;justify-content:center;margin:auto!important}.pixelstrap li a,.product-card-box{position:relative;-webkit-transform:scale(.95);transform:scale(.95);-webkit-transition:.3s ease-in-out;transition:.3s ease-in-out}.pixelstrap a,.pixelstrap a:active,.pixelstrap a:hover,.pixelstrap li>a{padding:0 7px 10px;text-align:center;width:100px;white-space:normal}
   </style>
-  @include('layouts.store.title-meta', ['title' => $title])
+  @include('layouts.store.title-meta')
   @include('layouts.store.head-content', ["demo" => "creative"])
   <style>
     :root {--theme-deafult: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;--top-header-color: <?= ($client_preference_detail) ? $client_preference_detail->site_top_header_color : '#4c4c4c' ?>;}

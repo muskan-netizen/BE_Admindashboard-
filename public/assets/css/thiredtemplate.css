@@ -232,20 +232,20 @@ font-size: 12px;
 .al_new_wrapper_design .new-pages a.suppliers-box.d-block .supplier-rating ul.timing-box small svg{
     fill: var(--theme-deafult);
 }
-.al_new_all_venders ul.timing-box {
-    display: block;
-    justify-content: space-between;
-    position: absolute;
-    right: 10px;
-    bottom: 5px;
-    background-color: #fff;
-    padding: 2px 5px;
-    border-radius: 6px;
-    box-shadow: 0 0 5px rgb(0 0 0 / 20%);
-}
+
 .al_new_all_venders ul.timing-box li{
     margin-right: 10px;
+    border:1px solid #eee;
+    padding: 2px 5px;
+    border-radius: 6px;
+}
+.al_new_all_venders ul.timing-box li svg{
+    fill: var(--theme-deafult);
 }
 .al_new_all_venders ul.timing-box li:last-child{
     margin-right: 0;
 }
+.al_new_all_venders .supplier-rating {padding: 0;}
+.timing-box_al{display: flex;justify-content: space-between;}
+.timing-box_al li{margin-right: 10px; font-size: 10px;line-height: normal;color: #777;}
+.timing-box_al li:last-child{margin-right: 0; }
