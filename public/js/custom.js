@@ -230,7 +230,7 @@ window.initializeSlider = function initializeSlider() {
         slidesToShow: 6,
         slidesToScroll: 1,
         centerMode: false,
-        centerPadding: '60px',
+        centerPadding: '0',
         arrows: true,
         dots: false,
         responsive: [
