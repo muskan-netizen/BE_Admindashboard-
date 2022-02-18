@@ -338,14 +338,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         </div>
     </div>
 
-    <script>
-        jQuery(function() {
-            jQuery(".al_toggle-menu").click(function() {
-                jQuery(this).toggleClass("active");
-                jQuery('.al_menu-drawer').toggleClass("open");
-            });
-        });
-    </script>
+
 
 </div>
 
