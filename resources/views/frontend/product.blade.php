@@ -1,4 +1,9 @@
-@extends('layouts.store', ['title' => (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''])
+@extends('layouts.store', [
+'title' => (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : '',
+'meta_title'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_title:'',
+'meta_keyword'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_keyword:'',
+'meta_description'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description:'',
+])
 
 @section('css')
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>

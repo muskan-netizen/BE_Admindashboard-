@@ -144,26 +144,26 @@ $pages = \App\Models\Page::with([
         <div class="container_fluid_al d-block" >
             <div class="row align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
-                <div class="container mobile-header d-flex align-items-center justify-content-between">
+                <div class="container al_mobile-header d-flex align-items-center justify-content-between position-relative">
                     <div class="al_count_tabs_new_design" data-aos="zoom-in">
                         @if($mod_count > 1)
-                        <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
+                        <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods" id="top-tab" role="tablist">
                             @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
-                            <li class="navigation-tab-item " role="presentation">
+                            <li class="navigation-tab-item pr-lg-3" role="presentation">
                                 <a class="nav-link al_delivery {{($mod_count==1 || (Session::get('vendorType')=='delivery') || (Session::get('vendorType')=='')) ? 'active' : ''}}" id="delivery_tab" data-toggle="tab" href="#delivery_tab" role="tab" aria-controls="profile" aria-selected="false">
                                     <span><img src="{{asset('images/al_custom3.png')}}" alt=""></span>
                                     {{$Delivery}}
                                 </a>
                             </li>
                             @endif @if($client_preference_detail->dinein_check==1) @php $Dine_In=getNomenclatureName('Dine-In', true); $Dine_In=($Dine_In==='Dine-In') ? __('Dine-In') : $Dine_In; @endphp
-                            <li class="navigation-tab-item " role="presentation">
+                            <li class="navigation-tab-item pr-lg-3 " role="presentation">
                                 <a class="nav-link al_dinein {{($mod_count==1 || (Session::get('vendorType')=='dine_in')) ? 'active' : ''}}" id="dinein_tab" data-toggle="tab" href="#dinein_tab" role="tab" aria-controls="dinein_tab" aria-selected="false">
                                     <span><img src="{{asset('images/al_custom1.png')}}" alt=""></span>
                                     {{$Dine_In}}
                                 </a>
                             </li>
                             @endif @if($client_preference_detail->takeaway_check==1)
-                            <li class="navigation-tab-item " role="presentation">
+                            <li class="navigation-tab-item  pr-lg-3" role="presentation">
                                 @php $Takeaway=getNomenclatureName('Takeaway', true); $Takeaway=($Takeaway==='Takeaway') ? __('Takeaway') : $Takeaway; @endphp
                                 <a class="nav-link al_takeway {{($mod_count==1 || (Session::get('vendorType')=='takeaway')) ? 'active' : ''}}" id="takeaway_tab" data-toggle="tab" href="#takeaway_tab" role="tab" aria-controls="takeaway_tab" aria-selected="false">
                                     <span><img src="{{asset('images/al_custom2.png')}}" alt=""></span>
@@ -421,8 +421,9 @@ $pages = \App\Models\Page::with([
                   <li class="al_main_category" data-aos="zoom-in">
                      <a href="{{route('categoryDetail', $cate['slug'])}}">
                         @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-                        <div class="nav-cate-img" > <img style="height:150px;" class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
-                        @endif{{$cate['name']}}
+                        <div class="nav-cate-img" > <img style="height:150px;width:150px;" class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
+                        @endif
+                        {{$cate['name']}}
                      </a>
                      @if(!empty($cate['children']))
                      <ul class="al_main_category_list">
@@ -458,8 +459,39 @@ $pages = \App\Models\Page::with([
        <div class="mobile-back text-end">Back<i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
    </li> -->
     <% _.each(nav_categories, function(category, key){ %>
-      <li class="al_main_category"> <a href="{{route('categoryDetail')}}/<%=category.slug %>"> @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome') <div class="nav-cate-img"> <img class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt=""> </div>@endif <%=category.name %> </a> <% if(category.children){%> <ul class="al_main_category_list"> <% _.each(category.children, function(childs, key1){%> <li> <a href="{{route('categoryDetail')}}/<%=childs.slug %>"><span class="new-tag"><%=childs.name %></span></a> <% if(childs.children){%> <ul class="al_main_category_sub_list"> <% _.each(childs.children, function(chld, key2){%> <li><a href="{{route('categoryDetail')}}/<%=chld.slug %>"><%=chld.name %></a></li><%}); %> </ul> <%}%> </li><%}); %> </ul> <%}%> </li>
-        <% }); %>
+    <li class="al_main_category" data-aos="zoom-in">
+        <a href="{{route('categoryDetail')}}/<%=category.slug %>">
+            @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
+            <div class="nav-cate-img">
+                <img style="height:150px;width:150px;" class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="">
+            </div>
+            @endif
+            <%=category.name %>
+        </a>
+        <% if(category.children){%>
+        <ul class="al_main_category_list">
+            <% _.each(category.children, function(childs, key1){%>
+            <li>
+                <a href="{{route('categoryDetail')}}/<%=childs.slug %>">
+                    <span class="new-tag"><%=childs.name %></span>
+                </a>
+                <% if(childs.children){%>
+                <ul class="al_main_category_sub_list">
+                    <% _.each(childs.children, function(chld, key2){%>
+                    <li>
+                        <a href="{{route('categoryDetail')}}/<%=chld.slug %>">
+                            <%=chld.name %>
+                        </a>
+                    </li>
+                    <%}); %>
+                </ul>
+                <%}%>
+            </li>
+            <%}); %>
+        </ul>
+        <%}%>
+    </li>
+    <% }); %>
 </script>
 @if($client_preference_detail)
     @if($client_preference_detail->is_hyperlocal == 1 )

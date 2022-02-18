@@ -1113,6 +1113,8 @@ class OrderController extends FrontController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
+        Log::info("sendOrderPushNotificationVendors");
+
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
         //    Log::info($devices);
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
@@ -1152,7 +1154,7 @@ class OrderController extends FrontController
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
                 $result = curl_exec($ch);
-                //    Log::info($result);
+                Log::info($result);
                 curl_close($ch);
             }
         }
@@ -1375,7 +1377,7 @@ class OrderController extends FrontController
 
         return 2;
     }
-    
+
 
     public function placeOrderRequestlalamove($request)
     {

@@ -1,25 +1,28 @@
 @extends('layouts.store', ['title' => __('Home')])
 
 @section('content')
-<header>
-	<div class="mobile-fix-option"></div>
-	<!-- header, category  in layouts.store/left-sidebar-template-two-->
-	@include('layouts.store/left-sidebar-template-two')
-</header>
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
-<section class="home-slider-wrapper pt-md-3" style="min-height:300px;" data-aos="zoom-in">
+<section class="home-slider-wrapper pt-md-3" data-aos="zoom-in">
 	<div class="container">
 		<div id="myCarousel" class="carousel slide" data-ride="carousel">
 			<div class="carousel-inner">
 				@foreach($banners as $key => $banner)
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
-					<div class="carousel-item @if($key == 0) active @endif">
-					 <a class="banner-img-outer" href="{{$url??'#'}}">
+					@if($key == 0)
+					<div class="carousel-item active">
+					<a class="banner-img-outer" href="{{$url??'#'}}">
+						<img alt="" title="" class="blur-up lazyload w-100" src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+					</a>
+					</div>
+					@else
+					<div class="carousel-item ">
+					<a class="banner-img-outer" href="{{$url??'#'}}">
 						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
 					</a>
 					</div>
+					@endif
 				@endforeach
 
 			</div>
@@ -47,19 +50,20 @@
 					<%}else{%>
 						<img  class="fluid-img mx-auto blur-up lazyload" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 					<%}%>
-					<% if(vendor.timeofLineOfSightDistance !=undefined){%>
-					<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
-					<%}%>
+
 				</div>
 				<div class="supplier-rating">
-
-						<h6 class="mb-1 ellips"><%=vendor.name %></h6> @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-						<% if(vendor.vendorRating > 0){%> <span class="rating-number"><%=vendor.vendorRating %></span>
-							<%}%> @endif @endif
+					<h6 class="mb-1 ellips"><%=vendor.name %></h6>
 					<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
 						<%=vendor.categoriesList %>
 					</p>
+						<% if(vendor.timeofLineOfSightDistance !=undefined){%>
+							<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
+						<%}%>
 				</div>
+				@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+				<% if(vendor.vendorRating > 0){%> <span class="rating-number"><%=vendor.vendorRating %> </span>
+				<%}%> @endif @endif
 			</a>
 		</div>
 		<% }); %>
@@ -80,10 +84,10 @@
 <script type="text/template" id="products_template" data-aos="zoom-in">
 	<% _.each(products, function(product, k){ %>
 		<div class="product-card-box position-relative al">
-			<div class="add-to-fav 12">
+			{{--<div class="add-to-fav 12">
 				<input id="fav_pro_one" type="checkbox">
 				<label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
-			</div>
+			</div>--}}
 			<a class="common-product-box text-center" href="<%=product.vendor.slug %>/product/<%=product.url_slug %>">
 				<div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="<%=product.image_url %>" alt="" title="">
 					<div class="pref-timing"> </div>
@@ -120,25 +124,26 @@
 <script type="text/template" id="trending_vendors_template" data-aos="zoom-in">
 	<% _.each(trending_vendors, function(vendor, k){%>
 		<div class="product-card-box position-relative text-center al_custom_vendors_sec">
-			<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
+			<a class="suppliers-box al_vendors_template2 d-block" href="{{route('vendorDetail')}}/<%=vendor.slug %>">
 				<div class="suppliers-img-outer position-relative ">
 					<% if(vendor.is_vendor_closed==1){%> <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 						<%}else{%> <img class="fluid-img mx-auto blur-up lazyload w-100" data-src="<%=vendor.logo.image_fit %>200/200<%=vendor.logo['image_path'] %>" alt="" title="">
 							<%}%>
-								<% if(vendor.timeofLineOfSightDistance !=undefined){%>
-									<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
-									<%}%>
 				</div>
 				<div class="supplier-rating">
 					<h6 class="mb-1 ellips"><%=vendor.name %></h6>
-					@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-						<% if(vendor.vendorRating > 0){%>
-						<span class="rating-number"><%=vendor.vendorRating %></span>
-						<%}%> @endif @endif
 					<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
 						<%=vendor.categoriesList %>
 					</p>
+
+						<% if(vendor.timeofLineOfSightDistance !=undefined){%>
+									<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
+									<%}%>
 				</div>
+				@if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+						<% if(vendor.vendorRating > 0){%>
+						<span class="rating-number"><%=vendor.vendorRating %> </span>
+						<%}%> @endif @endif
 			</a>
 		</div>
 		<% }); %>
@@ -458,7 +463,7 @@
 		<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="row">
 				<div class="col-12 top-heading d-flex align-items-center justify-content-between">
-					<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
+				<h2 class="h2-heading"> @php if($homePageLabel->slug=='vendors'){echo getNomenclatureName('vendors', true);}elseif($homePageLabel->slug=='recent_orders'){echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders");}else{echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);}@endphp </h2> @if($homePageLabel->slug=='vendors') <a class="" href="{{route('vendor.all')}}">{{__('View More')}}</a> @endif </div>
 			</div>
 			<div class="row">
 				<div class="col-12"> @if($homePageLabel->slug=='vendors' || $homePageLabel->slug=='trending_vendors')
@@ -511,4 +516,10 @@
 @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+	  $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
+	  $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight()});
+	});
+</script>
 @endsection

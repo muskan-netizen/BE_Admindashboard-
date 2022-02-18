@@ -82,7 +82,7 @@
   transition: all 0.35s ease 0.15s;
 }
 </style>
-<section class="section-b-space new-pages pb-265">
+<section class="section-b-space new-pages">
     <div class="container">
         <div class="row">
             <div class="col-12">

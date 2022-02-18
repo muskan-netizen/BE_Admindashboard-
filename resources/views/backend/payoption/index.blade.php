@@ -497,9 +497,11 @@
 
                 <?php
                 $creds = json_decode($opt->credentials);
-                $payout_secret_key = (isset($creds->secret_key)) ? $creds->secret_key : '';
-                $payout_publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
-                $payout_client_id = (isset($creds->client_id)) ? $creds->client_id : '';
+                $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+                $secret_key = (isset($creds->secret_key)) ? $creds->secret_key : '';
+                $multiplier = (isset($creds->multiplier)) ? $creds->multiplier : '';
+                $publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
+                $client_id = (isset($creds->client_id)) ? $creds->client_id : '';
                 ?>
 
                 <div class="card-box h-100">
@@ -529,19 +531,48 @@
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="stripe_payout_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
-                                    <input type="password" name="stripe_payout_secret_key" id="stripe_payout_secret_key" class="form-control" value="{{$payout_secret_key}}" @if($opt->status == 1) required @endif>
+                                    <input type="password" name="stripe_payout_secret_key" id="stripe_payout_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="stripe_payout_publishable_key" class="mr-3">{{ __("Publishable Key") }}</label>
-                                    <input type="password" name="stripe_payout_publishable_key" id="stripe_payout_publishable_key" class="form-control" value="{{$payout_publishable_key}}" @if($opt->status == 1) required @endif>
+                                    <input type="password" name="stripe_payout_publishable_key" id="stripe_payout_publishable_key" class="form-control" value="{{$publishable_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="stripe_payout_client_id" class="mr-3">{{ __("Client ID") }}</label>
-                                    <input type="password" name="stripe_payout_client_id" id="stripe_payout_client_id" class="form-control" value="{{$payout_client_id}}" @if($opt->status == 1) required @endif>
+                                    <input type="password" name="stripe_payout_client_id" id="stripe_payout_client_id" class="form-control" value="{{$client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ( (strtolower($opt->code) == 'pagarme') )
+                    <div class="mt-2" id="pagarme_payout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pagarme_payout_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="pagarme_payout_api_key" id="pagarme_payout_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pagarme_payout_secret_key" class="mr-3">{{ __("Secret Key") }}</label>
+                                    <input type="password" name="pagarme_payout_secret_key" id="pagarme_payout_secret_key" class="form-control" value="{{$secret_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pagarme_payout_multiplier" class="mr-3">{{ __("Multiplier") }}</label>
+                                    <input type="number" name="pagarme_payout_multiplier" id="pagarme_payout_multiplier" class="form-control" value="{{$multiplier}}" step="0.01" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                         </div>

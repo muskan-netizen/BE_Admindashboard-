@@ -1,4 +1,4 @@
-@if($listData->isNotEmpty())
+{{--@if($listData->isNotEmpty()) --}}
 <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
     <nav class="scrollspy-menu">
         <ul>
@@ -17,8 +17,8 @@
                     <input type="checkbox"
                         class="switch switch-bootstrap product_tag_filter status"
                         name="tag_id" id="product_tag_filter_{{ $key }}"
-                        data-tag_id="{{ $tag->id }}"" value="
-                        {{ $tag->id }}">
+                        data-tag_id="{{ $tag->id }}" value="
+                        {{ $tag->id }}" {{!is_null($tagId) && in_array($tag->id, $tagId) ? 'checked' : ''}}>
                     <span class="lable"> @if (isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}" alt="">@endif <span
                             class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span></span>
                 </label>
@@ -262,7 +262,7 @@
 <h4 class="mt-3 mb-3 text-center">No product found</h4>
 @endforelse
 </div>
-@endif
+{{--@endif--}}
         <div class="col-12 col-lg-3 d-lg-inline-block d-none">
             <div class="card-box p-0 cart-main-box">
                 <div class="p-2 d-flex align-items-center justify-content-between border-bottom">

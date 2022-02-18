@@ -11,7 +11,7 @@ use App\Models\ClientPreference;
 use App\Models\Client as ClientData;
 use App\Models\PaymentOption;
 use App\Models\ShippingOption;
-use App\Models\VendorSlot;
+use App\Models\{VendorSlot, ClientCurrency};
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 
@@ -331,15 +331,13 @@ function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 0)
     
     while ($StartTime <= $EndTime)
     {
-    $endtm = $StartTime + $AddMins;
-    if($endtm>$EndTime)
-    {
-    $endtm = $EndTime;
-    }
-    
-    $ReturnArray[] = date ("G:i", $StartTime).' - '.date ("G:i", $endtm);
-    $StartTime += $AddMins;
-    $endtm = 0;
+        $endtm = $StartTime + $AddMins;
+        if($endtm>$EndTime){
+            $endtm = $EndTime;
+        }
+        $ReturnArray[] = date ("G:i", $StartTime).' - '.date ("G:i", $endtm);
+        $StartTime += $AddMins;
+        $endtm = 0;
     }
     return $ReturnArray;
 }
@@ -681,4 +679,19 @@ function getServerURL(){
     }
     $server_url = "https://".$domain."/";
     return $server_url;
+}
+
+/* doller compare amount */
+function getDollarCompareAmount($amount, $customerCurrency='')
+{
+    $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+    if(empty($customerCurrency)){
+        $clientCurrency = $primaryCurrency;
+    }else{
+        $clientCurrency = ClientCurrency::where('currency_id', $customerCurrency)->first();
+    }
+    $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
+    $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
+    $amount = number_format($amount, 2,'.','');
+    return $amount;
 }

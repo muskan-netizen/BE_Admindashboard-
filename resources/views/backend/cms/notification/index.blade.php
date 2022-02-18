@@ -2,6 +2,11 @@
 @section('css')
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.8.0/bootstrap-tagsinput.css" rel="stylesheet">
+<style>
+    textarea.form-control {
+    height: auto !important;
+}
+</style>
 @endsection
 @section('content')
 <div class="container-fluid">
@@ -100,8 +105,8 @@
                         $('#edit_page_content #tags').html(response.data.tags);
                         $('#edit_page_content #subject').val(response.data.subject);
                         $('#edit_page_content #content').val(response.data.content);
-                        CKEDITOR.instances.content.setData(response.data.content);
-                        // $('#edit_page_content #content').summernote({'height':450});
+                        //CKEDITOR.instances.content.setData(response.data.content);
+                         //$('#edit_page_content #content').summernote({'height':450});
                     }else{
                       $(':input:text').val('');
                       $('textarea').val('');
@@ -117,8 +122,8 @@
         $(document).on("click","#update_notification_template",function() {
             var update_url = "{{route('cms.notifications.update')}}";
             let subject = $('#edit_page_content #subject').val();
-           // let content = $('#edit_page_content #content').val();
-            let content = CKEDITOR.instances.content.getData();
+            let content = $('#edit_page_content #content').val();
+           // let content = CKEDITOR.instances.content.getData();
             let email_template_id = $('#edit_page_content #notification_template_id').val();
             var data = { subject: subject, content: content, email_template_id:email_template_id};
             $.post(update_url, data, function(response) {
@@ -137,8 +142,8 @@
 @section('script')
 {{-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script> --}}
 <script src="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
-<script>
+{{-- <script>
     CKEDITOR.replace('content');
     CKEDITOR.config.height = 250;
-</script>
+</script> --}}
 @endsection
