@@ -84,7 +84,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                                    <% } %>
 
-                                                </div> 
+                                                </div>
 
 
 
@@ -98,7 +98,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                 <ul class="status_box mt-1 pl-0">
                                                     <li>
                                                         <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
-                                                        <label class="m-0 in-progress"><%= vendor.order_status %></label>                       
+                                                        <label class="m-0 in-progress"><%= vendor.order_status %></label>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -355,7 +355,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 <div class="error-msg">
                     <p>{{ __('You have not any order yet now.') }}</p>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
 </div>
@@ -406,7 +406,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         }
     });
     $("#vendor_select_box").change(function() {
-      var typ=  $("a.nav-link.active").data('rel'); 
+      var typ=  $("a.nav-link.active").data('rel');
      //   alert(typ);
 
         init(typ, "{{ route('orders.filter') }}", '', false);
@@ -424,7 +424,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
     }
 
-    function init(filter_order_status, url, search_keyword = "", isOnload = false) { 
+    function init(filter_order_status, url, search_keyword = "", isOnload = false) {
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
         $.ajax({
@@ -437,9 +437,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 vendor_id: vendor_id,
                 date_filter: date_filter
             },
-            success: function(response) { 
+            success: function(response) {
                 // reload after 10 sec
-               
+
 
                 $('#order_list_order').hide();
                 if (response.status == 'Success') {
@@ -468,23 +468,20 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     $("#history-orders").html("(" + response.data.orders_history + ")");
 
                  }
-                // setTimeout(autoloaddashboad(), 20000);
+                 setTimeout(autoloaddashboad(), 5000);
             },
             error: function(data) {
-
+               autoloaddashboad();
             },
         });
-
-
-        
-    } 
+    }
     $(document).ready(function() {
 
         setTimeout(function() {
             $("#pending_order-tab").trigger('click');
         }, 500);
         //setInterval(autoloaddashboad, 10000);
-        
+
         $(document).on("click", ".load-more-btn", function() {
             $('#order_list_order').show();
             var url = $(this).data('url');
