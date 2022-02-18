@@ -716,7 +716,7 @@ class CartController extends BaseController
                                     if (!empty($deliver_charge) && $delivery_count == 0) {
                                         $delivery_count = 1;
                                         $prod->deliver_charge = number_format($deliver_charge, 2, '.', '');
-                                       // $payable_amount = $payable_amount + $deliver_charge;
+                                        $payable_amount = $payable_amount + $deliver_charge;
                                         $order_sub_total = $order_sub_total + $deliver_charge;
                                         $delivery_fee_charges = $deliver_charge;
                                     }
@@ -910,7 +910,7 @@ class CartController extends BaseController
                 $vendorData->taxable_amount = $taxable_amount;
                 $vendorData->payable_amount = $payable_amount - $discount_amount;
                 $vendorData->isDeliverable = 1;
-                $total_paying = $total_paying + $payable_amount ;
+                $total_paying = $total_paying + $payable_amount ; 
                 $total_tax = $total_tax + $taxable_amount;
                 $total_disc_amount = $total_disc_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
@@ -1019,7 +1019,7 @@ class CartController extends BaseController
             $loyalty_amount_saved = $temp_total_paying;
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = $total_paying  + $total_tax - $total_disc_amount - $loyalty_amount_saved;
+            $cart->total_payable_amount = ($total_paying  + $total_tax) - ($total_disc_amount + $loyalty_amount_saved);
         }
         $wallet_amount_used = 0;
         if (isset($user)) {

@@ -101,4 +101,7 @@ class ProductVariant extends Model
             $qset->where($column,$value);
         });
     }
+
+    
+    
 }

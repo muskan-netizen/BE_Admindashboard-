@@ -204,7 +204,7 @@ class CategoryController extends FrontController{
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
 
         if(strtolower($type) == 'vendor'){
-            $preferences= (object)Session::get('preferences');
+            $preferences= ClientPreference::first();
             $vendorData = Vendor::with('products')->select('vendors.id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = Session::get('latitude') ?? '';

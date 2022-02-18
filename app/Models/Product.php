@@ -251,5 +251,14 @@ class Product extends Model{
     {
       return self::where('category_id',$category_id)->get();
     }
+
+
+
+    public function variantPrice(){
+      return $this->hasOne('App\Models\ProductVariant')->select('*','price as variant_price')->first(); 
+    }
+
+
+    
     
 }
