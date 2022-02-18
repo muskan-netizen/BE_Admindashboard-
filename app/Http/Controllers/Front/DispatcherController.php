@@ -237,6 +237,7 @@ class DispatcherController extends FrontController
                     })
                     ->where('user_id', $user->id)->where('id', $order_id)->select('*','id as total_discount_calculate')->first();
                 }
+                $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
                 if ($order) {
                     $order->user_name = $order->user->name;
                     $order->user_image = $order->user->image;
@@ -275,12 +276,24 @@ class DispatcherController extends FrontController
                             }
                             $product->variant_options = $variant_options;
                             if (!empty($product->addon)) {
-                                foreach ($product->addon as $addon) {
-                                    $product_addons[] = array(
-                                        'addon_id' =>  $addon->addon_id,
-                                        'addon_title' =>  $addon->set->title,
-                                        'option_title' =>  $addon->option->title,
-                                    );
+                                foreach ($product->addon as $k => $addon) {
+                                    // $product_addons[] = array(
+                                    //     'addon_id' =>  $addon->addon_id,
+                                    //     'addon_title' =>  $addon->set->title,
+                                    //     'option_title' =>  $addon->option->title,
+                                    // );
+                                    $opt_quantity_price = 0;
+                                    $opt_price_in_currency = $addon->option ? $addon->option->price : 0;
+                                    $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                                    $opt_quantity_price = $opt_price_in_doller_compare * $product->quantity;
+                                    $product_addons[$k]['quantity'] = $product->quantity;
+                                    $product_addons[$k]['addon_id'] = $addon->addon_id;
+                                    $product_addons[$k]['option_id'] = $addon->option_id;
+                                    $product_addons[$k]['price'] = $opt_price_in_currency;
+                                    $product_addons[$k]['addon_title'] = $addon->set->title;
+                                    $product_addons[$k]['quantity_price'] = $opt_quantity_price;
+                                    $product_addons[$k]['option_title'] = $addon->option ? $addon->option->title : 0;
+                                    // $product_addons[$k]['multiplier'] = $clientCurrency->doller_compare;
                                 }
                             }
                             $product->product_addons = $product_addons;
@@ -324,9 +337,56 @@ class DispatcherController extends FrontController
         }
     }
     public function test(Request $request){
-        $vendor_order_status_id  = $request->vendor_order_status_id ;
-        $data = $this->sendOrderNotification( $vendor_order_status_id );
-        pr( $data);
+        $devices[] = $request->token;
+
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        $orderData = Order::latest()->first();
+
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+
+            $from = $client_preferences->fcm_server_key;
+                $title = "test notification";
+                $body =  "test";
+                $headers = [
+                    'Authorization: key=' . $from,
+                    'Content-Type: application/json',
+                ];
+                //pr($title);
+                //pr($body);
+                $data = [
+                    "registration_ids" => $devices,
+                    "notification" => [
+                        'title' => $title,
+                        'body'  => $body,
+                        'sound' => "notification.wav",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                        'click_action' => route('order.index'),
+                        "android_channel_id" => "sound-channel-id"
+                    ],
+                    "data" => [
+                        'title' => $title,
+                        'body'  => $body,
+                        'data' => $orderData,
+                        'type' => "order_created"
+                    ],
+                    "priority" => "high"
+                ];
+                //    Log::info(json_encode($data));
+                $dataString = $data;
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
+                $result = curl_exec($ch);
+                //    Log::info($result);
+                curl_close($ch);
+                pr( $result);
+               // return $result;
+
+        }
     }
     /******************    ---- send notification to user -----   ******************/
     public function sendOrderNotification( $vendor_order_status_id )
@@ -339,6 +399,8 @@ class DispatcherController extends FrontController
             $orderNumber = Order::where('id',$OrderStatus->order_id)->select('order_number','user_id')->first();
 
             $user_id = $orderNumber ? $orderNumber->user_id : '';
+            // $checkuservendor = UserVendor::where('user_id',$user_id)->first();
+            // $sound = ($checkuservendor)?"notification.wav":"default";
             $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token');
 
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
@@ -359,7 +421,7 @@ class DispatcherController extends FrontController
                         "notification" => [
                             'title' => $title,
                             'body'  => $body,
-                            'sound' => "notification.wav",
+                            'sound' => "default",
                             "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                             'click_action' => route('order.index'),
                             "android_channel_id" => "sound-channel-id"

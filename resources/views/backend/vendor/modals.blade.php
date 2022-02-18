@@ -360,7 +360,7 @@
                                             {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
                                             <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if( (@$vendor->add_category == 1)) checked @endif >
                                         </div>
-                                        <div class="row">
+                                        <div class="row col-md-12">
                                             <div class="col-md-6 mb-3">
                                                 {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
                                             </div>
@@ -472,7 +472,7 @@
     </div>
 </div>
 <div id="import-form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __('Import') }} {{ $vendor_name }}</h4>

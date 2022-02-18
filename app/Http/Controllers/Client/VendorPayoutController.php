@@ -13,8 +13,8 @@ use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderVendorListExport;
-use App\Http\Controllers\Client\BaseController;
-use App\Models\{User, Vendor, OrderVendor, PaymentOption, PayoutOption, VendorConnectedAccount, VendorPayout, ClientCurrency};
+use App\Http\Controllers\Client\{BaseController, StripeGatewayController};
+use App\Models\{Client, User, Vendor, OrderVendor, PaymentOption, PayoutOption, VendorConnectedAccount, VendorPayout, ClientCurrency};
 
 class VendorPayoutController extends BaseController{
     use ApiResponser;
@@ -23,16 +23,54 @@ class VendorPayoutController extends BaseController{
     public $currency;
 
     public function __construct(){
-        $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'stripe')->where('status', 1)->first();
-        if($stripe_creds){
-            $creds_arr = json_decode($stripe_creds->credentials);
-            $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
-            $testmode = (isset($stripe_creds->test_mode) && ($stripe_creds->test_mode == '1')) ? true : false;
-            $this->gateway = Omnipay::create('Stripe');
-            $this->gateway->setApiKey($api_key);
-            $this->gateway->setTestMode($testmode); //set it to 'false' when go live
+        
+    }
+
+    public function payoutConnectDetails($vendor)
+    {
+        $client = Client::with('country')->orderBy('id','asc')->first();
+        if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain){
+            $server_url =  "https://" . $client->custom_domain . '/';
+        }else{
+            $server_url =  "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . '/';
         }
 
+        //stripe connected account details
+        $codes = ['cash', 'stripe'];
+        $payout_creds = PayoutOption::whereIn('code', $codes)->where('status', 1)->get();
+        if ($payout_creds) {
+            foreach ($payout_creds as $creds) {
+                $creds_arr = json_decode($creds->credentials);
+                if($creds->code != 'cash'){
+                    if ($creds->code == 'stripe') {
+                        $creds->stripe_connect_url = '';
+                        if( (isset($creds_arr->client_id)) && !empty($creds_arr->client_id) ){
+                            $stripe_redirect_url = $server_url."client/verify/oauth/token/stripe";
+                            $creds->stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$vendor.'&client_id='.$creds_arr->client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
+                        }
+                    }
+
+                    // Check if vendor has connected account
+                    $checkIfStripeAccountExists = VendorConnectedAccount::where(['vendor_id' => $vendor, 'payment_option_id' => $creds->id])->first();
+                    if($checkIfStripeAccountExists && (!empty($checkIfStripeAccountExists->account_id))){
+                        $creds->is_connected = 1;
+                    }else{
+                        $creds->is_connected = 0;
+                    }
+                }
+            }
+        }
+
+        // $ex_countries = ['INDIA'];
+
+        // if((!empty($payout_creds->credentials)) && ($client_id != '') && (!in_array($client->country->name, $ex_countries))){
+        //     $stripe_redirect_url = 'http://local.myorder.com/client/verify/oauth/token/stripe'; //$server_url."client/verify/oauth/token/stripe";
+        //     $stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$id.'&client_id='.$client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
+        // }else{
+        //     $stripe_connect_url = route('create.custom.connected-account.stripe', $id);
+        // }
+
+        return $payout_creds;
     }
 
     public function index(Request $request){
@@ -203,12 +241,14 @@ class VendorPayoutController extends BaseController{
             })->make(true);
     }
 
-    public function vendorPayoutRequestComplete(Request $request, $domain = '', $id){
+    public function vendorPayoutRequestComplete(Request $request, $domain = ''){
         try{
-            DB::beginTransaction();
-            $payout = VendorPayout::where('id', $id)->first();
             $user = Auth::user();
+            $id = $request->payout_id;
+            $payout_option_id = $request->payout_option_id;
+            $payout = VendorPayout::where('id', $id)->first();
             $vendor_id = $payout->vendor_id;
+            $request->request->add(['vendor_id' => $vendor_id]);
 
             $total_delivery_fees = OrderVendor::where('vendor_id', $vendor_id)->orderBy('id','desc');
             if ($user->is_superadmin == 0) {
@@ -253,20 +293,47 @@ class VendorPayoutController extends BaseController{
             $past_payout_value = $vendor_payouts;
             $available_funds = $total_order_value - $total_admin_commissions - $total_promo_amount - $past_payout_value;
 
+            // Check if requested amount is valid
             if($request->amount > $available_funds){
                 $toaster = $this->errorToaster('Error', __('Payout amount is greater than vendor available funds'));
                 return Redirect()->back()->with('toaster', $toaster);
             }
+            
+            // Payout via stripe
+            if($payout_option_id == 2){
+                $stripeController = new StripeGatewayController();
+                $response = $stripeController->vendorPayoutViaStripe($request)->getData();
+                if($response->status != 'Success'){
+                    $toaster = $this->errorToaster('Error', __($response->message));
+                    return Redirect()->back()->with('toaster', $toaster);
+                }
+                $request->request->add(['transaction_id' => $response->data]);
+            }
+            
+            // update payout request
+            $request->request->add(['status' => 1]);
+            $this->updateVendorPayoutRequest($request, $payout);
 
-            $payout->status = 1;
-            $payout->save();
-            DB::commit();
             $toaster = $this->successToaster(__('Success'), __('Payout has been completed successfully'));
         }
         catch(Exception $ex){
-            DB::rollback();
             $toaster = $this->errorToaster(__('Errors'), $ex->message());
         }
         return Redirect()->back()->with('toaster', $toaster);
+    }
+
+    public function updateVendorPayoutRequest($request, $payout=''){
+        try{
+            DB::beginTransaction();
+            $payout->transaction_id = $request->transaction_id;
+            $payout->status = $request->status;
+            $payout->update();
+            DB::commit();
+            return $this->successResponse('', __('Payout has been completed successfully'), 200);
+        }
+        catch(\Exception $ex){
+            DB::rollback();
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
     }
 }

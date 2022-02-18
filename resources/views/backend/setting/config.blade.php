@@ -1010,7 +1010,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                </div>
                <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
-               
+
                <div class="row align-items-start">
                   @if($client_preference_detail->business_type != 'taxi')
 
@@ -1058,8 +1058,15 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   @endif
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Toggle Tips')}}<small class="d-block pr-5">Manage the option to Tip before or After the Order.</small></label>
+                        <label for="tip_before_order" class="mr-2 mb-0">{{__('Toggle Tips')}}<small class="d-block pr-5">Manage the option to Tip before the Order.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="tip_before_order" id="tip_before_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_before_order == '1')) checked='checked' @endif>
+                     </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="tip_after_order" class="mr-2 mb-0">{{__('Toggle Tips')}}<small class="d-block pr-5">Manage the option to Tip after the Order.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="tip_after_order" id="tip_after_order" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->tip_after_order == '1')) checked='checked' @endif>
                      </span>
                      </div>
                   </div>
@@ -1093,7 +1100,7 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="gifting" class="mr-2 mb-0">{{__('Minumum Order/Batch')}}<small class="d-block pr-5">Set minimum Order and minimum increment on per product level.</small></label>
+                        <label for="gifting" class="mr-2 mb-0">{{__('Minumum Order/Increment')}}<small class="d-block pr-5">Set minimum Order and minimum increment on per product level.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="minimum_order_batch" id="minimum_order_batch" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->minimum_order_batch == '1')) checked='checked' @endif>
                      </span>
                      </div>
@@ -1107,11 +1114,26 @@ $sms_crendential = json_decode($preference->sms_credentials);
                   </div>
                   <div class="col-md-4">
                      <div class="form-group d-flex justify-content-between mb-3">
-                        <label for="page_header" class="mr-2 mb-0">{{__('Get Estimations')}}<small class="d-block pr-5">Enable to create product catalog to get estimations based on Auto String Matching or Bidding across Vendors.</small></label>
+                        <label for="get_estimations" class="mr-2 mb-0">{{__('Get Estimations')}}<small class="d-block pr-5">Enable to create product catalog to get estimations based on Auto String Matching or Bidding across Vendors.</small></label>
                        <span> <input type="checkbox" data-plugin="switchery" name="get_estimations" id="get_estimations" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->get_estimations == '1')) checked='checked' @endif>
                         </span>
                      </div>
                   </div>
+                  <div class="col-md-4">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="max_safety_mod" class="mr-2 mb-0">{{__('Max Safety')}}<small class="d-block pr-5">Enable to give max safety option to vendors.</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="max_safety_mod" id="max_safety_mod" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->max_safety_mod == '1')) checked='checked' @endif>
+                        </span>
+                     </div>
+                  </div>
+                  <div class="col-md-4 d-none">
+                     <div class="form-group d-flex justify-content-between mb-3">
+                        <label for="address_is_car" class="mr-2 mb-0">{{__('Car Mode')}}<small class="d-block pr-5">{{__('Enable to change addres into car details.')}}</small></label>
+                       <span> <input type="checkbox" data-plugin="switchery" name="address_is_car" id="address_is_car" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->address_is_car == '1')) checked='checked' @endif>
+                        </span>
+                     </div>
+                  </div>
+
                </div>
             </div>
          </form>

@@ -109,7 +109,7 @@
                         </select>
                     </div>
                     </div>
-                    
+
                     @endif
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
@@ -196,7 +196,7 @@
 
 @if(Auth::user()->is_superadmin == 1)
 
-@if(isset($checkAhoyShip))
+@if(isset($checkAhoyShip) && $checkAhoyShip != 0)
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -221,7 +221,7 @@
                         </select>
                         </div>
                     </div>
-                    
+
                     <div class="col-12">
                         <button class="btn btn-info waves-effect waves-light w-100" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationName)?'disabled':'' : ''}} >{{ __("Save") }}</button>
                     </div>
@@ -232,7 +232,7 @@
 </div>
 @endif
 
-@if(isset($checkShip))
+@if(isset($checkShip) && $checkShip != 0)
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -524,6 +524,10 @@ $( document ).ready(function() {
        if(min >=60){
             var hours = Math.floor(min / 60);
             var minutes = min % 60;
+            if( minutes <= 9)
+            minutes ='0'+minutes;
+
+
             var txt = '~ '+hours+':'+minutes+" {{__('Hours')}}";
             $('#Vendor_order_pre_time_show').text(txt);
        }else{
