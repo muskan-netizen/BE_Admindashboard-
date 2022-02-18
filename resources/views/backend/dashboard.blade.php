@@ -4,17 +4,7 @@
 <link href="{{asset('assets/libs/flatpickr/flatpickr.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
-    span.nodatafound {
-  font-size:120% !important;
-  border: 1px solid #FC0;
-  background: #FFC;
-  color: #384F34;
-  display: block;
-  font-weight: bold;
-  margin: 2px auto 14px;
-  padding: 15px !important;
-  text-align: left;
-}
+span.nodatafound {font-size:120% !important;border: 1px solid #FC0;background: #FFC;color: #384F34;display: block;font-weight: bold;margin: 2px auto 14px;padding: 15px !important;text-align: left;}
 </style>
 @endsection
 @section('content')
@@ -232,19 +222,20 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+
+            <div class="row ">
                 <div class="col-xl-6 col-lg-12 mb-3">
-                    <div class="card mb-0">
-                        <div class="card-body">
-                            <div class="card-widgets d-block align-items-center select-date">
-                                <div class="btn-group mb-0 mx-2">
-                                    <button type="button" class="btn btn-xs btn-secondary yearSales">{{ __('Yearly') }}</button>
-                                    <button type="button" class="btn btn-xs btn-light weeklySales">{{ __('Weekly') }}</button>
-                                    <button type="button" class="btn btn-xs btn-light monthlySales">{{ __('Monthly') }}</button>
+                    <div class="card mb-0 h-100">
+                        <div class="card-body align-items-center">
+                            <div id="cardCollpase2" class="collapse show mt-3 " dir="ltr" style="position: relative;">
+                                <div class="card-widgets d-block align-items-top select-date">
+                                    <div class="btn-group mb-0 mx-2">
+                                        <button type="button" class="btn btn-xs btn-secondary yearSales">{{ __('Yearly') }}</button>
+                                        <button type="button" class="btn btn-xs btn-light weeklySales">{{ __('Weekly') }}</button>
+                                        <button type="button" class="btn btn-xs btn-light monthlySales">{{ __('Monthly') }}</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <h4 class="header-title mb-0">{{ __('Sales Analytics') }}</h4>
-                            <div id="cardCollpase2" class="collapse show mt-3" dir="ltr" style="position: relative;">
+                                <h4 class="header-title mb-0">{{ __('Sales Analytics') }}</h4>
                                 <div id="sales-analytics" class="mt-4" data-colors="#1abc9c,#4a81d4" style="min-height: 393px;">
                                 </div>
                                 <div class="resize-triggers">
@@ -258,25 +249,25 @@
                     </div>
                 </div>
                 <div class="col-xl-4 col-lg-8 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                         <h4 class="header-title mb-0">{{ __('Revenue By Location') }}</h4>
-                         <div id="cardCollpase3" class="collapse pt-3 show">
-                            <div id="world-map-markers" style="height: 433px"></div>
-                         </div>
+                    <div class="card h-100">
+                        <div class="card-body align-items-center">
+                            <div id="cardCollpase3" class="collapse pt-3 show">
+                                <h4 class="header-title mb-0">{{ __('Revenue By Location') }}</h4>
+                                <div id="world-map-markers" style="height: 433px"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-xl-2 col-lg-4 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                         <h4 class="header-title mb-0 pb-2">{{ __("Orders (Top Categories)") }}</h4>
-                         <div class="gray-placeholder-img text-center py-5 my-2 hide" id="empty_card_collpase4">
-                             <img class="img-fluid" src="{{asset('assets/images/Dashboard _ Royo.png')}}" alt="">
-                         </div>
-                         <div id="cardCollpase4" class="collapse show pt-3">
-                            <div id="apexchartsfwg700r2" class="apexcharts-canvas apexchartsfwg700r2 apexcharts-theme-light"></div>
-                         </div>
+                    <div class="card h-100">
+                        <div class="card-body align-items-center">
+                            <div id="cardCollpase4" class="collapse show pt-3">
+                                <h4 class="header-title mb-0 pb-2">{{ __("Orders (Top Categories)") }}</h4>
+                                <div class="gray-placeholder-img text-center py-5 my-2 hide" id="empty_card_collpase4">
+                                    <img class="img-fluid" src="{{asset('assets/images/Dashboard _ Royo.png')}}" alt="">
+                                </div>
+                                <div id="apexchartsfwg700r2" class="apexcharts-canvas apexchartsfwg700r2 apexcharts-theme-light mt-5"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -85,7 +85,7 @@
                                             <h2>{{__('Upcoming')}}</h2>
                                         </div>
                                         @foreach($upcoming_loyalty as $loyalty)
-                                        <div class="col-md-6 mt-3 text-center">
+                                        <div class="col-md-4 mt-3 text-center">
                                             <div class="card-box">
                                                 <div class="point-img-box">
                                                     <img src="{{ $loyalty->image['proxy_url'] .'200/200'. $loyalty->image['image_path'] }}" alt="">
