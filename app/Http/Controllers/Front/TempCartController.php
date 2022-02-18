@@ -1311,22 +1311,67 @@ class TempCartController extends FrontController
     public function updateProductAddonsAndQuantity(Request $request, $domain = '')
     {
         try{
-            if ($request->quantity < 1) {
+            $user_id = $request->user_id;
+            $cart_id = $request->cart_id;
+            $quantity = $request->quantity;
+            $cart_product_id = $request->cart_product_id;
+
+            $addonSets = $addon_ids = $addon_options = array();
+            if($request->has('addonID')){
+                $addon_ids = $request->addonID;
+            }
+            if($request->has('addonoptID')){
+                $addon_options = $request->addonoptID;
+            }
+
+            if ($quantity < 1) {
                 return $this->errorResponse(__('Quantity should not be less than 1'), 422);
             }
             $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
             $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
-            $cart = TempCart::with(['address','currency','coupon.promo'])->where('user_id', $request->user_id)->where('id', $request->cart_id)->first();
+            $cart = TempCart::with(['address','currency','coupon.promo'])->where('user_id', $user_id)->where('id', $cart_id)->first();
             if (!$cart) {
                 return $this->errorResponse(__('User cart not exist.'), 404);
             }
-            $cartProduct = TempCartProduct::where('cart_id', $cart->id)->where('id', $request->cart_product_id)->first();
+            $cartProduct = TempCartProduct::where('cart_id', $cart_id)->where('id', $cart_product_id)->first();
             if (!$cartProduct) {
                 return $this->errorResponse(__('Product does not exist in cart.'), 404);
             }
-            $cartProduct->quantity = $request->quantity;
+            $cartProduct->quantity = $quantity;
             $cartProduct->save();
-            $totalProducts = TempCartProduct::where('cart_id', $cart->id)->sum('quantity');
+
+            
+            foreach($addon_options as $key => $opt){
+                $addonSets[$addon_ids[$key]][] = $opt;
+            }
+            foreach($addonSets as $key => $value){
+                $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
+                            ->select('addon_sets.id', 'addon_sets.min_select', 'addon_sets.max_select', 'ast.title')
+                            ->where('ast.language_id', $langId)
+                            ->where('addon_sets.status', '!=', '2')
+                            ->where('addon_sets.id', $key)->first();
+                if(!$addon){
+                    return $this->errorResponse(__('Invalid addon or delete by admin. Try again with remove some.'), 422);
+                }
+                if($addon->min_select > count($value)){
+                    return $this->errorResponse('Select minimum ' . $addon->min_select .' options of ' .$addon->title, 422);
+                }
+                if($addon->max_select < count($value)){
+                    return $this->errorResponse('You can select maximum ' . $addon->min_select .' options of ' .$addon->title, 422);
+                }
+            }
+
+            // foreach ($addon_options as $key => $opts) {
+            //     $checkaddonCount = TempCartAddon::updateOrCreate(
+            //         ['cart_id' => $cart->id, 'cart_product_id' => $cartProduct->id, 'addon_id' => $addon_ids[$key]],
+            //         ['addon_id' => $addon_ids[$key], 'option_id' => $opts]
+            //     )->count();
+            // }
+            // TempCartAddon::where(['cart_id' => $cart_id, 'cart_product_id' => $cartProduct->id])
+            // ->whereNotIn('addon_id', $addon_ids)
+            // ->whereNotIn('option_id', $addon_options)->delete();
+            
+            $totalProducts = TempCartProduct::where('cart_id', $cart_id)->sum('quantity');
             $cart->item_count = $totalProducts;
             $cart->save();
             

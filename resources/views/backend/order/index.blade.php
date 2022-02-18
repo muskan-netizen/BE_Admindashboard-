@@ -477,12 +477,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                  setTimeout(autoloaddashboad(), 5000);
             },
             error: function(data) {
-
+               autoloaddashboad();
             },
         });
-
-
-
     }
     $(document).ready(function() {
 
