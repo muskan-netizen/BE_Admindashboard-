@@ -324,6 +324,10 @@ $server = env('APP_ENV', 'development');
        if(min >=60){
             var hours = Math.floor(min / 60);
             var minutes = min % 60;
+
+            if( minutes <= 9)
+            minutes ='0'+minutes;
+
             var txt = '~ '+hours+':'+minutes+" {{__('Hours')}}";
             $('#Vendor_order_pre_time_show').text(txt);
        }else{
