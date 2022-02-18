@@ -62,9 +62,7 @@ body,
     border: 1px solid #e8e8e8;
 }
 .al_new_wrapper_design .al_vendor_product_page .offer-slider .common-product-box{display: flex;}
-#sidebar-menu ul#side-menu li span svg {
-    vertical-align: top;
-}
+
 .al_new_wrapper_design .product-card-box h6.ellips{
     white-space: nowrap;
     overflow: hidden;
@@ -73,6 +71,7 @@ body,
 }
 .al_new_wrapper_design .common-product-box{box-shadow: none;}
 .al_new_wrapper_design .inner-pages-offset {margin-top: 213px;}
+
 
 @media(max-width: 1199px){
 .top-header.site-topbar.al_custom_head .container {max-width: 100%;}
