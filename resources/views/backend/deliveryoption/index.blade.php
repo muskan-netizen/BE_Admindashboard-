@@ -60,12 +60,12 @@
                                <input data-plugin="switchery" name="need_delivery_service" id="need_delivery_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_delivery_service == '1')) checked @endif >
                             </div>
                          </div>
-                        <div class="mt-3 deliveryServiceFields">
+                        <div class="mt-3 deliveryServiceFields" style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}"> 
                             <hr>
                             <div class="row">
 
                                 <div class="col-12">
-                                    <div class="form-group mb-0 " style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
+                                    <div class="form-group mb-0 ">
                                         <label for="delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
                                         <input type="text" name="delivery_service_key_url" id="delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('delivery_service_key_url', $preference->delivery_service_key_url ?? '')}}">
                                         @if($errors->has('delivery_service_key_url'))
@@ -76,7 +76,7 @@
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="form-group mt-3 mb-0 " style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
+                                    <div class="form-group mt-3 mb-0 ">
                                         <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
                                         <input type="text" name="delivery_service_key_code" id="delivery_service_key_code" placeholder="" class="form-control" value="{{ old('delivery_service_key_code', $preference->delivery_service_key_code ?? '')}}">
                                         @if($errors->has('delivery_service_key_code'))
@@ -87,7 +87,7 @@
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="form-group mt-3 mb-0 " style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
+                                    <div class="form-group mt-3 mb-0 " >
                                         <label for="delivery_service_key">{{ __("Dispatcher API key") }}</label>
                                         <input type="text" name="delivery_service_key" id="delivery_service_key" placeholder="" class="form-control" value="{{ old('delivery_service_key', $preference->delivery_service_key ?? '')}}">
                                         @if($errors->has('delivery_service_key'))
@@ -99,7 +99,7 @@
                                 </div>
                                 @if($last_mile_teams != null && count($last_mile_teams))
                                 <div class="col-12">
-                                    <div class="form-group mt-3 mb-0" style="{{(isset($preference) && $preference->need_delivery_service == '1') ? '' : 'display: none;'}}" id="lastMileTeamListDiv">
+                                    <div class="form-group mt-3 mb-0" id="lastMileTeamListDiv">
                                         <div class="form-group">
                                             {!! Form::label('title', __('Team Tag For Last Mile'),['class' => 'control-label']) !!}
                                             <select class="form-control" id="lastMileTeamList" name="last_mile_team" data-toggle="select2" >
