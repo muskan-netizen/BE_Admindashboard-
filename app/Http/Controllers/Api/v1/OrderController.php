@@ -1627,24 +1627,27 @@ class OrderController extends BaseController
 
                         // If new amount is greater than previous amount then deduct from wallet
                         if($difference_to_be_paid > 0){
-                            $wallet_amount_used = 0;
-                            if ($user->balanceFloat > 0) {
-                                $wallet = $user->wallet;
-                                $wallet_amount_used = $user->balanceFloat;
+                            // deduct if payment method is not cash on delivery
+                            if($request->payment_option_id != 1){
+                                $wallet_amount_used = 0;
+                                if ($user->balanceFloat > 0) {
+                                    $wallet = $user->wallet;
+                                    $wallet_amount_used = $user->balanceFloat;
 
-                                if($difference_to_be_paid > $wallet_amount_used){
-                                    return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
-                                }
+                                    if($difference_to_be_paid > $wallet_amount_used){
+                                        return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
+                                    }
 
-                                if ($wallet_amount_used > $payable_amount) {
-                                    $wallet_amount_used = $payable_amount;
+                                    if ($wallet_amount_used > $payable_amount) {
+                                        $wallet_amount_used = $payable_amount;
+                                    }
+                                    $order->wallet_amount_used = $wallet_amount_used;
+                                    if ($wallet_amount_used > 0) {
+                                        $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                                    }
                                 }
-                                $order->wallet_amount_used = $wallet_amount_used;
-                                if ($wallet_amount_used > 0) {
-                                    $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
-                                }
+                                $payable_amount = $payable_amount - $wallet_amount_used;
                             }
-                            $payable_amount = $payable_amount - $wallet_amount_used;
                         }
                         else{
                             if($difference_to_be_paid < 0){

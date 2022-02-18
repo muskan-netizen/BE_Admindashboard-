@@ -17,8 +17,8 @@
                     <input type="checkbox"
                         class="switch switch-bootstrap product_tag_filter status"
                         name="tag_id" id="product_tag_filter_{{ $key }}"
-                        data-tag_id="{{ $tag->id }}"" value="
-                        {{ $tag->id }}">
+                        data-tag_id="{{ $tag->id }}" value="
+                        {{ $tag->id }}" {{!is_null($tagId) && in_array($tag->id, $tagId) ? 'checked' : ''}}>
                     <span class="lable"> @if (isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}" alt="">@endif <span
                             class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span></span>
                 </label>

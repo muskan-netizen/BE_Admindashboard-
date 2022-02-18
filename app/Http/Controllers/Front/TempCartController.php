@@ -10,10 +10,8 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Traits\{ApiResponser,CartManager};
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Front\FrontController;
-use App\Http\Controllers\Front\PromoCodeController;
-use App\Http\Controllers\Front\LalaMovesController;
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, TempCart, TempCartAddon, TempCartProduct, TempCartCoupon, TempCartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot};
+use App\Http\Controllers\Front\{FrontController, LalaMovesController, OrderController, PromoCodeController};
+use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, TempCart, TempCartAddon, TempCartProduct, TempCartCoupon, TempCartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot, UserDevice, NotificationTemplate};
 use Log;
 class TempCartController extends FrontController
 {
@@ -816,6 +814,59 @@ class TempCartController extends FrontController
         }
     }
 
+    /**
+     * send modified order notification to customer
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function sendEditedOrderPushNotification($user_ids, $orderData)
+    {
+        Log::info("sendEditedOrderPushNotification");
+
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        //    Log::info($devices);
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+            $from = $client_preferences->fcm_server_key;
+            $notification_content = NotificationTemplate::where('id', 12)->first();
+            if ($notification_content) {
+                $headers = [
+                    'Authorization: key=' . $from,
+                    'Content-Type: application/json',
+                ];
+                $data = [
+                    "registration_ids" => $devices,
+                    "notification" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $notification_content->content,
+                        'sound' => "notification.wav",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                        'click_action' => route('order.index'),
+                        "android_channel_id" => "sound-channel-id"
+                    ],
+                    "data" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $notification_content->content,
+                        'data' => $orderData,
+                        'type' => "order_modified"
+                    ],
+                    "priority" => "high"
+                ];
+                //    Log::info(json_encode($data));
+                $dataString = $data;
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
+                $result = curl_exec($ch);
+                Log::info($result);
+                curl_close($ch);
+            }
+        }
+    }
 
     /**
      * submit cart if order edit is done
@@ -832,6 +883,16 @@ class TempCartController extends FrontController
                 $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
                 $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
                 $cartData = $this->getCart($cart, $langId, $currId, '');
+
+                // Send notification to customer
+                $order_vendor = OrderVendor::select('order_id', 'vendor_id')->where('id', $cart->order_vendor_id)->first();
+                $order_id = $order_vendor->order_id;
+                $vendor_id = $order_vendor->vendor_id;
+                $orderController = new OrderController();
+                $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order_id, $vendor_id);
+                $this->sendEditedOrderPushNotification([$cart->user_id], $vendor_order_detail);
+                
+
                 return $this->successResponse($cartData, 'Order has been submitted successfully.', 200);
             } else {
                 return $this->errorResponse('Order cannot be submitted.', 422);
@@ -1198,8 +1259,130 @@ class TempCartController extends FrontController
         }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
-        }    
+        }
     }
+
+    /**
+     * Get cart product details with addon for edit
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getCartProductDetailWithAddons(Request $request, $domain = '')
+    {
+        try{
+            $cart_id = $request->cart_id;
+            $cart_product_id = $request->cart_product_id;
+
+            $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
+            $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
+            $cart = TempCart::with(['address','currency','coupon.promo'])->where('id', $cart_id)->first();
+            if (!$cart) {
+                return $this->errorResponse(__('User cart not exist.'), 404);
+            }
+            $cartProduct = TempCartProduct::with(['addon'])
+            ->where('cart_id', $cart_id)
+            ->where('id', $cart_product_id)->first();
+            if (!$cartProduct) {
+                return $this->errorResponse(__('Product does not exist in cart.'), 404);
+            }
+
+            $product_id = $cartProduct->product_id;
+            $product = $this->getProductById($request, '', $product_id)->getData();
+            $product_detail = null;
+            if($product->status == 'Success'){
+                $product_detail = $product->data;
+            }
+
+            $data['cart_product_detail'] = $cartProduct;
+            $data['product_detail'] = $product_detail->products;
+            
+            return $this->successResponse($data, '', 200);
+        }
+        catch(Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
+    }
+
+    /**
+     * Update cart product with Addons & Quantity
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function updateProductAddonsAndQuantity(Request $request, $domain = '')
+    {
+        try{
+            $user_id = $request->user_id;
+            $cart_id = $request->cart_id;
+            $quantity = $request->quantity;
+            $cart_product_id = $request->cart_product_id;
+
+            $addonSets = $addon_ids = $addon_options = array();
+            if($request->has('addonID')){
+                $addon_ids = $request->addonID;
+            }
+            if($request->has('addonoptID')){
+                $addon_options = $request->addonoptID;
+            }
+
+            if ($quantity < 1) {
+                return $this->errorResponse(__('Quantity should not be less than 1'), 422);
+            }
+            $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
+            $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
+            $cart = TempCart::with(['address','currency','coupon.promo'])->where('user_id', $user_id)->where('id', $cart_id)->first();
+            if (!$cart) {
+                return $this->errorResponse(__('User cart not exist.'), 404);
+            }
+            $cartProduct = TempCartProduct::where('cart_id', $cart_id)->where('id', $cart_product_id)->first();
+            if (!$cartProduct) {
+                return $this->errorResponse(__('Product does not exist in cart.'), 404);
+            }
+            $cartProduct->quantity = $quantity;
+            $cartProduct->save();
+
+            
+            foreach($addon_options as $key => $opt){
+                $addonSets[$addon_ids[$key]][] = $opt;
+            }
+            foreach($addonSets as $key => $value){
+                $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
+                            ->select('addon_sets.id', 'addon_sets.min_select', 'addon_sets.max_select', 'ast.title')
+                            ->where('ast.language_id', $langId)
+                            ->where('addon_sets.status', '!=', '2')
+                            ->where('addon_sets.id', $key)->first();
+                if(!$addon){
+                    return $this->errorResponse(__('Invalid addon or delete by admin. Try again with remove some.'), 422);
+                }
+                if($addon->min_select > count($value)){
+                    return $this->errorResponse('Select minimum ' . $addon->min_select .' options of ' .$addon->title, 422);
+                }
+                if($addon->max_select < count($value)){
+                    return $this->errorResponse('You can select maximum ' . $addon->min_select .' options of ' .$addon->title, 422);
+                }
+            }
+
+            // foreach ($addon_options as $key => $opts) {
+            //     $checkaddonCount = TempCartAddon::updateOrCreate(
+            //         ['cart_id' => $cart->id, 'cart_product_id' => $cartProduct->id, 'addon_id' => $addon_ids[$key]],
+            //         ['addon_id' => $addon_ids[$key], 'option_id' => $opts]
+            //     )->count();
+            // }
+            // TempCartAddon::where(['cart_id' => $cart_id, 'cart_product_id' => $cartProduct->id])
+            // ->whereNotIn('addon_id', $addon_ids)
+            // ->whereNotIn('option_id', $addon_options)->delete();
+            
+            $totalProducts = TempCartProduct::where('cart_id', $cart_id)->sum('quantity');
+            $cart->item_count = $totalProducts;
+            $cart->save();
+            
+            $cartData = $this->getCart($cart, $langId, $currId, '');
+            return $this->successResponse($cartData, 'Cart updated successfully', 200);
+        }
+        catch(Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
+    }
+
 
     public function vendorProductsSearchResults(Request $request, $domain = '')
     {
