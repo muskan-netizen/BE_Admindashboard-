@@ -75,6 +75,35 @@
                 </div>
             </form>
             <!-- Order Email Notification end -->
+            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+                <!-- Vendor Switch start -->
+            <div class="card-box mb-2">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                </div>
+                <div class="row align-items-start">
+                    <div class="col-md-12">
+                        <div class="form-group d-flex justify-content-between">
+                            <label for="dinein_check" class="mr-3 mb-0">{{getDynamicTypeName('Dine-In')}}</label>
+                            <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group d-flex justify-content-between">
+                            <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
+                            <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group d-flex justify-content-between">
+                            <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
+                            <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
         </div>
 
         <!-- Date & Time sec start -->
@@ -265,38 +294,10 @@
             </div>
             <!-- User Authentication end -->
             @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
-                <!-- Vendor Switch start -->
-            <div class="card-box mb-2">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h4 class="header-title text-uppercase mb-0">{{ __("Vendor Switch") }}</h4>
-                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
-                </div>
-                <div class="row align-items-start">
-                    <div class="col-md-12">
-                        <div class="form-group d-flex justify-content-between">
-                            <label for="dinein_check" class="mr-3 mb-0">{{getDynamicTypeName('Dine-In')}}</label>
-                            <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group d-flex justify-content-between">
-                            <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
-                            <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group d-flex justify-content-between">
-                            <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
-                            <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Vendor Switch end -->
             <!-- EDIT ORDER BY start -->
             <div class="card-box mb-0">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h4 class="header-title text-uppercase mb-0">{{ __("Edit Order By") }}</h4>
+                    <h4 class="header-title mb-0">{{ __("Edit Order By") }}</h4>
                     <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                 </div>
                 <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
@@ -400,7 +401,7 @@
                           @forelse($tags as $tag)
                              <tr>
                                 <td>
-                                   @if(isset($tag->icon) && !empty($tag->icon)) <img src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}">@endif
+                                   @if(isset($tag->icon) && !empty($tag->icon)) <img style="height: 25px;width: auto;" src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}">@endif
                                 </td>
                                 <td>
                                    <a class="edit_product_tag_btn" data-tag_id="{{$tag->id}}" href="javascript:void(0)">

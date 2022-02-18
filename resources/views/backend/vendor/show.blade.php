@@ -356,17 +356,17 @@
                                             <form action="{{  route('draw.circle.with.radius',$vendor->id) }}" method="post">
                                                 @csrf()
                                              <div class="row">
-                                                <div class="col-md-4">
+                                                <div class="col-md-12 col-xl-4">
                                                 {!! Form::label('title', 'Draw area with radius('.$client_preference_detail->distance_unit_for_time.')',['class' => 'control-label']) !!}
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-6 col-xl-4">
 
                                                     <div class="form-group" id="commission_monthlyInput">
                                                         <input class="form-control"  name="radius" type="number" min="0.01" step="0.01" required>
 
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-6 col-xl-4">
                                                     <button type="submit" class="btn btn-info"> {{ __('Go') }}</button>
                                                 </div>
                                              </div>

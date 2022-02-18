@@ -526,7 +526,7 @@
             e(".collection-grid-view").css("opacity", "1"),
                 e(".product-wrapper-grid").removeClass("list-view"),
                 e(".product-wrapper-grid").children().children().removeClass(),
-                e(".product-wrapper-grid").children().children().addClass("col-lg-3");
+                e(".product-wrapper-grid").children().children().addClass("col-lg-3 mt-3");
         }),
         e(".product-2-layout-view").on("click", function (s) {
             e(".product-wrapper-grid").hasClass("list-view") || (e(".product-wrapper-grid").children().children().removeClass(), e(".product-wrapper-grid").children().children().addClass("col-lg-6"));
