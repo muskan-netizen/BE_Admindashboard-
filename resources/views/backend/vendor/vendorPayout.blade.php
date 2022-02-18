@@ -239,13 +239,32 @@
                                             dataid="0" href="javascript:void(0);"><i
                                                 class="mdi mdi-plus-circle mr-1"></i> {{ __('Add Product') }}
                                         </a> --}}
-                                        @if($is_stripe_connected == 1)
+
+                                        @foreach ($payout_options as $opt)
+                                            @if($opt->code != 'cash')
+                                            @if($opt->is_connected == 1)
+                                                <h5 class="mr-2">
+                                                    <i class="fa fa-check text-success mr-2"></i><b>{{ __('Connected to') .' '. __($opt->title) }}</b>
+                                                </h5>
+                                            @else
+                                                <button type="button" class="btn btn-info waves-effect text-sm-right {{$opt->code}}_connect_btn" 
+                                                    @if($opt->code == 'stripe')
+                                                        onclick="location.href='{{$opt->stripe_connect_url}}'";
+                                                    @endif
+                                                >
+                                                    {{ __("Connect to") .' '. __($opt->title) }}
+                                                </button>
+                                            @endif
+                                            @endif
+                                        @endforeach
+                                        
+                                        {{-- @if($is_stripe_connected == 1)
                                             <h5><i class="fa fa-check text-success mr-2"></i><b>Connected to Stripe</b></h5>
                                         @else
                                             @if($is_stripe_payout_enabled == 1)
                                                 <button type="button" class="btn btn-info waves-effect text-sm-right" onclick="location.href='{{$stripe_connect_url}}'">{{ __("Connect to Stripe") }}</button>
                                             @endif
-                                        @endif
+                                        @endif --}}
                                         <button type="button" class="btn btn-info waves-effect text-sm-right ml-2" data-toggle="modal" data-target="#pay-receive-modal">{{ __("Payout") }}</button>
                                     </div>
                                     <div class="col-md-12">
@@ -318,7 +337,7 @@
 
                         <div class="row mt-2">
                             @foreach($payout_options as $opt)
-                                @if( ($is_stripe_connected && ($opt->code == 'stripe')) || ($opt->code == 'cash') )
+                                @if( (isset($opt->is_connected) && ($opt->is_connected)) || ($opt->code == 'cash') )
                                     <div class="col-md-12 mb-2">
                                         <div class="radio radio-blue form-check-inline">
                                             <input type="radio" id="{{$opt->code}}" value="{{$opt->id}}" name="payout_option">

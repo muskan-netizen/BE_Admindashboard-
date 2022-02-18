@@ -1,4 +1,9 @@
-@extends('layouts.store', ['title' => $category->translation_name])
+@extends('layouts.store', [
+'title' => $category->translation_name,
+'meta_title'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_title:'',
+'meta_keyword'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_keyword:'',
+'meta_description'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_description:'',
+])
 
 @section('css')
 <style type="text/css">
@@ -177,6 +182,7 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts px-0">
+
                                         <div class="product-wrapper-grid">
                                             <div class="row margin-res">
                                             @if($listData->isNotEmpty())

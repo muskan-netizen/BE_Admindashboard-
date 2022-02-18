@@ -54,7 +54,7 @@ class TempCartProduct extends Model{
     public function getAddOnSetAndOptionAttribute()
     {
        $cart_product_id = $this->attributes['id'];
-       $langId = Session::has('customerLanguage') ? Session::get('customerLanguage') : 1;
+       $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
         $cart_addons = \App\Models\TempCartAddon::where('cart_product_id',$cart_product_id)->pluck('addon_id');
         $addoset = [];
         if($cart_addons){

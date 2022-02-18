@@ -144,7 +144,7 @@ $pages = \App\Models\Page::with([
         <div class="container_fluid_al d-block" >
             <div class="row align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
-                <div class="container mobile-header d-flex align-items-center justify-content-between">
+                <div class="container al_mobile-header d-flex align-items-center justify-content-between position-relative">
                     <div class="al_count_tabs_new_design" data-aos="zoom-in">
                         @if($mod_count > 1)
                         <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-md-3 vendor_mods" id="top-tab" role="tablist">
@@ -421,7 +421,7 @@ $pages = \App\Models\Page::with([
                   <li class="al_main_category" data-aos="zoom-in">
                      <a href="{{route('categoryDetail', $cate['slug'])}}">
                         @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
-                        <div class="nav-cate-img" > <img style="height:150px;" class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
+                        <div class="nav-cate-img" > <img style="height:150px;width:150px;" class="blur-up lazyload" data-src="{{$cate['icon']['image_fit']}}150/150{{$cate['icon']['image_path']}}" alt=""> </div>
                         @endif
                         {{$cate['name']}}
                      </a>
@@ -463,7 +463,7 @@ $pages = \App\Models\Page::with([
         <a href="{{route('categoryDetail')}}/<%=category.slug %>">
             @if($client_preference_detail->show_icons==1 && \Request::route()->getName()=='userHome')
             <div class="nav-cate-img">
-                <img style="height:150px;" class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="">
+                <img style="height:150px;width:150px;" class="blur-up lazyload" data-src="<%=category.icon.image_fit %>200/200<%=category.icon.image_path %>" alt="">
             </div>
             @endif
             <%=category.name %>
