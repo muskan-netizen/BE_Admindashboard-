@@ -89,7 +89,7 @@ $timezone = Auth::user()->timezone;
                                     @endphp
 
                                     <!-- List of completed order status -->
-                                @if(count($vendor_order_statuses))    
+                                @if(count($vendor_order_statuses))
                                     @foreach ($vendor_order_statuses as $key => $vendor_order_status)
                                         @php
                                             $order_status = $order_status_options->where('id', $vendor_order_status->order_status_option_id)->pluck('title')->first();
@@ -113,7 +113,7 @@ $timezone = Auth::user()->timezone;
                                             </p>
                                         </li>
                                     @endforeach
-                                @endif    
+                                @endif
 
                                     <!-- List of incomplete order status if order is not rejected -->
 
@@ -353,7 +353,8 @@ $timezone = Auth::user()->timezone;
 
 
         <div class="row">
-            @if($order->address)
+            @if($order->address && ($order->luxury_option_id == 1) && ($client_preference_detail->hide_order_address ==0 ) )
+
             <div class="col-lg-6 mb-3">
                 <div class="card mb-0 h-100">
                     <div class="card-body">
@@ -375,6 +376,7 @@ $timezone = Auth::user()->timezone;
                     </div>
                 </div>
             </div>
+
             @elseif( ($order->luxury_option_id == 2) || ($order->luxury_option_id == 3) )
             <div class="col-lg-6 mb-3">
                 <div class="card mb-0 h-100">
