@@ -399,6 +399,8 @@ class DispatcherController extends FrontController
             $orderNumber = Order::where('id',$OrderStatus->order_id)->select('order_number','user_id')->first();
 
             $user_id = $orderNumber ? $orderNumber->user_id : '';
+            // $checkuservendor = UserVendor::where('user_id',$user_id)->first();
+            // $sound = ($checkuservendor)?"notification.wav":"default";
             $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token');
 
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
@@ -419,7 +421,7 @@ class DispatcherController extends FrontController
                         "notification" => [
                             'title' => $title,
                             'body'  => $body,
-                            'sound' => "notification.wav",
+                            'sound' => "default",
                             "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                             'click_action' => route('order.index'),
                             "android_channel_id" => "sound-channel-id"
