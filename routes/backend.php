@@ -71,6 +71,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/vendor', [VendorController::class, 'index'])->name('account.vendor');
         // Route::get('account/vendor/payout', [VendorPayoutController::class, 'index'])->name('account.vendor.payout');
         // Route::get('account/vendor/payout/filter', [VendorPayoutController::class, 'filter'])->name('account.vendor.payout.filter');
+        Route::get('account/vendor/payout/get/create-account-details', [VendorPayoutController::class, 'createAccountDetails'])->name('account.vendor.payout.createAccountDetails');
         Route::get('account/vendor/payout/requests', [VendorPayoutController::class, 'vendorPayoutRequests'])->name('account.vendor.payout.requests');
         Route::get('account/vendor/payout/requests/filter', [VendorPayoutController::class, 'vendorPayoutRequestsFilter'])->name('account.vendor.payout.requests.filter');
         Route::post('account/vendor/payout/request/complete', [VendorPayoutController::class, 'vendorPayoutRequestComplete'])->name('account.vendor.payout.request.complete');

@@ -253,57 +253,79 @@ if (Session::has('toaster')) {
 @endif
 <script>
     $(document).on("click", ".update_order_status", function() {
-        if (confirm("Are you Sure?")) {
-            let that = $(this);
-            var count = that.data("count");
-            var full_div = that.data("full_div");
-            var single_div = that.data("single_div");
-            var status_option_id = that.data("status_option_id");
-            var status_option_id_next = status_option_id + 1;
-            var order_vendor_id = that.data("order_vendor_id");
-            var order_id = that.data("order_id");
-            var vendor_id = that.data("vendor_id");
-            var count = that.data("count");
+        Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
 
-            $.ajax({
-                url: "{{ route('order.changeStatus') }}",
-                type: "POST",
-                data: {
-                    order_id: order_id,
-                    vendor_id: vendor_id,
-                    "_token": "{{ csrf_token() }}",
-                    status_option_id: status_option_id,
-                    order_vendor_id: order_vendor_id,
-                },
-                success: function(response) {
+            if (result.value) {
+                let that = $(this);
+                var count = that.data("count");
+                var full_div = that.data("full_div");
+                var single_div = that.data("single_div");
+                var status_option_id = that.data("status_option_id");
+                var status_option_id_next = status_option_id + 1;
+                var order_vendor_id = that.data("order_vendor_id");
+                var order_id = that.data("order_id");
+                var vendor_id = that.data("vendor_id");
+                var count = that.data("count");
 
-                    if (status_option_id == 4 || status_option_id == 5) {
-                        if (status_option_id == 4)
-                            var next_status = '{{__("Out For Delivery")}}';
-                        else
-                            var next_status = '{{__("Delivered")}}';
-                        that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
-                        return false;
-                    } else {
-                        $(that).parents(single_div).slideUp(1000, function() {
-                            $(this).remove();
-                        });
-                        setTimeout(function() {
-                            if ($("#received_new_orders").find(".update_order_status").length == 0) {
-                                $("#received_new_orders").modal('hide');
+                $.ajax({
+                    url: "{{ route('order.changeStatus') }}",
+                    type: "POST",
+                    data: {
+                        order_id: order_id,
+                        vendor_id: vendor_id,
+                        "_token": "{{ csrf_token() }}",
+                        status_option_id: status_option_id,
+                        order_vendor_id: order_vendor_id,
+                    },
+                    success: function(response) {
+                        if(response.status=='error'){
+                            if (count == 0) {
+                                $(full_div).slideUp(1000, function() {
+                                    $(this).remove();
+                                });
+
+                            } else {
+                                $(single_div).slideUp(1000, function() {
+                                    $(this).remove();
+                                });
+
                             }
-                        }, 2000);
-                    }
+                            $.NotificationApp.send('{{__("Error")}}', response.message, "top-right", "#ff0808", "error");
+                            return 0;
+                        }
+                        if (status_option_id == 4 || status_option_id == 5) {
+                            if (status_option_id == 4)
+                                var next_status = '{{__("Out For Delivery")}}';
+                            else
+                                var next_status = '{{__("Delivered")}}';
+                            that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
+                            return false;
+                        } else {
+                            $(that).parents(single_div).slideUp(1000, function() {
+                                $(this).remove();
+                            });
+                            setTimeout(function() {
+                                if ($("#received_new_orders").find(".update_order_status").length == 0) {
+                                    $("#received_new_orders").modal('hide');
+                                }
+                            }, 2000);
+                        }
 
-                    if (status_option_id == 2)
-                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                    // location.reload();
-                    if (typeof init === 'function') {
-                        init("pending_orders", "{{ route('orders.filter') }}", '', false);
-                    }
-                },
-            });
-        }
+                        if (status_option_id == 2)
+                            $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        // location.reload();
+                        if (typeof init === 'function') {
+                            init("pending_orders", "{{ route('orders.filter') }}", '', false);
+                        }
+                    },
+                });
+            }
+        });
     });
 </script>
 @endif

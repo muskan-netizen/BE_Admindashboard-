@@ -24,7 +24,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         <div class="col-md-3"><h4>{{ __("Order ID") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Date & Time") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Customer") }}</h4></div>
+                        @if($client_preference_detail->hide_order_address ==0 )
                         <div class="col-md-3"><h4>{{ __("Address") }}</h4></div>
+                        @endif
                     </div>
 
                     <div class="row no-gutters order_data mb-lg-2">
@@ -34,14 +36,15 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         <div class="col-md-3">
                             <a class="text-capitalize" href="#"><%= order.user.name %></a>
                         </div>
-
-                        <% if(order.address !== null) { %>
-                        <div class="col-md-3">
-                            <p class="ellipsis mb-0" data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">
-                                <%= order.address.house_number?order.address.house_number+',' : ''  %> <%= order.address.address %>
-                            </p>
-                        </div>
-                        <% } %>
+                        @if($client_preference_detail->hide_order_address ==0 )
+                            <% if(order.address !== null) { %>
+                            <div class="col-md-3">
+                                <p class="ellipsis mb-0" data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">
+                                    <%= order.address.house_number?order.address.house_number+',' : ''  %> <%= order.address.address %>
+                                </p>
+                            </div>
+                            <% } %>
+                        @endif
                     </div>
                     <div class="row">
                         <div class="col-md-9">
@@ -656,6 +659,22 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 order_vendor_id: order_vendor_id,
                             },
                             success: function(response) {
+
+                                if(response.status=='error'){
+                                    if (count == 0) {
+                                        $(full_div).slideUp(1000, function() {
+                                            $(this).remove();
+                                        });
+
+                                    } else {
+                                        $(single_div).slideUp(1000, function() {
+                                            $(this).remove();
+                                        });
+
+                                    }
+                                    $.NotificationApp.send('{{__("Error")}}', response.message, "top-right", "#ff0808", "error");
+                                    return 0;
+                                }
 
                                 if (status_option_id == 4 || status_option_id == 5) {
                                     if (status_option_id == 4){
