@@ -1,7 +1,7 @@
 <!-- Right Sidebar -->
 <div class="right-bar">
   <div data-simplebar class="h-100">
-  
+
       <!-- Nav tabs -->
       <ul class="nav nav-tabs nav-bordered nav-justified" role="tablist">
           <!-- <li class="nav-item">
@@ -24,7 +24,7 @@
       <!-- Tab panes -->
       <div class="tab-content pt-0">
           <div class="tab-pane" id="chat-tab" role="tabpanel">
-              
+
               <form class="search-bar p-3">
                   <div class="position-relative">
                       <input type="text" class="form-control" placeholder="Search...">
@@ -407,7 +407,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body pt-0">
 
             </div>
         </div>
@@ -434,8 +434,8 @@
                                         <% } else if(vendor.order_status_option_id == 5) { %>
                                             <button class="update_order_status btn-info" data-full_div="#latest_full_order_div<%= k %>"  data-single_div="#latest_single_order_div<%= k %><%= ve %>"  data-count="<%= ve %>"  data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="6" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __("Delivered") }}</button>
                                         <% } else { %>
-                                            
-                                    <% } %> 
+
+                                    <% } %>
                                 </div>
 
                                 <a href="<%= vendor.vendor_detail_url %>" class="row order_detail order_detail_data align-items-top pb-1 mb-0 card-box no-gutters h-100">
@@ -457,11 +457,11 @@
                                                     <div class="list-img">
                                                         <img src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
                                                         <span class="item_no position-absolute">x<%= product.quantity %></span>
-                                                    </div> 
+                                                    </div>
                                                     <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
                                                     <label class="items_price">$<%= product.price %></label>
                                                 </div>
-                                            <% }); %>                                    
+                                            <% }); %>
                                         </div>
                                     </div>
                                     <div class="col-md-3 mt-md-0 mt-sm-2">
@@ -480,7 +480,7 @@
                                                 <span>$<%= vendor.delivery_fee %></span>
                                                 <% }else { %>
                                                     <span>$ 0.00</span>
-                                                <% } %> 
+                                                <% } %>
                                             </li>
                                             <li class="grand_total d-flex align-items-center justify-content-between">
                                                 <label class="m-0">Amount</label>
