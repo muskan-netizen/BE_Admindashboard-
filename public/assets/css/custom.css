@@ -184,7 +184,6 @@ body .page-title-box .page-title{}
     --text_color_j: #1e1772;
 }
 body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}
-.al_custom_control .custom-control {min-height: 10.3125rem;}
 .faq_section .option_section:nth-child(even){background-color: #f3f7f9;border-radius: 15px;padding-top: 15px;margin-bottom: 15px;}
 body button.update_order_status{
     border-radius: 30px;
@@ -193,6 +192,20 @@ body button.update_order_status{
 }
 body #update-single-status {
     text-align: right;
+}
+.al_custom_control label.custom-control-label {
+    height: 100px;
+    overflow: hidden;
+    transition: 0.5s;
+}
+.al_custom_control label.custom-control-label img {
+    position: relative;
+    transition: 1.5s ease-in-out;
+    vertical-align: top;
+    top: 0;
+}
+.al_custom_control label.custom-control-label:hover img {
+    top: -36vh;
 }
 @media(max-width:1499px){h1.control-label {font-size: 46px;} }
 @media(max-width:767px){.al_add_user{margin-top: 0;}}
