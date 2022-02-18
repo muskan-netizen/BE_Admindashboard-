@@ -278,6 +278,15 @@ class PaymentOptionController extends BaseController
                         'transaction_key' => $request->authorize_net_transaction_key,
                         'client_key' => $request->authorize_net_client_key
                     ));
+                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'kongapay')) {
+                    $validatedData = $request->validate([
+                        'kongapay_api_key' => 'required',
+                        'kongapay_merchant_id' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'api_key' => $request->kongapay_api_key,
+                        'merchant_id' => $request->kongapay_merchant_id
+                    ));
                 }
             }
             PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);

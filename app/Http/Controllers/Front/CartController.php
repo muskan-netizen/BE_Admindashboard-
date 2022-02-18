@@ -14,6 +14,7 @@ use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\PromoCodeController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\DunzoController;
+use App\Http\Controllers\AhoyController;
 use App\Http\Controllers\ShiprocketController;
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot};
 use Log;
@@ -1492,6 +1493,29 @@ class CartController extends FrontController
                         );
                         $option = array_merge($option,$optionDunzo);
                     }
+                }
+                    
+                if(isset($vendorData->vendor->ahoy_location)){
+                  //getAhoy (Masa) Delivery fee changes code
+                  $ahoy = new AhoyController();
+                  if($ahoy->status){ 
+                      $deliver_ahoy_fee = $ahoy->getAhoyBaseFee($vendorData->vendor_id,$address);
+                      if($deliver_ahoy_fee>0)
+                      { 
+                          $deliver_charge_ahoy = number_format($deliver_ahoy_fee, 2, '.', '');
+                          $optionAhoy[] = array(
+                              'type'=>'M',
+                              'courier_name'=>__('Ahoy'),
+                              'rate' => $deliver_charge_ahoy,
+                              'courier_company_id' => 0,
+                              'etd' => 0,
+                              'etd_hours' => 0,
+                              'estimated_delivery_days' => 0,
+                              'code' => 'M_0'
+                          );
+                          $option = array_merge($option,$optionAhoy);
+                      }
+                  }
                 }
 
             

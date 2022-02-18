@@ -1133,6 +1133,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </span>
                      </div>
                   </div>
+                  <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3">
+                       <label for="hide_order_address" class="mr-2 mb-0">{{__('Hide customer details')}}<small class="d-block pr-5">{{__('Enable to hide customer details from order.')}}</small></label>
+                      <span> <input type="checkbox" data-plugin="switchery" name="hide_order_address" id="address_is_car" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->hide_order_address == '1')) checked='checked' @endif>
+                       </span>
+                    </div>
+                 </div>
 
                </div>
             </div>
