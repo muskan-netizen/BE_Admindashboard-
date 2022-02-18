@@ -1360,16 +1360,15 @@ class TempCartController extends FrontController
                     return $this->errorResponse('You can select maximum ' . $addon->min_select .' options of ' .$addon->title, 422);
                 }
             }
-
-            // foreach ($addon_options as $key => $opts) {
-            //     $checkaddonCount = TempCartAddon::updateOrCreate(
-            //         ['cart_id' => $cart->id, 'cart_product_id' => $cartProduct->id, 'addon_id' => $addon_ids[$key]],
-            //         ['addon_id' => $addon_ids[$key], 'option_id' => $opts]
-            //     )->count();
-            // }
-            // TempCartAddon::where(['cart_id' => $cart_id, 'cart_product_id' => $cartProduct->id])
-            // ->whereNotIn('addon_id', $addon_ids)
-            // ->whereNotIn('option_id', $addon_options)->delete();
+            $productAddonIds = [];
+            foreach ($addon_options as $key => $opts) {
+                $checkaddon = TempCartAddon::updateOrCreate(
+                    ['cart_id' => $cart->id, 'cart_product_id' => $cartProduct->id, 'addon_id' => $addon_ids[$key],'option_id' => $opts]
+                );
+                $productAddonIds[] = $checkaddon->id;
+            }
+            TempCartAddon::where(['cart_id' => $cart_id, 'cart_product_id' => $cartProduct->id])
+            ->whereNotIn('id', $productAddonIds)->delete();
             
             $totalProducts = TempCartProduct::where('cart_id', $cart_id)->sum('quantity');
             $cart->item_count = $totalProducts;
