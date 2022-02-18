@@ -183,19 +183,9 @@ body .page-title-box .page-title{}
     --card_color_j: #d2d1e3;
     --text_color_j: #1e1772;
 }
+body .main-customer-page .set-height .dataTables_scrollBody {height: 100%;}
+.al_custom_control .custom-control {min-height: 10.3125rem;}
+.faq_section .option_section:nth-child(even){background-color: #f3f7f9;border-radius: 15px;padding-top: 15px;margin-bottom: 15px;}
 
-
-body .main-customer-page .set-height .dataTables_scrollBody {
- height: 100%;
-}
-.al_custom_control .custom-control {
-    min-height: 10.3125rem;
-}
-.faq_section .option_section:nth-child(even){
-    background-color: #f3f7f9;
-    border-radius: 15px;
-    padding-top: 15px;
-    margin-bottom: 15px;
-}
 @media(max-width:1499px){h1.control-label {font-size: 46px;} }
 @media(max-width:767px){.al_add_user{margin-top: 0;}}
