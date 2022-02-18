@@ -141,8 +141,8 @@ class VendorImport implements ToCollection
                             $longitude = $geoInfo['lng'];
                         }
                         $insert_vendor_details = array(
-                            'logo' => ($da[0] == "") ? NULL : $da[0],
-                            'banner' => ($da[1] == "") ? NULL : $da[1],
+                            'logo' => ($da[0] == "") ? NULL : trim($da[0]),
+                            'banner' => ($da[1] == "") ? NULL : trim($da[1]),
                             'name' => $da[2],
                             'slug' => preg_replace("/[^A-Za-z0-9\-]/", "_", trim(strtolower($da[2]))),
                             'desc' => ($da[3] == "") ? NULL : $da[3],
