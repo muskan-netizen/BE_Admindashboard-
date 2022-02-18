@@ -1000,7 +1000,7 @@
         <script type="text/template" id="addon_template">
             <% if(addOnData != ''){ %>
                                 <% if(addOnData.product_image){ %>
-                                    <div class="d-flex" style="max-height:200px">
+                                    <div class="d-flex" style="height:200px">
                                         <img class="w-100" src="<%= addOnData.product_image %>" alt=""  style="object-fit:cover">
                                     </div>
                                 <% } %>
