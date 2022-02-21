@@ -658,12 +658,14 @@
                         <span>{{ __('Webhook Url') }} : </span>
                         <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('ahoyWebhook')}}</span></a>
                     </h5>
+                    <input type="button" class="btn btn-primary mt-2 float-right setWebhook" data-url="{{route('ahoyWebhook')}}" onclick="setwebhookurl(this)" value="Set Webhook" />
                     <sup class="position-relative">
                         <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('ahoyWebhook')}}" style="cursor:pointer;">
                             <i class="fa fa-copy"></i>
                         </a>
                         <h6 id="copy_message2" class="copy-message mt-2"></h6>
                     </sup>
+                    
                 </div>
 
                 <div class="row">
@@ -796,6 +798,24 @@
         }, 3000);
     });
 
+function setwebhookurl(data)
+{
+    $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+    var url = $(data).attr('data-url');
+    $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: "{{route('setWebhook')}}",
+            data: { url: url },
+            success: function(resp) {
+                alert(resp);
+            }
+        });
+}
 
 </script>
 @endsection
