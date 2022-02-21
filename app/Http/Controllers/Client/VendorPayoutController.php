@@ -13,7 +13,7 @@ use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderVendorListExport;
-use App\Http\Controllers\Client\{BaseController, StripeGatewayController};
+use App\Http\Controllers\Client\{BaseController, StripeGatewayController, PagarController};
 use App\Models\{Client, User, Vendor, OrderVendor, PaymentOption, PayoutOption, VendorConnectedAccount, VendorPayout, ClientCurrency};
 
 class VendorPayoutController extends BaseController{
@@ -71,6 +71,20 @@ class VendorPayoutController extends BaseController{
         // }
 
         return $payout_creds;
+    }
+
+    public function createAccountDetails(Request $request)
+    {
+        $vendor         = $request->vendor;
+        $payout_option  = $request->payout_option;
+        $returnHTML     = '';
+        if($payout_option == 'pagarme'){
+            // $pagarController = new PagarmeController();
+            // $banks_list      = $pagarController->getBankAccounts();
+            // dd($banks_list);
+            $returnHTML      =  view('backend.vendor.vendorPayout-modals')->with(['payout_option'=> $payout_option])->render();
+        }
+        return $this->successResponse($returnHTML);
     }
 
     public function index(Request $request){

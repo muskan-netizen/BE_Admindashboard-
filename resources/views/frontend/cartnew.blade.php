@@ -68,6 +68,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             <div class="cart_response mt-3 mb-3 d-none">
                 <div class="alert p-0" role="alert"></div>
             </div>
+            @if (\Session::has('error'))
+                        <div class="alert alert-danger">
+                            <span>{!! \Session::get('error') !!}</span>
+                        </div>
+            @endif
         </div>
     </div>
 </div>
@@ -1148,6 +1153,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var guest_cart = {{ $guest_user ? 1 : 0 }};
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
+    var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
@@ -1167,7 +1173,6 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     var payment_option_list_url = "{{route('payment.option.list')}}";
     var update_cart_slot = "{{ route('updateCartSlot') }}";
     var apply_promocode_coupon_url = "{{ route('verify.promocode') }}";
-    var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
     var update_cart_schedule = "{{route('cart.updateSchedule')}}";
     var check_schedule_slots = "{{route('cart.check_schedule_slots')}}";
     var login_via_username_url = "{{route('customer.loginViaUsername')}}";
@@ -1588,7 +1593,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
             return false;
         return true;
     }
+
+
 </script>
+<script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 <script src="{{asset('js/payment.js')}}"></script>
 
 @endsection
