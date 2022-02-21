@@ -68,7 +68,7 @@
                         <h4 class="header-title ">{{ __('Order Email Notification') }}</h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
-                    <div class="col-xl-12 my-2" id="addCur-160">
+                    <div class="col-xl-12 my-2 p-0" id="addCur-160">
                         <label class="primaryCurText">{{ __('Email') }}</label>
                         <input class="form-control" type="email" id="admin_email" name="admin_email" value="{{ old('admin_email', $preference->admin_email)}}">
                     </div>
