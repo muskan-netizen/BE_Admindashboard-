@@ -81,12 +81,12 @@ class VendorImport implements ToCollection
 
                             if ($vendor_registration_document->file_type == "selector") {
                                 if ($vendor_registration_document->is_required == 1) {
-                                    if ($row[$rownumber] == "") {
+                                    if (!array_key_exists($rownumber,$row) || $row[$rownumber] == "") {
                                         $error[] = "Row " . $i . " : " . $vendor_registration_document->primary->slug . " cannot be empty";
                                         $checker = 1;
                                     }
                                 }
-                                $selectOption = $row[$rownumber];
+                                $selectOption = array_key_exists($rownumber,$row) ? $row[$rownumber] : '';
                                 $vendorCategoryExists = VendorRegistrationSelectOption::with('translation')
                                     ->whereHas('translation', function ($q) use ($selectOption) {
                                         return $q->select('vendor_registration_select_option_translations.name', 'vendor_registration_select_option_translations.vendor_registration_select_option_id')
@@ -100,12 +100,12 @@ class VendorImport implements ToCollection
                                 }
                             } else {
                                 if ($vendor_registration_document->is_required == 1) {
-                                    if ($row[$rownumber] == "") {
+                                    if ( !array_key_exists($rownumber,$row) || $row[$rownumber] == "") {
                                         $error[] = "Row " . $i . " : " . $vendor_registration_document->primary->slug . " cannot be empty";
                                         $checker = 1;
                                     }
                                 }
-                                if ($row[$rownumber] != "") {
+                                if ( array_key_exists($rownumber,$row)  && $row[$rownumber] != "") {
                                     $imageValidation = array("jpeg", "jpg", "bmp", "png", "JFIF");
                                     $path = parse_url($row[$rownumber], PHP_URL_PATH);
                                     $pathFragments = explode('.', $path);
@@ -137,8 +137,8 @@ class VendorImport implements ToCollection
                         $longitude = 0;
                         if ($da[6] && $mapApiKey) {
                             $geoInfo = Geocoder::setApiKey($mapApiKey)->getCoordinatesForAddress($da[6]);
-                            $latitude = $geoInfo['lat'];
-                            $longitude = $geoInfo['lng'];
+                            $latitude = $geoInfo['lat'] ?? '';
+                            $longitude = $geoInfo['lng'] ?? '';
                         }
                         $insert_vendor_details = array(
                             'logo' => ($da[0] == "") ? NULL : trim($da[0]),
@@ -168,10 +168,10 @@ class VendorImport implements ToCollection
                         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
                         if ($vendor_registration_documents->count() > 0) {
                             foreach ($vendor_registration_documents as $vendor_registration_document) {
-                                $doc_name = str_replace(" ", "_", $vendor_registration_document->primary->slug);
+
                                 if ($vendor_registration_document->file_type == "selector") {
 
-                                    if ($da[$daKey] != "") {
+                                    if ( isset($da[$daKey]) && $da[$daKey] != "") {
                                         $saveselectOption = $da[$daKey];
                                         $vendorOptionExists = VendorRegistrationSelectOption::with('translation')
                                             ->whereHas('translation', function ($q) use ($saveselectOption) {
@@ -189,7 +189,7 @@ class VendorImport implements ToCollection
                                         }
                                     }
                                 } else {
-                                    if ($da[$daKey] != "") {
+                                    if (isset($da[$daKey]) && $da[$daKey] != "") {
                                         $vendor_docs =  new VendorDocs();
                                         $vendor_docs->vendor_id = $vendorID;
                                         $vendor_docs->vendor_registration_document_id = $vendor_registration_document->id;
