@@ -1653,6 +1653,7 @@
     <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
     @endif
     <script src="{{ asset('js/tip_after_order.js') }}"></script>
+    <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
     <script src="{{ asset('js/payment.js') }}"></script>
     <script type="text/javascript">
         $(document).delegate(".topup_wallet_btn_tip", "click", function() {
@@ -1684,6 +1685,7 @@
         var ajaxCall = 'ToCancelPrevReq';
         var credit_tip_url = "{{ route('user.tip_after_order') }}";
         var payment_stripe_url = "{{ route('payment.stripe') }}";
+        var create_konga_hash_url = "{{route('kongapay.createHash')}}";
         var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
         var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
         var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";

@@ -54,9 +54,9 @@
 				</div>
 				<div class="supplier-rating">
 					<h6 class="mb-1 ellips"><%=vendor.name %></h6>
-					<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
+					{{--<p title="<%=vendor.categoriesList %>" class="vendor-cate mb-1 ellips d-none">
 						<%=vendor.categoriesList %>
-					</p>
+					</p>--}}
 						<% if(vendor.timeofLineOfSightDistance !=undefined){%>
 							<div class="pref-timing"> <span><%=vendor.timeofLineOfSightDistance %></span> </div>
 						<%}%>
