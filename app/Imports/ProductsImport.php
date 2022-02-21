@@ -33,12 +33,12 @@ class ProductsImport implements ToCollection{
                     if ($row[0] != "SKU") { //header of excel check
 
                         if ($row[0] == "") { //if sku or handle is empty
-                            $error[] = "Row " . $i . " : handle is empty";
+                            $error[] = "Row " . $i . " :  SKU  is empty";
                             $checker = 1;
                         }
                         if (Product::where('sku', $row[0])->exists()) { //if sku or handle is empty
-                            $error[] = "Row " . $i . " : Product with this sku already exist";
-                            $checker = 1;
+                            // $error[] = "Row " . $i . " : Product with this sku already exist";
+                            // $checker = 1;
                         }
                         if ($row[3] == "") { //check if published is empty
                             $error[] = "Row " . $i . " : Please mark published either true or false";
