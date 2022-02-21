@@ -300,9 +300,12 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
 
         Route::post('subscription/payment/stripe', 'Client\StripeGatewayController@subscriptionPaymentViaStripe')->name('subscription.payment.stripe');
+
+        // Vendor Payout via gateway
         Route::get('verify/oauth/token/stripe', 'Client\StripeGatewayController@verifyOAuthToken')->name('verify.oauth.token.stripe');
-        Route::get('create/custom/connected-account/stripe/{vendor_id}', 'Client\StripeGatewayController@createCustomConnectedAccount')->name('create.custom.connected-account.stripe');
+        // Route::get('create/custom/connected-account/stripe/{vendor_id}', 'Client\StripeGatewayController@createCustomConnectedAccount')->name('create.custom.connected-account.stripe');
         Route::post('vendor/payout/stripe', 'Client\StripeGatewayController@vendorPayoutViaStripe')->name('vendor.payout.stripe');
+        Route::post('vendor/payout/account/create/pagarme', 'Client\PagarmeController@createVendorPayoutAccount')->name('vendor.payout.account.create.pagarme');
 
         Route::get('/admin/signup', 'Client\AdminSignUpController@index')->name('admin.signup');
         Route::post('save_fcm_token', 'Client\UserController@save_fcm')->name('client.save_fcm');

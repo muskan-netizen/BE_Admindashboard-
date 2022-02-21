@@ -824,6 +824,37 @@
             });
         });
 
+        $(document).on('click', '#pagarme_create_account', function(e) {
+            $("#pagarme_account_form input").removeClass('is-invalid');
+            $("#pagarme_account_form .invalid-feedback").html('');
+            $.ajax({
+                type: "POST",
+                data: $("#pagarme_account_form").serializeArray(),
+                url: "{{ route('vendor.payout.account.create.pagarme') }}",
+                beforeSend: function() {
+                    $(".loader_box").show();
+                },
+                complete: function() {
+                    $(".loader_box").hide();
+                },
+                success: function(response) {
+                    if(response.status == 'Success'){
+                        window.location.reload();
+                    }else{
+                        $.NotificationApp.send("Error", response.message, "top-right", "#ff0808", "error");
+                    }
+                },
+                error: function(error){
+                    var response = $.parseJSON(error.responseText);
+                    let error_messages = response.errors;
+                    $.each(error_messages, function(key, error_message) {
+                        $('#'+key).addClass('is-invalid');
+                        $('#'+key+'_err').html(error_message[0]).show();
+                    });
+                }
+            });
+        });
+
     </script>
     {{-- @include('backend.vendor.modals') --}}
 @endsection
