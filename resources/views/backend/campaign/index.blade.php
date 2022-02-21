@@ -164,6 +164,7 @@
 @endsection
 
 @section('script')
+<script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script type="text/javascript">
     $('.deleteCampaignButton').click(function(e) {
         e.preventDefault();
@@ -207,5 +208,8 @@
 </script>
 
 @include('backend.campaign.pagescript')
-
+<script>
+    CKEDITOR.replace('email_body');
+    
+</script>
 @endsection
