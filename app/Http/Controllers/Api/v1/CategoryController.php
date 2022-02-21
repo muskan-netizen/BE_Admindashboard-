@@ -470,6 +470,7 @@ class CategoryController extends BaseController
             ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
                 ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
+                ->withCount('OrderProduct')
                 ->where('products.category_id', $cid)
                 ->where('products.is_live', 1)
                 ->whereIn('products.id', function ($qr) use ($startRange, $endRange) {
@@ -502,6 +503,9 @@ class CategoryController extends BaseController
             }
             if (!empty($order_type) && $order_type == 'newly_added') {
                 $products = $products->orderBy('products.id', 'desc');
+            }
+            if (!empty($order_type) && $order_type == 'popular_product') {
+                $products = $products->orderBy('order_product_count', 'desc');
             }
             $paginate = $request->has('limit') ? $request->limit : 12;
             $products = $products->groupBy('id');

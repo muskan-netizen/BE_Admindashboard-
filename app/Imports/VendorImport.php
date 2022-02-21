@@ -154,7 +154,7 @@ class VendorImport implements ToCollection
                             'delivery' => ($da[9] == 'TRUE') ? 1 : 0,
                             'order_pre_time' => ($da[10] == "") ? NULL : $da[10],
                             'auto_reject_time' => ($da[11] == "") ? NULL : $da[11],
-                            'order_min_amount' => ($da[12] == "") ? NULL : $da[12],
+                            'order_min_amount' => ($da[12] == "") ? 0.00 : $da[12],
                             'show_slot' => ($da[13] == "TRUE") ? 1 : 0,
                             'commission_percent' => ($da[14] == "") ? NULL : $da[14],
                             'commission_fixed_per_order' => ($da[15] == "") ? NULL : $da[15],
