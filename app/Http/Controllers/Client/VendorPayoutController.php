@@ -13,7 +13,7 @@ use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ToasterResponser;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderVendorListExport;
-use App\Http\Controllers\Client\{BaseController, StripeGatewayController, PagarController};
+use App\Http\Controllers\Client\{BaseController, StripeGatewayController, PagarmeController};
 use App\Models\{Client, User, Vendor, OrderVendor, PaymentOption, PayoutOption, VendorConnectedAccount, VendorPayout, ClientCurrency};
 
 class VendorPayoutController extends BaseController{
@@ -36,7 +36,7 @@ class VendorPayoutController extends BaseController{
         }
 
         //stripe connected account details
-        $codes = ['cash', 'stripe'];
+        $codes = ['cash', 'stripe', 'pagarme'];
         $payout_creds = PayoutOption::whereIn('code', $codes)->where('status', 1)->get();
         if ($payout_creds) {
             foreach ($payout_creds as $creds) {
@@ -82,7 +82,7 @@ class VendorPayoutController extends BaseController{
             // $pagarController = new PagarmeController();
             // $banks_list      = $pagarController->getBankAccounts();
             // dd($banks_list);
-            $returnHTML      =  view('backend.vendor.vendorPayout-modals')->with(['payout_option'=> $payout_option])->render();
+            $returnHTML      =  view('backend.vendor.vendorPayout-modals')->with(['vendor'=>$vendor, 'payout_option'=> $payout_option])->render();
         }
         return $this->successResponse($returnHTML);
     }
@@ -313,10 +313,21 @@ class VendorPayoutController extends BaseController{
                 return Redirect()->back()->with('toaster', $toaster);
             }
             
-            // Payout via stripe
+            /////// Payout via stripe ///////
             if($payout_option_id == 2){
                 $stripeController = new StripeGatewayController();
                 $response = $stripeController->vendorPayoutViaStripe($request)->getData();
+                if($response->status != 'Success'){
+                    $toaster = $this->errorToaster('Error', __($response->message));
+                    return Redirect()->back()->with('toaster', $toaster);
+                }
+                $request->request->add(['transaction_id' => $response->data]);
+            }
+
+            /////// Payout via pagarme ///////
+            if($payout_option_id == 3){
+                $pagarmeController = new PagarmeController();
+                $response = $pagarmeController->vendorPayoutViaPagarme($request)->getData();
                 if($response->status != 'Success'){
                     $toaster = $this->errorToaster('Error', __($response->message));
                     return Redirect()->back()->with('toaster', $toaster);
