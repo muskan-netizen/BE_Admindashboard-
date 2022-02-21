@@ -638,7 +638,9 @@
     <% } %>
 </script>
 @if($product->related_products->count() > 0)
-<section class="">
+
+
+<section class="section-b-space ratio_asos">
     <div class="container">
         <div class="row m-0">
             <div class="col-12 ">
@@ -646,10 +648,7 @@
             </div>
         </div>
     </div>
-</section>
-
-<section class="section-b-space ratio_asos">
-    <div class="container mt-3 mb-5">
+    <div class="container mt-3 mb-4">
         <div class="product-4 product-m no-arrow related-products">
             @forelse($product->related_products as $related_product)
             <div>
