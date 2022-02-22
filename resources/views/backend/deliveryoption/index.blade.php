@@ -812,10 +812,13 @@ function setwebhookurl(data)
             url: "{{route('setWebhook')}}",
             data: { url: url },
             success: function(resp) {
-                alert(resp);
+                if(resp.code == '200'){
+                $.NotificationApp.send("{{__('Success')}}", resp.msg, "top-right", "#5ba035", "success");
+                }else{
+                $.NotificationApp.send("{{__('Error')}}", resp.msg, "top-right", "#5ba035", "error");
+                }
             }
         });
 }
-
 </script>
 @endsection
