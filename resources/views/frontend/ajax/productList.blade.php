@@ -1,3 +1,14 @@
+<div class="col-12 text-right">Sort By : 
+    <select name="order_type" id='order_type' class="sortingFilter p-1">
+        <option value="featured" {{isset($data['order_type']) && $data['order_type'] == "featured" ? 'selected' : ''}}>Featured</option>
+        <option value="a_to_z" {{isset($data['order_type']) && $data['order_type'] == "a_to_z" ? 'selected' : ''}}>A to Z</option>
+        <option value="z_to_a" {{isset($data['order_type']) && $data['order_type'] == "z_to_a" ? 'selected' : ''}}>Z to A</option>
+        <option value="low_to_high" {{isset($data['order_type']) && $data['order_type'] == "low_to_high" ? 'selected' : ''}}>Cost : Low to High</option>
+        <option value="high_to_low" {{isset($data['order_type']) && $data['order_type'] == "high_to_low" ? 'selected' : ''}}>Cost : High to Low</option>
+        <option value="rating" {{isset($data['order_type']) && $data['order_type'] == "rating" ? 'selected' : ''}}>Avg. Customer Review</option>
+        <option value="newly_added" {{isset($data['order_type']) && $data['order_type'] == "newly_added" ? 'selected' : ''}}>Newest Arrivals</option>
+    </select>
+</div>
 <div class="product-wrapper-grid">
     <div class="row margin-res">
       @if($listData->isNotEmpty())

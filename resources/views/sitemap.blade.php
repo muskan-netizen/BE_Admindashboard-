@@ -28,6 +28,15 @@
     </url>
 @endforeach
 
+@foreach($brands as $brand)
+    <url>
+        <loc>{{ URL::route("brandDetail", [$brand->id]) }}</loc>
+        <lastmod>{{ gmdate(DateTime::W3C, strtotime($brand->updated_at)) }}</lastmod> 
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+@endforeach
+
 @foreach($pages as $page)
     <url>
         <loc>{{ URL::route("extrapage", [$page->slug]) }}</loc>
