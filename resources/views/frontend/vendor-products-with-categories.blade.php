@@ -531,19 +531,32 @@
                                     </div>
                                     <div class="col-md-8 col-lg-6">
                                         <div class="row ">
-                                            @if (isset($tags) && !empty($tags))
-                                                @foreach ($tags as $key => $tag)
-                                                    <label class="label-switch switch-primary product_tag_filter mr-2">
-                                                        <input type="checkbox"
-                                                            class="switch switch-bootstrap product_tag_filter status"
-                                                            name="tag_id" id="product_tag_filter_{{ $key }}"
-                                                            data-tag_id="{{ $tag->id }}"" value="
-                                                            {{ $tag->id }}">
-                                                        <span class="lable"> @if (isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}" alt="">@endif <span
-                                                                class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span></span>
-                                                    </label>
-                                                @endforeach
-                                            @endif
+                                            <div class="col-6">
+                                                @if (isset($tags) && !empty($tags))
+                                                    @foreach ($tags as $key => $tag)
+                                                        <label class="label-switch switch-primary product_tag_filter mr-2">
+                                                            <input type="checkbox"
+                                                                class="switch switch-bootstrap product_tag_filter status"
+                                                                name="tag_id" id="product_tag_filter_{{ $key }}"
+                                                                data-tag_id="{{ $tag->id }}"" value="
+                                                                {{ $tag->id }}">
+                                                            <span class="lable"> @if (isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}" alt="">@endif <span
+                                                                    class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span></span>
+                                                        </label>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                            <div class="col-6 text-right">Sort By : 
+                                                <select name="order_type" id='order_type' class="product_tag_filter p-1">
+                                                    <option value="featured">Featured</option>
+                                                    <option value="a_to_z">A to Z</option>
+                                                    <option value="z_to_a">Z to A</option>
+                                                    <option value="low_to_high">Cost : Low to High</option>
+                                                    <option value="high_to_low">Cost : High to Low</option>
+                                                    <option value="rating">Avg. Customer Review</option>
+                                                    <option value="newly_added">Newest Arrivals</option>
+                                                </select>
+                                            </div>
                                         </div>
                                         @forelse($listData as $key => $data)
                                             <section class="scrolling_section " id="{{ $data->category->slug }}">
@@ -1323,6 +1336,7 @@
 
             function vendorProductsSearchResults() {
                 let keyword = $("#vendor_search_box").val();
+                let order_type = $("#order_type").val();
                 var checkboxesChecked = [];
                 $("input:checkbox[name=tag_id]:checked").each(function() {
                     checkboxesChecked.push($(this).val());
@@ -1336,6 +1350,7 @@
                     data: {
                         tag_id: checkedvalus,
                         keyword: keyword,
+                        order_type: order_type,
                         vendor: "{{ $vendor->id }}",
                         vendor_category: "{{ $vendor_category ?? '' }}"
                     },
