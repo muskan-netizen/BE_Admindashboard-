@@ -56,7 +56,7 @@ class CampaignController extends BaseController
             $campaign->sms_text = $request->sms_text;
         }elseif($request->type==2)
         {
-            $campaign->email_title = $request->email_title;
+            // $campaign->email_title = $request->email_title;
             $campaign->email_subject = $request->email_subject;
             $campaign->email_body = $request->email_body;
         }else{

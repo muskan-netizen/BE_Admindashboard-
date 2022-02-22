@@ -100,7 +100,7 @@
                         </div>
 
                         <div class="row push-section" style="display: none">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="form-group" id="pushTitle">
                                     <label for="push_title" class="control-label">{{__("Title")}}</label>
                                     <input class="form-control" placeholder="{{__("Title")}}" name="push_title" type="text" id="push_title">
@@ -109,7 +109,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-md-6" id="pushimageInput">
+                            <div class="col-md-12" id="pushimageInput">
                                 <label>{{ __('Upload image') }}</label>
                                 <input data-default-file="" type="file" data-plugins="dropify" name="push_image" accept="image/*" class="dropify" />
                                 <label class="logo-size d-block text-right mt-1">{{ __('Image Size') }} 150x150</label>                    
@@ -120,7 +120,7 @@
                             <div class="col-md-12">
                                 <div class="form-group" id="pushBody">
                                     <label for="push_body" class="control-label">{{__("Description")}}</label>
-                                    <textarea class="form-control" placeholder={{__("Description")}} name="push_message_body" type="text" id="push_message_body"></textarea>
+                                    <textarea class="txtarea form-control" rows="3" placeholder={{__("Description")}} name="push_message_body" type="text" id="push_message_body"></textarea>
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
                                     </span>
@@ -179,7 +179,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="request_user_count" class="control-label">{{__("Request User Count")}}</label>
-                                    <input type="text" class="form-control" name="request_user_count" id="request_user_count">
+                                    <input type="text" class="form-control" name="request_user_count" id="request_user_count" value="999">
                                                                
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
@@ -188,9 +188,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="request_time_gap" class="control-label">{{__("Request Time Gap")}}</label>
-                                    <input type="text" class="form-control" name="request_time_gap" id="request_time_gap">
-                                                               
+                                    <label for="request_time_gap" class="control-label">{{__("Request Time Gap(in seconds)")}}</label>
+                                    <input type="text" class="form-control" name="request_time_gap" id="request_time_gap" value="5">
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
                                     </span>
