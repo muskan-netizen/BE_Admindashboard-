@@ -72,6 +72,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/vendor', [VendorController::class, 'index'])->name('account.vendor');
         // Route::get('account/vendor/payout', [VendorPayoutController::class, 'index'])->name('account.vendor.payout');
         // Route::get('account/vendor/payout/filter', [VendorPayoutController::class, 'filter'])->name('account.vendor.payout.filter');
+        Route::get('account/vendor/payout/get/create-account-details', [VendorPayoutController::class, 'createAccountDetails'])->name('account.vendor.payout.createAccountDetails');
         Route::get('account/vendor/payout/requests', [VendorPayoutController::class, 'vendorPayoutRequests'])->name('account.vendor.payout.requests');
         Route::get('account/vendor/payout/requests/filter', [VendorPayoutController::class, 'vendorPayoutRequestsFilter'])->name('account.vendor.payout.requests.filter');
         Route::post('account/vendor/payout/request/complete', [VendorPayoutController::class, 'vendorPayoutRequestComplete'])->name('account.vendor.payout.request.complete');
@@ -300,9 +301,12 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
 
         Route::post('subscription/payment/stripe', 'Client\StripeGatewayController@subscriptionPaymentViaStripe')->name('subscription.payment.stripe');
+
+        // Vendor Payout via gateway
         Route::get('verify/oauth/token/stripe', 'Client\StripeGatewayController@verifyOAuthToken')->name('verify.oauth.token.stripe');
-        Route::get('create/custom/connected-account/stripe/{vendor_id}', 'Client\StripeGatewayController@createCustomConnectedAccount')->name('create.custom.connected-account.stripe');
+        // Route::get('create/custom/connected-account/stripe/{vendor_id}', 'Client\StripeGatewayController@createCustomConnectedAccount')->name('create.custom.connected-account.stripe');
         Route::post('vendor/payout/stripe', 'Client\StripeGatewayController@vendorPayoutViaStripe')->name('vendor.payout.stripe');
+        Route::post('vendor/payout/account/create/pagarme', 'Client\PagarmeController@createVendorPayoutAccount')->name('vendor.payout.account.create.pagarme');
 
         Route::get('/admin/signup', 'Client\AdminSignUpController@index')->name('admin.signup');
         Route::post('save_fcm_token', 'Client\UserController@save_fcm')->name('client.save_fcm');

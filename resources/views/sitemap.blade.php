@@ -10,9 +10,9 @@
     </url>
 @endforeach
 
-{{--@foreach($vendors as $vendor)
+@foreach($vendors as $vendor)
     <url>
-        <loc>{{ URL::route("patients.show", [$vendor->id]) }}</loc>
+        <loc>{{ URL::route("vendorDetail", [$vendor->slug]) }}</loc>
         <lastmod>{{ gmdate(DateTime::W3C, strtotime($vendor->updated_at)) }}</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
@@ -21,10 +21,19 @@
 
 @foreach($products as $product)
     <url>
-        <loc>{{ URL::route("patients.show", [$product->id]) }}</loc>
-        <lastmod>{{ gmdate(DateTime::W3C, strtotime($vendor->updated_at)) }}</lastmod>
+        <loc>{{ URL::route("productDetail", [$product->vendor->slug,$product->url_slug]) }}</loc>
+        <lastmod>{{ gmdate(DateTime::W3C, strtotime($product->updated_at)) }}</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
-@endforeach--}}
+@endforeach
+
+@foreach($pages as $page)
+    <url>
+        <loc>{{ URL::route("extrapage", [$page->slug]) }}</loc>
+        <lastmod>{{ gmdate(DateTime::W3C, strtotime($page->updated_at)) }}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+@endforeach
 </urlset>
