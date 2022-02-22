@@ -106,39 +106,45 @@ class AhoyController extends Controller
         	$customer = User::find($user_id);
 			$vendor_details = Vendor::find($orderVendor->vendor_id);
 			$cus_address = UserAddress::find($order->address_id);
-			$orderProducts = OrderVendorProduct::where(['order_id'=>$orderVendor->order_id,'order_vendor_id'=>$orderVendor->id])->get();
+			//$orderProducts = OrderVendorProduct::where(['order_id'=>$orderVendor->order_id,'order_vendor_id'=>$orderVendor->id])->get();
             $scheduledAt = '';
             if(isset($order->scheduled_date_time) && $order->scheduled_date_time){
                 $scheduledAt = strtotime($order->scheduled_date_time);
             }
 
-			$data = array (
-				'CompanyOrderTrackId' => $orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id,
-				'PickupLocationId' => $vendor_details->ahoy_location ? json_decode($vendor_details->ahoy_location)->id : '',   //Required 
-				'CustomerAddressId' => '',  
-				'OrderLargeBoxQuantity' => $vendor_details->name ?? '',  
-				'OrderMidBoxQuantity' => $vendor_details->phone_no, 
-				'OrderSmallBoxQuantity' => $vendor_details->email ?? '', 
-				'pickup_address' => $vendor_details->address ?? '',  
-			    'PickupTime' => ($scheduledAt!='')? $scheduledAt : '0',  //If order to be scheduled, provide pickup time in UTC Unix millisecond. if the order is an immediate leave as 0
-				
-                'CustomerName' => $customer->name,
-				'CustomerPhone' => $customer->phone_number,
-				'CustomerEmail' => $customer->email,
-                'CustomerAddress'=> $cus_address->address,
-				'CustomerLatitude' => $cus_address->latitude, //Required
-				'CustomerLongitude' => $cus_address->longitude, //Required
-				'IsCashPayment' =>  false,
-				'IsCardPayment' =>  false,
-				'CashAmount' => ($order->payment_option_id==1)?$order->total_amount : 0,
-				'CustomerAddressTypeId' => '1',
-				'CustomerAddressNote' => '',
-				'Area' => '1',
-				'Building' => '1',
-				'Floor' => '1',
-				'Unit' => '1',
-				'TemperatureTypeId' => 0,
+             # Request body
+             $data = array (
+                'pickupLocationId' =>  $vendor_details->ahoy_location ? json_decode($vendor_details->ahoy_location)->id : '',   //Required 
+                "companyOrderTrackId"=> $orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id,
+                "orderLargeBoxQuantity"=> '0',
+                "orderMidBoxQuantity"=> '1',
+                "orderSmallBoxQuantity"=> '0',
+                'customerName' => $customer->name,
+				'customerPhone' => '+97'.$customer->phone_number,
+				'customerEmail' => $customer->email,
+                'customerAddress'=> $cus_address->address,
+				'customerLatitude' => $cus_address->latitude, //Required
+				'customerLongitude' => $cus_address->longitude, //Required
 
+                "isCashPayment"=> true,
+                "isCardPayment"=> false,
+                "paymentAmount"=> ($order->payment_option_id==1)?$order->total_amount : 0,
+                "customerAddressTypeId"=> '2',
+                "customerAddressNote"=> '',
+                "area"=> 1,
+                "building"=> 1,
+                "floor"=> 1,
+                "unit"=> 1,
+                "temperatureTypeId"=> 0
+            );
+
+
+    	    $orderSuc = $this->createPreOrder($data);
+            if($orderSuc->preOrderId != ''){
+                return $this->confirmOrderPreRequestAhoy($orderSuc);
+            }else{
+                return 0;
+            }
 
             //     • CustomerAddressTypeId
             //     ◦ 1 => Tower, (either office or apartment)
@@ -153,10 +159,8 @@ class AhoyController extends Controller
             //     ◦ 1 => Cold
             //     ◦ 2 => Warm
 
-			  );
+			  
 		}
-    	$orderSuc = $this->createPreOrder($data);
-		return $orderSuc;
 		//Response Result
         // "preOrderId": 220,
         // "expiryTime": 1600352489947,
@@ -172,16 +176,63 @@ class AhoyController extends Controller
 
     }
 
-
-
-
-    public function confirmOrderPreRequestAhoy($order_id)
+    public function confirmOrderPreRequestAhoy($responseData)
     {
 		$this->configuration();
-		if($this->status){
-            $data =array('preOrderId',$order_id,'deliveryServiceTypeId'=>1);
+		if($this->status){ 
+            $typeId = $responseData->onDemand->deliveryServiceId;
+            $data =array('preOrderId'=>$responseData->preOrderId,'deliveryServiceTypeId'=>$typeId);
 			return $order= $this->confirmPreOrder($data);
 		}
+    }
+
+
+
+    public function getPreOrderFee($vendor_id,$cus_address)
+    {
+        $this->configuration();
+		if($this->status)
+		{
+            $user_id = auth()->id();
+        	$customer = User::find($user_id);
+			$vendor_details = Vendor::find($vendor_id);
+			//$cus_address = UserAddress::where(['is_primary'=>'1','user_id'=>$user_id])->first();
+           
+            # Request body
+            $data = array (
+                'pickupLocationId' => $vendor_details->ahoy_location ? json_decode($vendor_details->ahoy_location)->id : '',   //Required 
+                "companyOrderTrackId"=> '',
+                "orderLargeBoxQuantity"=> '0',
+                "orderMidBoxQuantity"=> '1',
+                "orderSmallBoxQuantity"=> '0',
+                'customerName' => $customer->name,
+				'customerPhone' => '+97'.$customer->phone_number,
+				'customerEmail' => $customer->email,
+                'customerAddress'=> $cus_address->address,
+				'customerLatitude' => $cus_address->latitude, //Required
+				'customerLongitude' => $cus_address->longitude, //Required
+                "isCashPayment"=> true,
+                "isCardPayment"=> false,
+                "paymentAmount"=> 100,
+                "customerAddressTypeId"=> '2',
+                "customerAddressNote"=> '',
+                "area"=> 1,
+                "building"=> 1,
+                "floor"=> 1,
+                "unit"=> 1,
+                "temperatureTypeId"=> 0
+            );
+
+            $orderSuc = $this->createPreOrder($data);
+
+            if($orderSuc->preOrderId != ''){
+                return $orderSuc->onDemand->price;
+            }else{
+                return 0;
+            }
+        }
+
+
     }
 
 
@@ -266,6 +317,16 @@ class AhoyController extends Controller
 
         return response([],200);
 
+    }
+
+    public function setWebhook(Request $request)
+    {
+        $this->configDetails();
+        if($this->test==1){
+            return $this->setWebhookUrl($request->url);
+        }else {
+            return 'Webhook url not set.';
+        }
     }
 
 

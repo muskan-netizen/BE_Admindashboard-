@@ -78,22 +78,21 @@ trait Ahoy{
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $result = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if (curl_errno($ch)) {
             $httpCode =  curl_error($ch);
         }
-  $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-  curl_close($curl);
-  return array('code'=>$httpCode,'response'=>$response);
+    curl_close($ch);
+  return array('code'=>$httpCode,'response'=>$result);
 }
-
 
 public function createPreOrder($data)
 {
     $this->configDetails();
     if($this->test==1){
-        $end_url = 'https://ahoydev.azure-api.net/delivery/deliveryrequest?Subscriptionkey='.$this->api_key;
+        $end_url = 'https://ahoydev.azure-api.net/delivery/deliveryservice?Subscriptionkey='.$this->api_key;
     }else{
-        $end_url = 'https://ahoyapis.azure-api.net/DeliveryIntegrationAPIProd/CreateOrderFromPreOrderFunction?Subscriptionkey='.$this->api_key;
+        $end_url = 'https://ahoyapis.azure-api.net/delivery/deliveryservice?Subscriptionkey='.$this->api_key;
     }
 
     $ch = curl_init();
@@ -113,9 +112,8 @@ public function createPreOrder($data)
         $httpCode =  curl_error($ch);
     }
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($curl);
-    return array('code'=>$httpCode,'response'=>$response);
-
+    curl_close($ch);
+    return json_decode($result);
 } 
 
 
@@ -146,7 +144,7 @@ public function confirmPreOrder($data)
         $httpCode =  curl_error($ch);
     }
     curl_close($ch);
-    return array('code'=>$httpCode,'response'=>json_decode($result));
+    return json_decode($result);
 } 
 
 
@@ -173,7 +171,6 @@ public function confirmPreOrder($data)
     $result = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if (curl_errno($ch)) {
-        \Log::info(curl_error($ch));
         $return =  curl_error($ch);
     }
     curl_close($ch);
@@ -185,20 +182,23 @@ public function confirmPreOrder($data)
   {
     $this->configDetails();
     $curl = curl_init();
-
+    if($this->test==1){
+        $end_url = 'https://ahoydev.azure-api.net/delivery/cancel?Subscriptionkey='.$this->api_key;
+    }else{
+        $end_url = 'https://ahoyapis.azure-api.net/delivery/cancel?Subscriptionkey='.$this->api_key;
+    }  
     curl_setopt_array($curl, array(
-    CURLOPT_URL => $this->app_url."/oporder/update",
+    CURLOPT_URL => $end_url,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => "",
     CURLOPT_MAXREDIRS => 10,
     CURLOPT_TIMEOUT => 30,
     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST => "POST",
+    CURLOPT_CUSTOMREQUEST => "PUT",
     CURLOPT_POSTFIELDS => $data,
     CURLOPT_HTTPHEADER => array(
         "apikey: {$this->api_key}",
         "cache-control: no-cache",
-        "content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
     ),
     ));
 
@@ -216,7 +216,43 @@ public function confirmPreOrder($data)
   }
 
 
+  public function setWebhookUrl($url)
+  {
+    $this->configDetails();
+    if($this->test==1){
+        $end_url = 'https://ahoydev.azure-api.net/delivery/orderwebhook?Subscriptionkey='.$this->api_key;
+    }else{
+        $end_url = 'https://ahoyapis.azure-api.net/delivery/orderwebhook?Subscriptionkey='.$this->api_key;
+    } 
+    $curl = curl_init($end_url);
+    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_setopt($curl, CURLOPT_URL, $end_url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    
+    # Request headers
+    $headers = array(
+        'Content-Type: application/json',
+        'Cache-Control: no-cache',
+        'Ocp-Apim-Subscription-Key: '.$this->api_key,);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+    
+    # Request body
+    $request_body = '{
+        "endpoint": "'.$url.'",
+    }';
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $request_body);
+    
+    $resp = curl_exec($curl);
+    $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    $err = curl_error($curl);
 
+    curl_close($curl);
+    if($httpCode == '200'){
+        return response()->json(['code'=>'200','msg'=>'Webhook url is set.']);
+    }else{
+        return response()->json(['code'=>'400','msg'=>'Error']);
+    }
+  }
 
 
 

@@ -122,6 +122,8 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
+
+
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -212,6 +214,7 @@ class CartController extends FrontController
                     ], 400);
                 }
             }
+
             $oldquantity = $isnew = 0;
             $cart_product_detail = [
                 'status'  => '0',
@@ -745,7 +748,7 @@ class CartController extends FrontController
                         $dropoff_delay_date = $prod->product->dropoff_delay_hrs_min;
                     }
                     $select = '';
-                      
+
                     if($action == 'delivery'){
                         $delivery_fee_charges = 0;
                         $deliver_charges_lalmove =0;
@@ -755,12 +758,12 @@ class CartController extends FrontController
                             $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address);
                            if(isset($deliveries[0]))
                            {
-                            $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">'; 
+                            $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                             foreach($deliveries as $k=> $opt)
                                 {
-                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['courier_name'].', Rate : '.$opt['rate'].'</option>'; 
+                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['courier_name'].', Rate : '.$opt['rate'].'</option>';
                                 }
-                            $select .= '</select>'; 
+                            $select .= '</select>';
                                 if($code){
                                     $new = array_filter($deliveries, function ($var) use ($code) {
                                         return ($var['code'] == $code);
@@ -786,9 +789,9 @@ class CartController extends FrontController
                             $dtype = explode('_',$code);
                             CartDeliveryFee::updateOrCreate(['cart_id' => $cart->id, 'vendor_id' => $vendorData->vendor->id],['delivery_fee' => $deliveryCharges,'shipping_delivery_type' => $dtype[0]??'D','courier_id'=>$dtype[1]??'0']);
                     }
-                    
-                    }//End Check last time stone 
-                        
+
+                    }//End Check last time stone
+
                 }
 
                     $product = Product::with([
@@ -917,7 +920,7 @@ class CartController extends FrontController
                 $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
                 $vendorData->delivery_fee_charges = number_format($delivery_fee_charges, 2, '.', '');
                 //$vendorData->delivery_fee_charges_static = number_format($delivery_fee_charges_static, 2, '.', '');;
-               
+
                 $vendorData->payable_amount = number_format($payable_amount, 2, '.', '');
                 $vendorData->discount_amount = number_format($discount_amount, 2, '.', '');
                 $vendorData->discount_percent = number_format($discount_percent, 2, '.', '');
@@ -931,7 +934,7 @@ class CartController extends FrontController
                 $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
                 $vendorData->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
                 $vendorData->delOptions = $select;
-                
+
                 if(isset($serviceArea)){
                     if($serviceArea->isEmpty()){
                         $vendorData->isDeliverable = 0;
@@ -1051,7 +1054,7 @@ class CartController extends FrontController
                     $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
                 }
                 if(count((array)$slots) == 0){
-                    $myDate  = date('Y-m-d',strtotime('+1 day'));
+                    $myDate  = date('Y-m-d',strtotime('+2 day'));
                     $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
                 }
 
@@ -1085,11 +1088,11 @@ class CartController extends FrontController
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->scheduled_date_time = $myDate;
-            if($cart->slotsCnt>0){
+            if($cart->slotsCnt==0){
                 $mdate = (object)findSlotNew('',$cart->vendor_id,'');
                 $cart->delay_date =  $mdate->mydate;
              }else{
-                $cart->delay_date =  $delay_date??0;
+                $cart->delay_date =  $myDate??0;
             }
 
 
@@ -1416,13 +1419,13 @@ class CartController extends FrontController
         //Fetch all delivery fee option
         public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address)
         {
-            $option = array(); 
+            $option = array();
             $delivery_count = 0;
             try {
                 if($vendorData->vendor_id)
                 {
                    Session()->put('vid',$vendorData->vendor_id);
-                
+
             if($preferences->static_delivey_fee != 1)
             {
                 //Dispatcher Delivery changes code
@@ -1440,15 +1443,15 @@ class CartController extends FrontController
                         'code' => 'D_0'
                     );
                 }
-         
-            
+
+
             //Lalamove Delivery changes code
             $lalamove = new LalaMovesController();
             $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
             if($deliver_lalmove_fee>0)
-            {   
+            {
                 $deliver_charge_lalamove = number_format($deliver_lalmove_fee, 2, '.', '');
-            
+
                 $optionLala[] = array(
                     'type'=>'L',
                     'courier_name'=>__('Lalamove'),
@@ -1463,13 +1466,13 @@ class CartController extends FrontController
             }
             //End Lalamove Delivery changes code
 
-            
+
             if($vendorData->vendor->shiprocket_pickup_name){
                 //getShiprocketFee Delivery changes code
                 $ship = new ShiprocketController();
                 $deliver_ship_fee = $ship->getCourierService($vendorData->vendor_id);
                 if($deliver_ship_fee)
-                {  
+                {
                     $option = array_merge($option,$deliver_ship_fee);
                 }
             }
@@ -1479,7 +1482,7 @@ class CartController extends FrontController
                 if($dunzo->status){
                     $deliver_dunzo_fee = $dunzo->getQuotations($vendorData->vendor_id,$address);
                     if($deliver_dunzo_fee>0)
-                    { 
+                    {
                         $deliver_charge_dunzo = number_format($deliver_dunzo_fee, 2, '.', '');
                         $optionDunzo[] = array(
                             'type'=>'DU',
@@ -1494,14 +1497,14 @@ class CartController extends FrontController
                         $option = array_merge($option,$optionDunzo);
                     }
                 }
-                    
+
                 if(isset($vendorData->vendor->ahoy_location)){
                   //getAhoy (Masa) Delivery fee changes code
                   $ahoy = new AhoyController();
                   if($ahoy->status){ 
-                      $deliver_ahoy_fee = $ahoy->getAhoyBaseFee($vendorData->vendor_id,$address);
+                      $deliver_ahoy_fee = $ahoy->getPreOrderFee($vendorData->vendor_id,$address);
                       if($deliver_ahoy_fee>0)
-                      { 
+                      {
                           $deliver_charge_ahoy = number_format($deliver_ahoy_fee, 2, '.', '');
                           $optionAhoy[] = array(
                               'type'=>'M',
@@ -1518,11 +1521,11 @@ class CartController extends FrontController
                   }
                 }
 
-            
+
         }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
-             # for static fees 
-           
-                if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){ 
+             # for static fees
+
+                if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){
                     $deliveryCharges = number_format($vendorData->vendor->delivery_fee_maximum, 2, '.', '');
                 }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
                     $deliveryCharges = number_format($vendorData->vendor->delivery_fee_minimum, 2, '.', '');
@@ -1658,7 +1661,7 @@ class CartController extends FrontController
                         if(isset($request->schedule_dt) && !empty($request->schedule_dt))
                         $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                     }
-                    
+
                 }
 
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup))    # for pickup laundry
@@ -1672,7 +1675,7 @@ class CartController extends FrontController
                 } else {
                     $cart_detail = Cart::where('unique_identifier', $new_session_token)->first();
                 }
-              
+
 
                 $cart_detail = $cart_detail->update(['specific_instructions' => $request->specific_instructions??null,
                 'schedule_type' => $request->task_type,

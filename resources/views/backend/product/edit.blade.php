@@ -425,7 +425,8 @@
                                     </div>
                             @endif
                         @endif
-                        @if($configData->need_delivery_service == 1 && $product->category->categoryDetail->type_id != 7 && (!in_array($client_preference_detail->business_type,['taxi','laundry'])))
+                        {{-- $configData->need_delivery_service == 1 &&  --}}
+                        @if($product->category->categoryDetail->type_id != 7 && (!in_array($client_preference_detail->business_type,['taxi','laundry'])))
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Requires Last Mile Delivery'),['class' => 'control-label']) !!}
                             <input type="checkbox" id="last_mile" data-plugin="switchery" name="last_mile" class="chk_box" data-color="#43bee1" @if($product->Requires_last_mile == 1) checked @endif>
