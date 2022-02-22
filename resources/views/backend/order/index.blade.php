@@ -5,6 +5,14 @@
 }.order-page .card-box {padding: 20px 20px 5px !important;}.progress-order {width: calc(100% + 48px);margin: -24px 0 20px;background: #00000012;
 color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;border-top-left-radius: 15px;border-top-right-radius: 15px;padding: 5px 0;
 }
+.error-msg {
+    font-size: 20px;
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    -webkit-transform: translate(0px, -50%);
+    transform: translate(0px, -50%);
+}
 </style>
 
 <script type="text/template" id="order_page_template">
@@ -81,7 +89,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                                    <% } %>
 
-                                                </div> 
+                                                </div>
 
 
 
@@ -95,7 +103,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                 <ul class="status_box mt-1 pl-0">
                                                     <li>
                                                         <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
-                                                        <label class="m-0 in-progress"><%= vendor.order_status %></label>                       
+                                                        <label class="m-0 in-progress"><%= vendor.order_status %></label>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -315,7 +323,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     </div>
 </div>
 <script type="text/template" id="no_order_template">
-    <div class="error-msg"><p>{{ __("You don't have orders right now.") }}</p></div>
+    <div class="error-msg mt-3">
+        <img class="mb-2" src="{{asset('images/no-order.svg')}}">
+        <p>{{ __("You don't have orders right now.") }}</p>
+    </div>
     </script>
 <div class="loader" id="order_list_order">
     <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
@@ -343,13 +354,14 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             </li>
         </ul>
         <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
-            <div class="tab-pane fade past-order show active" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
-            <div class="tab-pane fade" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
-            <div class="tab-pane fade past-order" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
-                <div class="error-msg">
-                    <p>{{ __('You have not any order yet now.') }}</p>
+            <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
+            <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
+            <div class="tab-pane fade past-order position-relative h-100" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
+                <div class="error-msg mt-3">
+                    <img class="mb-2" src="{{asset('images/no-order.svg')}}">
+                    <p>{{ __("You don't have orders right now.") }}</p>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
 </div>
@@ -400,7 +412,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         }
     });
     $("#vendor_select_box").change(function() {
-      var typ=  $("a.nav-link.active").data('rel'); 
+      var typ=  $("a.nav-link.active").data('rel');
      //   alert(typ);
 
         init(typ, "{{ route('orders.filter') }}", '', false);
@@ -418,7 +430,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
     }
 
-    function init(filter_order_status, url, search_keyword = "", isOnload = false) { 
+    function init(filter_order_status, url, search_keyword = "", isOnload = false) {
     var date_filter = $('#range-datepicker').val();
     var vendor_id = $('#vendor_select_box option:selected').val();
         $.ajax({
@@ -431,9 +443,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 vendor_id: vendor_id,
                 date_filter: date_filter
             },
-            success: function(response) { 
+            success: function(response) {
                 // reload after 10 sec
-               
+
 
                 $('#order_list_order').hide();
                 if (response.status == 'Success') {
@@ -462,23 +474,20 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     $("#history-orders").html("(" + response.data.orders_history + ")");
 
                  }
-                // setTimeout(autoloaddashboad(), 20000);
+                 setTimeout(autoloaddashboad(), 5000);
             },
             error: function(data) {
-
+               autoloaddashboad();
             },
         });
-
-
-        
-    } 
+    }
     $(document).ready(function() {
 
         setTimeout(function() {
             $("#pending_order-tab").trigger('click');
         }, 500);
         //setInterval(autoloaddashboad, 10000);
-        
+
         $(document).on("click", ".load-more-btn", function() {
             $('#order_list_order').show();
             var url = $(this).data('url');

@@ -6,7 +6,7 @@ use Illuminate\Routing\Route;
 use App\Models\Client;
 use Illuminate\Support\Facades\Cache;
 use Request;
-use Config;
+use Config,Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 

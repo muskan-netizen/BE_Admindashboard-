@@ -16,7 +16,7 @@
     </div>
     <div class="col-md-6">
         <div class="form-group" id="minimum_pointsInput">
-            {!! Form::label('title', __('Minimum Points to reach this level *'),['class' => 'control-label']) !!}
+            {!! Form::label('title', __('Min. Points to reach this level *'),['class' => 'control-label']) !!}
             {!! Form::text('minimum_points', $lc->minimum_points, ['class' => 'form-control']) !!}
             <span class="invalid-feedback" role="alert">
                 <strong></strong>

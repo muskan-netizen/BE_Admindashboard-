@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use App\Models\{Brand, Category, ClientLanguage, CategoryTranslation, CsvProductImport, Product, ProductCategory, ProductTranslation, ProductVariant, ProductVariantSet, TaxCategory, Variant, VariantOption, VendorCategory, VendorMedia, ProductImage,Client};
+use App\Models\{Brand, Category,AddonSet,ProductAddon ,ClientLanguage, CategoryTranslation, CsvProductImport, Product, ProductCategory, ProductTranslation, ProductVariant, ProductVariantSet, TaxCategory, Variant, VariantOption, VendorCategory, VendorMedia, ProductImage,Client};
 
 class ProductsImport implements ToCollection{
     private $folderName = 'prods';
@@ -26,10 +26,11 @@ class ProductsImport implements ToCollection{
             $error = array();
             $variant_exist = 0;
             try {
+
                 foreach ($rows as $row) {
 
                     $checker = 0;
-                    if ($row[0] != "Handle") { //header of excel check
+                    if ($row[0] != "SKU") { //header of excel check
 
                         if ($row[0] == "") { //if sku or handle is empty
                             $error[] = "Row " . $i . " : handle is empty";
@@ -50,13 +51,13 @@ class ProductsImport implements ToCollection{
                         if ($row[4] != "") {
                             $category = $row[4];
                             $vendorCategoryExists = VendorCategory::with('category.translation')
-                            ->whereHas('category.translation', function($q)use($category){
-                                $q->select('category_translations.name')
-                                ->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')
-                                ->join('languages', 'category_translations.language_id', 'languages.id')
-                                ->where('cl.is_active', 1)
-                                ->where('category_translations.name', 'LIKE', $category);
-                            })->where('vendor_id', $this->vendor_id)->first();
+                                                ->whereHas('category.translation', function($q)use($category){
+                                                    $q->select('category_translations.name')
+                                                    ->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')
+                                                    ->join('languages', 'category_translations.language_id', 'languages.id')
+                                                    ->where('cl.is_active', 1)
+                                                    ->where('category_translations.name', 'LIKE', $category);
+                                                })->where('vendor_id', $this->vendor_id)->first();
 
                             if (!$vendorCategoryExists) { //check if category doesn't exist
                                 $error[] = "Row " . $i . " : Category doesn't exist";
@@ -212,68 +213,86 @@ class ProductsImport implements ToCollection{
                         }
 
 
-                        if($row[23] != ""){
-                            $brand = Brand::where('title', "LIKE", $row[23])->first();
+                        if($row[18] != ""){
+                            $brand = Brand::where('title', "LIKE", $row[18])->first();
                             if(!$brand){
                                 $error[] = "Row " . $i . " : Brand doesn't exist";
                                 $checker = 1;
                             }
                         }
 
-                        if($row[24] != ""){
-                            $tax_category = TaxCategory::where('title', "LIKE", $row[24])->first();
+                        if($row[19] != ""){
+                            $tax_category = TaxCategory::where('title', "LIKE", $row[19])->first();
                             if(!$tax_category){
                                 $error[] = "Row " . $i . " : Tax Category doesn't exist";
                                 $checker = 1;
                             }
                         }
+                        if($row[23] != ""){
 
+                            foreach (explode(',', $row[23]) as $titleKey => $Addontitle) {
+                                $vendorAddonSetExists =AddonSet::where('title', "LIKE", $Addontitle)->first();
+                                if(!$vendorAddonSetExists){
+                                    $error[] = "Row " . $i . " : Addon doesn't exist";
+                                    $checker = 1;
+                                    break;
+                                }
+                            }
+                        }
                         if ($checker == 0) {
                             $data[] = $row;
                         }
                     }
+
                     $i++;
                 }
+                 //pr($error);
+
                 if (!empty($data)) {
                     foreach ($data as $da) {
+
                        // array_map("utf8_encode", $da);
                         $da[2] = str_replace("","’",$da[2]);
                        // pr($da);
                         if (!Product::where('sku', $da[0])->exists()) {
+                            $brand_id = null;
+                            $tax_category_id = null;
 
-                            if($da[23] != ""){
-                                $brand = Brand::where('title', "LIKE", $da[23])->first();
+                            if($da[18] != ""){
+                                $brand = Brand::where('title', "LIKE", $da[18])->first();
                                 if($brand){
                                     $brand_id = $brand->id;
                                 }
                             }
-                            else{
-                                $brand_id = null;
-                            }
 
-                            if($da[24] != ""){
-                                $tax_category = TaxCategory::where('title', "LIKE", $da[24])->first();
+
+                            if($da[19] != ""){
+
+                                $tax_category = TaxCategory::where('title', "LIKE", $da[19])->first();
                                 if($tax_category){
                                     $tax_category_id = $tax_category->id;
                                 }
                             }
-                            else{
-                                $tax_category_id = null;
-                            }
+
 
                             // insert product
                             // $category = CategoryTranslation::where('name', $da[4])->first();
-                            $categoryName = $da[4];
-                            $category = VendorCategory::with('category.translation')
-                            ->whereHas('category.translation', function($q)use($categoryName){
-                                $q->select('category_translations.name')
-                                ->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')
-                                ->join('languages', 'category_translations.language_id', 'languages.id')
-                                ->where('cl.is_active', 1)
-                                ->where('category_translations.name', 'LIKE', $categoryName);
-                            })->where('vendor_id', $this->vendor_id)->first();
+
+                                $category = $da[4];
+
+                                $category = VendorCategory::with('category.translation')
+                                ->whereHas('category.translation', function($q)use($category){
+                                    $q->select('category_translations.name')
+                                    ->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')
+                                    ->join('languages', 'category_translations.language_id', 'languages.id')
+                                    ->where('cl.is_active', 1)
+                                    ->where('category_translations.name', 'LIKE', $category);
+                                })->where('vendor_id', $this->vendor_id)->first();
+
+
+
+
                             $product = Product::insertGetId([
-                                'is_new' => 1,
                                 'type_id' => 1,
                                 'sku' => $da[0],
                                 'is_featured' => 0,
@@ -285,18 +304,32 @@ class ProductsImport implements ToCollection{
                                 'Requires_last_mile' => 0,
                                 'sell_when_out_of_stock' => 0,
                                 'vendor_id' => $this->vendor_id,
-                                'category_id' => $category->category_id,
+                                'category_id' =>$category->category_id,
                                 'tax_category_id' => $tax_category_id,
                                 'title' => ($da[1] == "") ? "" : $da[1],
                                 'is_live' => ($da[3] == 'TRUE') ? 1 : 0,
                                 'body_html' => ($da[2] == "") ? "" : $da[2],
                             ]);
 
+                            foreach (explode(',', $da[23]) as $titleKey => $Addontitle) {
+                                $vendorAddonSetExists =AddonSet::where('title', "LIKE", $Addontitle)->first();
+                                if($vendorAddonSetExists){
+                                    $addonsArray= [
+                                        'product_id' => $product,
+                                        'addon_id' => $vendorAddonSetExists->id
+                                    ];
+                                   ProductAddon::insert($addonsArray);
+                                }
+                            }
+
+
+
                             //insertion into product category
-                            $cat[] = [
+                            $cat = [
                                 'product_id' => $product,
                                 'Category_id' => $category->category_id,
                             ];
+
                             ProductCategory::insert($cat);
 
                             $client_lang = ClientLanguage::where('is_primary', 1)->first();
@@ -331,7 +364,7 @@ class ProductsImport implements ToCollection{
                                     'quantity' => (!empty($da[13]))?$da[13]:0,
                                     'price' => $da[12],
                                     'compare_at_price' => $da[14],
-                                    'cost_price' => $da[21],
+                                    'cost_price' => $da[17],
                                     'barcode' => $this->generateBarcodeNumber(),
                                 ]);
 
@@ -385,13 +418,14 @@ class ProductsImport implements ToCollection{
                                 $proVariant->sku = $da[0];
                                 $proVariant->product_id = $product;
                                 $proVariant->barcode = $this->generateBarcodeNumber();
-                                $proVariant->quantity = $da[25]??0;
-                                $proVariant->price = $da[26]??"";
-                                $proVariant->compare_at_price = $da[27]??"";
+                                $proVariant->quantity = $da[20]??0;
+                                $proVariant->price = $da[21]??"";
+                                $proVariant->compare_at_price = $da[22]??"";
                                 $proVariant->save();
                             }
-                            if (!empty($da[17])) {
-                                foreach (explode(',', $da[17]) as $file_key => $file) {
+                            //images
+                            if (!empty($da[16])) {
+                                foreach (explode(',', $da[16]) as $file_key => $file) {
                                     $img = new VendorMedia();
                                     $img->media_type = 1;
                                     $img->vendor_id = $this->vendor_id;
@@ -407,6 +441,17 @@ class ProductsImport implements ToCollection{
                         }
                         else{
                             $product_id = Product::where('sku', $da[0])->first();
+                            $delete = ProductAddon::where('product_id', $product_id->id)->delete();
+                            foreach (explode(',', $da[23]) as $titleKey => $Addontitle) {
+                                $vendorAddonSetExists =AddonSet::where('title', "LIKE", $Addontitle)->first();
+                                if($vendorAddonSetExists){
+                                    $addonsArray= [
+                                        'product_id' => $product_id->id,
+                                        'addon_id' => $vendorAddonSetExists->id
+                                    ];
+                                   ProductAddon::insert($addonsArray);
+                                }
+                            }
                             if ($da[5] != "" || $da[7] != "" || $da[9] != "") {
                                 $product_hasvariant = Product::where('id', $product_id->id)->first();
                                 $product_hasvariant->has_variant = 1;
@@ -419,7 +464,7 @@ class ProductsImport implements ToCollection{
                                     'quantity' => (!empty($da[13]))?$da[13]:0,
                                     'price' => $da[12],
                                     'compare_at_price' => $da[14],
-                                    'cost_price' => $da[21],
+                                    'cost_price' => $da[17],
                                     'barcode' => $this->generateBarcodeNumber(),
                                 ]);
 

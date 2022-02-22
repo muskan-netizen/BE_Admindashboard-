@@ -17,7 +17,7 @@
         </div>
     </div>
     <div class="row cms-cols al_custom_cms_page">
-        <div class="col-lg-5 col-xl-3 mb-2">
+        <div class="col-md-5 col-xl-3 mb-2">
             <div class="card">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-3">
@@ -64,7 +64,8 @@
                                 {{$page->primary ? $page->primary->title : ''}}
 
                                 <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_BLANK" class="mr-2">
-                                    <i class="mdi mdi-eye"></i>
+                                    <!-- <i class="mdi mdi-eye"></i> -->
+                                    <svg style="height:14px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.34 12"><defs><style>.cls-1{fill:#6e768e;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path class="cls-1" d="M2.69,10.8c-.29,0-.58,0-.86,0a.6.6,0,0,1-.63-.64V9.31a.63.63,0,0,0-.42-.58.61.61,0,0,0-.65.2A2.53,2.53,0,0,0,0,9.15v1.29l0,.08a1.67,1.67,0,0,0,1.34,1.41,5.84,5.84,0,0,0,1.45,0,.57.57,0,0,0,.34-.21.54.54,0,0,0,.07-.61A.58.58,0,0,0,2.69,10.8Z"/><path class="cls-1" d="M0,2.9a.6.6,0,0,0,.69.41.61.61,0,0,0,.48-.65V1.88a.59.59,0,0,1,.64-.65h.77a1.09,1.09,0,0,0,.26,0A.59.59,0,0,0,3.28.56.55.55,0,0,0,2.75,0,9.55,9.55,0,0,0,1.68,0,1.7,1.7,0,0,0,.22,1,4.44,4.44,0,0,0,0,1.58V2.87Z"/><path class="cls-1" d="M11.91,5.84a4.17,4.17,0,0,0-1.54-2.36A5.09,5.09,0,0,0,4.75,3,4.32,4.32,0,0,0,2.41,5.89a.57.57,0,0,0,0,.26,4.09,4.09,0,0,0,.78,1.61A4.87,4.87,0,0,0,7,9.65a5.43,5.43,0,0,0,2.15-.39,4.55,4.55,0,0,0,2.76-3A.77.77,0,0,0,11.91,5.84Zm-4.74,2A1.8,1.8,0,1,1,9,6,1.82,1.82,0,0,1,7.17,7.81Z"/><path class="cls-1" d="M11.67,1.23c.28,0,.57,0,.85,0a.58.58,0,0,1,.61.63c0,.29,0,.58,0,.87a.6.6,0,1,0,1.19,0v-.9A1.76,1.76,0,0,0,13,.1a5.54,5.54,0,0,0-.83-.1V0h-.61a.49.49,0,0,0-.41.23.58.58,0,0,0-.06.62A.6.6,0,0,0,11.67,1.23Z"/><path class="cls-1" d="M14.32,9.18a0,0,0,0,0,0,0,.59.59,0,0,0-1.17.15c0,.28,0,.57,0,.85a.59.59,0,0,1-.64.65h-.77a1.09,1.09,0,0,0-.26,0,.57.57,0,0,0-.4.64.56.56,0,0,0,.53.52h.94a1.8,1.8,0,0,0,1.73-1.28A5.69,5.69,0,0,0,14.32,9.18Z"/></g></g></svg>
 
                                 </a>
                                 @if(!in_array($page->id, [1,2,3]))
@@ -82,7 +83,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-7 col-xl-6 mb-2 cms-content">
+        <div class="col-md-7 col-xl-6 mb-2 cms-content">
             <div class="card">
                 <div class="card-body p-3" id="edit_page_content">
                     <div class="row">
@@ -93,7 +94,7 @@
                         </div>
                     </div>
                     <div class="row align-items-center">
-                        <div class="col-lg-6 mb-2">
+                        <div class="col-md-12 col-xl-6 mb-2">
                             <!-- <label for="title" class="control-label">{{ __("Title") }}</label> -->
                             <!-- <input class="form-control" id="edit_title" name="meta_title" type="text"> -->
                             <div class="site_link position-relative px-0">
@@ -116,7 +117,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4 col-xl-2 mb-2">
+                        <div class="col-md-4  col-xl-2 mb-2">
                             <div class="form-group mb-0">
                                 <select class="form-control" id="published">
                                     <option value="0">{{ __("Draft") }}</option>
@@ -171,11 +172,10 @@
                             <span class="text-danger error-text updatedescrpitionError"></span>
                         </div>
                         <div class="col-md-12 d-none" id="faqSection">
-                            <div class="card">
-                                <div class="card-body p-3">
-                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="card_">
+                                <div class="card-body_ p-0">
+                                    <div class="d-flex align-items-center justify-content-between mb-3 px-2">
                                         <h4>{{ __("Faq's") }}</h4>
-
                                     </div>
                                     <div class="faq_section" id ="faq_show_section"></div>
                                 </div>
@@ -189,20 +189,25 @@
 </div>
 <script type="text/template" id="faq_template">
     <div class ="option_section" id ="option_section_<%= id %>" data-section_number="<%= id %>">
-        <div class="form-group">
-            <label for="option_title_<%= id %>">{{__('Question')}}</label>
-            <input type="hidden" name="question_id[]"  id="option_id<%= id %>" data-id ="<%= id %>" value ="<%= data?data.id:'' %>">
-
-            <input type="text" name="question[]" class="form-control option_title" requrid id="question<%= id %>" placeholder="{{__('Enter question')}}" data-id ="<%= id %>" value ="<%= data?data.question:'' %>">
+        <div class="form-group px-2">
+            <div class="px-2">
+                <label for="option_title_<%= id %>">{{__('Question')}}</label>
+                <input type="hidden" name="question_id[]"  id="option_id<%= id %>" data-id ="<%= id %>" value ="<%= data?data.id:'' %>">
+                <input type="text" name="question[]" class="form-control option_title" requrid id="question<%= id %>" placeholder="{{__('Enter question')}}" data-id ="<%= id %>" value ="<%= data?data.question:'' %>">
+            </div>
         </div>
-        <div class="form-group">
-            <label for="answer<%= id %>">{{__('Answer')}}</label>
-            <input type="text" name="answer[]" class="form-control answer" requrid id="answer<%= id %>" placeholder="{{__('Enter Answer')}}" data-id ="<%= id %>" value ="<%= data?data.answer:'' %>">
+        <div class="form-group px-2">
+            <div class="px-2">
+                <label for="answer<%= id %>">{{__('Answer')}}</label>
+                <input type="text" name="answer[]" class="form-control answer" requrid id="answer<%= id %>" placeholder="{{__('Enter Answer')}}" data-id ="<%= id %>" value ="<%= data?data.answer:'' %>">
+            </div>
         </div>
-        <button type="button" class="btn btn-primary add_more_button mb-3" id ="add_button_<%= id %>" data-id ="<%= id %>" style=" margin-top: 17px;"> + {{__('Add Question')}}</button>
-        <% if(id > 1) { %>
-        <button type="button" class="btn btn-danger remove_more_button mb-3" id ="remove_button_<%= id %>" data-id ="<%= id %>" style=" margin-top: 17px;"> - {{__('Remove Question')}}</button>
-        <% } %>
+        <div class="px-2">
+            <button type="button" class="btn btn-primary add_more_button mb-3" id ="add_button_<%= id %>" data-id ="<%= id %>" style=" margin-top: 17px;"> + {{__('Add Question')}}</button>
+            <% if(id > 1) { %>
+            <button type="button" class="btn btn-danger remove_more_button mb-3" id ="remove_button_<%= id %>" data-id ="<%= id %>" style=" margin-top: 17px;"> - {{__('Remove Question')}}</button>
+            <% } %>
+        </div>
     </div>
     </script>
 <script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>

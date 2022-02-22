@@ -9,12 +9,12 @@
 @endphp
 <div class="row align-items-center mb-3">
     <div class="col-lg-6">
-        <h4 class="page-title m-0">{{ __($label.' Address') }} </h4>
+        <h4 class="page-title m-0">{{ __($label)." ".($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address')  }} </h4>
     </div>
     @if($action != 'dine_in' && $action != 'takeaway')
     <div class="col-lg-6 mt-2 mt-lg-0 text-center" id="add_new_address_btn">
         <a class="add-address w-100 mx-auto" href="javascript:void(0)">
-            <i class="fa fa-plus mr-1" aria-hidden="true"></i>{{__('Add New Address')}}
+            <i class="fa fa-plus mr-1" aria-hidden="true"></i>{{__('Add New ') }}{{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address')}}
         </a>
     </div>
     @endif
@@ -68,7 +68,7 @@
         </div>
         @empty
         <div class="col-12 address-no-found">
-            <p>{{__('Address not available.')}}</p>
+            <p>{{($client_preference_detail->address_is_car == 1) ? __('Car not available.') : __('Address not available.')}}</p>
         </div>
         @endforelse
         <!-- <div class="col-12 mt-4 text-center" id="add_new_address_btn">
@@ -114,12 +114,12 @@
                 $default_longitude = "";
                 $default_location_name = "";
                 $default_country = "";
-       //         if((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)){
-     //               $default_latitude = $preferences->Default_latitude??"";
-    //              $default_longitude = $preferences->Default_longitude??"";
-     //               $default_location_name = $preferences->Default_location_name??"";
+                //  if((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)){
+                //   $default_latitude = $preferences->Default_latitude??"";
+                //    $default_longitude = $preferences->Default_longitude??"";
+                //  $default_location_name = $preferences->Default_location_name??"";
                     $default_country = $preferences->client_detail->country_id??"";
-      //          }
+                //   }
                 @endphp
                 <input type="hidden" id="latitude" value="{{$default_latitude}}">
                 <input type="hidden" id="longitude" value="{{$default_longitude}}">
@@ -169,8 +169,8 @@
                         <span class="text-danger" id="country_error"></span>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="pincode">{{__('Zip Code')}}</label>
-                        <input type="text" class="form-control" id="pincode" placeholder="{{__('Zip Code')}}" value="">
+                        <label for="pincode">{{ getNomenclatureName('Zip Code', true) }}</label>
+                        <input type="text" class="form-control" id="pincode" placeholder="{{ getNomenclatureName('Zip Code', true) }}" value="">
                         <span class="text-danger" id="pincode_error"></span>
                     </div>
                     <div class="col-md-12 mb-3">
@@ -179,7 +179,7 @@
                         <span class="text-danger" id="extra_instruction_error"></span>
                     </div>
                     <div class="col-md-12 mt-3">
-                        <button type="button" class="btn btn-solid" id="save_address">{{__('Save Address')}}</button>
+                        <button type="button" class="btn btn-solid" id="save_address">{{__('Save')}} {{($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</button>
                         <button type="button" class="btn btn-solid black-btn" id="cancel_save_address_btn">{{__('Cancel')}}</button>
                     </div>
                 </div>

@@ -28,16 +28,7 @@
     @php
     $timezone = Auth::user()->timezone;
     @endphp
-    <header>
-        <div class="mobile-fix-option"></div>
-        @if (isset($set_template) && $set_template->template_id == 1)
-            @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template) && $set_template->template_id == 2)
-            @include('layouts.store/left-sidebar')
-        @else
-            @include('layouts.store/left-sidebar-template-one')
-        @endif
-    </header>
+    
     <style type="text/css">
         .productVariants .firstChild {
             min-width: 150px;
@@ -1693,6 +1684,8 @@
         var ajaxCall = 'ToCancelPrevReq';
         var credit_tip_url = "{{ route('user.tip_after_order') }}";
         var payment_stripe_url = "{{ route('payment.stripe') }}";
+        var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
+        var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
         var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";
         var payment_yoco_url = "{{ route('payment.yocoPurchase') }}";
         var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";

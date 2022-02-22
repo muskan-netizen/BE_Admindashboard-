@@ -772,17 +772,8 @@ class OrderController extends FrontController
                     if ($action == 'delivery') {
                         $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {
-                            $OrderVendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type;
-                            $OrderVendor->courier_id = $deliver_fee_data->courier_id;
-
-                            //Add here Delivery option Lalamove and dispatcher
-
-                            // if($delType=='L'){
-                            //     $lala = new LalaMovesController();
-                            //     $delivery_fee = $lala->getDeliveryFeeLalamove($vendor_cart_product->vendor_id);
-                            // }else{
-                            //     $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
-                            // }
+                            $OrderVendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type??'D';
+                            $OrderVendor->courier_id = $deliver_fee_data->courier_id??0;
 
 
                             if($deliver_fee_data)
@@ -1010,7 +1001,7 @@ class OrderController extends FrontController
             }
             // $this->sendOrderNotification($user->id, $vendor_ids);
             $this->sendSuccessEmail($request, $order);
-            $ex_gateways = [7, 8, 9, 10, 17, 19]; //  mobbex, yoco, pointcheckout, razorpay, checkout, stripe_fpx
+            $ex_gateways = [7,8,9,10,12,13,15,17,18,19]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx
             if (!in_array($request->payment_option_id, $ex_gateways)) {
                 Cart::where('id', $cart->id)->update([
                     'schedule_type' => null, 'scheduled_date_time' => null,
@@ -1122,6 +1113,8 @@ class OrderController extends FrontController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
+        Log::info("sendOrderPushNotificationVendors");
+
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
         //    Log::info($devices);
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
@@ -1161,7 +1154,7 @@ class OrderController extends FrontController
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
                 $result = curl_exec($ch);
-                //    Log::info($result);
+                Log::info($result);
                 curl_close($ch);
             }
         }
@@ -1306,19 +1299,19 @@ class OrderController extends FrontController
 
                 if ($request->status_option_id == 2) {
 
-                    if ($orderData->shipping_delivery_type=='D') {
+                    if ($request->shipping_delivery_type=='D') {
                     //             Log::info($request->status_option_id);
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if ($order_dispatch && $order_dispatch == 1) {
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
                     }
-                   }elseif($orderData->shipping_delivery_type=='L'){
+                   }elseif($request->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
                         $order_lalamove = $this->placeOrderRequestlalamove($request);
-                    }elseif($orderData->shipping_delivery_type=='SR'){
+                    }elseif($request->shipping_delivery_type=='SR'){
                         //Create Shipping place order request for Shiprocket
                         $order_ship = $this->placeOrderRequestShiprocket($request);
-                    }elseif($orderData->shipping_delivery_type=='DU'){
+                    }elseif($request->shipping_delivery_type=='DU'){
                         //Create Shipping place order request for Shiprocket
                         $order_ship = $this->placeOrderRequestDunzo($request);
                     }
@@ -1384,7 +1377,7 @@ class OrderController extends FrontController
 
         return 2;
     }
-    
+
 
     public function placeOrderRequestlalamove($request)
     {

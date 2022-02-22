@@ -751,7 +751,7 @@ class CartController extends FrontController
                         $deliveryCharges = 0;
                          $code = (($code)?$code:$cart->shipping_delivery_type);
                         if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
-                            $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount);
+                            $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address);
                            if(isset($deliveries[0]))
                            {
                             $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">'; 
@@ -1413,7 +1413,7 @@ class CartController extends FrontController
 
 
         //Fetch all delivery fee option
-        public function getDeliveryOptions($vendorData,$preferences,$payable_amount)
+        public function getDeliveryOptions($vendorData,$preferences,$payable_amount,$address)
         {
             $option = array(); 
             $delivery_count = 0;
@@ -1473,10 +1473,10 @@ class CartController extends FrontController
                 }
             }
 
-                //getShiprocketFee Delivery changes code
+                //getDunzo Delivery fee changes code
                 $dunzo = new DunzoController();
                 if($dunzo->status){
-                    $deliver_dunzo_fee = $dunzo->getCourierService($vendorData->vendor_id);
+                    $deliver_dunzo_fee = $dunzo->getQuotations($vendorData->vendor_id,$address);
                     if($deliver_dunzo_fee>0)
                     { 
                         $deliver_charge_dunzo = number_format($deliver_dunzo_fee, 2, '.', '');

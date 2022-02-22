@@ -21,9 +21,6 @@
     \Session::forget('success');
 @endphp
 
-@if(isset($set_template)  && $set_template->template_id == 1)
-<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom-template-one.css')}}">
-@endif
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
 <script type="text/javascript">
@@ -37,6 +34,7 @@
     var autocomplete_url = "{{ route('autocomplete') }}";
     let stripe_publishable_key = '{{ $stripe_publishable_key }}';
     let stripe_fpx_publishable_key = '{{ $stripe_fpx_publishable_key }}';
+    let checkout_public_key = '{{ $checkout_public_key }}';
     let yoco_public_key = '{{ $yoco_public_key }}';
     var login_url = "{{ route('customer.login') }}";
     if(currentRouteName == 'indexTemplateOne')
@@ -92,7 +90,7 @@
 
 /////////////Authorize Payment Routes
     var authorize_before_payment = "{{route('payment.authorize.beforePayment')}}";
-    var authorize_create_payment = "{{route('payment.authorize.createPayment')}}"; 
+    var authorize_create_payment = "{{route('payment.authorize.createPayment')}}";
 
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";
@@ -134,6 +132,8 @@
     if(!userLatitude ){
         userLatitude = "76.7794";
     }
+
+
     // if((home_page_url != window.location.href) && (home_page_url2 != window.location.href)){
     //     $('.vendor_mods').hide();}
     // else{
@@ -172,14 +172,17 @@
 <script type="text/javascript" src="{{$mapurl}}"></script>
 
 <script>
-      var bindLatlng = new google.maps.LatLng(userLatitude, userLongitude);
-      var bindmapProp = {
+    var bindLatlng, bindmapProp, bindMap = '';
+    function bindLatestCoords(userLatitude, userLongitude){
+        bindLatlng = new google.maps.LatLng(userLatitude, userLongitude);
+        bindmapProp = {
             center:bindLatlng,
             zoom:13,
             mapTypeId:google.maps.MapTypeId.ROADMAP
-
         };
-    var bindMap=new google.maps.Map(document.getElementById("nearmap"), bindmapProp);
+        bindMap=new google.maps.Map(document.getElementById("nearmap"), bindmapProp);
+    }
+    bindLatestCoords(userLatitude, userLongitude);
 </script>
 
 {{-- <script type="text/javascript" src="{{asset('front-assets/js/all-min.js')}}" defer></script> --}}
@@ -192,6 +195,12 @@
 <script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
+@if(isset($set_template)  && $set_template->template_id ==3)
+<script src="{{asset('js/aos.js')}}"></script>
+<script type="text/javascript">
+     AOS.init();
+</script>
+@endif
 <script type="text/javascript" src="{{asset('js/location.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/bootstrap-colorpicker/bootstrap-colorpicker.min.js')}}"></script>
@@ -211,6 +220,14 @@
 @if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
+<script>
+        $(function() {
+            $(".al_toggle-menu").click(function() {
+                $(this).toggleClass("active");
+                $('.al_menu-drawer').toggleClass("open");
+            });
+        });
+    </script>
 <script>
 
     // var tag = document.createElement('script');

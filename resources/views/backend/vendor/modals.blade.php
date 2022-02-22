@@ -67,14 +67,12 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="form-group mb-3" >
+                                    <div class="form-group mb-3"  id="pincodeInput">
                                         {!! Form::label('title', __('Pincode'),['class' => 'control-label']) !!}
                                         <input type="text" name="pincode" id="pincode" placeholder="" class="form-control" value="{{@$vendor->pincode}}">
-                                        @if($errors->has('Pincode'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('Pincode') }}</strong>
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
                                         </span>
-                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -362,7 +360,7 @@
                                             {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
                                             <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if( (@$vendor->add_category == 1)) checked @endif >
                                         </div>
-                                        <div class="row">
+                                        <div class="row col-md-12">
                                             <div class="col-md-6 mb-3">
                                                 {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
                                             </div>
@@ -474,7 +472,7 @@
     </div>
 </div>
 <div id="import-form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __('Import') }} {{ $vendor_name }}</h4>
@@ -485,7 +483,7 @@
                 <div class="modal-body">
                     <div class="row">
                     <div class="col-md-12 text-center">
-                            <a href="{{url('file-download'.'/sample_vendor.csv')}}">{{ __("Download Sample file here!") }}</a>
+                            <a as="{{url('file-download'.'/sample_vendor.csv')}}" href="{{ route('vendor.export') }}">{{ __("Download Sample file here!") }}</a>
                         </div>
                         <div class="col-md-12">
                             <div class="row mb-2">

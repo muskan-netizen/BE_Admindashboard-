@@ -27,7 +27,7 @@ class VendorController extends FrontController
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 30;
         $ses_vendors = $this->getServiceAreaVendors();
 
-        $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where('status', 1)->where($vendorType, 1);
+        $vendors = Vendor::with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where('status', 1)->where($vendorType, 1);
 
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $latitude = Session::get('latitude') ?? $preferences->Default_latitude;
@@ -83,7 +83,7 @@ class VendorController extends FrontController
         $vendor = Vendor::with('slot.day', 'slotDate')
             ->select('id','email', 'name', 'slug', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'vendor_templete_id', 'is_show_vendor_details', 'website', 'show_slot','closed_store_order_scheduled')->where('slug', $slug)->where('status', 1)->firstOrFail();
         $vendor->is_vendor_closed = 0;
-        if($vendor->show_slot == 0){ 
+        if($vendor->show_slot == 0){
             if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
                 $vendor->is_vendor_closed = 1;
             }else{
@@ -190,7 +190,7 @@ class VendorController extends FrontController
             }
         }
 
-        $tags = Tag::with('primary')->get();  
+        $tags = Tag::with('primary')->get();
         //dd($page);
 
         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
@@ -623,7 +623,7 @@ class VendorController extends FrontController
             }
         }
         $listData = $products;
-        $returnHTML = view('frontend.ajax.productList')->with(['listData' => $listData])->render(); 
+        $returnHTML = view('frontend.ajax.productList')->with(['listData' => $listData])->render();
         return $returnHTML;
         // return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
@@ -708,7 +708,7 @@ class VendorController extends FrontController
                             $q2->where('title', 'LIKE', '%' . $keyword . '%');
                         });
                     });
-                });                
+                });
             }
             if($tagId){
                 $products->whereHas('tags',function($query) use ($tagId){
@@ -782,9 +782,8 @@ class VendorController extends FrontController
         }
         $tags = Tag::with('primary')->get();
         // dd($vendor_categories->toArray());
-
         $listData = $vendor_categories;
-        $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData])->render();
+        $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData,'tagId'=>$tagId])->render();
         return response()->json(array('status'=>'Success', 'html'=>$returnHTML));
     }
 
@@ -873,7 +872,7 @@ class VendorController extends FrontController
                             $q2->where('title', 'LIKE', '%' . $keyword . '%');
                         });
                     });
-                });                
+                });
             }
             // if($tagId){
             //     $products->whereHas('tags',function($query) use ($tagId){
@@ -926,7 +925,7 @@ class VendorController extends FrontController
                     $vendor_category = VendorCategory::with(['category.translation' => function($q) use($langId){
                         $q->where('category_translations.language_id', $langId)->groupBy('category_translations.language_id');
                     }]);
-                    
+
                     $vendor_category = $vendor_category->where('status', 1)->where('vendor_id', $vid)->where('category_id', $cid)->first();
                     if($vendor_categories){
                         $vendorProducts = $products->where('category_id', $cid);
