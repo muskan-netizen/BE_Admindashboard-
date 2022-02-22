@@ -360,6 +360,7 @@
 <script type="text/javascript">
     var stripe_fpx = '';
     var fpxBank = '';
+    var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var subscription_payment_options_url = "{{route('user.subscription.plan.select', ':id')}}";
     var user_subscription_purchase_url = "{{route('user.subscription.plan.purchase', ':id')}}";
     var user_subscription_cancel_url = "{{route('user.subscription.plan.cancel', ':id')}}";
@@ -414,6 +415,7 @@
         $('#cancel-subscription-form').attr('action', user_subscription_cancel_url.replace(":id", id));
     });
 </script>
+<script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 <script src="{{asset('js/payment.js')}}"></script>
 
 @endsection

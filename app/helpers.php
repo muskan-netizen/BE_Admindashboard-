@@ -309,7 +309,6 @@ function SplitTime($myDate,$StartTime, $EndTime, $Duration="60",$delayMin = 0)
         else
             $timezoneset = 'Asia/Kolkata';
     }
-
     $cr = Carbon::now()->addMinutes($delayMin);
     $now = dateTimeInUserTimeZone24($cr, $timezoneset);
     $nowT = strtotime($now);

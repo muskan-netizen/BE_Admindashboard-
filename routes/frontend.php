@@ -43,6 +43,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('edit-order/temp-cart/product/add', 'Front\TempCartController@postAddToTempCart');
 	Route::post('edit-order/temp-cart/product/updateQuantity', 'Front\TempCartController@updateQuantity');
 	Route::post('edit-order/temp-cart/product/detailWithAddons', 'Front\TempCartController@getCartProductDetailWithAddons');
+	Route::post('edit-order/temp-cart/product/updateAddons', 'Front\TempCartController@updateProductAddonsAndQuantity');
 	Route::post('edit-order/temp-cart/product/remove', 'Front\TempCartController@removeItem');
 	Route::post('edit-order/temp-cart/remove', 'Front\TempCartController@emptyCartData');
 	Route::post('edit-order/temp-cart/submit', 'Front\TempCartController@submitCart');
@@ -137,6 +138,15 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
+
+	//KongaPay routes
+	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
+	Route::match(['get','post'],'payment/kongapay/result', 'Front\KongapayController@completeOrderCart')->name('kongapay.successCart');
+	Route::match(['get','post'],'payment/kongapay/walletResult', 'Front\KongapayController@completeOrderWallet')->name('kongapay.successWallet');
+	Route::match(['get','post'],'payment/kongapay/tipResult', 'Front\KongapayController@completeOrderTip')->name('kongapay.successTip');
+	Route::match(['get','post'],'payment/kongapay/subsResult', 'Front\KongapayController@completeOrderSubs')->name('kongapay.successSubs');
+
+
 	Route::post('payment/yoco/app', 'Front\YocoGatewayController@yocoPurchaseApp')->name('payment.yocoPurchaseApp');
 	Route::get('/payment/yoco-webview', function(){
 		return View::make('frontend.yoco_webview');

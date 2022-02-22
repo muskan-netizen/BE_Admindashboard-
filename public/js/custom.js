@@ -8,7 +8,6 @@ jQuery(window).scroll(function() {
 });
 
 
-
 // Material Select Initialization
 $(document).ready(function() {
     //$('.mdb-select').materialSelect();
@@ -894,6 +893,8 @@ $(document).ready(function() {
                 paymentViaAuthorize('', '');
             }else if (payment_option_id == 19) {
                 paymentViaStripeFPX('', 19, '');
+            }else if (payment_option_id == 20) {
+                payWithKPG('');
             }
         } else {
             _this.attr("disabled", false);
@@ -1223,7 +1224,6 @@ $(document).ready(function() {
 
         paymentSuccessViaPaypal(urlParams.get('amount'), urlParams.get('token'), urlParams.get('PayerID'), path, tipAmount, order_number);
     }
-
 
 
     function paymentViaStripe(stripe_token, address_id, payment_option_id, delivery_type = 'D', order='') {
@@ -1736,6 +1736,14 @@ $(document).ready(function() {
             else{
                 return false;
             }
+        }else if (payment_option_id == 20) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                payWithKPG(order);
+            }
+            else{
+                return false;
+            }
         }
     });
 
@@ -1918,6 +1926,8 @@ $(document).ready(function() {
             paymentViaAuthorize('', '');
         }else if (payment_option_id == 19) {
             paymentViaStripeFPX('', payment_option_id, '');
+        }else if (payment_option_id == 20) {
+            payWithKPG('');
         }
     });
     $(document).on("click", ".remove_promo_code_btn", function() {
