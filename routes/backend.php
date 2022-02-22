@@ -35,6 +35,7 @@ Route::get('admin/wrong/url', 'Auth\LoginController@wrongurl')->name('wrong.clie
 Route::group(['middleware' => 'adminLanguageSwitch'], function () {
     Route::group(['middleware' => ['ClientAuth', 'database'], 'prefix' => '/client'], function () {
 
+        Route::post('/webhook/set','AhoyController@setWebhook')->name('setWebhook');
         Route::any('/logout', 'Auth\LoginController@logout')->name('client.logout');
         Route::get('profile', 'Client\UserController@profile')->name('client.profile');
         Route::get('dashboard', 'Client\DashBoardController@index')->name('client.dashboard');
