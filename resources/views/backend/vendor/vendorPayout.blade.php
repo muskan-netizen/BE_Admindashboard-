@@ -247,10 +247,12 @@
                                                     <i class="fa fa-check text-success mr-2"></i><b>{{ __('Connected to') .' '. __($opt->title) }}</b>
                                                 </h5>
                                             @else
-                                                <button type="button" class="btn btn-info waves-effect text-sm-right {{$opt->code}}_connect_btn" 
+                                                <button type="button" class="btn btn-info waves-effect text-sm-right connect_btn" id="{{$opt->code}}_connect_btn" 
                                                     @if($opt->code == 'stripe')
                                                         onclick="location.href='{{$opt->stripe_connect_url}}'";
                                                     @endif
+                                                data-vendor="{{$vendor->id}}"
+                                                data-payout_option="{{$opt->code}}"
                                                 >
                                                     {{ __("Connect to") .' '. __($opt->title) }}
                                                 </button>
@@ -375,6 +377,15 @@
             </form>
         </div>
     </div>
+
+    <div class="modal fade" id="create_payout_account_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none" aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            
+            </div>
+        </div>
+    </div>
+
     <script src="{{asset('assets/libs/datatables/datatables.min.js')}}"></script>
     <!-- end product popup -->
     <script type="text/javascript">
@@ -786,6 +797,63 @@
             });
 
         }
+
+        $(document).on('click', '#pagarme_connect_btn', function(e) {
+            var vendor_id = $(this).attr('data-vendor');
+            var payout_option = $(this).attr('data-payout_option');
+            $.ajax({
+                type: "GET",
+                data: {vendor: vendor_id, payout_option: payout_option},
+                url: "{{ route('account.vendor.payout.createAccountDetails') }}",
+                dataType: 'json',
+                beforeSend: function() {
+                    $(".loader_box").show();
+                },
+                complete: function() {
+                    $(".loader_box").hide();
+                },
+                success: function(response) {
+                    if(response.status == 'Success'){
+                        var res_html = response.data;
+                        $("#create_payout_account_modal .modal-content").html(res_html);
+                        $("#create_payout_account_modal").modal('show');
+                    }
+                },
+                error: function(response){
+                }
+            });
+        });
+
+        $(document).on('click', '#pagarme_create_account', function(e) {
+            $("#pagarme_account_form input").removeClass('is-invalid');
+            $("#pagarme_account_form .invalid-feedback").html('');
+            $.ajax({
+                type: "POST",
+                data: $("#pagarme_account_form").serializeArray(),
+                url: "{{ route('vendor.payout.account.create.pagarme') }}",
+                beforeSend: function() {
+                    $(".loader_box").show();
+                },
+                complete: function() {
+                    $(".loader_box").hide();
+                },
+                success: function(response) {
+                    if(response.status == 'Success'){
+                        window.location.reload();
+                    }else{
+                        $.NotificationApp.send("Error", response.message, "top-right", "#ff0808", "error");
+                    }
+                },
+                error: function(error){
+                    var response = $.parseJSON(error.responseText);
+                    let error_messages = response.errors;
+                    $.each(error_messages, function(key, error_message) {
+                        $('#'+key).addClass('is-invalid');
+                        $('#'+key+'_err').html(error_message[0]).show();
+                    });
+                }
+            });
+        });
 
     </script>
     {{-- @include('backend.vendor.modals') --}}

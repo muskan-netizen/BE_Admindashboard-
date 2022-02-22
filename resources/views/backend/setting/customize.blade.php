@@ -68,7 +68,7 @@
                         <h4 class="header-title ">{{ __('Order Email Notification') }}</h4>
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
-                    <div class="col-xl-12 my-2" id="addCur-160">
+                    <div class="col-xl-12 my-2 p-0" id="addCur-160">
                         <label class="primaryCurText">{{ __('Email') }}</label>
                         <input class="form-control" type="email" id="admin_email" name="admin_email" value="{{ old('admin_email', $preference->admin_email)}}">
                     </div>
@@ -933,6 +933,30 @@
       </div>
    </div>
    <!-- end product tags -->
+   <script type="text/template" id="vendorSelectorTemp">
+        <tr class ="option_section" id ="option_section_<%= id %>" data-section_number="<%= id %>">
+        <input type="hidden" name="option_id[<%= id-1 %>][]"  id="option_id<%= id %>" data-id ="<%= id %>" value ="<%= data?data.id:'' %>">
+        @foreach($client_languages as $key => $langs)
+        <td>
+            <div class="form-group mb-0">
+                <input type="hidden" name="option_lang_id[<%= id-1 %>][]"   value ="{{$langs->langId}}">
+                <input type="text" name="option_name[<%= id-1 %>][]" class="form-control" @if($langs->is_primary == 1) required @endif   id="option_name_<%= id-1 %>_{{$langs->langId}}" placeholder="" data-id ="<%= id %>" value ="<%= data?(data.translations?data.translations.name:''):'' %>">
+            </div>
+        </td>
+
+        @endforeach
+        <td class="lasttd d-flex align-items-center justify-content-center">
+            <% if(id > 1) { %>
+                <a href="javascript:void(0)" class="action-icon remove_more_button"  id ="remove_button_<%= id %>" data-id ="<%= id %>"> <i class="mdi mdi-delete"></i></a>
+            <% } %>
+            <a href="javascript:void(0)" class="add_more_button" id ="add_button_<%= id %>" data-id ="<%= id %>"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+
+        </td>
+
+    </tr>
+
+
+</script>
 @endsection
 @section('script')
 <script src="{{asset('assets/js/jscolor.js')}}"></script>
@@ -943,6 +967,48 @@
     });
 
     // Vendor Registration Document Script
+    $(document).on("change", "#file_type_select", function() {
+        var file_type = $(this).val();
+        if(file_type == 'selector'){
+            $("#selector_div").removeClass("d-none");
+            var classoption_section = $('#option_div').find('.option_section');
+            if(classoption_section.length==0){
+                addoptionTemplate(0);
+            }
+        }
+        else{
+            $("#selector_div").addClass("d-none");
+        }
+    });
+    function addoptionTemplate(section_id){
+        section_id                = parseInt(section_id);
+        section_id                = section_id +1;
+        var data                  = '';
+
+        var price_section_temp    = $('#vendorSelectorTemp').html();
+        var modified_temp         = _.template(price_section_temp);
+        var result_html           = modified_temp({id:section_id,data:data});
+        $("#table_body").append(result_html);
+        $('.add_more_button').hide();
+        $('#add_button_'+section_id).show();
+    }
+     $(document).on('click','.add_more_button',function(){
+        var main_id = $(this).data('id');
+        addoptionTemplate(main_id);
+        console.log($('.add_more_button').length);
+    });
+    $(document).on('click','.remove_more_button',function(){
+        var main_id =$(this).data('id');
+        removeSeletOptionSectionTemplate(main_id);
+        $('.add_more_button').each(function(key,value){
+            if(key == ($('.add_more_button').length-1)){
+                $('#add_button_'+$(this).data('id')).show();
+            }
+        });
+    });
+    function removeSeletOptionSectionTemplate(div_id){
+        $('#option_section_'+div_id).remove();
+    }
     $('#add_vendor_registration_document_modal_btn').click(function(e) {
         document.getElementById("vendorRegistrationDocumentForm").reset();
         $('#add_vendor_registration_document_modal input[name=vendor_registration_document_id]').val("");

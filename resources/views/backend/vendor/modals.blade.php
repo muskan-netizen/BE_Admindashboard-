@@ -494,7 +494,7 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <table class="table table-centered table-nowrap table-striped" id="">
+                            <table class="table table-responsive table-centered table-nowrap table-striped" id="">
                             <p id="p-message" style="color:red;"></p>
                                 <thead>
                                     <tr>

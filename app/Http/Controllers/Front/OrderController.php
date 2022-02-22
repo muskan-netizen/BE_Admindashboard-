@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Http\Controllers\AhoyController;
 use DB;
 use Log;
 use Auth;
@@ -1001,7 +1002,7 @@ class OrderController extends FrontController
             }
             // $this->sendOrderNotification($user->id, $vendor_ids);
             $this->sendSuccessEmail($request, $order);
-            $ex_gateways = [7,8,9,10,12,13,15,17,18,19]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx
+            $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay
             if (!in_array($request->payment_option_id, $ex_gateways)) {
                 Cart::where('id', $cart->id)->update([
                     'schedule_type' => null, 'scheduled_date_time' => null,
@@ -1113,8 +1114,6 @@ class OrderController extends FrontController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
-        Log::info("sendOrderPushNotificationVendors");
-
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
         //    Log::info($devices);
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
@@ -1154,7 +1153,6 @@ class OrderController extends FrontController
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
                 $result = curl_exec($ch);
-                Log::info($result);
                 curl_close($ch);
             }
         }
@@ -1314,6 +1312,9 @@ class OrderController extends FrontController
                     }elseif($request->shipping_delivery_type=='DU'){
                         //Create Shipping place order request for Shiprocket
                         $order_ship = $this->placeOrderRequestDunzo($request);
+                    }elseif($request->shipping_delivery_type=='M'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_ship = $this->placeOrderRequestAhoy($request);
                     }
 
                 }
@@ -1348,6 +1349,29 @@ class OrderController extends FrontController
                     'ship_shipment_id' => $order_ship->shipment_id,
                     'ship_awb_id' => $order_ship->awb_code
                     ]);
+                return 1;
+            }
+
+        return 2;
+    }
+    
+
+    public function placeOrderRequestAhoy($request)
+    {
+
+        $data = new AhoyController();
+        //Create Shipping place order request for Dunzo
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+                $orderDetails = $data->createPreOrderRequestAhoy($checkOrder->user_id,$checkdeliveryFeeAdded);
+            }
+
+            if (isset($orderDetails->orderId)){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'web_hook_code' => $orderDetails->orderId,
+                ]);
                 return 1;
             }
 
