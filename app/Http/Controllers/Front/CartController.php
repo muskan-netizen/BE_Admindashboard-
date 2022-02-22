@@ -1054,7 +1054,7 @@ class CartController extends FrontController
                     $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
                 }
                 if(count((array)$slots) == 0){
-                    $myDate  = date('Y-m-d',strtotime('+1 day'));
+                    $myDate  = date('Y-m-d',strtotime('+2 day'));
                     $slots = (object)showSlot($myDate,$vendorId,'delivery',$duration->slot_minutes);
                 }
 
@@ -1088,11 +1088,11 @@ class CartController extends FrontController
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->scheduled_date_time = $myDate;
-            if($cart->slotsCnt>0){
+            if($cart->slotsCnt==0){
                 $mdate = (object)findSlotNew('',$cart->vendor_id,'');
                 $cart->delay_date =  $mdate->mydate;
              }else{
-                $cart->delay_date =  $delay_date??0;
+                $cart->delay_date =  $myDate??0;
             }
 
 
@@ -1501,8 +1501,8 @@ class CartController extends FrontController
                 if(isset($vendorData->vendor->ahoy_location)){
                   //getAhoy (Masa) Delivery fee changes code
                   $ahoy = new AhoyController();
-                  if($ahoy->status){
-                      $deliver_ahoy_fee = $ahoy->getAhoyBaseFee($vendorData->vendor_id,$address);
+                  if($ahoy->status){ 
+                      $deliver_ahoy_fee = $ahoy->getPreOrderFee($vendorData->vendor_id,$address);
                       if($deliver_ahoy_fee>0)
                       {
                           $deliver_charge_ahoy = number_format($deliver_ahoy_fee, 2, '.', '');
