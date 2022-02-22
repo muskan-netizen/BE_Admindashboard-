@@ -55,27 +55,29 @@ class VendorSimpelExport implements FromCollection, WithHeadings, WithMapping{
     public function headings(): array{
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         $heding = [
-            'Upload logo',
-            'Upload Banner Image',
-            'Name',
-            'Description',
-            'Email',
-            'Phone Number',
-            'Address',
-            'Dine_In',
-            'Takeaway',
-            'Delivery',
-            'Order_Prepare_Time (In minutes)',
-            'Auto_Reject_Time (In minutes, 0 for no rejection)',
-            'Order Min Amount',
-            '24*7 Availability',
-            'Commission Percent',
-            'Commission Fixed Per Order',
-            'Commission Monthly',
+            __('Upload logo'),
+            __('Upload Banner Image'),
+            __('Name'),
+             __('Description'),
+             __('Email'),
+             __('Phone Number'),
+             __('Address'),
+            getNomenclatureName('Dine-In'),
+            getNomenclatureName('Takeaway'),
+            getNomenclatureName('Delivery'),
+             __('Order_Prepare_Time (In minutes)'),
+             __('Auto_Reject_Time (In minutes, 0 for no rejection)'),
+             __('Order Min Amount'),
+             __('24*7 Availability'),
+             __('Commission Percent'),
+             __('Commission Fixed Per Order'),
+             __('Commission Monthly'),
         ];
+
         foreach ($vendor_registration_documents as $vendor_registration_document) {
             array_push($heding , $vendor_registration_document->primary->slug);
         }
+
         return $heding;
     }
 
