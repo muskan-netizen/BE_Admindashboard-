@@ -266,7 +266,7 @@ class StripeGatewayController extends FrontController
             $secret_key = stripeFPXPaymentCredentials()->secret_key;
             $stripe = new \Stripe\StripeClient($secret_key);
             
-            $webhook_url = 'https://635e-112-196-88-218.ngrok.io/payment/webhook/stripe_fpx';
+            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_fpx';
             $webhook_exists = false;
 
             // $stripe->webhookEndpoints->delete(
