@@ -103,7 +103,7 @@ class SendCampaignNotification extends Command
                             case '1':
                                 //send sms
                                 try {
-                                    $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+                                   // $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
                                     if ($singlenotification->user->dial_code == "971") {
                                         $to = '+' . $singlenotification->user->dial_code . "0" . $singlenotification->user->phone_number;
                                     } else {
@@ -120,6 +120,21 @@ class SendCampaignNotification extends Command
                                 break;
                             case '2':
                                 //send email
+                                try {
+                                    // $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+                                    // if ($singlenotification->user->dial_code == "971") {
+                                    //     $to = '+' . $singlenotification->user->dial_code . "0" . $singlenotification->user->phone_number;
+                                    // } else {
+                                    //     $to = '+' . $singlenotification->user->dial_code . $singlenotification->user->phone_number;
+                                    // }
+                                    // $provider = $client_preferences->sms_provider;
+                                    // $body = "Hi " . $singlenotification->user->name . ", " . $singlenotification->campaign->sms_text;
+                                    // if (!empty($client_preferences->sms_provider)) {
+                                    //     $send = $this->sendEmail($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
+                                    // }
+                                    
+                                } catch (\Exception $ex) {
+                                }
                                 break;
                             case '3':
                                 //send push                                
@@ -205,4 +220,32 @@ class SendCampaignNotification extends Command
         }
         return '1';
 	}
+
+    protected function sendEmail($sendto,$mailfrom,$subject,$body){
+        
+        // $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+        // $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+        // $message = __('An otp has been sent to your email. Please check.');
+        // if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+        //     $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+        //     //$sendto =  $user->email;
+        //     $client_name = 'Sales';
+        //     //$mail_from = $data->mail_from;
+        //     try {                
+        //         $data = [
+        //             'link' => "link",
+        //             'email' => $sendto,
+        //             'mail_from' => $mailfrom,
+        //             'client_name' => $client_name,
+        //             'logo' => $client->logo['original'],
+        //             'subject' => $subject,
+        //             //'customer_name' => $name,
+        //             'email_template_content' => $body,
+        //         ];
+        //         dispatch(new \App\Jobs\SendOrderSuccessEmailJob($data))->onQueue('verify_email');
+        //         $notified = 1;
+        //     } catch (\Exception $e) {
+        //     }
+        // }
+    }
 }

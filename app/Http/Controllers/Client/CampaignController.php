@@ -216,7 +216,7 @@ class CampaignController extends BaseController
             'message' => 'Celebrity created Successfully!',
             'data' => $celebrity
         ]);
-}
+    }
 
     /**
      * Remove the specified resource from storage.
