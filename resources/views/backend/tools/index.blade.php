@@ -146,15 +146,7 @@
                     </div>
                     <div class="row mt-2 al_custom_copypath" style="display: none;">
                         <div class="col-md-12">
-                            <!-- <p>
-                                <a href="#"><span id="pwd_spn" class="password-span" style="display: none;"></span></a>
-                                <label class="copy_link float-right" id="cp_btn" title="copy">
-                                    <img src="{{ asset('assets/icons/domain_copy_icon.svg')}}" alt="">
-                                    <span class="copied_txt" id="show_copy_msg_on_click_copy" style="display:none;">{{ __("Copied") }}</span>
-                                </label>
 
-                                <a id="copyAllImageUrl" href=""><label class="copy_link " id="cp_btn" title="copy">Copy all<span class="copied_txt" id="show_copy_msg_on_click_copy" style="display: none;">Copied</span></label></a>
-                            </p> -->
                             <table>
                                 <tbody class="imageCopyName"></tbody>
                             </table>
@@ -178,6 +170,7 @@
 
         $("div#my-awesome-dropzone").dropzone({
             acceptedFiles: ".jpeg,.jpg,.png,.svg",
+            // acceptedFiles: "image/*,application/pdf",
             addRemoveLinks: true,
             url: "{{route('tools.uploadImage')}}",
             // params: {

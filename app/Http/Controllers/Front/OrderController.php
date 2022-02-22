@@ -596,6 +596,7 @@ class OrderController extends FrontController
                 }
                 $total_payable_amount = $total_payable_amount - $loyalty_amount_saved;
             }
+
             $cart->loyalty_amount = number_format($loyalty_amount_saved, 2);
             $cart->gross_amount = number_format(($total_payable_amount + $total_discount_amount + $loyalty_amount_saved - $total_taxable_amount), 2);
             $cart->new_gross_amount = number_format(($total_payable_amount + $total_discount_amount), 2);
@@ -732,7 +733,7 @@ class OrderController extends FrontController
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
                 $delivery_fee = 0;
-                $deliver_charge = $delivery_fee_charges = 0.00;
+                $deliver_charge = $ptaxable_amount =$total_taxable_amount = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
                 $vendor_payable_amount = 0;
                 $vendor_discount_amount = 0;
@@ -757,6 +758,7 @@ class OrderController extends FrontController
                     $payable_amount = $payable_amount + $quantity_price;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
+
                     if (isset($vendor_cart_product->product->taxCategory)) {
                         foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
                             if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
@@ -769,6 +771,8 @@ class OrderController extends FrontController
                             $payable_amount = $payable_amount + $product_tax;
                         }
                     }
+
+
 
                     if ($action == 'delivery') {
                         $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
@@ -801,8 +805,10 @@ class OrderController extends FrontController
                         }
                     }
 
-                    $taxable_amount += $product_taxable_amount;
-                    $vendor_taxable_amount += $taxable_amount;
+                    $taxable_amount = $product_taxable_amount;
+                    $vendor_taxable_amount = $taxable_amount;
+
+                  //  pr($vendor_taxable_amount);
                     $total_amount += $vendor_cart_product->quantity * $variant->price;
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;
@@ -942,11 +948,13 @@ class OrderController extends FrontController
                 $order_status->order_status_option_id = 1;
                 $order_status->save();
             }
+
             $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
             if (in_array(1, $subscription_features)) {
                 $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
             }
             $total_discount = $total_discount + $total_subscription_discount;
+
             $order->total_amount = $total_amount;
             $order->total_discount = $total_discount;
             $order->taxable_amount = $taxable_amount;
@@ -1354,7 +1362,7 @@ class OrderController extends FrontController
 
         return 2;
     }
-    
+
 
     public function placeOrderRequestAhoy($request)
     {
