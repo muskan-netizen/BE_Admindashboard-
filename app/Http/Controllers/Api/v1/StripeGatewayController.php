@@ -253,6 +253,9 @@ class StripeGatewayController extends BaseController
         $returnParams = '?amount='. $request->amount .'&auth_token='.$user->auth_token. '&payment_form=' . $payment_form;
         if($payment_form == 'cart'){
             $returnParams .= '&order_number='.$request->order_number;
+            if($request->has('address_id')){
+                $returnParams .= '&address_id='.$request->address_id;
+            }
         }
         elseif($payment_form == 'tip'){
             $returnParams .= '&order_number='.$request->order_number;
