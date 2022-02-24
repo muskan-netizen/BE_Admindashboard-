@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Mail; 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\UserDevice;
@@ -70,7 +70,7 @@ class ProfileController extends FrontController
         }
         return response()->json(array('success' => true, 'message' => 'Send Successfully'));
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -83,6 +83,14 @@ class ProfileController extends FrontController
         $user = User::with('country', 'address')->select('id', 'name', 'email', 'description', 'phone_number', 'image', 'type', 'country_id', 'timezone')->where('id', Auth::user()->id)->first();
         $user_addresses = UserAddress::where('user_id', Auth::user()->id)->get();
         $refferal_code = UserRefferal::where('user_id', Auth::user()->id)->first();
+        if(!$refferal_code){
+            $userRefferal = new UserRefferal();
+            $userRefferal->refferal_code = $this->randomData("user_refferals", 8, 'refferal_code');
+            $userRefferal->user_id = Auth::user()->id;
+            $userRefferal->save();
+        }
+
+
         $timezone_list = Timezonelist::create('timezone', $user->timezone, [
             'id'    => 'timezone',
             'class' => 'styled form-control',

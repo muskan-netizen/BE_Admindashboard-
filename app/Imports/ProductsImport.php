@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use App\Models\{Brand, Category,AddonSet,ProductAddon ,ClientLanguage, CategoryTranslation, CsvProductImport, Product, ProductCategory, ProductTranslation, ProductVariant, ProductVariantSet, TaxCategory, Variant, VariantOption, VendorCategory, VendorMedia, ProductImage,Client};
+use App\Models\{Brand,Tag, Category,AddonSet,ProductAddon ,ClientLanguage, CategoryTranslation, CsvProductImport, Product, ProductCategory, ProductTranslation, ProductVariant, ProductVariantSet, TaxCategory, Variant, VariantOption, VendorCategory, VendorMedia, ProductImage,Client};
 
 class ProductsImport implements ToCollection{
     private $folderName = 'prods';
@@ -33,12 +33,12 @@ class ProductsImport implements ToCollection{
                     if ($row[0] != "SKU") { //header of excel check
 
                         if ($row[0] == "") { //if sku or handle is empty
-                            $error[] = "Row " . $i . " : handle is empty";
+                            $error[] = "Row " . $i . " : SKU  is empty";
                             $checker = 1;
                         }
                         if (Product::where('sku', $row[0])->exists()) { //if sku or handle is empty
-                            $error[] = "Row " . $i . " : Product with this sku already exist";
-                            $checker = 1;
+                            // $error[] = "Row " . $i . " : Product with this sku already exist";
+                            // $checker = 1;
                         }
                         if ($row[3] == "") { //check if published is empty
                             $error[] = "Row " . $i . " : Please mark published either true or false";
@@ -239,6 +239,24 @@ class ProductsImport implements ToCollection{
                                 }
                             }
                         }
+                        if($row[24] != ""){
+                            foreach (explode(',', $row[24]) as $titleKey => $tagtitle) {
+                                $vendorTagtitle = Tag::with('primary')->whereHas('primary', function($q)use($tagtitle){
+                                    $q->select('tag_translations.name')
+                                    ->join('client_languages as cl', 'cl.language_id', 'tag_translations.language_id')
+                                    ->join('languages', 'tag_translations.language_id', 'languages.id')
+                                    ->where('cl.is_active', 1)
+                                    ->where('tag_translations.name', 'LIKE', $tagtitle);
+                                })->first();
+                              
+
+                                if(!$vendorTagtitle){
+                                    $error[] = "Row " . $i . " : Tags doesn't exist";
+                                    $checker = 1;
+                                    break;
+                                }
+                            }
+                        }
                         if ($checker == 0) {
                             $data[] = $row;
                         }
@@ -246,7 +264,6 @@ class ProductsImport implements ToCollection{
 
                     $i++;
                 }
-                 //pr($error);
 
                 if (!empty($data)) {
                     foreach ($data as $da) {
@@ -331,6 +348,30 @@ class ProductsImport implements ToCollection{
                             ];
 
                             ProductCategory::insert($cat);
+
+                            if($da[24] != ""){
+                               // $delete = ProductTag::where('product_id', $product)->delete();
+                                foreach (explode(',', $da[24]) as $titleKey => $tagtitle) {
+                                    $vendorTagtitle = Tag::with('primary')->whereHas('primary', function($q)use($tagtitle){
+                                        $q->select('tag_translations.name')
+                                        ->join('client_languages as cl', 'cl.language_id', 'tag_translations.language_id')
+                                        ->join('languages', 'tag_translations.language_id', 'languages.id')
+                                        ->where('cl.is_active', 1)
+                                        ->where('tag_translations.name', 'LIKE', $tagtitle);
+                                    })->first();
+    
+    
+                                    if($vendorTagtitle){
+                                        $tagSetArray= [
+                                                        'product_id' => $product,
+                                                        'tag_id' => $vendorTagtitle->id
+                                                    ];
+                                        ProductTag::insert($tagSetArray);
+                                    }
+                                }
+                            }
+                           
+
 
                             $client_lang = ClientLanguage::where('is_primary', 1)->first();
                             if (!$client_lang) {
@@ -442,6 +483,7 @@ class ProductsImport implements ToCollection{
                         else{
                             $product_id = Product::where('sku', $da[0])->first();
                             $delete = ProductAddon::where('product_id', $product_id->id)->delete();
+                            $delete = ProductTag::where('product_id', $product)->delete();
                             foreach (explode(',', $da[23]) as $titleKey => $Addontitle) {
                                 $vendorAddonSetExists =AddonSet::where('title', "LIKE", $Addontitle)->first();
                                 if($vendorAddonSetExists){
@@ -452,6 +494,26 @@ class ProductsImport implements ToCollection{
                                    ProductAddon::insert($addonsArray);
                                 }
                             }
+                            if($da[24] != ""){
+                                 foreach (explode(',', $da[24]) as $titleKey => $tagtitle) {
+                                     $vendorTagtitle = Tag::with('primary')->whereHas('primary', function($q)use($tagtitle){
+                                         $q->select('tag_translations.name')
+                                         ->join('client_languages as cl', 'cl.language_id', 'tag_translations.language_id')
+                                         ->join('languages', 'tag_translations.language_id', 'languages.id')
+                                         ->where('cl.is_active', 1)
+                                         ->where('tag_translations.name', 'LIKE', $tagtitle);
+                                     })->first();
+     
+     
+                                     if($vendorTagtitle){
+                                         $tagSetArray= [
+                                                         'product_id' => $product,
+                                                         'tag_id' => $vendorTagtitle->id
+                                                     ];
+                                         ProductTag::insert($tagSetArray);
+                                     }
+                                 }
+                             }
                             if ($da[5] != "" || $da[7] != "" || $da[9] != "") {
                                 $product_hasvariant = Product::where('id', $product_id->id)->first();
                                 $product_hasvariant->has_variant = 1;

@@ -9,7 +9,7 @@
 @endphp
 <div class="row align-items-center mb-3">
     <div class="col-lg-6">
-        <h4 class="page-title m-0">{{ __($label)." ".($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address')  }} </h4>
+        <h4 class="page-title m-0">{{ __($label)  }} {{ ($client_preference_detail->address_is_car == 1) ? __('Car') : __('Address') }}</h4>
     </div>
     @if($action != 'dine_in' && $action != 'takeaway')
     <div class="col-lg-6 mt-2 mt-lg-0 text-center" id="add_new_address_btn">

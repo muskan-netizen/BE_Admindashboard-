@@ -393,6 +393,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
     var ajaxCall = 'ToCancelPrevReq';
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
+    var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
     var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
@@ -613,5 +614,6 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
         output.src = URL.createObjectURL(event.target.files[0]);
     };
 </script>
+<script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 <script src="{{asset('js/payment.js')}}"></script>
 @endsection

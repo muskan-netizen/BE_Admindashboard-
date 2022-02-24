@@ -29,7 +29,7 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay');
         $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
@@ -277,6 +277,15 @@ class PaymentOptionController extends BaseController
                         'login_id' => $request->authorize_net_login_id,
                         'transaction_key' => $request->authorize_net_transaction_key,
                         'client_key' => $request->authorize_net_client_key
+                    ));
+                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'kongapay')) {
+                    $validatedData = $request->validate([
+                        'kongapay_api_key' => 'required',
+                        'kongapay_merchant_id' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'api_key' => $request->kongapay_api_key,
+                        'merchant_id' => $request->kongapay_merchant_id
                     ));
                 }
             }

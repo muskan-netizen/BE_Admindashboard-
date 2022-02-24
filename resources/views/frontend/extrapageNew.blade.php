@@ -12,68 +12,12 @@
 @endsection
 @section('content')
 <style>
-   /* .accordion a{position:relative;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;width:100%;padding:1rem 3rem 1rem 1rem;color:#7288a2;font-size:1.15rem;font-weight:400;border-bottom:1px solid #e5e5e5}.accordion a:hover,.accordion a:hover::after{cursor:pointer;color:#ff5353}.accordion a:hover::after{border:1px solid #ff5353}.accordion a.active{color:#ff5353;border-bottom:1px solid #ff5353}.accordion a::after{font-family:Ionicons;content:'\f218';position:absolute;float:right;right:1rem;font-size:1rem;color:#7288a2;padding:5px;width:30px;height:30px;-webkit-border-radius:50%;-moz-border-radius:50%;border-radius:50%;border:1px solid #7288a2;text-align:center}.accordion a.active::after{font-family:Ionicons;content:'\f209';color:#ff5353;border:1px solid #ff5353}.accordion .content{opacity:0;padding:0 1rem;max-height:0;border-bottom:1px solid #e5e5e5;overflow:hidden;clear:both;-webkit-transition:all .2s ease .15s;-o-transition:all .2s ease .15s;transition:all .2s ease .15s}.accordion .content p{font-size:1rem;font-weight:300}.accordion .content.active{opacity:1;padding:1rem;max-height:100%;-webkit-transition:all .35s ease .15s;-o-transition:all .35s ease .15s;transition:all .35s ease .15s} */
-  input[data-plugin=switchery] {
-    display: none!important;
-}
-.time-sloat {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: green;
-    padding: 0 7px 3px;
-    font-size: 12px;
-    font-weight: 900;
-}
+/* .accordion a{position:relative;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;width:100%;padding:1rem 3rem 1rem 1rem;color:#7288a2;font-size:1.15rem;font-weight:400;border-bottom:1px solid #e5e5e5}.accordion a:hover,.accordion a:hover::after{cursor:pointer;color:#ff5353}.accordion a:hover::after{border:1px solid #ff5353}.accordion a.active{color:#ff5353;border-bottom:1px solid #ff5353}.accordion a::after{font-family:Ionicons;content:'\f218';position:absolute;float:right;right:1rem;font-size:1rem;color:#7288a2;padding:5px;width:30px;height:30px;-webkit-border-radius:50%;-moz-border-radius:50%;border-radius:50%;border:1px solid #7288a2;text-align:center}.accordion a.active::after{font-family:Ionicons;content:'\f209';color:#ff5353;border:1px solid #ff5353}.accordion .content{opacity:0;padding:0 1rem;max-height:0;border-bottom:1px solid #e5e5e5;overflow:hidden;clear:both;-webkit-transition:all .2s ease .15s;-o-transition:all .2s ease .15s;transition:all .2s ease .15s}.accordion .content p{font-size:1rem;font-weight:300}.accordion .content.active{opacity:1;padding:1rem;max-height:100%;-webkit-transition:all .35s ease .15s;-o-transition:all .35s ease .15s;transition:all .35s ease .15s} */
+   input[data-plugin=switchery]{display:none!important}.time-sloat{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:green;padding:0 7px 3px;font-size:12px;font-weight:900}
 /*collapse css here--*/
-#faq-accordion .collase1 {
-    background: #fff !important;
-    padding: 14px 19px !important;
-    margin-bottom: 0px;
-    font-size: 14px;
-    border-color: var(--theme-deafult);
-}
-.faq-collapse .open {
-    font-size: 13px;
-    line-height: 20px;
-}
-.faq-card {
-    margin-bottom: 10px;
-}
-.faq-header {
-    padding: 0px 0px;
-}
-.faq-card {
-    background-color: #f4f4f4 !important;
-}
-.faq-collapse {
-    background: #fff;
-}
-
+#faq-accordion .collase1{background:#fff!important;padding:14px 19px!important;margin-bottom:0;font-size:14px;border-color:var(--theme-deafult)}.faq-collapse .open{font-size:13px;line-height:20px}.faq-card{margin-bottom:10px}.faq-header{padding:0 0}.faq-card{background-color:#f4f4f4!important}.faq-collapse{background:#fff}
 /*end here-------------*/
-#addressInput .pac-container{top:65px!important;left:15px!important;}
-.dd-list .dd3-content img.rounded-circle.mr-1 {
-    height: 30px;
-}
-
-.al_details_vendor,
-.al_vendor_signup{background-color: #fff; border-radius: 15px;width: 100%;}
-.al_advanced_details {background-color: rgba(66,190,225,.09);border-radius: 2px;}
-body .switchery {height: 20px;width: 40px;box-shadow: none!important;}
-.nestable_list_1 {height: 400px;overflow-y: auto;}
-.dd {max-width: 100%!important;}
-.nestable_list_1>.dd-list {padding: 0;}
-.dd-list .dd3-item {margin: 5px 0;list-style: none;    width: 100%;}
-.dd-list .dd3-content {position: relative;padding: 8px 20px 8px 16px;font-weight: 400;height: auto;border: none;background: #f3f7f9;color: #6c757d;}
-.dd-list .dd3-content img.rounded-circle.mr-1 {height: 30px;}
-span.inner-div {float: right;}
-.action-icon {vertical-align: middle;}
-body .switchery>small {width: 20px;height: 20px;}
-.nestable_list_1 span.inner-div {position: absolute;right: 5px;top: 50%;-webkit-transform: translateY(-50%);-moz-transform: translateY(-50%);transform: translateY(-50%);}
-.nestable_list_1::-webkit-scrollbar-track{-webkit-box-shadow:inset 0 0 4px transparent;background-color:#fff;border-radius:5px}
-.nestable_list_1::-webkit-scrollbar{width:4px;background-color:#fff;border-radius:5px}
-.nestable_list_1::-webkit-scrollbar-thumb{background-color:#fff;border:2px solid #ddd;border-radius:5px}
+#addressInput .pac-container{top:65px!important;left:15px!important}.dd-list .dd3-content img.rounded-circle.mr-1{height:30px}.al_details_vendor,.al_vendor_signup{background-color:#fff;border-radius:15px;width:100%}.al_advanced_details{background-color:rgba(66,190,225,.09);border-radius:2px}body .switchery{height:20px;width:40px;box-shadow:none!important}.nestable_list_1{height:400px;overflow-y:auto}.dd{max-width:100%!important}.nestable_list_1>.dd-list{padding:0}.dd-list .dd3-item{margin:5px 0;list-style:none;width:100%}.dd-list .dd3-content{position:relative;padding:8px 20px 8px 16px;font-weight:400;height:auto;border:none;background:#f3f7f9;color:#6c757d}.dd-list .dd3-content img.rounded-circle.mr-1{height:30px}span.inner-div{float:right}.action-icon{vertical-align:middle}body .switchery>small{width:20px;height:20px}.nestable_list_1 span.inner-div{position:absolute;right:5px;top:50%;-webkit-transform:translateY(-50%);-moz-transform:translateY(-50%);transform:translateY(-50%)}.nestable_list_1::-webkit-scrollbar-track{-webkit-box-shadow:inset 0 0 4px transparent;background-color:#fff;border-radius:5px}.nestable_list_1::-webkit-scrollbar{width:4px;background-color:#fff;border-radius:5px}.nestable_list_1::-webkit-scrollbar-thumb{background-color:#fff;border:2px solid #ddd;border-radius:5px}
 </style>
 @php
     $user = Auth::user();
@@ -88,15 +32,63 @@ body .switchery>small {width: 20px;height: 20px;}
         </div>
         @if($page_detail->primary->type_of_form == 1)
 
-            <form class="vendor-signup" id="vendor_signup_form">
-                <div class="row justify-content-center">
+            <form class="vendor-signup col-md-12" id="vendor_signup_form">
+                <!-- al_new_vendor_form -->
+               
+                <!-- al_new_vendor_form -->
+
+                <!-- vendor_form other form-->
+                <div class="row justify-content-center ">
                     <div class="col-lg-10">
-                        <div class="alert alert-success" role="alert" id="success_msg" style="display:none;"></div>
+                        <div class="alert alert-success" role="alert" id="success_msg" style="display: none;"></div>
+                        <h2 class="mb-0">{{__('Personal Details')}}</h2>
+                        {{--<div class="needs-validation vendor-signup ">
+                            <div class="al_vendor_signup col-md-12 p-3 mb-3">
+                                <input type="hidden" name="user_id" value="{{$user ? $user->id : ''}}">
+                                <div class="form-row">
+                                    <div class="col-md-3 mb-2" id="full_nameInput">
+                                        <label for="fullname">{{__('Full Name')}}</label>
+                                        <input type="text" class="form-control" name="full_name" value="{{$user ? $user->name : ''}}" {{$user ? 'disabled' : ''}}>
+                                        <span class="invalid-feedback" id="full_name_error"><strong></strong></span>
+                                    </div>
+                                    <div class="col-md-3 mb-2" id="phone_numberInput">
+                                        <label for="validationCustom02">{{__('Phone No.')}}</label>
+                                        <input type="tel" class="form-control" name="phone_number" value="{{$user ? '+'.$user->dial_code.''.$user->phone_number : ''}}" id="phone" {{$user ? 'disabled' : ''}}>
+                                        <span class="invalid-feedback" id="phone_number_error"><strong></strong></span>
+                                        <input type="hidden" id="countryData" name="countryData" value="us">
+                                        <input type="hidden" id="dialCode" name="dialCode" value="{{$user ? $user->dial_code : ''}}">
+                                    </div>
+                                    <div class="col-md-3 mb-2" id="titleInput">
+                                        <label for="fullname">{{__('Title')}}</label>
+                                        <input type="text" class="form-control" name="title" value="{{$user ? $user->title : ''}}">
+                                        <span class="invalid-feedback" id="title_error"><strong></strong></span>
+                                    </div>
+                                    <div class="col-md-3 mb-2" id="emailInput">
+                                        <label for="email">{{__('Email')}}</label>
+                                        <input type="text" class="form-control" name="email" value="{{$user ? $user->email :''}}" {{$user ? 'disabled' : ''}}>
+                                        <span class="invalid-feedback" id="email_error"><strong></strong></span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
 
-                        <h2>{{__('Personal Details')}}</h2>
+                                    @if(!$user)
+                                        <div class="col-md-3 mb-2" id="passwordInput">
+                                            <label for="password">{{__('Password')}}</label>
+                                            <input type="password" class="form-control" name="password" value="" required="">
+                                            <span class="invalid-feedback" id="password_error"><strong></strong></span>
+                                        </div>
+                                        <div class="col-md-3 mb-2" id="confirm_passwordInput">
+                                            <label for="confirm_password">{{__('Confirm Password')}}</label>
+                                            <input type="password" class="form-control" name="confirm_password" value="" required="">
+                                            <span class="invalid-feedback" id="confirm_password_error"><strong></strong></span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
 
+                        </div>--}}
                         <div class="needs-validation vendor-signup ">
-                            <div class="al_vendor_signup col-md-12 mt-3 p-3 mb-3">
+                            <div class="al_vendor_signup col-md-12 p-3 mb-3">
                                 <input type="hidden" name="user_id" value="{{$user ? $user->id : ''}}">
                                 <div class="form-row">
                                     <div class="col-md-3 mb-2" id="full_nameInput">
@@ -140,7 +132,7 @@ body .switchery>small {width: 20px;height: 20px;}
                             </div>
 
 
-                            <h2 class="mb-3">{{getNomenclatureName('Vendors', true) .' '. __('Details')}}</h2>
+                            <h2 class="mb-0">{{getNomenclatureName('Vendors', true) .' '. __('Details')}}</h2>
                             <div class="al_details_vendor p-3 mb-3">
                                 <div class="form-row">
                                     <div class="col-md-4 mb-3">
@@ -485,7 +477,8 @@ body .switchery>small {width: 20px;height: 20px;}
                             </div>
                         </div>
                     </div>
-                </div>
+                </div><!-- vendor_form other form-->
+
             </form>
 
         @elseif ($page_detail->primary->type_of_form == 3)
@@ -738,6 +731,8 @@ function isNumberKey(evt) {
             if(min >=60){
                     var hours = Math.floor(min / 60);
                     var minutes = min % 60;
+                    if( minutes <= 9)
+                     minutes ='0'+minutes;
                     var txt = '~ '+hours+':'+minutes+" {{__('Hours')}}";
                     $('#Vendor_order_pre_time_show').text(txt);
             }else{

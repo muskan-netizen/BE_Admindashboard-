@@ -8,7 +8,7 @@
         <div class="page-title-box">
              <h4 class="page-title">{{ __("Delivery Options") }}</h4>
         </div>
-    </div> 
+    </div>
 
     <div class="col-12">
         <div class="text-sm-left">
@@ -41,7 +41,7 @@
 <div class="col-md-6 mb-3">
     <form method="POST" action="{{route('delivery.last_mile_delivery')}}" class="h-100">
     @csrf
-        
+
                 <div class="card-box h-100">
                     <div class="row ">
                     <div class="col-md-6">
@@ -60,12 +60,12 @@
                                <input data-plugin="switchery" name="need_delivery_service" id="need_delivery_service" class="form-control" data-color="#43bee1" type="checkbox" @if((isset($preference) && $preference->need_delivery_service == '1')) checked @endif >
                             </div>
                          </div>
-                        <div class="mt-3 deliveryServiceFields"> 
+                        <div class="mt-3 deliveryServiceFields" style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}"> 
                             <hr>
                             <div class="row">
-                                
+
                                 <div class="col-12">
-                                    <div class="form-group mb-0 " style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
+                                    <div class="form-group mb-0 ">
                                         <label for="delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
                                         <input type="text" name="delivery_service_key_url" id="delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('delivery_service_key_url', $preference->delivery_service_key_url ?? '')}}">
                                         @if($errors->has('delivery_service_key_url'))
@@ -76,7 +76,7 @@
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="form-group mt-3 mb-0 " style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
+                                    <div class="form-group mt-3 mb-0 ">
                                         <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
                                         <input type="text" name="delivery_service_key_code" id="delivery_service_key_code" placeholder="" class="form-control" value="{{ old('delivery_service_key_code', $preference->delivery_service_key_code ?? '')}}">
                                         @if($errors->has('delivery_service_key_code'))
@@ -87,7 +87,7 @@
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="form-group mt-3 mb-0 " style="{{((isset($preference) && $preference->need_delivery_service == '1')) ? '' : 'display:none;'}}">
+                                    <div class="form-group mt-3 mb-0 " >
                                         <label for="delivery_service_key">{{ __("Dispatcher API key") }}</label>
                                         <input type="text" name="delivery_service_key" id="delivery_service_key" placeholder="" class="form-control" value="{{ old('delivery_service_key', $preference->delivery_service_key ?? '')}}">
                                         @if($errors->has('delivery_service_key'))
@@ -99,7 +99,7 @@
                                 </div>
                                 @if($last_mile_teams != null && count($last_mile_teams))
                                 <div class="col-12">
-                                    <div class="form-group mt-3 mb-0" style="{{(isset($preference) && $preference->need_delivery_service == '1') ? '' : 'display: none;'}}" id="lastMileTeamListDiv">
+                                    <div class="form-group mt-3 mb-0" id="lastMileTeamListDiv">
                                         <div class="form-group">
                                             {!! Form::label('title', __('Team Tag For Last Mile'),['class' => 'control-label']) !!}
                                             <select class="form-control" id="lastMileTeamList" name="last_mile_team" data-toggle="select2" >
@@ -110,7 +110,7 @@
 
                                             </select>
                                         </div>
-                                    </div> 
+                                    </div>
                                 </div>
                                  @endif
                             </div>
@@ -127,8 +127,8 @@
 <div class="col-md-6 mb-3">
     <form method="POST" id="payment_option_form" action="{{route('deliveryoption.store')}}" class="h-100">
         @csrf
-        @method('POST')  
-        @if($delOption)      
+        @method('POST')
+        @if($delOption)
         <div class="card-box h-100">
             <input type="hidden" name="method_id" id="{{$delOption->id}}" value="{{base64_encode($delOption->id)}}">
             <input type="hidden" name="method_name" id="{{$delOption->code}}" value="{{$delOption->code}}">
@@ -169,7 +169,7 @@
                 </div>
 
             </div>
-            
+
 
             @if ( (strtolower($delOption->code) == 'lalamove'))
             <div class="mt-3" id="lalamove_fields_wrapper" @if($delOption->status != 1) style="display:none" @endif>
@@ -198,7 +198,7 @@
                             <option value="">{{ __("Please Select Country") }}</option>
                             <option value="MY" {{(($country_key == 'MY')?'Selected':'')}}>Malaysia</option>
                             {{-- <option value="MX" {{(($country_key == 'MX')?'Selected':'')}}>Mexico</option>     --}}
-                            </select> 
+                            </select>
                         </div>
                     </div>
 
@@ -269,7 +269,7 @@
                             <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
                             <input type="checkbox"  data-title="{{$delOption->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
                         </div>
-                
+
 
                     </div>
 
@@ -302,7 +302,7 @@
             </div>
             @endif
         </div>
-           
+
          @endif
     </form>
 </div>
@@ -336,7 +336,7 @@
             <div class="col-md-6 ">
                 <h3 class="mb-1">{{$opt->title}}</h3>
             </div>
-            <div class="col-sm-4 text-right">
+            <div class="col-md-6 text-right">
                 <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
             </div>
             </div>
@@ -425,7 +425,7 @@
                 </div>
             </div>
 
-           
+
             <div class="form-group mt-2">
                 <label for="" class="mr-3">{{ __("Item weight") }}</label>
             </div>
@@ -434,7 +434,7 @@
                     <div class="form-group mb-0">
                         <label for="shiprocket_base_price" class="mr-3">{{ __("Product Height (cms)") }}</label>
                         <input type="text" name="height" class="form-control" value="{{@$height}}" >
-                    </div>  
+                    </div>
                 </div>
 
                 <div class="col-md-4">
@@ -491,7 +491,7 @@
             <div class="col-md-6">
                 <h3 class="mb-1">{{$optDunzo->title}}</h3>
             </div>
-            <div class="col-sm-4 text-right">
+            <div class="col-md-6 text-right">
                 <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
             </div>
             </div>
@@ -513,7 +513,7 @@
                 @endif
             </div>
 
-            
+
 
             @if ( (strtolower($optDunzo->code) == 'dunzo') )
             <div id="dunzo_fields_wrapper" @if($optDunzo->status != 1) style="display:none" @endif>
@@ -587,7 +587,7 @@
 
 
         </div>
-            
+
     </form>
 </div>
 @endif
@@ -624,7 +624,7 @@
             <div class="col-md-6">
                 <h3 class="mb-1">{{$optAhoy->title}}</h3>
             </div>
-            <div class="col-sm-4 text-right">
+            <div class="col-md-6 text-right">
                 <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
             </div>
             </div>
@@ -646,7 +646,7 @@
                 @endif
             </div>
 
-            
+
 
             @if ( (strtolower($optAhoy->code) == 'ahoy') )
             <div id="ahoy_fields_wrapper" @if($optAhoy->status != 1) style="display:none" @endif>
@@ -658,12 +658,14 @@
                         <span>{{ __('Webhook Url') }} : </span>
                         <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('ahoyWebhook')}}</span></a>
                     </h5>
+                    <input type="button" class="btn btn-primary mt-2 float-right setWebhook" data-url="{{route('ahoyWebhook')}}" onclick="setwebhookurl(this)" value="Set Webhook" />
                     <sup class="position-relative">
                         <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('ahoyWebhook')}}" style="cursor:pointer;">
                             <i class="fa fa-copy"></i>
                         </a>
                         <h6 id="copy_message2" class="copy-message mt-2"></h6>
                     </sup>
+                    
                 </div>
 
                 <div class="row">
@@ -721,7 +723,7 @@
 
 
         </div>
-            
+
     </form>
 </div>
 @endif
@@ -796,6 +798,27 @@
         }, 3000);
     });
 
-
+function setwebhookurl(data)
+{
+    $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            }
+        });
+    var url = $(data).attr('data-url');
+    $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: "{{route('setWebhook')}}",
+            data: { url: url },
+            success: function(resp) {
+                if(resp.code == '200'){
+                $.NotificationApp.send("{{__('Success')}}", resp.msg, "top-right", "#5ba035", "success");
+                }else{
+                $.NotificationApp.send("{{__('Error')}}", resp.msg, "top-right", "#5ba035", "error");
+                }
+            }
+        });
+}
 </script>
 @endsection

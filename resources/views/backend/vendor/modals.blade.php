@@ -360,7 +360,7 @@
                                             {!! Form::label('title', __('Can Add Category'),['class' => 'control-label']) !!}
                                             <input type="checkbox" data-plugin="switchery" name="can_add_category" class="form-control can_add_category1" data-color="#43bee1" @if( (@$vendor->add_category == 1)) checked @endif >
                                         </div>
-                                        <div class="row">
+                                        <div class="row col-md-12">
                                             <div class="col-md-6 mb-3">
                                                 {!! Form::label('title', __('Vendor Detail To Show'),['class' => 'control-label ']) !!}
                                             </div>
@@ -494,7 +494,7 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <table class="table table-centered table-nowrap table-striped" id="">
+                            <table class="table table-responsive table-centered table-nowrap table-striped" id="">
                             <p id="p-message" style="color:red;"></p>
                                 <thead>
                                     <tr>

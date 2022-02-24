@@ -11,19 +11,32 @@
 </div>
 <div class="col-md-8 col-lg-6">
     <div class="row ">
-        @if (isset($tags) && !empty($tags))
-            @foreach ($tags as $key => $tag)
-                <label class="label-switch switch-primary product_tag_filter mr-2">
-                    <input type="checkbox"
-                        class="switch switch-bootstrap product_tag_filter status"
-                        name="tag_id" id="product_tag_filter_{{ $key }}"
-                        data-tag_id="{{ $tag->id }}"" value="
-                        {{ $tag->id }}">
-                    <span class="lable"> @if (isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}" alt="">@endif <span
-                            class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span></span>
-                </label>
-            @endforeach
-        @endif
+        <div class="col-6">
+            @if (isset($tags) && !empty($tags))
+                @foreach ($tags as $key => $tag)
+                    <label class="label-switch switch-primary product_tag_filter mr-2">
+                        <input type="checkbox"
+                            class="switch switch-bootstrap product_tag_filter status"
+                            name="tag_id" id="product_tag_filter_{{ $key }}"
+                            data-tag_id="{{ $tag->id }}" value="
+                            {{ $tag->id }}" {{!is_null($tagId) && in_array($tag->id, $tagId) ? 'checked' : ''}}>
+                        <span class="lable"> @if (isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}" alt="">@endif <span
+                                class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span></span>
+                    </label>
+                @endforeach
+            @endif
+        </div>
+        <div class="col-6 text-right">Sort By : 
+            <select name="order_type" id='order_type' class="product_tag_filter p-1">
+                <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>Featured</option>
+                <option value="a_to_z" {{isset($input['order_type']) && $input['order_type'] == "a_to_z" ? 'selected' : ''}}>A to Z</option>
+                <option value="z_to_a" {{isset($input['order_type']) && $input['order_type'] == "z_to_a" ? 'selected' : ''}}>Z to A</option>
+                <option value="low_to_high" {{isset($input['order_type']) && $input['order_type'] == "low_to_high" ? 'selected' : ''}}>Cost : Low to High</option>
+                <option value="high_to_low" {{isset($input['order_type']) && $input['order_type'] == "high_to_low" ? 'selected' : ''}}>Cost : High to Low</option>
+                <option value="rating" {{isset($input['order_type']) && $input['order_type'] == "rating" ? 'selected' : ''}}>Avg. Customer Review</option>
+                <option value="newly_added" {{isset($input['order_type']) && $input['order_type'] == "newly_added" ? 'selected' : ''}}>Newest Arrivals</option>
+            </select>
+        </div>
     </div>
     @forelse($listData as $key => $data)
         <section class="scrolling_section " id="{{ $data->category->slug }}">

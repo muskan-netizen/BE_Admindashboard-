@@ -448,10 +448,10 @@ class ToolsController extends BaseController
                     }
                 }
             }
-            return redirect()->back()->with('success', 'Tax copied successfully!');
+            return redirect()->back()->with('success', __("Tax copied successfully!"));
 
         }catch (Exception $e) {
-            return redirect()->back()->with('error', 'Something went wrong!');
+            return redirect()->back()->with('error', __("Something went wrong!"));
         }
     }
     public function uploadImage(Request $request)
@@ -462,6 +462,7 @@ class ToolsController extends BaseController
             $file = $request->file('file');
             $data['image_path'] = Storage::disk('s3')->put($this->folderName, $file, 'public');
             $data['image_url'] = \Config::get('app.IMG_URL1').'30/30'.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($data['image_path']).'@webp';
+            $data['show_image_url'] = \Storage::disk('s3')->url($data['image_path']);
             $data['image_id'] = uniqid();
             return response()->json(['data' => $data]);
         } else {
