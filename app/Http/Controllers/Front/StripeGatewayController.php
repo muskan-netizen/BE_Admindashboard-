@@ -641,17 +641,14 @@ class StripeGatewayController extends FrontController
     public function webViewResponseStripeFPX(Request $request)
     {
         if($request->has('payment_intent')){
+            $url = 'payment/gateway/returnResponse?status=0&gateway=stripe_fpx&action='.$request->payment_form;
             if($request->has('redirect_status') && ($request->redirect_status == 'succeeded')){
-                $url = 'payment/gateway/returnResponse?status=200&gateway=stripe_fpx&action='.$request->action;
+                $url = 'payment/gateway/returnResponse?status=200&gateway=stripe_fpx&action='.$request->payment_form;
                 if($request->payment_form == 'cart'){
                     $url = $url.'&order='.$order_number;
                 }
-                return Redirect::to($url);
             }
-            elseif($request->has('redirect_status') && ($request->redirect_status == 'failed')){
-                $url = 'payment/gateway/returnResponse?status=0&gateway=stripe_fpx&action='.$request->action;
-                return Redirect::to($url);
-            }
+            return Redirect::to($url);
         }
     }
 }
