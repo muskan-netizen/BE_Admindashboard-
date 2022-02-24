@@ -227,6 +227,10 @@
                             {!! Form::text('compare_at_price', $product->variant[0]->compare_at_price, ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         {{-- <div class="col-4 mb-2">
+                            {!! Form::label('title', __('Container Charges (Optional)'), ['class' => 'control-label']) !!}
+                            {!! Form::text('container_charges', $product->variant[0]->container_charges, ['class'=>'form-control', 'id' => 'container_charges', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div> --}}
+                        {{-- <div class="col-4 mb-2">
                             {!! Form::label('title', 'Cost Price (Optional)', ['class' => 'control-label']) !!}
                             {!! Form::text('cost_price', $product->variant[0]->cost_price, ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div> --}}
