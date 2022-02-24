@@ -320,8 +320,11 @@ class StripeGatewayController extends FrontController
             ];
 
             if($payment_form == 'cart'){
-                $address_id = $request->address_id;
-                $user_address = UserAddress::where('id', $address_id)->first();
+                $user_address = '';
+                if($request->has('address_id')){
+                    $address_id = $request->address_id;
+                    $user_address = UserAddress::where('id', $address_id)->first();
+                }
                 $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
                 $order_number = $request->order_number;
 
@@ -330,11 +333,13 @@ class StripeGatewayController extends FrontController
                 $postdata['metadata']['order_number'] = $order_number;
                 $postdata['shipping']['name'] = $user->name;
                 $postdata['shipping']['phone'] = $user->dial_code . $user->phone_number;
-                $postdata['shipping']['address']['line1'] = $user_address->street;
-                $postdata['shipping']['address']['city'] = $user_address->city;
-                $postdata['shipping']['address']['state'] = $user_address->state;
-                $postdata['shipping']['address']['country'] = $user_address->country;
-                $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
+                if(!empty($user_address)){
+                    $postdata['shipping']['address']['line1'] = $user_address->street;
+                    $postdata['shipping']['address']['city'] = $user_address->city;
+                    $postdata['shipping']['address']['state'] = $user_address->state;
+                    $postdata['shipping']['address']['country'] = $user_address->country;
+                    $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
+                }
             }
             elseif($payment_form == 'wallet'){
                 $postdata['description'] = 'Wallet Checkout';
