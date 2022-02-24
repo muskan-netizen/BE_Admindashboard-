@@ -645,7 +645,7 @@ class StripeGatewayController extends FrontController
             if($request->has('redirect_status') && ($request->redirect_status == 'succeeded')){
                 $url = 'payment/gateway/returnResponse?status=200&gateway=stripe_fpx&action='.$request->payment_form;
                 if($request->payment_form == 'cart'){
-                    $url = $url.'&order='.$order_number;
+                    $url = $url.'&order='.$request->order;
                 }
             }
             return Redirect::to($url);
