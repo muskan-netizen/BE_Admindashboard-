@@ -459,7 +459,7 @@
                                                     </li>
                                                     @if ($vendor->order_min_amount > 0)
                                                         <span class="badge badge-danger">{{ __('Minimum order value') }}
-                                                            {{ Session::get('currencySymbol') . number_format($vendor->order_min_amount, 2, '.', '') }}</span>
+                                                            {{ Session::get('currencySymbol') . decimal_format($vendor->order_min_amount) }}</span>
                                                     @endif
                                                 </ul>
                                             </div>
@@ -620,7 +620,7 @@
                                                                                             $vendor_id = $data->vendor_id;
                                                                                             $product_id = $data->id;
                                                                                             $batch_count = $data->batch_count;
-                                                                                            $variant_price = $var->price * $data->variant_multiplier;
+                                                                                            $variant_price = decimal_format($var->price * $data->variant_multiplier);
                                                                                             if (count($var->checkIfInCart) > 1) {
                                                                                                 $productVariantInCartWithDifferentAddons = 1;
                                                                                             }
@@ -707,7 +707,7 @@
                                                                     <span class="minus qty-minus-product"
                                                                         data-parent_div_id="show_plus_minus{{ $data->id }}"
                                                                         data-id="{{ $data->id }}"
-                                                                        data-base_price="{{ $data->variant_price * $data->variant_multiplier }}"
+                                                                        data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
                                                                         data-vendor_id="{{ $data->vendor_id }}"
                                                                         data-batch_count="{{ $batch_count }}"
                                                                         data-minimum_order_count="{{ $minimum_order_count }}">
@@ -720,7 +720,7 @@
                                                                         type="text" value="{{ $minimum_order_count }}"
                                                                         class="input-number input_qty" step="0.01">
                                                                     <span class="plus qty-plus-product" data-id=""
-                                                                        data-base_price="{{ $data->variant_price * $data->variant_multiplier }}"
+                                                                        data-base_price="{{ decimal_format($data->variant_price * $data->variant_multiplier) }}"
                                                                         data-vendor_id="{{ $data->vendor_id }}"
                                                                         data-batch_count="{{ $batch_count }}"
                                                                         data-minimum_order_count="{{ $minimum_order_count }}">
@@ -751,10 +751,10 @@
                                 @endif
 
                                 <p class="mb-1 product_price">
-                                    {{ Session::get('currencySymbol') . number_format($prod->variant_price * $prod->variant_multiplier, 2, '.', '') }}
+                                    {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier) }}
                                     @if ($prod->variant[0]->compare_at_price > 0)
                                         <span
-                                            class="org_price ml-1 font-14">{{ Session::get('currencySymbol') . number_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier, 2, '.', '') }}</span>
+                                            class="org_price ml-1 font-14">{{ Session::get('currencySymbol') . decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
                                     @endif
                                 </p>
                                 <div class="member_no d-block mb-0">

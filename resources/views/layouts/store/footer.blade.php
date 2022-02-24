@@ -153,9 +153,14 @@
         var defaultLocationName = "{{$client_preference_detail->Default_location_name}}";
     @endif
 
-    var NumberFormatHelper = { formatPrice: function(x){
+    var NumberFormatHelper = { formatPrice: function(x,format=1){
         if(x){
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
+            x = parseFloat(x).toFixed(digit_count);
+            if(format == 1)
+            {
+                return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
         }
         return x;
         }

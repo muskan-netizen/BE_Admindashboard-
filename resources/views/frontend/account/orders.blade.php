@@ -323,7 +323,7 @@
                                                                                                         <span
                                                                                                             class="item_no position-absolute">x{{ $product->quantity }}</span>
                                                                                                         <label
-                                                                                                            class="items_price">{{ Session::get('currencySymbol') }}{{ helper_number_formet($product->price * $clientCurrency->doller_compare, 2) }}</label>
+                                                                                                            class="items_price">{{ Session::get('currencySymbol') }}{{ decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                                                                     </li>
                                                                                                     @php
                                                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;
@@ -868,7 +868,7 @@
                                                                                                     for="control_01">
                                                                                                     <h5 class="m-0"
                                                                                                         id="tip_5">
-                                                                                                        {{ Session::get('currencySymbol') }}{{ helper_number_formet(round($order->payable_amount * 0.05, 2), 2) }}
+                                                                                                        {{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * 0.05) }}
                                                                                                     </h5>
                                                                                                     <p class="m-0">
                                                                                                         5%</p>
@@ -883,7 +883,7 @@
                                                                                                     for="control_02">
                                                                                                     <h5 class="m-0"
                                                                                                         id="tip_10">
-                                                                                                        {{ Session::get('currencySymbol') }}{{ helper_number_formet(round($order->payable_amount * 0.1, 2, 2)) }}
+                                                                                                        {{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * 0.1) }}
                                                                                                     </h5>
                                                                                                     <p class="m-0">
                                                                                                         10%</p>
@@ -898,7 +898,7 @@
                                                                                                     for="control_03">
                                                                                                     <h5 class="m-0"
                                                                                                         id="tip_15">
-                                                                                                        {{ Session::get('currencySymbol') }}{{ helper_number_formet(round($order->payable_amount * 0.15, 2), 2) }}
+                                                                                                        {{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * 0.15) }}
                                                                                                     </h5>
                                                                                                     <p class="m-0">
                                                                                                         15%</p>
@@ -1372,7 +1372,7 @@
                                                                                                         <span
                                                                                                             class="item_no position-absolute">x{{ $product->quantity }}</span>
                                                                                                         <label
-                                                                                                            class="items_price">{{ Session::get('currencySymbol') }}{{ helper_number_formet($product->price * $clientCurrency->doller_compare, 2) }}</label>
+                                                                                                            class="items_price">{{ Session::get('currencySymbol') }}{{ decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                                                                     </li>
                                                                                                     @php
                                                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;
