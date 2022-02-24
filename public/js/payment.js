@@ -957,7 +957,52 @@ $(document).ready(function() {
     }
 
     ///////////////////////////Stripe FPX payment Gateway //////////////////////////////
-    window.paymentViaStripeFPX = function paymentViaStripeFPX(address_id, payment_option_id, order) {
+    window.payWithKPG = function payWithKPG(order='')
+    {
+        let cartElement = $("input[name='cart_total_payable_amount']");
+        //let amt = cartElement.val()*100;
+        let total_amount = 0;
+        let walletElement = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscriptionId = $("input[name='subscription_id']");
+        let tipElement = $("#cart_tip_amount");
+        let payment_from = '';
+        if (path.indexOf("cart") !== -1) {
+            total_amount = cartElement.val();
+            payment_from = 'cart';
+            var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
+        } else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            var rowData = 'amt='+total_amount+'&from='+payment_from;
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+            var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
+        }else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            subsId = subscriptionId.val();
+            payment_from = 'subscription';
+            var rowData = 'subsid='+subsId+'&from='+payment_from+'&amt='+total_amount;
+        }
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: create_konga_hash_url,
+            data: rowData,
+            success: function(resp) {
+
+                KPG.setup(resp);
+          },
+          error: function(error) {
+              console.log(error);
+          }
+        
+        });
+    }
+
+    ///////////////////////////Stripe FPX payment Gateway //////////////////////////////
+    window.paymentViaStripeFPX = function paymentViaStripeFPX(address_id='', payment_option_id='', order='') {
         let total_amount = 0;
         let tip = 0;
         let cartElement = $("input[name='cart_total_payable_amount']");
@@ -965,9 +1010,10 @@ $(document).ready(function() {
         let subscriptionElement = $("input[name='subscription_amount']");
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
+        let returnParams = '';
 
         let ajaxData = [];
-        if (cartElement.length > 0) {
+        if (path.indexOf("cart") !== -1) {
             total_amount = cartElement.val();
             payment_form = 'cart';
             ajaxData.push(
@@ -975,11 +1021,12 @@ $(document).ready(function() {
                 {name: 'order_number', value: order.order_number},
                 {name: 'payment_form', value: 'cart'}
             );
-        } else if (walletElement.length > 0) {
+            returnParams += 'order=' + order.order_number;
+        } else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
             payment_form = 'wallet';
             ajaxData.push({name: 'payment_form', value: 'wallet'});
-        } else if (subscriptionElement.length > 0) {
+        } else if (path.indexOf("subscription") !== -1) {
             total_amount = subscriptionElement.val();
             payment_form = 'subscription';
             ajaxData = $("#subscription_payment_form").serializeArray();
@@ -989,10 +1036,12 @@ $(document).ready(function() {
             payment_form = 'tip';
             ajaxData.push( 
                 {name: 'payment_form', value: 'tip'},
-                {name: 'order_number', value: order.order_number}
+                {name: 'order_number', value: $("#order_number").val()}
             );
+            returnParams += 'order=' + $("#order_number").val();
         }
         ajaxData.push({ name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id });
+        returnParams += '&amount=' + total_amount + '&payment_form=' + payment_form;
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1006,7 +1055,7 @@ $(document).ready(function() {
                             fpx: fpxBank
                         },
                         // Return URL where the customer should be redirected after the authorization
-                        return_url: payment_retrive_stripe_fpx_url + '?amount='+total_amount+'&order=' + order.order_number + '&payment_form=' + payment_form,
+                        return_url: payment_retrive_stripe_fpx_url + '?' + returnParams,
                     });
                     if (result.error) {
                         // Inform the customer that there was an error.

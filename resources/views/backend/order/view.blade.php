@@ -34,7 +34,7 @@ $timezone = Auth::user()->timezone;
                                     <p>#{{$order->order_number}}</p>
                                 </div>
                             </div>
-                             @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->shipping_delivery_type=='D')
+                             @if(isset($order->vendors) && empty($order->vendors->first()->dispatch_traking_url) && ($order->vendors->first()->delivery_fee > 0) && ($order->vendors->first()->order_status_option_id >= 2) && $order->vendors->first()->shipping_delivery_type=='D')
                              <div class='inner-div d-inline-block' style="float: right;">
                                 <form method='POST' action='"+full.destroy_url+"'>
 
@@ -89,6 +89,7 @@ $timezone = Auth::user()->timezone;
                                     @endphp
 
                                     <!-- List of completed order status -->
+                                @if(count($vendor_order_statuses))
                                     @foreach ($vendor_order_statuses as $key => $vendor_order_status)
                                         @php
                                             $order_status = $order_status_options->where('id', $vendor_order_status->order_status_option_id)->pluck('title')->first();
@@ -112,6 +113,7 @@ $timezone = Auth::user()->timezone;
                                             </p>
                                         </li>
                                     @endforeach
+                                @endif
 
                                     <!-- List of incomplete order status if order is not rejected -->
 
@@ -242,7 +244,12 @@ $timezone = Auth::user()->timezone;
                                     $revenue += ($vendor->service_fee_percentage_amount + $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
                                     <tr>
-                                        <th scope="row"><a href="{{ route('product.edit', $product->product->id) }}" target="_blank">{{$product->product_name}}</a>
+                                        <th scope="row">
+
+                                            <a href="{{ isset($product->product) ? route('product.edit', @$product->product->id) : '#'}}" target="_blank">
+                                                {{$product->product_name}}
+                                            </a>
+                                            @if(isset($product->product) && isset($product->product->category) && isset($product->product->category->categoryDetail) && $product->product->category->categoryDetail->translation_one) ( in {{$product->product->category->categoryDetail->translation_one->name}} ) @endif
                                             <p class="p-0 m-0">
                                                 @if(isset($product->scheduled_date_time)) {{dateTimeInUserTimeZone($product->scheduled_date_time, $timezone)}} @endif
                                             </p>
@@ -346,7 +353,8 @@ $timezone = Auth::user()->timezone;
 
 
         <div class="row">
-            @if($order->address)
+            @if($order->address && ($order->luxury_option_id == 1) && ($client_preference_detail->hide_order_address ==0 ) )
+
             <div class="col-lg-6 mb-3">
                 <div class="card mb-0 h-100">
                     <div class="card-body">
@@ -364,10 +372,11 @@ $timezone = Auth::user()->timezone;
                         @if(isset($order->address) && !empty($order->address->state))
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("State") }}:</span> {{ $order->address ? $order->address->state : ''}}</p>
                         @endif
-                        <p class="mb-0"><span class="fw-semibold me-2">{{ __("Zip Code") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
+                        <p class="mb-0"><span class="fw-semibold me-2">{{ getNomenclatureName('Zip Code', true) }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
                     </div>
                 </div>
             </div>
+
             @elseif( ($order->luxury_option_id == 2) || ($order->luxury_option_id == 3) )
             <div class="col-lg-6 mb-3">
                 <div class="card mb-0 h-100">
@@ -383,7 +392,7 @@ $timezone = Auth::user()->timezone;
                         @if(isset($order->address) && !empty($order->address->state))
                         <p class="mb-2"><span class="fw-semibold me-2">{{ __("State") }}:</span> {{ $order->address ? $order->address->state : ''}}</p>
                         @endif
-                        <p class="mb-0"><span class="fw-semibold me-2">{{ __("Zip Code") }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
+                        <p class="mb-0"><span class="fw-semibold me-2">{{ getNomenclatureName('Zip Code', true) }}:</span>  {{ $order->address ? $order->address->pincode : ''}}</p>
 
                     </div>
                 </div>

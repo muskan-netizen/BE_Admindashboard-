@@ -12,16 +12,7 @@
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
+
 <style type="text/css">
 </style>
 
@@ -94,7 +85,7 @@
                                             <h2>{{__('Upcoming')}}</h2>
                                         </div>
                                         @foreach($upcoming_loyalty as $loyalty)
-                                        <div class="col-md-6 mt-3 text-center">
+                                        <div class="col-md-4 mt-3 text-center">
                                             <div class="card-box">
                                                 <div class="point-img-box">
                                                     <img src="{{ $loyalty->image['proxy_url'] .'200/200'. $loyalty->image['image_path'] }}" alt="">

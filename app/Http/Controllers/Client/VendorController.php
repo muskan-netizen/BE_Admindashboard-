@@ -19,10 +19,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Traits\ToasterResponser;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Client\BaseController;
+use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
-use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout};
+use App\Http\Controllers\AhoyController;
+use App\Models\{CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, Client, ClientPreference, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ShippingOption, VendorPayout,VendorRegistrationSelectOption};
 use GuzzleHttp\Client as GCLIENT;
+use App\Exports\VendorSimpelExport;
 use DB;
 use App\Models\VendorRegistrationDocument;
 
@@ -36,8 +38,8 @@ class VendorController extends BaseController
     public function __construct(){
         $code = Client::orderBy('id','asc')->value('code');
         $this->folderName = '/'.$code.'/vendor/extra_docs';
-        $payoutOption = PayoutOption::where('status', 1)->get();
-        if($payoutOption->isNotEmpty()){
+        $payoutOption = PayoutOption::where('status', 1)->first();
+        if($payoutOption){
             $this->is_payout_enabled = 1;
         }else{
             $this->is_payout_enabled = 0;
@@ -101,7 +103,7 @@ class VendorController extends BaseController
     }
     public function index(){
         $user = Auth::user();
-        $csvVendors = CsvVendorImport::all();
+        $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
         $vendor_docs = collect(new VendorDocs);
         $client_preferences = ClientPreference::first();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->orderBy('id', 'desc');
@@ -656,9 +658,11 @@ class VendorController extends BaseController
         $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
         $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
         $ship_creds = ShippingOption::select('status', 'test_mode')->where('code', 'shiprocket')->where('status', 1)->first();
+        $ahoys = ShippingOption::select('status', 'test_mode')->where('code', 'ahoy')->where('status', 1)->first();
         $checkShip = ($ship_creds->status) ?? 0;
+        $checkAhoyShip = ($ahoys->status) ?? 0;
 
-        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip]);
+        return view('backend.vendor.vendorCatalog')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'new_products' => $new_products, 'featured_products' => $featured_products, 'last_mile_delivery' => $last_mile_delivery, 'published_products' => $published_products, 'product_count' => $product_count, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory,'csvProducts' => $csvProducts, 'csvVendors' => $csvVendors, 'products' => $products, 'tab' => 'catalog', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'product_categories' => $product_categories_hierarchy, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'check_pickup_delivery_service' => $check_pickup_delivery_service, 'check_on_demand_service'=>$check_on_demand_service,'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip]);
     }
 
     /**   show vendor page - payout tab      */
@@ -771,45 +775,15 @@ class VendorController extends BaseController
         // $available_funds = number_format($available_funds, 2, '.', ',');
         $past_payout_value = number_format($past_payout_value, 2, '.', ',');
 
-        //stripe connected account details
-        $stripe_connect_url = '';
-        $codes = ['stripe'];
-        $is_stripe_payout_enabled = 0;
-        $payout_creds = PayoutOption::whereIn('code', $codes)->where('status', 1)->first();
-        if(!empty($payout_creds->credentials)){
-            $creds_arr = json_decode($payout_creds->credentials);
-            $client_id = (isset($creds_arr->client_id)) ? $creds_arr->client_id : '';
-            $is_stripe_payout_enabled = 1;
-        }
-
-        $payout_options = PayoutOption::where('status', 1)->get();
-
-        $is_stripe_connected = 0;
-        $checkIfStripeAccountExists = VendorConnectedAccount::where('vendor_id', $id)->first();
-        if($checkIfStripeAccountExists && (!empty($checkIfStripeAccountExists->account_id))){
-            $is_stripe_connected = 1;
-        }
-        $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/";
-
-        if((!empty($payout_creds->credentials)) && ($client_id != '')){
-            $stripe_redirect_url = $server_url."client/verify/oauth/token/stripe";
-            $stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$id.'&client_id='.$client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
-        }
-
-        // $ex_countries = ['INDIA'];
-
-        // if((!empty($payout_creds->credentials)) && ($client_id != '') && (!in_array($client->country->name, $ex_countries))){
-        //     $stripe_redirect_url = 'http://local.myorder.com/client/verify/oauth/token/stripe'; //$server_url."client/verify/oauth/token/stripe";
-        //     $stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$id.'&client_id='.$client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
-        // }else{
-        //     $stripe_connect_url = route('create.custom.connected-account.stripe', $id);
-        // }
+        // get vendor payout connect details
+        $vendorPayoutController = new VendorPayoutController();
+        $payout_options = $vendorPayoutController->payoutConnectDetails($id);
 
         $taxCate = TaxCategory::all();
         $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
         $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
 
-        return view('backend.vendor.vendorPayout')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory, 'tab' => 'payout', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'stripe_connect_url'=> $stripe_connect_url, 'is_payout_enabled'=>$this->is_payout_enabled, 'is_stripe_connected'=>$is_stripe_connected, 'total_order_value' => number_format($total_order_value, 2), 'total_admin_commissions' => number_format($total_admin_commissions, 2), 'total_promo_amount'=>$total_promo_amount, 'past_payout_value'=>$past_payout_value, 'available_funds'=>$available_funds, 'payout_options' => $payout_options, 'is_stripe_payout_enabled' => $is_stripe_payout_enabled]);
+        return view('backend.vendor.vendorPayout')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'taxCate' => $taxCate,'sku_url' => $sku_url, 'client_preferences' => $client_preferences, 'vendor' => $vendor, 'VendorCategory' => $VendorCategory, 'tab' => 'payout', 'typeArray' => $type, 'categories' => $categories, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build, 'woocommerce_detail' => $woocommerce_detail, 'is_payout_enabled'=>$this->is_payout_enabled, 'total_order_value' => number_format($total_order_value, 2), 'total_admin_commissions' => number_format($total_admin_commissions, 2), 'total_promo_amount'=>$total_promo_amount, 'past_payout_value'=>$past_payout_value, 'available_funds'=>$available_funds, 'payout_options' => $payout_options]);
     }
 
     public function vendorPayoutCreate(Request $request, $domain = '', $id){
@@ -997,6 +971,28 @@ class VendorController extends BaseController
         return redirect()->back()->with('success', $msg . ' updated successfully!');
     }
 
+    public function updateAhoyLocation(Request $request, $domain = '',  $id)
+    {
+        $vendor = Vendor::where('id', $id)->first();
+        $msg = 'Ahoy delivery location name added.';
+
+        if ($request->has('location_name')) {
+            $ship = new AhoyController();
+            $save = (object)$ship->createLocation($vendor,$request);
+            //dd($save);
+             if(isset($save) && $save->code=='200'){
+                $vendor->ahoy_location  = json_encode($save->response);
+                $vendor->save();
+                return redirect()->back()->with('success', $msg . ' successfully!');
+                }elseif(isset($save) && $save->code=='401'){
+                    return redirect()->back()->with('success',$save->response->message);
+                }else{
+                    return redirect()->back()->with('error_delete',$save->response->error);
+                }
+        }
+
+    }
+
     public function updateLocation(Request $request, $domain = '',  $id)
     {
         $vendor = Vendor::where('id', $id)->first();
@@ -1010,7 +1006,7 @@ class VendorController extends BaseController
                 $vendor->save();
                 return redirect()->back()->with('success', $msg . ' successfully!');
              }
-             return redirect()->back()->with('success',$save->errors->address[0]);
+             return redirect()->back()->with('error_delete',$save->errors->address[0]);
         }
 
     }
@@ -1107,10 +1103,11 @@ class VendorController extends BaseController
                 $csv_vendor_import->save();
             }
             $data = Excel::import(new VendorImport($csv_vendor_import->id), $request->file('vendor_csv'));
-            return response()->json([
-                'status' => 'success',
-                'message' => 'File Successfully Uploaded!'
-            ]);
+            //pr($data);
+            // return response()->json([
+            //     'status' => 'success',
+            //     'message' => 'File Successfully Uploaded!'
+            // ]);
         }
         return response()->json([
             'status' => 'error',
@@ -1538,6 +1535,8 @@ class VendorController extends BaseController
                     }
 
         }
-
-
+        // this vendio export ony for get simel vendor ewport
+        public function export() {
+            return Excel::download(new VendorSimpelExport, 'vendor_simpel.xlsx');
+        }
 }

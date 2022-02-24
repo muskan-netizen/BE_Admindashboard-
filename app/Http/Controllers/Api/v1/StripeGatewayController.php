@@ -143,4 +143,126 @@ class StripeGatewayController extends BaseController
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
+
+
+    ///// Stripe FPX Payment /////
+
+    public function createStripeFPXPaymentIntent(Request $request)
+    {
+        try{
+            ////// Create webhook Endpoint ///////
+            $secret_key = stripeFPXPaymentCredentials()->secret_key;
+            $stripe = new \Stripe\StripeClient($secret_key);
+            
+            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_fpx';
+            $webhook_exists = false;
+
+            // $stripe->webhookEndpoints->delete(
+            //     'we_1KQXhFA3MquWN79FKLUy0Zzp',
+            //     []
+            // );
+            // $stripe->webhookEndpoints->delete(
+            //     'we_1KQXc3A3MquWN79FjGGWHT66',
+            //     []
+            // );
+            // $stripe->webhookEndpoints->delete(
+            //     'we_1KQX8gA3MquWN79FmZFGhD9G',
+            //     []
+            // );
+            $endpoints = $stripe->webhookEndpoints->all();
+
+            foreach($endpoints->data as $obj){
+                if($obj->url == $webhook_url){
+                    $webhook_exists = true;
+                    break;
+                }
+            }
+            
+            if(!$webhook_exists){
+                $res = $stripe->webhookEndpoints->create([
+                    'url' => $webhook_url,
+                    'enabled_events' => [
+                        'payment_intent.succeeded',
+                        'payment_intent.payment_failed'
+                    ]
+                ]);
+            }
+            // return $webhook_exists;
+
+            $user = Auth::user();
+
+            $description = '';
+            $payment_form = $request->payment_form;
+            $amount = $this->getDollarCompareAmount($request->amount);
+
+            $postdata = [
+                'payment_method_types' => ['fpx'],
+                'amount' => $amount * 100,
+                'currency' => 'myr', //$this->currency
+                // 'customer' => '',
+                'receipt_email' => $user->email ?? '',
+                'metadata' => [
+                    'user_id' => $user->id,
+                    'payment_form' => $payment_form
+                ]
+            ];
+
+            if($payment_form == 'cart'){
+                $address_id = $request->address_id;
+                $user_address = UserAddress::where('id', $address_id)->first();
+                $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
+                $order_number = $request->order_number;
+
+                $postdata['description'] = 'Order Checkout';
+                $postdata['metadata']['cart_id'] = $cart->id;
+                $postdata['metadata']['order_number'] = $order_number;
+                $postdata['shipping']['name'] = $user->name;
+                $postdata['shipping']['phone'] = $user->dial_code . $user->phone_number;
+                $postdata['shipping']['address']['line1'] = $user_address->street;
+                $postdata['shipping']['address']['city'] = $user_address->city;
+                $postdata['shipping']['address']['state'] = $user_address->state;
+                $postdata['shipping']['address']['country'] = $user_address->country;
+                $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
+            }
+            elseif($payment_form == 'wallet'){
+                $postdata['description'] = 'Wallet Checkout';
+            }
+            if($payment_form == 'tip'){
+                $postdata['description'] = 'Tip Checkout';
+                $order_number = $request->order_number;
+                $postdata['metadata']['order_number'] = $order_number;
+            }
+            elseif($request->payment_form == 'subscription'){
+                $postdata['description'] = 'Subscription Checkout';
+                $postdata['metadata']['subscription_id'] = $request->subscription_id;
+            }
+            
+            $payment_intent = $stripe = $stripe->paymentIntents->create($postdata);
+            
+            return $this->successResponse($payment_intent->client_secret);
+        }
+        catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
+    }
+
+    public function paymentWebViewStripeFPX(Request $request, $domain='')
+    {
+        $user = Auth::user();
+        $payment_form = $request->action;
+        $returnParams = '?amount='. $request->amount .'&auth_token='.$user->auth_token. '&payment_form=' . $payment_form;
+        if($payment_form == 'cart'){
+            $returnParams .= '&order_number='.$request->order_number;
+            if($request->has('address_id')){
+                $returnParams .= '&address_id='.$request->address_id;
+            }
+        }
+        elseif($payment_form == 'tip'){
+            $returnParams .= '&order_number='.$request->order_number;
+        }
+        elseif($payment_form == 'subscription'){
+            $returnParams .= '&subscription_id='.$request->subscription_id;
+        }
+        return $this->successResponse(url($request->serverUrl.'payment/webview/stripe_fpx'.$returnParams)); 
+    }
 }

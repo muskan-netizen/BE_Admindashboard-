@@ -297,8 +297,11 @@
                 $(".loader_box").show();
             },
             complete: function() {
-
                 $(".loader_box").hide();
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+               
             }
         });
     }
@@ -325,7 +328,7 @@
             success: function(response) {
                 location.reload();
                 if (response.status == 'success') {
-                    // $("#import-form").modal('hide');
+                     $("#import-form").modal('hide');
                     $('#p-message').empty();
                     $('#p-message').append('Document uploaded Successfully!');
                     setTimeout(function() {

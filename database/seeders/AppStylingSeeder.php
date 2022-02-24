@@ -216,6 +216,14 @@ class AppStylingSeeder extends Seeder{
             'template_id' => '4',
         ]);
 
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'Home Page 7',
+            'image' => 'home_seven.png',
+            'is_selected' => '0',
+            'template_id' => '5',
+        ]);
+
         $app_styling = AppStyling::insertGetId([
             'name' => 'Home Tag Line',
             'type' => '1'

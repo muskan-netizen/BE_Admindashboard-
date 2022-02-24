@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Http\Controllers\AhoyController;
 use DB;
 use Log;
 use Auth;
@@ -595,6 +596,7 @@ class OrderController extends FrontController
                 }
                 $total_payable_amount = $total_payable_amount - $loyalty_amount_saved;
             }
+
             $cart->loyalty_amount = number_format($loyalty_amount_saved, 2);
             $cart->gross_amount = number_format(($total_payable_amount + $total_discount_amount + $loyalty_amount_saved - $total_taxable_amount), 2);
             $cart->new_gross_amount = number_format(($total_payable_amount + $total_discount_amount), 2);
@@ -731,7 +733,7 @@ class OrderController extends FrontController
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                 $vendor_ids[] = $vendor_id;
                 $delivery_fee = 0;
-                $deliver_charge = $delivery_fee_charges = 0.00;
+                $deliver_charge = $ptaxable_amount =$total_taxable_amount = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
                 $vendor_payable_amount = 0;
                 $vendor_discount_amount = 0;
@@ -756,6 +758,7 @@ class OrderController extends FrontController
                     $payable_amount = $payable_amount + $quantity_price;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
+
                     if (isset($vendor_cart_product->product->taxCategory)) {
                         foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
                             if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
@@ -769,20 +772,13 @@ class OrderController extends FrontController
                         }
                     }
 
+
+
                     if ($action == 'delivery') {
                         $deliver_fee_data = CartDeliveryFee::where('cart_id',$vendor_cart_product->cart_id)->where('vendor_id',$vendor_cart_product->vendor_id)->first();
                         if (((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) || isset($deliver_fee_data)) {
-                            $OrderVendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type;
-                            $OrderVendor->courier_id = $deliver_fee_data->courier_id;
-
-                            //Add here Delivery option Lalamove and dispatcher
-
-                            // if($delType=='L'){
-                            //     $lala = new LalaMovesController();
-                            //     $delivery_fee = $lala->getDeliveryFeeLalamove($vendor_cart_product->vendor_id);
-                            // }else{
-                            //     $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
-                            // }
+                            $OrderVendor->shipping_delivery_type = $deliver_fee_data->shipping_delivery_type??'D';
+                            $OrderVendor->courier_id = $deliver_fee_data->courier_id??0;
 
 
                             if($deliver_fee_data)
@@ -809,8 +805,10 @@ class OrderController extends FrontController
                         }
                     }
 
-                    $taxable_amount += $product_taxable_amount;
-                    $vendor_taxable_amount += $taxable_amount;
+                    $taxable_amount = $product_taxable_amount;
+                    $vendor_taxable_amount = $taxable_amount;
+
+                  //  pr($vendor_taxable_amount);
                     $total_amount += $vendor_cart_product->quantity * $variant->price;
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;
@@ -950,11 +948,13 @@ class OrderController extends FrontController
                 $order_status->order_status_option_id = 1;
                 $order_status->save();
             }
+
             $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
             if (in_array(1, $subscription_features)) {
                 $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
             }
             $total_discount = $total_discount + $total_subscription_discount;
+
             $order->total_amount = $total_amount;
             $order->total_discount = $total_discount;
             $order->taxable_amount = $taxable_amount;
@@ -1010,7 +1010,7 @@ class OrderController extends FrontController
             }
             // $this->sendOrderNotification($user->id, $vendor_ids);
             $this->sendSuccessEmail($request, $order);
-            $ex_gateways = [7, 8, 9, 10, 17, 19]; //  mobbex, yoco, pointcheckout, razorpay, checkout, stripe_fpx
+            $ex_gateways = [7,8,9,10,12,13,15,17,18,19,20]; //  mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay
             if (!in_array($request->payment_option_id, $ex_gateways)) {
                 Cart::where('id', $cart->id)->update([
                     'schedule_type' => null, 'scheduled_date_time' => null,
@@ -1161,7 +1161,6 @@ class OrderController extends FrontController
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
                 $result = curl_exec($ch);
-                //    Log::info($result);
                 curl_close($ch);
             }
         }
@@ -1306,21 +1305,24 @@ class OrderController extends FrontController
 
                 if ($request->status_option_id == 2) {
 
-                    if ($orderData->shipping_delivery_type=='D') {
+                    if ($request->shipping_delivery_type=='D') {
                     //             Log::info($request->status_option_id);
                     $order_dispatch = $this->checkIfanyProductLastMileon($request);
                     if ($order_dispatch && $order_dispatch == 1) {
                         $stats = $this->insertInVendorOrderDispatchStatus($request);
                     }
-                   }elseif($orderData->shipping_delivery_type=='L'){
+                   }elseif($request->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
                         $order_lalamove = $this->placeOrderRequestlalamove($request);
-                    }elseif($orderData->shipping_delivery_type=='SR'){
+                    }elseif($request->shipping_delivery_type=='SR'){
                         //Create Shipping place order request for Shiprocket
                         $order_ship = $this->placeOrderRequestShiprocket($request);
-                    }elseif($orderData->shipping_delivery_type=='DU'){
+                    }elseif($request->shipping_delivery_type=='DU'){
                         //Create Shipping place order request for Shiprocket
                         $order_ship = $this->placeOrderRequestDunzo($request);
+                    }elseif($request->shipping_delivery_type=='M'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_ship = $this->placeOrderRequestAhoy($request);
                     }
 
                 }
@@ -1361,6 +1363,29 @@ class OrderController extends FrontController
         return 2;
     }
 
+
+    public function placeOrderRequestAhoy($request)
+    {
+
+        $data = new AhoyController();
+        //Create Shipping place order request for Dunzo
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+                $orderDetails = $data->createPreOrderRequestAhoy($checkOrder->user_id,$checkdeliveryFeeAdded);
+            }
+
+            if (isset($orderDetails->orderId)){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'web_hook_code' => $orderDetails->orderId,
+                ]);
+                return 1;
+            }
+
+        return 2;
+    }
+
     public function placeOrderRequestDunzo($request)
     {
 
@@ -1384,7 +1409,7 @@ class OrderController extends FrontController
 
         return 2;
     }
-    
+
 
     public function placeOrderRequestlalamove($request)
     {

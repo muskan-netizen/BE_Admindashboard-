@@ -134,13 +134,16 @@ class HomeController extends BaseController
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
 
-            $payment_codes = ['stripe', 'razorpay', 'checkout'];
+            $payment_codes = ['stripe', 'stripe_fpx', 'razorpay', 'checkout'];
             $payment_creds = PaymentOption::select('code', 'credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
                 foreach ($payment_creds as $creds) {
                     $creds_arr = json_decode($creds->credentials);
                     if ($creds->code == 'stripe') {
                         $homeData['profile']->preferences->stripe_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
+                    }
+                    if ($creds->code == 'stripe_fpx') {
+                        $homeData['profile']->preferences->stripe_fpx_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
                     }
                     if ($creds->code == 'razorpay') {
                         $homeData['profile']->preferences->razorpay_api_key = (isset($creds_arr->api_key) && (!empty($creds_arr->api_key))) ? $creds_arr->api_key : '';
@@ -219,7 +222,7 @@ class HomeController extends BaseController
             if($venderFilterbest && ($venderFilterbest == 1) ){
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
-            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get();
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
 
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
@@ -248,8 +251,8 @@ class HomeController extends BaseController
                     $vendor->delaySlot = 0;
                     $vendor->closed_store_order_scheduled = 0;
                 }
-                
-                
+
+
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4) ? 1 : 0;
 
                 $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();
@@ -336,7 +339,7 @@ class HomeController extends BaseController
                     'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
                 );
             }
-            
+
             $isVendorArea = 0;
             $categories = $this->categoryNav($langId, $vends);
             $homeData['vendors'] = $vendorData;

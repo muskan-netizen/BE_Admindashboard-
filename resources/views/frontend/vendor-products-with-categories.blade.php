@@ -6,23 +6,6 @@
             padding-top: 20px;
             padding-bottom: 20px;
         }
-
-    </style>
-    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}">
-
-@endsection
-@section('content')
-    <header>
-        <div class="mobile-fix-option"></div>
-        @if (isset($set_template) && $set_template->template_id == 1)
-            @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template) && $set_template->template_id == 2)
-            @include('layouts.store/left-sidebar')
-        @else
-            @include('layouts.store/left-sidebar-template-one')
-        @endif
-    </header>
-    <style type="text/css">
         .productVariants .firstChild {
             min-width: 150px;
             text-align: left !important;
@@ -42,7 +25,6 @@
             border: 1px solid #f7f7f7;
             text-align: center;
         }
-
         .productVariants .otherSize {
             height: auto !important;
             width: auto !important;
@@ -393,6 +375,11 @@
         }
 
     </style>
+@endsection
+@section('css-links')
+<link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/price-range.css') }}"> 
+@endsection
+@section('content')
     <!-- section start -->
     <section class="section-b-space ratio_asos">
         <div class="collection-wrapper">
@@ -460,9 +447,9 @@
                                                         @elseif($vendor->closed_store_order_scheduled == 1 && $checkSlot != 0)
                                                         <span class="badge badge-danger">Closed</span>
                                                         {{__('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.
-                                                            
+
                                                         @else
-                                                            <span class="badge badge-danger">Closed</span> 
+                                                            <span class="badge badge-danger">Closed</span>
                                                         @endif
                                                         </span>
                                                         {{-- <span data-toggle="tooltip" data-placement="right" title="Tooltip on right"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></span>
@@ -531,14 +518,12 @@
                             <div class="col-md-4"></div>
                             <div class="col-md-8"></div>
                             <div class="col-12">
-                                <hr>
                                 <div class="row vendor-products-wrapper">
-                                    <div class="col-sm-4 col-lg-3 border-right">
+                                    <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
                                         <nav class="scrollspy-menu">
                                             <ul>
                                                 @forelse($listData as $key => $data)
-                                                    <li><a href="#{{ $data->category->slug }}">{{ $data->category->translation_one->name }}
-                                                            ({{ $data->products_count }})</a></li>
+                                                <li><a href="#{{ $data->category->slug }}">{{ $data->category->translation_one->name }}({{ $data->products_count }})</a></li>
                                                 @empty
                                                 @endforelse
                                             </ul>
@@ -546,28 +531,41 @@
                                     </div>
                                     <div class="col-md-8 col-lg-6">
                                         <div class="row ">
-                                            @if (isset($tags) && !empty($tags))
-                                                @foreach ($tags as $key => $tag)
-                                                    <label class="label-switch switch-primary product_tag_filter mr-2">
-                                                        <input type="checkbox"
-                                                            class="switch switch-bootstrap product_tag_filter status"
-                                                            name="tag_id" id="product_tag_filter_{{ $key }}"
-                                                            data-tag_id="{{ $tag->id }}"" value="
-                                                            {{ $tag->id }}">
-                                                        <span class="lable"> @if (isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}" alt="">@endif <span
-                                                                class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span></span>
-                                                    </label>
-                                                @endforeach
-                                            @endif
+                                            <div class="col-6">
+                                                @if (isset($tags) && !empty($tags))
+                                                    @foreach ($tags as $key => $tag)
+                                                        <label class="label-switch switch-primary product_tag_filter mr-2">
+                                                            <input type="checkbox"
+                                                                class="switch switch-bootstrap product_tag_filter status"
+                                                                name="tag_id" id="product_tag_filter_{{ $key }}"
+                                                                data-tag_id="{{ $tag->id }}"" value="
+                                                                {{ $tag->id }}">
+                                                            <span class="lable"> @if (isset($tag->icon) && !empty($tag->icon)) <img class="ml-1" src="{{ $tag->icon['proxy_url'] . '100/100' . $tag->icon['image_path'] }}" alt="">@endif <span
+                                                                    class="ml-1">{{ $tag->primary ? $tag->primary->name : '' }}</span></span>
+                                                        </label>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                            <div class="col-6 text-right">Sort By : 
+                                                <select name="order_type" id='order_type' class="product_tag_filter p-1">
+                                                    <option value="featured">Featured</option>
+                                                    <option value="a_to_z">A to Z</option>
+                                                    <option value="z_to_a">Z to A</option>
+                                                    <option value="low_to_high">Cost : Low to High</option>
+                                                    <option value="high_to_low">Cost : High to Low</option>
+                                                    <option value="rating">Avg. Customer Review</option>
+                                                    <option value="newly_added">Newest Arrivals</option>
+                                                </select>
+                                            </div>
                                         </div>
                                         @forelse($listData as $key => $data)
-                                            <section class="scrolling_section" id="{{ $data->category->slug }}">
+                                            <section class="scrolling_section " id="{{ $data->category->slug }}">
                                                 @if (!empty($data->products))
-                                                    <h2 class="category-head mt-0 mb-3">
+                                                    <h2 class="category-head mt-0 mb-3 pl-2">
                                                         {{ $data->category->translation_one->name }}
                                                         ({{ $data->products_count }})</h2>
                                                     @forelse($data->products as $prod)
-                                                        <div class="row cart-box-outer product_row classes_wrapper no-gutters mb-3"
+                                                        <div class="row cart-box-outer al_white_bg_round product_row classes_wrapper no-gutters mb-3 p-2"
                                                             data-p_sku="{{ $prod->sku }}"
                                                             data-slug="{{ $prod->url_slug }}">
                                                             <div class="col-2">
@@ -815,28 +813,6 @@
                             <div class="circle-core"></div>
                         </div>
                     </div>
-                    <!-- <div class="p-2 border-top">
-                                                                <h5>Cottonworth Classic Cuvée 75cl</h5>
-                                                                <div class="qty-box mt-3 mb-2">
-                                                                    <div class="input-group">
-                                                                        <span class="input-group-prepend">
-                                                                            <button type="button" class="btn quantity-left-minus" data-type="minus" data-field=""><i class="ti-angle-left"></i>
-                                                                            </button>
-                                                                        </span>
-                                                                        <input type="text" name="quantity" id="quantity" class="form-control input-qty-number quantity_count" value="1">
-                                                                        <span class="input-group-prepend quant-plus">
-                                                                            <button type="button" class="btn quantity-right-plus " data-type="plus" data-field="">
-                                                                                <i class="ti-angle-right"></i>
-                                                                            </button>
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="cart-sub-total d-flex align-items-center justify-content-between">
-                                                                <span>Subtotalll</span>
-                                                                <span>£ 10.50</span>
-                                                            </div> -->
-
                     <div class="show-div shopping-cart flex-fill w-100" id="header_cart_main_ul_ondemand"></div>
                 </div>
             </div>
@@ -1037,7 +1013,7 @@
         <script type="text/template" id="addon_template">
             <% if(addOnData != ''){ %>
                                 <% if(addOnData.product_image){ %>
-                                    <div class="d-flex" style="max-height:200px">
+                                    <div class="d-flex" style="height:200px">
                                         <img class="w-100" src="<%= addOnData.product_image %>" alt=""  style="object-fit:cover">
                                     </div>
                                 <% } %>
@@ -1360,6 +1336,7 @@
 
             function vendorProductsSearchResults() {
                 let keyword = $("#vendor_search_box").val();
+                let order_type = $("#order_type").val();
                 var checkboxesChecked = [];
                 $("input:checkbox[name=tag_id]:checked").each(function() {
                     checkboxesChecked.push($(this).val());
@@ -1373,6 +1350,7 @@
                     data: {
                         tag_id: checkedvalus,
                         keyword: keyword,
+                        order_type: order_type,
                         vendor: "{{ $vendor->id }}",
                         vendor_category: "{{ $vendor_category ?? '' }}"
                     },

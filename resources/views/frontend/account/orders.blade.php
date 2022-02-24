@@ -28,16 +28,7 @@
     @php
     $timezone = Auth::user()->timezone;
     @endphp
-    <header>
-        <div class="mobile-fix-option"></div>
-        @if (isset($set_template) && $set_template->template_id == 1)
-            @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template) && $set_template->template_id == 2)
-            @include('layouts.store/left-sidebar')
-        @else
-            @include('layouts.store/left-sidebar-template-one')
-        @endif
-    </header>
+    
     <style type="text/css">
         .productVariants .firstChild {
             min-width: 150px;
@@ -1662,6 +1653,7 @@
     <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
     @endif
     <script src="{{ asset('js/tip_after_order.js') }}"></script>
+    <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
     <script src="{{ asset('js/payment.js') }}"></script>
     <script type="text/javascript">
         $(document).delegate(".topup_wallet_btn_tip", "click", function() {
@@ -1693,6 +1685,9 @@
         var ajaxCall = 'ToCancelPrevReq';
         var credit_tip_url = "{{ route('user.tip_after_order') }}";
         var payment_stripe_url = "{{ route('payment.stripe') }}";
+        var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+        var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
+        var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
         var payment_paypal_url = "{{ route('payment.paypalPurchase') }}";
         var payment_yoco_url = "{{ route('payment.yocoPurchase') }}";
         var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";

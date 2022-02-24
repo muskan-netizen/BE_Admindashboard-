@@ -146,6 +146,112 @@ class AuthController extends BaseController
         return response()->json(['data' => $data]);
     }
 
+    public function vendorlogin(LoginRequest $loginReq)
+    {
+        //dd($loginReq->all());
+        $errors = array();
+        $user = User::with('country')->where('email', $loginReq->email)->first();
+        if (!$user) {
+            $errors['error'] = __('Invalid email');
+            return response()->json($errors, 422);
+        }
+        if (!Auth::attempt(['email' => $loginReq->email, 'password' => $loginReq->password])) {
+            $errors['error'] = __('Invalid password');
+            return response()->json($errors, 422);
+        }
+        $user = Auth::user();
+        //check vendor
+        $checkvendor = UserVendor::where('user_id',$user->id)->first();
+        if(!$checkvendor)
+        {
+            if($user->is_admin==0)
+            {
+                $errors['error'] = __('User is not register as vendor');
+            }else{
+                $errors['error'] = __('User is not approved by admin');
+            }             
+            return response()->json($errors, 422);
+        }
+        $prefer = ClientPreference::select('theme_admin', 'distance_unit', 'map_provider', 'date_format', 'time_format', 'map_key', 'sms_provider', 'verify_email', 'verify_phone', 'app_template_id', 'web_template_id')->first();
+        $verified['is_email_verified'] = $user->is_email_verified;
+        $verified['is_phone_verified'] = $user->is_phone_verified;
+        $token1 = new Token;
+        $token = $token1->make([
+            'key' => 'royoorders-jwt',
+            'issuer' => 'royoorders.com',
+            'expiry' => strtotime('+1 month'),
+            'issuedAt' => time(),
+            'algorithm' => 'HS256',
+        ])->get();
+        $token1->setClaim('user_id', $user->id);
+        try {
+            Token::validate($token, 'secret');
+        } catch (\Exception $e) {
+        }
+        $user_refferal = UserRefferal::where('user_id', $user->id)->first();
+        if (!empty($loginReq->fcm_token)) {
+            $device = UserDevice::updateOrCreate(
+                ['device_token' => $loginReq->fcm_token],
+                [
+                    'user_id' => $user->id,
+                    'device_type' => $loginReq->device_type,
+                    'access_token' => $token
+                ]
+            );
+        } else {
+            $device = UserDevice::updateOrCreate(
+                ['device_token' => $loginReq->device_token],
+                [
+                    'user_id' => $user->id,
+                    'device_type' => $loginReq->device_type,
+                    'access_token' => $token
+                ]
+            );
+        }
+
+
+        $user->auth_token = $token;
+        $user->save();
+
+        $user_cart = Cart::where('user_id', $user->id)->first();
+        if ($user_cart) {
+            $unique_identifier_cart = Cart::where('unique_identifier', $loginReq->device_token)->first();
+            if ($unique_identifier_cart) {
+                $unique_identifier_cart_products = CartProduct::where('cart_id', $unique_identifier_cart->id)->get();
+                foreach ($unique_identifier_cart_products as $unique_identifier_cart_product) {
+                    $user_cart_product_detail = CartProduct::where('cart_id', $user_cart->id)->where('product_id', $unique_identifier_cart_product->product_id)->first();
+                    if ($user_cart_product_detail) {
+                        $user_cart_product_detail->quantity = ($unique_identifier_cart_product->quantity + $user_cart_product_detail->quantity);
+                        $user_cart_product_detail->save();
+                        $unique_identifier_cart_product->delete();
+                    } else {
+                        $unique_identifier_cart_product->cart_id = $user_cart->id;
+                        $unique_identifier_cart_product->save();
+                    }
+                }
+                $unique_identifier_cart->delete();
+            }
+        } else {
+            Cart::where('unique_identifier', $loginReq->device_token)->update(['user_id' => $user->id,  'unique_identifier' => '']);
+        }
+        $checkSystemUser = $this->checkCookies($user->id);
+        $data['name'] = $user->name;
+        $data['email'] = $user->email;
+        $data['auth_token'] =  $token;
+        $data['source'] = $user->image;
+        $data['verify_details'] = $verified;
+        $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
+        $data['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+        //$data['is_admin'] = $user->is_admin;
+        $data['client_preference'] = $prefer;
+        $data['dial_code'] = $user->dial_code;
+        $data['phone_number'] = $user->phone_number;
+        $data['cca2'] = $user->country ? $user->country->code : '';
+        $data['callingCode'] = $user->country ? $user->country->phonecode : '';
+        $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code : '';
+        return response()->json(['data' => $data]);
+    }
+
     /**
      * User registraiotn
      * @return [status, email, need_email_verify, need_phone_verify]
@@ -857,6 +963,8 @@ class AuthController extends BaseController
 
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
                 if (!$user) {
+                    return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
+
                     $registerUser = $this->registerViaPhone($request)->getData();
                     if ($registerUser->status == 'Success') {
                         $user = $registerUser->data;
