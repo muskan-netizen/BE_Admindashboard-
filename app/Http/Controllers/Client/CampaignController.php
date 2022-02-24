@@ -18,6 +18,27 @@ class CampaignController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function index(){ 
+
+        $sendto = "testu00091@gmail.com";
+        $subject = "Test subject for email notification";
+        $body = "test body message";
+
+        $email_data = [
+            'code' => '1324',
+            'link' => "link",
+            'email' => $sendto,
+            'mail_from' => 'testu00091@gmail.com',
+            'client_name' => 'XYZ',
+            //'logo' => $client->logo['original'],
+            'subject' => $subject,
+            //'customer_name' => ucwords($user->name),
+            'email_template_content' => $body,
+            // 'cartData' => $cartDetails,
+            // 'user_address' => $address,
+        ];
+        $email_data['send_to_cc'] = 0;
+        dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+
         //return $vendors = UserVendor::select('user_id')->with('user')->groupBy('user_id')->get();
         $campaigns = Campaign::all();
         return view('backend.campaign.index')->with(['campaigns' => $campaigns]);

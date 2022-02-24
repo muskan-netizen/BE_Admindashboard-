@@ -91,13 +91,13 @@ class SendCampaignNotification extends Command
                 {
 
                     //test sms
-                    // $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
-                    //     $to = '+919996687653';
-                    //     $provider = $client_preferences->sms_provider;
-                    //     $body = "Hi ".$client_preferences->sms_key;
-                    //     if (!empty($client_preferences->sms_provider)) {
-                    //         $send = $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
-                    //     }
+                    $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+                        $to = '+919996687653';
+                        $provider = $client_preferences->sms_provider;
+                        $body = "Hi ".$client_preferences->sms_key;
+                        
+                        $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
+                        
 
                     //test email
                     $sendto = "testu00091@gmail.com";
