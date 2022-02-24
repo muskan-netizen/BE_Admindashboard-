@@ -761,7 +761,7 @@ class CartController extends FrontController
                             $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                             foreach($deliveries as $k=> $opt)
                                 {
-                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['courier_name'].', Rate : '.$opt['rate'].'</option>';
+                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
                                 }
                             $select .= '</select>';
                                 if($code){

@@ -245,4 +245,18 @@ class StripeGatewayController extends BaseController
             return $this->errorResponse($ex->getMessage(), $ex->getCode());
         }
     }
+
+    public function paymentWebViewStripeFPX(Request $request, $domain='')
+    {
+        $user = Auth::user();
+        $payment_form = $request->action;
+        $returnParams = '?amount='. $request->amount .'&auth_token='.$user->auth_token. '&payment_form=' . $payment_form;
+        if($payment_form == 'cart'){
+            $returnParams .= '&order='.$request->order_number;
+        }
+        elseif($payment_form == 'tip'){
+            $returnParams .= '&order='.$request->order_number;
+        }
+        return $this->successResponse(url($request->serverUrl.'payment/webview/stripe_fpx'.$returnParams)); 
+    }
 }
