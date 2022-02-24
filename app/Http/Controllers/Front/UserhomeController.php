@@ -162,15 +162,51 @@ class UserhomeController extends FrontController
         }])->where('slug', $request->slug)->firstOrFail();
         if ($page_detail->primary->type_of_form != 2) {
             if($page_detail->primary->type_of_form == 3){
-             $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', session()->get('customerLanguage'))->get();
+             $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', $language_id)->get();
              $page_detail->faqs_details = $faq;
             }
             $vendor_registration_documents = VendorRegistrationDocument::with(['primary','options','options.translation' => function($query) use($language_id) {
                 $query->where('language_id', session()->get('customerLanguage'));
             }])->get();
+            $builds = array();
+            $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+                                    ->where('id', '>', '1')
+                                    // ->where('is_core', 1)
+                                    ->whereNotIn('type_id', [4, 5])
+                                    ->where(function ($q) {
+                                        $q->whereNull('vendor_id');
+                                    })->orderBy('position', 'asc')
+                                    ->orderBy('id', 'asc')
+                                    ->where('status', 1)
+                                    ->orderBy('parent_id', 'asc')->get();
+            if ($categories) {
+                $builds = $this->buildTree($categories->toArray());
+            }
 
-            return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents'));
-        } else {
+            $VendorCategory =array();
+
+            $templetes  = \DB::table('vendor_templetes')->where('status', 1)->get();
+                $server = env('APP_ENV', 'development');
+                $langId = session()->get('customerLanguage');
+                $privacy = Page::with(['translations' => function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+                }])->whereHas('translations', function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+                })->first();
+
+                $terms = Page::with(['translations' => function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+                }])->whereHas('translations', function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+                })->first();
+                //pr($page_detail->faqs_details->toArray());
+                // if($server == 'local')
+                // {
+                    return view('frontend.extrapageNew', compact('page_detail','templetes','VendorCategory','builds','navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
+                // }else{
+                //     return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
+                // }
+            } else {
             $tag = [];
             $showTag = implode(',', $tag);
             $client = Client::with('country')->first();
@@ -255,15 +291,19 @@ class UserhomeController extends FrontController
 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
 
-            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get(); 
+            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
 
             // $last_mile = $this->checkIfLastMileDeliveryOn();
-            if (isset($set_template)  && $set_template->template_id == 1)
-                return view('frontend.home-template-one')->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
-            if (isset($set_template)  && $set_template->template_id == 2)
-                return view('frontend.home')->with(['home' => $home, 'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
-            else
-            return view('frontend.home-template-one')->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+            $view_page ="home-template-one";
+            if (isset($set_template)  && $set_template->template_id == 1){
+                $view_page = 'home-template-one';
+            }elseif(isset($set_template)  && $set_template->template_id == 2){
+                $view_page = "home";
+            }elseif(isset($set_template)  && $set_template->template_id == 3){
+                 $view_page = "home-template-two";
+            }
+            return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+
         } catch (Exception $e) {
             pr($e->getCode());
             die;
@@ -275,10 +315,15 @@ class UserhomeController extends FrontController
         $new_products = [];
         $feature_products = [];
         $on_sale_products = [];
-        if ($request->has('latitude')) {
+        $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+        $p_dim = '260/100';
+        if (isset($set_template)  && $set_template->template_id == 3){
+            $p_dim = '328/248';
+        }
+        if($request->has('latitude')){
             $latitude = $request->latitude;
             Session::put('latitude', $latitude);
-        } else {
+        } else{
             $latitude = Session::get('latitude');
         }
         if ($request->has('longitude')) {
@@ -289,10 +334,10 @@ class UserhomeController extends FrontController
         }
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
-        $preferences = Session::get('preferences');
+        $preferences = (object)Session::get('preferences');
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
-      
+
         $currency_id = $this->setCurrencyInSesion();
 
         $featured_products_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','featured_products');})->value('title');
@@ -311,14 +356,21 @@ class UserhomeController extends FrontController
 
         $recent_orders_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
 
-
-        $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
-            $q->where('language_id', $language_id);
-        }])->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->get();
-        foreach ($brands as $brand) {
-            $brand->redirect_url = route('brandDetail', $brand->id);
-            $brand->translation_title = $brand->translation->first() ? $brand->translation->first()->title : $brand->title;
+        $enable_layout = CabBookingLayout::where('is_active',1)->pluck('slug')->toArray();
+        $home_page_labels = HomePageLabel::with('translations')->get();
+        if (in_array('brands', $enable_layout)) {     # if enable brands section in
+            $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
+                $q->where('language_id', $language_id);
+            }])->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->get();
+            foreach ($brands as $brand) {
+                $brand->redirect_url = route('brandDetail', $brand->id);
+                $brand->translation_title = $brand->translation->first() ? $brand->translation->first()->title : $brand->title;
+            }
+        }else{
+            $brands = [];
         }
+
+
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
         $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
@@ -488,7 +540,7 @@ class UserhomeController extends FrontController
         foreach ($new_product_details as  $new_product_detail) {
             $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
-            $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . '260/100' . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $new_products[] = array(
                 'tag_title' => $new_products_title??0,
                 'image_url' => $image_url,
@@ -506,7 +558,7 @@ class UserhomeController extends FrontController
         foreach ($feature_product_details as  $feature_product_detail) {
             $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
             $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
-            $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['proxy_url'] . '260/100' . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $feature_products[] = array(
                 'tag_title' => $featured_products_title??'0',
                 'image_url' => $image_url,
@@ -524,7 +576,7 @@ class UserhomeController extends FrontController
         foreach ($on_sale_product_details as  $on_sale_product_detail) {
             $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
             $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
-            $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['proxy_url'] . '260/100' . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $on_sale_products[] = array(
                 'tag_title' => $on_sale_title??'0',
                 'image_url' => $image_url,
@@ -539,7 +591,7 @@ class UserhomeController extends FrontController
                 'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
         }
-        $home_page_labels = HomePageLabel::with('translations')->get();
+
 
         $activeOrders = [];
 
@@ -596,7 +648,7 @@ class UserhomeController extends FrontController
             'brands' => $brands,
             'vendors' => $vendors,
             'new_products' => $new_products,
-             'homePageLabels' => $home_page_labels,
+            'homePageLabels' => $home_page_labels,
             'feature_products' => $feature_products,
             'on_sale_products' => $on_sale_products,
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
@@ -763,7 +815,7 @@ class UserhomeController extends FrontController
         }
     }
 
-    # category menu 
+    # category menu
 
     public function homePageDataCategoryMenu(Request $request)
     {
@@ -784,22 +836,22 @@ class UserhomeController extends FrontController
         $preferences = Session::get('preferences');
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
-     
+
         $currency_id = $this->setCurrencyInSesion();
 
-    
+
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
-       
+
         $now = Carbon::now()->toDateTimeString();
-     
+
 
         $navCategories = $this->categoryNav($language_id);
         Session::put('navCategories', $navCategories);
-      
+
         $user = Auth::user();
 
-     
+
 
         $data = [
            'navCategories' => $navCategories,

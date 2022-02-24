@@ -1,27 +1,8 @@
 @extends('layouts.store', ['title' => $vendor->name])
 @section('css')
 <style type="text/css">
-    .main-menu .brand-logo {
-        display: inline-block;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-</style>
-<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
-@endsection
-@section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
-<style type="text/css">
-    .productVariants .firstChild {
+.main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}
+.productVariants .firstChild {
         min-width: 150px;
         text-align: left !important;
         border-radius: 0% !important;
@@ -55,8 +36,12 @@
         font-size: 16px;
     }
 </style>
+<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
+@endsection
+@section('content')
+
 <!-- section start -->
-<section class="section-b-space ratio_asos">
+<section class="section-b-space ratio_asos al_vendor_product_page">
     <div class="collection-wrapper">
         <div class="container">
             <div class="row">
@@ -198,49 +183,53 @@
                                 @foreach($newProducts as $newProds)
 
                                     @foreach($newProds as $new)
-                                    <div>
+                                    <div class="col-md-12">
                                     <?php /*$imagePath = '';
                                     foreach ($new['media'] as $k => $v) {
                                         $imagePath = $v['image']['path']['image_fit'] . '300/300' . $v['image']['path']['image_path'];
                                     }*/ ?>
 
 
-                                    <a class="common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                        <div class="img-outer-box position-relative">
-                                            <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
-                                            <div class="pref-timing">
-                                                <!--<span>5-10 min</span>-->
-                                            </div>
-                                            {{-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> --}}
-                                        </div>
-                                        <div class="media-body align-self-center">
-                                            <div class="inner_spacing px-0">
-                                                <div class="product-description">
-                                                    <div class="d-flex align-items-center justify-content-between">
-                                                        <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
-                                                        <!--<span class="rating-number">2.0</span>-->
+                                    <a class="row common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
+                                        <div class="col-sm-3">
+                                            <div class="img-outer-box position-relative">
+                                                    <img class="blur-up lazyload" data-src="{{$new['image_url']}}" alt="">
+                                                    <div class="pref-timing">
+                                                        <!--<span>5-10 min</span>-->
                                                     </div>
-                                                    <!-- <h3 class="m-0">{{ $new['translation_title'] }}</h3> -->
-                                                    <p>{{$new['vendor']['name']}}</p>
-                                                    <p class="pb-1">In {{$new['category_name']}}</p>
-                                                    <div class="d-flex align-items-center justify-content-between">
-                                                        <b>
-                                                            @if($new['inquiry_only'] == 0)
-                                                                <?php $multiply = $new['variant_multiplier']; ?>
-                                                                {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
-                                                            @endif
-                                                        </b>
-
-                                                        <!-- @if($client_preference_detail)
-                                                            @if($client_preference_detail->rating_check == 1)
-                                                                @if($new['averageRating'] > 0)
-                                                                    <div class="rating-box">
-                                                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                                                        <span>{{ $new['averageRating'] }}</span>
-                                                                    </div>
+                                                    {{-- <i class="fa fa-heart-o fav-heart" aria-hidden="true"></i> --}}
+                                                </div>
+                                        </div>
+                                        <div class="col-sm-9 p-0">
+                                            <div class="media-body align-self-center ">
+                                                <div class="inner_spacing px-0">
+                                                    <div class="product-description">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <h6 class="card_title mb-1 ellips">{{ $new['translation_title'] }}</h6>
+                                                            <!--<span class="rating-number">2.0</span>-->
+                                                        </div>
+                                                        <!-- <h3 class="m-0">{{ $new['translation_title'] }}</h3> -->
+                                                        <p>{{$new['vendor']['name']}}</p>
+                                                        <p class="pb-1">In {{$new['category_name']}}</p>
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <b>
+                                                                @if($new['inquiry_only'] == 0)
+                                                                    <?php $multiply = $new['variant_multiplier']; ?>
+                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
                                                                 @endif
-                                                            @endif
-                                                        @endif   -->
+                                                            </b>
+
+                                                            <!-- @if($client_preference_detail)
+                                                                @if($client_preference_detail->rating_check == 1)
+                                                                    @if($new['averageRating'] > 0)
+                                                                        <div class="rating-box">
+                                                                            <i class="fa fa-star" aria-hidden="true"></i>
+                                                                            <span>{{ $new['averageRating'] }}</span>
+                                                                        </div>
+                                                                    @endif
+                                                                @endif
+                                                            @endif   -->
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -299,6 +288,17 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts px-0">
+                                        <div class="col-12 text-right">Sort By : 
+                                            <select name="order_type" id='order_type' class="sortingFilter p-1">
+                                                <option value="featured">Featured</option>
+                                                <option value="a_to_z">A to Z</option>
+                                                <option value="z_to_a">Z to A</option>
+                                                <option value="low_to_high">Cost : Low to High</option>
+                                                <option value="high_to_low">Cost : High to Low</option>
+                                                <option value="rating">Avg. Customer Review</option>
+                                                <option value="newly_added">Newest Arrivals</option>
+                                            </select>
+                                        </div>
                                         <div class="product-wrapper-grid">
                                             <div class="row margin-res">
                                                 @if($listData->isNotEmpty())
@@ -311,7 +311,7 @@
                                                         }
                                                         $imagePath2 = $data->media[$i]->image->path['image_fit'] . '600/600' . $data->media[$i]->image->path['image_path'];
                                                     }*/ ?>
-                                                    <div class="col-xl-3 col-md-4 col-6 col-grid-box mt-4">
+                                                    <div class="col-md-3 col-6 col-grid-box mt-4">
                                                         <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="common-product-box scale-effect mt-0">
                                                             <div class="img-outer-box position-relative">
                                                                 <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
@@ -335,7 +335,7 @@
                                                                     <!-- <h3>{{ $data->translation_title }}</h3> -->
                                                                     <p>{{$data->description}}</p>
                                                                     <p class="border-bottom pb-1 mb-1">In {{$data->category_name}}</p>
-                                                                   
+
 
                                                                     <div class="d-flex align-items-center justify-content-between">
                                                                         @if($data['inquiry_only'] == 0)
@@ -393,8 +393,10 @@
     $('.js-range-slider').change(function() {
         filterProducts();
     });
-
     $('.productFilter').click(function() {
+        filterProducts();
+    });
+    $(document).on('change','.sortingFilter',function(){
         filterProducts();
     });
 
@@ -415,6 +417,7 @@
             }
         });
         var range = $('.rangeSliderPrice').val();
+        var order_type = $('.sortingFilter').val();
 
         ajaxCall = $.ajax({
             type: "post",
@@ -425,7 +428,8 @@
                 "brands": brands,
                 "variants": variants,
                 "options": options,
-                "range": range
+                "range": range,
+                "order_type" : order_type
             },
             beforeSend: function() {
                 if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {

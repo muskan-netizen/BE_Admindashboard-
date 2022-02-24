@@ -20,7 +20,7 @@
             <div class="col-sm-4">              
                 <label>{{ __("Upload Category image") }}</label>
                 <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="" />
-                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1026x200</label>
+                <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1370x300</label>
             </div>
             <div class="col-sm-6">
                 <div class="row">

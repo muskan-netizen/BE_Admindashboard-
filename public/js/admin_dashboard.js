@@ -27,7 +27,7 @@ $(document).ready(function () {
         $flatpickr.clear();
         getDashboardData(dashboard_filter_url, 'weekly');
     });
-    function getDashboardData(dashboard_filter_url, type = 'monthly'){
+    function getDashboardData(dashboard_filter_url, type = 'yearly'){
         var date_filter = $('#range-datepicker').val();
         $.getJSON(dashboard_filter_url,{type:type,date_filter:date_filter}, function (response) {
             if(response.status == 'Success'){
@@ -149,9 +149,9 @@ $(document).ready(function () {
                 series: series,
                 labels: labels,
                 chart: {
-                    width: 550,
+                    width: 320,
                     type: 'donut',
-                    offsetX: -100,
+                    offsetX: -130,
                 },
                 dataLabels: {
                     enabled: false
@@ -169,8 +169,8 @@ $(document).ready(function () {
                 }],
                 legend: {
                     position: 'bottom',
-                    offsetX: 0,
-                    height: 130,
+                    height: 150,
+                    width : 240
                 },
                 noData: {
                     text: "No Data Found",

@@ -1,19 +1,18 @@
-<div class="row">
-    <div class="col-md-12">
-        <div class="row mb-2">
-            <div class="col-md-12">              
+<div class=" col-md-12">
+    <div class="row mb-2">
+            <div class="col-md-4">
                 <label>{{ __("Upload Logo") }}</label>
                 <input type="file" accept="image/*" class="dropify" data-plugins="dropify" name="image1" data-default-file="{{$brand->image['proxy_url'].'400/400'.$brand->image['image_path']}}" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 350x200</label>
             </div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-md-12">              
+            <div class="col-md-8">
                 <label>{{ __("Upload Banner") }}</label>
                 <input type="file" accept="image/*" class="dropify" data-plugins="dropify" name="image2" data-default-file="{{$brand->image_banner['proxy_url'].'400/400'.$brand->image_banner['image_path']}}" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 350x200</label>
             </div>
-        </div>
+    </div>
+</div>
+
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
@@ -29,7 +28,7 @@
                         @endforeach
                         {{-- @foreach($categories as $cate)
                             @if($brand->bc)
-                                <option value="{{$cate->id}}" @foreach($brand->bc as $cat)@if($cat->category_id == $cate->id) selected @endif 
+                                <option value="{{$cate->id}}" @foreach($brand->bc as $cat)@if($cat->category_id == $cate->id) selected @endif
                                     @endforeach>{{$cate->translation_one['name'] ?? $cate->slug}}</option>
                             @else
                                 <option value="{{$cate->id}}">{{$cate->translation_one['name'] ?? $cate->slug}}</option>

@@ -29,8 +29,8 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout');
-        $payout_codes = array('cash', 'stripe');
+        $payment_codes = array('cod', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net');
+        $payout_codes = array('cash', 'stripe', 'pagarme');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
         return view('backend/payoption/index')->with(['payOption' => $payOption, 'payoutOption' => $payoutOption]);
@@ -136,7 +136,18 @@ class PaymentOptionController extends BaseController
                         $json_creds = json_encode($stripe_arr);
                     }
                    
-                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'yoco')) {
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'stripe_fpx')) {
+                    $validatedData = $request->validate([
+                        'stripe_fpx_secret_key' => 'required',
+                        'stripe_fpx_secret_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'secret_key' => $request->stripe_fpx_secret_key,
+                        'publishable_key' => $request->stripe_fpx_publishable_key
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'yoco')) {
                     $validatedData = $request->validate([
                         'yoco_secret_key'        => 'required',
                         'yoco_public_key' => 'required'
@@ -256,6 +267,27 @@ class PaymentOptionController extends BaseController
                         'public_key' => $request->checkout_public_key
                     ));
                 }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'authorize_net')) {
+                    $validatedData = $request->validate([
+                        'authorize_net_login_id' => 'required',
+                        'authorize_net_transaction_key' => 'required',
+                        'authorize_net_client_key' => 'required'
+                    ]);
+                    $json_creds = json_encode(array(
+                        'login_id' => $request->authorize_net_login_id,
+                        'transaction_key' => $request->authorize_net_transaction_key,
+                        'client_key' => $request->authorize_net_client_key
+                    ));
+                }else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'kongapay')) {
+                    $validatedData = $request->validate([
+                        'kongapay_api_key' => 'required',
+                        'kongapay_merchant_id' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'api_key' => $request->kongapay_api_key,
+                        'merchant_id' => $request->kongapay_merchant_id
+                    ));
+                }
             }
             PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
         }
@@ -299,6 +331,18 @@ class PaymentOptionController extends BaseController
                         'secret_key' => $request->stripe_payout_secret_key,
                         'publishable_key' =>  $request->stripe_payout_publishable_key,
                         'client_id' => $request->stripe_payout_client_id
+                    ));
+                }
+                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'pagarme')) {
+                    $validatedData = $request->validate([
+                        'pagarme_payout_api_key' => 'required',
+                        'pagarme_payout_secret_key' => 'required',
+                        'pagarme_payout_multiplier' => 'required',
+                    ]);
+                    $json_creds = json_encode(array(
+                        'api_key' => $request->pagarme_payout_api_key,
+                        'secret_key' => $request->pagarme_payout_secret_key,
+                        'multiplier' => $request->pagarme_payout_multiplier,
                     ));
                 }
             }

@@ -1,15 +1,6 @@
 @extends('layouts.store', ['title' => 'Checkout'])
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
+
 <section class="section-b-space light-layout">
     <div class="container">
         <div class="row">
@@ -17,7 +8,8 @@
                 <div class="success-text">
                 	<i class="fa fa-check-circle" aria-hidden="true"></i>
                     <h2>{{__('Thank You')}}</h2>
-                    <p>{{__('Payment is successfully processsed and your order is on the way')}}</p>
+                    {{-- <p>{{__('Payment is successfully processsed and your order is on the way')}}</p> --}}
+                    <p>{{__("Your order has been placed")}}</p>
                     @if(($order->payment_method != 1) && ($order->payment_method != 2))
                     	<p>{{__('Transaction ID')}}: {{$order->payment ? $order->payment->transaction_id : ''}}</p>
                     @endif
@@ -34,7 +26,9 @@
                 <div class="product-order">
                     <h3>{{__('Your Order Details')}}</h3>
                     @foreach($order->products as $product)
+
                         @php
+
                             $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
                         @endphp
 	                    <div class="row product-order-detail">
@@ -44,7 +38,7 @@
 	                        <div class="col-3 order_detail">
 	                            <div>
 	                                <h4>{{__('Product Name')}}</h4>
-	                                <h5>{{$product->pvariant->translation_one->title}}</h5>
+	                                <h5>{{$product->pvariant->translation_one->title ?? $product->pvariant->sku }}</h5>
                                     @foreach($product->pvariant->vset as $vset)
                                         <label><span>{{$vset->optionData->trans->title}}:</span>{{$vset->variantDetail->trans->title}}</label>
                                     @endforeach
@@ -105,8 +99,8 @@
                             <li>{{__('Order Total')}}: {{Session::get('currencySymbol')}}@money($order->payable_amount * @$clientCurrency->doller_compare)</li>
                         </ul>
                     </div>
-                    <div class="col-sm-6">
-                        <h4>{{__('Shipping Address')}}</h4>
+                    <div class="col-sm-6 Shipping">
+                        <h4>{{__('Pickup Address')}}</h4>
                         <ul class="order-detail">
                             <li> {{ ($order->address->house_number ?? false) ? $order->address->house_number."," : '' }} {{$order->address ? $order->address->address : ''}}</li>
                         </ul>
