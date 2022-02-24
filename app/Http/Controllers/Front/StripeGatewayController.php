@@ -617,10 +617,10 @@ class StripeGatewayController extends FrontController
             $payment_form = $request->payment_form;
             $returnParams = 'amount='. $request->amount . '&payment_form=' . $payment_form;
             if($payment_form == 'cart'){
-                $returnParams .= '&order='.$request->order;
+                $returnParams .= '&order='.$request->order_number;
             }
             elseif($payment_form == 'tip'){
-                $returnParams .= '&order='.$request->order;
+                $returnParams .= '&order='.$request->order_number;
             }
             $payment_retrive_stripe_fpx_url = url('payment/webview/response/stripe_fpx' .'/?'. $returnParams);
             

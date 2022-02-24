@@ -252,10 +252,10 @@ class StripeGatewayController extends BaseController
         $payment_form = $request->action;
         $returnParams = '?amount='. $request->amount .'&auth_token='.$user->auth_token. '&payment_form=' . $payment_form;
         if($payment_form == 'cart'){
-            $returnParams .= '&order='.$request->order_number;
+            $returnParams .= '&order_number='.$request->order_number;
         }
         elseif($payment_form == 'tip'){
-            $returnParams .= '&order='.$request->order_number;
+            $returnParams .= '&order_number='.$request->order_number;
         }
         return $this->successResponse(url($request->serverUrl.'payment/webview/stripe_fpx'.$returnParams)); 
     }
