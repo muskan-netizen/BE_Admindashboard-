@@ -103,7 +103,7 @@ class SendCampaignNotification extends Command
                     $sendto = "testu00091@gmail.com";
                     $subject = "Test subject for email notification";
                     $body = "test body message";
-                    
+
                     $email_data = [
                         // 'code' => $otp,
                         // 'link' => "link",
@@ -122,7 +122,7 @@ class SendCampaignNotification extends Command
                     // $res = $this->testOrderMail($email_data);
                     // dd($res);
                     dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
-                    $notified = 1;
+                    
 
 
 

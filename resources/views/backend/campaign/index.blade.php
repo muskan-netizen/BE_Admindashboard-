@@ -140,7 +140,6 @@
                                                     @method('DELETE')
                                                     <div class="form-group">
                                                        <button type="button" id="deleteCampaignButton" class="btn btn-primary-outline action-icon deleteCampaignButton"><i class="mdi mdi-delete"></i></button> 
-
                                                     </div>
                                                 </form>
                                             </div>
