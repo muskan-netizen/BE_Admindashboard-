@@ -205,6 +205,30 @@
       }
     }
   });
+
+  $('#push_url_option').on('change', function() {
+    var pushvalue = this.value;
+    if(pushvalue==1)
+    {
+        $('.push_url_option_value').html('');
+        var pushvaluehtml = '<input class="form-control" placeholder="" name="push_url_option_value" type="text" id="push_url_option_value">';
+        $('.push_url_option_value').html(pushvaluehtml);
+    }else{
+        $.ajax({
+            type: "get",
+            url: "{{route('campaign.pushoptions')}}",
+            data: {'pushvalue':pushvalue},
+            dataType: 'json',
+            success: function(data) {
+               $('.push_url_option_value').html('');
+               $('.push_url_option_value').html(data.html);
+            },
+            error: function(data) {
+                console.log('data2');
+            }
+        });
+    }
+  });
 </script>
 
 @include('backend.campaign.pagescript')

@@ -142,7 +142,9 @@
                             <div class="col-md-6">
                                 <div class="form-group" id="pushTitle">
                                     <label for="push_title" class="control-label">{{__("Push Option Value")}}</label>
-                                    <input class="form-control" placeholder="" name="push_url_option_value" type="text" id="push_url_option_value">
+                                    <div class="push_url_option_value">
+                                        <input class="form-control" placeholder="" name="push_url_option_value" type="text" id="push_url_option_value">
+                                    </div>
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
                                     </span>
@@ -188,7 +190,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="request_time_gap" class="control-label">{{__("Request Time Gap(in seconds)")}}</label>
+                                    <label for="request_time_gap" class="control-label">{{__("Request Time Gap(in minutes)")}}</label>
                                     <input type="text" class="form-control" name="request_time_gap" id="request_time_gap" value="5">
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>

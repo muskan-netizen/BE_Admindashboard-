@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Campaign, CampaignRoster, Celebrity, Brand, Country, User, UserVendor, Client, Timezone, UserDevice };
+use App\Models\{Campaign, CampaignRoster, Celebrity, Brand, Category, Country, User, UserVendor, Client, Timezone, UserDevice, Vendor};
 use Carbon\Carbon;
 
 class CampaignController extends BaseController
@@ -165,6 +165,32 @@ class CampaignController extends BaseController
                 'data' => $campaign
             ]);
         }
+    }
+
+    public function GetPushOptions(Request $request)
+    {
+        $pushoption =  $request->pushvalue;
+        $html='<select class="form-control" name="push_url_option_value" id="push_url_option_value"> ';
+        if($pushoption==2)  //categories        
+        {
+            $getcategories = Category::where('status',1)->with('translation_one')->get(['id','slug']);            
+            foreach($getcategories as $singlecategory)
+            {
+                $html .= '<option value="'.$singlecategory->id.'">'.$singlecategory->translation_one->name.'</option>';
+            }
+        }elseif($pushoption==3) //vendors
+        {
+            $getvendors = Vendor::where('status',1)->get(['id','name','slug']);
+            foreach($getvendors as $singlevendor)
+            {
+                $html .= '<option value="'.$singlevendor->id.'">'.$singlevendor->name.'</option>';
+            }
+        }else{
+
+        }
+        $html .= '</select>';
+        $result = array('html'=>$html);
+        echo json_encode($result);
     }
 
     /**

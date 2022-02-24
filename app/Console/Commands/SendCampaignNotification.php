@@ -3,7 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\Client;
+use App\Mail\OrderSuccessEmail;
+use Mail;
 use Config;
+use App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 use App\Models\ClientPreference;
@@ -86,6 +89,8 @@ class SendCampaignNotification extends Command
                 $notifications = CampaignRoster::where('notification_time', '<=', $intervalTime)->where('status',0)->with('campaign','user')->get();
                 if($notifications)
                 {
+
+                    //test sms
                     // $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
                     //     $to = '+919996687653';
                     //     $provider = $client_preferences->sms_provider;
@@ -93,6 +98,37 @@ class SendCampaignNotification extends Command
                     //     if (!empty($client_preferences->sms_provider)) {
                     //         $send = $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
                     //     }
+
+                    //test email
+                    $sendto = "testu00091@gmail.com";
+                    $subject = "Test subject for email notification";
+                    $body = "test body message";
+                    
+                    $email_data = [
+                        // 'code' => $otp,
+                        // 'link' => "link",
+                        'email' => $sendto,
+                        'mail_from' => $client_preferences->mail_from,
+                        'client_name' => $client_preferences->mail_from,
+                        //'logo' => $client->logo['original'],
+                        'subject' => $subject,
+                        //'customer_name' => ucwords($user->name),
+                        'email_template_content' => $body,
+                        // 'cartData' => $cartDetails,
+                        // 'user_address' => $address,
+                    ];
+                    $email_data['send_to_cc'] = 0;
+                    
+                    // $res = $this->testOrderMail($email_data);
+                    // dd($res);
+                    dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                    $notified = 1;
+
+
+
+
+
+                    //$this->sendEmail($client_preferences,$sendto,$subject,$body);
                     foreach($notifications as $singlenotification)
                     {
                         
@@ -121,18 +157,12 @@ class SendCampaignNotification extends Command
                             case '2':
                                 //send email
                                 try {
-                                    // $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
-                                    // if ($singlenotification->user->dial_code == "971") {
-                                    //     $to = '+' . $singlenotification->user->dial_code . "0" . $singlenotification->user->phone_number;
-                                    // } else {
-                                    //     $to = '+' . $singlenotification->user->dial_code . $singlenotification->user->phone_number;
-                                    // }
-                                    // $provider = $client_preferences->sms_provider;
-                                    // $body = "Hi " . $singlenotification->user->name . ", " . $singlenotification->campaign->sms_text;
-                                    // if (!empty($client_preferences->sms_provider)) {
-                                    //     $send = $this->sendEmail($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
-                                    // }
-                                    
+                                    if (!empty($client_preferences->mail_driver) && !empty($client_preferences->mail_host) && !empty($client_preferences->mail_port) && !empty($client_preferences->mail_password) && !empty($client_preferences->mail_encryption)) {
+                                        $useremail = $singlenotification->user->email;
+                                        $email_subject = $singlenotification->campaign->email_subject;
+                                        $email_body = $singlenotification->campaign->email_body;
+                                        $this->sendEmail($client_preferences,$useremail,$email_subject,$email_body);
+                                    }
                                 } catch (\Exception $ex) {
                                 }
                                 break;
@@ -221,31 +251,47 @@ class SendCampaignNotification extends Command
         return '1';
 	}
 
-    protected function sendEmail($sendto,$mailfrom,$subject,$body){
+    protected function sendEmail($client_preferences,$sendto,$subject,$body){
         
-        // $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
-        // $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
-        // $message = __('An otp has been sent to your email. Please check.');
-        // if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
-        //     $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-        //     //$sendto =  $user->email;
-        //     $client_name = 'Sales';
-        //     //$mail_from = $data->mail_from;
-        //     try {                
-        //         $data = [
-        //             'link' => "link",
-        //             'email' => $sendto,
-        //             'mail_from' => $mailfrom,
-        //             'client_name' => $client_name,
-        //             'logo' => $client->logo['original'],
-        //             'subject' => $subject,
-        //             //'customer_name' => $name,
-        //             'email_template_content' => $body,
-        //         ];
-        //         dispatch(new \App\Jobs\SendOrderSuccessEmailJob($data))->onQueue('verify_email');
-        //         $notified = 1;
-        //     } catch (\Exception $e) {
-        //     }
-        // }
+        $mailfrom = $client_preferences->mail_from;
+        $confirured = $this->setMailDetail($client_preferences->mail_driver, $client_preferences->mail_host, $client_preferences->mail_port, $client_preferences->mail_username, $client_preferences->mail_password, $client_preferences->mail_encryption);
+        // Mail::to($this->details['email'])->send($data);
+        
+            
+            //$sendto =  $user->email;
+            //$client_name = 'Sales';
+            //$mail_from = $data->mail_from;
+            try {                
+                $data = [
+                    'link' => "link",
+                    'email' => $sendto,
+                    'mail_from' => $client_preferences->mail_from,
+                    // 'client_name' => $client_name,
+                    // 'logo' => $client->logo['original'],
+                    'subject' => $subject,
+                    //'customer_name' => $name,
+                    'email_template_content' => $body,
+                ];
+                Mail::to($sendto)->send($data);
+            } catch (\Exception $e) {
+            }
+        
+    }
+
+    public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){
+        $config = array(
+            'pretend' => false,
+            'host' => $mail_host,
+            'port' => $mail_port,
+            'driver' => $mail_driver,
+            'username' => $mail_username,
+            'password' => $mail_password,
+            'encryption' => $mail_encryption,
+            'sendmail' => '/usr/sbin/sendmail -bs',
+        );
+        Config::set('mail', $config);
+        $app = App::getInstance();
+        $app->register('Illuminate\Mail\MailServiceProvider');
+        return true;
     }
 }
