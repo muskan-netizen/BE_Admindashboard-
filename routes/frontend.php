@@ -141,7 +141,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//KongaPay routes
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
-	Route::match(['get','post'],'payment/kongapay/result', 'Front\KongapayController@completeOrderCart')->name('kongapay.successCart');
+	Route::any('payment/kongapay/api', 'Front\KongapayController@webViewPay')->name('kongapay.webview');
+	Route::match(['get','post'],'payment/kongapay/result/{from?}', 'Front\KongapayController@completeOrderCart')->name('kongapay.successCart');
 	Route::match(['get','post'],'payment/kongapay/walletResult', 'Front\KongapayController@completeOrderWallet')->name('kongapay.successWallet');
 	Route::match(['get','post'],'payment/kongapay/tipResult', 'Front\KongapayController@completeOrderTip')->name('kongapay.successTip');
 	Route::match(['get','post'],'payment/kongapay/subsResult', 'Front\KongapayController@completeOrderSubs')->name('kongapay.successSubs');

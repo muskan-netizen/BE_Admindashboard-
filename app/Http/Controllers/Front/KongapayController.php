@@ -66,6 +66,11 @@ class KongapayController extends Controller
 
       $request->amt = number_format($request->amt,2)*100;
       $returnUrl = route('kongapay.successSubs');
+     }elseif($request->from == 'app')
+     {
+      $request->amt = $request->amt*100;
+      $time = $request->order_number;
+      $returnUrl = route('kongapay.successCart',['from'=>'app=1']);
      }   
      $key = $request->amt.'|'.$this->api_key.'|'.$time;
 
@@ -74,7 +79,7 @@ class KongapayController extends Controller
      $data = array(
             "hash"=> hash('Sha512',$key),
             "amount"=> $request->amt??0,
-            "description"=> "payment",
+            "description"=> "web payment",
             "email"=> $user->email??'',
             "merchantId"=> $this->merchant_id,
             "reference"=> $time,
@@ -88,6 +93,29 @@ class KongapayController extends Controller
 
       return json_encode($data);
    }  
+
+
+   public function webViewPay(Request $request)
+   {
+    $request['from']='app';
+    $request['amt']=$request->amount??'100';
+    $request['order_number']=$request->order_no??time(); // order no
+    $data = json_decode($this->createHash($request));
+    $inputs = '
+    <input type="text" value="'.$data->hash.'" name="hash"/>
+    <input type="number" value="'.$data->amount.'" name="amount"/>
+    <input type="text" value="mobile payment" name="description">
+    <input type="email" value="'.$data->email.'" name="email">
+    <input type="text" value="Kongadel" name="merchant_id">
+    <input type="text" value="'.$data->reference.'" name="reference">
+    <input type="text" value="'.$data->firstname.'" name="firstname">
+    <input type="text" value="'.$data->lastname.'" name="lastname">
+    <input type="text" value="'.$data->phone.'" name="phone">
+    <input type="text" value="'.$data->callback.'" name="callback">
+    <input type="text" value="'.$data->customerId.'" name="customerId">
+    ';
+    return view('frontend.payment_gatway.kongapay_view', compact('inputs'));
+   }
 
 
    public function completeOrderCart(Request $request)
@@ -112,8 +140,9 @@ class KongapayController extends Controller
           }else{
             $user = auth()->user();
             $wallet = $user->wallet;
-            $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
-
+            if(isset($order->wallet_amount_used)){
+              $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+            }
             return Redirect::to(route('showCart'))->with('error',$request->message);
           }
 
