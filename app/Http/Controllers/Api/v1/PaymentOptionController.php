@@ -83,7 +83,7 @@ class PaymentOptionController extends BaseController{
 
     public function postPaymentVia_stripe_fpx(Request $request){
         $gateway = new StripeGatewayController();
-        return $gateway->createStripeFPXPaymentIntent($request);
+        return $gateway->paymentWebViewStripeFPX($request);
     }
 
     public function postPaymentVia_paystack(Request $request){
