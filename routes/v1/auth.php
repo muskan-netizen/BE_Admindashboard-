@@ -15,6 +15,7 @@ Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], funct
         Route::post('register', 'Api\v1\AuthController@signup');
         Route::post('resetPassword', 'Api\v1\AuthController@resetPassword');
         Route::post('forgotPassword', 'Api\v1\AuthController@forgotPassword');
+        Route::post('vendor-login', 'Api\v1\AuthController@vendorlogin');
       
     });
 });
@@ -66,10 +67,14 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('mystore/product/addProductImage', 'Api\v1\StoreController@productImages');
         Route::post('mystore/product/getProductImages', 'Api\v1\StoreController@getProductImages');
         Route::post('mystore/product/deleteimage', 'Api\v1\StoreController@deleteProductImage');
+        Route::post('mystore/vendor/product/list', 'Api\v1\StoreController@getVendorProductList');
+        Route::post('mystore/product/status-update', 'Api\v1\StoreController@updateProductStatus');
 
         Route::post('vendor-dasboard-data', 'Api\v1\RevenueController@getDashboardDetails');
         Route::post('get-vendor-profile', 'Api\v1\VendorController@getVendorDetails');
         Route::post('update-vendor-profile', 'Api\v1\VendorController@updateVendorDetails');
+        Route::post('get-vendor-transactions', 'Api\v1\VendorController@getVendorTransactions');
+        //Route::post('get-vendor-transactions', 'Api\v1\VendorController@getOrdersList');
         
       
         Route::get('payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');

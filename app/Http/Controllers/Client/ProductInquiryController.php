@@ -48,6 +48,7 @@ class ProductInquiryController extends BaseController{
             });
         }
         $product_inquiries = $product_inquiries->get();
+        //return $product_inquiries;
         foreach ($product_inquiries as $product_inquiry) {
             if(isset($product_inquiry->product->vendor->slug) && isset($product_inquiry->product->sku)) 
             $product_inquiry->view_url = route('productDetail',[$product_inquiry->product->vendor->slug,$product_inquiry->product->sku]);

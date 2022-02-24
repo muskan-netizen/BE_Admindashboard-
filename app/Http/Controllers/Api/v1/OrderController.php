@@ -402,6 +402,7 @@ class OrderController extends BaseController
                     $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                     $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                     $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
+                    $order->scheduled_slot = $cart->scheduled_slot ?? null;
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
                     $order->payable_amount = $payable_amount;
@@ -471,13 +472,14 @@ class OrderController extends BaseController
                         // $this->sendOrderPushNotificationVendors($order->admins, ['id' => $order->id], $code);
                     }
 
+                    DB::commit();
+
                     # if payment type cash on delivery or payment status is 'Paid'
                     if (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                         # if vendor selected auto accept
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
 
-                    DB::commit();
                     $this->sendSuccessSMS($request, $order);
 
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
@@ -995,7 +997,7 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner'])
+        $orders = $orders->with(['orderDetail', 'vendor:id,name,logo,banner,return_request'])
             ->whereHas('orderDetail', function ($q1) {
                 $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1]);
                 $q1->orWhere(function ($q2) {
@@ -1184,12 +1186,24 @@ class OrderController extends BaseController
                         }
                         $product->variant_options = $variant_options;
                         if (!empty($product->addon)) {
-                            foreach ($product->addon as $addon) {
-                                $product_addons[] = array(
-                                    'addon_id' =>  $addon->addon_id,
-                                    'addon_title' =>  $addon->set->title,
-                                    'option_title' =>  $addon->option->title,
-                                );
+                            foreach ($product->addon as $k => $addon) {
+                                // $product_addons[] = array(
+                                //     'addon_id' =>  $addon->addon_id,
+                                //     'addon_title' =>  $addon->set->title,
+                                //     'option_title' =>  $addon->option->title,
+                                // );
+                                $opt_quantity_price = 0;
+                                $opt_price_in_currency = $addon->option ? $addon->option->price : 0;
+                                $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                                $opt_quantity_price = $opt_price_in_doller_compare * $product->quantity;
+                                $product_addons[$k]['quantity'] = $product->quantity;
+                                $product_addons[$k]['addon_id'] = $addon->addon_id;
+                                $product_addons[$k]['option_id'] = $addon->option_id;
+                                $product_addons[$k]['price'] = $opt_price_in_currency;
+                                $product_addons[$k]['addon_title'] = $addon->set->title;
+                                $product_addons[$k]['quantity_price'] = $opt_quantity_price;
+                                $product_addons[$k]['option_title'] = $addon->option ? $addon->option->title : 0;
+                                // $product_addons[$k]['multiplier'] = $clientCurrency->doller_compare;
                             }
                         }
                         $product->product_addons = $product_addons;
@@ -1284,8 +1298,7 @@ class OrderController extends BaseController
             ]);
             if ($validator->fails()) {
                 foreach ($validator->errors()->toArray() as $error_key => $error_value) {
-                    $errors['error'] = __($error_value[0]);
-                    return response()->json($errors, 422);
+                    return $this->errorResponse(__($error_value[0]), 422);
                 }
             }
             $status = $request->status;
@@ -1336,12 +1349,12 @@ class OrderController extends BaseController
                     // }
                     if ($client_preference->verify_phone == 1) {
                         if ($user->is_phone_verified == 0) {
-                            return response()->json(['error' => 'Your phone is not verified.'], 404);
+                            return $this->errorResponse(__('Your phone is not verified.'), 404);
                         }
                     }
                     $user_address = UserAddress::where('id', $request->address_id)->first();
                     if (!$user_address) {
-                        return response()->json(['error' => 'Invalid address id.'], 404);
+                        return $this->errorResponse(__('Invalid address id.'), 404);
                     }
                     $action = ($request->has('type')) ? $request->type : 'delivery';
                     $luxury_option = LuxuryOption::where('title', $action)->first();
@@ -1379,7 +1392,7 @@ class OrderController extends BaseController
                         // $order->schedule_dropoff = $cart->schedule_dropoff ?? null;
                         // $order->specific_instructions = $cart->specific_instructions ?? null;
                         // $order->is_gift = $request->is_gift ?? 0;
-                        $order->save();
+                        $order->update();
 
 
                         $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
@@ -1389,13 +1402,13 @@ class OrderController extends BaseController
                         OrderProduct::where('order_id', $order->id)->delete();
                         OrderProductPrescription::where('order_id', $order->id)->delete();
                         OrderTax::where('order_id', $order->id)->delete();
-                        
+
                         $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                         $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-                        
+
                         $cart_products = TempCartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
                         $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
-                        
+
                         foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                             $delivery_fee = 0;
                             $deliver_charge = $delivery_fee_charges = 0.00;
@@ -1584,14 +1597,14 @@ class OrderController extends BaseController
                                     $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                                 }
                             }
-                            $order_vendor->save();
+                            $order_vendor->update();
 
                             $order_status = VendorOrderStatus::where('order_id', $order->id)->where('order_vendor_id', $order_vendor_id)->first();
                             $order_status->order_id = $order->id;
                             $order_status->vendor_id = $vendor_id;
                             $order_status->order_status_option_id = 1;
                             $order_status->order_vendor_id = $order_vendor->id;
-                            $order_status->save();
+                            $order_status->update();
                         }
                         $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
                         if (in_array(1, $subscription_features)) {
@@ -1615,24 +1628,27 @@ class OrderController extends BaseController
 
                         // If new amount is greater than previous amount then deduct from wallet
                         if($difference_to_be_paid > 0){
-                            $wallet_amount_used = 0;
-                            if ($user->balanceFloat > 0) {
-                                $wallet = $user->wallet;
-                                $wallet_amount_used = $user->balanceFloat;
+                            // deduct if payment method is not cash on delivery
+                            if($request->payment_option_id != 1){
+                                $wallet_amount_used = 0;
+                                if ($user->balanceFloat > 0) {
+                                    $wallet = $user->wallet;
+                                    $wallet_amount_used = $user->balanceFloat;
 
-                                if($difference_to_be_paid > $wallet_amount_used){
-                                    return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
-                                }
+                                    if($difference_to_be_paid > $wallet_amount_used){
+                                        return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
+                                    }
 
-                                if ($wallet_amount_used > $payable_amount) {
-                                    $wallet_amount_used = $payable_amount;
+                                    if ($wallet_amount_used > $payable_amount) {
+                                        $wallet_amount_used = $payable_amount;
+                                    }
+                                    $order->wallet_amount_used = $wallet_amount_used;
+                                    if ($wallet_amount_used > 0) {
+                                        $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
+                                    }
                                 }
-                                $order->wallet_amount_used = $wallet_amount_used;
-                                if ($wallet_amount_used > 0) {
-                                    $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
-                                }
+                                $payable_amount = $payable_amount - $wallet_amount_used;
                             }
-                            $payable_amount = $payable_amount - $wallet_amount_used;
                         }
                         else{
                             if($difference_to_be_paid < 0){
@@ -1666,12 +1682,12 @@ class OrderController extends BaseController
                         // if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                         //     $order->payment_status = 1;
                         // }
-                        $order->save();
+                        $order->update();
                         foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                             $this->sendSuccessEmail($request, $order, $vendor_id);
                         }
                         $res = $this->sendSuccessEmail($request, $order);
-                        
+
                         $ex_gateways = [5, 6, 7, 8, 9, 10, 11, 12, 13, 17]; // if paystack, mobbex, payfast, yoco, razorpay, gcash, simplify, square, checkout
                         // if (!in_array($request->payment_option_id, $ex_gateways)) {
                         //     Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL]);
@@ -1689,16 +1705,15 @@ class OrderController extends BaseController
                             }
                         }
                         $cart->is_approved = 1;
-                        $cart->save();
+                        $cart->update();
 
                         // if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
-                        //     Payment::insert([
-                        //         'date' => date('Y-m-d'),
-                        //         'order_id' => $order->id,
-                        //         'transaction_id' => $request->transaction_id,
-                        //         'balance_transaction' => $order->payable_amount,
-                        //         'type' => 'cart'
-                        //     ]);
+                            $order_payment = Payment::where('order_id', $order->id)->first();
+                            if($order_payment){
+                                $order_payment->date = date('Y-m-d');
+                                $order_payment->balance_transaction = $order->payable_amount;
+                                $order_payment->update();
+                            }
                         // }
                         $order = $order->with(['vendors:id,order_id,dispatch_traking_url,vendor_id', 'user_vendor', 'vendors.vendor'])->where('order_number', $order->order_number)->first();
                         if (!in_array($order->payment_option_id, $ex_gateways)) {
@@ -1720,13 +1735,17 @@ class OrderController extends BaseController
                             $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail, $code);
                         }
 
+                        DB::commit();
+
+                        // Send push notification to order specific driver
+                        $this->sendEditOrderApprovalStatusNotification($order_vendor, 1);
+
                         # if payment type cash on delivery or payment status is 'Paid'
                         if (($order->payment_option_id == 1) || (($order->payment_option_id != 1) && ($order->payment_status == 1))) {
                             # if vendor selected auto accept
                             $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                         }
 
-                        DB::commit();
                         $this->sendSuccessSMS($request, $order);
 
                         return $this->successResponse($order, __('Order accepted successfully.'), 201);
@@ -1743,19 +1762,50 @@ class OrderController extends BaseController
                 $cart = TempCart::where('status', '0')->where('id', $cart_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', 1)->where('is_approved', 0)->first();
                 if($cart){
                     $cart->is_approved = 2;
-                    $cart->save();
+                    $cart->update();
+
+                    // Send push notification to order specific driver
+                    $order_vendor = OrderVendor::select('web_hook_code')->where('id', $order_vendor_id)->first();
+                    $this->sendEditOrderApprovalStatusNotification($order_vendor, 2);
                 }
                 DB::commit();
                 return $this->successResponse($cart, __('Order rejected successfully.'), 201);
             }
-        } 
+        }
         catch (Exception $e) {
             DB::rollback();
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 
-    
+    public function sendEditOrderApprovalStatusNotification($order_vendor, $status){
+        try{
+            $dispatch_domain = $this->checkIfLastMileOn();
+            if ($dispatch_domain && $dispatch_domain != false) {
+                $postdata =  ['web_hook_code' => $order_vendor->web_hook_code, 'status' => $status];
+                $client = new GCLIENT([
+                    'headers' => [
+                        'personaltoken' => $dispatch_domain->delivery_service_key,
+                        'shortcode' => $dispatch_domain->delivery_service_key_code,
+                        'content-type' => 'application/json'
+                    ]
+                ]);
+                $url = $dispatch_domain->delivery_service_key_url;
+                $res = $client->post(
+                    $url . '/api/edit-order/driver/notify',
+                    ['form_params' => ($postdata)]
+                );
+                $response = json_decode($res->getBody(), true);
+                // if ($response && $response['message'] == 'success') {
+                //     return $response;
+                // }
+            }
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
     public function postVendorOrderStatusUpdate(Request $request)
     {
         DB::beginTransaction();
@@ -1771,7 +1821,14 @@ class OrderController extends BaseController
             } else if ($order_status_option_id == 8) {
                 $order_status_option_id = 3;
             }
-            $vendor_order_status = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->first();
+           // $vendor_order_status = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->first();
+            $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
+            Log::info(($currentOrderStatus ? $currentOrderStatus->order_status_option_id : 'no'));
+
+            if ($currentOrderStatus->order_status_option_id == 3 ) { //$request->status_option_id == 2){
+
+                return response()->json(['status' => 'error', 'message' => __('This Order has been rejected.')]);
+            }
             $vendor_order_status_detail = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->where('order_status_option_id', $order_status_option_id)->first();
             if (!$vendor_order_status_detail) {
                 $vendor_order_status = new VendorOrderStatus();

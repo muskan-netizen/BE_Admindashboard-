@@ -4,17 +4,6 @@
 @endsection
 @section('content')
 
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-    @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-    @else
-        @include('layouts.store/left-sidebar-template-one')
-    @endif
-
-</header>
 <section class="cab-booking pt-0">
     <div id="booking-map" style="width: 100%; height: 100%;"></div>
     <input id="booking-latitude" type="hidden" value="-34">
@@ -510,6 +499,7 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
+    var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
@@ -577,6 +567,7 @@
         output.src = URL.createObjectURL(event.target.files[0]);
     };
 </script>
+<script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 <script src="{{asset('js/payment.js')}}"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

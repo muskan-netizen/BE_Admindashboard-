@@ -21,14 +21,14 @@ use App\Models\Transaction;
 use App\Models\AutoRejectOrderCron;
 
 class ReturnOrderController extends FrontController{
-	
+
     use ApiResponser;
-    
+
     /**
      * order details in modal
     */
     public function getOrderDatainModel(Request $request){
-        try { 
+        try {
             $order_details = Order::with(['vendors.products.productReturn','products.productRating', 'user', 'address',
             'vendors'=>function($qw)use($request){
                 $qw->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
@@ -41,15 +41,15 @@ class ReturnOrderController extends FrontController{
                 $q->where('vendor_id', $request->vendor_id)->where('order_id', $request->id);
             })
             ->where('orders.user_id', Auth::user()->id)->where('orders.id', $request->id)->orderBy('orders.id', 'DESC')->first();
-           
+
             if(isset($order_details)){
-              
+
                 if ($request->ajax()) {
                  return \Response::json(\View::make('frontend.modals.return-product-order', array('order' => $order_details))->render());
                 }
             }
             return $this->errorResponse('Invalid order', 404);
-            
+
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
@@ -61,7 +61,7 @@ class ReturnOrderController extends FrontController{
     */
     public function getReturnProducts(Request $request, $domain = ''){
         try {
-            
+
             $langId = Session::get('customerLanguage');
             $navCategories = $this->categoryNav($langId);
             $reasons = ReturnReason::where('status','Active')->orderBy('order','asc')->get();
@@ -74,7 +74,7 @@ class ReturnOrderController extends FrontController{
             ->whereHas('vendors.products',function($q)use($request){
                 $q->where('id', $request->return_ids);
             })->where('orders.user_id', Auth::user()->id)->where('id', $request->order_id)->orderBy('orders.id', 'DESC')->first();
-            
+
             if(isset($order_details)){
                 foreach($order_details->vendors as $key => $vendor){
                     foreach($vendor->products as $product){
@@ -90,7 +90,7 @@ class ReturnOrderController extends FrontController{
                 return view('frontend.account.return-order')->with(['order' => $order_details,'navCategories' => $navCategories,'reasons' => $reasons]);
             }
             return $this->errorResponse('Invalid order', 404);
-            
+
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
@@ -98,7 +98,7 @@ class ReturnOrderController extends FrontController{
 
 
     /**
-     * return  order product 
+     * return  order product
     */
     public function updateProductReturn(OrderProductReturnRequest $request){
         try {
@@ -107,13 +107,13 @@ class ReturnOrderController extends FrontController{
             $order_details = OrderProduct::where('id',$request->order_vendor_product_id)->whereHas('order',function($q){$q->where('user_id',Auth::id());})->first();
             if($order_details)
             $order_deliver = VendorOrderStatus::where(['order_id' => $order_details->order_id,'vendor_id' => $order_details->vendor_id,'order_status_option_id' => 5])->count();
-            
+
             if($order_deliver > 0){
                 $returns = OrderReturnRequest::updateOrCreate(['order_vendor_product_id' => $request->order_vendor_product_id,
                 'order_id' => $order_details->order_id,
                 'return_by' => Auth::id()],['reason' => $request->reason??null,'coments' => $request->coments??null]);
 
-            //    if ($image = $request->file('images')) { 
+            //    if ($image = $request->file('images')) {
             //         foreach ($image as $files) {
             //         $file =  substr(md5(microtime()), 0, 15).'_'.$files->getClientOriginalName();
             //         $storage = Storage::disk('s3')->put('/return', $files, 'public');
@@ -121,24 +121,24 @@ class ReturnOrderController extends FrontController{
             //         $img->order_return_request_id = $returns->id;
             //         $img->file = $storage;
             //         $img->save();
-                   
+
             //         }
             //     }
 
-            if(isset($request->add_files) && is_array($request->add_files))    # send  array of insert images 
+            if(isset($request->add_files) && is_array($request->add_files))    # send  array of insert images
                 {
                     foreach ($request->add_files as $storage) {
                         $img = new OrderReturnRequestFile();
                         $img->order_return_request_id = $returns->id;
                         $img->file = $storage;
                         $img->save();
-                       
+
                     }
-                }  
-               
-              if(isset($request->remove_files) && is_array($request->remove_files))    # send index array of deleted images 
+                }
+
+              if(isset($request->remove_files) && is_array($request->remove_files))    # send index array of deleted images
                 $removefiles = OrderReturnRequestFile::where('order_return_request_id',$returns->id)->whereIn('id',$request->remove_files)->delete();
-       
+
             }
             if(isset($returns)) {
                 $this->sendSuccessNotification($user->id, $order_details->vendor_id);
@@ -146,7 +146,7 @@ class ReturnOrderController extends FrontController{
                 return $this->successResponse($returns,'Return Submitted.');
             }
             return $this->errorResponse('Invalid order', 200);
-            
+
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
@@ -157,21 +157,21 @@ class ReturnOrderController extends FrontController{
         $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
         $devices = UserDevice::whereNotNull('device_token')->where('user_id', $id)->pluck('device_token');
         foreach($devices as $device){
-            $token[] = $device;  
+            $token[] = $device;
         }
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_vendors)->pluck('device_token');
         foreach($devices as $device){
-            $token[] = $device;  
+            $token[] = $device;
         }
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $super_admin)->pluck('device_token');
         foreach($devices as $device){
-            $token[] = $device;  
+            $token[] = $device;
         }
-        $token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";  
+        $token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
         // dd($token);
-        
+
         $from = env('FIREBASE_SERVER_KEY');
-        
+
         $notification_content = NotificationTemplate::where('id', 3)->first();
         if($notification_content){
             $headers = [
@@ -186,7 +186,7 @@ class ReturnOrderController extends FrontController{
                 ]
             ];
             $dataString = $data;
-    
+
             $ch = curl_init();
             curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
             curl_setopt( $ch,CURLOPT_POST, true );
@@ -246,18 +246,18 @@ class ReturnOrderController extends FrontController{
     */
     public function getVendorOrderForCancel(Request $request){
         try {
-               
+
             $order_vendor = OrderVendor::where('id',$request->id)->first();
             if(isset($order_vendor)){
-              
+
                 if ($request->ajax()) {
                  return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor))->render());
                 }
 
             }
             return \Response::json(\View::make('frontend.modals.vendor-cancel-order', array('order_vendor'=>  $order_vendor))->render());
-           
-            
+
+
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
@@ -280,9 +280,12 @@ class ReturnOrderController extends FrontController{
             $request->status_option_id = 3;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
-            
+
             if ($currentOrderStatus->order_status_option_id == 3 && $request->status_option_id == 3) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
+            }
+            if ($currentOrderStatus->order_status_option_id >= 2 ) { //$request->status_option_id == 2){
+                return response()->json(['status' => 'error', 'message' => __('Order is accepted, you can not reject this order !!!')]);
             }
             if (!$vendor_order_status_check) {
                 $vendor_order_status = new VendorOrderStatus();
@@ -295,28 +298,28 @@ class ReturnOrderController extends FrontController{
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
                 }
-               
-                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 
-                'reject_reason' => $request->reject_reason,  'cancelled_by' => Auth::id(),
-            ]);
+
+                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id,
+                    'reject_reason' => $request->reject_reason,  'cancelled_by' => Auth::id(),
+                ]);
                 $orderData = Order::find($request->order_id);
 
                 if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
                     $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                     $response = Http::get($dispatch_traking_url);
                 }
-                
+
                 if($currentOrderStatus->payment_option_id != 1){
-                
+
                 $user = User::find(Auth::id());
                 $wallet = $user->wallet;
                 $credit_amount = $currentOrderStatus->payable_amount;
                 $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
 
                 }
-                
+
                 DB::commit();
-       //         $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
+            //  $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
                 return response()->json([
                     'status' => 'success',
                     'message' => __('Order Cancelled Successfully.')

@@ -5,6 +5,14 @@
 }.order-page .card-box {padding: 20px 20px 5px !important;}.progress-order {width: calc(100% + 48px);margin: -24px 0 20px;background: #00000012;
 color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;border-top-left-radius: 15px;border-top-right-radius: 15px;padding: 5px 0;
 }
+.error-msg {
+    font-size: 20px;
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    -webkit-transform: translate(0px, -50%);
+    transform: translate(0px, -50%);
+}
 </style>
 
 <script type="text/template" id="order_page_template">
@@ -16,7 +24,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         <div class="col-md-3"><h4>{{ __("Order ID") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Date & Time") }}</h4></div>
                         <div class="col-md-3"><h4>{{ __("Customer") }}</h4></div>
+                        @if($client_preference_detail->hide_order_address ==0 )
                         <div class="col-md-3"><h4>{{ __("Address") }}</h4></div>
+                        @endif
                     </div>
 
                     <div class="row no-gutters order_data mb-lg-2">
@@ -26,14 +36,15 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         <div class="col-md-3">
                             <a class="text-capitalize" href="#"><%= order.user.name %></a>
                         </div>
-
-                        <% if(order.address !== null) { %>
-                        <div class="col-md-3">
-                            <p class="ellipsis mb-0" data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">
-                                <%= order.address.house_number?order.address.house_number+',' : ''  %> <%= order.address.address %>
-                            </p>
-                        </div>
-                        <% } %>
+                        @if($client_preference_detail->hide_order_address ==0 )
+                            <% if(order.address !== null) { %>
+                            <div class="col-md-3">
+                                <p class="ellipsis mb-0" data-toggle="tooltip" data-placement="top" title="<%= order.address.address %>">
+                                    <%= order.address.house_number?order.address.house_number+',' : ''  %> <%= order.address.address %>
+                                </p>
+                            </div>
+                            <% } %>
+                        @endif
                     </div>
                     <div class="row">
                         <div class="col-md-9">
@@ -64,16 +75,20 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% } %>
 
 
-                                                    <% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){ %>
-                                                        <% if(order.scheduled_slot == null){ %>
-                                                        <% if(order.scheduled_date_time){ %>
-                                                               <span class="ml-2">{{__('Your order will arrive by')}} <%= order.converted_scheduled_date_time %></span>
-                                                           <% } else { %>
-                                                               <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
-                                                           <% } %>
-                                                           <% }else{ %>
-                                                            <span class="ml-2">{{__('Your order will arrive by')}} <%= order.converted_scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
-                                                           <% } %>
+                                                    <% if(((vendor.delivery_fee > 0) || (order.scheduled_date_time))){ %>
+                                                        <% if(vendor.order_status != 'Rejected'){%>
+                                                            <% if(order.scheduled_slot == null){ %>
+                                                            <% if(order.scheduled_date_time){ %>
+                                                                   <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %></span>
+                                                               <% } else { %>
+                                                                   <span class="ml-2">{{__('Your order will arrive by')}} <%= vendor.ETA %></span>
+                                                               <% } %>
+                                                               <% }else{ %>
+                                                                <span class="ml-2">{{__('Your order will arrive by')}} <%= order.scheduled_date_time %>, Slot : <%= order.scheduled_slot %></span>
+                                                               <% } %>
+                                                        <% } else if(vendor.order_status == 'Rejected' && vendor.cancelled_by != null){%>
+                                                            <span class="ml-2 text-danger"><%= vendor.order_status %> by <%= vendor.cancelled_by.name %></span>
+                                                        <% }%>
 
                                                    <% } %>
 
@@ -311,7 +326,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     </div>
 </div>
 <script type="text/template" id="no_order_template">
-    <div class="error-msg"><p>{{ __("You don't have orders right now.") }}</p></div>
+    <div class="error-msg mt-3">
+        <img class="mb-2" src="{{asset('images/no-order.svg')}}">
+        <p>{{ __("You don't have orders right now.") }}</p>
+    </div>
     </script>
 <div class="loader" id="order_list_order">
     <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
@@ -339,13 +357,14 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             </li>
         </ul>
         <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
-            <div class="tab-pane fade past-order show active" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
-            <div class="tab-pane fade" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
-            <div class="tab-pane fade past-order" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
-                <div class="error-msg">
-                    <p>{{ __('You have not any order yet now.') }}</p>
+            <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
+            <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
+            <div class="tab-pane fade past-order position-relative h-100" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
+                <div class="error-msg mt-3">
+                    <img class="mb-2" src="{{asset('images/no-order.svg')}}">
+                    <p>{{ __("You don't have orders right now.") }}</p>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
 </div>
@@ -427,9 +446,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 vendor_id: vendor_id,
                 date_filter: date_filter
             },
-            success: function(response) { 
+            success: function(response) {
                 // reload after 10 sec
-               
+
 
                 $('#order_list_order').hide();
                 if (response.status == 'Success') {
@@ -458,15 +477,12 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     $("#history-orders").html("(" + response.data.orders_history + ")");
 
                  }
-                // setTimeout(autoloaddashboad(), 20000);
+                 setTimeout(autoloaddashboad(), 5000);
             },
             error: function(data) {
-
+               autoloaddashboad();
             },
         });
-
-
-        
     }
     $(document).ready(function() {
 
@@ -474,7 +490,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             $("#pending_order-tab").trigger('click');
         }, 500);
         //setInterval(autoloaddashboad, 10000);
-        
+
         $(document).on("click", ".load-more-btn", function() {
             $('#order_list_order').show();
             var url = $(this).data('url');
@@ -518,6 +534,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
 
         function openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id) {
+            var cancelled_by = "{{Auth::user()->id}}";
             // var that = document.getElementById('reject');
             //     var count = that.data("count");
             //     var full_div = that.data("full_div");
@@ -553,6 +570,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                         "_token": "{{ csrf_token() }}",
                         status_option_id: status_option_id,
                         order_vendor_id: order_vendor_id,
+                        cancelled_by: cancelled_by,
                     },
 
                     success: function(response) {
@@ -641,6 +659,22 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                 order_vendor_id: order_vendor_id,
                             },
                             success: function(response) {
+
+                                if(response.status=='error'){
+                                    if (count == 0) {
+                                        $(full_div).slideUp(1000, function() {
+                                            $(this).remove();
+                                        });
+
+                                    } else {
+                                        $(single_div).slideUp(1000, function() {
+                                            $(this).remove();
+                                        });
+
+                                    }
+                                    $.NotificationApp.send('{{__("Error")}}', response.message, "top-right", "#ff0808", "error");
+                                    return 0;
+                                }
 
                                 if (status_option_id == 4 || status_option_id == 5) {
                                     if (status_option_id == 4){

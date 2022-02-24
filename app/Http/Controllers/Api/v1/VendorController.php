@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, Permissions, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country};
+use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, Permissions, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption};
 
 class VendorController extends BaseController{
     use ApiResponser;
@@ -60,7 +60,8 @@ class VendorController extends BaseController{
             $userid = $user->id;
             $latitude = $user->latitude;
             $longitude = $user->longitude;
-            $paginate = $request->has('limit') ? $request->limit : 12;
+            $limit = $request->has('limit') ? $request->limit : 12;
+            $page = $request->has('page') ? $request->page : 12;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $langId = $user->language;
@@ -305,7 +306,7 @@ class VendorController extends BaseController{
                         }
                     ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 'products.batch_count')
                     ->where('products.vendor_id', $vid)
-                    ->where('products.is_live', 1)->paginate($paginate);
+                    ->where('products.is_live', 1)->paginate($limit, $page);
                 if(!empty($products)){
                     foreach ($products as $key => $product) {
                         foreach ($product->addOn as $key => $value) {
@@ -815,7 +816,8 @@ class VendorController extends BaseController{
                             },'variant.checkIfInCartApp', 'checkIfInCartApp',
                         ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
                             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
-                            ->join('product_translations', 'product_translations.product_id', '=', 'products.id'); // Or whatever the join logic is
+                            ->join('product_translations', 'product_translations.product_id', '=', 'products.id')
+                            ->withCount('OrderProduct'); // Or whatever the join logic is
 
                         $products->where('products.category_id', $category->category_id);
 
@@ -852,9 +854,13 @@ class VendorController extends BaseController{
                         if (!empty($order_type) && $order_type == 'newly_added') {
                             $products = $products->orderBy('products.id', 'desc');
                         }
+                        if (!empty($order_type) && $order_type == 'popular_product') {
+                            $products = $products->orderBy('order_product_count', 'desc');
+                        }
                         //->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
                         // $products = $products->where('is_live', 1)->where('category_id', $category->category_id)->where('vendor_id', $vid)->get();
                         $products = $products->groupBy('products.id')->get();
+
                         if (!empty($products)) {
                             foreach ($products as $key => $value) {
                                 foreach ($value->addOn as $key => $val) {
@@ -952,7 +958,8 @@ class VendorController extends BaseController{
                             }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                         ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
                         ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
-                        ->join('product_translations', 'product_translations.product_id', '=', 'products.id'); // Or whatever the join logic is
+                        ->join('product_translations', 'product_translations.product_id', '=', 'products.id')// Or whatever the join logic is
+                        ->withCount('OrderProduct');
 
 
                         //->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
@@ -985,7 +992,12 @@ class VendorController extends BaseController{
                         if (!empty($order_type) && $order_type == 'newly_added') {
                             $products = $products->orderBy('products.id', 'desc');
                         }
+                        if (!empty($order_type) && $order_type == 'popular_product') {
+
+                            $products = $products->orderBy('order_product_count', 'desc');
+                        }
                     $products = $products->where('is_live', 1)->groupBy('products.id')->where('vendor_id', $vendor->id)->paginate($paginate);
+
                     if (!empty($products)) {
                         foreach ($products as $key => $product) {
                             foreach ($product->addOn as $key => $value) {
@@ -1507,10 +1519,10 @@ class VendorController extends BaseController{
     {
         try {
 			$validator = Validator::make($request->all(), [
-				'vendor_id' => 'required',	
+				'vendor_id' => 'required',
 			]);
 
-			if ($validator->fails()) {			
+			if ($validator->fails()) {
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
             $vendordetail = Vendor::where('id',$request->vendor_id)->first();
@@ -1526,7 +1538,7 @@ class VendorController extends BaseController{
             }else{
                 return $this->errorResponse('Vendor not found', 422);
             }
-        } catch (Exception $e) {            
+        } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
@@ -1535,10 +1547,10 @@ class VendorController extends BaseController{
     {
         try{
             $validator = Validator::make($request->all(), [
-				'vendor_id' => 'required',	
+				'vendor_id' => 'required',
 			]);
 
-			if ($validator->fails()) {			
+			if ($validator->fails()) {
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
             //return $request->all();
@@ -1551,27 +1563,27 @@ class VendorController extends BaseController{
                 }
                 if($request->desc)
                 {
-                    $vendordetail->desc = $request->desc;                    
+                    $vendordetail->desc = $request->desc;
                 }
                 if($request->email)
                 {
-                    $vendordetail->email = $request->email;                    
+                    $vendordetail->email = $request->email;
                 }
                 if($request->phone_no)
                 {
-                    $vendordetail->phone_no = $request->phone_no;                    
+                    $vendordetail->phone_no = $request->phone_no;
                 }
                 if($request->address)
                 {
-                    $vendordetail->address = $request->address;                    
+                    $vendordetail->address = $request->address;
                 }
                 if($request->latitude)
                 {
-                    $vendordetail->latitude = $request->latitude;                    
+                    $vendordetail->latitude = $request->latitude;
                 }
                 if($request->longitude)
                 {
-                    $vendordetail->longitude = $request->longitude;                    
+                    $vendordetail->longitude = $request->longitude;
                 }
                 if($request->website)
                 {
@@ -1579,54 +1591,54 @@ class VendorController extends BaseController{
                 }
                 // if($request->slug)
                 // {
-                //     $vendordetail->slug = $request->slug;                    
+                //     $vendordetail->slug = $request->slug;
                 // }
                 // if($request->order_min_amount)
                 // {
-                //     $vendordetail->order_min_amount = $request->order_min_amount;                    
+                //     $vendordetail->order_min_amount = $request->order_min_amount;
                 // }
                 // if($request->order_pre_time)
                 // {
-                //     $vendordetail->order_pre_time = $request->order_pre_time;                    
+                //     $vendordetail->order_pre_time = $request->order_pre_time;
                 // }
                 // if($request->auto_reject_time)
                 // {
-                //     $vendordetail->auto_reject_time = $request->auto_reject_time;                    
+                //     $vendordetail->auto_reject_time = $request->auto_reject_time;
                 // }
                 // if($request->commission_percent)
                 // {
-                //     $vendordetail->commission_percent = $request->commission_percent;                    
+                //     $vendordetail->commission_percent = $request->commission_percent;
                 // }
                 // if($request->commission_fixed_per_order)
                 // {
-                //     $vendordetail->commission_fixed_per_order = $request->commission_fixed_per_order;                    
+                //     $vendordetail->commission_fixed_per_order = $request->commission_fixed_per_order;
                 // }
                 // if($request->commission_monthly)
                 // {
-                //     $vendordetail->commission_monthly = $request->commission_monthly;                    
+                //     $vendordetail->commission_monthly = $request->commission_monthly;
                 // }
                 if($request->dine_in!="")
                 {
-                    $vendordetail->dine_in = $request->dine_in;                    
+                    $vendordetail->dine_in = $request->dine_in;
                 }
                 if($request->takeaway!="")
                 {
-                    $vendordetail->takeaway = $request->takeaway;                    
+                    $vendordetail->takeaway = $request->takeaway;
                 }
                 if($request->delivery!="")
                 {
-                    $vendordetail->delivery = $request->delivery;                    
+                    $vendordetail->delivery = $request->delivery;
                 }
                 // if($request->status)
                 // {
-                //     $vendordetail->status = $request->status;                    
+                //     $vendordetail->status = $request->status;
                 // }
                 // if($request->commission_fixed_per_order)
                 // {
-                //     $vendordetail->commission_fixed_per_order = $request->commission_fixed_per_order;                    
+                //     $vendordetail->commission_fixed_per_order = $request->commission_fixed_per_order;
                 // }
 
-                //images                
+                //images
                 if ($request->hasFile('upload_logo')) {
                     $file = $request->file('upload_logo');
                     $vendordetail->logo = Storage::disk('s3')->put('/vendor', $file, 'public');
@@ -1635,15 +1647,678 @@ class VendorController extends BaseController{
                     $file = $request->file('upload_banner');
                     $vendordetail->banner = Storage::disk('s3')->put('/vendor', $file, 'public');
                 }
-                
+
                 $vendordetail->save();
                 $vendordetail = Vendor::where('id',$request->vendor_id)->first();
                 return $this->successResponse($vendordetail);
             }else{
                 return $this->errorResponse('Vendor not found', 422);
             }
-        } catch (Exception $e) {            
+        } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    // public function getVendorTransactions(Request $request)
+    // {
+    //     try {
+	// 		$validator = Validator::make($request->all(), [
+	// 			'vendor_id' => 'required',
+	// 		]);
+
+	// 		if ($validator->fails()) {
+	// 			return $this->errorResponse($validator->errors()->first(), 422);
+	// 		}
+    //         $start_date = $request->start_date;
+    //         $end_date = $request->end_date;
+    //         $filter_order_status = $request->filter_order_status;
+
+    //         $user = Auth::user();
+    //         $langId = 1;
+    //         $filter_order_status = $request->filter_order_status;
+    //         $orders = Order::with(['vendors.products', 'vendors.status', 'orderStatusVendor'])->orderBy('id', 'DESC');
+    //         if (Auth::user()->is_superadmin == 0) {
+    //             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
+    //                 $query->where('user_id', Auth::user()->id);
+    //             });
+    //         }
+    //         // if (!empty($request->search_keyword)) {
+    //         //     $orders = $orders->where('order_number', 'like', '%' . $request->search_keyword . '%');
+    //         // }
+
+
+
+    //         $order_count = Order::with('vendors')->where(function ($q1) {
+    //             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+    //             $q1->orWhere(function ($q2) {
+    //                 $q2->where('payment_option_id', 1);
+    //             });
+    //         })->orderBy('id', 'asc');
+    //         if (Auth::user()->is_superadmin == 0) {
+    //             $order_count = $order_count->whereHas('vendors.vendor.permissionToUser', function ($query) {
+    //                 $query->where('user_id', Auth::user()->id);
+    //             });
+    //         }
+    //         //filer bitween date
+    //         // if (!empty($request->get('date_filter'))) {
+    //         //     $date_date_filter = explode(' to ', $request->get('date_filter'));
+    //         //     $to_date = (!empty($date_date_filter[1])) ? $date_date_filter[1] : $date_date_filter[0];
+    //         //     $from_date = $date_date_filter[0];
+
+    //         //     $orders->between($from_date . " 00:00:00", $to_date . " 23:59:59");
+
+    //         //     //order_count
+    //         //     $order_count->between($from_date . " 00:00:00", $to_date . " 23:59:59");
+    //         // }
+    //         //get by vendor
+    //         if (!empty($request->get('vendor_id'))) {
+    //             $order_count->whereHas('vendors', function ($query)  use ($request) {
+    //                 $query->where('vendor_id', $request->get('vendor_id'));
+    //             });
+    //         }
+    //         $pending_orders = clone $order_count;
+    //         $active_orders = clone $order_count;
+    //         $orders_history = clone $order_count;
+
+    //         if ($filter_order_status) {
+    //             switch ($filter_order_status) {
+    //                 case 'pending_orders':
+    //                     $orders = $orders->with('vendors', function ($query) {
+    //                         $query->where('order_status_option_id', 1);
+    //                     })->whereHas('vendors', function ($query) use ($request) {
+    //                         $query->where('order_status_option_id', 1);
+    //                         if (!empty($request->get('vendor_id'))) {
+    //                             $query->where('vendor_id', $request->get('vendor_id'));
+    //                         }
+    //                     });
+
+    //                     break;
+    //                 case 'active_orders':
+    //                     $order_status_options = [2, 4, 5];
+    //                     $orders = $orders->with('vendors', function ($query) use ($order_status_options) {
+    //                         $query->whereIn('order_status_option_id', $order_status_options);
+    //                     })->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+    //                         $query->whereIn('order_status_option_id', $order_status_options);
+    //                         if (!empty($request->get('vendor_id'))) {
+    //                             $query->where('vendor_id', $request->get('vendor_id'));
+    //                         }
+    //                     });
+
+    //                     break;
+    //                 case 'orders_history':
+    //                     $order_status_options = [6, 3];
+    //                     $orders = $orders->with('vendors', function ($query) use ($order_status_options) {
+    //                         $query->whereIn('order_status_option_id', $order_status_options);
+    //                     })->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+    //                         $query->whereIn('order_status_option_id', $order_status_options);
+    //                         if (!empty($request->get('vendor_id'))) {
+    //                             $query->where('vendor_id', $request->get('vendor_id'));
+    //                         }
+    //                     });
+
+    //                     break;
+    //             }
+    //         }
+    //         $orders = $orders->whereHas('vendors')->where(function ($q1) {
+    //             $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
+    //             $q1->orWhere(function ($q2) {
+    //                 $q2->where('payment_option_id', 1);
+    //             });
+    //         })->select('*', 'id as total_discount_calculate')->paginate(30);
+
+
+    //         $pending_orders = $pending_orders->with('vendors', function ($query) {
+    //             $query->where('order_status_option_id', 1);
+    //         })->whereHas('vendors', function ($query) {
+    //             $query->where('order_status_option_id', 1);
+    //         })->count();
+
+    //         $order_status_optionsa = [2, 4, 5];
+    //         $active_orders = $active_orders->with('vendors', function ($query) use ($order_status_optionsa) {
+    //             $query->whereIn('order_status_option_id', $order_status_optionsa);
+    //         })->whereHas('vendors', function ($query) use ($order_status_optionsa) {
+    //             $query->whereIn('order_status_option_id', $order_status_optionsa);
+    //         })->count();
+
+    //         $order_status_optionsd = [6, 3];
+    //         $orders_history = $orders_history->with('vendors', function ($query) use ($order_status_optionsd) {
+    //             $query->whereIn('order_status_option_id', $order_status_optionsd);
+    //         })->whereHas('vendors', function ($query) use ($order_status_optionsd) {
+    //             $query->whereIn('order_status_option_id', $order_status_optionsd);
+    //         })->count();
+
+
+    //         foreach ($orders as $key => $order) {
+    //             // $order->created_date = convertDateTimeInTimeZone($order->created_at, $user->timezone, 'd-m-Y, h:i A');
+    //             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
+    //             $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
+    //             foreach ($order->vendors as $vendor) {
+    //                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
+    //                 $vendor->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
+    //                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
+    //                 $vendor->vendor_name = $vendor ? $vendor->vendor->name : '';
+    //                 $product_total_count = 0;
+    //                 foreach ($vendor->products as $product) {
+    //                     $product_total_count += $product->quantity * $product->price;
+    //                     $product->image_path  = $product->media->first() ? $product->media->first()->image->path : getDefaultImagePath();
+    //                 }
+
+    //                 if ($vendor->delivery_fee > 0) {
+    //                     $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
+    //                     $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
+    //                     $ETA = $order_pre_time + $user_to_vendor_time;
+    //                     // $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : convertDateTimeInTimeZone($vendor->created_at, $user->timezone, 'h:i A');
+    //                     $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : dateTimeInUserTimeZone($vendor->created_at, $user->timezone);
+    //                     //$order->converted_scheduled_date_time = $order->scheduled_date_time;
+    //                     $order->converted_scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
+    //                 }
+
+    //                 $vendor->product_total_count = $product_total_count;
+    //                 $vendor->final_amount = $vendor->taxable_amount + $product_total_count;
+    //             }
+    //             $luxury_option_name = '';
+    //             if ($order->luxury_option_id > 0) {
+    //                 $luxury_option = LuxuryOption::where('id', $order->luxury_option_id)->first();
+    //                 if ($luxury_option->title == 'takeaway') {
+    //                     $luxury_option_name = $this->getNomenclatureName('Takeaway', $langId, false);
+    //                 } elseif ($luxury_option->title == 'dine_in') {
+    //                     $luxury_option_name = 'Dine-In';
+    //                 } else {
+    //                     $luxury_option_name = 'Delivery';
+    //                 }
+    //             }
+    //             $order->luxury_option_name = __($luxury_option_name);
+    //             if ($order->vendors->count() == 0) {
+    //                 $orders->forget($key);
+    //             }
+    //         }
+
+    //         return $data = array('orders' => $orders, 'pending_orders' => $pending_orders, 'active_orders' => $active_orders, 'orders_history' => $orders_history);
+
+
+    //     } catch (Exception $e) {
+    //         return $this->errorResponse($e->getMessage(), $e->getCode());
+    //     }
+    // }
+
+    public function getVendorTransactions(Request $request)
+    {
+        try {
+			$validator = Validator::make($request->all(), [
+				'vendor_id' => 'required',
+			]);
+
+			if ($validator->fails()) {
+				return $this->errorResponse($validator->errors()->first(), 422);
+			}
+            // $start_date = $request->start_date;
+            // $end_date = $request->end_date;
+            //$filter_order_status = $request->filter_order_status;
+            $user = Auth::user();
+            $order_status_options = [];
+            $type = $request->has('type') ? $request->type : 'active';
+            // $orders = OrderVendor::where('user_id', $user->id)->orderBy('id', 'DESC');
+            $total_amount = 0;
+            $orders = OrderVendor::where('vendor_id', $request->vendor_id)->orderBy('id', 'DESC');
+            $allorders = $orders->whereNotIn('order_status_option_id', [1,2,4,5,6])->sum('payable_amount');
+
+            switch ($type) {
+                case 'complete':
+                    $orders->whereNotIn('order_status_option_id', [6]);
+                    break;
+                case 'pending':
+                    $orders->whereIn('order_status_option_id', [1,2,4,5]);
+                    break;
+                case 'refund':
+                    $order_status_options = [3];
+                    $orders->whereHas('status', function ($query) use ($order_status_options) {
+                        $query->whereIn('order_status_option_id', $order_status_options);
+                    });
+                    break;
+            }
+            $orders = $orders->with(['orderDetail'])
+                ->whereHas('orderDetail', function ($q1) {
+                    $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1]);
+                    $q1->orWhere(function ($q2) {
+                        $q2->where('orders.payment_option_id', 1);
+                    });
+                })
+                ->get();
+            foreach ($orders as $order) {
+                $total_amount = $total_amount + $order->payable_amount;
+                $order_item_count = 0;
+                $order->user_name = $user->name;
+                $order->user_image = $user->image;
+                $order->date_time = dateTimeInUserTimeZone($order->orderDetail->created_at, $user->timezone);
+                $order->payment_option_title = __($order->orderDetail->paymentOption->title ?? '');
+                $order->order_number = $order->orderDetail->order_number;
+                $product_details = [];
+                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->orderDetail->id)->where('vendor_id', $order->vendor_id)->orderBy('id', 'DESC')->first();
+                if ($vendor_order_status) {
+                    $order_sts = OrderStatusOption::where('id',$order->order_status_option_id)->first();
+                // $order->order_status =  ['current_status' => ['id' => $vendor_order_status->OrderStatusOption->id, 'title' => __($vendor_order_status->OrderStatusOption->title)]];
+                    $order->order_status =  ['current_status' => ['id' => $order_sts->id, 'title' => __($order_sts->title)]];
+                } else {
+                    $order->current_status = null;
+                }
+                foreach ($order->products as $product) {
+                    $order_item_count += $product->quantity;
+                    $product_details[] = array(
+                        'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
+                        'price' => $product->price,
+                        'qty' => $product->quantity,
+                        'category_type' => $product->product->category->categoryDetail->type->title ?? '',
+                        'product_id' => $product->product_id,
+                        'title' => $product->product_name,
+                    );
+                }
+                if ($order->delivery_fee > 0) {
+                    $order_pre_time = ($order->order_pre_time > 0) ? $order->order_pre_time : 0;
+                    $user_to_vendor_time = ($order->user_to_vendor_time > 0) ? $order->user_to_vendor_time : 0;
+                    $ETA = $order_pre_time + $user_to_vendor_time;
+                    $order->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $order->created_at, $order->orderDetail->scheduled_date_time) : dateTimeInUserTimeZone($order->created_at, $user->timezone);
+                }
+                if (!empty($order->orderDetail->scheduled_date_time)) {
+                    $order->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
+                }
+                $luxury_option_name = '';
+                if ($order->orderDetail->luxury_option_id > 0) {
+                    $luxury_option = LuxuryOption::where('id', $order->orderDetail->luxury_option_id)->first();
+                    if ($luxury_option->title == 'takeaway') {
+                        $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
+                    } elseif ($luxury_option->title == 'dine_in') {
+                        $luxury_option_name = __('Dine-In');
+                    } else {
+                        $luxury_option_name = __('Delivery');
+                    }
+                }
+                $order->luxury_option_name = $luxury_option_name;
+                $order->product_details = $product_details;
+                $order->item_count = $order_item_count;
+                unset($order->user);
+                unset($order->products);
+                unset($order->paymentOption);
+                unset($order->payment_option_id);
+                unset($order->orderDetail);
+            }
+
+            $data = array('totalEarning'=>$allorders, 'filter_total'=>$total_amount,'orders'=>$orders);
+            return $this->successResponse($data, '', 201);
+
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function viewAll(Request $request)
+    {
+        // return $request->all();
+        $user = Auth::user();
+        $langId = $user->language;
+        $currency_id = $user->currency;
+        $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+        $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
+        $limit = $request->has('limit') ? $request->limit : 12;
+        $page = $request->has('page') ? $request->page : 1;
+
+        //filter
+        $venderFilterClose   = $request->has('close_vendor') && $request->close_vendor ? $request->close_vendor : null;
+        $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
+        $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
+        $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
+
+        $type = 'delivery';
+        if ($request->has('type')) {
+            if (empty($request->type)) {
+                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
+            } else {
+                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($request->type, 1);
+                $type = $request->type;
+            }
+        } else {
+            $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','closed_store_order_scheduled')->withAvg('product', 'averageRating');
+        }
+
+        $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
+
+        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+            $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+            $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+            $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+            //3961 for miles and 6371 for kilometers
+            $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+            $vendorData = $vendorData->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                    cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                    sin( radians(' . $latitude . ') ) *
+                    sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
+            $vendorData = $vendorData->whereIn('id', $ses_vendors);
+            //if($venderFilternear && ($venderFilternear == 1) ){
+                //->orderBy('vendorToUserDistance', 'ASC')
+                $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
+            //}
+        }
+
+        //filter on ratings
+        if($venderFilterbest && ($venderFilterbest == 1) ){
+            $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
+        }
+        if($venderFilterClose && ($venderFilterClose == 1) ){
+            $vendorData =   $vendorData->where('show_slot', 0)->whereDoesntHave('slot')->whereDoesntHave('slotDate');
+        }
+        if($venderFilterOpen && ($venderFilterOpen == 1) ){
+            $vendorData =   $vendorData->where('show_slot', 1)
+            ->orWhere(function($q) {
+                $q->where('show_slot', 0)
+                ->where(function($q1){
+                    $q1->whereHas('slot')->orWhereHas('slotDate');
+                });
+            });
+        }
+        $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->paginate($limit, $page);
+
+        foreach ($vendorData as $vendor) {
+            unset($vendor->products);
+
+            $vendor->is_vendor_closed = 0;
+            if ($vendor->show_slot == 0) {
+                if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
+                    $vendor->is_vendor_closed = 1;
+                } else {
+                    $vendor->is_vendor_closed = 0;
+                    if ($vendor->slotDate->isNotEmpty()) {
+                        $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
+                        $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
+                    } elseif ($vendor->slot->isNotEmpty()) {
+                        $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
+                        $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
+                    }
+                }
+            }
+            $slotsDate = 0;
+            if($vendor->is_vendor_closed){
+                $slotsDate = findSlot('',$vendor->id,'');
+                $vendor->delaySlot = $slotsDate;
+                $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
+            }else{
+                $vendor->delaySlot = 0;
+                $vendor->closed_store_order_scheduled = 0;
+            }
+
+
+            $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4) ? 1 : 0;
+
+            $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();
+            $categoriesList = '';
+            foreach ($vendorCategories as $key => $category) {
+                if ($category->category) {
+                    $cat_name = isset($category->category->translation_one) ? $category->category->translation_one->name : $category->category->slug;
+                    $categoriesList = $categoriesList . $cat_name ?? '';
+                    if ($key !=  $vendorCategories->count() - 1) {
+                        $categoriesList = $categoriesList . ', ';
+                    }
+                }
+            }
+            $vendor->categoriesList = $categoriesList;
+
+            // $vends[] = $vendor->id;
+            if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences, $type);
+            }
+
+        }
+        //filter vendor
+        // if($venderFilterClose && ($venderFilterClose == 1) ){
+        //     $vendorData =   $vendorData->where('is_vendor_closed',1)->values();
+        // }
+        // if($venderFilterOpen && ($venderFilterOpen == 1) ){
+        //     $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
+        // }
+
+        return $this->successResponse($vendorData);
+    }
+
+
+    # optimize product by vendpr
+
+    public function productsByVendorOptimize(Request $request, $vid = 0){
+        try {
+            if($vid == 0){
+                return response()->json(['error' => 'No record found.'], 404);
+            }
+            $user = Auth::user();
+            $userid = $user->id;
+            $latitude = $user->latitude;
+            $longitude = $user->longitude;
+            $limit = $request->has('limit') ? $request->limit : 12;
+            $page = $request->has('page') ? $request->page : 12;
+            $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+            $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
+            $langId = $user->language;
+            $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'slug', 'show_slot',
+                        'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery','closed_store_order_scheduled')
+                        ->withAvg('product', 'averageRating');
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                //3961 for miles and 6371 for kilometers
+                $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                $vendor = $vendor->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                        cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                        sin( radians(' . $latitude . ') ) *
+                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
+            }
+            $vendor = $vendor->where('id', $vid)->first();
+            if(!$vendor){
+                return response()->json(['error' => 'No record found.'], 200);
+            }
+
+            $vendor->is_vendor_closed = 0;
+            if($vendor->show_slot == 0){
+                if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
+                    $vendor->is_vendor_closed = 1;
+                }else{
+                    $vendor->is_vendor_closed = 0;
+                    if($vendor->slotDate->isNotEmpty()){
+                        $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
+                        $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
+                    }elseif($vendor->slot->isNotEmpty()){
+                        $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
+                        $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
+                    }
+                }
+            }
+
+            $slotsDate = 0;
+            if($vendor->is_vendor_closed){
+                $slotsDate = findSlot('',$vendor->id,'');
+                $vendor->delaySlot = $slotsDate;
+                $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
+            }else{
+                $vendor->delaySlot = 0;
+                $vendor->closed_store_order_scheduled = 0;
+            }
+
+            if($vendor->closed_store_order_scheduled == 1 && $vendor->is_vendor_closed == 1)
+            {
+                $vendor->scheduled_time = findSlot('',$vid);
+            }
+
+            $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
+            $vendor->is_show_products_with_category = ($vendor->vendor_templete_id == 5) ? 1 : 0;
+            $categoriesList = '';
+
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
+            }
+
+            $code = $request->header('code');
+            $client = Client::where('code',$code)->first();
+            $vendor->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/vendor/".$vendor->slug;
+            $variantSets =  ProductVariantSet::with(['options' => function($zx) use($langId){
+                                $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
+                                $zx->select('variant_options.*', 'vt.title');
+                                $zx->where('vt.language_id', $langId);
+                            }])->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id')
+                            ->join('variant_translations as vt','vt.variant_id','vr.id')
+                            ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
+                            ->where('vt.language_id', $langId)
+                            ->whereIn('product_id', function($qry) use($vid){
+                            $qry->select('id')->from('products')
+                                ->where('vendor_id', $vid);
+                            })
+                        ->groupBy('product_variant_sets.variant_type_id')->get();
+                    // ->join('product_categories as pc', 'pc.product_id', 'products.id')
+                    // ->whereNotIn('pc.category_id', function($qr) use($vid){
+                    //             $qr->select('category_id')->from('vendor_categories')
+                    //                 ->where('vendor_id', $vid)->where('status', 0);
+                    // })
+
+                    $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
+
+            if($vendor->vendor_templete_id == 5){
+                $vendor_categories = VendorCategory::where('vendor_id', $vid)->with(['category.translation' => function($q) use($langId){
+                    $q->where('category_translations.language_id', $langId);
+                }])->whereHas('category.products')->with(['category.products' => function ($q)use($langId,$userid, $multipli){
+                        $q->where('is_live', 1)->with([
+                            'category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                            ->where('category_translations.language_id', $langId);
+                        }, 
+                        'inwishlist' => function($qry) use($userid){
+                            $qry->where('user_id', $userid);
+                        },
+                        'media.image',
+                        'addOn' => function ($q1) use ($langId) {
+                            $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                            $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                            $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                            $q1->where('set.status', 1)->where('ast.language_id', $langId);
+                        },
+                        'addOn.setoptions' => function ($q2) use ($langId) {
+                            $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                            $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                            $q2->where('apt.language_id', $langId);
+                        },
+                        'translation' => function($q) use($langId){
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id')->where('language_id', $langId)->take(1);
+                        },
+                        'variant' => function($q) use($langId, $multipli){
+                            $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"),)->orderBy('quantity', 'desc');
+                            // $q->groupBy('product_id');
+                        },'variant.checkIfInCartApp', 'checkIfInCartApp',
+                         'tags.tag.translations' => function ($q) use ($langId) {
+                            $q->where('language_id', $langId);
+                        }
+                    ])->with(['variantSet' => function ($z) use ($langId) {
+                                        $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                                        $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+                                        $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                                        $z->where('vt.language_id', $langId);
+                                        $z->orderBy('product_variant_sets.variant_type_id', 'asc');
+                                    },'variantSet.option2'=> function ($zx) use ($langId) {
+                                        $zx->where('vt.language_id', $langId);
+                                    }])->select('*',DB::raw("'$multipli' as variant_multiplier"));
+                    }])->where('status', 1)->get();
+               
+                $listData =  array_values($vendor_categories->toArray());
+            }
+            else{
+                $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
+                    $q->where('category_translations.language_id', $langId);
+                }])->where('vendor_id', $vendor->id)->where('status', 1)->get();
+
+                foreach($vendorCategories as $key => $category){
+                    if($category->category){
+                        $categoriesList = $categoriesList . ($category->category->translation->first()->name ?? '');
+                        if( $key !=  $vendorCategories->count()-1 ){
+                            $categoriesList = $categoriesList . ', ';
+                        }
+                    }
+                }
+                $products = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                            ->where('category_translations.language_id', $langId);
+                        }, 'inwishlist' => function($qry) use($userid){
+                            $qry->where('user_id', $userid);
+                        },
+                        'media.image',
+                        'addOn' => function($q1) use($langId){
+                            $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                            $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                            $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                            $q1->where('set.status', 1)->where('ast.language_id', $langId);
+                        },
+                        'addOn.setoptions' => function($q2) use($langId){
+                            $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                            $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                            $q2->where('apt.language_id', $langId);
+                        },
+                        'translation' => function($q) use($langId){
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                        },
+                        'variant' => function($q) use($langId){
+                            $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
+                            // $q->groupBy('product_id');
+                        }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
+                        'tags.tag.translations' => function ($q) use ($langId) {
+                            $q->where('language_id', $langId);
+                        }
+                    ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 'products.batch_count')
+                    ->where('products.vendor_id', $vid)
+                    ->where('products.is_live', 1)->paginate($limit, $page);
+                if(!empty($products)){
+                    foreach ($products as $key => $product) {
+                        foreach ($product->addOn as $key => $value) {
+                            foreach ($value->setoptions as $k => $v) {
+                                if($v->price == 0){
+                                    $v->is_free = true;
+                                }else{
+                                    $v->is_free = false;
+                                }
+                                $v->multiplier = $clientCurrency->doller_compare;
+                            }
+                        }
+
+                        $p_id = $product->id;
+                        $variantData = $product->with(['variantSet' => function ($z) use ($langId, $p_id) {
+                            $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                            $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+                            $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                            $z->where('vt.language_id', $langId);
+                            $z->where('product_variant_sets.product_id', $p_id)->orderBy('product_variant_sets.variant_type_id', 'asc');
+                        },'variantSet.options'=> function($zx) use($langId, $p_id){
+                            $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
+                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
+                            ->where('pvs.product_id', $p_id)
+                            ->where('vt.language_id', $langId);
+                        }])->where('id', $p_id)->first();
+                        $product->variantSet = $variantData->variantSet;
+                        // $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+                        $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+                        $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
+                        $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html),ENT_QUOTES) : '';
+                        $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
+                        $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                        $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+                        $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
+                        $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
+                        foreach ($product->variant as $k => $v) {
+                            $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
+                        }
+                    }
+                }
+            }
+            $vendor->categoriesList = $categoriesList;
+            $response['vendor'] = $vendor;
+            $response['products'] = ($vendor->vendor_templete_id != 5) ? $products : [];
+            $response['categories'] = ($vendor->vendor_templete_id == 5) ? $listData : [];
+            $response['filterData'] = $variantSets;
+            return response()->json(['data' => $response]);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
         }
     }
 

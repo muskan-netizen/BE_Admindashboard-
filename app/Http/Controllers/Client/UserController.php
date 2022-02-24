@@ -64,7 +64,7 @@ class UserController extends BaseController
     {
         $current_user = Auth::user();
         $users = User::withCount(['orders', 'currentlyWorkingOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc');
-       
+
         return Datatables::of($users)
             ->addColumn('edit_url', function($users) {
                 return route('customer.new.edit', $users->id);
@@ -117,10 +117,14 @@ class UserController extends BaseController
             ->filter(function ($instance) use ($request) {
                 if (!empty($request->get('search'))) {
                     $search = $request->get('search');
-                    $instance->where('name', 'LIKE', '%'.$search.'%')
-                    ->orWhere('email', 'LIKE', '%'.$search.'%')
-                    ->orWhere('phone_number', 'LIKE', '%'.$search.'%')
-                    ->orWhere('import_user_id', 'LIKE', '%'.$search.'%');
+                    $instance->where(function($query) use($search) {
+                        $query->where('name', 'LIKE', '%'.$search.'%')
+                        ->orWhere('email', 'LIKE', '%'.$search.'%')
+                        ->orWhere('phone_number', 'LIKE', '%'.$search.'%')
+                        ->orWhere('import_user_id', 'LIKE', '%'.$search.'%');
+                    });
+
+                  
                 }
             }, true)
             ->make(true);
@@ -184,7 +188,7 @@ class UserController extends BaseController
     //          $query->where('phone_number', $full_number);
     //         })],
     //         'password' => ['required', 'string', 'min:6', 'max:50'],
-          
+
 
     //     ]);
     // }
@@ -196,17 +200,18 @@ class UserController extends BaseController
      */
     public function store(Request $request)
     {
-
         $customer = new User();
        $validation  = Validator::make($request->all(), $customer->rules())->validate();
        //$validator = $this->validator($request->all())->validate();
-       
+
         $saveId = $this->save($request, $customer, 'false');
         if ($saveId > 0) {
+            $user = User::where('id', $saveId)->firstOrFail();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Customer created Successfully!',
                 'data' => $saveId,
+                'Userdata' => $user,
                 'aaa' => $request->all()
             ]);
         }
@@ -444,5 +449,86 @@ class UserController extends BaseController
         UserDevice::updateOrCreate(['device_token' => $request->fcm_token], ['user_id' => Auth::user()->id, 'device_type' => "web"])->first();
         Session::put('current_fcm_token', $request->fcm_token);
         return response()->json(['status' => 'success', 'message' => 'Token updated successfully']);
+    }
+
+    public function customNotification()
+    {
+        $users = User::withCount(['orders', 'activeOrders'])->where('status', '!=', 3)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc')->paginate(10);
+        $social_logins = 0;
+        foreach ($users as  $user) {
+            if (!empty($user->facebook_auth_id)) {
+                $social_logins++;
+            } elseif (!empty($user->twitter_auth_id)) {
+                $social_logins++;
+            } elseif (!empty($user->google_auth_id)) {
+                $social_logins++;
+            } elseif (!empty($user->apple_auth_id)) {
+                $social_logins++;
+            }
+        }
+        return view('backend.users.send_notification')->with(['users' => $users]);
+    }
+
+    public function sendNotification(Request $request)
+    {
+        //dd($request->all());
+        if(isset($request->all_customer))
+        {
+            //return $request->all();
+            return $customers = User::where('status', 1)->where('is_superadmin', '!=', 1)->orderBy('id', 'desc')->get();
+        }else{
+            //return "sdfsd";
+        }
+    }
+
+    public function sendPushNotification($user_ids, $orderData, $header_code='')
+    {
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+            $from = $client_preferences->fcm_server_key;
+            $notification_content = NotificationTemplate::where('id', 4)->first();
+            if ($notification_content) {
+                if($header_code == ''){
+                    $header_code = Client::orderBy('id', 'asc')->first()->code;
+                }
+                $code = $header_code;
+                $client = Client::where('code', $code)->first();
+                $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
+                $headers = [
+                    'Authorization: key=' . $from,
+                    'Content-Type: application/json',
+                ];
+                $data = [
+                    "registration_ids" => $devices,
+                    "notification" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $notification_content->content,
+                        'sound' => "notification.wav",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                        'click_action' => $redirect_URL,
+                        "android_channel_id" => "sound-channel-id"
+                    ],
+                    "data" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $notification_content->content,
+                        'data' => $orderData,
+                        'type' => "order_created"
+                    ],
+                    "priority" => "high"
+                ];
+                $dataString = $data;
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataString));
+                $result = curl_exec($ch);
+                curl_close($ch);
+            }
+        }
     }
 }

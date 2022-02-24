@@ -118,7 +118,7 @@ class CartController extends BaseController
 
             if ($product->category->categoryDetail->type_id == 8) {
             } else {
-                if ( ($product->sell_when_out_of_stock == 0) && ($productVariant->quantity < $request->quantity) ) {
+                if ( ($product->sell_when_out_of_stock == 0) && ($productVariant->quantity < $request->quantity && $product->has_inventory == 1) ) {
                     return $this->errorResponse('You Can not order more than ' . $productVariant->quantity . ' quantity.', 404);
                 }
             }
@@ -993,7 +993,7 @@ class CartController extends BaseController
                 $cart->closed_store_order_scheduled = 0;
             }
         }else{
-            $duration = [];
+            $duration = (object)['closed_store_order_scheduled'=>'0'];
             $slots = [];
             $cart->slots = [];
             $cart->closed_store_order_scheduled = 0;
@@ -1683,19 +1683,19 @@ class CartController extends BaseController
                 $request->schedule_dropoff = Carbon::parse($request->schedule_dropoff, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
                 if($request->task_type!='now'){
-                    if(isset($request->slot))
-                    {
-                    //$request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                        $time = $request->schedule_dt;
-                        $slot = $request->slot;
+                        if(isset($request->slot))
+                        {
+                        //$request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                            $time = $request->schedule_dt;
+                            $slot = $request->slot;
+                        }else{
+                            $time = $request->schedule_dt;
+                            $slot = null;
+                        }
                     }else{
                         $time = $request->schedule_dt;
                         $slot = null;
                     }
-                }else{
-                    $time = $request->schedule_dt;
-                    $slot = null;
-                }
 
                 Cart::where('status', '0')->where('user_id', $user->id)->update(['specific_instructions' => $request->specific_instructions ?? null,
                 'schedule_type' => $request->task_type??null,

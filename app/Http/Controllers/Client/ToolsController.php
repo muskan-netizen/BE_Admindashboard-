@@ -108,6 +108,19 @@ class ToolsController extends BaseController
                         $add_product = $this->addProduct($from_product,$copy_to,$request->copy_from,$product_sku);
                     }
                 }
+                foreach($from_vendor->getAllCategory as $v_category)
+                {
+                    $this->vendorCategoryObj->addVendorCategory($copy_to,$v_category->category_id);
+                }
+                foreach($from_vendor->getCustomCategory as $v_c_category)
+                {
+                    $check_category = $this->categoryObj->checkCategory($v_c_category,$copy_to);
+                    if(is_null($check_category))
+                    {
+                        $add_category = $this->addCompleteCategory($v_c_category,$copy_to);
+                    }
+                }
+
                 return redirect()->back()->with('success', 'Catalogs copied successfully!');
             }
             return redirect()->back()->with('error', 'Please select atleast one store');
@@ -164,7 +177,7 @@ class ToolsController extends BaseController
     {
         $product = $from_product;
         $product = $product->replicate();
-        $product->vendor_id = $copy_to; 
+        $product->vendor_id = $copy_to;  
         $product->sku = $product_sku;
         $product->save();
         foreach($from_product->addOn as $addOn)
@@ -184,7 +197,7 @@ class ToolsController extends BaseController
         if(isset($from_product->category) && !is_null($from_product->category)) 
         {
             $category_id = $from_product->category->category_id;
-            if(!is_null($from_product->category->categoryDetail->vendor_id)){
+            if(!is_null($from_product->category->categoryDetail->vendor_id)){ 
                 $check_category = $this->categoryObj->checkCategory($from_product->category->categoryDetail,$copy_to);
                 if(is_null($check_category))
                 {
@@ -435,10 +448,10 @@ class ToolsController extends BaseController
                     }
                 }
             }
-            return redirect()->back()->with('success', 'Tax copied successfully!');
+            return redirect()->back()->with('success', __("Tax copied successfully!"));
 
         }catch (Exception $e) {
-            return redirect()->back()->with('error', 'Something went wrong!');
+            return redirect()->back()->with('error', __("Something went wrong!"));
         }
     }
     public function uploadImage(Request $request)
@@ -449,6 +462,7 @@ class ToolsController extends BaseController
             $file = $request->file('file');
             $data['image_path'] = Storage::disk('s3')->put($this->folderName, $file, 'public');
             $data['image_url'] = \Config::get('app.IMG_URL1').'30/30'.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($data['image_path']).'@webp';
+            $data['show_image_url'] = \Storage::disk('s3')->url($data['image_path']);
             $data['image_id'] = uniqid();
             return response()->json(['data' => $data]);
         } else {

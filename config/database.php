@@ -129,6 +129,30 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+        'PROD' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL_PROD'),
+            'host' => env('DB_HOST_PROD', '127.0.0.1'),
+            'port' => env('DB_PORT_PROD', '3306'),
+            'database' => env('DB_DATABASE_PROD', 'forge'),
+            'username' => env('DB_USERNAME_PROD', 'forge'),
+            'password' => env('DB_PASSWORD_PROD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'dump' => [
+                'dump_binary_path' => 'D:\xampp\mysql\bin', // only the path, so without `mysqldump` or `pg_dump`
+                'use_single_transaction',
+                'timeout' => 60 * 5, // 5 minute timeout
+            ],
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
         'mysql2' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),

@@ -8,7 +8,7 @@ use DB;
 use App;
 use Auth;
 use Config;
-use Session;
+use Session,Log;
 use Carbon\CarbonPeriod;
 use DateTime;
 use DateInterval;
@@ -33,6 +33,8 @@ class FrontController extends Controller
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+                    Log::info('SMS twilio respons');
+                    Log::info($send);
                 }else{
                     return 2;
                 }
@@ -53,6 +55,8 @@ class FrontController extends Controller
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
+                    Log::info('SMS twilio respons');
+                    Log::info($send);
                 }else{
                     return 2;
                 }
@@ -60,7 +64,8 @@ class FrontController extends Controller
             //return $send;
         }
         catch(\Exception $e){
-          //  pr($e->getMessage());
+            Log::info('SMS logs');
+            Log::info($e->getMessage());
             return '2';
         }
         return '1';
@@ -813,8 +818,10 @@ class FrontController extends Controller
     }
 
     public function vendorTime($minutes){
-        $hours = intdiv($minutes, 60).':'. ($minutes % 60);
-
+        $hours = intdiv($minutes, 60);//.':'. ($minutes % 60);
+        if(($minutes % 60) > 30){
+            $hours = $hours+1;
+        }
         return $hours;
 
     }

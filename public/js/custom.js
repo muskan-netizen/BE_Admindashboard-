@@ -7,10 +7,12 @@ jQuery(window).scroll(function() {
     }
 });
 
+
 // Material Select Initialization
 $(document).ready(function() {
-    $('.mdb-select').materialSelect();
-    });
+    //$('.mdb-select').materialSelect();
+
+});
 
 $(function() {
     document.ajax_loading = false;
@@ -107,7 +109,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider(){
     });
 }
 
-// loadMainMenuSlider();
+ loadMainMenuSlider();
 
 window.resizeMenuSlider = function resizeMenuSlider(){
     var windowWidth = $(window).width();
@@ -117,7 +119,7 @@ window.resizeMenuSlider = function resizeMenuSlider(){
         if(!$('.menu-slider').hasClass('slick-initialized')){
 
             setTimeout(function(){
-                loadMainMenuSlider();
+                //loadMainMenuSlider();
                 if ( $('#main-menu .slick-slide').length > 13 ) {
                     $('#main-menu').addClass('items-center');
                 }
@@ -144,7 +146,7 @@ if ($(window).width() < 767) {
 
 window.initializeSlider = function initializeSlider() {
     $(".slide-6").slick({
-        arrows: false,
+        arrows: true,
         dots: false,
         infinite: true,
         speed: 300,
@@ -162,12 +164,12 @@ window.initializeSlider = function initializeSlider() {
     $(".product-4").slick({
         dots: false,
         infinite: true,
-        dots: false,
         speed: 300,
         slidesToShow: 4,
         centerMode: true,
-        centerPadding: '60px',
+        centerPadding: '20px',
         slidesToScroll: 4,
+        arrows: true,
         responsive: [
             { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
             { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
@@ -176,7 +178,7 @@ window.initializeSlider = function initializeSlider() {
     });
 
     $(".recent-orders").slick({
-        arrows: false,
+        arrows: true,
         dots: false,
         infinite: true,
         speed: 300,
@@ -192,69 +194,53 @@ window.initializeSlider = function initializeSlider() {
         ]
     });
     $(".brand-slider").slick({
-        arrows: false,
-        dots: !1,
-        infinite: !1,
+        arrows: true,
+        dots: false,
+        infinite: true,
         speed: 300,
         slidesToShow: 4,
         slidesToScroll: 3,
         responsive: [
-            {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,arrows: false,infinite: true}},
-            {breakpoint: 991,settings: {slidesToShow: 3,arrows: false,slidesToScroll: 1}},
-            {breakpoint: 767,settings: {slidesToShow: 2,arrows: false,slidesToScroll: 1}},
-            {breakpoint: 360,settings: {slidesToShow: 1,arrows: false,slidesToScroll: 1}}
+            {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 1}},
+            {breakpoint: 767,settings: {slidesToShow: 2,slidesToScroll: 1}},
+            {breakpoint: 360,settings: {slidesToShow: 1,slidesToScroll: 1}}
         ]
     });
     $('.suppliers-slider').slick({
+        infinite: true,
+        speed: 300,
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        centerMode: false,
+        centerPadding: '60px',
+        arrows: true,
         dots: false,
+        responsive: [
+            {breakpoint: 1199,settings: {slidesToShow: 4,slidesToScroll: 3,infinite: true,dots: false,centerMode: false,}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 3,dots: false,centerMode: true,}},
+            {breakpoint: 767,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}},
+            {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
+        ]
+    });
+    $('.al_t2_suppliers-slider').slick({
         infinite: true,
         speed: 300,
         slidesToShow: 6,
         slidesToScroll: 1,
         centerMode: false,
-        centerPadding: '60px',
-        arrows: false,
+        centerPadding: '0',
+        arrows: true,
         dots: false,
-        responsive: [{
-                breakpoint: 1199,
-                settings: {
-                    slidesToShow: 4,
-                    slidesToScroll: 3,
-                    infinite: true,
-                    dots: false,
-                    centerMode: false,
-                }
-            },
-            {
-                breakpoint: 991,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 3,
-                    dots: false,
-                    centerMode: true,
-                }
-            },
-            {
-                breakpoint: 767,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    dots: false,
-                    centerMode: true,
-                }
-            },
-            {
-                breakpoint: 576,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    dots: false,
-                    centerMode: true,
-                }
-            }
+        responsive: [
+            {breakpoint: 1199,settings: {slidesToShow: 4,slidesToScroll: 3,infinite: true,dots: false,centerMode: false,}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 3,dots: false,centerMode: true,}},
+            {breakpoint: 767,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}},
+            {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
         ]
     });
     $(".product-5").slick({
+        arrows: true,
         dots: false,
         infinite: true,
         dots: false,
@@ -271,7 +257,7 @@ window.initializeSlider = function initializeSlider() {
     $('.vendor-product').slick({
         infinite: true,
         speed: 300,
-        arrows: false,
+        arrows: true,
         dots: false,
         slidesToShow: 4,
         slidesToScroll: 2,
@@ -298,7 +284,8 @@ window.initializeSlider = function initializeSlider() {
 
 
     $(".booking-time").slick({
-        dots: !1,
+        dots: false,
+        arrows: true,
         infinite: !0,
         speed: 300,
         slidesToShow: 3,
@@ -312,7 +299,7 @@ window.initializeSlider = function initializeSlider() {
     });
 
     if ($('body').attr('dir') == 'rtl') {
-        $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
+        $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .al_t2_suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
     }
 }
 
@@ -526,8 +513,32 @@ $(document).ready(function() {
         card.mount('#stripe-card-element');
     }
 
+    function stripeFPXInitialize() {
+        stripe_fpx = Stripe(stripe_fpx_publishable_key);
+        var elements = stripe_fpx.elements();
+        var style = {
+            base: {
+              // Add your base input styles here. For example:
+              padding: '10px 12px',
+              color: '#32325d',
+              fontSize: '16px',
+            },
+        };
+        fpxBank = elements.create('fpxBank',
+            {
+              style: style,
+              accountHolderType: 'individual',
+            }
+        );
+        // Add an instance of the fpxBank Element into the container with id `fpx-bank-element`.
+        fpxBank.mount('#fpx-bank-element');
+    }
+
     if ($("#stripe-card-element").length > 0) {
         stripeInitialize();
+    }
+    if ($("#fpx-bank-element").length > 0) {
+        stripeFPXInitialize();
     }
 
     $(document).delegate(".subscribe_btn", "click", function() {
@@ -558,6 +569,7 @@ $(document).ready(function() {
                                 }
                                 $("#subscription_payment").modal("show");
                                 stripeInitialize();
+                                stripeFPXInitialize();
                             }
                         },
                         error: function(error) {
@@ -594,7 +606,7 @@ $(document).ready(function() {
                         $("#card_last_four_digit").val(result.token.card.last4);
                         $("#card_expiry_month").val(result.token.card.exp_month);
                         $("#card_expiry_year").val(result.token.card.exp_year);
-                        paymentViaStripe(result.token.id, '', payment_option_id);
+                        paymentViaStripe(result.token.id, '', payment_option_id, '', '');
                     }
                 });
             } else if (payment_option_id == 3) {
@@ -635,6 +647,12 @@ $(document).ready(function() {
                 paymentViaPagarme('', '');
             }else if (payment_option_id == 17) {
                 paymentViaCheckout('', '');
+            }else if (payment_option_id == 18) {
+                paymentViaAuthorize('', '');
+            }else if (payment_option_id == 19) {
+                paymentViaStripeFPX('', 19, '');
+            }else if (payment_option_id == 20) {
+                payWithKPG('');
             }
         } else {
             _this.attr("disabled", false);
@@ -676,7 +694,7 @@ $(document).ready(function() {
                     }
                     cartHeader();
                     cartTotalProductCount();
-                    
+
 
                     if ($('#show_plus_minus' + cartproduct_id).length != 0) {
                         if($('.addon_variant_quantity_' + cartproduct_id).closest('.customized_product_row').length > 0){
@@ -843,7 +861,7 @@ $(document).ready(function() {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions:specific_instructions,task_type: task_type,schedule_dropoff:schedule_dropoff, schedule_pickup:schedule_pickup,schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor , delivery_type : delivery_type ,slot:slot},
+                data: { specific_instructions:specific_instructions,task_type: task_type,schedule_dropoff:schedule_dropoff, schedule_pickup:schedule_pickup,schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor , delivery_type : delivery_type ,slot:slot,address : address},
                 success: function(response) {
                     if (response.status == "Success") {
                         $.ajax({
@@ -862,6 +880,7 @@ $(document).ready(function() {
                                     $('#proceed_to_pay_modal').modal('show');
                                     $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
                                     stripeInitialize();
+                                    stripeFPXInitialize();
                                 }
                             },
                             error: function(error) {
@@ -898,6 +917,7 @@ $(document).ready(function() {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
+                        stripeFPXInitialize();
                     }
                 }
             },
@@ -935,6 +955,7 @@ $(document).ready(function() {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
+                        stripeFPXInitialize();
                     }
                 }
             },
@@ -963,27 +984,44 @@ $(document).ready(function() {
     }
 
 
-
-    function paymentViaStripe(stripe_token, address_id, payment_option_id, delivery_type = 'D') {
+    function paymentViaStripe(stripe_token, address_id, payment_option_id, delivery_type = 'D', order='') {
         let total_amount = 0;
         let tip = 0;
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
         let subscriptionElement = $("input[name='subscription_amount']");
         let tipElement = $("#cart_tip_amount");
+        let payment_form = '';
 
         let ajaxData = [];
-        if (cartElement.length > 0) {
+        if (path.indexOf("cart") !== -1) {
+            payment_form = 'cart';
             total_amount = cartElement.val();
             tip = tipElement.val();
-            ajaxData.push({ name: 'tip', value: tip });
-        } else if (walletElement.length > 0) {
+            ajaxData.push(
+                { name: 'tip', value: tip },
+                {name: 'order_number', value: order.order_number}
+            );
+        } else if ( (path.indexOf("wallet") !== -1)  ||  ((typeof cabbookingwallet !== 'undefined') && (cabbookingwallet == 1)) ) {
+            payment_form = 'wallet';
             total_amount = walletElement.val();
-        } else if (subscriptionElement.length > 0) {
+        } else if (path.indexOf("subscription") !== -1) {
+            payment_form = 'subscription';
             total_amount = subscriptionElement.val();
             ajaxData = $("#subscription_payment_form").serializeArray();
+        } else if ((typeof tip_for_past_order !== 'undefined') && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            payment_form = 'tip';
+            ajaxData.push(
+                {name: 'order_number', value: $("#order_number").val()}
+            );
         }
-        ajaxData.push({ name: 'stripe_token', value: stripe_token }, { name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id });
+        ajaxData.push(
+            { name: 'payment_form', value: payment_form },
+            { name: 'stripe_token', value: stripe_token },
+            { name: 'amount', value: total_amount },
+            { name: 'payment_option_id', value: payment_option_id }
+        );
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -992,21 +1030,22 @@ $(document).ready(function() {
             success: function(resp) {
                 if (resp.status == 'Success') {
                     if (path.indexOf("cart") !== -1) {
-                        placeOrder(address_id, payment_option_id, resp.data.id, tip,delivery_type);
+                        // placeOrder(address_id, payment_option_id, resp.data.id, tip,delivery_type);
                     } else if (path.indexOf("wallet") !== -1) {
-                        creditWallet(total_amount, payment_option_id, resp.data.id);
+                        // creditWallet(total_amount, payment_option_id, resp.data.id);
                     } else if (path.indexOf("subscription") !== -1) {
-                        userSubscriptionPurchase(total_amount, payment_option_id, resp.data.id);
+                        // userSubscriptionPurchase(total_amount, payment_option_id, resp.data.id);
                     } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
 
-                        let order_number = $("#order_number").val();
-                        if (order_number.length > 0) {
-                            order_number = order_number;
-                        }
-                        creditTipAfterOrder(total_amount, payment_option_id, resp.data.id, order_number);
+                        // let order_number = $("#order_number").val();
+                        // if (order_number.length > 0) {
+                        //     order_number = order_number;
+                        // }
+                        // creditTipAfterOrder(total_amount, payment_option_id, resp.data.id, order_number);
                     } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
-                        creditWallet(total_amount, payment_option_id, resp.data.id);
+                        // creditWallet(total_amount, payment_option_id, resp.data.id);
                     }
+                    window.location.href = resp.data;
                 } else {
                     if (path.indexOf("cart") !== -1) {
                         success_error_alert('error', resp.message, ".payment_response");
@@ -1342,10 +1381,16 @@ $(document).ready(function() {
                     $('#stripe_card_error').html(result.error.message);
                     $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
                 } else {
-                    paymentViaStripe(result.token.id, address_id, payment_option_id,delivery_type);
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaStripe(result.token.id, address_id, payment_option_id,delivery_type, order);
+                    } else {
+                        return false;
+                    }
                 }
             });
-        } else if (payment_option_id == 8) {
+        }
+        else if (payment_option_id == 8) {
             var order;
             inline.createToken().then(function(result) {
                 if (result.error) {
@@ -1430,6 +1475,31 @@ $(document).ready(function() {
             if (order != '') {
                 paymentViaCheckout(address_id, order);
             } else {
+                return false;
+            }
+        }
+        else if (payment_option_id == 18) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaAuthorize(address_id, order);
+            } else {
+                return false;
+            }
+        }
+        else if (payment_option_id == 19) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaStripeFPX(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
+        }else if (payment_option_id == 20) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                payWithKPG(order);
+            }
+            else{
                 return false;
             }
         }
@@ -1565,7 +1635,7 @@ $(document).ready(function() {
                     $('#stripe_card_error').html(result.error.message);
                     $(".topup_wallet_confirm").attr("disabled", false);
                 } else {
-                    paymentViaStripe(result.token.id, '', payment_option_id);
+                    paymentViaStripe(result.token.id, '', payment_option_id, '', '');
                 }
             });
         } else if (payment_option_id == 3) {
@@ -1610,6 +1680,12 @@ $(document).ready(function() {
             paymentViaPagarme('', '');
         }else if (payment_option_id == 17) {
             paymentViaCheckout('', '');
+        }else if (payment_option_id == 18) {
+            paymentViaAuthorize('', '');
+        }else if (payment_option_id == 19) {
+            paymentViaStripeFPX('', payment_option_id, '');
+        }else if (payment_option_id == 20) {
+            payWithKPG('');
         }
     });
     $(document).on("click", ".remove_promo_code_btn", function() {

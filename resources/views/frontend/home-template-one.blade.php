@@ -1,6 +1,4 @@
 @extends('layouts.store', ['title' => __('Home')]) @section('content')
-<header>
-	<div class="mobile-fix-option"></div> @include('layouts.store/left-sidebar-template-one') </header>
 <!-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> -->
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
@@ -74,7 +72,7 @@
 </script>
 <script type="text/template" id="products_template">
 	<% _.each(products, function(product, k){ %>
-		<div class="product-card-box position-relative">
+		<div class="product-card-box position-relative al">
 			<div class="add-to-fav 12">
 				<input id="fav_pro_one" type="checkbox">
 				<label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
@@ -142,10 +140,10 @@
 						<% if((vendor.delivery_fee > 0) || (order.scheduled_date_time)){%>
 							<div class="progress-order font-12">
 								<% if(order.scheduled_slot==null){%>
-									<% if(order.scheduled_date_time){%> <span class="badge badge-success ml-2">Scheduled</span> <span class="ml-2">{{__('Your order will arrive by')}}<%=order.converted_scheduled_date_time %></span>
-										<%}else{%> <span class="ml-2">{{__('Your order will arrive by')}}<%=vendor.ETA %></span>
+									<% if(order.scheduled_date_time){%> <span class="badge badge-success ml-2">Scheduled</span> <span class="ml-2">{{__('Your order will arrive by ')}}<%=order.converted_scheduled_date_time %></span>
+										<%}else{%> <span class="ml-2">{{__('Your order will arrive by ')}}<%=vendor.ETA %></span>
 											<%}%>
-												<%}else{%> <span class="badge badge-success ml-2">Scheduled</span> <span class="ml-2">{{__('Your order will arrive by')}}<%=order.converted_scheduled_date_time %>, Slot : <%=order.scheduled_slot %></span>
+												<%}else{%> <span class="badge badge-success ml-2">Scheduled</span> <span class="ml-2">{{__('Your order will arrive by ')}}<%=order.converted_scheduled_date_time %>, Slot : <%=order.scheduled_slot %></span>
 													<%}%>
 							</div>
 							<%}%> <span class="left_arrow pulse"></span>
@@ -441,7 +439,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-12 top-heading d-flex align-items-center justify-content-between">
-						<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
+						<h2 class="h2-heading">{{$homePageLabel->slug=='trending_vendors' ? __('Trending')." ".getNomenclatureName('vendors', true) : __($homePageLabel->title)}}</h2> </div>
 					<div class="col-12">
 						<div class="suppliers-slider product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"> </div>
 					</div>
@@ -490,6 +488,8 @@
 			</div>
 		</div>
 	</div>
-</div> @endsection @section('script')
+</div>
+@endsection @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
-<script src="{{asset('front-assets/js/fly-cart.js')}}"></script> @endsection
+<script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
+@endsection

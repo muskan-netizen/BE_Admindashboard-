@@ -1,8 +1,8 @@
 <div class="modal fade bd-example-modal-lg addModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">{{ __('Add Celebrity') }}</h4><br>
+                <h4 class="modal-title">{{ __('Add Influencer') }}</h4><br>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="save_loyality_form" class="p-3" enctype="multipart/form-data">
@@ -11,14 +11,14 @@
                     <div class="col-md-6" id="imageInput">
                         <label>{{ __('Upload image') }}</label>
                         <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify" />
-                        <label class="logo-size d-block text-right mt-1">{{ __('Image Size') }} 150x150</label>                    
+                        <label class="logo-size d-block text-right mt-1">{{ __('Image Size') }} 150x150</label>
                         <span class="invalid-feedback" role="alert">
                             <strong></strong>
                         </span>
                     </div>
                 </div>
 
-                <div class="row mb-2">
+                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group" id="nameInput">
                             {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
@@ -30,7 +30,7 @@
                     </div>
                     <div class="col-md-6" id="slugInput">
                         <div class="form-group">
-                            {!! Form::label('title', __('Slug'),['class' => 'control-label']) !!} 
+                            {!! Form::label('title', __('Slug'),['class' => 'control-label']) !!}
                             {!! Form::text('slug', null, ['class'=>'form-control', 'required' => 'required', 'onkeypress' => "return alphaNumeric(event)", 'id' => 'slug']) !!}
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
@@ -90,7 +90,7 @@
 
                 </div>
 
-                <div class="modal-footer border-0">
+                <div class="modal-footer pt-0 border-0">
                     <button type="submit" class="btn btn-info waves-effect waves-light submitAddForm">{{ __('Submit') }}</button>
                 </div>
             </form>
@@ -99,10 +99,10 @@
 </div>
 
 <div id="edit-loyalty-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
-                <h4 class="modal-title">{{ __("Edit Celebrity") }}</h4>
+                <h4 class="modal-title">{{ __("Edit Influencer") }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <form id="update_loyality_form" method="post" enctype="multipart/form-data">
