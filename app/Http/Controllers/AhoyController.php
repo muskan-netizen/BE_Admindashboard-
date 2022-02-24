@@ -322,7 +322,7 @@ class AhoyController extends Controller
     {
         $this->configDetails();
         if($this->test==1){
-            return $this->setWebhookUrl('https://webhook.site/758348ce-7cec-4a54-afa9-51584233a851');
+            return $this->setWebhookUrl($request->url);
         }else {
             return 'Webhook url not set.';
         }
