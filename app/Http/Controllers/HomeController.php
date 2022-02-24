@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Jenssegers\Agent\Facades\Agent;
-use App\Models\{ClientPreference, Category, Vendor, Product, Page};
+use App\Models\{ClientPreference, Category, Vendor, Product, Page, Brand};
 use Redirect;
 
 class HomeController extends Controller
@@ -39,22 +39,23 @@ class HomeController extends Controller
     {
         // each Sitemap file must have no more than 50,000 URLs and must be no larger than 10MB
         $categories = Category::select(["id","slug", "updated_at"]) 
-        ->orderBy("id", "desc")
-        ->take(50000) 
+        ->orderBy("id", "desc") 
         ->get();
 
         $vendors = Vendor::select(["id","slug", "updated_at"]) 
         ->orderBy("id", "desc")
-        ->take(50000) 
         ->get();
 
         $products = Product::with("vendor")->select(["id","url_slug","updated_at","vendor_id"]) 
         ->orderBy("id", "desc")
-        ->take(50000) 
+        ->get();
+
+        $brands = Brand::select(["id","updated_at"])
+        ->orderBy("id", "desc")
         ->get();
 
         $pages = page::select('id','slug','updated_at')->get();
 
-        return response()->view('sitemap',['categories'=>$categories, 'vendors'=>$vendors, 'products'=>$products,'pages'=>$pages])->header('Content-Type', 'text/xml');
+        return response()->view('sitemap',['categories'=>$categories, 'vendors'=>$vendors, 'products'=>$products,'brands'=>$brands,'pages'=>$pages])->header('Content-Type', 'text/xml');
     }
 } 

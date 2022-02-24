@@ -78,6 +78,7 @@ $preference = $client_preference_detail;
                             </ul>
                         </li>
                         @endif
+                        @if(count($languageList) > 1)
                         <li class="onhover-dropdown change-language">
                             <a href="javascript:void(0)">{{$applocale}}
                             <span class="icon-ic_lang align-middle"></span>
@@ -91,7 +92,9 @@ $preference = $client_preference_detail;
                                 @endforeach
                             </ul>
                         </li>
+                        @endif
 
+                        @if(count($currencyList) > 1)
                         <li class="onhover-dropdown change-currency">
                             <a href="javascript:void(0)">{{session()->get('iso_code')}}
                             <span class="icon-ic_currency align-middle"></span>
@@ -107,6 +110,7 @@ $preference = $client_preference_detail;
                                 @endforeach
                             </ul>
                         </li>
+                        @endif
 
                         <li class="onhover-dropdown mobile-account"> <i class="fa fa-user" aria-hidden="true"></i>
                             {{__('My Account')}}

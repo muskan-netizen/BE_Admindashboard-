@@ -348,7 +348,7 @@ class StripeGatewayController extends FrontController
                 $postdata['description'] = 'Subscription Checkout';
                 $postdata['metadata']['subscription_id'] = $request->subscription_id;
             }
-                    
+            
             $payment_intent = $stripe = $stripe->paymentIntents->create($postdata);
             
             return $this->successResponse($payment_intent->client_secret);
@@ -606,5 +606,32 @@ class StripeGatewayController extends FrontController
         }
         
         http_response_code(200);
+    }
+
+
+
+    public function paymentWebViewStripeFPX(Request $request, $domain='')
+    {
+        // try{
+            $user_id = $request->user_id;
+            $user = User::find($user_id);
+            Auth::login($user);
+            $payment_form = $request->action;
+            $returnParams = 'amount='. $request->amount . '&payment_form=' . $payment_form;
+            if($payment_form == 'cart'){
+                $returnParams .= '&order='.$request->order_number;
+            }
+            elseif($payment_form == 'tip'){
+                $returnParams .= '&order='.$request->order_number;
+            }
+            $payment_retrive_stripe_fpx_url = url('payment/retrieve/stripe_fpx' .'/?'. $returnParams);
+            
+            $request->request->add(['come_from' => 'app', 'payment_form' => $payment_form]);
+            $data = $request->all();
+            return view('frontend.payment_gatway.stripe_fpx_view')->with(['data' => $data, 'payment_retrive_stripe_fpx_url'=>$payment_retrive_stripe_fpx_url]);
+        // }
+        // catch(\Exception $ex){
+        //     return redirect()->back()->with('errors', $ex->getMessage());
+        // }
     }
 }
