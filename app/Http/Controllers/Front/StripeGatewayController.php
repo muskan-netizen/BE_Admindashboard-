@@ -608,23 +608,21 @@ class StripeGatewayController extends FrontController
         http_response_code(200);
     }
 
-
-
     public function paymentWebViewStripeFPX(Request $request, $domain='')
     {
         // try{
-            $user_id = $request->user_id;
-            $user = User::find($user_id);
+            $auth_token = $request->auth_token;
+            $user = User::where('auth_token', $auth_token)->first();
             Auth::login($user);
-            $payment_form = $request->action;
+            $payment_form = $request->payment_form;
             $returnParams = 'amount='. $request->amount . '&payment_form=' . $payment_form;
             if($payment_form == 'cart'){
-                $returnParams .= '&order='.$request->order_number;
+                $returnParams .= '&order='.$request->order;
             }
             elseif($payment_form == 'tip'){
-                $returnParams .= '&order='.$request->order_number;
+                $returnParams .= '&order='.$request->order;
             }
-            $payment_retrive_stripe_fpx_url = url('payment/retrieve/stripe_fpx' .'/?'. $returnParams);
+            $payment_retrive_stripe_fpx_url = url('payment/webview/response/stripe_fpx' .'/?'. $returnParams);
             
             $request->request->add(['come_from' => 'app', 'payment_form' => $payment_form]);
             $data = $request->all();
@@ -633,5 +631,22 @@ class StripeGatewayController extends FrontController
         // catch(\Exception $ex){
         //     return redirect()->back()->with('errors', $ex->getMessage());
         // }
+    }
+
+    public function webViewResponseStripeFPX(Request $request)
+    {
+        if($request->has('payment_intent')){
+            if($request->has('redirect_status') && ($request->redirect_status == 'succeeded')){
+                $url = 'payment/gateway/returnResponse?status=200&gateway=stripe_fpx&action='.$request->action;
+                if($request->payment_form == 'cart'){
+                    $url = $url.'&order='.$order_number;
+                }
+                return Redirect::to($url);
+            }
+            elseif($request->has('redirect_status') && ($request->redirect_status == 'failed')){
+                $url = 'payment/gateway/returnResponse?status=0&gateway=stripe_fpx&action='.$request->action;
+                return Redirect::to($url);
+            }
+        }
     }
 }
