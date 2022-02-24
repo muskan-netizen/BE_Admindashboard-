@@ -320,8 +320,11 @@ class StripeGatewayController extends FrontController
             ];
 
             if($payment_form == 'cart'){
-                $address_id = $request->address_id;
-                $user_address = UserAddress::where('id', $address_id)->first();
+                $user_address = '';
+                if($request->has('address_id')){
+                    $address_id = $request->address_id;
+                    $user_address = UserAddress::where('id', $address_id)->first();
+                }
                 $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
                 $order_number = $request->order_number;
 
@@ -330,11 +333,13 @@ class StripeGatewayController extends FrontController
                 $postdata['metadata']['order_number'] = $order_number;
                 $postdata['shipping']['name'] = $user->name;
                 $postdata['shipping']['phone'] = $user->dial_code . $user->phone_number;
-                $postdata['shipping']['address']['line1'] = $user_address->street;
-                $postdata['shipping']['address']['city'] = $user_address->city;
-                $postdata['shipping']['address']['state'] = $user_address->state;
-                $postdata['shipping']['address']['country'] = $user_address->country;
-                $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
+                if(!empty($user_address)){
+                    $postdata['shipping']['address']['line1'] = $user_address->street;
+                    $postdata['shipping']['address']['city'] = $user_address->city;
+                    $postdata['shipping']['address']['state'] = $user_address->state;
+                    $postdata['shipping']['address']['country'] = $user_address->country;
+                    $postdata['shipping']['address']['postal_code'] = $user_address->pincode;
+                }
             }
             elseif($payment_form == 'wallet'){
                 $postdata['description'] = 'Wallet Checkout';
@@ -617,10 +622,10 @@ class StripeGatewayController extends FrontController
             $payment_form = $request->payment_form;
             $returnParams = 'amount='. $request->amount . '&payment_form=' . $payment_form;
             if($payment_form == 'cart'){
-                $returnParams .= '&order='.$request->order;
+                $returnParams .= '&order='.$request->order_number;
             }
             elseif($payment_form == 'tip'){
-                $returnParams .= '&order='.$request->order;
+                $returnParams .= '&order='.$request->order_number;
             }
             $payment_retrive_stripe_fpx_url = url('payment/webview/response/stripe_fpx' .'/?'. $returnParams);
             
@@ -636,17 +641,14 @@ class StripeGatewayController extends FrontController
     public function webViewResponseStripeFPX(Request $request)
     {
         if($request->has('payment_intent')){
+            $url = 'payment/gateway/returnResponse?status=0&gateway=stripe_fpx&action='.$request->payment_form;
             if($request->has('redirect_status') && ($request->redirect_status == 'succeeded')){
-                $url = 'payment/gateway/returnResponse?status=200&gateway=stripe_fpx&action='.$request->action;
+                $url = 'payment/gateway/returnResponse?status=200&gateway=stripe_fpx&action='.$request->payment_form;
                 if($request->payment_form == 'cart'){
-                    $url = $url.'&order='.$order_number;
+                    $url = $url.'&order='.$request->order;
                 }
-                return Redirect::to($url);
             }
-            elseif($request->has('redirect_status') && ($request->redirect_status == 'failed')){
-                $url = 'payment/gateway/returnResponse?status=0&gateway=stripe_fpx&action='.$request->action;
-                return Redirect::to($url);
-            }
+            return Redirect::to($url);
         }
     }
 }
