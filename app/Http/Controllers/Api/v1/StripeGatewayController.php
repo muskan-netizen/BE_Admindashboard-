@@ -260,7 +260,7 @@ class StripeGatewayController extends BaseController
         elseif($payment_form == 'tip'){
             $returnParams .= '&order_number='.$request->order_number;
         }
-        elseif($payment_form == 'tip'){
+        elseif($payment_form == 'subscription'){
             $returnParams .= '&subscription_id='.$request->subscription_id;
         }
         return $this->successResponse(url($request->serverUrl.'payment/webview/stripe_fpx'.$returnParams)); 
