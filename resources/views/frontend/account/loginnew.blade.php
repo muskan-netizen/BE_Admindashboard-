@@ -8,7 +8,7 @@
 
 <section class="wrapper-main py-lg-5">
     <div class="container">
-        <div class="row d-flex align-items-center h-100" id="login-section">
+        <div class="row  align-items-center h-100" id="login-section">
             <div class="col-lg-6 mb-lg-0 mb-3 text-center border-right pb-4 pb-sm-0">
                 <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
                 @if(session('preferences'))
