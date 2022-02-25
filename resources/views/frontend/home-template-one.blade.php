@@ -74,50 +74,6 @@
 		</div>
 		<% }); %>
 </script>
-<<<<<<< HEAD
-
-
-<script type="text/template" id="products_template">
-    <% _.each(products, function(product, k){ %>
-        <div class="product-card-box position-relative">
-            <div class="add-to-fav 12">
-                <input id="fav_pro_one" type="checkbox">
-                <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
-            </div>
-            <a class="common-product-box text-center" href="<%= product.vendor.slug %>/product/<%= product.url_slug %>">
-                <div class="img-outer-box position-relative">
-                    <img class="blur-up lazyload" data-src="<%= product.image_url %>" alt="">
-                    <div class="pref-timing">
-                        <!--<span>5-10 min</span>-->
-                    </div>
-                </div>
-                <div class="media-body align-self-center">
-                    <div class="inner_spacing px-0">
-                        <div class="product-description">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <h6 class="card_title mb-1 ellips"><%= product.title %></h6>
-                                @if($client_preference_detail)
-                                    @if($client_preference_detail->rating_check == 1)
-                                        <% if(product.averageRating > 0){%>
-                                            <span class="rating-number"><%= product.averageRating %></span>
-                                        <% } %>
-                                    @endif
-                                @endif
-                            </div>
-                            <p><%= product.vendor_name %></p>
-                            <p class="border-bottom pb-1">{{__('In')}} <%= product.category %></p>
-                            <div class="d-flex align-items-center justify-content-between">
-                                <b><% if(product.inquiry_only == 0) { %>
-                                    <%= product.price %>
-                                <% } %></b>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-    <% }); %>
-=======
 <script type="text/template" id="products_template">
 	<% _.each(products, function(product, k){ %>
 		<div class="product-card-box position-relative al">
@@ -153,7 +109,6 @@
 			</a>
 		</div>
 		<% }); %>
->>>>>>> d29d4d8a7fa3ddb0637bee718c1dba726e16bcc7
 </script>
 <script type="text/template" id="trending_vendors_template">
 	<% _.each(trending_vendors, function(vendor, k){%>
