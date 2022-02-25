@@ -133,7 +133,7 @@
             @method('POST')
                 <div class="card-box h-100 mb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">{{ __('Upload Multiple Image Tool')}}</h4>
+                        <h4 class="header-title mb-0">{{ __('Upload Multiple Files Tool')}}</h4>
                     </div>
                     <div class="row mt-2">
                         <div class="col-12">
@@ -169,8 +169,8 @@
     $(document).ready(function() {
 
         $("div#my-awesome-dropzone").dropzone({
-            acceptedFiles: ".jpeg,.jpg,.png,.svg",
-            // acceptedFiles: "image/*,application/pdf",
+            acceptedFiles: ".jpeg,.jpg,.png,.svg,.pdf",
+             //acceptedFiles: "image/*,application/pdf",
             addRemoveLinks: true,
             url: "{{route('tools.uploadImage')}}",
             // params: {
@@ -182,7 +182,12 @@
             },
             success: function(file, res) {
                 $('.al_custom_copypath').show();
-                $('.imageCopyName').append('<tr id="'+res.data.image_id+'"><td style="padding: 5px"><img src="'+res.data.image_url+'"></td><td style="padding: 5px"><a href="'+res.data.show_image_url+'" target="_blank" style="font-size: 12px;" id="image_'+res.data.image_id+'">'+res.data.image_path+' </td><td style="padding: 5px"><label class="copy_link " id="cp_btn" title="copy" data-image_id="'+res.data.image_id+'" onclick="copyUrl(this)"><img src="{{asset("assets/icons/domain_copy_icon.svg")}}" alt="" style="margin: 0"><span class="copied_txt" id="show_copy_msg_on_click_copy" style="display: none;">Copied</span> </label></td></tr>');
+                if(res.data.ext == 'pdf'){
+                    $('.imageCopyName').append('<tr id="'+res.data.image_id+'"><td style="padding: 5px"><img src="'+res.data.pdf_url+'"></td><td style="padding: 5px"><a href="'+res.data.show_image_url+'" target="_blank" style="font-size: 12px;" id="image_'+res.data.image_id+'">'+res.data.image_path+' </td><td style="padding: 5px"><label class="copy_link " id="cp_btn" title="copy" data-image_id="'+res.data.image_id+'" onclick="copyUrl(this)"><img src="{{asset("assets/icons/domain_copy_icon.svg")}}" alt="" style="margin: 0"><span class="copied_txt" id="show_copy_msg_on_click_copy" style="display: none;">Copied</span> </label></td></tr>');
+                }else{
+                    $('.imageCopyName').append('<tr id="'+res.data.image_id+'"><td style="padding: 5px"><img src="'+res.data.image_url+'"></td><td style="padding: 5px"><a href="'+res.data.show_image_url+'" target="_blank" style="font-size: 12px;" id="image_'+res.data.image_id+'">'+res.data.image_path+' </td><td style="padding: 5px"><label class="copy_link " id="cp_btn" title="copy" data-image_id="'+res.data.image_id+'" onclick="copyUrl(this)"><img src="{{asset("assets/icons/domain_copy_icon.svg")}}" alt="" style="margin: 0"><span class="copied_txt" id="show_copy_msg_on_click_copy" style="display: none;">Copied</span> </label></td></tr>');
+                }
+                
                 uploadedDocumentMap[file.name] = res.data.image_id;
                 var imageUrl = $('#pwd_spn').text();
                 //alert();
