@@ -919,7 +919,7 @@ class CartController extends FrontController
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
                 $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
                 $vendorData->delivery_fee_charges = decimal_format($delivery_fee_charges);
-                //$vendorData->delivery_fee_charges_static = number_format($delivery_fee_charges_static, 2, '.', '');;
+                //$vendorData->delivery_fee_charges_static = decimal_format($delivery_fee_charges_static);;
 
                 $vendorData->payable_amount = decimal_format($payable_amount);
                 $vendorData->discount_amount = decimal_format($discount_amount);

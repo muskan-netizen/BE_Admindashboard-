@@ -112,7 +112,7 @@ class VendorPayoutController extends BaseController{
         }
         $total_order_value = $total_order_value->sum('payable_amount') - $total_delivery_fees;
 
-        return view('backend.payment.vendor-payout')->with(['total_order_value' => number_format($total_order_value, 2), 'total_admin_commissions' => number_format($total_admin_commissions, 2)]);
+        return view('backend.payment.vendor-payout')->with(['total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions)]);
     }
 
     public function filter(Request $request){
@@ -140,15 +140,15 @@ class VendorPayoutController extends BaseController{
             $vendor->total_paid = 0.00;
             // $vendor->url = route('vendor.show', $vendor->id);
             $vendor->view_url = route('vendor.show', $vendor->id);
-            $vendor->delivery_fee = number_format($vendor->orders->sum('delivery_fee'), 2, ".","");
-            $vendor->payable_amount = number_format($vendor->orders->sum('payable_amount'),2, ".","");
-            $vendor->order_value = number_format(($vendor->payable_amount - $vendor->delivery_fee), 2, ".","");
-            // $vendor->payment_method = number_format($vendor->orders->whereIn('payment_option_id', [2,3, 4])->sum('payable_amount'), 2, ".","");
-            // $vendor->promo_admin_amount = number_format($vendor->orders->where('coupon_paid_by', 1)->sum('discount_amount'), 2, ".","");
-            // $vendor->promo_vendor_amount = number_format($vendor->orders->where('coupon_paid_by', 0)->sum('discount_amount'), 2, ".","");
-            // $vendor->cash_collected_amount = number_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount'), 2, ".","");
-            $vendor->admin_commission_amount = number_format($vendor->orders->sum('admin_commission_percentage_amount') + $vendor->orders->sum('admin_commission_fixed_amount'), 2, ".","");
-            // $vendor->vendor_earning = number_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $admin_commission_amount), 2, ".","");
+            $vendor->delivery_fee = decimal_format($vendor->orders->sum('delivery_fee'));
+            $vendor->payable_amount = decimal_format($vendor->orders->sum('payable_amount'));
+            $vendor->order_value = decimal_format(($vendor->payable_amount - $vendor->delivery_fee));
+            // $vendor->payment_method = decimal_format($vendor->orders->whereIn('payment_option_id', [2,3, 4])->sum('payable_amount'));
+            // $vendor->promo_admin_amount = decimal_format($vendor->orders->where('coupon_paid_by', 1)->sum('discount_amount'));
+            // $vendor->promo_vendor_amount = decimal_format($vendor->orders->where('coupon_paid_by', 0)->sum('discount_amount'));
+            // $vendor->cash_collected_amount = decimal_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount'));
+            $vendor->admin_commission_amount = decimal_format($vendor->orders->sum('admin_commission_percentage_amount') + $vendor->orders->sum('admin_commission_fixed_amount'));
+            // $vendor->vendor_earning = decimal_format(($vendor->orders->sum('payable_amount') - $vendor->promo_vendor_amount - $vendor->promo_admin_amount - $admin_commission_amount));
 
             $is_stripe_connected = 0;
             $checkIfStripeAccountExists = VendorConnectedAccount::where('vendor_id', $vendor->id)->first();
@@ -157,7 +157,7 @@ class VendorPayoutController extends BaseController{
             }
             $vendor->is_stripe_connected = $is_stripe_connected;
 
-            $vendor->vendor_earning = number_format(($vendor->order_value - $vendor->admin_commission_amount), 2, ".","");
+            $vendor->vendor_earning = decimal_format(($vendor->order_value - $vendor->admin_commission_amount));
         }
         return Datatables::of($vendors)
             ->addIndexColumn()
@@ -214,7 +214,7 @@ class VendorPayoutController extends BaseController{
         $client_currency = ClientCurrency::with('currency')->where('is_primary', 1)->first();
         $currency_symbol = $client_currency->currency->symbol ?? '$';
 
-        return view('backend.payment.vendorPayoutRequests')->with(['total_order_value' => number_format($total_order_value, 2), 'total_admin_commissions' => number_format($total_admin_commissions, 2), 'pending_payout_value'=>$pending_payout_value, 'completed_payout_value'=>$completed_payout_value, 'pending_payout_count'=>$pending_payout_count, 'completed_payout_count'=>$completed_payout_count, 'payout_options'=>$payout_options, 'currency_symbol'=>$currency_symbol]);
+        return view('backend.payment.vendorPayoutRequests')->with(['total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions), 'pending_payout_value'=>$pending_payout_value, 'completed_payout_value'=>$completed_payout_value, 'pending_payout_count'=>$pending_payout_count, 'completed_payout_count'=>$completed_payout_count, 'payout_options'=>$payout_options, 'currency_symbol'=>$currency_symbol]);
     }
 
     public function vendorPayoutRequestsFilter(Request $request){

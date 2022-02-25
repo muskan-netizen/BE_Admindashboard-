@@ -336,10 +336,10 @@ class OrderController extends BaseController
                         $opt_price_in_currency = $addons->option->price / $divider;
                         $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                     }
-                    $opt_quantity_price = number_format($opt_price_in_doller_compare * $product->quantity, 2, '.', '');
+                    $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $product->quantity);
                     $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
                     $addons->option->price_in_cart = $addons->option->price;
-                    $addons->option->price = number_format($opt_price_in_currency, 2, '.', '');
+                    $addons->option->price = decimal_format($opt_price_in_currency);
                     $addons->option->multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
                     $addons->option->quantity_price = $opt_quantity_price;
                     $total_amount = $total_amount + $opt_quantity_price;
@@ -1374,10 +1374,10 @@ class OrderController extends BaseController
                         $opt_price_in_currency = $addons->option->price / $divider;
                         $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
                     }
-                    $opt_quantity_price = number_format($opt_price_in_doller_compare * $product->quantity, 2, '.', '');
+                    $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $product->quantity);
                     $addons->option->translation_title = ($addons->option->translation->isNotEmpty()) ? $addons->option->translation->first()->title : '';
                     $addons->option->price_in_cart = $addons->option->price;
-                    $addons->option->price = number_format($opt_price_in_currency, 2, '.', '');
+                    $addons->option->price = decimal_format($opt_price_in_currency);
                     $addons->option->multiplier = ($clientCurrency) ? $clientCurrency->doller_compare : 1;
                     $addons->option->quantity_price = $opt_quantity_price;
                     $total_amount = $total_amount + $opt_quantity_price;

@@ -105,7 +105,7 @@ class PickupDeliveryController extends FrontController{
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product);
         $product->original_tags_price = $tags_price;
-        $product->tags_price = number_format($tags_price);
+        $product->tags_price = decimal_format($tags_price);
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
@@ -128,7 +128,7 @@ class PickupDeliveryController extends FrontController{
                 $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
             }
         }
-        $product->loyalty_amount_saved = number_format((float)$loyalty_amount_saved, 2, '.', '') ??0.00;
+        $product->loyalty_amount_saved = decimal_format((float)$loyalty_amount_saved ?? 0);
 
         if($product->loyalty_amount_saved > $product->tags_price)
         $product->loyalty_amount_saved = $product->tags_price;
@@ -184,7 +184,7 @@ class PickupDeliveryController extends FrontController{
                     $product->name = $product->translation->first() ? $product->translation->first()->title :'';
                     $product->description = $product->translation->first() ? $product->translation->first()->meta_description :'';
                     $product->original_tags_price = $tags_price;
-                    $product->tags_price = number_format($tags_price);
+                    $product->tags_price = decimal_format($tags_price);
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
                     foreach ($product->variant as $k => $v) {
                         $product->variant[$k]->price = $product->tags_price;
@@ -209,7 +209,7 @@ class PickupDeliveryController extends FrontController{
 
             $response['vendor'] = $vendor;
             $response['products'] = $products;
-            $response['loyalty_amount_saved'] = number_format((float)$loyalty_amount_saved, 2, '.', '') ??0.00;
+            $response['loyalty_amount_saved'] = decimal_format((float)$loyalty_amount_saved ?? 0 ) ;
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
