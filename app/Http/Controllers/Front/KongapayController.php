@@ -13,8 +13,11 @@ use App\Models\CartProduct;
 use App\Models\CartProductPrescription;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\User;
+use App\Models\UserVendor;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
+use Log;
 
 class KongapayController extends Controller
 {
@@ -36,47 +39,76 @@ class KongapayController extends Controller
    public function createHash(Request $request)
    {
      $time = '';
-     $user = auth()->user();
+    if(isset($request->auth_token) && !empty($request->auth_token)){
+      $user = User::where('auth_token', $request->auth_token)->first();
+      Auth::login($user);
+    }else{
+      $user = auth()->user();
+    }
      $name = explode(' ',$user->name);
      $returnUrl = '';
      if($request->from == 'cart')
      {
       $request->amt = $request->amt*100;
       $time = $request->order_number;
-      $returnUrl = route('kongapay.successCart');
+
+      if(isset($request->app) && !empty($request->app))
+      {
+        $returnUrl = route('kongapay.successCart',['from'=>'?auth_token='.$request->auth_token]);
+      }else{ 
+        $returnUrl = route('kongapay.successCart');
+      }
+
      }elseif($request->from == 'wallet')
      {
-      $time = 'W_'.time();
+      $time = ($request->transaction_id)??'W_'.time();
       //Save transaction before payment success for get information only
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d')]);
-
       $request->amt = $request->amt*100;
-      $returnUrl = route('kongapay.successWallet');
+
+      if(isset($request->app) && !empty($request->app))
+      {
+        $returnUrl = route('kongapay.successWallet',['transaction_id='.$time]);
+      }else{ 
+        $returnUrl = route('kongapay.successWallet');
+      }
+
      }elseif($request->from == 'tip')
      {
       $time = 'T_'.time().'_'.$request->order_number;
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d')]);
      
       $request->amt = $request->amt*100;
-      $returnUrl = route('kongapay.successTip');
+      if(isset($request->app) && !empty($request->app))
+      {
+        $returnUrl = route('kongapay.successTip',['subscription_id='.$time]);
+      }else{ 
+        $returnUrl = route('kongapay.successTip');
+      }
+      
      }elseif($request->from == 'subscription')
      {
-      $time = 'S_'.time().'_'.$request->subsid;
+      $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
 
       $request->amt = number_format($request->amt,2)*100;
-      $returnUrl = route('kongapay.successSubs');
-     }elseif($request->from == 'app')
-     {
-      $request->amt = $request->amt*100;
-      $time = $request->order_number;
-      $returnUrl = route('kongapay.successCart',['from'=>'app=1']);
-     }   
+      
+      if(isset($request->app) && !empty($request->app))
+      {
+        $returnUrl = route('kongapay.successSubs',['subscription_id='.$time]);
+      }else{ 
+        $returnUrl = route('kongapay.successSubs');
+      }
+
+
+     
+     }
+       
      $key = $request->amt.'|'.$this->api_key.'|'.$time;
 
      //Need to save entry in payment table
 
-     $data = array(
+     $data = (object)array(
             "hash"=> hash('Sha512',$key),
             "amount"=> $request->amt??0,
             "description"=> "web payment",
@@ -90,14 +122,14 @@ class KongapayController extends Controller
             "callback" => $returnUrl,
             "customerId" => $user->email
         );
-
       return json_encode($data);
    }  
 
 
    public function webViewPay(Request $request)
    {
-    $request['from']='app';
+    // $data = $request->all();
+    $request['from']=$request->from;
     $request['amt']=$request->amount??'100';
     $request['order_number']=$request->order_no??time(); // order no
     $data = json_decode($this->createHash($request));
@@ -117,14 +149,43 @@ class KongapayController extends Controller
     return view('frontend.payment_gatway.kongapay_view', compact('inputs'));
    }
 
+   public function kongapayPurchase(Request $request)
+   {
+       $amount = $request->amount;
+       $user = auth()->user();
+       $action = isset($request->action) ? $request->action : ''; 
+       $params = '?amount=' . $amount.'&auth_token='.$user->auth_token.'&from='.$action;
+       if($action == 'cart'){
+           $params = $params . '&order_no=' . $request->order_number.'&app=1';
+       }elseif($action == 'wallet'){
+         //app = 2 is for wallet
+        $params = $params .'&app=2&transaction_id=W_'.time();
+       }elseif($action == 'subscription'){
+        //app = 2 is for wallet
+       $params = $params .'&app=3&subscription_id='.'S_'.time().'_'.$request->subscription_id;
+      }
+
+       return $this->successResponse(url($request->serverUrl.'payment/kongapay/api/'.$params)); 
+   }
 
    public function completeOrderCart(Request $request)
     {
+      // if(isset($request->auth_token) && !empty($request->auth_token))
+      //   {
+      //       $user = User::where('auth_token', $request->auth_token)->first();
+      //       Auth::login($user);
+      //   }
       $order = Order::where('order_number',$request->merchant_reference)->first();
-          if(isset($request->merchant_reference) && $request->code=='00' && $request->status == 'success')
+          if(isset($request->merchant_reference) && $request->status == 'success')
           {
+           
             $order->payment_status = '1';
             $order->save();
+
+            // Auto accept order
+            $orderController = new OrderController();
+            $orderController->autoAcceptOrderIfOn($order->id);
+
             $cart = Cart::where('user_id',auth()->id())->select('id')->first();
             $cartid = $cart->id;
             Cart::where('id', $cartid)->update([
@@ -135,15 +196,43 @@ class KongapayController extends Controller
             CartCoupon::where('cart_id', $cartid)->delete();
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
+
             Payment::create(['amount'=>0,'transaction_id'=>$request->merchant_reference,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id]);
+
+             // Send Notification
+             if (!empty($order->vendors)) {
+              foreach ($order->vendors as $vendor_value) {
+                  $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                  $user_vendors = UserVendor::where(['vendor_id' => $vendor_value->vendor_id])->pluck('user_id');
+                  $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+              }
+          }
+          $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+          $super_admin = User::where('is_superadmin', 1)->pluck('id');
+          $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
+          if(isset($request->auth_token) && !empty($request->auth_token))
+          {
+            $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order->order_number;
+            return Redirect::to($returnUrl); 
+          }else{
             return Redirect::to(route('order.success',[$order->id]));
+          }
+
           }else{
             $user = auth()->user();
             $wallet = $user->wallet;
             if(isset($order->wallet_amount_used)){
               $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
             }
-            return Redirect::to(route('showCart'))->with('error',$request->message);
+            if(isset($request->auth_token) && !empty($request->auth_token))
+            {
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&order='.$order->order_number;
+              return Redirect::to($returnUrl);  
+            }else{
+              return Redirect::to(route('showCart'))->with('error',$request->message);
+            }
+
           }
 
         return $this->successResponse($request->getTransactionReference());
@@ -153,18 +242,35 @@ class KongapayController extends Controller
 
     public function completeOrderWallet(Request $request)
     {
-          if(isset($request->merchant_reference) && $request->code=='00' && $request->status == 'success')
+          if(isset($request->merchant_reference) && $request->status == 'success')
           {
             $data = Payment::where('transaction_id',$request->merchant_reference)->first();
             $user = auth()->user();
             $wallet = $user->wallet;
             $wallet->depositFloat($data->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $request->merchant_reference . '</b>']);
 
-            return Redirect::to(route('user.wallet'));
+            if(isset($request->transaction_id) && !empty($request->transaction_id))
+            {
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=wallet';
+              return Redirect::to($returnUrl); 
+            }else{
+              return Redirect::to(route('user.wallet'));
+            }
+
+            
           }else{
             $data = Payment::where('transaction_id',$request->merchant_reference)->first();
             $data->delete();
-            return Redirect::to(route('user.wallet'))->with('error',$request->message);
+
+            if(isset($request->transaction_id) && !empty($request->transaction_id))
+            {
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=wallet';
+              return Redirect::to($returnUrl); 
+            }else{
+              return Redirect::to(route('user.wallet'))->with('error',$request->message);
+            }
+
+           
           }
         return $this->successResponse($request->getTransactionReference());
 
@@ -175,16 +281,31 @@ class KongapayController extends Controller
     {
       $user = auth()->user();
       $data = Payment::where('transaction_id',$request->merchant_reference)->first();
-      if(isset($request->merchant_reference) && $request->code=='00' && $request->status == 'success')
+      if(isset($request->merchant_reference) && $request->status == 'success')
           {
             $subscription = explode('_',$request->merchant_reference);
             $request->request->add(['user_id' => $user->id, 'payment_option_id' => 20, 'amount' => $data->balance_transaction, 'transaction_id' => $request->merchant_reference]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription[2]);
-            return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
+
+            if(isset($request->subscription_id) && !empty($request->subscription_id))
+            {
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->merchant_reference.'&action=subscription';
+              return Redirect::to($returnUrl); 
+            }else{
+              return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
+            }
           }else{
             $data->delete();
-            return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
+
+            if(isset($request->subscription_id) && !empty($request->subscription_id))
+            {
+              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=subscription';
+              return Redirect::to($returnUrl); 
+            }else{
+              return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
+            }
+
           }
         return $this->successResponse($request->getTransactionReference());
 
@@ -193,7 +314,7 @@ class KongapayController extends Controller
     public function completeOrderTip(Request $request)
     {
       $data = Payment::where('transaction_id',$request->merchant_reference)->first();
-      if(isset($request->merchant_reference) && $request->code=='00' && $request->status == 'success')
+      if(isset($request->merchant_reference) && $request->status == 'success')
           {
             $order_number = explode('_',$request->merchant_reference);
             $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $request->merchant_reference]);

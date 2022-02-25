@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Campaign, CampaignRoster, Celebrity, Brand, Country, User, UserVendor, Client, Timezone, UserDevice };
+use App\Models\{Campaign, CampaignRoster, Celebrity, Brand, Category, Country, User, UserVendor, Client, Timezone, UserDevice, Vendor};
 use Carbon\Carbon;
 
 class CampaignController extends BaseController
@@ -18,6 +18,27 @@ class CampaignController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function index(){ 
+
+        // $sendto = "testu00091@gmail.com";
+        // $subject = "Test subject for email notification";
+        // $body = "test body message";
+
+        // $email_data = [
+        //     // 'code' => '1324',
+        //     // 'link' => "link",
+        //     'email' => $sendto,
+        //     'mail_from' => 'testu00091@gmail.com',
+        //     // 'client_name' => 'XYZ',
+        //     //'logo' => $client->logo['original'],
+        //     'subject' => $subject,
+        //     //'customer_name' => ucwords($user->name),
+        //     'email_template_content' => $body,
+        //     // 'cartData' => $cartDetails,
+        //     // 'user_address' => $address,
+        // ];
+        // $email_data['send_to_cc'] = 0;
+        // dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+
         //return $vendors = UserVendor::select('user_id')->with('user')->groupBy('user_id')->get();
         $campaigns = Campaign::all();
         return view('backend.campaign.index')->with(['campaigns' => $campaigns]);
@@ -56,7 +77,7 @@ class CampaignController extends BaseController
             $campaign->sms_text = $request->sms_text;
         }elseif($request->type==2)
         {
-            $campaign->email_title = $request->email_title;
+            // $campaign->email_title = $request->email_title;
             $campaign->email_subject = $request->email_subject;
             $campaign->email_body = $request->email_body;
         }else{
@@ -167,6 +188,32 @@ class CampaignController extends BaseController
         }
     }
 
+    public function GetPushOptions(Request $request)
+    {
+        $pushoption =  $request->pushvalue;
+        $html='<select class="form-control" name="push_url_option_value" id="push_url_option_value"> ';
+        if($pushoption==2)  //categories        
+        {
+            $getcategories = Category::where('status',1)->with('translation_one')->get(['id','slug']);            
+            foreach($getcategories as $singlecategory)
+            {
+                $html .= '<option value="'.$singlecategory->id.'">'.$singlecategory->translation_one->name.'</option>';
+            }
+        }elseif($pushoption==3) //vendors
+        {
+            $getvendors = Vendor::where('status',1)->get(['id','name','slug']);
+            foreach($getvendors as $singlevendor)
+            {
+                $html .= '<option value="'.$singlevendor->id.'">'.$singlevendor->name.'</option>';
+            }
+        }else{
+
+        }
+        $html .= '</select>';
+        $result = array('html'=>$html);
+        echo json_encode($result);
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -216,7 +263,7 @@ class CampaignController extends BaseController
             'message' => 'Celebrity created Successfully!',
             'data' => $celebrity
         ]);
-}
+    }
 
     /**
      * Remove the specified resource from storage.

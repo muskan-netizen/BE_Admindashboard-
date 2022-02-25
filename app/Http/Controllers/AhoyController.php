@@ -13,6 +13,7 @@ use App\Models\VendorOrderDispatcherStatus;
 use App\Models\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Log;
 
 class AhoyController extends Controller
 {
@@ -119,8 +120,8 @@ class AhoyController extends Controller
                 "orderLargeBoxQuantity"=> '0',
                 "orderMidBoxQuantity"=> '1',
                 "orderSmallBoxQuantity"=> '0',
-                'customerName' => $customer->name,  //97 code is only for dubai and it's required
-				'customerPhone' => $customer->dial_code??'97'.$customer->phone_number,
+                'customerName' => $customer->name,  //+97 code is only for dubai and it's required
+				'customerPhone' => $customer->dial_code??'+97'.$customer->phone_number,
 				'customerEmail' => $customer->email,
                 'customerAddress'=> $cus_address->address,
 				'customerLatitude' => $cus_address->latitude, //Required
@@ -139,7 +140,8 @@ class AhoyController extends Controller
 
 
     	    $orderSuc = $this->createPreOrder($data);
-            if($orderSuc->preOrderId != ''){
+            \Log::info(json_encode($orderSuc));
+            if(isset($orderSuc->preOrderId) && !empty($orderSuc->preOrderId)){
                 return $this->confirmOrderPreRequestAhoy($orderSuc);
             }else{
                 return 0;
@@ -205,7 +207,7 @@ class AhoyController extends Controller
                 "orderMidBoxQuantity"=> '1',
                 "orderSmallBoxQuantity"=> '0',
                 'customerName' => $customer->name,
-				'customerPhone' => '+97'.$customer->phone_number,
+				'customerPhone' => $customer->dial_code??'+97'.$customer->phone_number,
 				'customerEmail' => $customer->email,
                 'customerAddress'=> $cus_address->address,
 				'customerLatitude' => $cus_address->latitude, //Required
@@ -223,7 +225,7 @@ class AhoyController extends Controller
             );
 
             $orderSuc = $this->createPreOrder($data);
-
+            \Log::info(json_encode($orderSuc));
             if($orderSuc->preOrderId != ''){
                 return $orderSuc->onDemand->price;
             }else{
@@ -245,7 +247,7 @@ class AhoyController extends Controller
                 'latitude'=>$vendor_details->latitude ?? '',
                 'longitude'=>$vendor_details->longitude ?? '',
                 'locationType'=>$request->location_type??1,
-                'PhoneNumber'=>$vendor_details->phone_no ?? '',
+                'PhoneNumber'=>'97'.$vendor_details->phone_no ?? '',
                 'Email'=>$vendor_details->email ?? ''
             );
             //dd($data);
