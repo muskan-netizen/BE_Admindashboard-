@@ -72,14 +72,7 @@ class User extends Authenticatable implements Wallet, WalletFloat
     public function device(){
        return $this->hasMany('App\Models\UserDevice');
     }
-    /*
-    bucketname:- royoorders2.0-assets
-
-        IAM user:-royoorders2.0S3Access
-        Access key ID:- AKIAUDRAUVRKEJPQVO4C
-        Secret access key :- 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
-
-    */
+   
 
     public function getImageAttribute($value)
     {
