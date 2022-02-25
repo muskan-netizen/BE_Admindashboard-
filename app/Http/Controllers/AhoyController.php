@@ -121,7 +121,7 @@ class AhoyController extends Controller
                 "orderMidBoxQuantity"=> '1',
                 "orderSmallBoxQuantity"=> '0',
                 'customerName' => $customer->name,  //+97 code is only for dubai and it's required
-				'customerPhone' => $customer->dial_code??'+97'.$customer->phone_number,
+				'customerPhone' => ($customer->dial_code??'+97').$customer->phone_number,
 				'customerEmail' => $customer->email,
                 'customerAddress'=> $cus_address->address,
 				'customerLatitude' => $cus_address->latitude, //Required
@@ -207,7 +207,7 @@ class AhoyController extends Controller
                 "orderMidBoxQuantity"=> '1',
                 "orderSmallBoxQuantity"=> '0',
                 'customerName' => $customer->name,
-				'customerPhone' => $customer->dial_code??'+97'.$customer->phone_number,
+				'customerPhone' => ($customer->dial_code??'+97').$customer->phone_number,
 				'customerEmail' => $customer->email,
                 'customerAddress'=> $cus_address->address,
 				'customerLatitude' => $cus_address->latitude, //Required
@@ -223,7 +223,6 @@ class AhoyController extends Controller
                 "unit"=> null,
                 "temperatureTypeId"=> 0
             );
-
             $orderSuc = $this->createPreOrder($data);
             \Log::info(json_encode($orderSuc));
             if($orderSuc->preOrderId != ''){
