@@ -215,7 +215,7 @@
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
                                                                     <?php $multiply = $new['variant_multiplier']; ?>
-                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                    {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                 @endif
                                                             </b>
 
@@ -339,7 +339,7 @@
 
                                                                     <div class="d-flex align-items-center justify-content-between">
                                                                         @if($data['inquiry_only'] == 0)
-                                                                            <h4 class="mt-0">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                            <h4 class="mt-0">{{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                         @endif
                                                                       <!--   @if($client_preference_detail)
                                                                             @if($client_preference_detail->rating_check == 1)

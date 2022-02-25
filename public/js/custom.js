@@ -2492,7 +2492,7 @@ $(document).ready(function() {
                 if (response.status == 'Success') {
                     $("#product_addon_modal .modal-content").html('');
                     let addon_template = _.template($('#addon_template').html());
-                    $("#product_addon_modal .modal-content").append(addon_template({ addOnData: response.data }));
+                    $("#product_addon_modal .modal-content").append(addon_template({Helper: NumberFormatHelper, addOnData: response.data }));
                     $("#product_addon_modal").modal('show');
                 } else {
                    // alert(response.message);

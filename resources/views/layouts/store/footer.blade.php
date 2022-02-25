@@ -156,10 +156,15 @@
     var NumberFormatHelper = { formatPrice: function(x,format=1){
         if(x){
             var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
-            x = parseFloat(x).toFixed(digit_count);
+            if(digit_count)
+            {
+                x = parseFloat(x).toFixed(digit_count);
+            }
             if(format == 1)
             {
-                return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                var parts = x.split(".");
+                return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ((parts[1] !== undefined) ? "." + parts[1] : "");
+                // return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         }
         return x;
