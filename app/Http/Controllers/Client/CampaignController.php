@@ -111,7 +111,7 @@ class CampaignController extends BaseController
             {
                 $users = User::where(['status'=>1])->get();
                 $getusercount = count($users);                
-                $totalbatches = round($getusercount/$request->request_user_count);
+                $totalbatches = ceil($getusercount/$request->request_user_count);
                 for ($i=1;$i<=$totalbatches;$i++)
                 {
                     $usercount = $request->request_user_count;
@@ -148,7 +148,7 @@ class CampaignController extends BaseController
                 $vendors = UserVendor::select('user_id')->with('user')->groupBy('user_id')->get();
                 $getusercount = count($vendors);                
                 $usercount = $request->request_user_count;
-                $totalbatches = round($getusercount/$usercount);
+                $totalbatches = ceil($getusercount/$usercount);
                 for ($i=1;$i<=$totalbatches;$i++)
                 {                    
                     if($i==1)
