@@ -383,7 +383,8 @@ class UserhomeController extends FrontController
                 Session::put('longitude', $longitude);
                 Session::put('selectedAddress', $selectedAddress);
             } else {
-                if (($latitude == $preferences->Default_latitude) && ($longitude == $preferences->Default_longitude)) {
+
+                if ($preferences && ($latitude == $preferences->Default_latitude) && ($longitude == $preferences->Default_longitude)) {
                     Session::put('selectedAddress', $preferences->Default_location_name);
                 }
             }
