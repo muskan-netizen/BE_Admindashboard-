@@ -191,7 +191,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="request_time_gap" class="control-label">{{__("Request Time Gap(in minutes)")}}</label>
-                                    <input type="text" class="form-control" name="request_time_gap" id="request_time_gap" value="5">
+                                    <input type="text" class="form-control" name="request_time_gap" id="request_time_gap" value="1">
                                     <span class="invalid-feedback" role="alert">
                                         <strong></strong>
                                     </span>
