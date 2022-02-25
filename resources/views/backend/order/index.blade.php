@@ -429,8 +429,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     function autoloaddashboad(){
         //console.log('dasd');
         var typ=  $("a.nav-link.active").data('rel');
+        console.log('kuch bhi');
         init(typ, "{{ route('orders.filter') }}", '', false);
-
+        
     }
 
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
@@ -477,6 +478,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     $("#history-orders").html("(" + response.data.orders_history + ")");
 
                  }
+                 
                  setTimeout(autoloaddashboad(), 15000);
             },
             error: function(data) {
