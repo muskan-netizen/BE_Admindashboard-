@@ -147,7 +147,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         </div>
     </nav>
 
-    <nav class="al_new_mobile_header d-sm-inline d-block d-sm-none">
+    <nav class="al_new_mobile_header d-block d-sm-none">
         <div class="al_new_mobile_header_top d-flex justify-content-between">
             <a class="navbar-brand mr-xl-3 mr-0" style="min-width:150px;" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
             <div class="al_mobile_menu">
