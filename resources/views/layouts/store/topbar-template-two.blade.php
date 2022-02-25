@@ -290,7 +290,7 @@ $preference = $client_preference_detail;
 
     </nav>
 
-    <div class="mobile-menu main-menu  position-fixed  d-none">
+    <div class="mobile-menu main-menu position-fixed d-none">
         <div class="menu-right_">
             <ul class="header-dropdown icon-nav d-flex justify-content-around">
                 <li class="onhover-div mobile-setting">
