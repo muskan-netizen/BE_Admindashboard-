@@ -153,18 +153,18 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         </div>
     </div>
 
-    <div class="mobile-menu main-menu d-block d-sm-none">
-        <div class="menu-right">
-            <ul class="header-dropdown icon-nav">
+    <div class="mobile-menu main-menu position-fixed d-block d-sm-none">
+        <div class="menu-right_">
+            <ul class="header-dropdown icon-nav d-flex justify-content-around">
                 <li class="onhover-div mobile-setting">
                     <div data-toggle="modal" data-target="#setting_modal"><i class="ti-settings"></i></div>
                     <!-- <div class="show-div setting">
-                        <h6>{{ __("language") }}</h6>
+                        <h6>language</h6>
                         <ul>
                             <li><a href="#">english</a></li>
-                            <li><a href="#">{{ __("french") }}</a></li>
+                            <li><a href="#">french</a></li>
                         </ul>
-                        <h6>{{ __("currency") }}</h6>
+                        <h6>currency</h6>
                         <ul class="list-inline">
                             @foreach($currencyList as $key => $listc)
                                 <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
@@ -184,20 +184,28 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 <li class="onhover-dropdown mobile-account  d-inline d-sm-none"> <i class="fa fa-user" aria-hidden="true"></i>
                     {{__('My Account')}}
                     <ul class="onhover-show-div">
-                        @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
+                        @if(Auth::user())
+                            @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
+                                <li>
+                                    <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                </li>
+                            @endif
                             <li>
-                                <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
                             </li>
+                            <li>
+                                <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
+                            </li>
+                        @else
+                        <li>
+                            <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
+                        </li>
+                        <li>
+                            <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
+                        </li>
                         @endif
-                        <li>
-                            <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
-                        </li>
-                        <li>
-                            <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
-                        </li>
                     </ul>
                 </li>
-
                 @if($client_preference_detail->show_wishlist == 1)
                 <li class="mobile-wishlist d-inline d-sm-none">
                     <a href="{{route('user.wishlists')}}">
@@ -205,25 +213,18 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     </a>
                 </li>
                 @endif
-
-                <li class="onhover-div mobile-search">
-                    <a href="javascript:void(0);" id="mobile_search_box_btn"><i class="ti-search"></i></a>
+                <li class="onhover-div al_mobile-search">
+                    <a href="javascript:void(0);" id="mobile_search_box_btn" onClick="$('.search-overlay').css('display','block');"><i class="ti-search"></i></a>
                     <div id="search-overlay" class="search-overlay">
                         <div> <span class="closebtn" onclick="closeSearch()" title="Close Overlay">×</span>
-                            <div class="overlay-content">
-                                <div class="container">
-                                    <div class="row">
-                                        <div class="col-xl-12">
-                                            <form>
-                                                <div class="form-group">
-                                                    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Search a Product">
-                                                </div>
-                                                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                                            </form>
-                                        </div>
-                                    </div>
+                        <div class="overlay-content w-100">
+                            <form>
+                                <div class="form-group m-0">
+                                    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Search a Product">
                                 </div>
-                            </div>
+                                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                            </form>
+                        </div>
                         </div>
                     </div>
                 </li>
@@ -234,7 +235,6 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         <i class="ti-shopping-cart"></i>
                         <span class="cart_qty_cls" style="display:none"></span>
                     </a>
-                    {{--<span class="cart_qty_cls" style="display:none"></span>--}}
                     <ul class="show-div shopping-cart">
                     </ul>
                 </li>
