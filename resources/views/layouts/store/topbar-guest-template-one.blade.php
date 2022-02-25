@@ -6,15 +6,15 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 
 @endphp
-<div class="top-header site-topbar">
+<div class="top-header site-topbar al_template_one">
     <div class="container">
         <div class="row align-items-center justify-content-center">
-            <div class="col-4">
+            <div class="col-5">
                 <div class="d-flex align-items-center justify-content-start">
                     <a class="navbar-brand mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
-                            <div class="location-bar d-none d-sm-flex align-items-center justify-content-start my-2 my-lg-0 order-1" href="#edit-address" data-toggle="modal">
+                            <div class="location-bar d-none d-sm-flex align-items-center justify-content-start my-2 my-lg-0" href="#edit-address" data-toggle="modal">
                                 <div class="map-icon mr-1"><span>{{__('Delivering To')}}</span> <i class="fa fa-map-marker" aria-hidden="true"></i></div>
                                 <div class="homepage-address text-left">
                                     <h2><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
@@ -27,7 +27,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     @endif
                 </div>
             </div>
-            <div class="col-8 d-none text-right pr-0">
+            <div class="col-7 d-none text-right pr-0">
                 <div class="icon-nav">
                     <ul>
                         <li class="d-inline-block d-lg-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li>
@@ -130,13 +130,11 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <div class="show-div setting">
                         <h6>language</h6>
                         <ul>
-                            @foreach($languageList as $key => $listl)
-                                <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
-                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
-                                </li>
-                            @endforeach
-                            {{-- <li><a href="#">english</a></li>
-                            <li><a href="#">french</a></li> --}}
+                        @foreach($languageList as $key => $listl)
+                            <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
+                                <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                            </li>
+                        @endforeach
                         </ul>
                         <h6>currency</h6>
                         <ul class="list-inline">

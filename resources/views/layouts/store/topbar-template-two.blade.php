@@ -9,10 +9,10 @@ $preference = $client_preference_detail;
 
 <div class="top-header site-topbar al_custom_head">
     <nav class="navbar navbar-expand-lg p-0">
-        <div class="container">
+        <div class="container p-0">
             <div class="row d-flex align-items-center justify-content-between w-100">
 
-                <div class="col-sm-10 col-lg-6 d-flex align-items-center justify-content-start"  data-aos="zoom-in">
+                <div class="col col-lg-6 d-flex align-items-center justify-content-start"  data-aos="zoom-in">
                     <a class="navbar-brand mr-xl-3 mr-0" style="min-width:150px;" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     <div class=" al_custom_head_map_box px-2 py-1 d-inline-flex align-items-center justify-content-start">
                         @if(isset($preference))
@@ -33,7 +33,7 @@ $preference = $client_preference_detail;
                     </div>
                 </div>
 
-                <div class="col-sm-2 col-lg-6 text-right ml-auto al_z_index" data-aos="zoom-in">
+                <div class="col-2 col-lg-6 text-right ml-auto al_z_index p-0" data-aos="zoom-in">
                     @php
                     $applocale = 'en';
                     if(session()->has('applocale')){
@@ -246,12 +246,13 @@ $preference = $client_preference_detail;
             </div>
         </div>
     </nav>
-    <div class="mobile-menu main-menu d-block d-sm-none" data-aos="zoom-in">
-        <div class="menu-right">
-            <ul class="header-dropdown icon-nav">
+
+    <div class="mobile-menu main-menu position-fixed d-block d-sm-none">
+        <div class="menu-right_">
+            <ul class="header-dropdown icon-nav d-flex justify-content-around">
                 <li class="onhover-div mobile-setting">
-                    <div><i class="ti-settings"></i></div>
-                    <div class="show-div setting">
+                    <div data-toggle="modal" data-target="#setting_modal"><i class="ti-settings"></i></div>
+                    <!-- <div class="show-div setting">
                         <h6>language</h6>
                         <ul>
                             <li><a href="#">english</a></li>
@@ -271,7 +272,7 @@ $preference = $client_preference_detail;
                             <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
                         </ul>
                         @endif
-                    </div>
+                    </div> -->
                 </li>
 
                 <li class="onhover-dropdown mobile-account  d-inline d-sm-none"> <i class="fa fa-user" aria-hidden="true"></i>
@@ -306,24 +307,18 @@ $preference = $client_preference_detail;
                     </a>
                 </li>
                 @endif
-                <li class="onhover-div mobile-search">
-                    <a href="javascript:void(0);" id="mobile_search_box_btn"><i class="ti-search"></i></a>
+                <li class="onhover-div al_mobile-search">
+                    <a href="javascript:void(0);" id="mobile_search_box_btn" onClick="$('.search-overlay').css('display','block');"><i class="ti-search"></i></a>
                     <div id="search-overlay" class="search-overlay">
                         <div> <span class="closebtn" onclick="closeSearch()" title="Close Overlay">×</span>
-                            <div class="overlay-content">
-                                <div class="container">
-                                    <div class="row">
-                                        <div class="col-xl-12">
-                                            <form>
-                                                <div class="form-group">
-                                                    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Search a Product">
-                                                </div>
-                                                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                                            </form>
-                                        </div>
-                                    </div>
+                        <div class="overlay-content w-100">
+                            <form>
+                                <div class="form-group m-0">
+                                    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Search a Product">
                                 </div>
-                            </div>
+                                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                            </form>
+                        </div>
                         </div>
                     </div>
                 </li>
@@ -341,10 +336,4 @@ $preference = $client_preference_detail;
             </ul>
         </div>
     </div>
-
-
-
 </div>
-
-
-

@@ -13,10 +13,10 @@ $preference = $client_preference_detail;
     }
 </style>
 
-<div class="top-header site-topbar al">
+<div class="top-header site-topbar al_template_one">
     <div class="container">
         <div class="row align-items-center justify-content-between">
-            <div class="col-sm-4 mb-2 mb-sm-0">
+            <div class="col-sm-4">
                 <div class="d-flex align-items-center justify-content-lg-start">
                     <a class="navbar-brand mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     @if(isset($preference))
@@ -260,8 +260,11 @@ $preference = $client_preference_detail;
         <div class="show-div setting">
             <h6 class="mb-1">{{ __("language") }}</h6>
             <ul>
-                <li><a href="#">english</a></li>
-                <li><a href="#">{{ __("french") }}</a></li>
+                @foreach($languageList as $key => $listl)
+                    <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
+                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                    </li>
+                @endforeach
             </ul>
             <h6 class="mb-1">{{ __("currency") }}</h6>
             <ul class="list-inline">
