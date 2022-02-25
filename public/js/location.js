@@ -283,7 +283,7 @@ $(document).ready(function () {
                         layouts.forEach(function(obj, index) {
                             setTimeout(function(){
                                 myFunctionGetDataHomePage(obj, index);
-                            }, 2000 * (index + 1));
+                            }, 1000 * (index + 1));
                         });
 
                         
