@@ -2,6 +2,7 @@
 
 @section('css')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('content')
@@ -162,6 +163,7 @@
 @section('script')
 {{-- <script src="https://www.gstatic.com/firebasejs/5.5.9/firebase.js"></script> --}}
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
     var login_via_username_url = "{{route('customer.loginViaUsername')}}";
     var forgot_password_url = "{{route('customer.forgotPass')}}";
@@ -346,8 +348,27 @@
                 }, error: function (error) {
                     var response = $.parseJSON(error.responseText);
                     // let error_messages = response.message;
-                    $("#error-msg").html(response.message);
-                    $("#error-msg").show();
+
+                    if((response.data.user_exists != undefined) && (response.data.user_exists == false)){
+                        Swal.fire({
+                            title: "{{__('User Not Found')}}",
+                            text: response.message,
+                            icon: 'info',
+                            iconColor: '{{getClientPreferenceDetail()->web_color}}',
+                            showCancelButton: true,
+                            confirmButtonText: 'Signup',
+                            confirmButtonColor: '{{getClientPreferenceDetail()->web_color}}'
+                        }).then((result) => {
+                            if(result.value)
+                            {
+                                window.location.href = "{{ route('customer.register') }}";
+                            }
+                        });
+                    }
+                    else{
+                        $("#error-msg").html(response.message);
+                        $("#error-msg").show();
+                    }
                 }
             });
         }
