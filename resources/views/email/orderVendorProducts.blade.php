@@ -19,7 +19,7 @@
                       </div>
                       <div class="flex-set" style="display:block; justify-content:space-between; flex-direction:column; height:60px;padding: 0 0 0 15px;">
                         <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;">{{$vendor_product['product']['translation_one']['title']}}</h3>
-                         <p style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0;"> <span style="color: #777777;">{{__('Item price')}} : </span> {{ $currencySymbol . number_format(($vendor_product['pvariant']['price']*$vendor_product['quantity']), 2, '.', '')}}</p>
+                         <p style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0;"> <span style="color: #777777;">{{__('Item price')}} : </span> {{ $currencySymbol . decimal_format(($vendor_product['pvariant']['price']*$vendor_product['quantity']))}}</p>
                       </div>
                    </div>
                 </td>
@@ -27,7 +27,7 @@
                 <td style="width: 35%;padding: 10px 0;  text-align: right;">
                     <div class="flex-set-scd" style="display: block; justify-content: end; align-items: end; flex-direction: column; height: 60px;">
                         {{-- <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;"># 231</h3> --}}
-                      <p style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0;padding: 50px 0 0;"> <span style="color: #777777;">{{__('Item price')}} : </span> {{ $currencySymbol . number_format($vendor_product['pvariant']['price'], 2, '.', '')}}</p>
+                      <p style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0;padding: 50px 0 0;"> <span style="color: #777777;">{{__('Item price')}} : </span> {{ $currencySymbol . decimal_format($vendor_product['pvariant']['price'])}}</p>
                    </div>
                    @php
                    $total_products += $vendor_product['pvariant']['price'];
@@ -42,31 +42,31 @@
              <tr>
                 <td style="text-align: left;"><b>{{__('Subtotal')}}:</b></td>
                 <td></td>
-                <td style="text-align: right;">{{$currencySymbol . number_format($total_products, 2, '.', '')}}</td>
+                <td style="text-align: right;">{{$currencySymbol . decimal_format($total_products)}}</td>
              </tr>
 
              <tr>
                 <td style="text-align: left;"><b>{{__('TAX')}}:</b></td>
                 <td></td>
-                <td style="text-align: right;">{{$currencySymbol . number_format($product['taxable_amount'], 2, '.', '')}}</td>
+                <td style="text-align: right;">{{$currencySymbol . decimal_format($product['taxable_amount'])}}</td>
              </tr>
 
              <tr>
                 <td style="text-align: left;"><b>{{__('SHIPPING Charge')}}:</b></td>
                 <td></td>
-                <td style="text-align: right;">{{$currencySymbol . number_format($product['delivery_fee_charges'], 2, '.', '')}}</td>
+                <td style="text-align: right;">{{$currencySymbol . decimal_format($product['delivery_fee_charges'])}}</td>
              </tr>
 
              <tr>
                 <td style="text-align: left;"><b>{{__('Discount')}}:</b></td>
                 <td></td>
-                <td style="text-align: right;">{{$currencySymbol . number_format($product['discount_amount'], 2, '.', '')}}</td>
+                <td style="text-align: right;">{{$currencySymbol . decimal_format($product['discount_amount'])}}</td>
              </tr>
              
              <tr>
                 <td style="text-align: left;"><b>{{__('Total')}}:</b></td>
                 <td></td>
-                <td style="text-align: right;">{{$currencySymbol . number_format($product['payable_amount'], 2, '.', '')}}</td>
+                <td style="text-align: right;">{{$currencySymbol . decimal_format($product['payable_amount'])}}</td>
              </tr>
             
             

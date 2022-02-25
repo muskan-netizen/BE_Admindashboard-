@@ -57,7 +57,7 @@
                   <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">x 1</p> --}}
                </td>
                <td style="width: 35%;padding: 15px 0 10px;  text-align: right;">
-                  <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{ $currencySymbol . number_format(($vendor_product['pvariant']['price']), 2, '.', '')}}</h3>
+                  <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 0 0 3px;">{{ $currencySymbol . decimal_format(($vendor_product['pvariant']['price']))}}</h3>
                   @if(count($vendor_product['addon']))
                      @foreach ($vendor_product['addon'] as $addon)
                      @php
@@ -65,7 +65,7 @@
                      @endphp
                      {{-- <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p>
                      <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p> --}}
-                     <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 5px 0 0;padding: 5px 0 0;color: #000000;display: inline-block;border-top: 1px solid #ddd;min-width: 80px;">{{ $currencySymbol . number_format(($vendor_product['pvariant']['price']*$vendor_product['quantity']), 2, '.', '')}}</h3>
+                     <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 5px 0 0;padding: 5px 0 0;color: #000000;display: inline-block;border-top: 1px solid #ddd;min-width: 80px;">{{ $currencySymbol . decimal_format(($vendor_product['pvariant']['price']*$vendor_product['quantity']))}}</h3>
                      @endforeach
                   @endif
                </td>
@@ -78,31 +78,31 @@
            <tr>
               <td style="text-align: left;"><b>{{__('Subtotal')}}:</b></td>
               <td></td>
-              <td style="text-align: right;">{{$currencySymbol . number_format($total_products, 2, '.', '')}}</td>
+              <td style="text-align: right;">{{$currencySymbol . decimal_format($total_products)}}</td>
            </tr>
 
            <tr>
               <td style="text-align: left;"><b>{{__('TAX')}}:</b></td>
               <td></td>
-              <td style="text-align: right;">{{$currencySymbol . number_format($product['taxable_amount'], 2, '.', '')}}</td>
+              <td style="text-align: right;">{{$currencySymbol . decimal_format($product['taxable_amount'])}}</td>
            </tr>
 
            <tr>
               <td style="text-align: left;"><b>{{__('SHIPPING Charge')}}:</b></td>
               <td></td>
-              <td style="text-align: right;">{{$currencySymbol . number_format($product['delivery_fee_charges'], 2, '.', '')}}</td>
+              <td style="text-align: right;">{{$currencySymbol . decimal_format($product['delivery_fee_charges'])}}</td>
            </tr>
 
            <tr>
               <td style="text-align: left;"><b>{{__('Discount')}}:</b></td>
               <td></td>
-              <td style="text-align: right;">{{$currencySymbol . number_format($product['discount_amount'], 2, '.', '')}}</td>
+              <td style="text-align: right;">{{$currencySymbol . decimal_format($product['discount_amount'])}}</td>
            </tr>
 
            <tr>
               <td style="text-align: left;"><b>{{__('Total')}}:</b></td>
               <td></td>
-              <td style="text-align: right;">{{$currencySymbol .$product['payable_amount']}}</td>
+              <td style="text-align: right;">{{$currencySymbol .decimal_format($product['payable_amount'])}}</td>
            </tr>
 
 
