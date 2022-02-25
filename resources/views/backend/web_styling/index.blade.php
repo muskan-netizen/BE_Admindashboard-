@@ -269,45 +269,34 @@
             <div class="custom-dd-empty dd" id="pickup_datatable">
                 <ol class="dd-list p-0" id="pickup_ol" >
                     @foreach($cab_booking_layouts as $key => $home_page_label)
-                    <div id="al_web_styling" class="item_dev_row row dd-item dd3-item on_click{{$home_page_label->slug}}" data-id="1" data-row-id="{{$home_page_label->id}}">
-                        <div class="col-md-6">
-                            <div class="row d-flex align-items-center">
-                                <div class="col-md-5 p-0">
-                                    <a herf="#" class="dd-handle dd3-handle d-block mr-auto">
-                                        {{$home_page_label->title}}
-                                    </a>
-                                </div>
-                                <div class="col-md-7 p-0">
-                                    <div class="language-input style-4">
-                                        <div class="row no-gutters flex-nowrap align-items-center my-2">
-                                            @foreach($langs as $lang)
-                                            @php
-                                            $exist = 0;
-                                            $value = '';
-                                            @endphp
-                                            <div class="col-6 pl-1">
-                                                <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="home_labels[]">
-                                                <input class="form-control" type="hidden" value="{{$lang->langId}}" name="languages[]">
-                                                @foreach($home_page_label->translations as $translation)
-                                                @if($translation->language_id == $lang->langId)
-                                                @php
-                                                $exist = 1;
-                                                $value = $translation->title;
-                                                @endphp
-                                                @endif
-                                                @endforeach
-                                                <input class="form-control" value="{{$exist == 1 ? $value : '' }}" type="text" name="names[]" placeholder="{{ $lang->langName }}">
-                                            </div>
-                                            @endforeach
-
-                                        </div>
+                    <li id="al_web_styling" class="item_dev_row row  dd-item align-items-center dd3-item on_click{{$home_page_label->slug}}" data-id="1" data-row-id="{{$home_page_label->id}}">
+                            <a herf="#" class="dd-handle dd3-handle d-block mr-auto">
+                                {{$home_page_label->title}}
+                            </a>
+                            <div class="language-input style-4">
+                                <div class="row no-gutters flex-nowrap align-items-center my-2">
+                                    @foreach($langs as $lang)
+                                    @php
+                                    $exist = 0;
+                                    $value = '';
+                                    @endphp
+                                    <div class="col-3 pl-1">
+                                        <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="home_labels[]">
+                                        <input class="form-control" type="hidden" value="{{$lang->langId}}" name="languages[]">
+                                        @foreach($home_page_label->translations as $translation)
+                                        @if($translation->language_id == $lang->langId)
+                                        @php
+                                        $exist = 1;
+                                        $value = $translation->title;
+                                        @endphp
+                                        @endif
+                                        @endforeach
+                                        <input class="form-control" value="{{$exist == 1 ? $value : '' }}" type="text" name="names[]" placeholder="{{ $lang->langName }}">
                                     </div>
+                                    @endforeach
+
                                 </div>
                             </div>
-
-                        </div>
-                        <div class="col-md-6">
-                            <div class=" d-flex align-items-center justify-content-end">
                                 @if($home_page_label->slug == 'pickup_delivery')
                                     <div class="col pl-1">
                                         <select class="form-control select2-multiple" required id="categories" name="categories[{{$key}}][check]" data-toggle="select2"  data-placeholder="Choose ...">
@@ -350,9 +339,7 @@
                                 <a class="action-icon deletePickupSectionx" href="{{route('pickup.delete.section', $home_page_label->id)}}" onclick="return confirm('Are you sure you want to delete this section?');"  dataid="{{$home_page_label->id}}" href="javascript:void(0);">
                                     <i class="mdi mdi-delete"></i>
                                 </a>
-                            </div>
-                        </div>
-                    </div>
+                    </li>
 
                     @endforeach
                 </ol>

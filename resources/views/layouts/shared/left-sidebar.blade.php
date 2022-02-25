@@ -207,7 +207,7 @@
                         <!-- <span class="icon-settings-1-1"></span> -->
                         <span>{{ __('SETTINGS') }}</span>
                     </a>
-                    <ul class="nav-second-level">
+                    <ul class="nav-second-level p-0 mx-2">
                         @if(in_array('profile',$allowed) || Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('client.profile')}}">
@@ -334,7 +334,7 @@
                         <!-- <span class="icon-marketing"></span> -->
                         <span>{{ __('MARKETING') }}</span>
                     </a>
-                    <ul class="nav-second-level">
+                    <ul class="nav-second-level p-0 mx-2">
 
                         @if(Auth::user()->is_superadmin == 1)
                         <li>
@@ -389,7 +389,7 @@
                             <!-- <span class="icon-extra"></span> -->
                             <span>{{ __("EXTRA") }}</span>
                         </a>
-                        <ul class="nav-second-level">
+                        <ul class="nav-second-level p-0 mx-2">
                             @if(Auth::user()->is_superadmin == 1 && $client_preference->celebrity_check == 1)
                                 @if(in_array('celebrity',$allowed) || Auth::user()->is_superadmin == 1)
                                     <li>
