@@ -1133,6 +1133,13 @@ $sms_crendential = json_decode($preference->sms_credentials);
                         </span>
                      </div>
                   </div>
+                  <div class="col-md-4">
+                    <div class="form-group d-flex justify-content-between mb-3">
+                       <label for="hide_order_address" class="mr-2 mb-0">{{__('Hide customer details')}}<small class="d-block pr-5">{{__('Enable to hide customer details from order.')}}</small></label>
+                      <span> <input type="checkbox" data-plugin="switchery" name="hide_order_address" id="address_is_car" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->hide_order_address == '1')) checked='checked' @endif>
+                       </span>
+                    </div>
+                 </div>
 
                </div>
             </div>
@@ -1376,30 +1383,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
          </div>
       </div>
    </div>
-   <script type="text/template" id="vendorSelectorTemp">
-        <tr class ="option_section" id ="option_section_<%= id %>" data-section_number="<%= id %>">
-        <input type="hidden" name="option_id[<%= id-1 %>][]"  id="option_id<%= id %>" data-id ="<%= id %>" value ="<%= data?data.id:'' %>">
-        @foreach($client_languages as $key => $langs)
-        <td>
-            <div class="form-group mb-0">
-                <input type="hidden" name="option_lang_id[<%= id-1 %>][]"   value ="{{$langs->langId}}">
-                <input type="text" name="option_name[<%= id-1 %>][]" class="form-control" @if($langs->is_primary == 1) required @endif   id="option_name_<%= id-1 %>_{{$langs->langId}}" placeholder="" data-id ="<%= id %>" value ="<%= data?(data.translations?data.translations.name:''):'' %>">
-            </div>
-        </td>
-
-        @endforeach
-        <td class="lasttd d-flex align-items-center justify-content-center">
-            <% if(id > 1) { %>
-                <a href="javascript:void(0)" class="action-icon remove_more_button"  id ="remove_button_<%= id %>" data-id ="<%= id %>"> <i class="mdi mdi-delete"></i></a>
-            <% } %>
-            <a href="javascript:void(0)" class="add_more_button" id ="add_button_<%= id %>" data-id ="<%= id %>"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
-
-        </td>
-
-    </tr>
-
-
-</script>
 
 
    <!-- modal for slots -->
@@ -1457,40 +1440,10 @@ $sms_crendential = json_decode($preference->sms_credentials);
    @section('script')
    <script type="text/javascript">
 
-    $(document).on("change", "#file_type_select", function() {
-        var file_type = $(this).val();
-        if(file_type == 'selector'){
-            $("#selector_div").removeClass("d-none");
-            var classoption_section = $('#option_div').find('.option_section');
-            if(classoption_section.length==0){
-                addoptionTemplate(0);
-            }
-        }
-        else{
-            $("#selector_div").addClass("d-none");
-        }
-    });
-    $(document).on('click','.add_more_button',function(){
-        var main_id = $(this).data('id');
-        addoptionTemplate(main_id);
-        console.log($('.add_more_button').length);
-    });
-    $(document).on('click','.remove_more_button',function(){
-        var main_id =$(this).data('id');
-        removeSeletOptionSectionTemplate(main_id);
-        $('.add_more_button').each(function(key,value){
-            if(key == ($('.add_more_button').length-1)){
-                $('#add_button_'+$(this).data('id')).show();
-            }
-        });
-    });
     $(document).on("change","#option_client_language",function() {
         let vendor_registration_document_id = $('input[name="vendor_registration_document_id"]').val();
         editVendorRegistrationForm(vendor_registration_document_id);
     });
-    function removeSeletOptionSectionTemplate(div_id){
-        $('#option_section_'+div_id).remove();
-    }
     $(document).on('click', '.addOptionRow-Add', function(e) {
         var d = new Date();
         var n = d.getTime();
@@ -1502,19 +1455,6 @@ $sms_crendential = json_decode($preference->sms_credentials);
         $('.optionTableAdd').append($clone);
 
     });
-
-    function addoptionTemplate(section_id){
-        section_id                = parseInt(section_id);
-        section_id                = section_id +1;
-        var data                  = '';
-
-        var price_section_temp    = $('#vendorSelectorTemp').html();
-        var modified_temp         = _.template(price_section_temp);
-        var result_html           = modified_temp({id:section_id,data:data});
-        $("#table_body").append(result_html);
-        $('.add_more_button').hide();
-        $('#add_button_'+section_id).show();
-    }
       $('#add_slot_modal_btn').click(function(e) {
          document.getElementById("slotForm").reset();
          $('#add_slot_modal input[name=slot_id]').val("");

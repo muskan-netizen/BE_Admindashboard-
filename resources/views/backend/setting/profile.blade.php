@@ -49,15 +49,22 @@
         @endif
     </div>
     <div class="row">
-        @if(Auth::user()->is_superadmin == 1)
+        @if(Auth::user()->is_superadmin == 1) 
         <div class="col-md-10 col-xl-7 col-lg-8">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title">{{ __("Organization details") }}</h4>
-                    <p class="sub-header">
-                        {{ __("View and edit your organization's profile details.") }}
-                    </p>
                     <form id="UpdateClient" method="post" action="{{route('client.profile.update',Auth::user()->code)}}" enctype="multipart/form-data">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="mb-0">
+                            <h4 class="header-title">{{ __("Organization details") }}</h4>
+                            <p class="sub-header">
+                                {{ __("View and edit your organization's profile details.") }}
+                            </p>
+                        </div>
+                       
+                        <button type="submit" class=" mt-3 btn btn-info waves-effect waves-light">{{ __("Update") }}</button>
+                     </div>
+
                         @method('PUT')
                         @csrf
                         <div class="row mb-2 d-flex align-items-center">
@@ -187,14 +194,11 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <button type="submit" class=" mt-3 btn btn-info waves-effect waves-light">{{ __("Update") }}</button>
-                            </div>
                         </div>
                     </form>
                 </div>
             </div>
-        </div>
+        </div> 
         @endif
 
 

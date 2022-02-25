@@ -8,7 +8,6 @@ jQuery(window).scroll(function() {
 });
 
 
-
 // Material Select Initialization
 $(document).ready(function() {
     //$('.mdb-select').materialSelect();
@@ -110,7 +109,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider(){
     });
 }
 
- loadMainMenuSlider();
+ // loadMainMenuSlider();
 
 window.resizeMenuSlider = function resizeMenuSlider(){
     var windowWidth = $(window).width();
@@ -120,7 +119,7 @@ window.resizeMenuSlider = function resizeMenuSlider(){
         if(!$('.menu-slider').hasClass('slick-initialized')){
 
             setTimeout(function(){
-                //loadMainMenuSlider();
+                loadMainMenuSlider();
                 if ( $('#main-menu .slick-slide').length > 13 ) {
                     $('#main-menu').addClass('items-center');
                 }
@@ -234,10 +233,10 @@ window.initializeSlider = function initializeSlider() {
         arrows: true,
         dots: false,
         responsive: [
-            {breakpoint: 1199,settings: {slidesToShow: 4,slidesToScroll: 3,infinite: true,dots: false,centerMode: false,}},
-            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 3,dots: false,centerMode: true,}},
-            {breakpoint: 767,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}},
-            {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
+            {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 1}},
+            {breakpoint: 767,settings: {slidesToShow: 2,slidesToScroll: 1}},
+            {breakpoint: 360,settings: {slidesToShow: 1,slidesToScroll: 1}}
         ]
     });
     $(".product-5").slick({
@@ -652,6 +651,8 @@ $(document).ready(function() {
                 paymentViaAuthorize('', '');
             }else if (payment_option_id == 19) {
                 paymentViaStripeFPX('', 19, '');
+            }else if (payment_option_id == 20) {
+                payWithKPG('');
             }
         } else {
             _this.attr("disabled", false);
@@ -981,7 +982,6 @@ $(document).ready(function() {
 
         paymentSuccessViaPaypal(urlParams.get('amount'), urlParams.get('token'), urlParams.get('PayerID'), path, tipAmount, order_number);
     }
-
 
 
     function paymentViaStripe(stripe_token, address_id, payment_option_id, delivery_type = 'D', order='') {
@@ -1494,6 +1494,14 @@ $(document).ready(function() {
             else{
                 return false;
             }
+        }else if (payment_option_id == 20) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                payWithKPG(order);
+            }
+            else{
+                return false;
+            }
         }
     });
 
@@ -1676,6 +1684,8 @@ $(document).ready(function() {
             paymentViaAuthorize('', '');
         }else if (payment_option_id == 19) {
             paymentViaStripeFPX('', payment_option_id, '');
+        }else if (payment_option_id == 20) {
+            payWithKPG('');
         }
     });
     $(document).on("click", ".remove_promo_code_btn", function() {

@@ -816,7 +816,8 @@ class VendorController extends BaseController{
                             },'variant.checkIfInCartApp', 'checkIfInCartApp',
                         ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
                             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
-                            ->join('product_translations', 'product_translations.product_id', '=', 'products.id'); // Or whatever the join logic is
+                            ->join('product_translations', 'product_translations.product_id', '=', 'products.id')
+                            ->withCount('OrderProduct'); // Or whatever the join logic is
 
                         $products->where('products.category_id', $category->category_id);
 
@@ -853,9 +854,13 @@ class VendorController extends BaseController{
                         if (!empty($order_type) && $order_type == 'newly_added') {
                             $products = $products->orderBy('products.id', 'desc');
                         }
+                        if (!empty($order_type) && $order_type == 'popular_product') {
+                            $products = $products->orderBy('order_product_count', 'desc');
+                        }
                         //->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
                         // $products = $products->where('is_live', 1)->where('category_id', $category->category_id)->where('vendor_id', $vid)->get();
                         $products = $products->groupBy('products.id')->get();
+
                         if (!empty($products)) {
                             foreach ($products as $key => $value) {
                                 foreach ($value->addOn as $key => $val) {
@@ -953,7 +958,8 @@ class VendorController extends BaseController{
                             }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                         ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
                         ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
-                        ->join('product_translations', 'product_translations.product_id', '=', 'products.id'); // Or whatever the join logic is
+                        ->join('product_translations', 'product_translations.product_id', '=', 'products.id')// Or whatever the join logic is
+                        ->withCount('OrderProduct');
 
 
                         //->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
@@ -986,7 +992,12 @@ class VendorController extends BaseController{
                         if (!empty($order_type) && $order_type == 'newly_added') {
                             $products = $products->orderBy('products.id', 'desc');
                         }
+                        if (!empty($order_type) && $order_type == 'popular_product') {
+
+                            $products = $products->orderBy('order_product_count', 'desc');
+                        }
                     $products = $products->where('is_live', 1)->groupBy('products.id')->where('vendor_id', $vendor->id)->paginate($paginate);
+
                     if (!empty($products)) {
                         foreach ($products as $key => $product) {
                             foreach ($product->addOn as $key => $value) {
@@ -1508,10 +1519,10 @@ class VendorController extends BaseController{
     {
         try {
 			$validator = Validator::make($request->all(), [
-				'vendor_id' => 'required',	
+				'vendor_id' => 'required',
 			]);
 
-			if ($validator->fails()) {			
+			if ($validator->fails()) {
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
             $vendordetail = Vendor::where('id',$request->vendor_id)->first();
@@ -1527,7 +1538,7 @@ class VendorController extends BaseController{
             }else{
                 return $this->errorResponse('Vendor not found', 422);
             }
-        } catch (Exception $e) {            
+        } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
@@ -1536,10 +1547,10 @@ class VendorController extends BaseController{
     {
         try{
             $validator = Validator::make($request->all(), [
-				'vendor_id' => 'required',	
+				'vendor_id' => 'required',
 			]);
 
-			if ($validator->fails()) {			
+			if ($validator->fails()) {
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
             //return $request->all();
@@ -1552,27 +1563,27 @@ class VendorController extends BaseController{
                 }
                 if($request->desc)
                 {
-                    $vendordetail->desc = $request->desc;                    
+                    $vendordetail->desc = $request->desc;
                 }
                 if($request->email)
                 {
-                    $vendordetail->email = $request->email;                    
+                    $vendordetail->email = $request->email;
                 }
                 if($request->phone_no)
                 {
-                    $vendordetail->phone_no = $request->phone_no;                    
+                    $vendordetail->phone_no = $request->phone_no;
                 }
                 if($request->address)
                 {
-                    $vendordetail->address = $request->address;                    
+                    $vendordetail->address = $request->address;
                 }
                 if($request->latitude)
                 {
-                    $vendordetail->latitude = $request->latitude;                    
+                    $vendordetail->latitude = $request->latitude;
                 }
                 if($request->longitude)
                 {
-                    $vendordetail->longitude = $request->longitude;                    
+                    $vendordetail->longitude = $request->longitude;
                 }
                 if($request->website)
                 {
@@ -1580,54 +1591,54 @@ class VendorController extends BaseController{
                 }
                 // if($request->slug)
                 // {
-                //     $vendordetail->slug = $request->slug;                    
+                //     $vendordetail->slug = $request->slug;
                 // }
                 // if($request->order_min_amount)
                 // {
-                //     $vendordetail->order_min_amount = $request->order_min_amount;                    
+                //     $vendordetail->order_min_amount = $request->order_min_amount;
                 // }
                 // if($request->order_pre_time)
                 // {
-                //     $vendordetail->order_pre_time = $request->order_pre_time;                    
+                //     $vendordetail->order_pre_time = $request->order_pre_time;
                 // }
                 // if($request->auto_reject_time)
                 // {
-                //     $vendordetail->auto_reject_time = $request->auto_reject_time;                    
+                //     $vendordetail->auto_reject_time = $request->auto_reject_time;
                 // }
                 // if($request->commission_percent)
                 // {
-                //     $vendordetail->commission_percent = $request->commission_percent;                    
+                //     $vendordetail->commission_percent = $request->commission_percent;
                 // }
                 // if($request->commission_fixed_per_order)
                 // {
-                //     $vendordetail->commission_fixed_per_order = $request->commission_fixed_per_order;                    
+                //     $vendordetail->commission_fixed_per_order = $request->commission_fixed_per_order;
                 // }
                 // if($request->commission_monthly)
                 // {
-                //     $vendordetail->commission_monthly = $request->commission_monthly;                    
+                //     $vendordetail->commission_monthly = $request->commission_monthly;
                 // }
                 if($request->dine_in!="")
                 {
-                    $vendordetail->dine_in = $request->dine_in;                    
+                    $vendordetail->dine_in = $request->dine_in;
                 }
                 if($request->takeaway!="")
                 {
-                    $vendordetail->takeaway = $request->takeaway;                    
+                    $vendordetail->takeaway = $request->takeaway;
                 }
                 if($request->delivery!="")
                 {
-                    $vendordetail->delivery = $request->delivery;                    
+                    $vendordetail->delivery = $request->delivery;
                 }
                 // if($request->status)
                 // {
-                //     $vendordetail->status = $request->status;                    
+                //     $vendordetail->status = $request->status;
                 // }
                 // if($request->commission_fixed_per_order)
                 // {
-                //     $vendordetail->commission_fixed_per_order = $request->commission_fixed_per_order;                    
+                //     $vendordetail->commission_fixed_per_order = $request->commission_fixed_per_order;
                 // }
 
-                //images                
+                //images
                 if ($request->hasFile('upload_logo')) {
                     $file = $request->file('upload_logo');
                     $vendordetail->logo = Storage::disk('s3')->put('/vendor', $file, 'public');
@@ -1636,26 +1647,26 @@ class VendorController extends BaseController{
                     $file = $request->file('upload_banner');
                     $vendordetail->banner = Storage::disk('s3')->put('/vendor', $file, 'public');
                 }
-                
+
                 $vendordetail->save();
                 $vendordetail = Vendor::where('id',$request->vendor_id)->first();
                 return $this->successResponse($vendordetail);
             }else{
                 return $this->errorResponse('Vendor not found', 422);
             }
-        } catch (Exception $e) {            
+        } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-    
+
     // public function getVendorTransactions(Request $request)
     // {
     //     try {
 	// 		$validator = Validator::make($request->all(), [
-	// 			'vendor_id' => 'required',	
+	// 			'vendor_id' => 'required',
 	// 		]);
 
-	// 		if ($validator->fails()) {			
+	// 		if ($validator->fails()) {
 	// 			return $this->errorResponse($validator->errors()->first(), 422);
 	// 		}
     //         $start_date = $request->start_date;
@@ -1823,9 +1834,9 @@ class VendorController extends BaseController{
     //         }
 
     //         return $data = array('orders' => $orders, 'pending_orders' => $pending_orders, 'active_orders' => $active_orders, 'orders_history' => $orders_history);
-            
-        
-    //     } catch (Exception $e) {            
+
+
+    //     } catch (Exception $e) {
     //         return $this->errorResponse($e->getMessage(), $e->getCode());
     //     }
     // }
@@ -1834,23 +1845,23 @@ class VendorController extends BaseController{
     {
         try {
 			$validator = Validator::make($request->all(), [
-				'vendor_id' => 'required',	
+				'vendor_id' => 'required',
 			]);
 
-			if ($validator->fails()) {			
+			if ($validator->fails()) {
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
             // $start_date = $request->start_date;
             // $end_date = $request->end_date;
             //$filter_order_status = $request->filter_order_status;
             $user = Auth::user();
-            $order_status_options = [];            
+            $order_status_options = [];
             $type = $request->has('type') ? $request->type : 'active';
             // $orders = OrderVendor::where('user_id', $user->id)->orderBy('id', 'DESC');
             $total_amount = 0;
             $orders = OrderVendor::where('vendor_id', $request->vendor_id)->orderBy('id', 'DESC');
             $allorders = $orders->whereNotIn('order_status_option_id', [1,2,4,5,6])->sum('payable_amount');
-            
+
             switch ($type) {
                 case 'complete':
                     $orders->whereNotIn('order_status_option_id', [6]);
@@ -1934,7 +1945,7 @@ class VendorController extends BaseController{
             $data = array('totalEarning'=>$allorders, 'filter_total'=>$total_amount,'orders'=>$orders);
             return $this->successResponse($data, '', 201);
 
-        } catch (Exception $e) {            
+        } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
@@ -1957,7 +1968,7 @@ class VendorController extends BaseController{
         $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
         $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
         $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
-            
+
         $type = 'delivery';
         if ($request->has('type')) {
             if (empty($request->type)) {

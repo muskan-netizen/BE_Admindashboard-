@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Http\Controllers\AhoyController;
 use Auth;
 use Session;
 use App\Models\Tax;
@@ -434,8 +435,11 @@ class OrderController extends BaseController
                         //Create Shipping place order request for Shiprocket
                         $order_ship = $this->placeOrderRequestShiprocket($request);
                     }elseif($orderData->shipping_delivery_type=='DU'){
-                        //Create Shipping place order request for Shiprocket
+                        //Create Shipping place order request for Dunzo
                         $order_dunzo = $this->placeOrderRequestDunzo($request);
+                    }elseif($orderData->shipping_delivery_type=='M'){
+                        //Create Shipping place order request for Ahoy Masa
+                        $order_dunzo = $this->placeOrderRequestAhoy($request);
                     }
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
@@ -456,6 +460,10 @@ class OrderController extends BaseController
                         //Cancel Dunzo place order request for Dunzo
                         $ship = new DunzoController();
                         $order_ship = $ship->cancelOrderRequestDunzo($currentOrderStatus->web_hook_code);
+                    }elseif($orderData->shipping_delivery_type=='M'){
+                        //Create Shipping place order request for Ahoy
+                        $ship = new AhoyController();
+                        $order_ship = $ship->cancelOrderRequestAhoy($currentOrderStatus->web_hook_code);
                     }
 
                 }
@@ -557,6 +565,29 @@ class OrderController extends BaseController
                     'ship_shipment_id' => $order_ship->shipment_id,
                     'ship_awb_id' => $order_ship->awb_code
                     ]);
+                return 1;
+            }
+
+        return 2;
+    }
+
+    public function placeOrderRequestAhoy($request)
+    {
+
+        $data = new AhoyController();
+        //Create Ahoy place order request for Ahoy
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+                $order_det = $data->createPreOrderRequestAhoy($checkOrder->user_id,$checkdeliveryFeeAdded);
+            }
+
+            if (isset($order_det->orderId)){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'web_hook_code' => $order_det->orderId
+                ]);
+
                 return 1;
             }
 

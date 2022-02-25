@@ -260,8 +260,11 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
         <div class="show-div setting">
             <h6 class="mb-1">{{ __("language") }}</h6>
             <ul>
-                <li><a href="#">english</a></li>
-                <li><a href="#">{{ __("french") }}</a></li>
+                @foreach($languageList as $key => $listl)
+                    <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
+                        <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                    </li>
+                @endforeach
             </ul>
             <h6 class="mb-1">{{ __("currency") }}</h6>
             <ul class="list-inline">

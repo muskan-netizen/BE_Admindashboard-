@@ -448,10 +448,10 @@ class ToolsController extends BaseController
                     }
                 }
             }
-            return redirect()->back()->with('success', 'Tax copied successfully!');
+            return redirect()->back()->with('success', __("Tax copied successfully!"));
 
         }catch (Exception $e) {
-            return redirect()->back()->with('error', 'Something went wrong!');
+            return redirect()->back()->with('error', __("Something went wrong!"));
         }
     }
     public function uploadImage(Request $request)

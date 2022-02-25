@@ -106,6 +106,25 @@
                         @endif
                     </div>
 
+                    @if ( (strtolower($opt->code) == 'kongapay') )
+                    <div class="mt-2" id="kongapay_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="kongapay_api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                    <input type="text" name="kongapay_api_key" id="kongapay_api_key" class="form-control" value="{{$api_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="kongapay_merchant" class="mr-3">{{ __("Merchant Id") }}</label>
+                                    <input type="text" name="kongapay_merchant_id" id="kongapay_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     @if ( (strtolower($opt->code) == 'stripe') )
                     <div class="mt-2" id="stripe_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">

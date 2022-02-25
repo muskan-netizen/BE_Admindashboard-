@@ -166,7 +166,7 @@
                             previous: "<i class='mdi mdi-chevron-left'>",
                             next: "<i class='mdi mdi-chevron-right'>"
                         },
-                        searchPlaceholder: '{{__("Search By Name, Email, Phone Number")}}'
+                        searchPlaceholder: '{{__("Search ")}}'
                     },
                     drawCallback: function() {
                         $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
