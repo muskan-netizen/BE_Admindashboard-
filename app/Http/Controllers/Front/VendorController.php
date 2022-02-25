@@ -170,10 +170,8 @@ class VendorController extends FrontController
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if(Session::has('vendors')){
                 $vendors = Session::get('vendors');
-                Log::info($vendors);
-                Log::info($vendor);
-                if(count($vendors) > 0 && isset($vendor) && isset($vendor->id)){
-                    if( $vendors && !in_array($vendor->id, $vendors)){
+                if(isset($vendor) && isset($vendor->id)){
+                    if(!in_array($vendor->id, $vendors)){
                         $listData =collect();
                         Log::info($page);
                         return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
