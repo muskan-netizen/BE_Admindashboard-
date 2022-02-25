@@ -21,7 +21,7 @@ use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, Vendor
 
 class DashBoardController extends BaseController{
     use ApiResponser;
-    public function index(){
+    public function index(){        
         return view('backend/dashboard');
     }
     public function postFilterData(Request $request){

@@ -2,121 +2,14 @@
 @section('content')
 
 <style>
-    
 /* Jet Taxi Home Page Css */
-.jet-taxi-banner {
-    background: linear-gradient(180deg, rgb(248 242 255), #FFFFFF 99.91%);
-    padding: 63px 0 36px;
+.jet-taxi-banner{background:linear-gradient(180deg,rgb(248 242 255),#fff 99.91%);padding:63px 0 36px}.jet-banner-right{height:430px;margin:auto;width:auto}.jet-banner-right img{height:100%}.jet-taxi-banner h1{color:#000;font-size:56px;font-weight:600;letter-spacing:0;margin-bottom:21px;line-height:67px}.jet-taxi-banner p{color:#3a3a3a;font-size:24px;letter-spacing:0;line-height:32px;margin-bottom:23px}.work-box{border:1px solid rgba(151,151,151,.22);border-radius:4px;background-color:#fdfbff;box-shadow:0 15px 25px 0 rgba(70,44,103,.07);padding:40px 28px;height:100%}.work-box h3{color:#000;font-size:24px;font-weight:600;letter-spacing:0;margin:32px 0 12px;line-height:29px}.work-box p{color:#3a3a3a;font-size:18px;letter-spacing:0;line-height:22px;text-align:center}.app-content{width:270px;max-width:100%}.app-content .number{height:56px;line-height:56px;width:56px;border-radius:3.2px;background-color:rgba(207,172,255,.29);color:#7c1eff;font-size:25.6px;font-weight:600;letter-spacing:0;text-align:center}.app-content h4{color:#000;font-size:20px;font-weight:600;letter-spacing:0;line-height:24px}.app-content p{opacity:.68;color:#000;font-size:16px;letter-spacing:0;line-height:19px}
+@media(max-width: 767px){.app-content{width: 100%;}.app-content{margin-top: 30px;}
 }
-
-.jet-banner-right {
-    height: 430px;
-    margin: auto;  
-    width: auto; 
-}
-
-.jet-banner-right img {
-    height: 100%;
-}
-
-.jet-taxi-banner h1 {
-    color: #000000;
-    /* font-family: "Gill Sans"; */
-    font-size: 56px;
-    font-weight: 600;
-    letter-spacing: 0;
-    margin-bottom: 21px;
-    line-height: 67px;
-}
-
-.jet-taxi-banner p {
-    color: #3A3A3A;
-    /* font-family: "Gill Sans"; */
-    font-size: 24px;
-    letter-spacing: 0;
-    line-height: 32px;
-    margin-bottom: 23px;
-}
-
-
-.work-box {
-    border: 1px solid rgba(151, 151, 151, 0.22);
-    border-radius: 4px;
-    background-color: #FDFBFF;
-    box-shadow: 0 15px 25px 0 rgba(70, 44, 103, 0.07);
-    padding: 40px 28px;
-    height: 100%;
-}
-
-.work-box h3 {
-    color: #000000;
-    /* font-family: "Gill Sans"; */
-    font-size: 24px;
-    font-weight: 600;
-    letter-spacing: 0;
-    margin: 32px 0 12px;
-    line-height: 29px;
-}
-
-.work-box p {
-    color: #3A3A3A;
-    /* font-family: "Gill Sans"; */
-    font-size: 18px;
-    letter-spacing: 0;
-    line-height: 22px;
-    text-align: center;
-}
-
-.app-content {
-    width: 270px;
-    max-width: 100%;
-}
-
-.app-content .number {
-    height: 56px;
-    line-height: 56px;
-    width: 56px;
-    border-radius: 3.2px;
-    background-color: rgba(207,172,255,0.29);
-    color: #7C1EFF;
-    /* font-family: "Gill Sans"; */
-    font-size: 25.6px;
-    font-weight: 600;
-    letter-spacing: 0;
-    text-align: center;
-}
-
-.app-content h4 {
-    color: #000000;
-    /* font-family: "Gill Sans"; */
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 0;
-    line-height: 24px;
-}
-
-.app-content p {
-    opacity: 0.68;
-    color: #000000;
-    /* font-family: "Gill Sans"; */
-    font-size: 16px;
-    letter-spacing: 0;
-    line-height: 19px;
-}
-
-@media(max-width: 767px){
-    .app-content{
-        width: 100%;
-    }
-    .app-content{
-        margin-top: 30px;
-    }
-}
-
 </style>
 
     <!-- royo default demo -->
-    
+
     <div class="cab-content-area">
 
 
@@ -246,7 +139,7 @@
 
         <!-- Royo Business Start From Here -->
         <section class="royo-business p-0">
-            <div class="container p-64">
+            <div class="container p-64 pl-0 pr-0">
                 <div class="row">
                     <div class="col-12">
                         <h2 class="title-36">Royo for Business</h2>
@@ -261,8 +154,8 @@
 
         <!-- Royo Business Start From Here -->
         <section class="royo-rental p-0">
-            <div class="container">                
-               
+            <div class="container">
+
                 <div class="row align-items-center p-64">
                     <div class="col-sm-6">
                         <div class="cab-img-box">
@@ -296,7 +189,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </section>
 
@@ -491,11 +384,11 @@
     <section class="cab-bottom-banner">
         <img class="img-fluid" src="{{asset('assets/images/ic_bg1@2x.png')}}" alt="">
     </section>
-        
+
 
     </div>
 
-    
+
 
 
     <script src="{{asset('front-assets/js/popper.min.js')}}"></script>
@@ -515,9 +408,9 @@
 
     <script src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
-    
+
     <script type="text/javascript">
-        
+
     </script>
 
     <script>
@@ -552,9 +445,9 @@
     banner.src = URL.createObjectURL(event.target.files[0]);
    };
 
-  
+
     </script>
 
-   
-    
+
+
 @endsection

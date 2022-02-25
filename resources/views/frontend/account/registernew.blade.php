@@ -3,16 +3,6 @@
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
 <section class="wrapper-main mb-5 py-lg-5">
     <div class="container">
         <div class="row">
@@ -71,9 +61,9 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="">{{ __('Phone No.') }}</label>
                                     <input type="tel" class="form-control phone @error('phone_number') is-invalid @enderror" id="phone" placeholder="{{ __('Phone No.') }}" name="phone_number" value="{{old('full_number')}}">
-                                    <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode') ? old('dialCode') : '1' }}">
-                                    <input type="hidden" id="countryData" name="countryData" value="{{ old('countryData') ? old('countryData') : 'us'}}">
-                                    @error('phone_number')
+                                    <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode','1') }}">
+                                    <input type="hidden" id="countryData" name="countryData" value="{{ old('countryData') ? old('countryData') : Session::get('default_country_code','US')}}">
+                                    @error('phone_number') 
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -107,12 +97,24 @@
                             <div class="row form-group mb-0 align-items-center">
                                 <div class="col-12 checkbox-input">
                                     <input type="checkbox" id="html" name="term_and_condition" class="form-control @error('term_and_condition') is-invalid @enderror">
-                                    <label for="html">{{__('I accept the')}}<a href="{{url('page/terms-conditions')}}" target="_blank">{{__('Terms And Conditions')}} </a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy')}}.</a></label>
+
+                                  
+
+                                    <label for="html">{{__('I accept the')}}  
+                                    <a href="{{ ($terms) ? route('extrapage',$terms->slug) : '#'}}" target="_blank">{{__('Terms And Conditions')}} </a> 
+                                     {{__('and have read the')}} 
+                                    <a href="{{ ($privacy) ? route('extrapage',$privacy->slug) : '#'}}" target="_blank"> 
+                                        {{__('Privacy Policy')}}.
+                                    </a>
+                                    </label>
                                     @if($errors->first('term_and_condition'))
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $errors->first('term_and_condition') }}</strong>
                                     </span>
                                     @endif
+
+                                    
+
                                 </div>
                                 <div class="col-md-6 hide position-absolute">
                                     <label for="">Referral Code</label>

@@ -33,6 +33,10 @@ class OrderVendor extends Model{
 	public function orderstatus(){
 	    return $this->hasOne('App\Models\VendorOrderStatus' , 'vendor_id', 'vendor_id', 'order_id', 'order_id')->orderBy('id', 'DESC')->latest(); 
 	}
+	public function cancelledBy()
+	{
+		return $this->belongsTo('App\Models\User','cancelled_by','id')->select('id','name');
+	}
 	public function scopeBetween($query, $from, $to){
         $query->whereBetween('created_at', [$from, $to]);
     }
@@ -57,7 +61,7 @@ class OrderVendor extends Model{
 			  break;
 			case "Completed":
 			  $title = "You have arrived at your destination!";
-			 break;  
+			  break;  
 			default:
 			$title = $title;
 		  }
@@ -71,5 +75,9 @@ class OrderVendor extends Model{
 
 	public function dineInTable(){
 	    return $this->belongsTo('App\Models\VendorDineinTable' , 'vendor_dinein_table_id', 'id'); 
+	}
+
+	public function tempCart(){
+	    return $this->hasOne('App\Models\TempCart' , 'order_vendor_id', 'id'); 
 	}
 }

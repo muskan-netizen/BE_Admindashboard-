@@ -5,16 +5,7 @@
 <link href="{{asset('assets/libs/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template) && $set_template->template_id == 1)
-    @include('layouts.store/left-sidebar-template-one')
-    @elseif(isset($set_template) && $set_template->template_id == 2)
-    @include('layouts.store/left-sidebar')
-    @else
-    @include('layouts.store/left-sidebar-template-one')
-    @endif
-</header>
+
 <section class="section-b-space new-pages pb-265">
     <div class="container">
         <div class="row">
@@ -113,42 +104,13 @@
                             </div>
                         </div>
 
-                        <div class="row ">
-                            <div class="col-md-12" id="vehicle_type_idInput">
-                                <div class="form-group" id="vehicle_type_idInputEdit">
-                                    <p class="text-muted mt-3 mb-2">TRANSPORT TYPE</p>
-                                    <div class="radio radio-blue form-check-inline click cursors">
-                                        <input type="radio" id="onfoot" value="1" name="vehicle_type_id" act="add" checked>
-                                        <img id="foot_add" src="{{asset('assets/icons/walk.png')}}" style="float:right;padding-right:40px;">
-                                    </div>
-                                    <div class="radio radio-primery form-check-inline click cursors">
-                                        <input type="radio" id="bycycle" value="2" name="vehicle_type_id" act="add">
-                                        <img id="cycle_add" src="{{asset('assets/icons/cycle.png')}}" style="float:right;padding-right:40px;">
-                                    </div>
-                                    <div class="radio radio-info form-check-inline click cursors">
-                                        <input type="radio" id="motorbike" value="3" name="vehicle_type_id" act="add">
-                                        <img id="bike_add" src="{{asset('assets/icons/bike.png')}}" style="float:right;padding-right:40px;">
-                                    </div>
-                                    <div class="radio radio-danger form-check-inline click cursors">
-                                        <input type="radio" id="car" value="4" name="vehicle_type_id" act="add">
-                                        <img id="cars_add" src="{{asset('assets/icons/car.png')}}" style="float:right;padding-right:40px;">
-                                    </div>
-                                    <div class="radio radio-warning form-check-inline click cursors">
-                                        <input type="radio" id="truck" value="5" name="vehicle_type_id" act="add">
-                                        <img id="trucks_add" src="{{asset('assets/icons/truck.png')}}" style="float:right;padding-right:40px;">
-                                    </div>
-                                    <span class="invalid-feedback" id="vehicle_type_id_error" role="alert">
-                                        <strong></strong>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                       
                     </div>
                     <div class="row ">
                         <div class="col-md-6" id="make_modelInput">
                             <div class="form-group" id="make_modelInputEdit">
                                 <label for="make_model" class="control-label">TRANSPORT DETAILS</label>
-                                <input type="text" class="form-control required" id="make_model" placeholder="Year, Make, Model" name="make_model" value="">
+                                <input type="text" class="form-control" id="make_model" placeholder="Year, Make, Model" name="make_model" value="">
                                 <span class="invalid-feedback" id="make_model_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -156,8 +118,8 @@
                         </div>
                         <div class="col-md-6" id="uidInput">
                             <div class="form-group" id="uidInputEdit">
-                                <label for="uid" class="control-label">UID</label>
-                                <input type="text" class="form-control required" id="uid" placeholder="897abd" name="uid" value="">
+                                <label for="make_model" class="control-label">UID</label>
+                                <input type="text" class="form-control" id="uid" placeholder="897abd" name="uid" value="">
                                 <span class="invalid-feedback" id="uid_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -168,7 +130,7 @@
                         <div class="col-md-6" id="plate_numberInput">
                             <div class="form-group" id="plate_numberInputEdit">
                                 <label for="plate_number" class="control-label">LICENCE PLATE</label>
-                                <input type="text" class="form-control required" id="plate_number" name="plate_number" placeholder="508.KLV" value="">
+                                <input type="text" class="form-control" id="plate_number" name="plate_number" placeholder="508.KLV" value="">
                                 <span class="invalid-feedback" id="plate_number_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -177,7 +139,7 @@
                         <div class="col-md-6" id="colorInput">
                             <div class="form-group" id="colorInputEdit">
                                 <label for="color" class="control-label">COLOR</label>
-                                <input type="text" class="form-control required" id="color" name="color" placeholder="Color" value="">
+                                <input type="text" class="form-control" id="color" name="color" placeholder="Color" value="">
                                 <span class="invalid-feedback" id="color_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -189,7 +151,7 @@
                         <div class="col-md-6 mb-3" id="{{$driver_registration_document->slug}}Input">
                             <label for="">{{$driver_registration_document->name ? $driver_registration_document->name : ''}}</label>
                             @if(strtolower($driver_registration_document->file_type) == 'text')
-                            <div class="form-group">
+                            <div class="form-group" id="{{$driver_registration_document->slug}}InputEdit" >
                                 <input type="text" class="form-control {{ (!empty($driver_registration_document->is_required))?'required':''}}" id="input_file_logo_{{$driver_registration_document->id}}" name="{{$driver_registration_document->slug}}" placeholder="Enter Text" value="">
                                 <span class="invalid-feedback" id="{{$driver_registration_document->slug}}_error" role="alert">
                                     <strong></strong>

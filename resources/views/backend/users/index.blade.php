@@ -4,28 +4,13 @@
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 <style type="text/css">
-    .iti__flag-container li,
-    .flag-container li {
-        display: block;
-    }
-
-    .iti.iti--allow-dropdown,
-    .allow-dropdown {
-        position: relative;
-        display: inline-block;
-        width: 100%;
-    }
-
-    .iti.iti--allow-dropdown .phone,
-    .flag-container .phone {
-        padding: 17px 0 17px 100px !important;
-    }
-
-    .mdi-icons {
-        color: #43bee1;
-        font-size: 26px;
-        vertical-align: middle;
-    }
+.iti__flag-container li,
+.flag-container li {display: block;}
+.iti.iti--allow-dropdown,
+.allow-dropdown {position: relative;display: inline-block;width: 100%;}
+.iti.iti--allow-dropdown .phone,
+.flag-container .phone {padding: 17px 0 17px 100px !important;}
+.mdi-icons {color: #43bee1;font-size: 26px;vertical-align: middle;}
 </style>
 @endsection
 @section('content')
@@ -36,13 +21,8 @@
                 <h4 class="page-title">{{ __("Customers") }}</h4>
             </div>
         </div>
-        <div class="col-sm-6 text-right">
-            <button class="btn btn-info waves-effect waves-light text-sm-right importUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
-            </button>
-            <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
-            </button>
-        </div>
-       
+
+
     </div>
 
     <div class="row">
@@ -81,9 +61,9 @@
         </div>
     </div>
 
-    <div class="row main-customer-page">
+    <div class="row main-customer-page al">
         <div class="col-12">
-            <div class="card-box set-height">
+            <div class="card-box set-height pb-0">
                 <div class="row mb-2">
                     <div class="col-sm-12">
                         <div class="text-sm-left">
@@ -100,31 +80,39 @@
                         </div>
                     </div>
                 </div>
+                <div class="al_new_export_table">
+                    <div class=" position-absolute mb-2">
+                        <button class="btn btn-info waves-effect waves-light text-sm-right importUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
+                        </button>
+                        <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
+                        </button>
+                    </div>
+                    <div class="table-responsive">
 
-                <div class="table-responsive">
-                    <table class="table table-centered table-nowrap table-striped" id="user_datatable" width="100%">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>{{ __('Image')}}</th>
-                                <th>{{ __('Name')}}</th>
-                                <th>{{ __('Login Type') }}</th>
-                                <th>{{ __('Email/Auth-id')}}</th>
-                                <th>{{ __('Phone')}}</th>
-                                <th>{{ __("Email OTP") }}</th>
-                                <th>{{ __("Phone OTP") }}</th>
-                                <th>{{ __('Wallet')}}</th>
-                                <th>{{ __('Orders')}}</th>
-                                 <th>{{ __('Loyalty Card')}}</th>
-                                <th>{{ __('Active Orders') }}</th>
-                                <th>{{ __('Status')}}</th>
-                                <th>{{ __('Action')}}</th>
-                            </tr>
-                        </thead>
-                        <tbody id="post_list">
+                        <table class="table table-centered table-nowrap table-striped" id="user_datatable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>{{ __('Image')}}</th>
+                                    <th>{{ __('Name')}}</th>
+                                    <th>{{ __('Login Type') }}</th>
+                                    <th>{{ __('Email/Auth-id')}}</th>
+                                    <th>{{ __('Phone')}}</th>
+                                    <th>{{ __("Email OTP") }}</th>
+                                    <th>{{ __("Phone OTP") }}</th>
+                                    <th>{{ __('Wallet')}}</th>
+                                    <th>{{ __('Orders')}}</th>
+                                    <th>{{ __('Loyalty Card')}}</th>
+                                    <th>{{ __('Active Orders') }}</th>
+                                    <th>{{ __('Status')}}</th>
+                                    <th>{{ __('Action')}}</th>
+                                </tr>
+                            </thead>
+                            <tbody id="post_list">
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -178,7 +166,7 @@
                             previous: "<i class='mdi mdi-chevron-left'>",
                             next: "<i class='mdi mdi-chevron-right'>"
                         },
-                        searchPlaceholder: '{{__("Search By Name, Email, Phone Number")}}'
+                        searchPlaceholder: '{{__("Search ")}}'
                     },
                     drawCallback: function() {
                         $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
@@ -193,6 +181,7 @@
                     ajax: {
                         url: "{{route('user.filterdata')}}",
                         data: function(d) {
+                            d._token = "{{ csrf_token() }}";
                             d.search = $('input[type="search"]').val();
                             d.date_filter = $('#range-datepicker').val();
                             d.payment_option = $('#payment_option_select_box option:selected').val();
@@ -233,7 +222,11 @@
                             orderable: false,
                             searchable: false,
                             "mRender": function(data, type, full) {
-                                return "<a href='" + full.edit_url + "'>" + full.name + "</a> ";
+                                var improtId = '';
+                                if(full.import_user_id){
+                                    improtId = "<br>("+ full.import_user_id +")";
+                                }
+                                return "<a href='" + full.edit_url + "'>" + full.name + "</a>"+ improtId;
                             }
                         },
                         {
@@ -444,7 +437,7 @@
             {
                 window.location.href = submit_url;
             }else{
-               return false; 
+               return false;
             }
         });
         return false;

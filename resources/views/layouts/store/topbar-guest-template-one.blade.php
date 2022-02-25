@@ -9,7 +9,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
 <div class="top-header site-topbar">
     <div class="container">
         <div class="row align-items-center justify-content-center">
-            <div class="col-6">
+            <div class="col-4">
                 <div class="d-flex align-items-center justify-content-start">
                     <a class="navbar-brand mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     @if( (Session::get('preferences')))
@@ -27,7 +27,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     @endif
                 </div>
             </div>
-            <div class="col-6 d-none text-right pr-0">
+            <div class="col-8 d-none text-right pr-0">
                 <div class="icon-nav">
                     <ul>
                         <li class="d-inline-block d-lg-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li>
@@ -45,7 +45,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     @if($client_preference_detail->header_quick_link == 1)
                     <li class="onhover-dropdown quick-links quick-links">
 
-                        <span class="quick-links ml-1 align-middle">{{ __('Register') }}</span>
+                        <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
                         </a>
                         <ul class="onhover-show-div">
 
@@ -130,8 +130,13 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <div class="show-div setting">
                         <h6>language</h6>
                         <ul>
-                            <li><a href="#">english</a></li>
-                            <li><a href="#">french</a></li>
+                            @foreach($languageList as $key => $listl)
+                                <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
+                                    <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                                </li>
+                            @endforeach
+                            {{-- <li><a href="#">english</a></li>
+                            <li><a href="#">french</a></li> --}}
                         </ul>
                         <h6>currency</h6>
                         <ul class="list-inline">

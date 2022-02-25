@@ -74,16 +74,7 @@
 </style>
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template) && $set_template->template_id == 1)
-    @include('layouts.store/left-sidebar-template-one')
-    @elseif(isset($set_template) && $set_template->template_id == 2)
-    @include('layouts.store/left-sidebar')
-    @else
-    @include('layouts.store/left-sidebar-template-one')
-    @endif
-</header>
+
 {{-- <div class="offset-top @if((\Request::route()->getName() != 'userHome') || ($client_preference_detail->show_icons == 0)) inner-pages-offset @endif @if($client_preference_detail->hide_nav_bar == 1) set-hide-nav-bar @endif"></div> --}}
 
 @if(count($banners))
@@ -168,7 +159,7 @@
 <script type="text/template" id="products_template">
     <% _.each(products, function(product, k){ %>
         <div>
-            <a class="card scale-effect text-center" href="<%= product.vendor.slug %>/{{route('productDetail')}}/<%= product.url_slug %>">
+            <a class="card scale-effect text-center" href="<%= product.vendor.slug %>/product/<%= product.url_slug %>">
                 <label class="product-tag"><% if(product.tag_title != 0) { %><%= product.tag_title %><% } else { %><%= type %><% } %></label>
                 <div class="product-image">
                     <img class="blur-up lazyloaded" src="<%= product.image_url %>" alt="">
@@ -401,12 +392,16 @@
         <div class="container render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
             <div class="row">
                 <div class="col-12">
-                    @if($homePageLabel->slug == 'vendors' || $homePageLabel->slug == 'trending_vendors')
-                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+                    @if($homePageLabel->slug == 'vendors')
+                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+                    @elseif($homePageLabel->slug == 'trending_vendors')
+                    <div class="product-5 product-m no-arrow render_{{$homePageLabel->slug}} suppliers-slider-{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
                     @elseif($homePageLabel->slug == 'recent_orders')
                     <div class="recent-orders product-m no-arrow render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"></div>
+                    @elseif($homePageLabel->slug == 'brands')
+                    <div class="brand-slider product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}"></div>
                     @else
-                    <div class="product-4 product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}"></div>
+                    <div class="product-4-{{$homePageLabel->slug}} product-m no-arrow render_{{$homePageLabel->slug }}" id="{{$homePageLabel->slug.$key}}"></div>
                     @endif
                 </div>
             </div>
@@ -415,6 +410,7 @@
         @endforeach
     </div>
 </section>
+
 <section class="no-store-wrapper mb-3">
     <div class="container">
         @if(count($for_no_product_found_html))
@@ -423,8 +419,8 @@
         @endforeach
        @else
         <div class="row">
-            <div class="col-12">
-                <img class="no-store-image w-100 mt-2 mb-2" src="{{ getImageUrl(asset('images/no-stores.svg'),'250/250') }}" style="max-height: 250px;">
+            <div class="col-12 text-center">
+                <img class="no-store-image mt-2 mb-2" src="{{ getImageUrl(asset('images/no-stores.svg'),'250/250') }}" style="max-height: 250px;">
             </div>
         </div>
         <div class="row">
@@ -460,7 +456,7 @@
 @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-<script>
+<script type="text/javascript">
     $(document).ready(function() {
         $("#doneeee").click(function() {
             console.log("nejhbfe");

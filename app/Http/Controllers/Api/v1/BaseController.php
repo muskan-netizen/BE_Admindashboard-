@@ -38,6 +38,10 @@ class BaseController extends Controller{
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
                 $send = $this->mazinhost_sms($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 4) //for unifonic gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->unifonic($to,$body,$crendentials);
             }else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -48,6 +52,53 @@ class BaseController extends Controller{
         }
         return '1';
 	}
+
+    /*      Category options heirarchy      */
+    public function printCategoryOptionsHeirarchy($tree, $parentCategory = [])
+    {
+        if (!is_null($tree) && count($tree) > 0) {
+            foreach ($tree as $key => $node) {
+                if($node['parent_id'] == 1){
+                    $parentCategory = array($node['translation'][0]['name']??'');
+                }
+                // type_id 1 means product in type table
+                if (isset($node['children']) && count($node['children']) > 0) {
+                    if($node['parent_id'] != 1 && !empty($node['translation'][0]['name'])){
+                        $parentCategory[] = $node['translation'][0]['name'];
+                    }
+
+                    // start including parent category
+                    $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+                    $hierarchyName = $category; // assume first category is parent
+                    if(count($parentCategory) > 0){
+                        if($node['parent_id'] != 1){ // if category is not parent then make heirarchy
+                            $hierarchyName = implode(' > ', $parentCategory);
+                            $hierarchyName = $hierarchyName.' > '.$category;
+                        }
+                    }
+                    $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                    // end including parent category
+
+                    $this->printCategoryOptionsHeirarchy($node['children'], $parentCategory);
+                }
+                else{
+                    // if ($node['type_id'] == 1 || $node['type_id'] == 3 || $node['type_id'] == 7 || $node['type_id'] == 8) {
+                        $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
+                        if($node['parent_id'] == 1){
+                            $parentCategory = [];
+                            $hierarchyName = $category;
+                        }else{
+                            $hierarchyName = implode(' > ', $parentCategory);
+                            $hierarchyName = $hierarchyName.' > '.$category;
+                        }
+                        // $this->optionData .= '<option value="'.$node['id'].'">'.$hierarchyName.'</option>';
+                        $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'category'=>$category, 'can_add_products'=>$node['can_add_products']);
+                    // }
+                }
+            }
+        }
+        return $this->categoryOptionData;
+    }
 
 	public function buildTree($elements, $parentId = 1) {
         $branch = array();
@@ -199,7 +250,7 @@ class BaseController extends Controller{
         return $products;
     }
 
-    function getVendorDistanceWithTime($userLat='', $userLong='', $vendor, $preferences){
+    function getVendorDistanceWithTime($userLat='', $userLong='', $vendor, $preferences, $type = 'delivery'){
         if(($preferences) && ($preferences->is_hyperlocal == 1)){
             if( (empty($userLat)) && (empty($userLong)) ){
                 $userLat = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
@@ -215,7 +266,13 @@ class BaseController extends Controller{
             $distance_to_time_multiplier = (!empty($preferences->distance_to_time_multiplier)) ? $preferences->distance_to_time_multiplier : 2;
             $distance = $this->calulateDistanceLineOfSight($lat1, $long1, $lat2, $long2, $distance_unit);
             $vendor->lineOfSightDistance = number_format($distance, 1, '.', '') .' '. $unit_abbreviation;
-            $pretime =  number_format(floatval($vendor->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', ''); // distance is multiplied by distance time multiplier to calculate travel time
+            if($type == 'delivery')
+            {
+                $pretime =  number_format(floatval($vendor->order_pre_time), 0, '.', '') + number_format(($distance * $distance_to_time_multiplier), 0, '.', '');
+                // distance is multiplied by distance time multiplier to calculate travel time
+            }else{
+                $pretime =  number_format(floatval($vendor->order_pre_time), 0, '.', '') + 0;
+            }
             // if($pretime >= 60){
             //     $vendor->timeofLineOfSightDistance =  $this->vendorTime($pretime) . '-' . $this->vendorTime((intval($pretime) + 5)).' '. __('hour');
             // }else{
@@ -271,10 +328,14 @@ class BaseController extends Controller{
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
             $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
-            $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
+
+            if(!empty($latitude) && !empty($longitude) ){
+                $serviceAreaVendors = $serviceAreaVendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
                     $query->select('vendor_id')
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                 });
+            }
+
         }
         $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
 
@@ -354,11 +415,12 @@ class BaseController extends Controller{
         return $currency[0]['convertedAmount'];
     }
 
-    public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){
+    public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption ){
         $config = array(
             'driver' => $mail_driver,
             'host' => $mail_host,
             'port' => $mail_port,
+
             'encryption' => $mail_encryption,
             'username' => $mail_username,
             'password' => $mail_password,
@@ -367,11 +429,11 @@ class BaseController extends Controller{
         );
         Config::set('mail', $config);
         $app = App::getInstance();
-        $app->register('Illuminate\Mail\MailServiceProvider');
-        return '1';
+        // $app->register('Illuminate\Mail\MailServiceProvider');
+        return  $config;
     }
 
-    /**     * check if cookie already exist     */
+    /*** check if cookie already exist */
     public function checkCookies($userid){
         if (isset(Auth::user()->system_user) && !empty(Auth::user()->system_user)) {
             $userFind = User::where('system_id', Auth::user()->system_user)->first();
@@ -574,7 +636,7 @@ class BaseController extends Controller{
         }
         $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
         $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
-        $amount = number_format($amount, 2);
+        $amount = number_format($amount, 2,'.','');
         return $amount;
     }
 
@@ -613,6 +675,71 @@ class BaseController extends Controller{
         $hours = intdiv($minutes, 60).':'. ($minutes % 60);
 
         return $hours;
+    }
+
+    public function testOrderMail($emailData){
+        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+
+        if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+            $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+            $client_name = $emailData['client_name'];
+            $mail_from = $emailData['mail_from'];
+            $sendto = $emailData['email'];
+
+            try{
+                Mail::send([], [],
+                function ($message) use($sendto, $client_name, $mail_from, $emailData) {
+                    $message->from($mail_from, $client_name);
+                    $message->to($sendto)->subject('Order mail');
+                    $message->setBody($emailData['email_template_content'], 'text/html'); // for HTML rich messages
+                });
+                $response['send_email'] = 1;
+                return count(Mail::failures());
+            }
+            catch(\Exception $e){
+                return response()->json(['data' => $e->getMessage()]);
+            }
+        }
+    }
+
+
+    public function sendTestMail(){
+        $after7days = Carbon::now()->addDays(7)->toDateString();
+        $now = Carbon::now()->toDateString();
+
+        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+
+            if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
+                $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
+
+                $client_name = $client->name;
+                $mail_from = 'dineshk@codebrewinnovations.com';
+                $sendto = 'dkdenni7@gmail.com';
+                try{
+                    // $data = [
+                    //     'customer_name' => 'Test',
+                    //     'code_text' => '',
+                    //     'logo' => $client->logo['original'],
+                    //     'frequency' => $subscription->frequency,
+                    //     'end_date' => $subscription->end_date,
+                    //     'link'=> "http://local.myorder.com/user/subscription/select/".$subscription->plan->slug,
+                    // ];
+                    Mail::send([], [],
+                    function ($message) use($sendto, $client_name, $mail_from) {
+                        $message->from($mail_from, $client_name);
+                        $message->to($sendto)->subject('Upcoming Subscription Billing');
+                        $message->setBody('TEst data', 'text/html'); // for HTML rich messages
+                    });
+                    $response['send_email'] = 1;
+                    return count(Mail::failures());
+                }
+                catch(\Exception $e){
+                    return response()->json(['data' => $e->getMessage()]);
+                }
+            }
+
     }
 
 }

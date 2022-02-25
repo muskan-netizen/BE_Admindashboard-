@@ -10,6 +10,8 @@ class OrderProduct extends Model{
 
     protected $table = 'order_vendor_products';
     protected $casts = ['price' => 'double'];
+    protected $appends = ['image_base64']; 
+
     public function vendor(){
         return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'order_pre_time', 'auto_reject_time', 'order_min_amount');
     }
@@ -63,5 +65,26 @@ class OrderProduct extends Model{
       $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
       $values['image_fit'] = \Config::get('app.FIT_URl');
       return $values;
+    }
+    public function getImageBase64Attribute()
+    {
+      if(!empty($this->attributes['image']))
+      $img = $this->attributes['image'];
+      else
+      $img = 'default/default_image.png';
+
+      $image = $this->getImageAttribute($img);
+      $image_url = $image['proxy_url'].'100/100'.$image['image_path'];
+      try{
+        if(isset($image_url) && !empty($image_url))
+        $base64 = base64_encode(@file_get_contents($image_url));
+        else
+        $base64 = '';
+        return $base64;
+     }
+     catch(Exception $e) {
+      $base64 = '';
+      return $base64;
+      }
     }
 }

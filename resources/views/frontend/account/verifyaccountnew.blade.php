@@ -12,16 +12,7 @@
       background: #dddddd;
     }
 </style>
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
+
 <section class="wrapper-main mb-5 py-lg-5">
     <div class="container">
         <script type="text/template" id="email_verified_template">
@@ -84,7 +75,7 @@
                 @if($user->is_phone_verified == 0)
                 <img src="{{asset('front-assets/images/phone-otp.svg')}}">
                 <h3 class="mb-2">{{__('Verify Phone')}}</h3>
-                <p>{{__('Enter the code we just sent you on your email address')}}</p>
+                <p>{{__('Enter the code we just sent you on your phone number')}}</p>
                 <div class="row mt-3">
                     <div class="offset-xl-3 col-xl-6 text-left">
                         <div class="verify_id input-group mb-3 radius-flag">

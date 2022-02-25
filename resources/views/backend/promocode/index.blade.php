@@ -87,11 +87,11 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                                 </a>
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{route('promocode.destroy', $promo->id) }}">
+                                                <form method="POST" action="{{route('promocode.destroy', $promo->id) }}" id="deletePromoCode">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group">
-                                                        <button type="submit" onclick="return confirm('Are you sure? You want to delete the Promocode.')" class="btn btn-primary-outline action-icon">
+                                                        <button type="submit" id="deletePromoButton" class="btn btn-primary-outline action-icon">
                                                             <i class="mdi mdi-delete"></i>
                                                         </button>
                                                     </div>
@@ -116,5 +116,24 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
 @include('backend.promocode.modals')
 @endsection
 @section('script')
+<script type="text/javascript">
+    $('#deletePromoButton').click(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete the Promocode.')}}",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $("#deletePromoCode").off("submit").submit();
+            }else{
+                return false;
+            }
+        });
+    });
+</script>
 @include('backend.promocode.pagescript')
 @endsection

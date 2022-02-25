@@ -162,15 +162,51 @@ class UserhomeController extends FrontController
         }])->where('slug', $request->slug)->firstOrFail();
         if ($page_detail->primary->type_of_form != 2) {
             if($page_detail->primary->type_of_form == 3){
-             $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', session()->get('customerLanguage'))->get();
+             $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', $language_id)->get();
              $page_detail->faqs_details = $faq;
             }
             $vendor_registration_documents = VendorRegistrationDocument::with(['primary','options','options.translation' => function($query) use($language_id) {
                 $query->where('language_id', session()->get('customerLanguage'));
             }])->get();
+            $builds = array();
+            $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+                                    ->where('id', '>', '1')
+                                    // ->where('is_core', 1)
+                                    ->whereNotIn('type_id', [4, 5])
+                                    ->where(function ($q) {
+                                        $q->whereNull('vendor_id');
+                                    })->orderBy('position', 'asc')
+                                    ->orderBy('id', 'asc')
+                                    ->where('status', 1)
+                                    ->orderBy('parent_id', 'asc')->get();
+            if ($categories) {
+                $builds = $this->buildTree($categories->toArray());
+            }
 
-            return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents'));
-        } else {
+            $VendorCategory =array();
+
+            $templetes  = \DB::table('vendor_templetes')->where('status', 1)->get();
+                $server = env('APP_ENV', 'development');
+                $langId = session()->get('customerLanguage');
+                $privacy = Page::with(['translations' => function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+                }])->whereHas('translations', function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[4]);   # get privacy & terms url
+                })->first();
+
+                $terms = Page::with(['translations' => function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+                }])->whereHas('translations', function ($q) use($langId) {
+                    $q->where('language_id', $langId)->where('type_of_form',[5]);   # get privacy & terms url
+                })->first();
+                //pr($page_detail->faqs_details->toArray());
+                // if($server == 'local')
+                // {
+                    return view('frontend.extrapageNew', compact('page_detail','templetes','VendorCategory','builds','navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
+                // }else{
+                //     return view('frontend.extrapage', compact('page_detail', 'navCategories', 'client_preferences', 'user', 'vendor_registration_documents','terms','privacy'));
+                // }
+            } else {
             $tag = [];
             $showTag = implode(',', $tag);
             $client = Client::with('country')->first();
@@ -255,15 +291,19 @@ class UserhomeController extends FrontController
 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
 
-            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get(); 
+            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
 
             // $last_mile = $this->checkIfLastMileDeliveryOn();
-            if (isset($set_template)  && $set_template->template_id == 1)
-                return view('frontend.home-template-one')->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
-            if (isset($set_template)  && $set_template->template_id == 2)
-                return view('frontend.home')->with(['home' => $home, 'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
-            else
-            return view('frontend.home-template-one')->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+            $view_page ="home-template-one";
+            if (isset($set_template)  && $set_template->template_id == 1){
+                $view_page = 'home-template-one';
+            }elseif(isset($set_template)  && $set_template->template_id == 2){
+                $view_page = "home";
+            }elseif(isset($set_template)  && $set_template->template_id == 3){
+                 $view_page = "home-template-two";
+            }
+            return view('frontend.'.$view_page)->with(['home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $clientPreferences, 'banners' => $banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude]);
+
         } catch (Exception $e) {
             pr($e->getCode());
             die;
@@ -275,10 +315,15 @@ class UserhomeController extends FrontController
         $new_products = [];
         $feature_products = [];
         $on_sale_products = [];
-        if ($request->has('latitude')) {
+        $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+        $p_dim = '260/100';
+        if (isset($set_template)  && $set_template->template_id == 3){
+            $p_dim = '328/248';
+        }
+        if($request->has('latitude')){
             $latitude = $request->latitude;
             Session::put('latitude', $latitude);
-        } else {
+        } else{
             $latitude = Session::get('latitude');
         }
         if ($request->has('longitude')) {
@@ -289,14 +334,12 @@ class UserhomeController extends FrontController
         }
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
-        $preferences = Session::get('preferences');
+        $preferences = (object)Session::get('preferences');
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
-        $layouts = CabBookingLayoutTranslation::where('language_id',$language_id)->with('layout')->get()->toArray();
 
         $currency_id = $this->setCurrencyInSesion();
 
-       // $key = array_search(1, array_columns($layouts, 'cab_booking_layout_id'));
         $featured_products_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','featured_products');})->value('title');
 
         $vendors_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','vendors');})->value('title');
@@ -313,35 +356,46 @@ class UserhomeController extends FrontController
 
         $recent_orders_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
 
-
-        $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
-            $q->where('language_id', $language_id);
-        }])->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->get();
-        foreach ($brands as $brand) {
-            $brand->redirect_url = route('brandDetail', $brand->id);
-            $brand->translation_title = $brand->translation->first() ? $brand->translation->first()->title : $brand->title;
+        $enable_layout = CabBookingLayout::where('is_active',1)->pluck('slug')->toArray();
+        $home_page_labels = HomePageLabel::with('translations')->get();
+        if (in_array('brands', $enable_layout)) {     # if enable brands section in
+            $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
+                $q->where('language_id', $language_id);
+            }])->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->get();
+            foreach ($brands as $brand) {
+                $brand->redirect_url = route('brandDetail', $brand->id);
+                $brand->translation_title = $brand->translation->first() ? $brand->translation->first()->title : $brand->title;
+            }
+        }else{
+            $brands = [];
         }
+
+
         Session::forget('vendorType');
         Session::put('vendorType', $request->type);
         $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude','show_slot')->where($request->type, 1);
         if ($preferences) {
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = $preferences->Default_location_name;
-                $latitude = $preferences->Default_latitude;
-                $longitude = $preferences->Default_longitude;
+                $latitude = $preferences->Default_latitude??null;
+                $longitude = $preferences->Default_longitude??null;
                 Session::put('latitude', $latitude);
                 Session::put('longitude', $longitude);
                 Session::put('selectedAddress', $selectedAddress);
             } else {
-                if (($latitude == $preferences->Default_latitude) && ($longitude == $preferences->Default_longitude)) {
+
+                if ($preferences && ($latitude == $preferences->Default_latitude) && ($longitude == $preferences->Default_longitude)) {
                     Session::put('selectedAddress', $preferences->Default_location_name);
                 }
             }
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
-                    $query->select('vendor_id')
+
+                if (!empty($latitude) && !empty($longitude)) {
+                    $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                        $query->select('vendor_id')
                         ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                });
+                    });
+                }
             }
         }
         $vendors = $vendors->where('status', 1)->inRandomOrder()->get();
@@ -481,15 +535,13 @@ class UserhomeController extends FrontController
             $mostSellingVendors = $mostSellingVendors->sortBy('lineOfSightDistance')->values()->all();
         }
 
-        $navCategories = $this->categoryNav($language_id);
-        Session::put('navCategories', $navCategories);
         $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
         $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
         $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
         foreach ($new_product_details as  $new_product_detail) {
             $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
             $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
-            $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . '260/100' . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $new_products[] = array(
                 'tag_title' => $new_products_title??0,
                 'image_url' => $image_url,
@@ -500,14 +552,14 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $new_product_detail->inquiry_only,
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'vendor' => $new_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (number_format($new_product_detail->variant->first()->price * $multiply, 2)),
+                'price' => Session::get('currencySymbol') . ' ' . (number_format($new_product_detail->variant->first()->price??0 * $multiply, 2)),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
             );
         }
         foreach ($feature_product_details as  $feature_product_detail) {
             $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
             $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
-            $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['proxy_url'] . '260/100' . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $feature_products[] = array(
                 'tag_title' => $featured_products_title??'0',
                 'image_url' => $image_url,
@@ -525,7 +577,7 @@ class UserhomeController extends FrontController
         foreach ($on_sale_product_details as  $on_sale_product_detail) {
             $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
             $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
-            $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['proxy_url'] . '260/100' . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['proxy_url'] . $p_dim . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
             $on_sale_products[] = array(
                 'tag_title' => $on_sale_title??'0',
                 'image_url' => $image_url,
@@ -536,74 +588,78 @@ class UserhomeController extends FrontController
                 'inquiry_only' => $on_sale_product_detail->inquiry_only,
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'vendor' => $on_sale_product_detail->vendor,
-                'price' => Session::get('currencySymbol') . ' ' . (number_format($on_sale_product_detail->variant->first()->price * $multiply, 2)),
-                'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug
+                'price' => Session::get('currencySymbol') . ' ' . (number_format($on_sale_product_detail->variant->first()->price??0 * $multiply, 2)),
+                'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
             );
         }
-        $home_page_labels = HomePageLabel::with('translations')->get();
 
         $activeOrders = [];
 
-        $user = Auth::user();
+        if (in_array('recent_ordersx', $enable_layout)) {     # if enable brands section in
+           
+            $user = Auth::user();
 
-        if ($user) {
-            $activeOrders = Order::with([
-                'vendors' => function ($q) {
-                    $q->where('order_status_option_id', '!=', 6);
-                },
-                'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
-                    $qry->where('language_id', $language_id);
-                }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address'
-            ])->whereHas('vendors', function ($q) {
-                    $q->where('order_status_option_id', '!=', 6);
-                })
-                ->where('orders.user_id', $user->id)->take(10)
-                ->orderBy('orders.id', 'DESC')->get();
-            foreach ($activeOrders as $order) {
-                foreach ($order->vendors as $vendor) {
-                    // dd($vendor->toArray());
-                    $vendor->tag_title = $vendor_title??'0';
-                    $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
-                    $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
-                    foreach ($vendor->products as $product) {
-                        if (isset($product->pvariant) && $product->pvariant->media->isNotEmpty()) {
-                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
-                        } elseif ($product->media->isNotEmpty()) {
-                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
-                        } else {
-                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+            if ($user) {    
+                    $activeOrders = Order::with([
+                        'vendors' => function ($q) {
+                            $q->where('order_status_option_id', '!=', 6);
+                        },
+                        'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
+                            $qry->where('language_id', $language_id);
+                        }, 'vendors.dineInTable.category', 'vendors.products', 'vendors.products.media.image', 'vendors.products.pvariant.media.pimage.image', 'user', 'address'
+                    ])->whereHas('vendors', function ($q) {
+                        $q->where('order_status_option_id', '!=', 6);
+                    })
+                        ->where('orders.user_id', $user->id)->take(10)
+                        ->orderBy('orders.id', 'DESC')->get();
+                        foreach ($activeOrders as $order) {
+                            foreach ($order->vendors as $vendor) {
+                                // dd($vendor->toArray());
+                                $vendor->tag_title = $vendor_title??'0';
+                                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
+                                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                                foreach ($vendor->products as $product) {
+                                    if (isset($product->pvariant) && $product->pvariant->media->isNotEmpty()) {
+                                        $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                                    } elseif ($product->media->isNotEmpty()) {
+                                        $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                                    } else {
+                                        $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                                    }
+                                    $product->pricedoller_compare = 1;
+                                }
+                                if ($vendor->delivery_fee > 0) {
+                                    $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
+                                    $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
+                                    $ETA = $order_pre_time + $user_to_vendor_time;
+                                    $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : dateTimeInUserTimeZone($vendor->created_at, $user->timezone);
+                                }
+                                if ($vendor->dineInTable) {
+                                    $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                                    $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                                    $vendor->dineInTableCategory = $vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
+                                }
+                            }
+                            $order->converted_scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
                         }
-                        $product->pricedoller_compare = 1;
-                    }
-                    if ($vendor->delivery_fee > 0) {
-                        $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
-                        $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
-                        $ETA = $order_pre_time + $user_to_vendor_time;
-                        $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : dateTimeInUserTimeZone($vendor->created_at, $user->timezone);
-                    }
-                    if ($vendor->dineInTable) {
-                        $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
-                        $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
-                        $vendor->dineInTableCategory = $vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
-                    }
-
-
-                }
-                $order->converted_scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
             }
+        }else{
+
         }
 
         $data = [
             'brands' => $brands,
             'vendors' => $vendors,
             'new_products' => $new_products,
-            'navCategories' => $navCategories,
             'homePageLabels' => $home_page_labels,
             'feature_products' => $feature_products,
             'on_sale_products' => $on_sale_products,
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
             'active_orders' => $activeOrders
         ];
+
+       
+        
         return $this->successResponse($data);
     }
 
@@ -754,6 +810,7 @@ class UserhomeController extends FrontController
             $home_page_pickup_labels = CabBookingLayout::with(['translations' => function ($q) use ($langId) {
                 $q->where('language_id', $langId);
             }])->where('is_active', 1)->orderBy('order_by')->where('for_no_product_found_html',0)->get();
+            $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
 
             $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->where('for_no_product_found_html',1)->orderBy('order_by')->get();
 
@@ -762,5 +819,455 @@ class UserhomeController extends FrontController
             pr($e->getCode());
             die;
         }
+    }
+
+    # category menu
+
+    public function homePageDataCategoryMenu(Request $request)
+    {
+          if ($request->has('latitude')) {
+            $latitude = $request->latitude;
+            Session::put('latitude', $latitude);
+        } else {
+            $latitude = Session::get('latitude');
+        }
+        if ($request->has('longitude')) {
+            $longitude = $request->longitude;
+            Session::put('longitude', $longitude);
+        } else {
+            $longitude = Session::get('longitude');
+        }
+        $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
+        $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
+        $preferences = Session::get('preferences');
+        $currency_id = Session::get('customerCurrency');
+        $language_id = Session::get('customerLanguage');
+
+        $currency_id = $this->setCurrencyInSesion();
+
+
+        Session::forget('vendorType');
+        Session::put('vendorType', $request->type);
+
+        $now = Carbon::now()->toDateTimeString();
+
+
+        $navCategories = $this->categoryNav($language_id);
+        Session::put('navCategories', $navCategories);
+
+        $user = Auth::user();
+
+
+
+        $data = [
+           'navCategories' => $navCategories,
+             ];
+        return $this->successResponse($data);
+    }
+
+    #post Home Page Data New
+    public function postHomePageDataNew(Request $request)
+    {
+       
+        $enable_layout = CabBookingLayout::where('is_active',1)->orderBy('order_by','asc')->pluck('slug')->toArray();
+       
+        $data = [
+            'data' => $enable_layout
+        ];
+
+       
+        return $this->successResponse($data);
+    }
+
+
+
+    #post Home Page Data Single
+    public function postHomePageDataSingle(Request $request)
+    {   
+
+        $slug = $request->slug??null;
+        $vendor_ids = [];
+        $new_products = [];
+        $feature_products = [];
+        $on_sale_products = [];
+        if ($request->has('latitude')) {
+            $latitude = $request->latitude;
+            Session::put('latitude', $latitude);
+        } else {
+            $latitude = Session::get('latitude');
+        }
+        if ($request->has('longitude')) {
+            $longitude = $request->longitude;
+            Session::put('longitude', $longitude);
+        } else {
+            $longitude = Session::get('longitude');
+
+        }
+        $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
+        $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
+        $preferences = ClientPreference::first();
+        $currency_id = Session::get('customerCurrency');
+        $language_id = Session::get('customerLanguage');
+
+        $currency_id = $this->setCurrencyInSesion();
+
+        if(isset($slug) && $slug == 'featured_products')
+        $featured_products_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','featured_products');})->value('title');
+        if(isset($slug) && $slug == 'vendors')
+        $vendors_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','vendors');})->value('title');
+        if(isset($slug) && $slug == 'new_products')
+        $new_products_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','new_products');})->value('title');
+        if(isset($slug) && $slug == 'on_sale')
+        $on_sale_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','on_sale');})->value('title');
+        if(isset($slug) && $slug == 'brands')
+        $brands_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','brands');})->value('title');
+        if(isset($slug) && $slug == 'best_sellers')
+        $best_sellers_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','best_sellers');})->value('title');
+        if(isset($slug) && $slug == 'trending_vendors')
+        $trending_vendors_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','trending');})->value('title');
+        if(isset($slug) && $slug == 'recent_orders')
+        $recent_orders_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
+
+     
+         if(isset($slug) && $slug == 'brands'){     # if enable brands section in
+            $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
+                $q->where('language_id', $language_id);
+            }])->where('status', '!=', $this->field_status)->orderBy('position', 'asc')->get();
+            foreach ($brands as $brand) {
+                $brand->redirect_url = route('brandDetail', $brand->id);
+                $brand->translation_title = $brand->translation->first() ? $brand->translation->first()->title : $brand->title;
+            }
+        }else{
+            $brands = [];
+        }
+
+
+        Session::forget('vendorType');
+        Session::put('vendorType', $request->type);
+        if(isset($slug)){
+            $vendors = Vendor::with('products')->with('slot.day', 'slotDate')->select('id', 'name', 'banner', 'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'show_slot')->where($request->type, 1);
+            if ($preferences) {
+                if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
+                    $selectedAddress = $preferences->Default_location_name;
+                    $latitude = $preferences->Default_latitude;
+                    $longitude = $preferences->Default_longitude;
+                    Session::put('latitude', $latitude);
+                    Session::put('longitude', $longitude);
+                    Session::put('selectedAddress', $selectedAddress);
+                } else {
+                    if($preferences){
+                        if (($latitude == $preferences->Default_latitude) && ($longitude == $preferences->Default_longitude)) {
+                            Session::put('selectedAddress', $preferences->Default_location_name);
+                        }
+                    }
+                    
+                }
+                if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                    if (!empty($latitude) && !empty($longitude)) {
+                        $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                            $query->select('vendor_id')
+                        ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                        });
+                    }
+                }
+            }
+            $vendors = $vendors->where('status', 1)->inRandomOrder();
+            $vendor_set = clone $vendors;
+
+            $vendors = $vendors->take(25)->get();
+            $vendor_ids = $vendor_set->pluck('id');
+
+            foreach ($vendors as $key => $value) {
+                $value->vendorRating = $this->vendorRating($value->products);
+                // $value->name = Str::limit($value->name, 15, '..');
+                if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                    $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
+                }
+                $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
+                $categoriesList = '';
+                foreach ($vendorCategories as $key => $category) {
+                    if ($category->category) {
+                        $categoriesList = $categoriesList . @$category->category->translation_one->name ?? '';
+                        if ($key !=  $vendorCategories->count() - 1) {
+                            $categoriesList = $categoriesList . ', ';
+                        }
+                    }
+                }
+                $value->categoriesList = $categoriesList;
+                $value->type_title = $categoriesList;
+
+                $value->is_vendor_closed = 0;
+                if ($value->show_slot == 0) {
+                    if (($value->slotDate->isEmpty()) && ($value->slot->isEmpty())) {
+                        $value->is_vendor_closed = 1;
+                    } else {
+                        $value->is_vendor_closed = 0;
+                        if ($value->slotDate->isNotEmpty()) {
+                            $value->opening_time = Carbon::parse($value->slotDate->first()->start_time)->format('g:i A');
+                            $value->closing_time = Carbon::parse($value->slotDate->first()->end_time)->format('g:i A');
+                        } elseif ($value->slot->isNotEmpty()) {
+                            $value->opening_time = Carbon::parse($value->slot->first()->start_time)->format('g:i A');
+                            $value->closing_time = Carbon::parse($value->slot->first()->end_time)->format('g:i A');
+                        }
+                    }
+                }
+            }
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $vendors = $vendors->sortBy('lineOfSightDistance')->values()->all();
+            }
+           
+
+            if (($latitude) && ($longitude)) {
+                Session::put('vendors', $vendor_ids);
+            }
+        }else{
+            $vendors = [];
+        }
+            
+        
+
+        if (isset($slug) && $slug == 'trending_vendors') {
+            $now = Carbon::now()->toDateTimeString();
+            $subscribed_vendors_for_trending = SubscriptionInvoicesVendor::with('features')->whereHas('features', function ($query) {
+                $query->where(['subscription_invoice_features_vendor.feature_id' => 1]);
+            })
+            ->select('id', 'vendor_id', 'subscription_id')
+            ->where('end_date', '>=', $now)
+            ->pluck('vendor_id')->toArray();
+
+            $trendingVendors = Vendor::with('slot.day', 'slotDate')->whereIn('id', $subscribed_vendors_for_trending)->where('status', 1)->inRandomOrder()->get();
+
+            if ((!empty($trendingVendors) && count($trendingVendors) > 0)) {
+                foreach ($trendingVendors as $key => $value) {
+                    $value->tag_title = $trending_vendors_title??'0';
+                    $value->vendorRating = $this->vendorRating($value->products);
+                    // $value->name = Str::limit($value->name, 15, '..');
+                    if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                        $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
+                    }
+                    $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
+                    $categoriesList = '';
+                    foreach ($vendorCategories as $key => $category) {
+                        if ($category->category) {
+                            $categoriesList = $categoriesList . @$category->category->translation_one->name;
+                            if ($key !=  $vendorCategories->count() - 1) {
+                                $categoriesList = $categoriesList . ', ';
+                            }
+                        }
+                    }
+                    $value->categoriesList = $categoriesList;
+                    $value->is_vendor_closed = 0;
+                    if ($value->show_slot == 0) {
+                        if (($value->slotDate->isEmpty()) && ($value->slot->isEmpty())) {
+                            $value->is_vendor_closed = 1;
+                        } else {
+                            $value->is_vendor_closed = 0;
+                            if ($value->slotDate->isNotEmpty()) {
+                                $value->opening_time = Carbon::parse($value->slotDate->first()->start_time)->format('g:i A');
+                                $value->closing_time = Carbon::parse($value->slotDate->first()->end_time)->format('g:i A');
+                            } elseif ($value->slot->isNotEmpty()) {
+                                $value->opening_time = Carbon::parse($value->slot->first()->start_time)->format('g:i A');
+                                $value->closing_time = Carbon::parse($value->slot->first()->end_time)->format('g:i A');
+                            }
+                        }
+                    }
+                }
+            }
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $trendingVendors = $trendingVendors->sortBy('lineOfSightDistance')->values()->all();
+            }
+        }else{
+            $trendingVendors = [];
+        }
+
+
+        if (isset($slug) && $slug == 'trending_vendors') {
+            $mostSellingVendors = Vendor::with('slot.day', 'slotDate')->select('vendors.*', DB::raw('count(vendor_id) as max_sales'))->join('order_vendors', 'vendors.id', '=', 'order_vendors.vendor_id')->whereIn('vendors.id', $vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'), 'desc')->get();
+            if ((!empty($mostSellingVendors) && count($mostSellingVendors) > 0)) {
+                foreach ($mostSellingVendors as $key => $value) {
+                    $value->vendorRating = $this->vendorRating($value->products);
+                    // $value->name = Str::limit($value->name, 15, '..');
+                    if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                        $value = $this->getVendorDistanceWithTime($latitude, $longitude, $value, $preferences);
+                    }
+                    $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $value->id)->where('status', 1)->get();
+                    $categoriesList = '';
+                    foreach ($vendorCategories as $key => $category) {
+                        if ($category->category) {
+                            $categoriesList = $categoriesList . @$category->category->translation_one->name;
+                            if ($key !=  $vendorCategories->count() - 1) {
+                                $categoriesList = $categoriesList . ', ';
+                            }
+                        }
+                    }
+                    $value->categoriesList = $categoriesList;
+
+                    $value->is_vendor_closed = 0;
+                    if ($value->show_slot == 0) {
+                        if (($value->slotDate->isEmpty()) && ($value->slot->isEmpty())) {
+                            $value->is_vendor_closed = 1;
+                        } else {
+                            $value->is_vendor_closed = 0;
+                            if ($value->slotDate->isNotEmpty()) {
+                                $value->opening_time = Carbon::parse($value->slotDate->first()->start_time)->format('g:i A');
+                                $value->closing_time = Carbon::parse($value->slotDate->first()->end_time)->format('g:i A');
+                            } elseif ($value->slot->isNotEmpty()) {
+                                $value->opening_time = Carbon::parse($value->slot->first()->start_time)->format('g:i A');
+                                $value->closing_time = Carbon::parse($value->slot->first()->end_time)->format('g:i A');
+                            }
+                        }
+                    }
+                }
+            }
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $mostSellingVendors = $mostSellingVendors->sortBy('lineOfSightDistance')->values()->all();
+            }
+        }
+        else{
+            $mostSellingVendors = [];
+        }
+
+        if (isset($slug) && $slug == 'on_sale'){
+            $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', '', $request->type);
+            foreach ($on_sale_product_details as  $on_sale_product_detail) {
+                $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
+                $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
+                $image_url = $on_sale_product_detail->media->first() ? $on_sale_product_detail->media->first()->image->path['proxy_url'] . '260/100' . $on_sale_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                $on_sale_products[] = array(
+                    'tag_title' => $on_sale_title??'0',
+                    'image_url' => $image_url,
+                    'sku' => $on_sale_product_detail->sku,
+                    'title' => Str::limit($title, 18, '..'),
+                    'url_slug' => $on_sale_product_detail->url_slug,
+                    'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),
+                    'inquiry_only' => $on_sale_product_detail->inquiry_only,
+                    'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
+                    'vendor' => $on_sale_product_detail->vendor,
+                    'price' => Session::get('currencySymbol') . ' ' . (number_format($on_sale_product_detail->variant->first()->price??0 * $multiply, 2)),
+                    'category' => ($on_sale_product_detail->category->categoryDetail->translation) ? ( $on_sale_product_detail->category->categoryDetail->translation->first()->name ?? $on_sale_product_detail->category->categoryDetail->slug): $on_sale_product_detail->category->categoryDetail->slug??''
+                );
+            }
+        }
+        else
+        $on_sale_product_detail = [];
+        if (isset($slug) && $slug == 'new_products'){
+            $new_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
+            foreach ($new_product_details as  $new_product_detail) {
+            $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
+            $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
+            $image_url = $new_product_detail->media->first() ? $new_product_detail->media->first()->image->path['proxy_url'] . '260/100' . $new_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+            $new_products[] = array(
+                'tag_title' => $new_products_title??0,
+                'image_url' => $image_url,
+                'sku' => $new_product_detail->sku,
+                'title' => Str::limit($title, 18, '..'),
+                'url_slug' => $new_product_detail->url_slug,
+                'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
+                'inquiry_only' => $new_product_detail->inquiry_only,
+                'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
+                'vendor' => $new_product_detail->vendor,
+                'price' => Session::get('currencySymbol') . ' ' . (number_format($new_product_detail->variant->first()->price??0 * $multiply, 2)),
+                'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug
+            );
+            }
+        }
+        else
+        $new_product_detail  = [];
+        if (isset($slug) && $slug == 'featured_products'){
+            $feature_product_details = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
+            foreach ($feature_product_details as  $feature_product_detail) {
+                $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
+                $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
+                $image_url = $feature_product_detail->media->first() ? $feature_product_detail->media->first()->image->path['proxy_url'] . '260/100' . $feature_product_detail->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                $feature_products[] = array(
+                    'tag_title' => $featured_products_title??'0',
+                    'image_url' => $image_url,
+                    'sku' => $feature_product_detail->sku,
+                    'title' => Str::limit($title, 18, '..'),
+                    'url_slug' => $feature_product_detail->url_slug,
+                    'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
+                    'inquiry_only' => $feature_product_detail->inquiry_only,
+                    'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
+                    'vendor' => $feature_product_detail->vendor,
+                    'price' => Session::get('currencySymbol') . ' ' . (number_format($feature_product_detail->variant->first()->price * $multiply, 2)),
+                    'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug
+                );
+            }
+        }
+        else
+        $feature_product_detail = [];
+
+      
+        
+       
+
+        $activeOrders = [];
+
+        if (isset($slug) && $slug == 'recent_orders'){    # if enable recent_orders section in
+           
+            $user = Auth::user();
+
+            if ($user) {    
+                    $activeOrders = Order::whereHas('vendors', function ($q) {
+                        $q->where('order_status_option_id', '!=', 6);
+                    })->with([
+                        'vendors' => function ($q) {
+                            $q->where('order_status_option_id', '!=', 6)->with('products','products.media.image', 'products.pvariant.media.pimage.image');
+                        },
+                        'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
+                            $qry->where('language_id', $language_id);
+                        }, 'vendors.dineInTable.category', 
+                        'address'
+                    ])->where('orders.user_id', $user->id)
+                        ->orderBy('orders.id', 'DESC')
+                        ->take(5)->get(); 
+                        foreach ($activeOrders as $order) {
+                            foreach ($order->vendors as $vendor) {
+                                // dd($vendor->toArray());
+                                $vendor->tag_title = $vendor_title??'0';
+                                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
+                                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                                foreach ($vendor->products as $product) {
+                                    if (isset($product->pvariant) && $product->pvariant->media->isNotEmpty()) {
+                                        $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                                    } elseif ($product->media->isNotEmpty()) {
+                                        $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                                    } else {
+                                        $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                                    }
+                                    $product->pricedoller_compare = 1;
+                                }
+                                if ($vendor->delivery_fee > 0) {
+                                    $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
+                                    $user_to_vendor_time = ($vendor->user_to_vendor_time > 0) ? $vendor->user_to_vendor_time : 0;
+                                    $ETA = $order_pre_time + $user_to_vendor_time;
+                                    $vendor->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $vendor->created_at, $order->scheduled_date_time) : dateTimeInUserTimeZone($vendor->created_at, $user->timezone);
+                                }
+                                if ($vendor->dineInTable) {
+                                    $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                                    $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                                    $vendor->dineInTableCategory = $vendor->dineInTable->category->first() ? $vendor->dineInTable->category->first()->title : '';
+                                }
+                            }
+                            $order->converted_scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
+                        }
+            }
+
+          
+        }else{
+
+        }
+
+        $data = [
+            'brands' => $brands,
+            'vendors' => $vendors,
+            'new_products' => $new_products,
+            'feature_products' => $feature_products,
+            'on_sale_products' => $on_sale_products,
+            'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
+            'active_orders' => $activeOrders
+        ];
+       
+        return $this->successResponse($data);
     }
 }

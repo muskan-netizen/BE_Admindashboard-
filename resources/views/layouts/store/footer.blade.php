@@ -20,6 +20,7 @@
 
     \Session::forget('success');
 @endphp
+
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-3.3.1.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery-ui.min.js')}}"></script>
 <script type="text/javascript">
@@ -32,8 +33,9 @@
     @endif
     var autocomplete_url = "{{ route('autocomplete') }}";
     let stripe_publishable_key = '{{ $stripe_publishable_key }}';
-    let yoco_public_key = '{{ $yoco_public_key }}';
+    let stripe_fpx_publishable_key = '{{ $stripe_fpx_publishable_key }}';
     let checkout_public_key = '{{ $checkout_public_key }}';
+    let yoco_public_key = '{{ $yoco_public_key }}';
     var login_url = "{{ route('customer.login') }}";
     if(currentRouteName == 'indexTemplateOne')
     var home_page_url = "{{ route('indexTemplateOne') }}";
@@ -45,6 +47,9 @@
     var add_to_whishlist_url = "{{ route('addWishlist') }}";
     var show_cart_url = "{{ route('showCart') }}";
     var home_page_data_url = "{{ route('homePageData') }}";
+    var home_page_data_url_new = "{{ route('homePageDataNew') }}";
+    var postHomePageDataSingle = "{{ route('postHomePageDataSingle') }}";
+    var home_page_data_url_category_menu = "{{ route('homePageDataCategoryMenu') }}";
     var client_preferences_url = "{{ route('getClientPreferences') }}";
     var check_isolate_single_vendor_url = "{{ route('checkIsolateSingleVendor') }}";
     let empty_cart_url = "{{route('emptyCartData')}}";
@@ -83,6 +88,9 @@
     var pagarme_before_payment = "{{route('payment.pagarme.beforePayment')}}";
     var pagarme_create_payment = "{{route('payment.pagarme.createPayment')}}";
 
+/////////////Authorize Payment Routes
+    var authorize_before_payment = "{{route('payment.authorize.beforePayment')}}";
+    var authorize_create_payment = "{{route('payment.authorize.createPayment')}}";
 
 // Logged In User Detail
     var logged_in_user_name = "{{Auth::user()->name??''}}";
@@ -124,6 +132,8 @@
     if(!userLatitude ){
         userLatitude = "76.7794";
     }
+
+
     // if((home_page_url != window.location.href) && (home_page_url2 != window.location.href)){
     //     $('.vendor_mods').hide();}
     // else{
@@ -155,7 +165,6 @@
     @php
         $mapurl = "https://maps.googleapis.com/maps/api/js?key=".$mapKey."&v=3.exp&libraries=places,drawing";
     @endphp
-
 </script>
 
 
@@ -163,18 +172,22 @@
 <script type="text/javascript" src="{{$mapurl}}"></script>
 
 <script>
-      var bindLatlng = new google.maps.LatLng(userLatitude, userLongitude);
-      var bindmapProp = {
+    var bindLatlng, bindmapProp, bindMap = '';
+    function bindLatestCoords(userLatitude, userLongitude){
+        bindLatlng = new google.maps.LatLng(userLatitude, userLongitude);
+        bindmapProp = {
             center:bindLatlng,
             zoom:13,
             mapTypeId:google.maps.MapTypeId.ROADMAP
-
         };
-    var bindMap=new google.maps.Map(document.getElementById("nearmap"), bindmapProp);
+        bindMap=new google.maps.Map(document.getElementById("nearmap"), bindmapProp);
+    }
+    bindLatestCoords(userLatitude, userLongitude);
 </script>
 
+{{-- <script type="text/javascript" src="{{asset('front-assets/js/all-min.js')}}" defer></script> --}}
+<script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/popper.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/slick.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
@@ -182,13 +195,17 @@
 <script type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/custom.js')}}"></script>
+@if(isset($set_template)  && $set_template->template_id ==3)
+<script src="{{asset('js/aos.js')}}"></script>
+<script type="text/javascript">
+     AOS.init();
+</script>
+@endif
 <script type="text/javascript" src="{{asset('js/location.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/bootstrap-colorpicker/bootstrap-colorpicker.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/libs/clockpicker/clockpicker.min.js')}}"></script>
-
-
 
 <!--WaitMe Loader Script -->
 <script type="text/javascript" src="{{asset('js/waitMe.min.js')}}"></script>
@@ -197,7 +214,6 @@
 
 <!-- SweetAlert Script -->
 <script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
-
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 @if (Auth::check())
@@ -205,6 +221,21 @@
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
 <script>
+        $(function() {
+            $(".al_toggle-menu").click(function() {
+                $(this).toggleClass("active");
+                $('.al_menu-drawer').toggleClass("open");
+            });
+        });
+    </script>
+<script>
+
+    // var tag = document.createElement('script');
+    // tag.src = "{{asset('front-assets/js/all-min.js')}}";
+    // tag.setAttribute('defer','');
+    // var firstScriptTag = document.getElementsByTagName('script')[0];
+    // firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
     var firebaseCredentials = {!!json_encode(Session::get('preferences')) !!};
     var firebaseConfig = {
         apiKey: firebaseCredentials.fcm_api_key,
@@ -241,11 +272,9 @@
             console.log(`Token Error :: ${err}`);
         });
     }
-
     @if(empty(Session::get('current_fcm_token')))
     initFirebaseMessagingRegistration();
     @endif
-
     messaging.onMessage(function(payload) {
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");

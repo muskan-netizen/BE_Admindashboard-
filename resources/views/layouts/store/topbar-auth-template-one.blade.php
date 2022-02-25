@@ -4,7 +4,7 @@ $urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
-
+$preference = $client_preference_detail;
 @endphp
 
 <style>
@@ -13,14 +13,14 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
     }
 </style>
 
-<div class="top-header site-topbar">
+<div class="top-header site-topbar al">
     <div class="container">
         <div class="row align-items-center justify-content-between">
-            <div class="col-sm-6 mb-2 mb-sm-0">
+            <div class="col-sm-4 mb-2 mb-sm-0">
                 <div class="d-flex align-items-center justify-content-lg-start">
                     <a class="navbar-brand mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
-                    @if( (Session::get('preferences')))
-                        @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
+                    @if(isset($preference))
+                    @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
                             <div class="location-bar d-flex align-items-center justify-content-start m-0 p-0 dropdown-toggle order-1 ellips" href="#edit-address" data-toggle="modal">
                                 <div class="map-icon mr-1"><span class="yl-text">{{__('Delivering to')}}</span> <i class="fa fa-map-marker" aria-hidden="true"></i></div>
                                 <div class="homepage-address text-left">
@@ -35,7 +35,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </div>
             </div>
 
-            <div class="col-6 d-none text-right pr-0">
+            <div class="col d-none text-right pr-0">
                 <div class="icon-nav">
                     <ul>
                         <li class="d-inline-block d-lg-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li>
@@ -43,7 +43,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </div>
             </div>
 
-            <div class="col-sm-6 text-right">
+            <div class="col-sm-8 text-right">
                 <div class="d-inline d-sm-none">
                     @if( (Session::get('preferences')))
                         @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
@@ -74,7 +74,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     @if($client_preference_detail->header_quick_link == 1)
                     <li class="onhover-dropdown quick-links quick-links">
 
-                        <span class="quick-links ml-1 align-middle">{{ __('Register') }}</span>
+                        <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
                         </a>
                         <ul class="onhover-show-div">
 

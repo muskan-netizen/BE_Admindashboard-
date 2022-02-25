@@ -226,6 +226,13 @@
                             {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
                             {!! Form::text('compare_at_price', $product->variant[0]->compare_at_price, ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
+                      
+                        @if($product->vendor->need_container_charges == 1)
+                        <div class="col-4 mb-2">
+                            {!! Form::label('title', __('Container Charges (Optional)'), ['class' => 'control-label']) !!}
+                            {!! Form::text('container_charges', $product->variant[0]->container_charges, ['class'=>'form-control', 'id' => 'container_charges', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div>
+                        @endif
                         {{-- <div class="col-4 mb-2">
                             {!! Form::label('title', 'Cost Price (Optional)', ['class' => 'control-label']) !!}
                             {!! Form::text('cost_price', $product->variant[0]->cost_price, ['class'=>'form-control', 'id' => 'cost_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
@@ -261,7 +268,7 @@
                                     {!! Form::number('minimum_order_count', $product->minimum_order_count, ['class'=>'form-control', 'id' => 'minimum_order_count', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
                                 <div class="col-sm-2">
-                                    {!! Form::label('title', __('Batch Count'),['class' => 'control-label']) !!}
+                                    {!! Form::label('title', __('Batch (Min Increment)'),['class' => 'control-label']) !!}
                                     {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
                                 @endif
@@ -414,18 +421,19 @@
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Other Information") }}</h5>
                     <div class="row mb-2">
                         @if(!in_array($client_preference_detail->business_type,['taxi','laundry']))
-                        <div class="col-md-6 d-flex justify-content-between mb-2">
-                            {!! Form::label('title', __('New'),['class' => 'control-label']) !!}
-                            <input type="checkbox" id="is_new" data-plugin="switchery" name="is_new" class="chk_box" data-color="#43bee1" @if($product->is_new == 1) checked @endif>
-                        </div>
-                            @if(Auth::user()->is_superadmin == 1)
-                                <div class="col-md-6 d-flex justify-content-between mb-2">
-                                    {!! Form::label('title', __('Featured'),['class' => 'control-label']) !!}
-                                    <input type="checkbox" id="is_featured" data-plugin="switchery" name="is_featured" class="chk_box" data-color="#43bee1" @if($product->is_featured == 1) checked @endif>
-                                </div>
+                                @if(Auth::user()->is_superadmin == 1)
+                                    <div class="col-md-6 d-flex justify-content-between mb-2">
+                                        {!! Form::label('title', __('New'),['class' => 'control-label']) !!}
+                                        <input type="checkbox" id="is_new" data-plugin="switchery" name="is_new" class="chk_box" data-color="#43bee1" @if($product->is_new == 1) checked @endif>
+                                    </div>
+                                    <div class="col-md-6 d-flex justify-content-between mb-2">
+                                        {!! Form::label('title', __('Featured'),['class' => 'control-label']) !!}
+                                        <input type="checkbox" id="is_featured" data-plugin="switchery" name="is_featured" class="chk_box" data-color="#43bee1" @if($product->is_featured == 1) checked @endif>
+                                    </div>
                             @endif
                         @endif
-                        @if($configData->need_delivery_service == 1 && $product->category->categoryDetail->type_id != 7 && (!in_array($client_preference_detail->business_type,['taxi','laundry'])))
+                        {{-- $configData->need_delivery_service == 1 &&  --}}
+                        @if($product->category->categoryDetail->type_id != 7 && (!in_array($client_preference_detail->business_type,['taxi','laundry'])))
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Requires Last Mile Delivery'),['class' => 'control-label']) !!}
                             <input type="checkbox" id="last_mile" data-plugin="switchery" name="last_mile" class="chk_box" data-color="#43bee1" @if($product->Requires_last_mile == 1) checked @endif>
@@ -510,7 +518,7 @@
                             <select class="form-control " id="typeSelectBox" name="tax_category">
                                 <option value="">Select</option>
                                 @foreach($taxCate as $cate)
-                                <option value="{{$cate->id}}" @if($product->variant[0]->tax_category_id == $cate->id) selected @endif>{{$cate->title??null}}</option>
+                                <option value="{{$cate->id}}" {{ $product->tax_category_id == $cate->id ? 'selected' : ''}} >{{$cate->title??null}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -546,9 +554,20 @@
                        </div>
                     </div>
                     @else
+                    @php
+                        $Delivery = getNomenclatureName('Delivery', true);
+                        $Delivery = ($Delivery === 'Delivery') ? __('Delivery') : $Delivery;
+                        $Dine_In = getNomenclatureName('Dine-In', true);
+                        $Dine_In = ($Dine_In === 'Dine-In') ? __('Dine-In') : $Dine_In;
+                        $Takeaway = getNomenclatureName('Takeaway', true);
+                        $Takeaway = ($Takeaway === 'Takeaway') ? __('Takeaway') : $Takeaway;
+                    @endphp
+                    <div class="row mt-2">
+                        <label class="control-label">{{__('Set Delay Time')}}</label>
+                    </div>
                     <div class="row">
                         <div class="col-md-12">
-                            {!! Form::label('title', __('Set Delay Time'),['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('For ').$Delivery,['class' => 'control-label']) !!}
                          </div>
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Hrs'),['class' => 'control-label']) !!}
@@ -557,6 +576,32 @@
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Minutes'),['class' => 'control-label']) !!}
                            <input type="number"  class="form-control" value="{{$product->delay_order_min}}" name="delay_order_min" placeholder="{{__('minutes')}}">
+                       </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            {!! Form::label('title', __('For ').$Dine_In,['class' => 'control-label']) !!}
+                         </div>
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Hrs'),['class' => 'control-label']) !!}
+                             <input type="number"  class="form-control" value="{{$product->delay_order_hrs_for_dine_in}}" name="delay_order_hrs_for_dine_in" placeholder="{{__('hrs')}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Minutes'),['class' => 'control-label']) !!}
+                           <input type="number"  class="form-control" value="{{$product->delay_order_min_for_dine_in}}" name="delay_order_min_for_dine_in" placeholder="{{__('minutes')}}">
+                       </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            {!! Form::label('title',__('For ').$Takeaway,['class' => 'control-label']) !!}
+                         </div>
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Hrs'),['class' => 'control-label']) !!}
+                             <input type="number"  class="form-control" value="{{$product->delay_order_hrs_for_takeway}}" name="delay_order_hrs_for_takeway" placeholder="{{__('hrs')}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Minutes'),['class' => 'control-label']) !!}
+                           <input type="number"  class="form-control" value="{{$product->delay_order_min_for_takeway}}" name="delay_order_min_for_takeway" placeholder="{{__('minutes')}}">
                        </div>
                     </div>
                     @endif
@@ -591,7 +636,6 @@
                                 <option value="{{$coun->id}}" @if($product->country_origin_id == $coun->id) selected @endif>{{$coun->name}}</option>
                                 @endforeach
                             </select>
-
                         </div>
                     </div> -->
 
@@ -748,11 +792,7 @@
                                    </table>
                                 </div>
                              </div>
-
-
                           </div>
-
-
                  </div>
                  @endif
                  <!-- end product faqs -->

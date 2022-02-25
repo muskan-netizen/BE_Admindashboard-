@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot};
+use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart};
 
 class HomeController extends BaseController
 {
@@ -134,13 +134,16 @@ class HomeController extends BaseController
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
 
-            $payment_codes = ['stripe', 'razorpay', 'checkout'];
+            $payment_codes = ['stripe', 'stripe_fpx', 'razorpay', 'checkout'];
             $payment_creds = PaymentOption::select('code', 'credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
                 foreach ($payment_creds as $creds) {
                     $creds_arr = json_decode($creds->credentials);
                     if ($creds->code == 'stripe') {
                         $homeData['profile']->preferences->stripe_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
+                    }
+                    if ($creds->code == 'stripe_fpx') {
+                        $homeData['profile']->preferences->stripe_fpx_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
                     }
                     if ($creds->code == 'razorpay') {
                         $homeData['profile']->preferences->razorpay_api_key = (isset($creds_arr->api_key) && (!empty($creds_arr->api_key))) ? $creds_arr->api_key : '';
@@ -156,7 +159,7 @@ class HomeController extends BaseController
             else
                 $domain_link = "https://" . $homeData['profile']->sub_domain . env('SUBMAINDOMAIN');
             $homeData['domain_link'] = $domain_link;
-            
+
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -187,13 +190,13 @@ class HomeController extends BaseController
             $type = 'delivery';
             if ($request->has('type')) {
                 if (empty($request->type)) {
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating');
+                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled');
                 } else {
-                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating')->where($request->type, 1);
+                    $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($request->type, 1);
                     $type = $request->type;
                 }
             } else {
-                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')->withAvg('product', 'averageRating');
+                $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','closed_store_order_scheduled')->withAvg('product', 'averageRating');
             }
 
             $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
@@ -219,7 +222,7 @@ class HomeController extends BaseController
             if($venderFilterbest && ($venderFilterbest == 1) ){
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
-            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get();
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
 
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
@@ -239,6 +242,16 @@ class HomeController extends BaseController
                         }
                     }
                 }
+                $slotsDate = 0;
+                if($vendor->is_vendor_closed){
+                    $slotsDate = findSlot('',$vendor->id,'');
+                    $vendor->delaySlot = $slotsDate;
+                    $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
+                }else{
+                    $vendor->delaySlot = 0;
+                    $vendor->closed_store_order_scheduled = 0;
+                }
+
 
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4) ? 1 : 0;
 
@@ -257,7 +270,7 @@ class HomeController extends BaseController
 
                 $vends[] = $vendor->id;
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                    $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences);
+                    $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences, $type);
                 }
 
             }
@@ -327,7 +340,6 @@ class HomeController extends BaseController
                 );
             }
 
-
             $isVendorArea = 0;
             $categories = $this->categoryNav($langId, $vends);
             $homeData['vendors'] = $vendorData;
@@ -354,6 +366,21 @@ class HomeController extends BaseController
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+    }
+
+    public function getEditedOrders(Request $request){
+        // Get user Edited Orders from Temp Cart
+        $user = Auth::user();
+        $temp_order_vendors = TempCart::where('status', '0')->where('user_id', $user->id)->where('is_submitted', 1)->where('is_approved', 0)->pluck('order_vendor_id');
+        $temp_orders = Order::with(['vendors'=> function($q){
+            $q->select('order_id','vendor_id', 'dispatch_traking_url');
+        }])->whereHas('vendors', function($q) use($temp_order_vendors){
+            $q->whereIn('id', $temp_order_vendors);
+        })
+        ->select('id','order_number')
+        ->get();
+
+        return $this->successResponse($temp_orders, '', 200);
     }
 
     public function vendorProducts($venderIds, $langId, $currency = '', $where = '', $type)
@@ -492,10 +519,13 @@ class HomeController extends BaseController
 
                 $vendors = Vendor::select('id', 'name  as dataname', 'logo', 'slug', 'address')->where($action, 1);
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                    $vendors = $vendors->whereHas('serviceArea', function($query) use($latitude, $longitude){
-                        $query->select('vendor_id')
+
+                    if (!empty($latitude) && !empty($longitude)) {
+                        $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                            $query->select('vendor_id')
                         ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
-                    });
+                        });
+                    }
                 }
 
 
@@ -596,7 +626,7 @@ class HomeController extends BaseController
                 return $this->errorResponse($error_value[0], 400);
             }
         }
-        $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
+        $client = Client::select('id', 'name', 'email', 'phone_number','contact_email', 'logo')->where('id', '>', 0)->first();
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
         $superAdmin = User::where('is_superadmin', 1)->first();
         if ($superAdmin) {
@@ -607,7 +637,7 @@ class HomeController extends BaseController
                     return $this->errorResponse('We are sorry for inconvenience. Please contact us later', 400);
                 }
                 $mail_from = $request->email;
-                $sendto = $superAdmin->email;
+                $sendto = $client->contact_email ? $client->contact_email : $superAdmin->email;
                 $customer_name = $request->name;
                 $data = [
                     'logo' => $client->logo['original'],

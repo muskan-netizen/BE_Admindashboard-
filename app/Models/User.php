@@ -22,7 +22,7 @@ class User extends Authenticatable implements Wallet, WalletFloat
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'description', 'phone_number', 'image', 'is_email_verified','email_verified_at', 'is_verified_phone', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone'
+        'name', 'email', 'password', 'description', 'phone_number', 'image', 'is_email_verified','email_verified_at', 'is_verified_phone', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id'
     ];
     protected $appends = ['loyalty_name'];
     /**
@@ -72,14 +72,7 @@ class User extends Authenticatable implements Wallet, WalletFloat
     public function device(){
        return $this->hasMany('App\Models\UserDevice');
     }
-    /*
-    bucketname:- royoorders2.0-assets
-
-        IAM user:-royoorders2.0S3Access
-        Access key ID:- AKIAUDRAUVRKEJPQVO4C
-        Secret access key :- 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
-
-    */
+   
 
     public function getImageAttribute($value)
     {

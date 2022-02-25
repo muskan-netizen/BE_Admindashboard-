@@ -1,16 +1,10 @@
 @extends('layouts.store', ['title' => 'Booking Details'])
+@section('css')
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+@endsection
 @section('content')
 
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
+
 <section class="cab-booking pt-0">
     <div id="map_canvas" style="width: 100%; height: 100%;"></div>
 
@@ -208,7 +202,7 @@
 
 
 
-</section> 
+</section>
 <div class="modal fade product-rating" id="product_rating" tabindex="-1" aria-labelledby="product_ratingLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -246,6 +240,7 @@ var apply_cab_booking_promocode_coupon_url = "{{ route('verify.cab.booking.promo
 var order_place_driver_details_url = "{{$route}}";
 var location_icon = "{{asset("demo/images/location.png")}}";
 $(document).ready(function (){
+
     setOrderDetailsPage();
 });
 

@@ -11,6 +11,7 @@ use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Api\v1\{BaseController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController};
+use App\Http\Controllers\Front\KongapayController;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, User, Payment, Transaction};
@@ -21,13 +22,13 @@ class PaymentOptionController extends BaseController{
 
     public function getPaymentOptions(Request $request, $page = ''){
         if($page == 'wallet'){
-            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout');
+            $code = array('paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay');
         }
         elseif($page == 'pickup_delivery'){
             $code = array('cod', 'razorpay');
         }
         else{
-            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout');
+            $code = array('cod', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay');
         }
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'title', 'off_site']);
         foreach($payment_options as $option){
@@ -46,7 +47,13 @@ class PaymentOptionController extends BaseController{
         if(!empty($gateway)){
             $code = $request->header('code');
             $client = Client::where('code',$code)->first();
-            $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/";
+            $domain = '';
+            if(!empty($client->custom_domain)){
+                $domain = $client->custom_domain;
+            }else{
+                $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+            }
+            $server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
             $function = 'postPaymentVia_'.$gateway;
@@ -64,9 +71,19 @@ class PaymentOptionController extends BaseController{
         }
     }
 
+    public function postPaymentVia_kongapay(Request $request){
+        $gateway = new KongapayController();
+        return $gateway->kongapayPurchase($request);
+    }
+
     public function postPaymentVia_stripe(Request $request){
         $gateway = new StripeGatewayController();
         return $gateway->stripePurchase($request);
+    }
+
+    public function postPaymentVia_stripe_fpx(Request $request){
+        $gateway = new StripeGatewayController();
+        return $gateway->paymentWebViewStripeFPX($request);
     }
 
     public function postPaymentVia_paystack(Request $request){
@@ -115,6 +132,10 @@ class PaymentOptionController extends BaseController{
     public function postPaymentVia_checkout(Request $request){
         $gateway = new CheckoutGatewayController();
         return $gateway->checkoutPurchase($request);
+    }
+    public function postPaymentVia_authorize_net(Request $request){
+        $gateway = new AuthorizeGatewayController();
+        return $gateway->authorizePurchase($request); 
     }
 
     public function postPaymentVia_paypal(Request $request){

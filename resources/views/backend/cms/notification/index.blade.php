@@ -2,6 +2,11 @@
 @section('css')
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.8.0/bootstrap-tagsinput.css" rel="stylesheet">
+<style>
+    textarea.form-control {
+    height: auto !important;
+}
+</style>
 @endsection
 @section('content')
 <div class="container-fluid">
@@ -18,7 +23,7 @@
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h4>{{ __("List") }}</h4>
-                    </div> 
+                    </div>
                    <div class="table-responsive pages-list-data">
                         <table class="table table-striped w-100">
                             <thead>
@@ -38,10 +43,10 @@
                             </tbody>
                         </table>
                    </div>
-                </div>            
+                </div>
             </div>
         </div>
-        <div class="col-lg-7 col-xl-9 mb-2">
+        <div class="col-md-7 col-xl-6 mb-2 al_cms_notification">
             <div class="card">
                 <div class="card-body p-3" id="edit_page_content">
                     <div class="row">
@@ -53,26 +58,27 @@
                         <input type="hidden" id="notification_template_id" value="">
                         <div class="col-lg-12">
                             <div class="row">
-                                <div class="col-12 mb-3">
+                                <div class="col-12 mb-2">
                                     <label for="title" class="control-label">{{ __("Subject") }}</label>
-                                    <input class="form-control" id="subject" placeholder="Subject" name="subject" type="text">
+                                    <input class="form-control " id="subject" placeholder="Subject" name="subject" type="text">
                                     <span class="text-danger error-text updatetitleError"></span>
                                 </div>
-                                <div class="col-md-10 mb-3">
+                                <div class="col-md-10 mb-2">
                                     <label for="title" class="control-label">{{ __("Content") }}</label>
                                     <textarea class="form-control" id="content" placeholder="Meta Keyword" rows="6" name="meta_keyword" cols="10" maxlength="250"></textarea>
                                 </div>
-                                <div class="col-md-2 mb-3">
+                                <div class="col-md-2">
                                     <label for="title" class="control-label">{{ __("Tags") }}:-<div id="tags" disabled=""></div></label>
                                 </div>
-                            </div>         
+                            </div>
                         </div>
                     </div>
-                </div>            
+                </div>
             </div>
         </div>
     </div>
 </div>
+<script src="{{ asset('assets/ck_editor/ckeditor.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
          $.ajaxSetup({
@@ -80,7 +86,7 @@
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        setTimeout(function(){ 
+        setTimeout(function(){
             $('tr.page-title:first').trigger('click');
         }, 500);
         $(document).on("click","#client_language",function() {
@@ -99,7 +105,8 @@
                         $('#edit_page_content #tags').html(response.data.tags);
                         $('#edit_page_content #subject').val(response.data.subject);
                         $('#edit_page_content #content').val(response.data.content);
-                        // $('#edit_page_content #content').summernote({'height':450});
+                        //CKEDITOR.instances.content.setData(response.data.content);
+                         //$('#edit_page_content #content').summernote({'height':450});
                     }else{
                       $(':input:text').val('');
                       $('textarea').val('');
@@ -116,6 +123,7 @@
             var update_url = "{{route('cms.notifications.update')}}";
             let subject = $('#edit_page_content #subject').val();
             let content = $('#edit_page_content #content').val();
+           // let content = CKEDITOR.instances.content.getData();
             let email_template_id = $('#edit_page_content #notification_template_id').val();
             var data = { subject: subject, content: content, email_template_id:email_template_id};
             $.post(update_url, data, function(response) {
@@ -132,6 +140,10 @@
 </script>
 @endsection
 @section('script')
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+{{-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script> --}}
 <script src="https://cdn.jsdelivr.net/bootstrap.tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+{{-- <script>
+    CKEDITOR.replace('content');
+    CKEDITOR.config.height = 250;
+</script> --}}
 @endsection

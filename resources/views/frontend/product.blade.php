@@ -1,4 +1,9 @@
-@extends('layouts.store', ['title' => (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''])
+@extends('layouts.store', [
+'title' => (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : '',
+'meta_title'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_title:'',
+'meta_keyword'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_keyword:'',
+'meta_description'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description:'',
+])
 
 @section('css')
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
@@ -8,6 +13,7 @@
 
     <link rel="stylesheet" href="https://www.jqueryscript.net/css/jquerysctipttop.css">
     <link rel="stylesheet" href="https://www.jqueryscript.net/demo/Product-Carousel-Magnifying-Effect-exzoom/jquery.exzoom.css">
+    <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .main-menu .brand-logo {
         display: inline-block;
@@ -46,16 +52,7 @@
 @endsection
 
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
+
 @if(!empty($category))
 @include('frontend.included_files.products_breadcrumb')
 @endif
@@ -190,7 +187,7 @@
                                 </div> --}}
 
                                 <div class="exzoom hidden w-100" id="exzoom">
-                                    <div class="exzoom_img_box">
+                                    <div class="exzoom_img_box mb-2">
                                         <ul class='exzoom_img_ul'>
                                         @if(!empty($product->media))
                                         @foreach($product->media as $k => $image)
@@ -201,22 +198,24 @@
                                                             $img = $image->image;
                                                         }
                                                     @endphp
-                                            <li><img class="blur-up lazyload" data-src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" /></li>
+                                            <li><img class="" src="{{$img->path['image_fit'].'300/300'.$img->path['image_path']}}" /></li>
                                         @endforeach
                                         @endif
                                         </ul>
                                     </div>
+                                    @if(count($product->media) > 1)
                                     <div class="exzoom_nav"></div>
                                     <p class="exzoom_btn">
                                         <a href="javascript:void(0);" class="exzoom_prev_btn">
                                             < </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
                                         </a>
                                     </p>
+                                    @endif
                                 </div>
                             </div>
 
                             <div class="@php if(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-7'; } else { echo 'offset-lg-4 col-lg-4'; } @endphp rtl-text">
-                                <div class="product-right inner_spacing">
+                                <div class="product-right inner_spacing pl-3">
                                     <h2 class="mb-0">
                                         {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                     </h2>
@@ -290,7 +289,8 @@
                                                 @php
                                                 $product_quantity_in_cart = $product_in_cart->quantity??0;
                                                 @endphp
-                                                    <input type="hidden" id="instock" value="{{ ($product->variant[0]->quantity - $product_quantity_in_cart)}}">
+                                                <input type="hidden" value="{{$product->has_inventory}}" id="hasInventory">
+                                                <input type="hidden" id="instock" value="{{ ($product->variant[0]->quantity - $product_quantity_in_cart)}}">
                                                 @endif
                                             </h6>
                                             @if(!$product->has_inventory || $product->variant[0]->quantity > 0 || $product->sell_when_out_of_stock == 1)
@@ -399,10 +399,13 @@
                                         </table>--}}
                                     </div>
                                     @endif
+                                    @php
+                                    $checkSlot = findSlot('',$product->vendor->id,'');
+                                    @endphp
                                     <div class="product-buttons">
                                         @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                         @if($is_inwishlist_btn && $is_available)
-                                        <button type="button" class="btn btn-solid addWishList" proSku="{{$product->sku}}">
+                                        <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}">
                                             {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
                                         </button>
                                         @endif
@@ -415,14 +418,16 @@
                                         else
                                         $product_quantity_in_cart = $product_in_cart->quantity??0;
 
+
                                         @endphp
-                                        @if($is_available)
-                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($vendor_info->closed_store_order_scheduled == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                        @if($is_available == 1)
+                                            <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
                                         @endif
-                                            @if($vendor_info->is_vendor_closed == 1 && $vendor_info->closed_store_order_scheduled == 0)
-                                            <p class="text-danger">Vendor is not accepting orders right now.</p>
+
+                                            @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
+                                            <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
                                             @elseif($vendor_info->is_vendor_closed == 1 && $vendor_info->closed_store_order_scheduled == 1)
-                                            <p class="text-danger">We are not accepting orders right now. You can schedule this for {{findSlot('',$product->vendor_id,'')}}.</p>
+                                            <p class="text-danger">{{ __('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.</p>
                                             @endif
                                         @else
                                             <a href="#" data-toggle="modal" data-target="#inquiry_form" class="btn btn-solid inquiry_mode">{{ __('Inquire Now')}}</a>
@@ -633,7 +638,9 @@
     <% } %>
 </script>
 @if($product->related_products->count() > 0)
-<section class="">
+
+
+<section class="section-b-space ratio_asos">
     <div class="container">
         <div class="row m-0">
             <div class="col-12 ">
@@ -641,10 +648,7 @@
             </div>
         </div>
     </div>
-</section>
-
-<section class="section-b-space ratio_asos">
-    <div class="container mt-3 mb-5">
+    <div class="container mt-3 mb-4">
         <div class="product-4 product-m no-arrow related-products">
             @forelse($product->related_products as $related_product)
             <div>
@@ -758,7 +762,7 @@
 
 
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
-
+<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 
 
 <script>
@@ -900,8 +904,8 @@
                         let variant_image_template = _.template($('#variant_image_template').html());
                         $(".product__carousel .gallery-parent").html('');
                         $(".product__carousel .gallery-parent").append(variant_image_template({variant:response.variant}));
-                        // easyZoomInitialize();
-                        // $('.easyzoom').easyZoom();
+                        easyZoomInitialize();
+                        $('.easyzoom').easyZoom();
 
                         if(response.variant.media != ''){
                             $(".product-slick").slick({ slidesToShow: 1, slidesToScroll: 1, arrows: !0, fade: !0, asNavFor: ".slider-nav" });

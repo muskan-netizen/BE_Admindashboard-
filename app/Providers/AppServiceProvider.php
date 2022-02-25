@@ -11,7 +11,7 @@ use App\Models\Page;
 use App\Models\Client;
 use App\Models\SocialMedia;
 use Illuminate\Http\Request;
-use App\Models\{ClientPreference, PaymentOption};
+use App\Models\{ClientPreference, PaymentOption,WebStylingOption};
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
@@ -49,14 +49,17 @@ class AppServiceProvider extends ServiceProvider
         }
         $client_head = Client::where(['id' => 1])->first();
 
-        $payment_codes = ['stripe', 'yoco', 'checkout'];
-        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = '';
+        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout'];
+        $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = '';
         $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
         if($payment_options){
             foreach($payment_options as $option){
                 $creds = json_decode($option->credentials);
                 if($option->code == 'stripe'){
                     $stripe_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
+                }
+                if($option->code == 'stripe_fpx'){
+                    $stripe_fpx_publishable_key = (isset($creds->publishable_key) && (!empty($creds->publishable_key))) ? $creds->publishable_key : '';
                 }
                 if($option->code == 'yoco'){
                     $yoco_public_key = (isset($creds->public_key) && (!empty($creds->public_key))) ? $creds->public_key : '';
@@ -76,6 +79,7 @@ class AppServiceProvider extends ServiceProvider
         
         $last_mile_common_set = $this->checkIfLastMileDeliveryOn();
         $client_payment_options = PaymentOption::where('status', 1)->pluck('code')->toArray();
+        // $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
 
 
         view()->share('last_mile_common_set', $last_mile_common_set);
@@ -85,10 +89,12 @@ class AppServiceProvider extends ServiceProvider
         view()->share('mod_count', $count);
         view()->share('social_media_details', $social_media_details);
         view()->share('stripe_publishable_key', $stripe_publishable_key);
+        view()->share('stripe_fpx_publishable_key', $stripe_fpx_publishable_key);
         view()->share('yoco_public_key', $yoco_public_key);
         view()->share('checkout_public_key', $checkout_public_key);
         view()->share('client_preference_detail', $client_preference_detail);
         view()->share('client_payment_options', $client_payment_options);
+        // view()->share('set_template', $set_template);
        
        
     }

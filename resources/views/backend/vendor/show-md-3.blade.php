@@ -89,21 +89,42 @@
                         {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="show_slot" class="form-control" data-color="#43bee1" @if($vendor->show_slot == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
-                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                        <div class="form-group">
-                             {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
-                        <input type="number"  name="slot_minutes" class="form-control"  value="{{$vendor->slot_minutes??0}}" min="0">
-                        </div>
+
+                    <div class="col-md-12 mb-2 align-items-center justify-content-between" style="display:{{$vendor->show_slot == 1 ? 'none!important' : 'block'}}" id="sch_vendor_close">
+                        {!! Form::label('title', __('Scheduled order if vendor closed?'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="closed_store_order_scheduled" class="form-control" data-color="#43bee1" @if($vendor->closed_store_order_scheduled == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
+
+                    
+
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
-                             {!! Form::label('title', __('Scheduled order for next day?'),['class' => 'control-label']) !!}
-                             <input type="checkbox" data-plugin="switchery" name="closed_store_order_scheduled" class="form-control" data-color="#43bee1" @if($vendor->closed_store_order_scheduled == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    <div class="form-group w-100">
+                     {!! Form::label('title', __('Slot Duration (In minutes)'),['class' => 'control-label']) !!}
+                        <select class="form-control" name="slot_minutes">
+                            <option value="">{{__('Slot Duration')}}</option>
+                            <option value="15" {{$vendor->slot_minutes == '15'? 'selected':''}}>15 {{__(' Minutes')}}</option>
+                            <option value="30" {{$vendor->slot_minutes == '30'? 'selected':''}}>30 {{__(' Minutes')}}</option>
+                            <option value="45" {{$vendor->slot_minutes == '45'? 'selected':''}}>45 {{__(' Minutes')}}</option>
+                            @for($i=1;$i<=8;$i++)
+                                <option value="{{$i*60}}" {{$vendor->slot_minutes == ($i*60)? 'selected':''}}>{{ $i. __(' Hour')}}</option>
+                            @endfor
+                        </select>
                     </div>
+                    </div>
+
                     @endif
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('Auto Accept Order'),['class' => 'control-label']) !!}
                         <input type="checkbox" data-plugin="switchery" name="auto_accept_order" class="form-control" data-color="#43bee1" @if($vendor->auto_accept_order == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Need Container Charges?'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="need_container_charges" class="form-control" data-color="#43bee1" @if($vendor->need_container_charges == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Return Request'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="return_request" class="form-control" data-color="#43bee1" @if($vendor->return_request == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
                     </div>
                     <div class="col-md-12" id="auto_reject_timeInput" style="display:{{$vendor->auto_accept_order == 1 ? 'none' : 'block'}}">
                         <div class="form-group">
@@ -180,6 +201,68 @@
 
 
 @if(Auth::user()->is_superadmin == 1)
+
+@if(isset($checkAhoyShip) && $checkAhoyShip != 0)
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.ahoy.pickuplocation', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Add Pickup Location Ahoy Delivery") }}</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        <input type="text" name="location_name" class="form-control" value="{{@$vendor->ahoy_location? json_decode($vendor->ahoy_location)->locationName :''}}" {{(($vendor->ahoy_location)? 'disabled' :'')}} placeholder="{{__('Location Name')}}" required>
+                    </div>
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        <div class="form-group w-100">
+                            <label class="radio">{{__('Location Type')}}</label>
+                        <select class="form-control" name="location_type">
+                            <option value="1" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationType =='1')?'Selected':'' : ''}}>Tower, (either office or apartment)</option>
+                            <option value="2" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationType =='2')?'Selected':'' : ''}}>Building (villa, police station. etc)</option>
+                            <option value="3" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationType =='3')?'Selected':'' : ''}}>Commercial (warehouse)</option>
+                        </select>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{@$vendor->ahoy_location? (json_decode($vendor->ahoy_location)->locationName)?'disabled':'' : ''}} >{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+
+@if(isset($checkShip) && $checkShip != 0)
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.pickuplocation', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Add Pickup Location Shiprocket") }}</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        <input type="text" name="shiprocket_pickup_name" class="form-control" value="{{@$vendor->shiprocket_pickup_name}}" {{(($vendor->shiprocket_pickup_name)? 'disabled' :'')}} placeholder="{{__('Pickup Location Name')}}" required>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{(($vendor->shiprocket_pickup_name)? 'disabled' :'')}}>{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -447,6 +530,10 @@ $( document ).ready(function() {
        if(min >=60){
             var hours = Math.floor(min / 60);
             var minutes = min % 60;
+            if( minutes <= 9)
+            minutes ='0'+minutes;
+
+
             var txt = '~ '+hours+':'+minutes+" {{__('Hours')}}";
             $('#Vendor_order_pre_time_show').text(txt);
        }else{
@@ -614,6 +701,22 @@ $( document ).ready(function() {
             $("#auto_reject_timeInput").css("display", "none");
         } else {
             $("#auto_reject_timeInput").css("display", "block");
+        }
+    })
+
+    $("input[name='show_slot']").change(function() {
+        if($(this).prop('checked')){
+            $("#sch_vendor_close").css("display", "none");
+        } else {
+            $("#sch_vendor_close").css("display", "block");
+        }
+    })
+
+    $("input[name='need_container_charges']").change(function() {
+        if($(this).prop('checked')){
+            $("#need_container_charges").css("display", "none");
+        } else {
+            $("#need_container_charges").css("display", "block");
         }
     })
 </script>

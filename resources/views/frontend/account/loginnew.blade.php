@@ -2,23 +2,15 @@
 
 @section('css')
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
-<section class="wrapper-main mb-5 py-lg-5">
+
+<section class="wrapper-main py-lg-5">
     <div class="container">
-        <div class="row" id="login-section">
-            <div class="col-lg-6 mb-lg-0 mb-3 text-center border-right pb-4">
+        <div class="row  align-items-center h-100" id="login-section">
+            <div class="col-lg-6 mb-lg-0 mb-3 text-center border-right pb-4 pb-sm-0">
                 <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
                 @if(session('preferences'))
                 @if(@session('preferences')->fb_login == 1 || @session('preferences')->twitter_login == 1 || @session('preferences')->google_login == 1 || @session('preferences')->apple_login == 1)
@@ -55,7 +47,7 @@
                 @endif
                 <div class="row mt-3 arabic-language">
                     <div class="offset-xl-2 col-xl-8 text-left">
-                        {{-- <form name="login" id="login" action="{{route('customer.loginData')}}"  class="px-lg-4" method="post"> 
+                        {{-- <form name="login" id="login" action="{{route('customer.loginData')}}"  class="px-lg-4" method="post">
                             @csrf
                             <div class="form-group">
                                 <label for="">{{ __('Email') }}</label>
@@ -103,7 +95,7 @@
                         <input type="hidden" name="device_token" value="web">
                         <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode','1') }}">
                         <input type="hidden" id="countryData" name="countryData" value="{{ strtolower(Session::get('default_country_code','US')) }}">
-                        
+
                         <div class="login-with-username">
                             <div class="form-group">
                                 <input type="text" class="form-control" id="username" placeholder="{{ __('Email or Phone Number') }}" required="" name="username" value="{{ old('username')}}">
@@ -123,15 +115,15 @@
                         </div>
                         </form>
                     </div>
-                </div>    
+                </div>
             </div>
             <div class="col-lg-6 text-center">
-                <h3 class="mb-md-5 mb-4">{{ __('New Customer') }}</h3>   
+                <h3 class="mb-md-3 mb-2">{{ __('New Customer') }}</h3>
                 <div class="create_box">
                     {{-- <h6>{{ __('Create An Account') }}</h6> --}}
                     {{-- <p>{{ __('Sign up for a free account at our store. Registration is quick and easy. It allows you to be able to order from our shop. To start shopping click register.') }}</p> --}}
                     <h6>{{ __('Create a free account and join us!') }}</h6>
-                    <a href="{{route('customer.register')}}" class="btn btn-solid mt-4">{{ __('Create An Account') }}</a>
+                    <a href="{{route('customer.register')}}" class="btn btn-solid mt-2">{{ __('Create An Account') }}</a>
                 </div>
             </div>
         </div>
@@ -166,11 +158,12 @@
         </div>
         </form>
     </div>
-</section> 
+</section>
 @endsection
 @section('script')
 {{-- <script src="https://www.gstatic.com/firebasejs/5.5.9/firebase.js"></script> --}}
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
     var login_via_username_url = "{{route('customer.loginViaUsername')}}";
     var forgot_password_url = "{{route('customer.forgotPass')}}";
@@ -341,7 +334,7 @@
                             $('#verify-phone-section').show();
                             $('.otp_inputs input').val('');
                             $('#phone_otp_success_msg').html(response.message).show();
-                            setTimeout(function(){ 
+                            setTimeout(function(){
                                 $('#phone_otp_success_msg').html('').hide();
                             }, 5000);
                         }
@@ -355,8 +348,27 @@
                 }, error: function (error) {
                     var response = $.parseJSON(error.responseText);
                     // let error_messages = response.message;
-                    $("#error-msg").html(response.message);
-                    $("#error-msg").show();
+
+                    if((response.data.user_exists != undefined) && (response.data.user_exists == false)){
+                        Swal.fire({
+                            title: "{{__('User Not Found')}}",
+                            text: response.message,
+                            icon: 'info',
+                            iconColor: '{{getClientPreferenceDetail()->web_color}}',
+                            showCancelButton: true,
+                            confirmButtonText: 'Signup',
+                            confirmButtonColor: '{{getClientPreferenceDetail()->web_color}}'
+                        }).then((result) => {
+                            if(result.value)
+                            {
+                                window.location.href = "{{ route('customer.register') }}";
+                            }
+                        });
+                    }
+                    else{
+                        $("#error-msg").html(response.message);
+                        $("#error-msg").show();
+                    }
                 }
             });
         }
@@ -389,7 +401,7 @@
         });
         var form_inputs = $("#login-form-new").serializeArray();
         form_inputs.push({name : 'verifyToken', value : verifyToken});
-        
+
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -400,14 +412,14 @@
                     window.location.href = response.data.redirect_to;
                 }else{
                     $(".invalid_phone_otp_error").html(response.message);
-                    setTimeout(function(){ 
+                    setTimeout(function(){
                 		$('.invalid_phone_otp_error').html('').hide();
                 	}, 5000);
                 }
             },
             error: function(data) {
                 $(".invalid_phone_otp_error").html(data.responseJSON.message);
-                setTimeout(function(){ 
+                setTimeout(function(){
                     $('.invalid_phone_otp_error').html('').hide();
                 }, 5000);
             },
@@ -448,7 +460,7 @@
             success: function(res) {
                 if(res.status == "Success"){
                     $('#success-msg').html(res.message).show();
-                	setTimeout(function(){ 
+                	setTimeout(function(){
                 		$('#success-msg').html('').hide();
                 	}, 5000);
                 }

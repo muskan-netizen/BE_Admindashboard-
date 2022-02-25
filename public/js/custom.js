@@ -1,15 +1,17 @@
 jQuery(window).scroll(function() {
     var scroll = jQuery(window).scrollTop();
-
     if (scroll <= 50) {
-
         jQuery(".site-header").removeClass("fixed-bar");
-
     } else {
-
         jQuery(".site-header").addClass("fixed-bar");
-
     }
+});
+
+
+// Material Select Initialization
+$(document).ready(function() {
+    //$('.mdb-select').materialSelect();
+
 });
 
 $(function() {
@@ -107,7 +109,7 @@ window.loadMainMenuSlider = function loadMainMenuSlider(){
     });
 }
 
-// loadMainMenuSlider();
+ loadMainMenuSlider();
 
 window.resizeMenuSlider = function resizeMenuSlider(){
     var windowWidth = $(window).width();
@@ -117,7 +119,7 @@ window.resizeMenuSlider = function resizeMenuSlider(){
         if(!$('.menu-slider').hasClass('slick-initialized')){
 
             setTimeout(function(){
-                loadMainMenuSlider();
+                //loadMainMenuSlider();
                 if ( $('#main-menu .slick-slide').length > 13 ) {
                     $('#main-menu').addClass('items-center');
                 }
@@ -144,7 +146,7 @@ if ($(window).width() < 767) {
 
 window.initializeSlider = function initializeSlider() {
     $(".slide-6").slick({
-        arrows: false,
+        arrows: true,
         dots: false,
         infinite: true,
         speed: 300,
@@ -156,25 +158,75 @@ window.initializeSlider = function initializeSlider() {
             { breakpoint: 1367, settings: { slidesToShow: 5, slidesToScroll: 5, infinite: !0 } },
             { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
             { breakpoint: 767, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 3, infinite: !0 } },
-            { breakpoint: 480, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } }
+            { breakpoint: 480, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
     $(".product-4").slick({
         dots: false,
         infinite: true,
-        dots: false,
         speed: 300,
-        slidesToShow: 5,
+        slidesToShow: 4,
+        centerMode: true,
+        centerPadding: '20px',
         slidesToScroll: 4,
+        arrows: true,
         responsive: [
             { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
             { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+        ]
+    });
+
+    $(".product-4-featured_products").slick({
+        dots: false,
+        infinite: true,
+        speed: 300,
+        slidesToShow: 4,
+        centerMode: true,
+        centerPadding: '60px',
+        slidesToScroll: 4,
+        arrows: true,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+        ]
+    });
+
+    $(".product-4-new_products").slick({
+        dots: false,
+        infinite: true,
+        speed: 300,
+        slidesToShow: 4,
+        centerMode: true,
+        centerPadding: '60px',
+        slidesToScroll: 4,
+        arrows: true,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+        ]
+    });
+
+    $(".product-4-on_sale").slick({
+        dots: false,
+        infinite: true,
+        speed: 300,
+        slidesToShow: 4,
+        centerMode: true,
+        centerPadding: '60px',
+        slidesToScroll: 4,
+        arrows: true,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
 
     $(".recent-orders").slick({
-        arrows: false,
+        arrows: true,
         dots: false,
         infinite: true,
         speed: 300,
@@ -185,33 +237,211 @@ window.initializeSlider = function initializeSlider() {
         responsive: [
             { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 2 } },
             { breakpoint: 991, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 2 } },
-            { breakpoint: 767, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 1 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } },
             { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
     $(".brand-slider").slick({
-        arrows: false,
-        dots: !1,
-        infinite: !1,
+        arrows: true,
+        dots: false,
+        infinite: true,
         speed: 300,
         slidesToShow: 4,
         slidesToScroll: 3,
         responsive: [
-            {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,arrows: false,infinite: true}},
-            {breakpoint: 991,settings: {slidesToShow: 3,arrows: false,slidesToScroll: 1}},
-            {breakpoint: 767,settings: {slidesToShow: 2,arrows: false,slidesToScroll: 1}},
-            {breakpoint: 360,settings: {slidesToShow: 1,arrows: false,slidesToScroll: 1}}
+            {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 1}},
+            {breakpoint: 767,settings: {slidesToShow: 2,slidesToScroll: 1}},
+            {breakpoint: 360,settings: {slidesToShow: 1,slidesToScroll: 1}}
         ]
     });
     $('.suppliers-slider').slick({
+        infinite: true,
+        speed: 300,
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        centerMode: false,
+        centerPadding: '60px',
+        arrows: true,
+        dots: false,
+        responsive: [
+            {breakpoint: 1199,settings: {slidesToShow: 4,slidesToScroll: 3,infinite: true,dots: false,centerMode: false,}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 3,dots: false,centerMode: true,}},
+            {breakpoint: 767,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}},
+            {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
+        ]
+    });
+    $('.al_t2_suppliers-slider').slick({
+        infinite: true,
+        speed: 300,
+        slidesToShow: 6,
+        slidesToScroll: 1,
+        centerMode: false,
+        centerPadding: '0',
+        arrows: true,
+        dots: false,
+        responsive: [
+            {breakpoint: 1199,settings: {slidesToShow: 4,slidesToScroll: 3,infinite: true,dots: false,centerMode: false,}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 3,dots: false,centerMode: true,}},
+            {breakpoint: 767,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}},
+            {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
+        ]
+    });
+    $(".product-5").slick({
+        arrows: true,
+        dots: false,
+        infinite: true,
+        dots: false,
+        speed: 300,
+        slidesToShow: 6,
+        slidesToScroll: 3,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } },
+            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+        ]
+    });
+    $('.vendor-product').slick({
+        infinite: true,
+        speed: 300,
+        arrows: true,
+        dots: false,
+        slidesToShow: 4,
+        slidesToScroll: 2,
+        autoplay: true,
+        autoplaySpeed: 5000,
+        rtl: false,
+        responsive: [{
+                breakpoint: 1200,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3
+                }
+            },
+            {
+                breakpoint: 767,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    arrows: true
+                }
+            }
+        ]
+    });
+
+
+    $(".booking-time").slick({
+        dots: false,
+        arrows: true,
+        infinite: !0,
+        speed: 300,
+        slidesToShow: 3,
+        slidesToScroll: 3,
+        responsive: [
+            { breakpoint: 1367, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
+            { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
+            { breakpoint: 767, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 3, infinite: !0 } },
+            { breakpoint: 480, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+        ]
+    });
+
+    if ($('body').attr('dir') == 'rtl') {
+        $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .al_t2_suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
+    }
+}
+
+
+window.initializeSliderNew = function initializeSliderNew() {
+    
+    
+
+    $(".product-4-featured_products").slick({
         dots: false,
         infinite: true,
         speed: 300,
-        slidesToShow: 5,
+        slidesToShow: 4,
+        centerMode: true,
+        centerPadding: '60px',
+        slidesToScroll: 4,
+        arrows: true,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+        ]
+    });
+
+    $(".product-4-new_products").slick({
+        dots: false,
+        infinite: true,
+        speed: 300,
+        slidesToShow: 4,
+        centerMode: true,
+        centerPadding: '60px',
+        slidesToScroll: 4,
+        arrows: true,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+        ]
+    });
+
+    $(".product-4-on_sale").slick({
+        dots: false,
+        infinite: true,
+        speed: 300,
+        slidesToShow: 4,
+        centerMode: true,
+        centerPadding: '60px',
+        slidesToScroll: 4,
+        arrows: true,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+        ]
+    });
+
+    $(".recent-orders").slick({
+        arrows: true,
+        dots: false,
+        infinite: true,
+        speed: 300,
+        // centerMode: true,
+        // centerPadding: '60px',
+        slidesToShow: 2,
+        slidesToScroll: 1,
+        responsive: [
+            { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 2 } },
+            { breakpoint: 991, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } },
+            { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
+        ]
+    });
+    $(".brand-slider").slick({
+        arrows: true,
+        dots: false,
+        infinite: true,
+        speed: 300,
+        slidesToShow: 4,
         slidesToScroll: 3,
+        responsive: [
+            {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
+            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 1}},
+            {breakpoint: 767,settings: {slidesToShow: 2,slidesToScroll: 1}},
+            {breakpoint: 360,settings: {slidesToShow: 1,slidesToScroll: 1}}
+        ]
+    });
+    $('.suppliers-slider-trending_vendors').slick({
+        infinite: true,
+        speed: 300,
+        slidesToShow: 6,
+        slidesToScroll: 1,
         centerMode: false,
         centerPadding: '60px',
-        arrows: false,
+        arrows: true,
         dots: false,
         responsive: [{
                 breakpoint: 1199,
@@ -235,8 +465,8 @@ window.initializeSlider = function initializeSlider() {
             {
                 breakpoint: 767,
                 settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
                     dots: false,
                     centerMode: true,
                 }
@@ -253,6 +483,7 @@ window.initializeSlider = function initializeSlider() {
         ]
     });
     $(".product-5").slick({
+        arrows: true,
         dots: false,
         infinite: true,
         dots: false,
@@ -262,13 +493,14 @@ window.initializeSlider = function initializeSlider() {
         responsive: [
             { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
             { breakpoint: 991, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } },
+            { breakpoint: 767, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } },
             { breakpoint: 420, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
     $('.vendor-product').slick({
         infinite: true,
         speed: 300,
-        arrows: false,
+        arrows: true,
         dots: false,
         slidesToShow: 4,
         slidesToScroll: 2,
@@ -278,8 +510,8 @@ window.initializeSlider = function initializeSlider() {
         responsive: [{
                 breakpoint: 1200,
                 settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2
+                    slidesToShow: 3,
+                    slidesToScroll: 3
                 }
             },
             {
@@ -295,7 +527,8 @@ window.initializeSlider = function initializeSlider() {
 
 
     $(".booking-time").slick({
-        dots: !1,
+        dots: false,
+        arrows: true,
         infinite: !0,
         speed: 300,
         slidesToShow: 3,
@@ -304,7 +537,7 @@ window.initializeSlider = function initializeSlider() {
             { breakpoint: 1367, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
             { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 4, infinite: !0 } },
             { breakpoint: 767, settings: { slidesToShow: 3, arrows: true, slidesToScroll: 3, infinite: !0 } },
-            { breakpoint: 480, settings: { slidesToShow: 2, arrows: true, slidesToScroll: 2 } }
+            { breakpoint: 480, settings: { slidesToShow: 1, arrows: true, slidesToScroll: 1 } }
         ]
     });
 
@@ -312,7 +545,6 @@ window.initializeSlider = function initializeSlider() {
         $(".slide-6, .brand-slider, .product-4, .product-5, .brand-slider, .suppliers-slider, .booking-time, .vendor-product").slick('slickSetOption', { rtl: true }, true);
     }
 }
-
 
 
 
@@ -361,14 +593,7 @@ $(document).ready(function() {
     $("#mobile_search_box_btn").click(function() {
         $('.radius-bar').slideToggle();
     });
-    // $("#mobile_search_box_btn").click(function () {
-    //     $('.search-overlay').slideToggle();
-    // });
-    // $(".closebtn").click(function () {
-    //     $('.search-overlay').slideUp();
-    // });
-    // $("#search_viewall").click(function () {
-    // });
+
     $(document).on("click", "#search_viewall", function(e) {
         let keyword = $("#main_search_box").val();
         let url = "/search-all/" + keyword;
@@ -429,7 +654,13 @@ $(document).ready(function() {
         $("form").submit(function(e) {
             let address_id = $("input:radio[name='address_id']").is(":checked");
             if (!address_id) {
-                alert('Address field required.');
+               // alert('Address field required.');
+                Swal.fire({
+                    // title: "Warning!",
+                    text: "{{__('Address field required.') }}",
+                    icon : "error",
+                    button: "OK",
+                });
                 return false;
             }
         });
@@ -524,8 +755,32 @@ $(document).ready(function() {
         card.mount('#stripe-card-element');
     }
 
+    function stripeFPXInitialize() {
+        stripe_fpx = Stripe(stripe_fpx_publishable_key);
+        var elements = stripe_fpx.elements();
+        var style = {
+            base: {
+              // Add your base input styles here. For example:
+              padding: '10px 12px',
+              color: '#32325d',
+              fontSize: '16px',
+            },
+        };
+        fpxBank = elements.create('fpxBank',
+            {
+              style: style,
+              accountHolderType: 'individual',
+            }
+        );
+        // Add an instance of the fpxBank Element into the container with id `fpx-bank-element`.
+        fpxBank.mount('#fpx-bank-element');
+    }
+
     if ($("#stripe-card-element").length > 0) {
         stripeInitialize();
+    }
+    if ($("#fpx-bank-element").length > 0) {
+        stripeFPXInitialize();
     }
 
     $(document).delegate(".subscribe_btn", "click", function() {
@@ -556,6 +811,7 @@ $(document).ready(function() {
                                 }
                                 $("#subscription_payment").modal("show");
                                 stripeInitialize();
+                                stripeFPXInitialize();
                             }
                         },
                         error: function(error) {
@@ -592,7 +848,7 @@ $(document).ready(function() {
                         $("#card_last_four_digit").val(result.token.card.last4);
                         $("#card_expiry_month").val(result.token.card.exp_month);
                         $("#card_expiry_year").val(result.token.card.exp_year);
-                        paymentViaStripe(result.token.id, '', payment_option_id);
+                        paymentViaStripe(result.token.id, '', payment_option_id, '', '');
                     }
                 });
             } else if (payment_option_id == 3) {
@@ -609,7 +865,13 @@ $(document).ready(function() {
                 }).catch(function(error) {
                     // Re-enable button now that request is complete
                     _this.attr("disabled", false);
-                    alert("error occured: " + error);
+                    //alert("error occured: " + error);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: "error occured: " + error,
+                        icon : "error",
+                        button: "OK",
+                    });
                 });
             } else if (payment_option_id == 9) {
                 paymentViaPaylink('', '');
@@ -627,6 +889,12 @@ $(document).ready(function() {
                 paymentViaPagarme('', '');
             }else if (payment_option_id == 17) {
                 paymentViaCheckout('', '');
+            }else if (payment_option_id == 18) {
+                paymentViaAuthorize('', '');
+            }else if (payment_option_id == 19) {
+                paymentViaStripeFPX('', 19, '');
+            }else if (payment_option_id == 20) {
+                payWithKPG('');
             }
         } else {
             _this.attr("disabled", false);
@@ -666,8 +934,9 @@ $(document).ready(function() {
                     if ($("[id^=cart_product_]").length == 0) {
                         $(".shopping-cart").html('');
                     }
-                    cartTotalProductCount();
                     cartHeader();
+                    cartTotalProductCount();
+
 
                     if ($('#show_plus_minus' + cartproduct_id).length != 0) {
                         if($('.addon_variant_quantity_' + cartproduct_id).closest('.customized_product_row').length > 0){
@@ -713,7 +982,7 @@ $(document).ready(function() {
     $(document).on("change", ".schedule_datetime", function() {
         var schedule_dt = $(this).val();
         var vendor_id = $('#vendor_id').val();
-        
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -750,10 +1019,12 @@ $(document).ready(function() {
     });
 
     $(document).on("click", "#order_placed_btn", function() {
+        var delivery_type = 'D';
+        var selected = document.querySelector(".delivery-fee.select");
+        if(selected){
+             delivery_type = selected.value;
+        }
 
-        //var delivery_fee = $("input[name='deliveryFee']:checked").val();
-        var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode'); 
-        
         $('.alert-danger').html('');
         if ((typeof guest_cart != undefined) && (guest_cart == 1)) {
             // window.location.href = login_url;
@@ -832,7 +1103,7 @@ $(document).ready(function() {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions:specific_instructions,task_type: task_type,schedule_dropoff:schedule_dropoff, schedule_pickup:schedule_pickup,schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor , delivery_type : delivery_type ,slot:slot},
+                data: { specific_instructions:specific_instructions,task_type: task_type,schedule_dropoff:schedule_dropoff, schedule_pickup:schedule_pickup,schedule_dt: schedule_dt , comment_for_pickup_driver: comment_for_pickup_driver , comment_for_dropoff_driver: comment_for_dropoff_driver , comment_for_vendor: comment_for_vendor , delivery_type : delivery_type ,slot:slot,address : address},
                 success: function(response) {
                     if (response.status == "Success") {
                         $.ajax({
@@ -851,6 +1122,7 @@ $(document).ready(function() {
                                     $('#proceed_to_pay_modal').modal('show');
                                     $('#proceed_to_pay_modal #total_amt').html($('#cart_total_payable_amount').html());
                                     stripeInitialize();
+                                    stripeFPXInitialize();
                                 }
                             },
                             error: function(error) {
@@ -887,6 +1159,7 @@ $(document).ready(function() {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
+                        stripeFPXInitialize();
                     }
                 }
             },
@@ -924,6 +1197,7 @@ $(document).ready(function() {
                         $("#topup_wallet .topup_wallet_confirm").hide();
                     } else {
                         stripeInitialize();
+                        stripeFPXInitialize();
                     }
                 }
             },
@@ -952,27 +1226,44 @@ $(document).ready(function() {
     }
 
 
-
-    function paymentViaStripe(stripe_token, address_id, payment_option_id, delivery_type = 'D') {
+    function paymentViaStripe(stripe_token, address_id, payment_option_id, delivery_type = 'D', order='') {
         let total_amount = 0;
         let tip = 0;
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
         let subscriptionElement = $("input[name='subscription_amount']");
         let tipElement = $("#cart_tip_amount");
+        let payment_form = '';
 
         let ajaxData = [];
-        if (cartElement.length > 0) {
+        if (path.indexOf("cart") !== -1) {
+            payment_form = 'cart';
             total_amount = cartElement.val();
             tip = tipElement.val();
-            ajaxData.push({ name: 'tip', value: tip });
-        } else if (walletElement.length > 0) {
+            ajaxData.push(
+                { name: 'tip', value: tip },
+                {name: 'order_number', value: order.order_number}
+            );
+        } else if ( (path.indexOf("wallet") !== -1)  ||  ((typeof cabbookingwallet !== 'undefined') && (cabbookingwallet == 1)) ) {
+            payment_form = 'wallet';
             total_amount = walletElement.val();
-        } else if (subscriptionElement.length > 0) {
+        } else if (path.indexOf("subscription") !== -1) {
+            payment_form = 'subscription';
             total_amount = subscriptionElement.val();
             ajaxData = $("#subscription_payment_form").serializeArray();
+        } else if ((typeof tip_for_past_order !== 'undefined') && (tip_for_past_order == 1)) {
+            total_amount = walletElement.val();
+            payment_form = 'tip';
+            ajaxData.push(
+                {name: 'order_number', value: $("#order_number").val()}
+            );
         }
-        ajaxData.push({ name: 'stripe_token', value: stripe_token }, { name: 'amount', value: total_amount }, { name: 'payment_option_id', value: payment_option_id });
+        ajaxData.push(
+            { name: 'payment_form', value: payment_form },
+            { name: 'stripe_token', value: stripe_token },
+            { name: 'amount', value: total_amount },
+            { name: 'payment_option_id', value: payment_option_id }
+        );
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -981,21 +1272,22 @@ $(document).ready(function() {
             success: function(resp) {
                 if (resp.status == 'Success') {
                     if (path.indexOf("cart") !== -1) {
-                        placeOrder(address_id, payment_option_id, resp.data.id, tip,delivery_type);
+                        // placeOrder(address_id, payment_option_id, resp.data.id, tip,delivery_type);
                     } else if (path.indexOf("wallet") !== -1) {
-                        creditWallet(total_amount, payment_option_id, resp.data.id);
+                        // creditWallet(total_amount, payment_option_id, resp.data.id);
                     } else if (path.indexOf("subscription") !== -1) {
-                        userSubscriptionPurchase(total_amount, payment_option_id, resp.data.id);
+                        // userSubscriptionPurchase(total_amount, payment_option_id, resp.data.id);
                     } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
 
-                        let order_number = $("#order_number").val();
-                        if (order_number.length > 0) {
-                            order_number = order_number;
-                        }
-                        creditTipAfterOrder(total_amount, payment_option_id, resp.data.id, order_number);
+                        // let order_number = $("#order_number").val();
+                        // if (order_number.length > 0) {
+                        //     order_number = order_number;
+                        // }
+                        // creditTipAfterOrder(total_amount, payment_option_id, resp.data.id, order_number);
                     } else if ((cabbookingwallet != undefined) && (cabbookingwallet == 1)) {
-                        creditWallet(total_amount, payment_option_id, resp.data.id);
+                        // creditWallet(total_amount, payment_option_id, resp.data.id);
                     }
+                    window.location.href = resp.data;
                 } else {
                     if (path.indexOf("cart") !== -1) {
                         success_error_alert('error', resp.message, ".payment_response");
@@ -1310,8 +1602,8 @@ $(document).ready(function() {
     $(document).on("click", ".proceed_to_pay", function() {
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
         $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
-        var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode'); 
-       
+        var delivery_type = $("input:radio.delivery-fee:checked").attr('data-dcode');
+
         let address_id = $("input:radio[name='address_id']:checked").val();
 
         if ((vendor_type == 'delivery') && ((address_id == '') || (address_id < 1) || ($("input[name='address_id']").length < 1))) {
@@ -1320,7 +1612,7 @@ $(document).ready(function() {
         }
         //let payment_option_id = $('#proceed_to_pay_modal #v_pills_tab').find('.active').data('payment_option_id');
         let payment_option_id = $("#cart_payment_form input[name='cart_payment_method']:checked").val();
-        
+
 
         let tip = $("#cart_tip_amount").val();
         if (payment_option_id == 1) {
@@ -1331,10 +1623,16 @@ $(document).ready(function() {
                     $('#stripe_card_error').html(result.error.message);
                     $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
                 } else {
-                    paymentViaStripe(result.token.id, address_id, payment_option_id,delivery_type);
+                    var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                    if (order != '') {
+                        paymentViaStripe(result.token.id, address_id, payment_option_id,delivery_type, order);
+                    } else {
+                        return false;
+                    }
                 }
             });
-        } else if (payment_option_id == 8) {
+        }
+        else if (payment_option_id == 8) {
             var order;
             inline.createToken().then(function(result) {
                 if (result.error) {
@@ -1355,7 +1653,13 @@ $(document).ready(function() {
                 }
             }).catch(function(error) {
                 // Re-enable button now that request is complete
-                alert("error occured: " + error);
+                //alert("error occured: " + error);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: "error occured: " + error,
+                    icon : "error",
+                    button: "OK",
+                });
             });
         } else if (payment_option_id == 3) {
             paymentViaPaypal(address_id, payment_option_id);
@@ -1413,6 +1717,31 @@ $(document).ready(function() {
             if (order != '') {
                 paymentViaCheckout(address_id, order);
             } else {
+                return false;
+            }
+        }
+        else if (payment_option_id == 18) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaAuthorize(address_id, order);
+            } else {
+                return false;
+            }
+        }
+        else if (payment_option_id == 19) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                paymentViaStripeFPX(address_id, payment_option_id, order);
+            }
+            else{
+                return false;
+            }
+        }else if (payment_option_id == 20) {
+            var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+            if (order != '') {
+                payWithKPG(order);
+            }
+            else{
                 return false;
             }
         }
@@ -1548,7 +1877,7 @@ $(document).ready(function() {
                     $('#stripe_card_error').html(result.error.message);
                     $(".topup_wallet_confirm").attr("disabled", false);
                 } else {
-                    paymentViaStripe(result.token.id, '', payment_option_id);
+                    paymentViaStripe(result.token.id, '', payment_option_id, '', '');
                 }
             });
         } else if (payment_option_id == 3) {
@@ -1568,7 +1897,14 @@ $(document).ready(function() {
                 }
             }).catch(function(error) {
                 // Re-enable button now that request is complete
-                alert("error occured: " + error);
+               // alert("error occured: " + error);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: "error occured: " + error,
+                    icon : "error",
+                    button: "OK",
+                });
+
             });
         }else if (payment_option_id == 9) {
             paymentViaPaylink('', '');
@@ -1586,6 +1922,12 @@ $(document).ready(function() {
             paymentViaPagarme('', '');
         }else if (payment_option_id == 17) {
             paymentViaCheckout('', '');
+        }else if (payment_option_id == 18) {
+            paymentViaAuthorize('', '');
+        }else if (payment_option_id == 19) {
+            paymentViaStripeFPX('', payment_option_id, '');
+        }else if (payment_option_id == 20) {
+            payWithKPG('');
         }
     });
     $(document).on("click", ".remove_promo_code_btn", function() {
@@ -1651,7 +1993,13 @@ $(document).ready(function() {
             error: function(reject) {
                 if (reject.status === 422) {
                     var message = $.parseJSON(reject.responseText);
-                    alert(message.message);
+                    //alert(message.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: message.message,
+                        icon : "error",
+                        button: "OK",
+                    });
                 }
             }
         });
@@ -1728,6 +2076,9 @@ $(document).ready(function() {
                     }
                 }
             });
+            setTimeout(function(){
+                $(".pac-container").appendTo("#add_new_address_form .address-input-group");
+            }, 300);
         }
     }
     initialize();
@@ -1819,6 +2170,9 @@ $(document).ready(function() {
                                 initializeSlider();
                                 $('#placeorder_form .left_box').html('');
                                 $('#placeorder_form .left_box').html(cart_details.left_section);
+                                $('#expected_vendors').html('');
+                                $('#expected_vendors').html(response.expected_vendor_html);
+
                                 if (vendor_type != 'delivery') {
                                     var latitude = $('#latitude').val();
                                     var longitude = $('#longitude').val();
@@ -2034,6 +2388,7 @@ $(document).ready(function() {
             url: update_qty_url,
             data: { "quantity": quantity, "cartproduct_id": cartproduct_id },
             success: function(response) {
+               // console.log(response);
                 var latest_price = parseInt(base_price) * parseInt(quantity);
                 $('#product_total_amount_' + cartproduct_id).html('$' + latest_price);
                 cartHeader();
@@ -2148,7 +2503,7 @@ $(document).ready(function() {
     });
 
     $(document).on('change', '.delivery-fee', function() {
-        let code = $(this).data('dcode');
+        let code = $(this).val();
         let address_id = $("input[type='radio'][name='address_id']:checked").val();
         cartHeaderDilivery(address_id,code);
     });
@@ -2162,6 +2517,7 @@ $(document).ready(function() {
     });
     $(document).on("click", "#add_new_address_btn", function() {
         $(this).hide();
+        initialize();
         $('#add_new_address_form').show();
     });
     $(document).on("click", "#save_address", function() {
@@ -2175,6 +2531,7 @@ $(document).ready(function() {
         let latitude = $('#add_new_address_form #latitude').val();
         let longitude = $('#add_new_address_form #longitude').val();
         let house_number = $('#add_new_address_form #house_number').val();
+        let extra_instruction = $('#add_new_address_form #extra_instruction').val();
         $.ajax({
             type: "post",
             dataType: "json",
@@ -2190,6 +2547,7 @@ $(document).ready(function() {
                 "latitude": latitude,
                 "longitude": longitude,
                 "house_number": house_number,
+                "extra_instruction" : extra_instruction
             },
             beforeSend: function() {
                 if ($("#cart_table").length > 0) {
@@ -2260,12 +2618,25 @@ $(document).ready(function() {
             var max_select = $(this).attr("data-max");
             var addon_set_title = $(this).attr("data-addonset-title");
             if ((min_select > 0) && ($(this).find(".productDetailAddonOption:checked").length < min_select)) {
-                alert("Minimum " + min_select + " " + addon_set_title + " required");
+                Swal.fire({
+                   // title: "Warning!",
+                   text: "Minimum " + min_select + " " + addon_set_title + " required",
+                   icon : "warning",
+                   button: "OK",
+                });
+                // alert("Minimum " + min_select + " " + addon_set_title + " required");
+
                 breakOut = true;
                 return false;
             }
             if ((max_select > 0) && ($(this).find(".productDetailAddonOption:checked").length > max_select)) {
-                alert("You can select maximum " + max_select + " " + addon_set_title);
+                Swal.fire({
+                   // title: "Warning!",
+                   text: "You can select maximum " + max_select + " " + addon_set_title,
+                   icon : "warning",
+                   button: "OK",
+                });
+                // alert("You can select maximum " + max_select + " " + addon_set_title);
                 breakOut = true;
                 return false;
             }
@@ -2312,13 +2683,25 @@ $(document).ready(function() {
                     returnResponse = true;
                     cartHeader();
                 } else {
-                    alert(response.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: response.message,
+                        icon : "warning",
+                        button: "OK",
+                    });
+                    //alert(response.message);
                 }
             },
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 let error_messages = response.message;
-                alert(error_messages);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error_messages,
+                    icon : "error",
+                    button: "OK",
+                });
+               // alert(error_messages);
             },
         });
         return returnResponse;
@@ -2354,13 +2737,25 @@ $(document).ready(function() {
                     $("#product_addon_modal .modal-content").append(addon_template({ addOnData: response.data }));
                     $("#product_addon_modal").modal('show');
                 } else {
-                    alert(response.message);
+                   // alert(response.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: response.message,
+                        icon : "warning",
+                        button: "OK",
+                    });
                 }
             },
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 let error_messages = response.message;
-                alert(error_messages);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error_messages,
+                    icon : "error",
+                    button: "OK",
+                });
+                //alert(error_messages);
             },
         });
     }
@@ -2384,7 +2779,13 @@ $(document).ready(function() {
             },
             error: function(response){
                 var error = $.parseJSON(response.responseText);
-                alert(error.message);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error.message,
+                    icon : "error",
+                    button: "OK",
+                });
+                //alert(error.message);
             }
         });
     }
@@ -2400,12 +2801,24 @@ $(document).ready(function() {
                     $('#customize_repeated_item_modal .modal-content').html(response.data);
                 }else{
                     $('#customize_repeated_item_modal .modal-content').html('');
-                    alert(response.message);
+                    //alert(response.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: response.message,
+                        icon : "warning",
+                        button: "OK",
+                    });
                 }
             },
             error: function(response){
                 var error = $.parseJSON(response.responseText);
-                alert(error.message);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error.message,
+                    icon : "error",
+                    button: "OK",
+                });
+                //alert(error.message);
                 $('#customize_repeated_item_modal .modal-content').html('');
             }
         });
@@ -2714,13 +3127,25 @@ $(document).ready(function() {
                         }
                     }
                 } else {
-                    alert(response.message);
+                    //alert(response.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: response.message,
+                        icon : "error",
+                        button: "OK",
+                    });
                 }
             },
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 let error_messages = response.message;
-                alert(error_messages);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error_messages,
+                    icon : "error",
+                    button: "OK",
+                });
+                //alert(error_messages);
             },
         });
         return returnResponse;
@@ -2827,7 +3252,13 @@ $(document).ready(function() {
                 } else {
                     addonids = [];
                     addonoptids = [];
-                    alert(response.message);
+                    //alert(response.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: response.message,
+                        icon : "warning",
+                        button: "OK",
+                    });
                 }
             },
             error: function(error) {
@@ -2836,7 +3267,13 @@ $(document).ready(function() {
                 addonids = [];
                 addonoptids = [];
                 that.prop('checked', false);
-                alert(error_messages);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error_messages,
+                    icon : "error",
+                    button: "OK",
+                });
+                //alert(error_messages);
             }
         });
 
@@ -2931,13 +3368,26 @@ $(document).ready(function() {
                         addons_div.hide();
                     }
                 } else {
-                    alert(response.message);
+                    //alert(response.message);
+                    Swal.fire({
+                        // title: "Warning!",
+                        text: response.message,
+                        icon : "warning",
+                        button: "OK",
+                    });
                 }
             },
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 let error_messages = response.message;
-                alert(error_messages);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error_messages,
+                    icon : "error",
+                    button: "OK",
+                });
+               // alert(error_messages);
+
             },
         });
     }
@@ -3044,7 +3494,14 @@ $(document).ready(function() {
             error: function(error) {
                 var response = $.parseJSON(error.responseText);
                 let error_messages = response.message;
-                alert(error_messages);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: error_messages,
+                    icon : "error",
+                    button: "OK",
+                });
+              //  alert(error_messages);
+
             },
         });
     }
@@ -3058,6 +3515,7 @@ $(document).ready(function() {
     // end on demand add to cart
     $(document).delegate('.quantity-right-plus', 'click', function() {
         var quan = parseInt($('.quantity_count').val());
+        var hasInv = $('#hasInventory').val();
         var str = $('#instock').val();
         var batch_count = $(this).data("batch_count");
         // var res = parseInt(str.substring(10, str.length - 1));
@@ -3066,8 +3524,14 @@ $(document).ready(function() {
         else
         batch_count = 1;
 
-        if ((quan + batch_count) > str) {
-            alert("Quantity is not available in stock");
+        if ((quan + batch_count) > str && hasInv == "1") {
+            Swal.fire({
+                // title: "Warning!",
+                text: "Quantity is not available in stock",
+                icon : "warning",
+                button: "OK",
+            });
+           // alert("Quantity is not available in stock");
             $('.quantity_count').val(str);
         } else {
             var s = $(".qty-box .input-qty-number"),
@@ -3078,7 +3542,8 @@ $(document).ready(function() {
     $(document).delegate(".quantity-left-minus", "click", function() {
 
         var batch_count = $(this).data("batch_count");
-        if(batch_count >0)
+        var str = $('#instock').val();
+        if(batch_count >0 || str == '0')
         batch_count = batch_count;
         else
         batch_count = 1;
@@ -3097,7 +3562,13 @@ $(document).ready(function() {
             i = parseInt(s.val(), 10);
 
         if (i - batch_count < minimum_order_count) {
-                alert("Minimum Quantity count is " + minimum_order_count);
+            Swal.fire({
+                // title: "Warning!",
+                text: "Minimum Quantity count is "+minimum_order_count,
+                icon : "warning",
+                button: "OK",
+             });
+                //alert("Minimum Quantity count is " + minimum_order_count);
                 return false;
         }
         !isNaN(i) && i > 1 && s.val(i - batch_count);
@@ -3108,7 +3579,13 @@ $(document).ready(function() {
 
 
         if (quan > str) {
-            alert("Quantity is not available in stock");
+            Swal.fire({
+                // title: "Warning!",
+                text: "Quantity is not available in stock",
+                icon : "warning",
+                button: "OK",
+             });
+           // alert("Quantity is not available in stock");
             $('.quantity_count').val(str);
         }
     });

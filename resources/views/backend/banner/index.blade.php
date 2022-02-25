@@ -146,21 +146,21 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                 @foreach($banners as $ban)
                                 <tr data-row-id="{{$ban->id}}">
                                     <td class="draggableTd"><span class="dragula-handle"></span></td>
-                                    <td class="banner_wrapper"> 
+                                    <td class="banner_wrapper">
                                         <div class="banner_box">
                                             <img src="{{$ban->image['proxy_url'].'400/160'.$ban->image['image_path']}}" alt="{{$ban->id}}" >
-                                        </div>    
+                                        </div>
                                     </td>
 
-                                    <td><a class="openBannerModal" userId="{{$ban->id}}" href="#"> {{ $ban->name }}</a> </td> 
+                                    <td><a class="openBannerModal" userId="{{$ban->id}}" href="#"> {{ $ban->name }}</a> </td>
                                     <td> <span class="text-center d-inline-block">
                                         @if(isset($ban->start_date_time) && isset($ban->end_date_time))
-                                        {{ dateTimeInUserTimeZone($ban->start_date_time, $timezone)}} <br/> to <br/> {{dateTimeInUserTimeZone($ban->end_date_time, $timezone)}} 
+                                        {{ dateTimeInUserTimeZone($ban->start_date_time, $timezone)}} <br/> to <br/> {{dateTimeInUserTimeZone($ban->end_date_time, $timezone)}}
                                         @else
                                         -
                                         @endif
                                     </span></td>
-                                    <td>                                         
+                                    <td>
                                         @if($ban->link == 'category')
                                             {{ __("Category") }}
                                         @elseif($ban->link == 'vendor')
@@ -169,22 +169,22 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                             {{ __("N/A") }}
                                         @endif
                                      </td>
-                                    <td> 
+                                    <td>
                                         <input type="checkbox" bid="{{$ban->id}}" id="cur_{{$ban->id}}" data-plugin="switchery" name="validity_index" class="chk_box" data-color="#43bee1" {{($ban->validity_on == '1') ? 'checked' : ''}} >
                                      </td>
-                                    <td> 
+                                    <td>
                                         <div class="form-ul" style="width: 60px;">
                                             <div class="inner-div" style="float: left;">
-                                                <a class="action-icon openBannerModal" userId="{{$ban->id}}" href="#"> <i class="mdi mdi-square-edit-outline"></i></a> 
+                                                <a class="action-icon openBannerModal" userId="{{$ban->id}}" href="#"> <i class="mdi mdi-square-edit-outline"></i></a>
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{ route('banner.destroy', $ban->id) }}">
+                                                <form method="POST" action="{{ route('banner.destroy', $ban->id) }}" id="deleteWebBanner">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group mb-0">
-                                                        <button type="submit" onclick="return confirm('Are you sure? You want to delete the banner.')" class="btn btn-primary-outline action-icon">
+                                                        <button type="submit" class="btn btn-primary-outline action-icon">
                                                             <i class="mdi mdi-delete"></i>
-                                                        </button> 
+                                                        </button>
 
                                                     </div>
                                                 </form>
@@ -211,6 +211,23 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
 @section('script')
 
 <script type="text/javascript">
+    $('#deleteWebBanner').submit(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete the banner.')}}",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $("#deleteWebBanner").off("submit").submit();
+            }else{
+                return false;
+            }
+        });
+    });
     function assignSortAttach() {
       $("table").sortable({
         axis: "y",

@@ -13,16 +13,7 @@
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 @section('content')
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
+
 <section class="section-b-space ratio_asos">
     <div class="collection-wrapper">
         <div class="container">
@@ -64,11 +55,16 @@
                                                 <p>{{$vendor->desc}}</p>
                                             </div>
                                         @endif
+
+                                        @php
+                                        $checkSlot = findSlot('',$vendor->id,'');
+                                        @endphp
+
                                         <div class="col-md-12 text-center">
-                                        @if($is_vendor_closed == 1 && $vendor->closed_store_order_scheduled == 0)
-                                        <p class="text-danger">Vendor is not accepting orders right now.</p>
+                                        @if($is_vendor_closed == 1 && $checkSlot == 0)
+                                        <p class="text-danger">{{getNomenclatureName('Vendors', true) . __(' is not accepting orders right now.')}}</p>
                                         @elseif($is_vendor_closed == 1 && $vendor->closed_store_order_scheduled == 1)
-                                        <p class="text-danger">We are not accepting orders right now. You can schedule this for {{findSlot('',$vendor->id,'')}}.</p>
+                                        <p class="text-danger">{{__('We are not accepting orders right now. You can schedule this for '). $checkSlot}}.</p>
                                         @endif
                                         </div>
 

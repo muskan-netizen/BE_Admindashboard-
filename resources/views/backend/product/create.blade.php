@@ -3,6 +3,8 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/css/dropzone.css')}}" rel="stylesheet" />
 <style type="text/css">
     .image-upload>input {
         display: none;
@@ -364,8 +366,8 @@
 @endsection
 
 @section('script')
+<script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 
-<link href="{{asset('assets/css/dropzone.css')}}" rel="stylesheet" />
 <script src="{{asset('assets/js/dropzone.js')}}"></script>
 
 <script type="text/javascript">
@@ -474,7 +476,13 @@
     $('.makeVariantRow').click(function(){
         var product_sku = $('#sku').val();
         if(product_sku.trim() == ''){
-            alert('Enter Product sku.');
+            //alert('Enter Product sku.');
+            Swal.fire({
+                // title: "Warning!",
+                text: "{{__('Enter Product sku.')}}",
+                icon : "warning",
+                button: "{{__('ok')}}",
+            });
             return false;
         }
         var var_ids = [];
@@ -495,7 +503,13 @@
             dataType: 'json',
             success: function (resp) {
                 if(resp.success == 'false'){
-                    alert(resp.msg);
+                   // alert(resp.msg);
+                    Swal.fire({
+                    // title: "Warning!",
+                    text: resp.msg,
+                    icon : "error",
+                    button: "{{__('ok')}}",
+                });
                 }else{
                     $('#variantRowDiv').html(resp.html);
                 }

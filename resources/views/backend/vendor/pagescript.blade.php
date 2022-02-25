@@ -1,14 +1,18 @@
 <script>
+    var section_id = 0
     $('.openAddModal').click(function() {
         $('#add-form').modal({
             //backdrop: 'static',
             keyboard: false
+
         });
-        //runPicker();
+       // runPicker();
         $('.dropify').dropify();
         $('.selectize-select').selectize();
+        $('.selectized').selectize();
         autocompletesWraps.push('add');
         loadMap(autocompletesWraps);
+
     });
 
     $('.openImportModal').click(function() {
@@ -52,10 +56,13 @@
             autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById(name + "-address"), {
                 types: ['geocode']
             });
+
             google.maps.event.addListener(autocomplete[name], 'place_changed', function() {
-
                 var place = autocomplete[name].getPlace();
-
+                if (!place.geometry) {
+                    window.alert("Autocomplete's returned place contains no geometry");
+                    return;
+                }
                 geocoder.geocode({
                     'placeId': place.place_id
                 }, function(results, status) {
@@ -67,8 +74,49 @@
                         document.getElementById(name + '_longitude').value = lng;
                     }
                 });
+
+                for (let i = 1; i < place.address_components.length; i++) {
+                    let mapAddress = place.address_components[i];
+                    if (mapAddress.long_name != '') {
+                        let streetAddress = '';
+                        if (mapAddress.types[0] == "street_number") {
+                            streetAddress += mapAddress.long_name;
+                        }
+                        if (mapAddress.types[0] == "route") {
+                            streetAddress += mapAddress.short_name;
+                        }
+                        if ($('#street').length > 0) {
+                            document.getElementById('street').value = streetAddress;
+                        }
+                        if (mapAddress.types[0] == "locality") {
+                            document.getElementById('city').value = mapAddress.long_name;
+                        }
+                        if (mapAddress.types[0] == "administrative_area_level_1") {
+                            document.getElementById('state').value = mapAddress.long_name;
+                        }
+                        if (mapAddress.types[0] == "postal_code") {
+                            document.getElementById('pincode').value = mapAddress.long_name;
+                        } else {
+                            document.getElementById('pincode').value = '';
+                        }
+                        if (mapAddress.types[0] == "country") {
+                            document.getElementById('country').value = mapAddress.long_name.toUpperCase();
+
+                        }
+                    }
+                }
+
             });
+
         });
+    }
+    function checkAddressString(obj,name)
+    {
+        if($(obj).val() == "")
+        {
+            document.getElementById(name + '_latitude').value = '';
+            document.getElementById(name + '_longitude').value = '';
+        }
     }
     $('#show-map-modal').on('hide.bs.modal', function() {
         $('#add-customer-modal').removeClass('fadeIn');
@@ -81,15 +129,19 @@
 
         var lats = document.getElementById(no + '_latitude').value;
         var lngs = document.getElementById(no + '_longitude').value;
+        var address = document.getElementById(no+'-address').value;
         console.log(lats + '--' + lngs);
 
         document.getElementById('map_for').value = no;
 
-        if (lats == null || lats == '0') {
-            lats = 30.53899440;
+        if (lats == null || lats == '0' || lats =='') {
+            lats = Default_latitude;
         }
-        if (lngs == null || lngs == '0') {
-            lngs = 75.95503290;
+        if (lngs == null || lngs == '0'  || lngs == '') {
+            lngs = Default_longitude ;
+        }
+        if(address==null){
+            address= '';
         }
 
         var myLatlng = new google.maps.LatLng(lats, lngs);
@@ -99,6 +151,11 @@
             mapTypeId: google.maps.MapTypeId.ROADMAP
 
         };
+        document.getElementById('lat_map').value= lats;
+        document.getElementById('lng_map').value= lngs ;
+        document.getElementById('address_map').value= address ;
+        var infowindow = new google.maps.InfoWindow();
+        var geocoder = new google.maps.Geocoder();
         var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
         var marker = new google.maps.Marker({
             position: myLatlng,
@@ -108,23 +165,42 @@
         });
         document.getElementById('lat_map').value = lats;
         document.getElementById('lng_map').value = lngs;
-        // marker drag event
-        google.maps.event.addListener(marker, 'drag', function(event) {
-            document.getElementById('lat_map').value = event.latLng.lat();
-            document.getElementById('lng_map').value = event.latLng.lng();
+
+        google.maps.event.addListener(marker, 'dragend', function() {
+            geocoder.geocode({
+            'latLng': marker.getPosition()
+            }, function(results, status) {
+
+            if (status == google.maps.GeocoderStatus.OK) {
+                if (results[0]) {
+                        document.getElementById('lat_map').value = marker.getPosition().lat();
+                        document.getElementById('lng_map').value = marker.getPosition().lng();
+                        document.getElementById('address_map').value= results[0].formatted_address;
+
+                    infowindow.setContent(results[0].formatted_address);
+
+                    infowindow.open(map, marker);
+                }
+            }
+            });
         });
+        // // marker drag event
+        // google.maps.event.addListener(marker, 'drag', function(event) {
+        //     document.getElementById('lat_map').value = event.latLng.lat();
+        //     document.getElementById('lng_map').value = event.latLng.lng();
+        // });
 
         //marker drag event end
-        google.maps.event.addListener(marker, 'dragend', function(event) {
-            var zx = JSON.stringify(event);
-            console.log(zx);
+        // google.maps.event.addListener(marker, 'dragend', function(event) {
+        //     var zx = JSON.stringify(event);
+        //     console.log(zx);
 
 
-            document.getElementById('lat_map').value = event.latLng.lat();
-            document.getElementById('lng_map').value = event.latLng.lng();
-            //alert("lat=>"+event.latLng.lat());
-            //alert("long=>"+event.latLng.lng());
-        });
+        //     document.getElementById('lat_map').value = event.latLng.lat();
+        //     document.getElementById('lng_map').value = event.latLng.lng();
+        //     //alert("lat=>"+event.latLng.lat());
+        //     //alert("long=>"+event.latLng.lng());
+        // });
         $('#add-customer-modal').addClass('fadeIn');
         $('#show-map-modal').modal({
             //backdrop: 'static',
@@ -138,9 +214,11 @@
         var mapLat = document.getElementById('lat_map').value;
         var mapLlng = document.getElementById('lng_map').value;
         var mapFor = document.getElementById('map_for').value;
+        var address = document.getElementById('address_map').value;
 
         document.getElementById(mapFor + '_latitude').value = mapLat;
         document.getElementById(mapFor + '_longitude').value = mapLlng;
+        document.getElementById(mapFor + '-address').value = address;
 
         $('#show-map-modal').modal('hide');
     });
@@ -219,8 +297,11 @@
                 $(".loader_box").show();
             },
             complete: function() {
-
                 $(".loader_box").hide();
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+               
             }
         });
     }
@@ -247,7 +328,7 @@
             success: function(response) {
                 location.reload();
                 if (response.status == 'success') {
-                    // $("#import-form").modal('hide');
+                     $("#import-form").modal('hide');
                     $('#p-message').empty();
                     $('#p-message').append('Document uploaded Successfully!');
                     setTimeout(function() {
@@ -309,7 +390,7 @@
     });
 
     function saveData(formData, type, data_uri) {
-        console.log(data_uri);
+      //  console.log(data_uri);
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -327,6 +408,66 @@
             processData: false,
             success: function(response) {
 
+                if (response.status == 'success') {
+                    $(".modal .close").click();
+                   // location.reload();
+                } else {
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text(response.message);
+                }
+                return response;
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            },
+            error: function(response) {
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    Object.keys(errors).forEach(function(key) {
+                        $("#" + key + "Input input").addClass("is-invalid");
+                        $("#" + key + "Input span.invalid-feedback").children("strong").text(errors[key][0]);
+                        $("#" + key + "Input span.invalid-feedback").show();
+                    });
+                } else {
+                    $(".show_all_error.invalid-feedback").show();
+                    $(".show_all_error.invalid-feedback").text('Something went wrong, Please try Again.');
+                }
+                return response;
+            }
+        });
+    }
+    $(document).on('click', '#add_vendor_form', function(e) {
+        e.preventDefault();
+        var input='';
+        $(".activeCategory:checkbox:checked").each(function(){
+            var category_id = $(this).data('category_id');
+                 input+= "  <input type='hideen' name='category_ids[]' value='"+category_id+"' >";
+        });
+        $('#nestable_list_1').append(input);
+        var form = document.getElementById('save_banner_form');
+        var formData = new FormData(form);
+        var data_uri = "{{route('vendor.store')}}";
+        // console.log(formData);
+        // return false;
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: data_uri,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
                 if (response.status == 'success') {
                     $(".modal .close").click();
                     location.reload();
@@ -357,7 +498,9 @@
                 return response;
             }
         });
-    }
+
+    });
+
     $(".openAddonModal").click(function(e) {
         $('#addAddonmodal').modal({
             backdrop: 'static',
@@ -499,6 +642,139 @@
             }
         });
     });
+    // search users for set permission
+    $('#search_user_for_vendor_permission').keyup(function(){
+        var query = $(this).val();
+        var vendor_id = 1;
+        if(query != '')
+        {
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+            url:"{{ route('searchUserForPermission') }}",
+            method:"POST",
+            data:{query:query, _token:_token, vendor_id:vendor_id},
+            success:function(data){
+            $('#userList').fadeIn();
+            $('#userList').html(data);
+            }
+            });
+        }
+    });
+    $(document).on('click', '#userList li', function(){
+        $('#search_user_for_vendor_permission').val($(this).text());
+        $('#userId').val($(this).attr('data-id'));
+        $('#userList').fadeOut();
+    });
+
+    // search users for set permission
+    $('#search_user_for_permission').keyup(function(){
+        var query = $(this).val();
+        var vendor_id = 0;
+        var userid =[];
+        $("#selected_user .user_hidden_ids").each(function(){
+            var id = $(this).val();
+            userid.push(id)
+
+        });
+        // if($("input[name='userIDs[]']").val()){
+        //   userid = $("input[name='userIDs[]']").val();
+        // }
+
+        if(query != '')
+        {
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+            url:"{{ route('searchUserForPermission') }}",
+            method:"POST",
+            data:{query:query, _token:_token, vendor_id:vendor_id,user_ids:userid},
+            success:function(data){
+            $('#userList_model').fadeIn();
+            $('#userList_model').html(data);
+            }
+            });
+        }
+    });
+    $(document).on('click', '#userList_model li', function(){
+        $("#selected_user_ul").removeClass('active');
+        $("#selected_user_ul").addClass('active');
+        $('#search_user_for_permission').val('');
+       var user_id = $(this).attr('data-id');
+       var name = $(this).attr('data-name');
+       var image = $(this).attr('data-image');
+       var email = $(this).attr('data-email');
+
+       $('#userList_model').fadeOut();
+        var user_id_section    = $('#user_id_section').html();
+        var modified_temp         = _.template(user_id_section);
+        $('#selected_user').append(modified_temp({ id:section_id,user_id:user_id,name:name,image:image,email:email}));
+
+      // $('#userList_model').fadeOut();
+    });
+    $(document).on('click', '#addUserAddForm', function(e){
+        e.preventDefault();
+        var url=$(this).attr('data-url');
+
+        console.log(url);
+        var name       = $("#new_user_name").val();
+        var token       = $("input[name=_token]").val();
+        var email      = $("#new_user_email").val();
+        var phone_number = $("#new_user_phone_number").val();
+        var countryCode = $("#countryCode").val();
+        var dial_code   = $("#dialCode").val();
+        var password    = $("#new_user_password").val();
+
+        console.log(name,phone_number,countryCode,dial_code);
+        if(name =='' || email =='' || phone_number =='' || password ==''  ){
+
+         var alert = '<div class="alert alert-danger"><span>All fields required</span></div>'
+            $('#adduesr_error').html(alert);
+            return false;
+        }
+
+        var contact=dial_code+phone_number;
+
+        $.ajax({
+            method: 'post',
+            url: url,
+            data: { _token:token,name: name,contact:contact,phone_number:phone_number,dial_code:dial_code,email:email,password:password},
+            success: function(response) {
+                $('#adduesr_error').html('');
+                console.log(response);
+                var user =response.Userdata;
+                console.log(user);
+                var user_id =user.id;
+                var name = user.name;
+                var email =user.email;
+
+                var image = '';
+                if( user.image){
+                    image=user.image.image_fit+'100/100'+user.image.image_path;
+                }
+
+                var user_id_section    = $('#user_id_section').html();
+                var modified_temp         = _.template(user_id_section);
+                $('#selected_user').append(modified_temp({ id:section_id,user_id:user_id,name:name,image:image,email:email}));
+
+            },
+            error: function(response) {
+                var alert = '<div class="alert alert-danger">';
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    Object.keys(errors).forEach(function(key) {
+                        alert+='<span>'+errors[key][0]+'</span><br>';
+
+                    });
+                } else {
+                    alert+='<span>Something went wrong, Please try Again.</span>';
+                }
+                alert+='</div>';
+
+                $('#adduesr_error').html(alert);
+                return response;
+            }
+        });
+    });
+
 
     ///// **************** 1.1  check vendor exists in dispatcher or not for pickup********** //////////
 
@@ -528,7 +804,13 @@
                 window.open(url, '_blank');
             },
             error: function(data) {
-                alert(data.message);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: data.message,
+                    icon : "error",
+                    button: "{{__('ok')}}",
+                });
+                //alert(data.message);
             },
             beforeSend: function() {
                 $(".loader_box").show();
@@ -572,7 +854,13 @@
                 window.open(url, '_blank');
             },
             error: function(data) {
-                alert(data.message);
+                Swal.fire({
+                    // title: "Warning!",
+                    text: data.message,
+                    icon : "error",
+                    button: "{{__('ok')}}",
+                });
+                //alert(data.message);
             },
             beforeSend: function() {
                 $(".loader_box").show();

@@ -14,16 +14,7 @@ $user = Auth::user();
 $timezone = $user->timezone;
 $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurrency->doller_compare) : 0;
 @endphp
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
+
 <style type="text/css">
     .productVariants .firstChild {
         min-width: 150px;
@@ -135,17 +126,19 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($user_transactions as $ut)
-                                        <?php $reason = json_decode($ut->meta) ?>
-                                        @php
-                                        $amount = ($ut->amount / 100) * $clientCurrency->doller_compare;
-                                        @endphp
-                                          <tr>
-                                              <td> {{dateTimeInUserTimeZone($ut->created_at, $timezone)}}</td>
-                                              <td  class="name_">{!!$reason[0]!!}</td>
-                                              <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}@money(sprintf("%.2f",$amount))</b></td>
-                                          </tr>
-                                        @endforeach
+                                    @forelse($user_transactions as $ut)
+                                    @php
+                                    $reason = json_decode($ut->meta);
+                                    $amount = ($ut->amount / 100) * $clientCurrency->doller_compare;
+                                    @endphp
+                                    <tr>
+                                        <td> {{dateTimeInUserTimeZone($ut->created_at, $timezone)}}</td>
+                                        <td  class="name_">{!!$reason[0]!!}</td>
+                                        <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}@money(sprintf("%.2f",$amount))</b></td>
+                                    </tr>
+                                    @empty
+                                    <tr><td align="center" colspan="4">{{__('No Transaction history exists')}}</td></tr>
+                                    @endforelse
                                     </tbody>
                                   </table>
                                 </div>
@@ -261,16 +254,17 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
           <div class="modal-body pb-0">
               <div class="form-group">
                 <h5 class="text-17 mb-2">{{__('Available Balance')}}</h5>
-              </div>  
+              </div>
               <div class="form-group">
                   <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">@money($user_wallet_balance)</span></div>
               </div>
-              
+
               @if($user_wallet_balance <= 0)
                 <div class="alert alert-danger">
                     <span>{{ __('Insufficient funds in wallet') }}</span>
                 </div>
               @else
+              <div id="error_dev"></div>
               <div class="form-group" id="wallet_transfer_amountInput">
                 <label for="wallet_transfer_amount">{{__('Amount to transfer')}}</label>
                 <input class="form-control" name="wallet_transfer_amount" id="wallet_transfer_amount" type="text" placeholder="{{__('Enter Amount')}}">
@@ -289,7 +283,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                 </span>
               </div>
               <div class="form-group" id="user_profile">
-                
+
               </div>
               <span class="error-msg pl-0" id="wallet_transfer_error_msg"></span>
               @endif
@@ -330,7 +324,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                     <span class="checkround"></span>
                 </label>
                 <% if(payment_option.slug == 'stripe') { %>
-                    <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper d-none">
+                    <div class="col-md-12 mt-3 mb-3 stripe_element_wrapper option-wrapper d-none">
                         <div class="form-control">
                             <label class="d-flex flex-row pt-1 pb-1 mb-0">
                                 <div id="stripe-card-element"></div>
@@ -339,8 +333,21 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                         <span class="error text-danger" id="stripe_card_error"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'stripe_fpx') { %>
+                    <div class="col-md-12 mt-3 mb-3 stripe_fpx_element_wrapper option-wrapper d-none">
+                        <label for="fpx-bank-element">
+                            FPX Bank
+                        </label>
+                        <div class="form-control">
+                            <div id="fpx-bank-element">
+                              <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                        </div>
+                        <span class="error text-danger" id="stripe_fpx_error"></span>
+                    </div>
+                <% } %>
                 <% if(payment_option.slug == 'yoco') { %>
-                    <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper d-none">
+                    <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
                         <div class="form-control">
                             <label class="d-flex flex-row pt-1 pb-1 mb-0">
                             <div id="yoco-card-frame">
@@ -352,7 +359,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                     </div>
                 <% } %>
                 <% if(payment_option.slug == 'checkout') { %>
-                    <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper d-none">
+                    <div class="col-md-12 mt-3 mb-3 checkout_element_wrapper option-wrapper d-none">
                         <div class="form-control card-frame">
                             <!-- form will be added here -->
                         </div>
@@ -365,13 +372,13 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
 </script>
 @endsection
 @section('script')
-@if(in_array('razorpay',$client_payment_options)) 
+@if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
-@if(in_array('stripe',$client_payment_options)) 
+@if(in_array('stripe',$client_payment_options))
 <script src="https://js.stripe.com/v3/"></script>
 @endif
-@if(in_array('yoco',$client_payment_options)) 
+@if(in_array('yoco',$client_payment_options))
 <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
 <script type="text/javascript">
@@ -379,11 +386,16 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
         publicKey: yoco_public_key
     });
 </script>
-@endif 
+@endif
 <script type="text/javascript">
+    var stripe_fpx = '';
+    var fpxBank = '';
     var ajaxCall = 'ToCancelPrevReq';
     var credit_wallet_url = "{{route('user.creditWallet')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
+    var create_konga_hash_url = "{{route('kongapay.createHash')}}";
+    var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
+    var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
     var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
@@ -400,7 +412,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
     var wallet_balance_insufficient_msg = "{{ __('Insufficient funds in wallet') }}";
     var user_wallet_balance = parseFloat("{{ $user_wallet_balance }}");
 
-    
+
     var inline='';
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
@@ -444,33 +456,40 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
     $(document).on('change', '#wallet_payment_methods input[name="wallet_payment_method"]', function() {
         $('#wallet_payment_methods_error').html('');
         var method = $(this).val();
-        if(method == 'stripe'){
-            $("#wallet_payment_methods .stripe_element_wrapper").removeClass('d-none');
-        }else{
-            $("#wallet_payment_methods .stripe_element_wrapper").addClass('d-none');
+        var code = method.replace('radio-', '');
+
+        if (code != '') {
+            $("#wallet_payment_methods .option-wrapper").addClass('d-none');
+            $("#wallet_payment_methods ."+code+"_element_wrapper").removeClass('d-none');
+        } else {
+            $("#wallet_payment_methods .option-wrapper").addClass('d-none');
         }
-        if (method == 'yoco') {
-            $("#wallet_payment_methods .yoco_element_wrapper").removeClass('d-none');
+
+        if (code == 'yoco') {
+            // $("#wallet_payment_methods .yoco_element_wrapper").removeClass('d-none');
             // Create a new dropin form instance
 
             var yoco_amount_payable = $("input[name='wallet_amount']").val();
 
             inline = sdk.inline({
                 layout: 'field',
-                amountInCents:  yoco_amount_payable*100,
+                amountInCents:  yoco_amount_payable * 100,
                 currency: 'ZAR'
             });
             // this ID matches the id of the element we created earlier.
             inline.mount('#yoco-card-frame');
-        } else {
-            $("#wallet_payment_methods .yoco_element_wrapper").addClass('d-none');
         }
-        if (method == 'checkout') {
-            $("#wallet_payment_methods .checkout_element_wrapper").removeClass('d-none');
+        // else {
+        //     $("#wallet_payment_methods .yoco_element_wrapper").addClass('d-none');
+        // }
+
+        if (code == 'checkout') {
+            // $("#wallet_payment_methods .checkout_element_wrapper").removeClass('d-none');
             Frames.init(checkout_public_key);
-        } else {
-            $("#wallet_payment_methods .checkout_element_wrapper").addClass('d-none');
         }
+        // else {
+        //     $("#wallet_payment_methods .checkout_element_wrapper").addClass('d-none');
+        // }
     });
 
     $(document).on('blur', '#wallet_transfer_user', function() {
@@ -543,6 +562,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
         var amount = $("#wallet_transfer_amount").val();
         var username = $("#wallet_transfer_user").val();
         if((amount != '') && (username != '')){
+            $("#error_dev").hide();
             var is_valid = true;
             $('#wallet_transfer_form input').each(function(index, el) {
                 if($(el).hasClass("is-invalid")){
@@ -583,7 +603,8 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                 },
             });
         }else{
-            alert('All fields are required');
+            var html ='<div class="alert alert-danger"><span>{{ __("All fields are required") }}</span></div>'
+            $("#error_dev").html(html).show();
         }
     });
 </script>
@@ -593,5 +614,6 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
         output.src = URL.createObjectURL(event.target.files[0]);
     };
 </script>
+<script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
 <script src="{{asset('js/payment.js')}}"></script>
 @endsection

@@ -1046,15 +1046,15 @@ INSERT INTO `vendor_categories` (`id`, `vendor_id`, `category_id`, `status`, `cr
 -- --------------------------------------------------------
 
 INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`, `image_mobile`) VALUES
-(1, 'Vegetables', NULL, 'banner/jNz3XAQzyOnDAO28EyQyIZgjAHo3Z6tbSXW4gCtM.png', 1, 1, 1, '2021-09-30 16:32:00', '2022-02-24 12:00:00', 8, NULL, 'category', NULL, '2021-10-11 10:13:22', 'banner/cUGwzVOqMLbh3w9dKguCaFHNl3iDECYvNtF3TnHb.png'),
-(2, 'Beverages', NULL, 'banner/ANHtxqX9efpQyI569o3zfUv8wksov9b1uN8MfUiy.jpg', 1, 2, 1, '2021-09-30 16:38:00', '2021-12-30 12:00:00', 15, NULL, 'category', NULL, '2021-10-11 10:13:40', 'banner/mPpy09BVimNeg46TatzLQt3m0zDYgp3eT1eXzQyZ.png'),
-(3, 'Fruits', NULL, 'banner/jFO3l6weFavP3irAM9jTu9k92mf0m8Wp9icfzxCY.jpg', 1, 3, 1, '2021-09-30 17:37:00', '2022-02-23 12:00:00', 9, NULL, 'category', NULL, '2021-10-11 10:14:50', 'banner/0F2XdQvXs0u81vN7KVi38AOgXyvi5Kwk81EhDWMq.png');
+(1, 'Vegetables', NULL, 'banner/jNz3XAQzyOnDAO28EyQyIZgjAHo3Z6tbSXW4gCtM.png', 1, 1, 1, '2021-09-30 16:32:00', '2025-02-24 12:00:00', 8, NULL, 'category', NULL, '2021-10-11 10:13:22', 'banner/cUGwzVOqMLbh3w9dKguCaFHNl3iDECYvNtF3TnHb.png'),
+(2, 'Beverages', NULL, 'banner/ANHtxqX9efpQyI569o3zfUv8wksov9b1uN8MfUiy.jpg', 1, 2, 1, '2021-09-30 16:38:00', '2025-12-30 12:00:00', 15, NULL, 'category', NULL, '2021-10-11 10:13:40', 'banner/mPpy09BVimNeg46TatzLQt3m0zDYgp3eT1eXzQyZ.png'),
+(3, 'Fruits', NULL, 'banner/jFO3l6weFavP3irAM9jTu9k92mf0m8Wp9icfzxCY.jpg', 1, 3, 1, '2021-09-30 17:37:00', '2025-02-23 12:00:00', 9, NULL, 'category', NULL, '2021-10-11 10:14:50', 'banner/0F2XdQvXs0u81vN7KVi38AOgXyvi5Kwk81EhDWMq.png');
 
 
 INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
-(1, 'Vegetables', NULL, 'banner/ETnFf4CIEdESfMqkNyOY2PPWnQNTOb201a6bv6h6.png', 1, 1, 1, '2021-09-30 16:32:00', '2022-02-24 12:00:00', 8, NULL, 'category', NULL, '2021-11-15 08:30:45'),
-(2, 'Beverages', NULL, 'banner/XgkKGRgtXe2h3ls3FUD1uGfgYUDN9X9s7jS0i3Ea.png', 1, 2, 1, '2021-09-30 16:38:00', '2021-12-30 12:00:00', 15, NULL, 'category', NULL, '2021-11-15 08:31:13'),
-(3, 'Fruits', NULL, 'banner/GmAuMUxcvDRW5fFNpxQ6TP2LNtxVQ4C9bwJcmVTb.png', 1, 3, 1, '2021-09-30 17:37:00', '2022-02-23 12:00:00', 9, NULL, 'category', NULL, '2021-11-15 08:31:43');
+(1, 'Vegetables', NULL, 'banner/ETnFf4CIEdESfMqkNyOY2PPWnQNTOb201a6bv6h6.png', 1, 1, 1, '2021-09-30 16:32:00', '2025-02-24 12:00:00', 8, NULL, 'category', NULL, '2021-11-15 08:30:45'),
+(2, 'Beverages', NULL, 'banner/XgkKGRgtXe2h3ls3FUD1uGfgYUDN9X9s7jS0i3Ea.png', 1, 2, 1, '2021-09-30 16:38:00', '2025-12-30 12:00:00', 15, NULL, 'category', NULL, '2021-11-15 08:31:13'),
+(3, 'Fruits', NULL, 'banner/GmAuMUxcvDRW5fFNpxQ6TP2LNtxVQ4C9bwJcmVTb.png', 1, 3, 1, '2021-09-30 17:37:00', '2025-02-23 12:00:00', 9, NULL, 'category', NULL, '2021-11-15 08:31:43');
 
 
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
@@ -1114,3 +1114,11 @@ INSERT INTO `loyalty_cards` (`id`, `name`, `description`, `image`, `minimum_poin
 
 
 UPDATE `client_preferences` SET `business_type` = 'food_grocery_ecommerce' , `is_hyperlocal` = 0 WHERE `client_preferences`.`id` = 1;
+
+INSERT INTO `service_areas` (`id`, `name`, `description`, `geo_array`, `zoom_level`, `polygon`, `vendor_id`, `created_at`, `updated_at`) VALUES
+(1, 'Chandigarh', 'Chandigarh', '(30.602512763703658, 76.73777973337707),(30.694961539827222, 76.58259784861144),(30.81032436676724, 76.62002002878722),(30.817106109673308, 76.76490223093566),(30.78142287984877, 76.85965931101379),(30.70175141300602, 76.91253101511535),(30.634126600892838, 76.82120716257629)', 12, 0x0000000001030000000100000008000000a087c7463e9a3e4064a07cc8372f53402589ddffe8b13e4064a07c4849255340ce6aee6a71cf3e4064a07c68ae2753409d68b2dd2dd13e4064a07c28f4305340ee4b71540bc83e4064a07ca8043753405bc808fba5b33e4064a07ce8663a5340bf5bf41e56a23e4064a07ca88e345340a087c7463e9a3e4064a07cc8372f5340, 6, '2022-01-20 13:46:12', '2022-01-20 13:46:12'),
+(2, 'Chandigarh', 'Chandigarh', '(30.609604615880997, 76.73194324656066),(30.686104465616197, 76.55547535105285),(30.81032436676724, 76.60937702341613),(30.81297814927031, 76.74395954294738),(30.752807751722777, 76.88540851755675),(30.68964739281792, 76.91356098337707),(30.659528368050854, 76.86000263376769),(30.64239767624637, 76.8218938080841)', 12, 0x000000000103000000010000000900000014b3500c0f9c3e4064a07c28d82e53400c76d18aa4af3e4064a07ce88c235340ce6aee6a71cf3e4064a07c0800275340857a03561fd03e4064a07c089d2f53401ad34102b8c03e4064a07c88aa385340b5ec45bb8cb03e4064a07cc8773a53400b90e3d9d6a83e4064a07c480a3753402b81922c74a43e4064a07ce89934534014b3500c0f9c3e4064a07c28d82e5340, 5, '2022-01-20 13:46:38', '2022-01-20 13:46:38'),
+(3, 'Chandigarh', 'Chandigarh', '(30.617286869731622, 76.73022663279113),(30.65244017405108, 76.53006946726379),(30.80649099596058, 76.60079395456847),(30.815926710516923, 76.74567615671691),(30.716510358566588, 76.94240009470519)', 12, 0x00000000010300000001000000060000005ebf2583069e3e4064a07c08bc2e53405c25ba5106a73e4064a07ca8ec2153404e2ba43176ce3e4064a07c6873265340619aa992e0d03e4064a07c28b92f5340ea490d396db73e4064a07c48503c53405ebf2583069e3e4064a07c08bc2e5340, 4, '2022-01-20 13:47:14', '2022-01-20 13:47:14'),
+(4, 'Chandigarh', 'Chandigarh', '(30.60990009845287, 76.73812305613097),(30.720052169464154, 76.55753528757629),(30.81297814927031, 76.62722980661925),(30.817695803820836, 76.79305469675597),(30.700865804466762, 76.96093952341613)', 12, 0x0000000001030000000100000006000000a8aeb069229c3e4064a07c683d2f53402c43c75655b83e4064a07ca8ae235340857a03561fd03e4064a07c8824285340a77c1f8354d13e4064a07c68c1325340c911fdf06bb33e4064a07c08803d5340a8aeb069229c3e4064a07c683d2f5340, 3, '2022-01-20 13:47:40', '2022-01-20 13:47:40');
+
+UPDATE `clients` SET `logo` = 'Clientlogo/6156dfbc8becb.png' WHERE  1;

@@ -178,11 +178,11 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                                 <a class="action-icon openBannerModal" userId="{{$ban->id}}" href="#"> <i class="mdi mdi-square-edit-outline"></i></a> 
                                             </div>
                                             <div class="inner-div">
-                                                <form method="POST" action="{{ route('mobilebanner.destroy', $ban->id) }}">
+                                                <form method="POST" action="{{ route('mobilebanner.destroy', $ban->id) }}" id="deleteMobileBanner">
                                                     @csrf
                                                     @method('DELETE')
                                                     <div class="form-group mb-0">
-                                                        <button type="submit" onclick="return confirm('Are you sure? You want to delete the banner.')" class="btn btn-primary-outline action-icon">
+                                                        <button type="button" class="btn btn-primary-outline action-icon" id="deleteMobileBannerButton">
                                                             <i class="mdi mdi-delete"></i>
                                                         </button> 
 
@@ -211,6 +211,23 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
 @section('script')
 
 <script type="text/javascript">
+    $('#deleteMobileBannerButton').click(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "{{__('Are you sure?')}}",
+            text:"{{__('You want to delete the banner.')}}",
+                // icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+        }).then((result) => {
+            if(result.value)
+            {
+                $("#deleteMobileBanner").off("submit").submit();
+            }else{
+                return false;
+            }
+        });
+    });
     function assignSortAttach() {
       $("table").sortable({
         axis: "y",

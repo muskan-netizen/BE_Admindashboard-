@@ -18,31 +18,22 @@
 
 
        <style type="text/css">
-            .loader_box {
-                position: fixed;
-                width: 100%;
-                height: 100%;
-                background: #00000075;
-                top: 0;
-                z-index:99999;
-                left: 0;
-            }
-            .spinner-border{
-                position: absolute;
-                top: 50%;
-                left: 0;
-                right: 0;
-                margin: 0 auto !important;
-                display: block;
-            }
+.loader_box {position: fixed;width: 100%;height: 100%;background: #00000075;top: 0;z-index:99999;left: 0;}
+.spinner-border{position: absolute;top: 50%;left: 0;right: 0;margin: 0 auto !important;display: block;}
        </style>
 
     </head>
     @php
         $classBody1 = 'light';
-        $theme1 = \App\Models\ClientPreference::where(['id' => 1])->first('theme_admin');
+        $Default_latitude = '30.7187';
+        $Default_longitude = '76.8106';
+        $theme1 = \App\Models\ClientPreference::where(['id' => 1])->first('theme_admin','Default_latitude','Default_longitude');
         if($theme1 && ($theme1->theme_admin == 'dark' || $theme1->theme_admin == 'Dark')){
             $classBody1 = 'dark';
+        }
+        if($theme1){
+            $Default_latitude = $theme1->Default_latitude ? $theme1->Default_latitude : '30.7187' ;
+            $Default_longitude = $theme1->Default_longitude ? $theme1->Default_longitude : '76.8106' ;
         }
 
         $ll = session()->get('applocale_admin');
@@ -87,6 +78,9 @@
         <!-- End Page content -->
     </div>
 <script>
+    var Default_latitude  =  {{ $Default_latitude }};
+    var Default_longitude =  {{ $Default_longitude }};
+
     var NumberFormatHelper = { formatPrice: function(x){
         if(x){
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -100,5 +94,11 @@
 
     @yield('script')
     <script src="{{asset('assets/js/app.min.js')}}"></script>
+    <script>
+
+        $(".remove-modal-open").click(function (e) {
+               $('body').addClass('modal-opensag');
+       });
+    </script>
     </body>
 </html>

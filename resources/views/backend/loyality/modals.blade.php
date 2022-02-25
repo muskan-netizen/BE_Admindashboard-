@@ -5,8 +5,8 @@
  @endphp
 
 
-<div class="modal fade bd-example-modal-lg addModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+<div class="modal fade bd-example-modal-md addModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content p-3">
             <div class="modal-header border-0 p-0 mb-3">
                 <h4 class="modal-title">{{ __('Add') }} {{ $newLoyalty_Cards }}</h4><br>
@@ -33,7 +33,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group" id="minimum_pointsInput">
-                            {!! Form::label('title', __('Minimum Points to reach this level *'),['class' => 'control-label']) !!}
+                            {!! Form::label('title', __('Min. Points to reach this level *'),['class' => 'control-label']) !!}
                             {!! Form::text('minimum_points', null, ['class' => 'form-control']) !!}
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
@@ -72,7 +72,7 @@
                 <label for="purchase">{{ __("Order Amount to earn 1") }} {{ $newLoyalty_Cards }} {{ __("point") }} ({{ __("as per primary currency") }})</label>
 
                 <div class="row mb-2">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-prepend">
@@ -94,7 +94,7 @@
 </div>
 
 <div id="edit-loyalty-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-header border-bottom">
                 <h4 class="modal-title">{{ __("Edit") }} {{ $newLoyalty_Cards }}</h4>

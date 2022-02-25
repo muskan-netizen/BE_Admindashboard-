@@ -2,8 +2,11 @@
 namespace App\Http\Traits;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Config;
 use GuzzleHttp\Client;
 use Log;
+use Unifonic;
 trait smsManager{
 
   public function __construct()
@@ -24,10 +27,8 @@ trait smsManager{
     public function mazinhost($to,$message,$crendentials)
     {
         $curl = curl_init();
-
         $from = $crendentials->sender_id;
         $to = substr($to, 1);
-
         curl_setopt_array($curl, array(
         CURLOPT_URL => "https://mazinhost.com/smsv1/sms/api",
         CURLOPT_RETURNTRANSFER => true,
@@ -53,6 +54,23 @@ trait smsManager{
         //return $endpoint;
     }
 
+    public function unifonic($recipient,$message,$crendentials)
+    {   try{
+
+            $crendential = [
+                'app_id' =>$crendentials->unifonic_app_id,
+                'account_email' => $crendentials->unifonic_account_email,
+                'account_password' => $crendentials->unifonic_account_password
+            ];
+            config(['services.unifonic' => $crendential]);
+            $to_number = substr($recipient, 1);
+            $respont = Unifonic::send( $to_number,  $message, $senderID = null);
+            return 1;
+        }catch(Exception $e) {
+            return $e->getMessage();
+        }
+
+    }
     private function postCurl($data,$token=null):object{
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->api_url);

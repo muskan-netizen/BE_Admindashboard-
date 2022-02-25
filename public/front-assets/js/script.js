@@ -24,7 +24,7 @@
                 e(".sm").addClass("hover-unset");
             }),
             e(window).width() > "1200" &&
-            e("#sub-menu > li").hover(
+            e("#sub-menu  > li").hover(
                 function () {
                     e(this).children().hasClass("has-submenu") && e(this).parents().find("nav").addClass("sidebar-unset");
                 },
@@ -196,6 +196,45 @@
                 { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
             ],
         }),
+        e(".product-4-on_sale").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
+            ],
+        }),
+        e(".product-4-new_products").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
+            ],
+        }),
+        e(".product-4-best_sellers").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
+            ],
+        }),
         e(".recent-orders").slick({
             infinite: !0,
             speed: 300,
@@ -209,6 +248,42 @@
                 { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
             ],
         }),
+        e('.suppliers-slider').slick({
+            dots: false,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            arrows: false,
+            dots: false,
+            responsive: [
+              {
+                breakpoint: 991,
+                settings: {
+                  slidesToShow: 3,
+                  slidesToScroll: 1,
+                  infinite: true,
+                  dots: false
+                }
+              },
+              {
+                breakpoint: 767,
+                settings: {
+                  slidesToShow: 2,
+                  slidesToScroll: 1,
+                  dots: false
+                }
+              },
+              {
+                breakpoint: 480,
+                settings: {
+                  slidesToShow:1,
+                  slidesToScroll: 1,
+                  dots: false
+                }
+              }
+            ]
+        });
         e('.suppliers-slider').slick({
             dots: false,
             infinite: true,
@@ -526,7 +601,7 @@
             e(".collection-grid-view").css("opacity", "1"),
                 e(".product-wrapper-grid").removeClass("list-view"),
                 e(".product-wrapper-grid").children().children().removeClass(),
-                e(".product-wrapper-grid").children().children().addClass("col-lg-3");
+                e(".product-wrapper-grid").children().children().addClass("col-lg-3 mt-3");
         }),
         e(".product-2-layout-view").on("click", function (s) {
             e(".product-wrapper-grid").hasClass("list-view") || (e(".product-wrapper-grid").children().children().removeClass(), e(".product-wrapper-grid").children().children().addClass("col-lg-6"));

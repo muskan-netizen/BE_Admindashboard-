@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row al">
     <div class="col-md-12">
         <div class="row mb-2">
             <div class="col-md-3">
@@ -28,8 +28,9 @@
             @endif--}}
         </div>
         {!! Form::hidden('vendor_id', $vendor->id, ['class'=>'form-control']) !!}
+
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="form-group" id="nameInput">
                     {!! Form::label('title', __('Name'),['class' => 'control-label']) !!}
                     {!! Form::text('name', $vendor->name, ['class'=>'form-control']) !!}
@@ -38,14 +39,6 @@
                     </span>
                 </div>
             </div>
-            <div class="col-md-12">
-                <div class="form-group" id="descInput">
-                    {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
-                    {!! Form::textarea('desc', $vendor->desc, ['class' => 'form-control', 'rows' => '3']) !!}
-                </div>
-            </div>
-        </div>
-        <div class="row">
             <div class="col-md-6">
                 <div class="form-group" id="emailInput">
                     <label for="">{{ __('Email') }}</label>
@@ -64,13 +57,24 @@
                     </span>
                 </div>
             </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="">{{ __('Website') }}</label>
+                    {!! Form::text('website', $vendor->website, ['class'=>'form-control']) !!}
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row">
+
         </div>
         <div class="row mb-2" id="edit">
-            <div class="col-md-4">
+            <div class="col-md-12">
                 <div class="form-group mb-3" id="addressInput">
                     {!! Form::label('title', __('Address'),['class' => 'control-label']) !!}
                     <div class="input-group">
-                        <input type="text" name="address" id="edit-address" placeholder="Delhi, India" class="form-control" value="{{$vendor->address}}">
+                        <input type="text" name="address" id="edit-address" placeholder="Delhi, India" class="form-control" value="{{$vendor->address}}" onkeyup="checkAddressString(this,'edit')">
                         <div class="input-group-append">
                             <button class="btn btn-xs btn-dark waves-effect waves-light showMap" type="button" num="edit"> <i class="mdi mdi-map-marker-radius"></i></button>
                         </div>
@@ -80,9 +84,56 @@
                     </span>
                 </div>
             </div>
+        </div>
+
+        <div class="row mb-2" >
+            <div class="col-md-4">
+                <div class="form-group mb-3" id="pincode">
+                    {!! Form::label('title', __('Pincode'),['class' => 'control-label']) !!}
+                    <input type="text" name="pincode" placeholder="Pincode" class="form-control" value="{{@$vendor->pincode}}">
+                    @if($errors->has('Pincode'))
+                    <span class="text-danger" role="alert">
+                        <strong>{{ $errors->first('Pincode') }}</strong>
+                    </span>
+                    @endif
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group mb-3">
+                    {!! Form::label('title', __('City'),['class' => 'control-label']) !!}
+                    <input type="text" name="city" placeholder="City" class="form-control" value="{{$vendor->city}}">
+                    @if($errors->has('city'))
+                    <span class="text-danger" role="alert">
+                        <strong>{{ $errors->first('city') }}</strong>
+                    </span>
+                    @endif
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group mb-3">
+                    {!! Form::label('title', __('State'),['class' => 'control-label']) !!}
+                    <input type="text" name="state" placeholder="State" class="form-control" value="{{$vendor->state}}">
+                    @if($errors->has('state'))
+                    <span class="text-danger" role="alert">
+                        <strong>{{ $errors->first('state') }}</strong>
+                    </span>
+                    @endif
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group mb-3">
+                    {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
+                    <input type="text" name="country" placeholder="Country" class="form-control" value="{{$vendor->country}}">
+                    @if($errors->has('country'))
+                    <span class="text-danger" role="alert">
+                        <strong>{{ $errors->first('country') }}</strong>
+                    </span>
+                    @endif
+                </div>
+            </div>
             <div class="col-md-4">
                 <div class="form-group mb-3" id="latitudeInput">
-                    {!! Form::label('title', __('latitude'),['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Latitude'),['class' => 'control-label']) !!}
                     <input type="text" name="latitude" id="edit_latitude" placeholder="24.9876755" class="form-control" value="{{$vendor->latitude}}">
                     @if($errors->has('latitude'))
                     <span class="text-danger" role="alert">
@@ -93,7 +144,7 @@
             </div>
             <div class="col-md-4">
                 <div class="form-group mb-3" id="longitudeInput">
-                    {!! Form::label('title', __('longitude'),['class' => 'control-label']) !!}
+                    {!! Form::label('title', __('Longitude'),['class' => 'control-label']) !!}
                     <input type="text" name="longitude" id="edit_longitude" placeholder="11.9871371723" class="form-control" value="{{$vendor->longitude}}">
                     @if($errors->has('longitude'))
                     <span class="text-danger" role="alert">
@@ -105,11 +156,12 @@
         </div>
         <div class="row">
             <div class="col-md-6">
-                <div class="form-group">
-                    <label for="">{{ __('Website') }}</label>
-                    {!! Form::text('website', $vendor->website, ['class'=>'form-control']) !!}
+                <div class="form-group" id="descInput">
+                    {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}
+                    {!! Form::textarea('desc', $vendor->desc, ['class' => 'form-control', 'rows' => '3']) !!}
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="row">
                     <div class="col-md-4">
@@ -162,7 +214,7 @@
                         <select class="form-control {{ (!empty($vendor_registration_document->is_required))?'required':''}}" name="{{$vendor_registration_document->primary->slug}}"  id="input_file_selector_{{$vendor_registration_document->id}}">
                             <option value="" >{{__('Please Select '). ($vendor_registration_document->primary ? $vendor_registration_document->primary->name : '') }}</option>
                             @foreach ($vendor_registration_document->options as $key =>$value )
-                                <option value="{{$value->id}}">{{$value->translation? $value->translation->name: ""}}</option>
+                                <option value="{{$value->id}}" {{ ($value->id == $field_value) ? 'selected':'' }} >{{$value->translation? $value->translation->name: ""}}</option>
                             @endforeach
                         </select>
                         <span class="invalid-feedback" id="{{$vendor_registration_document->primary->slug}}_error"><strong></strong></span>

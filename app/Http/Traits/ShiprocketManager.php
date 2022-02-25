@@ -3,7 +3,8 @@ namespace App\Http\Traits;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use App\Models\{ShippingOption};
+use App\Models\{ShippingOption, UserAddress, Vendor};
+use Illuminate\Support\Facades\Auth;
 
 trait ShiprocketManager{
 
@@ -17,9 +18,25 @@ trait ShiprocketManager{
         $this->email = $creds_arr->username;
         $this->password = $creds_arr->password;
         $this->api_url = 'https://apiv2.shiprocket.in/v1/external';
+        $this->weight = $creds_arr->weight;
+    }
+
+    public function credentials()
+    {
+        $ship_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'shiprocket')->where('status', 1)->first();
+        if(isset($ship_creds) && !empty($ship_creds)){
+            $creds_arr = json_decode($ship_creds->credentials);
+            $this->email = $creds_arr->username;
+            $this->password = $creds_arr->password;
+            $this->api_url = 'https://apiv2.shiprocket.in/v1/external';
+            $this->weight = $creds_arr->weight;
+        }else{
+            return false;
+        }
     }
    
     public function getAuthToken():object{
+        $this->credentials();
         $endpoint='/auth/login';
         $data=[
            'email'=>$this->email,
@@ -29,98 +46,8 @@ trait ShiprocketManager{
         return $response;
     }
 
-        public function createOrder($token,$data){
+    public function createOrder($token,$data){
         $endpoint="/orders/create/adhoc";
-        // $data=[
-        //     'order_id'                  =>  $data['order_id'],
-        //     'order_date'                =>  $data['order_date'],
-        //     'pickup_location'           =>  $data['pickup_location']??null,
-        //     'billing_customer_name'     =>  $data['billing_customer_name'],
-        //     'billing_last_name'         =>  $data['billing_last_name']??'',
-        //     'billing_address'           =>  $data['billing_address'],
-        //     'billing_address_2'         =>  $data['billing_address_2']??null,
-        //     'billing_city'              =>  $data['billing_city'],
-        //     'billing_pincode'           =>  $data['billing_pincode'],
-        //     'billing_state'             =>  $data['billing_state'],
-        //     'billing_country'           =>  $data['billing_country'],
-        //     "billing_email"             => $data['billing_email'],
-        //     "billing_phone"             =>  $data["billing_phone"],
-        //     "shipping_is_billing"       => $data["shipping_is_billing"],
-        //     "order_items" => $data['order_items'],
-        //     "payment_method"=>$data['payment_method']??"Prepaid",
-        //     "shipping_charges"=> $data['shipping_charges']??0,
-        //     "giftwrap_charges"=>$data['giftwrap_charges']??0 ,
-        //     "transaction_charges"=>$data['transaction_charges']??0,
-        //     "total_discount"=>$data['total_discount']??0,
-        //     "sub_total" =>  $data['sub_total'],
-        //     "length"=>  $data['length'],
-        //     "breadth"=>  $data['breadth'],
-        //     "height"=> $data['height'],
-        //     "weight"=>  $data['weight']
-
-        // ];
-        $data = array (
-              'order_id' => '22411447',
-              'order_date' => '2021-08-24 11:11',
-              'pickup_location' => 'Primary',
-              'channel_id' => '',
-              'comment' => 'Reseller: M/s Goku',
-              'billing_customer_name' => 'TEsting',
-              'billing_last_name' => 'Uzumaki',
-              'billing_address' => 'Code brew Labs, CDCL Building',
-              'billing_address_2' => '',
-              'billing_city' => 'Chandigarh',
-              'billing_pincode' => '160002',
-              'billing_state' => 'Chandigarh',
-              'billing_country' => 'India',
-              'billing_email' => 'sujatacodebrew@gmail.com',
-              'billing_phone' => '8059272673',
-              'shipping_is_billing' => true,
-              'shipping_customer_name' => '',
-              'shipping_last_name' => '',
-              'shipping_address' => '',
-              'shipping_address_2' => '',
-              'shipping_city' => '',
-              'shipping_pincode' => '',
-              'shipping_country' => '',
-              'shipping_state' => '',
-              'shipping_email' => '',
-              'shipping_phone' => '',
-              'order_items' => 
-              array (
-                0 => 
-                array (
-                  'name' => 'Kunai',
-                  'sku' => 'chakra123',
-                  'units' => 10,
-                  'selling_price' => '900',
-                  'discount' => '',
-                  'tax' => '',
-                  'hsn' => 441122,
-                ),
-                0 => 
-                array (
-                  'name' => 'Kunai 2',
-                  'sku' => 'chakra123-2',
-                  'units' => 10,
-                  'selling_price' => '900',
-                  'discount' => '',
-                  'tax' => '',
-                  'hsn' => 441122,
-                ),
-              ),
-              'payment_method' => 'Prepaid',
-              'shipping_charges' => 0,
-              'giftwrap_charges' => 0,
-              'transaction_charges' => 0,
-              'total_discount' => 0,
-              'sub_total' => 18000,
-              'length' => 10,
-              'breadth' => 15,
-              'height' => 20,
-              'weight' => 2.5,
-            );
-        // dd($endpoint,$data,trim($token),$token);
         $response=$this->postCurl($endpoint,$data,trim($token));
         return $response;
     }
@@ -150,16 +77,13 @@ trait ShiprocketManager{
 
     public function trackingThroughAWB($token,$awbCode){
         $endpoint="/courier/track/awb/$awbCode";
-        $response=$this->getCurl($endpoint,$token);
+        $response=$this->getCurl($endpoint,'',$token);
         return $response;
     }
 
-
-
-
     public function trackingThroughShipmentId($token,$shipmentId){
         $endpoint="/shipments/$shipmentId";
-        $response=$this->getCurl($endpoint,$token);
+        $response=$this->getCurl($endpoint,'',$token);
         return $response;
     }
 
@@ -179,40 +103,72 @@ trait ShiprocketManager{
     }
 
 
-    public function addAddress($token,$data){
+    public function addAddress($token,$vid,$name){
         $endpoint='/settings/company/addpickup';
         $data = array (
-              'pickup_location' => "".rand(1000,99999999),
-              'name' => 'Deadpool',
-              'email' => 'deadpool@yopmail.com',
-              'phone' => '8059272673',
-              'address' => 'Mutant Facility, Sector 4 ',
+              'pickup_location' => $name,
+              'name' => $vid->name,
+              'email' => $vid->email,
+              'phone' => $vid->phone_no,
+              'address' => $vid->address,
               'address_2' => '',
-              'city' => 'Pune',
-              'state' => 'Maharshtra',
-              'country' => 'India',
-              'pin_code' => '110022',
+              'city' => $vid->city,
+              'state' => $vid->state,
+              'country' => $vid->country,
+              'pin_code' => $vid->pincode,
             );
         $response=$this->postCurl($endpoint,$data,trim($token));
         return $response;
+    //   "success": true
+    //   "address": {
+    //   "company_id": 2001023
+    //   "pickup_code": "Inderjit_1642589053"
+    //      }
+
     }
 
-    public function checkCourierService($token)
+    public function checkCourierService($token,$vid,$weight = null)
     {
+        $vendors = array();
+        $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
+        $vendor_details = Vendor::find($vid);
+        if($cus_address->pincode!='')
+        {
+        $this->credentials();
         $endpoint='/courier/serviceability';
         $data = array (
-          'pickup_postcode' => 110030,
-          'delivery_postcode' => 122002,
+          'pickup_postcode' => ($vendor_details->pincode) ?? null,
+          'delivery_postcode' => ($cus_address->pincode)?? null,
           'cod' => 0,
-          'weight' => 2,
-          'length' => 15,
-          'breadth' => 10,
-          'height' => 5,
-          'declared_value' => 50,
+          'weight' => (($weight)?$weight:$this->weight),
+          //'length' => 15,
+          //'breadth' => 10,
+          //'height' => 5,
+          //'declared_value' => 50,
         );
-        $response=$this->getCurl($endpoint,$data,trim($token));
-        return $response;
+        $result = $this->getCurl($endpoint,$data,trim($token));
+        //courier_name , rate, courier_company_id , etd , etd_hours , estimated_delivery_days
+        if($result->status == '200'){
+          $result = $result->data->available_courier_companies;
+          foreach($result as $key => $data)
+          {
+              $vendors[] = array(
+                'type'=>'SR',
+                'courier_name' => $data->courier_name,
+                'rate' => number_format(round($data->rate), 2, '.', ''),
+                'courier_company_id' => $data->courier_company_id,
+                'etd' => $data->etd,
+                'etd_hours' => $data->etd_hours,
+                'estimated_delivery_days' => $data->estimated_delivery_days,
+                'code' => 'SR_'.$data->courier_company_id
+            );
+          }
+        }
+        }
+        return $vendors;
     }
+
+
 
     private function postCurl($endpoint,$data,$token=null):object{
                 $ch = curl_init();
@@ -237,12 +193,19 @@ trait ShiprocketManager{
                 return json_decode($result); 
     }
 
-    private function getCurl($endpoint,$token=null):object{
-            $ch = curl_init();
+    private function getCurl($endpoint,$data,$token=null):object{
 
+        $curl = curl_init();
+          
+            $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $this->api_url.''.$endpoint);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+            if($data)
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
+
+
             $headers = array();
             $headers[] = 'Accept: */*';
             if(!is_null($token)){

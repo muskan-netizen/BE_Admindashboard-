@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Http\Controllers\AhoyController;
 use Auth;
 use Session;
 use App\Models\Tax;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
+use App\Http\Controllers\ShiprocketController;
+use App\Http\Controllers\DunzoController;
 use App\Models\VendorOrderDispatcherStatus;
 use App\Models\{OrderStatusOption, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency};
 use DB;
@@ -117,7 +120,6 @@ class OrderController extends BaseController
         }
         $vendors = $vendors->get();
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-
         return view('backend.order.index', compact('return_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors'));
     }
 
@@ -203,7 +205,7 @@ class OrderController extends BaseController
                         if (!empty($request->get('vendor_id'))) {
                             $query->where('vendor_id', $request->get('vendor_id'));
                         }
-                    });
+                    })->with('vendors.cancelledBy');
 
                     break;
             }
@@ -242,7 +244,10 @@ class OrderController extends BaseController
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
             $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
             foreach ($order->vendors as $vendor) {
-                $vendor->vendor_detail_url = route('order.show.detail', [$order->id, $vendor->vendor_id]);
+                if(isset($vendor) && !empty($vendor->vendor_id))
+                $vendor->vendor_detail_url = route('order.show.detail', [$order->id, @$vendor->vendor_id]);
+                else
+                $vendor->vendor_detail_url = '#';
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
@@ -399,10 +404,11 @@ class OrderController extends BaseController
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
+
             if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 2) { //$request->status_option_id == 3){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been accepted!!!')]);
             }
-            if ($currentOrderStatus->order_status_option_id == 3 && $request->status_option_id == 3) { //$request->status_option_id == 2){
+            if ($currentOrderStatus->order_status_option_id == 3) { //$request->status_option_id == 2){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
             }
             if (!$vendor_order_status_check) {
@@ -416,38 +422,59 @@ class OrderController extends BaseController
                     $clientDetail = CP::on('mysql')->where(['code' => $client_preferences->client_code])->first();
                     AutoRejectOrderCron::on('mysql')->where(['database_name' => $clientDetail->database_name, 'order_vendor_id' => $currentOrderStatus->id])->delete();
                 }
-                $orderData = Order::find($request->order_id);
+                $orderData = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
-                    if ($orderData->shipping_delivery_type=='L') {
+                    if ($orderData->shipping_delivery_type=='D') {
                         //Create Shipping request for dispatcher
                         $order_dispatch = $this->checkIfanyProductLastMileon($request);
                         if ($order_dispatch && $order_dispatch == 1)
                             $stats = $this->insertInVendorOrderDispatchStatus($request);
-                    
+
                     }elseif($orderData->shipping_delivery_type=='L'){
                         //Create Shipping place order request for Lalamove
                         $order_lalamove = $this->placeOrderRequestlalamove($request);
+                    }elseif($orderData->shipping_delivery_type=='SR'){
+                        //Create Shipping place order request for Shiprocket
+                        $order_ship = $this->placeOrderRequestShiprocket($request);
+                    }elseif($orderData->shipping_delivery_type=='DU'){
+                        //Create Shipping place order request for Dunzo
+                        $order_dunzo = $this->placeOrderRequestDunzo($request);
+                    }elseif($orderData->shipping_delivery_type=='M'){
+                        //Create Shipping place order request for Ahoy Masa
+                        $order_dunzo = $this->placeOrderRequestAhoy($request);
                     }
                 }
-                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason]);
+                OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id' => $request->status_option_id, 'reject_reason' => $request->reject_reason, 'cancelled_by'=>$request->cancelled_by]);
 
-                if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
-                    
-                    if ($orderData->shipping_delivery_type=='D') {
+                if ($request->status_option_id == 3) {
+                    if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
                         $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                         $response = Http::get($dispatch_traking_url);
                     }elseif($orderData->shipping_delivery_type=='L'){
                         //Cancel Shipping place order request for Lalamove
                         $lala = new LalaMovesController();
                         $order_lalamove = $lala->cancelOrderRequestlalamove($currentOrderStatus->web_hook_code);
+                    }elseif($orderData->shipping_delivery_type=='SR'){
+                        //Cancel Shipping place order request for Shiprocket
+                        $ship = new ShiprocketController();
+                        $order_ship = $ship->cancelOrderRequestShiprocket($currentOrderStatus->ship_order_id);
+                    }elseif($orderData->shipping_delivery_type=='DU'){
+                        //Cancel Dunzo place order request for Dunzo
+                        $ship = new DunzoController();
+                        $order_ship = $ship->cancelOrderRequestDunzo($currentOrderStatus->web_hook_code);
+                    }elseif($orderData->shipping_delivery_type=='M'){
+                        //Create Shipping place order request for Ahoy
+                        $ship = new AhoyController();
+                        $order_ship = $ship->cancelOrderRequestAhoy($currentOrderStatus->web_hook_code);
                     }
 
                 }
                 if($request->status_option_id == 2){
-                    $this->ProductVariantStoke($request->order_id);
+                    $this->ProductVariantStock($request->order_id);
                 }
                 DB::commit();
+                $orderData = Order::find($request->order_id);
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
                 $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
                 return response()->json([
@@ -525,9 +552,78 @@ class OrderController extends BaseController
     }
     /// ******************  check If any Product Last Mile on   ************************ ///////////////
 
+    public function placeOrderRequestShiprocket($request)
+    {
+        $ship = new ShiprocketController();
+        //Create Shipping place order request for Shiprocket
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+            $order_ship = $ship->createOrderRequestShiprocket($checkOrder->user_id,$checkdeliveryFeeAdded);
+            }
+            if ($order_ship->order_id){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'ship_order_id' => $order_ship->order_id,
+                    'ship_shipment_id' => $order_ship->shipment_id,
+                    'ship_awb_id' => $order_ship->awb_code
+                    ]);
+                return 1;
+            }
+
+        return 2;
+    }
+
+    public function placeOrderRequestAhoy($request)
+    {
+
+        $data = new AhoyController();
+        //Create Ahoy place order request for Ahoy
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+                $order_det = $data->createPreOrderRequestAhoy($checkOrder->user_id,$checkdeliveryFeeAdded);
+            }
+
+            if (isset($order_det->orderId)){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'web_hook_code' => $order_det->orderId
+                ]);
+
+                return 1;
+            }
+
+        return 2;
+    }
+
+    public function placeOrderRequestDunzo($request)
+    {
+
+        $data = new DunzoController();
+        //Create Shipping place order request for Dunzo
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+            if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+                $order_lalamove = $data->createOrderRequestDunzo($checkOrder->user_id,$checkdeliveryFeeAdded);
+            }
+
+            if ($order_lalamove->status){
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+                ->update([
+                    'web_hook_code' => $order_lalamove->data->order_uuid,
+                    'lalamove_tracking_url'=>$order_lalamove->data->trackUrl
+                ]);
+
+                return 1;
+            }
+
+        return 2;
+    }
+
     public function placeOrderRequestlalamove($request)
     {
-       
+
         $lala = new LalaMovesController();
         //Create Shipping place order request for Lalamove
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
@@ -539,7 +635,7 @@ class OrderController extends BaseController
             if ($order_lalamove->totalFee >0){
                 $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
                 ->update(['web_hook_code' => $order_lalamove->orderRef]);
-            
+
                 return 1;
             }
 
@@ -657,7 +753,7 @@ class OrderController extends BaseController
                 } else {
                     $task_type = 'now';
                 }
- 
+
             $tasks[] = array(
                 'task_type_id' => 1,
                 'latitude' => $vendor_details->latitude ?? '',

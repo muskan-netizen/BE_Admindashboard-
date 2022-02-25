@@ -82,17 +82,7 @@
   transition: all 0.35s ease 0.15s;
 }
 </style>
-<header>
-    <div class="mobile-fix-option"></div>
-    @if(isset($set_template)  && $set_template->template_id == 1)
-        @include('layouts.store/left-sidebar-template-one')
-        @elseif(isset($set_template)  && $set_template->template_id == 2)
-        @include('layouts.store/left-sidebar')
-        @else
-        @include('layouts.store/left-sidebar-template-one')
-        @endif
-</header>
-<section class="section-b-space new-pages pb-265">
+<section class="section-b-space new-pages">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -152,7 +142,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-12">
-                                    <h2>{{__('Store Details.')}}</h2>
+                                    <h2>{{getNomenclatureName('Vendors', true) . __(' Details.')}}</h2>
                                 </div>
                             </div>
                             <div class="form-row">
@@ -301,7 +291,13 @@
                             <div class="form-row">
                                 <div class="col-12 checkbox-input">
                                     <input type="checkbox" id="html" name="check_conditions" value="1">
-                                    <label for="html">{{__('I accept the')}} <a href="{{url('page/terms-conditions')}}" target="_blank">{{__('Terms And Conditions')}}</a> {{__('and have read the')}} <a href="{{url('page/privacy-policy')}}" target="_blank"> {{__('Privacy Policy.')}}</a></label>
+                                    <label for="html">{{__('I accept the')}} 
+                                        <a href="{{ ($terms) ? route('extrapage',$terms->slug) : '#'}}" target="_blank">{{__('Terms And Conditions')}} </a> 
+                                        {{__('and have read the')}} 
+                                       <a href="{{ ($privacy) ? route('extrapage',$privacy->slug) : '#'}}" target="_blank"> 
+                                           {{__('Privacy Policy')}}.
+                                       </a>
+                                </label>
                                     <span class="invalid-feedback" id="check_conditions_error"><strong></strong></span>
                                 </div>
                             </div>
@@ -312,7 +308,7 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </form> 
         @elseif ($page_detail->primary->type_of_form == 3)
         <div class="accordion">
             @foreach ($page_detail->faqs_details as $key =>$value)

@@ -54,7 +54,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                 </div>
                 @endif
                 @if(count($social_media_details))
-                <div class="col-lg-4 col-md-4 pl-lg-5">
+                <div class="col-lg-4 col-md-4">
                     <div class="sub-title">
                     <div class="footer-title mt-0 text-center text-md-left">
                             <h4 class="mt-0">{{ __('Connect') }}</h4>
@@ -84,9 +84,9 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                         </div>
                         <div class="footer-contant">
                             <ul class="contact-list">
-                                <li><i class="icon-location"></i> {{$clientData ? $clientData->company_address : 'Demo Store, 345-659'}}</li>
-                                <li><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? $clientData->phone_number : '123-456-7898'}}">{{$clientData ? $clientData->phone_number : '123-456-7898'}}</a></li>
-                                <li><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : 'Support@Fiot.com'}}" style="text-transform:none">{{$clientData ? $clientData->email : 'Support@Fiot.com'}}</a></li>
+                                <li><i class="icon-location"></i> {{$clientData ? $clientData->company_address : ''}}</li>
+                                <li><i class="icon-ic_call"></i> <a href="tel: {{$clientData ? $clientData->phone_number : ''}}">{{$clientData ? $clientData->phone_number : ''}}</a></li>
+                                <li><i class="icon-ic_mail"></i> <a href="mailto: {{$clientData ? $clientData->email : ''}}" style="text-transform:none">{{$clientData ? $clientData->email : ''}}</a></li>
                             </ul>
                         </div>
                     </div>

@@ -39,6 +39,14 @@ class WebStylingSeeder extends Seeder{
             'template_id' => '2',
         ]);
 
+        $app_styling_option = WebStylingOption::insert([
+            'web_styling_id' => $app_styling,
+            'name' => 'Home Page 3',
+            'image' => 'template-three.png',
+            'is_selected' => '0',
+            'template_id' => '3',
+        ]);
+
 
      
     }

@@ -1890,16 +1890,16 @@ INSERT INTO `vendor_categories` (`id`, `vendor_id`, `category_id`, `status`, `cr
 
 INSERT INTO `banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`, `image_mobile`) VALUES
 (1, 'Supermarket', NULL, 'banner/6tKRaCYpA05ZPZjlkPtk3twBOyDhMIlJ3lAp3rFo.png', 1, 3, 1, '2021-10-06 13:11:00', '2025-10-29 12:00:00', 8, NULL, 'category', NULL, '2021-10-11 10:18:48', 'banner/xZxsg4JYN0wt6olsXSCrvIVtwre5jfJR5fylFiJI.png'),
-(2, 'Electronics', NULL, 'banner/VYTHD1Jd3ZXclEcfp95RWJjyJgBrJmU6jOs4HHCU.png', 1, 2, 1, '2021-10-01 11:24:00', '2024-10-30 12:00:00', 24, NULL, 'category', NULL, '2021-10-11 10:18:32', 'banner/7t3Ue0Fo8AbKf8wrYspa4vjXCy6fxobymLLFYzZk.png'),
-(4, 'Fashion', NULL, 'banner/sR4RvrIUoz3RezV8lGVBsQbNjbrrovXR2qL9S2ph.png', 1, 1, 1, '2021-10-03 20:54:00', '2024-10-31 12:00:00', 21, NULL, 'category', '2021-10-01 05:59:21', '2021-10-11 10:18:19', 'banner/dmIbEvwSExjPitb8D0nsnRoNmu4PbG98YTsZNYLF.png'),
-(5, 'Pharmacy', NULL, 'banner/HdNkAXsIgB6rSEBQQSFScoPj4An01ZTftiTRE551.jpg', 0, 4, 1, '2021-10-03 20:56:00', '2024-10-31 12:00:00', NULL, NULL, NULL, '2021-10-03 15:27:40', '2021-10-11 07:40:53', NULL);
+(2, 'Electronics', NULL, 'banner/VYTHD1Jd3ZXclEcfp95RWJjyJgBrJmU6jOs4HHCU.png', 1, 2, 1, '2021-10-01 11:24:00', '2025-10-30 12:00:00', 24, NULL, 'category', NULL, '2021-10-11 10:18:32', 'banner/7t3Ue0Fo8AbKf8wrYspa4vjXCy6fxobymLLFYzZk.png'),
+(4, 'Fashion', NULL, 'banner/sR4RvrIUoz3RezV8lGVBsQbNjbrrovXR2qL9S2ph.png', 1, 1, 1, '2021-10-03 20:54:00', '2025-10-31 12:00:00', 21, NULL, 'category', '2021-10-01 05:59:21', '2021-10-11 10:18:19', 'banner/dmIbEvwSExjPitb8D0nsnRoNmu4PbG98YTsZNYLF.png'),
+(5, 'Pharmacy', NULL, 'banner/HdNkAXsIgB6rSEBQQSFScoPj4An01ZTftiTRE551.jpg', 0, 4, 1, '2021-10-03 20:56:00', '2025-10-31 12:00:00', NULL, NULL, NULL, '2021-10-03 15:27:40', '2021-10-11 07:40:53', NULL);
 
 
 INSERT INTO `mobile_banners` (`id`, `name`, `description`, `image`, `validity_on`, `sorting`, `status`, `start_date_time`, `end_date_time`, `redirect_category_id`, `redirect_vendor_id`, `link`, `created_at`, `updated_at`) VALUES
 (1, 'Supermarket', NULL, 'banner/hmVvbAoBOfeB7LjRizJEoBlH7h1aymShYvWkvlrC.png', 1, 3, 1, '2021-10-06 13:11:00', '2025-10-29 12:00:00', 8, NULL, 'category', NULL, '2021-11-15 09:52:51'),
-(2, 'Fashion', NULL, 'banner/6UcB2Aicy6hFPBJ9rD1oNyeZbMhwlauHOjcRGK1v.png', 1, 2, 1, '2021-10-01 11:24:00', '2024-10-30 12:00:00', 24, NULL, 'category', NULL, '2021-11-15 09:52:17'),
-(4, 'Electronics', NULL, 'banner/1fRMwEtQ4IQ1cgeiFDWWTWM7KnR57l7fzFwywefu.png', 1, 1, 1, '2021-10-03 20:54:00', '2024-10-31 12:00:00', 21, NULL, 'category', '2021-10-01 05:59:21', '2021-11-15 09:48:25'),
-(5, 'Pharmacy', NULL, 'banner/BRbzRPGGSz6oywBiVPLGGT3P5oDjI4a1HhnKoDBX.jpg', 1, 4, 1, '2021-10-03 20:56:00', '2024-10-31 12:00:00', NULL, NULL, NULL, '2021-10-03 15:27:40', '2021-11-15 09:53:26');
+(2, 'Fashion', NULL, 'banner/6UcB2Aicy6hFPBJ9rD1oNyeZbMhwlauHOjcRGK1v.png', 1, 2, 1, '2021-10-01 11:24:00', '2025-10-30 12:00:00', 24, NULL, 'category', NULL, '2021-11-15 09:52:17'),
+(4, 'Electronics', NULL, 'banner/1fRMwEtQ4IQ1cgeiFDWWTWM7KnR57l7fzFwywefu.png', 1, 1, 1, '2021-10-03 20:54:00', '2025-10-31 12:00:00', 21, NULL, 'category', '2021-10-01 05:59:21', '2021-11-15 09:48:25'),
+(5, 'Pharmacy', NULL, 'banner/BRbzRPGGSz6oywBiVPLGGT3P5oDjI4a1HhnKoDBX.jpg', 1, 4, 1, '2021-10-03 20:56:00', '2025-10-31 12:00:00', NULL, NULL, NULL, '2021-10-03 15:27:40', '2021-11-15 09:53:26');
 
 
 INSERT INTO `cab_booking_layouts` (`id`, `title`, `slug`, `order_by`, `is_active`, `created_at`, `updated_at`) VALUES
@@ -1970,3 +1970,8 @@ INSERT INTO `loyalty_cards` (`id`, `name`, `description`, `image`, `minimum_poin
 
 
 UPDATE `client_preferences` SET `business_type` = 'food_grocery_ecommerce' , `is_hyperlocal` = 0 WHERE `client_preferences`.`id` = 1;
+
+INSERT INTO `service_areas` (`id`, `name`, `description`, `geo_array`, `zoom_level`, `polygon`, `vendor_id`, `created_at`, `updated_at`) VALUES
+(1, 'Chandigarh', 'Chandigarh', '(30.636489837442145, 76.7230168549591),(30.67783712988861, 76.61384021921691),(30.768148878396328, 76.60148060007629),(30.813567868760114, 76.67220508738097),(30.80767051095956, 76.75185596628722),(30.798823795558807, 76.80404102488097),(30.710902225267418, 76.89158832712707),(30.65598433602003, 76.86240589304504)', 12, 0x0000000001030000000100000009000000e50c7cfff0a23e4064a07ce8452e5340d6e2f0bb86ad3e4064a07c2849275340db2ba767a5c43e4064a07ca87e265340af66ddfb45d03e4064a07c68052b5340d2839e7ec3ce3e4064a07c681e30534011315db77fcc3e4064a07c68753353405c2d30b0fdb53e4064a07cc80f395340f1e4e596eea73e4064a07ca831375340e50c7cfff0a23e4064a07ce8452e5340, 1, '2022-01-20 12:13:13', '2022-01-20 12:13:13');
+
+UPDATE `clients` SET `logo` = 'Clientlogo/61570106c8946.png' WHERE  1;

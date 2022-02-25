@@ -1,14 +1,12 @@
 <div class="row">
     <div class="col-md-12 pb-0 mb-0">
         <div class="row mb-2">
-            <div class="col-md-12">
+            <div class="col-md-4">
                 <label>{{ __("Upload Logo") }}</label>
                 <input type="file" accept="image/*" data-plugins="dropify" name="image1" class="dropify" data-default-file="" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 350x200</label>
             </div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-md-12">
+            <div class="col-md-8">
                 <label>{{ __("Upload Banner") }}</label>
                 <input type="file" accept="image/*" data-plugins="dropify" name="image2" class="dropify" data-default-file="" />
                 <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 1920x1080</label>

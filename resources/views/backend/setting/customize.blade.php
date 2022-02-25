@@ -1,6 +1,9 @@
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Customize'])
 @section('css')
 <link href="https://itsjavi.com/fontawesome-iconpicker/dist/css/fontawesome-iconpicker.min.css" rel="stylesheet" type="text/css" />
+<style>
+.select2-multiple {visibility: hidden !important;}
+</style>
 @endsection
 @section('content')
 <div class="container-fluid">
@@ -24,11 +27,12 @@
     </div>
     <div class="row col-spacing">
         <div class="col-lg-3 col-xl-3 mb-3">
-            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+            <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
-                <div class="card-box mb-0 h-100 pb-0">
+                <!-- Panel Theme title -->
+                <div class="card-box mb-0 pb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">{{ __("Admin") }}</h4>
+                        <h4 class="header-title mb-0">{{ __("Panel Theme") }}</h4>
                         <input type="hidden" name="send_to" id="send_to" value="customize">
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
@@ -52,20 +56,64 @@
                             </span>
                             @endif
                         </div>
-                        <!-- <div class="col-12 d-flex align-items-center justify-content-between mt-2">
-                            <label class="cursor" for="ios_app">iOS App Link</label>
-                            <input type="checkbox" id="ios_app" data-plugin="switchery" name="show_contact_us" class="chk_box2" data-color="#43bee1">
-                        </div>
-                        <div class="col-12 d-flex align-items-center justify-content-between mt-2">
-                            <label class="cursor" for="android_app">android App Link</label>
-                            <input type="checkbox" id="android_app" data-plugin="switchery" name="show_contact_us" class="chk_box2" data-color="#43bee1">
-                        </div> -->
+                    </div>
+                </div><!-- Panel Theme end -->
+            </form>
+            <!-- Order Email Notification start -->
+            <form method="POST" class="mt-2" action="{{route('configure.update', Auth::user()->code)}}">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box pb-1">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title ">{{ __('Order Email Notification') }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="col-xl-12 my-2 p-0" id="addCur-160">
+                        <label class="primaryCurText">{{ __('Email') }}</label>
+                        <input class="form-control" type="email" id="admin_email" name="admin_email" value="{{ old('admin_email', $preference->admin_email)}}">
                     </div>
                 </div>
             </form>
+            <!-- Order Email Notification end -->
+            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+                <!-- Vendor Switch start -->
+            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <input type="hidden" name="verify_config" id="verify_config" value="1">
+                <div class="card-box mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="row align-items-start">
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="dinein_check" class="mr-3 mb-0">{{getDynamicTypeName('Dine-In')}}</label>
+                                <input type="checkbox" data-plugin="switchery" name="dinein_check" id="dinein_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->dinein_check == '1')) checked='checked' @endif>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="delivery_check" class="mr-3 mb-0">{{getDynamicTypeName('Delivery')}}</label>
+                                <input type="checkbox" data-plugin="switchery" name="delivery_check" id="delivery_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->delivery_check == '1')) checked='checked' @endif>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="takeaway_check" class="mr-3 mb-0">{{getDynamicTypeName('Takeaway')}}</label>
+                                <input type="checkbox" data-plugin="switchery" name="takeaway_check" id="takeaway_check" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->takeaway_check == '1')) checked='checked' @endif>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            @endif
         </div>
+
+        <!-- Date & Time sec start -->
         <div class="col-lg-4 col-xl-3 mb-3">
-            <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+            <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
                 <div class="card-box mb-0 h-100 pb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
@@ -80,7 +128,7 @@
                         <div class="col-md-12">
                             <div class="form-group mb-2">
                                 <label for="date_format">{{ __("Date Format") }}</label>
-                                <select class="form-control" id="date_format" name="date_format">
+                                <select class="form-control al_box_height al_box_height" id="date_format" name="date_format">
                                     <option value="DD-MM-YYYY" {{ ($preference && $preference->date_format =="DD-MM-YYYY")? "selected" : "" }}>
                                         DD-MM-YYYY</option>
                                     {{-- <option value="DD/MM/YYYY" {{ ($preference && $preference->date_format =="DD/MM/YYYY")? "selected" : "" }}>
@@ -100,7 +148,7 @@
                         <div class="col-md-12">
                             <div class="form-group mb-2">
                                 <label for="time_format">{{ __("Time Format") }}</label>
-                                <select class="form-control" id="time_format" name="time_format">
+                                <select class="form-control al_box_height al_box_height" id="time_format" name="time_format">
                                     <option value="12" {{ ($preference && $preference->time_format =="12")? "selected" : "" }}>12 {{ __("hours") }}
                                     </option>
                                     <option value="24" {{ ($preference && $preference->time_format =="24")? "selected" : "" }}>24 {{ __("hours") }}
@@ -116,7 +164,37 @@
                     </div>
                 </div>
             </form>
+            <!-- Date & Time sec end -->
+            <!-- Distance to Time Calculator start -->
+            <form method="POST" class="mt-2" action="{{route('configure.update', Auth::user()->code)}}">
+                <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
+                @csrf
+                <input type="hidden" name="send_to" id="send_to" value="customize">
+                <div class="card-box mb-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="header-title mb-0">{{__('Distance to Time Calculator')}}</h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                    </div>
+                    <div class="row mt-2">
+                    <div class="col-12 mb-2">
+                        <label class="primaryCurText">{{__('Distance Unit')}}</label>
+                        <select class="form-control" id="distance_unit_for_time" name="distance_unit_for_time">
+                            <option value="">{{__('Select unit')}}</option>
+                            <option value="kilometer" @if((isset($preference) && $preference->distance_unit_for_time == 'kilometer')) selected @endif>{{__('Kilometer')}}</option>
+                            <option value="mile" @if((isset($preference) && $preference->distance_unit_for_time == 'mile')) selected @endif>{{__('Mile')}}</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="primaryCurText">{{__('Distance to Time Multiplier (Per 1 distance unit)')}}</label>
+                        <input class="form-control" type="number" id="distance_to_time_multiplier" name="distance_to_time_multiplier" value="{{ old('distance_to_time_multiplier', $preference->distance_to_time_multiplier  ?? '')}}" min="0">
+                    </div>
+                    </div>
+                </div>
+            </form>
+            <!-- Distance to Time Calculator end -->
         </div>
+
+        <!-- Localization start -->
         <div class="col-lg-5 col-xl-6 mb-3">
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf
@@ -132,7 +210,7 @@
                     <div class="row col-spacing">
                         <div class="col-sm-4 mb-2">
                             <label for="languages">{{ __("Primary Language") }}</label>
-                            <select class="form-control" id="primary_language" name="primary_language">
+                            <select class="form-control al_box_height" id="primary_language" name="primary_language">
                                 @php
                                    $primary_language_id =  $preference->primarylang ? $preference->primarylang->language_id : '';
                                 @endphp
@@ -143,17 +221,17 @@
                         </div>
                         <div class="col-sm-8 mb-2">
                             <label for="languages">{{ __("Additional Languages") }}</label>
-                            <select class="form-control select2-multiple" id="languages" name="languages[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
+                            <select class="form-control al_box_height select2-multiple" id="languages" name="languages[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
                                 @foreach($languages as $lang)
                                 @if($lang->id != $primary_language_id)
-                                    <option value="{{$lang->id}}" {{ (isset($preference) && in_array($lang->id, $cli_langs))? "selected" : "" }}>{{$lang->nativeName??''}}</option>
+                                    <option value="{{$lang->id}}" {{ (isset($preference) && in_array($lang->id, $cli_langs))? "selected" : "" }}>{{$lang->name ??''}} ({{$lang->nativeName??''}})</option>
                                 @endif
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-sm-4 mb-2">
                             <label for="primary_currency">{{ __("Primary Currency") }}</label>
-                            <select class="form-control" id="primary_currency" name="primary_currency">
+                            <select class="form-control al_box_height" id="primary_currency" name="primary_currency">
                                 @foreach($currencies as $currency)
                                 <option iso="{{$currency->iso_code.' '.$currency->symbol}}" {{ (isset($preference) && $preference->primary->currency->id == $currency->id) ? "selected" : ""}} value="{{$currency->id}}"> {{$currency->iso_code.' '.$currency->symbol}} </option>
                                 @endforeach
@@ -161,7 +239,7 @@
                         </div>
                         <div class="col-sm-8">
                             <label for="currency">{{ __("Additional Currency") }}</label>
-                            <select class="form-control select2-multiple" id="currency" name="currency_data[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
+                            <select class="form-control al_box_height select2-multiple" id="currency" name="currency_data[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
                                 @foreach($currencies as $currency)
                                 @if($preference->primary->currency->id != $currency->id)
                                 <option value="{{$currency->id}}" iso="{{$currency->iso_code}}" {{ (isset($preference) && in_array($currency->id, $cli_currs))? "selected" : "" }}> {{$currency->iso_code}} {{!empty($currency->symbol) ? $currency->symbol : ''}} </option>
@@ -175,7 +253,7 @@
                                 @foreach($preference->currency as $ac)
                                 <div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-{{$ac->currency->id}}">
                                     <label class="primaryCurText">1 {{$preference->primary->currency->iso_code}} {{!empty($preference->primary->currency->symbol) ? $preference->primary->currency->symbol : ''}} = </label>
-                                    <input class="form-control w-50 d-inline-block" type="number" value="{{$ac->doller_compare}}" step=".0001" name="multiply_by[]" min="0.0001"> {{$ac->currency->iso_code}} {{!empty($ac->currency->symbol) ? $ac->currency->symbol : ''}}
+                                    <input class="form-control al_box_height w-50 d-inline-block" type="text" value="{{$ac->doller_compare}}" step=".0001" name="multiply_by[{{$ac->currency->id}}]" oninput="changeCurrencyValue(this)"> {{$ac->currency->iso_code}} {{!empty($ac->currency->symbol) ? $ac->currency->symbol : ''}}
                                     <input type="hidden" name="cuid[]" class="curr_id" value="{{ $ac->currency->id }}">
                                 </div>
                                 @endforeach
@@ -185,11 +263,188 @@
                     </div>
                 </div>
             </form>
-        </div>
+        </div><!-- Localization end -->
+
+    </div>
+
+    <div class="row">
+      <!-- User Authentication start-->
+      <div class="col-md-3 mb-3">
+        <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+            <input type="hidden" name="verify_config" id="verify_config" value="1">
+            <input type="hidden" name="send_to" id="send_to" value="customize">
+            @csrf
+            <!-- User Authentication start -->
+
+            <div class="card-box mb-2">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h4 class="header-title mb-0">{{ __("User Authentication") }}</h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                </div>
+                <h4 class="header-title text-uppercase"></h4>
+                <div class="row align-items-start">
+                    <div class="col-sm-12">
+                        <div class="form-group d-flex justify-content-between">
+                            <label for="verify_email" class="mr-3 mb-0">{{ __("Verify Email") }}</label>
+                            <input type="checkbox" data-plugin="switchery" name="verify_email" id="verify_email" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_email == '1')) checked='checked' @endif>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group d-flex justify-content-between">
+                            <label for="verify_phone" class="mr-3 mb-0">{{ __("Verify Phone") }}</label>
+                            <input type="checkbox" data-plugin="switchery" name="verify_phone" id="verify_phone" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->verify_phone == '1')) checked='checked' @endif>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- User Authentication end -->
+            @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' )
+            <!-- EDIT ORDER BY start -->
+            <div class="card-box mb-0">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h4 class="header-title mb-0">{{ __("Edit Order By") }}</h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                </div>
+                <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+                    <input type="hidden" name="edit_order_modes" id="edit_order_modes" value="1">
+                    @csrf
+
+                    @php
+                        $vendormenu = getNomenclatureName('Vendors', true);
+                        $vendormenulabel = ($vendormenu=="Vendors")?__('Vendors'):$vendormenu;
+
+                    @endphp
+
+                    <div class="row align-items-start">
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between mb-3">
+                            <label for="is_edit_order_driver" class="mr-2 mb-0">{{ __("Driver") }}</label>
+                            <input type="checkbox" data-plugin="switchery" name="is_edit_order_driver" id="is_edit_order_driver" class="form-control" data-color="#43bee1" @if((isset($preference) && $preference->is_edit_order_driver == '1')) checked='checked' @endif>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- EDIT ORDER BY start -->
+            @endif
+        </form>
+    </div><!-- User Authentication end-->
+    <div class="col-md-5">
+        <!-- Vendor Registration Documents start -->
+        <div class="card-box pb-2">
+            <div class="d-flex align-items-center justify-content-between">
+               <h4 class="header-title m-0">{{ __("Vendor Registration Documents") }}</h4>
+               <a class="btn btn-info d-block" id="add_vendor_registration_document_modal_btn">
+                  <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+               </a>
+            </div>
+            <div class="table-responsive mt-3 mb-1">
+               <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                  <thead>
+                     <tr>
+                        <th>{{ __("Name") }}</th>
+                        <th>{{ __("Type") }}</th>
+                        <th>{{ __("Is Required?") }}</th>
+                        <th>{{ __("Action") }}</th>
+                     </tr>
+                  </thead>
+                  <tbody id="post_list">
+                     @forelse($vendor_registration_documents as $vendor_registration_document)
+                     <tr>
+                        <td>
+                           <a class="edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">
+                              {{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}
+                           </a>
+                        </td>
+                        <td>{{$vendor_registration_document->file_type}}</td>
+                        <td>{{ ($vendor_registration_document->is_required == 1)?__('Yes'):__('No') }}</td>
+                        <td>
+                           <div>
+                              <div class="inner-div" style="float: left;">
+                                 <a class="action-icon edit_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}" href="javascript:void(0)">
+                                    <i class="mdi mdi-square-edit-outline"></i>
+                                 </a>
+                              </div>
+                              <div class="inner-div">
+                                 <button type="button" class="btn btn-primary-outline action-icon delete_vendor_registration_document_btn" data-vendor_registration_document_id="{{$vendor_registration_document->id}}">
+                                    <i class="mdi mdi-delete"></i>
+                                 </button>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     @empty
+                     <tr align="center">
+                        <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                     </tr>
+                     @endforelse
+                  </tbody>
+               </table>
+            </div>
+        </div><!-- Vendor Registration Documents end -->
+    </div>
+    <div class="col-md-4">
+        <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
+            @csrf
+            <div class="card-box product-tags mb-0 pb-1">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="header-title ">{{ __('Tags for Product')}}</h4>
+                    <a class="btn btn-info d-block" id="add_product_tag_modal_btn">
+                       <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+                    </a>
+                </div>
+                <div class="table-responsive mt-3 mb-1">
+                    <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+                        <thead>
+                          <tr>
+                             <th>{{ __("Icon") }}</th>
+                             <th>{{ __("Name") }}</th>
+                             <th>{{ __("Action") }}</th>
+                          </tr>
+                        </thead>
+                        <tbody id="post_list">
+                          @forelse($tags as $tag)
+                             <tr>
+                                <td>
+                                   @if(isset($tag->icon) && !empty($tag->icon)) <img style="height: 25px;width: auto;" src="{{ $tag->icon['proxy_url'].'100/100'.$tag->icon['image_path'] }}">@endif
+                                </td>
+                                <td>
+                                   <a class="edit_product_tag_btn" data-tag_id="{{$tag->id}}" href="javascript:void(0)">
+                                      {{$tag->primary ? $tag->primary->name : ''}}
+                                   </a>
+                                </td>
+                                <td>
+                                   <div>
+                                      <div class="inner-div" style="float: left;">
+                                         <a class="action-icon edit_product_tag_btn" data-tag_id="{{$tag->id}}" href="javascript:void(0)">
+                                            <i class="mdi mdi-square-edit-outline"></i>
+                                         </a>
+                                      </div>
+                                      <div class="inner-div">
+                                         <button type="button" class="btn btn-primary-outline action-icon delete_product_tag_btn" data-tag_id="{{$tag->id}}">
+                                            <i class="mdi mdi-delete"></i>
+                                         </button>
+                                      </div>
+                                   </div>
+                                </td>
+                             </tr>
+                          @empty
+                             <tr align="center">
+                                <td colspan="4" style="padding: 20px 0">{{ __("Tags not found.") }}</td>
+                             </tr>
+                          @endforelse
+                       </tbody>
+                    </table>
+                </div>
+            </div>
+        </form><!-- Tags for Product end -->
+      </div>
+   </div>
+    <div class="row">
         <div class="col-lg-3 col-lg-3 mb-3">
-            <form method="POST" class="h-100" action="{{route('client.updateDomain', Auth::user()->code)}}">
+            <form method="POST" action="{{route('client.updateDomain', Auth::user()->code)}}">
                 @csrf
-                <div class="card-box mb-0 h-100">
+                <div class="card-box mb-0 ">
                     <div class="d-flex align-items-center justify-content-between">
                         <h4 class="header-title mb-0">{{ __("Custom Domain") }}</h4>
                         <input type="hidden" name="send_to" id="send_to" value="customize">
@@ -207,7 +462,7 @@
 
                                 <div class="domain-outer d-flex align-items-center">
                                     <div class="domain_name">https://</div>
-                                    <input type="text" name="custom_domain" id="custom_domain" placeholder="" class="form-control" value="{{ old('custom_domain', $preference->domain->custom_domain ?? '')}}">
+                                    <input type="text" name="custom_domain" id="custom_domain" placeholder="" class="form-control al_box_height" value="{{ old('custom_domain', $preference->domain->custom_domain ?? '')}}">
                                 </div>
 
 
@@ -221,6 +476,53 @@
                     </div>
                 </div>
             </form>
+                        <!-- Android/IOS Link start -->
+            <div class="card-box pb-2 mt-3">
+                  <div class="table-responsive mb-1">
+                     <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
+                        <input type="hidden" name="distance_to_time_calc_config" id="distance_to_time_calc_config" value="1">
+                        @csrf
+                        <input type="hidden" name="send_to" id="send_to" value="customize">
+                        <div class="card-box mb-0 py-0 px-2">
+                           <div class="d-flex align-items-center justify-content-between">
+                              <h4 class="header-title mb-0">{{ __("Android/IOS Link") }}</h4>
+                              <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                           </div>
+                           <div class="row mt-2">
+                              <div class="col-12 mb-2">
+                                 <label class="primaryCurText">{{__('Android App Link')}}</label>
+                                 <input class="form-control" type="text" id="android_app_link" name="android_app_link" value="{{ old('android_app_link', $preference->android_app_link  ?? '')}}">
+                              </div>
+                              <div class="col-12">
+                                 <label class="primaryCurText">{{__('IOS App Link')}}</label>
+                                 <input class="form-control" type="text" id="ios_link" name="ios_link" value="{{ old('ios_link', $preference->ios_link  ?? '')}}" >
+                              </div>
+                           </div>
+                        </div>
+                     </form>
+                  </div>
+               </div>
+               <!-- Android/IOS Link end -->
+               <!-- Refer and Earn start -->
+                <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
+                    @csrf
+                    <input type="hidden" name="send_to" id="send_to" value="customize">
+                    <div class="card-box mb-0 pb-1">
+                        <div class="d-flex align-items-center justify-content-between">
+                        <h4 class="header-title">Refer and Earn</h4>
+                        <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
+                        </div>
+                        <div class="col-xl-12 my-2" id="addCur-160">
+                        <label class="primaryCurText">{{ __("Referred To Amount") }} = </label>
+                        <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', $reffer_to ?? '')}}" min="0">
+                        </div>
+                        <div class="col-xl-12 mb-2 mt-3" id="addCur-160">
+                        <label class="primaryCurText">{{ __("Referred By Amount") }} = </label>
+                        <input class="form-control" type="number" name="reffered_by_amount" id="reffered_by_amount" value="{{ old('reffered_by_amount', $reffer_by ?? '')}}" min="0">
+                        </div>
+                    </div>
+                </form>
+                <!-- Refer and Earn end -->
         </div>
         <div class="col-lg-3 mb-3">
             <div class="card-box mb-0 h-100 pb-1">
@@ -289,7 +591,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Vendors") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 1)}}">
+                                    <input type="text" name="names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 1)}}">
                                     @if($k == 0)
                                         @if($errors->has('names.0'))
                                             <span class="text-danger" role="alert">
@@ -307,7 +609,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Loyalty Cards") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="loyalty_cards_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="loyalty_cards_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 2)}}">
+                                    <input type="text" name="loyalty_cards_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 2)}}">
                                     @if($k == 0)
                                         @if($errors->has('loyalty_cards_names.0'))
                                             <span class="text-danger" role="alert">
@@ -325,7 +627,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Takeaway") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="takeaway_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="takeaway_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 3)}}">
+                                    <input type="text" name="takeaway_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 3)}}">
                                     @if($k == 0)
                                         @if($errors->has('takeaway_names.0'))
                                             <span class="text-danger" role="alert">
@@ -343,7 +645,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Search") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="search_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="search_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 4)}}">
+                                    <input type="text" name="search_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 4)}}">
                                     @if($k == 0)
                                         @if($errors->has('search_names.0'))
                                             <span class="text-danger" role="alert">
@@ -361,7 +663,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Wishlist") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="wishlist_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="wishlist_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 5)}}">
+                                    <input type="text" name="wishlist_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 5)}}">
                                     @if($k == 0)
                                         @if($errors->has('wishlist_names.0'))
                                             <span class="text-danger" role="alert">
@@ -379,7 +681,7 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Dine-In") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="dinein_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="dinein_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 6)}}">
+                                    <input type="text" name="dinein_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 6)}}">
                                     @if($k == 0)
                                         @if($errors->has('dinein_names.0'))
                                             <span class="text-danger" role="alert">
@@ -397,9 +699,27 @@
                                 <div class="form-group mb-0">
                                     <label for="custom_domain">{{ __("Delivery") }}({{$client_language->langName}})</label>
                                     <input type="hidden" name="delivery_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="delivery_names[]" class="form-control" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 7)}}">
+                                    <input type="text" name="delivery_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 7)}}">
                                     @if($k == 0)
                                         @if($errors->has('delivery_names.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="row mb-2 flex-nowrap">
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-3">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Zip Code") }}({{$client_language->langName}})</label>
+                                    <input type="hidden" name="zipCode_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="zipCode_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 8)}}">
+                                    @if($k == 0)
+                                        @if($errors->has('Zip-Code.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -431,7 +751,7 @@
                             <div class="input-group-prepend">
                                 <div class="input-group-text"><i class="fab fa-facebook"></i></div>
                             </div>
-                            <select class="form-control" id="social_icons" name="icon">
+                            <select class="form-control al_box_height" id="social_icons" name="icon">
                                 <option value="facebook"> Facebook </option>
                                 <option value="github"> Github </option>
                                 <option value="reddit"> Reddit </option>
@@ -449,7 +769,7 @@
                     </div>
                     <div class="form-group position-relative">
                         <label for="">{{ __("URL") }}</label>
-                        <input class="form-control" name="url" type="text" placeholder="http://www.google.com">
+                        <input class="form-control al_box_height" name="url" type="text" placeholder="http://www.google.com">
                         <span class="text-danger error-text social_media_url_err"></span>
                     </div>
                 </div>
@@ -460,6 +780,188 @@
         </div>
     </div>
 </div>
+<!-- Add Vendor Registration Document Modal -->
+<div id="add_vendor_registration_document_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-bottom al">
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Vendor Registration Document") }}</h4>
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+               <form id="vendorRegistrationDocumentForm" method="POST" action="javascript:void(0)">
+                  @csrf
+                  <div id="save_social_media">
+                     <input type="hidden" name="vendor_registration_document_id" value="">
+                     <div class="row">
+                        <div class="col-md-6">
+                           <div class="form-group position-relative">
+                              <label for="">Type</label>
+                              <div class="input-group mb-2">
+                                 <select class="form-control" name="file_type" id="file_type_select">
+                                    <option value="Text">Text</option>
+                                    <option value="Image">Image</option>
+                                    <option value="Pdf">PDF</option>
+                                    <option value="selector">Selector</option>
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-6">
+                           <div class="form-group position-relative">
+                              <label for="">Is Required?</label>
+                              <div class="input-group mb-2">
+                                 <select class="form-control" name="is_required">
+                                    <option value="1">{{__('Yes')}}</option>
+                                    <option value="0">{{__('No')}}</option>
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        @forelse($client_languages as $k => $client_language)
+                        <div class="col-md-6 mb-2">
+                           <div class="row">
+                              <div class="col-12">
+                                 <div class="form-group position-relative">
+                                    <label for="">{{ __("Name") }} ({{$client_language->langName}})</label>
+                                    <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
+                                    <input class="form-control" name="name[{{$k}}]" type="text" id="vendor_registration_document_name_{{$client_language->langId}}">
+                                 </div>
+                                 @if($k == 0)
+                                    <span class="text-danger error-text social_media_url_err"></span>
+                                 @endif
+                              </div>
+                           </div>
+                        </div>
+                        @empty
+                        @endforelse
+                        <div id="selector_div" class="col-md-12 d-none">
+                            <div class="card">
+                            <div class="card-box mb-0 ">
+                                <div class="d-flex align-items-center justify-content-between">
+                                   <h4 class="header-title text-uppercase">{{__('Options')}}</h4>
+                                   {{-- <div class="col-md-4 col-xl-4 mb-2 ">
+                                        <div class="form-group mb-0">
+                                            <select class="form-control" name="option_language_id" id="option_client_language">
+                                            @foreach($client_languages as $client_language)
+                                                <option value="{{$client_language->langId}}">{{$client_language->langName}}</option>
+                                            @endforeach
+                                            </select>
+                                        </div>
+                                    </div> --}}
+                                </div>
+                                <div id="option_div">
+
+                                        <div class="selector-option table-responsive">
+                                            <table class="table table-borderless mb-0 optionTableAdd" id="selector-datatable">
+                                                <tr class="trForClone">
+
+                                                    @foreach($client_languages as $langs)
+                                                        <th>{{$langs->langName}}</th>
+                                                    @endforeach
+                                                    <th></th>
+                                                </tr>
+                                                <tbody id="table_body">
+                                                    {{-- <tr>
+                                                    @foreach($client_languages as $key => $langs)
+                                                        <td>
+                                                            {{-- <input type="hidden" name="option_language_id[]"  value="{{$langs->langId}}" class="form-control">
+                                                            <input type="hidden" name="option_id[{{$key}}][]"   class="form-control" >
+                                                            <input type="text" name="option_names[{{$key}}][]" class="form-control" @if($langs->is_primary == 1) required @endif>
+                                                        </td>
+                                                        @endforeach
+                                                        <td class="lasttd"></td>
+                                                    </tr> --}}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary submitSaveVendorRegistrationDocument">{{ __("Save") }}</button>
+            </div>
+         </div>
+      </div>
+   </div>
+<!--End Add Vendor Registration Document Modal -->
+<!-- modal for product tags -->
+   <div id="add_product_tag_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+         <div class="modal-content">
+            <div class="modal-header border-bottom">
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Product Tag") }}</h4>
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+               <form id="productTagForm" method="POST" action="javascript:void(0)" enctype="multipart/form-data">
+                  @csrf
+                  <div id="save_product_tag">
+                     <input type="hidden" name="tag_id" value="">
+                     <div class="row">
+                        <div class="col-md-3">
+                           <label>{{ __('Upload Icon') }}</label>
+                           <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify"  />
+                           <label class="logo-size text-right w-100">{{ __("Icon Size") }} 100X100</label>
+                       </div>
+
+                        @forelse($client_languages as $k => $client_language)
+                        <div class="col-md-6 mb-2">
+                           <div class="row">
+                              <div class="col-12">
+                                 <div class="form-group position-relative">
+                                    <label for="">{{ __("Name") }} ({{$client_language->langName}})</label>
+                                    <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
+                                    <input class="form-control" name="name[{{$k}}]" type="text" id="product_tag_name_{{$client_language->langId}}">
+                                 </div>
+                                 @if($k == 0)
+                                    <span class="text-danger error-text product_tag_err"></span>
+                                 @endif
+                              </div>
+                           </div>
+                        </div>
+                        @empty
+                        @endforelse
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary submitSaveProductTag">{{ __("Save") }}</button>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- end product tags -->
+   <script type="text/template" id="vendorSelectorTemp">
+        <tr class ="option_section" id ="option_section_<%= id %>" data-section_number="<%= id %>">
+        <input type="hidden" name="option_id[<%= id-1 %>][]"  id="option_id<%= id %>" data-id ="<%= id %>" value ="<%= data?data.id:'' %>">
+        @foreach($client_languages as $key => $langs)
+        <td>
+            <div class="form-group mb-0">
+                <input type="hidden" name="option_lang_id[<%= id-1 %>][]"   value ="{{$langs->langId}}">
+                <input type="text" name="option_name[<%= id-1 %>][]" class="form-control" @if($langs->is_primary == 1) required @endif   id="option_name_<%= id-1 %>_{{$langs->langId}}" placeholder="" data-id ="<%= id %>" value ="<%= data?(data.translations?data.translations.name:''):'' %>">
+            </div>
+        </td>
+
+        @endforeach
+        <td class="lasttd d-flex align-items-center justify-content-center">
+            <% if(id > 1) { %>
+                <a href="javascript:void(0)" class="action-icon remove_more_button"  id ="remove_button_<%= id %>" data-id ="<%= id %>"> <i class="mdi mdi-delete"></i></a>
+            <% } %>
+            <a href="javascript:void(0)" class="add_more_button" id ="add_button_<%= id %>" data-id ="<%= id %>"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+
+        </td>
+
+    </tr>
+
+
+</script>
 @endsection
 @section('script')
 <script src="{{asset('assets/js/jscolor.js')}}"></script>
@@ -468,6 +970,267 @@
     $('#social_icons').on('change', function() {
         $(".input-group-text").html('<i class="fab fa-'+this.value+'"></i>');
     });
+
+    // Vendor Registration Document Script
+    $(document).on("change", "#file_type_select", function() {
+        var file_type = $(this).val();
+        if(file_type == 'selector'){
+            $("#selector_div").removeClass("d-none");
+            var classoption_section = $('#option_div').find('.option_section');
+            if(classoption_section.length==0){
+                addoptionTemplate(0);
+            }
+        }
+        else{
+            $("#selector_div").addClass("d-none");
+        }
+    });
+    function addoptionTemplate(section_id){
+        section_id                = parseInt(section_id);
+        section_id                = section_id +1;
+        var data                  = '';
+
+        var price_section_temp    = $('#vendorSelectorTemp').html();
+        var modified_temp         = _.template(price_section_temp);
+        var result_html           = modified_temp({id:section_id,data:data});
+        $("#table_body").append(result_html);
+        $('.add_more_button').hide();
+        $('#add_button_'+section_id).show();
+    }
+     $(document).on('click','.add_more_button',function(){
+        var main_id = $(this).data('id');
+        addoptionTemplate(main_id);
+        console.log($('.add_more_button').length);
+    });
+    $(document).on('click','.remove_more_button',function(){
+        var main_id =$(this).data('id');
+        removeSeletOptionSectionTemplate(main_id);
+        $('.add_more_button').each(function(key,value){
+            if(key == ($('.add_more_button').length-1)){
+                $('#add_button_'+$(this).data('id')).show();
+            }
+        });
+    });
+    function removeSeletOptionSectionTemplate(div_id){
+        $('#option_section_'+div_id).remove();
+    }
+    $('#add_vendor_registration_document_modal_btn').click(function(e) {
+        document.getElementById("vendorRegistrationDocumentForm").reset();
+        $('#add_vendor_registration_document_modal input[name=vendor_registration_document_id]').val("");
+        $('#add_vendor_registration_document_modal').modal('show');
+        $('#add_vendor_registration_document_modal #standard-modalLabel').html('Add Vendor Registration Document');
+    });
+    $(document).on('click', '.submitSaveVendorRegistrationDocument', function(e) {
+        var vendor_registration_document_id = $("#add_vendor_registration_document_modal input[name=vendor_registration_document_id]").val();
+        if (vendor_registration_document_id) {
+            var post_url = "{{ route('vendor.registration.document.update') }}";
+        } else {
+            var post_url = "{{ route('vendor.registration.document.create') }}";
+        }
+        var form_data = new FormData(document.getElementById("vendorRegistrationDocumentForm"));
+        $.ajax({
+            url: post_url,
+            method: 'POST',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+               if (response.status == 'Success') {
+                  $('#add_or_edit_social_media_modal').modal('hide');
+                  $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+               }
+            },
+            error: function(response) {
+               $('#add_vendor_registration_document_modal .social_media_url_err').html('The default language name field is required.');
+            }
+        });
+    });
+    $(document).on("click", ".edit_vendor_registration_document_btn", function() {
+        let vendor_registration_document_id = $(this).data('vendor_registration_document_id');
+        editVendorRegistrationForm(vendor_registration_document_id);
+    });
+    function editVendorRegistrationForm(vendor_registration_document_id){
+        let language_id = $('#option_client_language').val();
+         $('#add_vendor_registration_document_modal input[name=vendor_registration_document_id]').val(vendor_registration_document_id);
+         $.ajax({
+            method: 'GET',
+            data: {
+               vendor_registration_document_id: vendor_registration_document_id,
+               language_id:language_id
+            },
+            url: "{{ route('vendor.registration.document.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                    if(response.data.file_type=="selector"){
+                        $("#selector_div").removeClass("d-none");
+                        $('.option_section').remove();
+                        var options = response.data.options;
+                        var section_id =0
+                        var row =0
+                        var option_section_temp    = $('#vendorSelectorTemp').html();
+                        var modified_temp         = _.template(option_section_temp);
+                        $(options).each(function(index, value) {
+                            section_id                = parseInt(section_id);
+                            row                       = parseInt(section_id)
+                            section_id                = section_id +1;
+                            $('#table_body').append(modified_temp({ id:section_id,data:value}));
+                            var options_trans = value.translations;
+                            $(options_trans).each(function(trans_index, trans_value) {
+                                var input_id = '#option_name_'+row+'_'+trans_value.language_id;
+                                $(input_id).val(trans_value.name);
+                            });
+                            $('.add_more_button').hide();
+                            $('#add_button_'+section_id).show();
+                        });
+                    }else{
+                        $('.option_section').remove();
+                        $("#selector_div").addClass("d-none");
+                    }
+                  $(document).find("#add_vendor_registration_document_modal select[name=file_type]").val(response.data.file_type).change();
+
+                  $("#add_vendor_registration_document_modal input[name=vendor_registration_document_id]").val(response.data.id);
+                  $(document).find("#add_vendor_registration_document_modal select[name=is_required]").val(response.data.is_required).change();
+                  $('#add_vendor_registration_document_modal #standard-modalLabel').html('Update Vendor Registration Document');
+                  $('#add_vendor_registration_document_modal').modal('show');
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_vendor_registration_document_modal #vendor_registration_document_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {}
+        });
+    }
+    $(document).on("click", ".delete_vendor_registration_document_btn", function() {
+         var vendor_registration_document_id = $(this).data('vendor_registration_document_id');
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+         }).then((result) => {
+            if (result.value) {
+               $.ajax({
+                  type: "POST",
+                  dataType: 'json',
+                  url: "{{ route('vendor.registration.document.delete') }}",
+                  data: {
+                     _token: "{{ csrf_token() }}",
+                     vendor_registration_document_id: vendor_registration_document_id
+                  },
+                  success: function(response) {
+                     if (response.status == "Success") {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function() {
+                           location.reload()
+                        }, 2000);
+                     }
+                  }
+               });
+            }
+        });
+    });
+    //End Vendor Registration Document Script
+
+    // Product Tag Script
+    $('#add_product_tag_modal_btn').click(function(e) {
+        document.getElementById("productTagForm").reset();
+        $('#add_product_tag_modal input[name=tag_id]').val("");
+        $('#add_product_tag_modal').modal('show');
+        $('#add_product_tag__modal #standard-modalLabel').html('Add Tag');
+    });
+    $(document).on('click', '.submitSaveProductTag', function(e) {
+        var tag_id = $("#add_product_tag_modal input[name=tag_id]").val();
+        if (tag_id) {
+            var post_url = "{{ route('tag.update') }}";
+        } else {
+            var post_url = "{{ route('tag.create') }}";
+        }
+        var form_data = new FormData(document.getElementById("productTagForm"));
+        $.ajax({
+            url: post_url,
+            method: 'POST',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+               if (response.status == 'Success') {
+                  $('#add_or_edit_social_media_modal').modal('hide');
+                  $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+               }
+            },
+            error: function(response) {
+               $('#add_product_tag_modal .product_tag_err').html('The default language name field is required.');
+            }
+        });
+    });
+    $(document).on("click", ".edit_product_tag_btn", function() {
+        let tag_id = $(this).data('tag_id');
+        $('#add_product_tag_modal input[name=tag_id]').val(tag_id);
+        $.ajax({
+            method: 'GET',
+            data: {
+               tag_id: tag_id
+            },
+            url: "{{ route('tag.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                  $("#add_product_tag_modal input[name=tag_id]").val(response.data.id);
+                  $('#add_product_tag_modal #standard-modalLabel').html('Update Product Tag');
+                  $('#add_product_tag_modal').modal('show');
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_product_tag_modal #product_tag_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {
+
+            }
+        });
+    });
+    $(document).on("click", ".delete_product_tag_btn", function() {
+         var tag_id = $(this).data('tag_id');
+         Swal.fire({
+            title: "{{__('Are you Sure?')}}",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+          }).then((result) => {
+            if(result.value)
+            {
+               $.ajax({
+                  type: "POST",
+                  dataType: 'json',
+                  url: "{{ route('tag.delete') }}",
+                  data: {
+                     _token: "{{ csrf_token() }}",
+                     tag_id: tag_id
+                  },
+                  success: function(response) {
+                     if (response.status == "Success") {
+                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                        setTimeout(function() {
+                           location.reload()
+                        }, 2000);
+                     }
+                  }
+               });
+            }
+        });
+    });
+    //End Product Tag Script
+
+
+
 
     $(document).ready(function() {
         $.ajaxSetup({
@@ -617,10 +1380,16 @@
         }
         for (i = 0; i < cidText.length; i++) {
             if (existCid.indexOf(cidText[i].id) === -1) {
-                var text = '<div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-' + cidText[i].id + '"><label class="primaryCurText">1 ' + pri_curr + '  = </label> <input type="number" name="multiply_by[]" min="0.01" value="0" step=".01">' + cidText[i].text + '<input type="hidden" name="cuid[]" class="curr_id" value="' + cidText[i].id + '"></div>';
+                var text = '<div class="col-sm-10 offset-sm-4 col-lg-12 offset-lg-0 col-xl-8 offset-xl-4 mb-2" id="addCur-' + cidText[i].id + '"><label class="primaryCurText">1 ' + pri_curr + '  = </label> <input type="number" name="multiply_by['+cidText[i].id+']"  oninput="changeCurrencyValue(this)" min="0.00000001" value="0" step=".00000001">' + cidText[i].text + '<input type="hidden" name="cuid[]" class="curr_id" value="' + cidText[i].id + '"></div>';
                 $('.multiplierData').append(text);
             }
         }
     });
+    function changeCurrencyValue(obj)
+    {
+        var value = $(obj).val();
+        var new_value = value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, $1);
+        $(obj).val(new_value);
+    }
 </script>
 @endsection
