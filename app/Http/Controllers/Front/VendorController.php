@@ -173,9 +173,7 @@ class VendorController extends FrontController
                 if(isset($vendor) && isset($vendor->id)){
                     if(!in_array($vendor->id, $vendors)){
                         $listData =collect();
-                        Log::info($page);
                         return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
-                        Log::info($page);
                         //  return view('frontend.vendor-not-in-location')->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
                     //    abort(404);
                     }
