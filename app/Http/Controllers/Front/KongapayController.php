@@ -79,7 +79,13 @@ class KongapayController extends Controller
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d')]);
      
       $request->amt = $request->amt*100;
-      $returnUrl = route('kongapay.successTip');
+      if(isset($request->app) && !empty($request->app))
+      {
+        $returnUrl = route('kongapay.successTip',['subscription_id='.$time]);
+      }else{ 
+        $returnUrl = route('kongapay.successTip');
+      }
+      
      }elseif($request->from == 'subscription')
      {
       $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
