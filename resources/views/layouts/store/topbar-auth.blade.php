@@ -6,10 +6,23 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 
 @endphp
-<div class="top-header site-topbar">
+<div class="top-header site-topbar al_template_two d-none d-md-flex">
     <div class="container">
-        <div class="row align-item-center">
-            <div class="col-4">
+    <div class="row d-flex align-items-center">
+            <div class="col-md-4  col-lg-6 d-flex align-items-center">
+            @if( (Session::get('preferences')))
+                @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal == 1) )
+                    <div class="location-bar d-none d-lg-flex align-items-center justify-content-start" href="#edit-address" data-toggle="modal">
+                        <div class="map-icon mr-1"><span>{{__('Delivering To')}}</span> <i class="fa fa-map-marker" aria-hidden="true"></i></div>
+                        <div class="homepage-address text-left">
+                            <h2><span data-placement="top" data-toggle="tooltip" title="{{session('selectedAddress')}}">{{session('selectedAddress')}}</span></h2>
+                        </div>
+                        <!-- <div class="down-icon ml-2">
+                            <i class="fa fa-angle-down" aria-hidden="true"></i>
+                        </div> -->
+                    </div>
+                @endif
+            @endif
                     {{-- <div class="header-contact">
                         <ul>
                             <li class="text-capitalize">{{session('client_config')->company_name}}</li>
@@ -29,7 +42,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
             @endphp
 
 
-            <div class="col-8 text-right">
+            <div class="col-md-8 col-lg-6 text-right">
                 <ul class="header-dropdown">
                     <!-- <li class="mobile-wishlist d-inline d-sm-none">
                         <a href="{{route('user.wishlists')}}">
@@ -134,8 +147,11 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <div class="show-div setting">
                         <h6>language</h6>
                         <ul>
-                            <li><a href="#">english</a></li>
-                            <li><a href="#">french</a></li>
+                        @foreach($languageList as $key => $listl)
+                            <li class="{{$applocale ==  $listl->language->sort_code ?  'active' : ''}}">
+                                <a href="javascript:void(0)" class="customerLang" langId="{{$listl->language_id}}">{{$listl->language->name}}</a>
+                            </li>
+                        @endforeach
                         </ul>
                         <h6>currency</h6>
                         <ul class="list-inline">

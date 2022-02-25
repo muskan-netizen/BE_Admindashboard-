@@ -13,10 +13,10 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
     }
 </style>
 
-<div class="top-header site-topbar al">
+<div class="top-header site-topbar al_template_one">
     <div class="container">
         <div class="row align-items-center justify-content-between">
-            <div class="col-sm-4 mb-2 mb-sm-0">
+            <div class="col-sm-4">
                 <div class="d-flex align-items-center justify-content-lg-start">
                     <a class="navbar-brand mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
                     @if( (Session::get('preferences')))

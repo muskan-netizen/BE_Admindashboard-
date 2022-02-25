@@ -169,3 +169,29 @@ ul#header_cart_main_ul li .buttons a.view-cart{font-size: 14px;}
     object-fit: cover;
     max-width: 1370px;
 }
+.suppliers-box:hover .timing-box_al li img{transform: scale(1);}
+.timing-box_al{display:flex;justify-content:space-between}
+.timing-box_al li img{width: auto;}
+.timing-box_al li{margin-right:10px;font-size:10px;line-height:normal;color:#777}
+.timing-box_al li:last-child{margin-right:0}
+body .al_footer_template_two .footer-theme .sub-title .contact-list li i{top: 8px;}
+.al_template_two.site-topbar .location-bar h2,
+.al_template_one.site-topbar .location-bar h2{position: relative;padding-right: 10px;}
+.al_template_two.site-topbar .location-bar h2:after,
+.al_template_one.site-topbar .location-bar h2:after {
+    right: 0px;
+}
+@media(max-width:991px){
+    .al_template_one .onhover-dropdown:before,
+    .al_template_two .onhover-dropdown:before {
+right: -7px;
+}
+.al_template_one .map-icon.mr-1 span,
+.al_template_two .map-icon.mr-1 span {
+display: none;
+}
+.al_template_one .homepage-address,
+.al_template_two .homepage-address {
+width: 100%;
+}
+}
