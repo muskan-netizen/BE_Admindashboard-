@@ -480,13 +480,13 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                  }
                  setTimeout(function() {
                     autoloaddashboad()
-                }, 15000);
+                }, 7000);
                 
             },
             error: function(data) {
                 setTimeout(function() {
                     autoloaddashboad()
-                }, 15000);
+                }, 7000);
             },
         });
     }
