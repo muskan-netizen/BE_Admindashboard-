@@ -196,6 +196,45 @@
                 { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
             ],
         }),
+        e(".product-4-on_sale").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
+            ],
+        }),
+        e(".product-4-new_products").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
+            ],
+        }),
+        e(".product-4-best_sellers").slick({
+            infinite: !0,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            autoplay: !0,
+            autoplaySpeed: 3e3,
+            responsive: [
+                { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+                { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+                { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
+            ],
+        }),
         e(".recent-orders").slick({
             infinite: !0,
             speed: 300,
@@ -209,6 +248,42 @@
                 { breakpoint:  400, settings: { slidesToShow: 1, slidesToScroll: 2 } },
             ],
         }),
+        e('.suppliers-slider').slick({
+            dots: false,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            arrows: false,
+            dots: false,
+            responsive: [
+              {
+                breakpoint: 991,
+                settings: {
+                  slidesToShow: 3,
+                  slidesToScroll: 1,
+                  infinite: true,
+                  dots: false
+                }
+              },
+              {
+                breakpoint: 767,
+                settings: {
+                  slidesToShow: 2,
+                  slidesToScroll: 1,
+                  dots: false
+                }
+              },
+              {
+                breakpoint: 480,
+                settings: {
+                  slidesToShow:1,
+                  slidesToScroll: 1,
+                  dots: false
+                }
+              }
+            ]
+        });
         e('.suppliers-slider').slick({
             dots: false,
             infinite: true,
