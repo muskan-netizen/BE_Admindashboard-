@@ -170,8 +170,6 @@ class VendorController extends FrontController
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if(Session::has('vendors')){
                 $vendors = Session::get('vendors');
-                Log::info($vendor->id);
-                Log::info($vendors);
                 $vendors = $vendors->toArray();
                 if(isset($vendor) && isset($vendor->id)){
                     if(!in_array($vendor->id, $vendors)){
@@ -197,9 +195,7 @@ class VendorController extends FrontController
 
         $tags = Tag::with('primary')->get();
         //dd($page);
-        Log::info('page');
-        Log::info($page);
-        // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
+         // $page = ($vendor->vendor_templete_id == 2) ? 'categories' : 'products';
         return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed]);
     }
 
