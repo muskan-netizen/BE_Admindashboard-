@@ -20,6 +20,21 @@ class CampaignController extends BaseController
      */
     public function index(){ 
         $campaigns = Campaign::all();
+        if($campaigns)
+        {
+            if(count($campaigns)>0)
+            {
+                $i = 0;
+                foreach($campaigns as $singlecampaign)
+                {
+                    $pendingnotification = CampaignRoster::where(['campaign_id'=>$singlecampaign->id])->count();
+                    $livecount = $singlecampaign->total_request_count - $pendingnotification;
+                    $campaigns[$i]->livecount = $livecount ?? 0;
+                    $i++; 
+                }
+            }
+            
+        }        
         return view('backend.campaign.index')->with(['campaigns' => $campaigns]);
     }
 
