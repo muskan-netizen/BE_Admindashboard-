@@ -24,11 +24,11 @@ class CampaignController extends BaseController
         $body = "test body message";
 
         $email_data = [
-            'code' => '1324',
-            'link' => "link",
+            // 'code' => '1324',
+            // 'link' => "link",
             'email' => $sendto,
             'mail_from' => 'testu00091@gmail.com',
-            'client_name' => 'XYZ',
+            // 'client_name' => 'XYZ',
             //'logo' => $client->logo['original'],
             'subject' => $subject,
             //'customer_name' => ucwords($user->name),
