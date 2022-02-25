@@ -225,7 +225,7 @@ class AhoyController extends Controller
             );
 
             $orderSuc = $this->createPreOrder($data);
-
+            \Log::info(json_encode($orderSuc));
             if($orderSuc->preOrderId != ''){
                 return $orderSuc->onDemand->price;
             }else{
