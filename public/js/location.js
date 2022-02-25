@@ -693,10 +693,10 @@ $(document).ready(function () {
 
                           let vendors = response.data.vendors;
                         
-                            if (vendors.length > 0) {console.log('set');
+                            if (vendors.length > 0) {
                                 $('#our_vendor_main_div').removeClass('d-none');
                                 $(".no-store-wrapper").hide();
-                            } else {console.log('set2');
+                            } else {
                                 $('#our_vendor_main_div').addClass('d-none');
                                 $(".no-store-wrapper").show();
                             }
