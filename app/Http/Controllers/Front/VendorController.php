@@ -172,8 +172,9 @@ class VendorController extends FrontController
                 $vendors = Session::get('vendors');
                 Log::info($vendor->id);
                 Log::info($vendors);
+                $vendors = $vendors->toArray();
                 if(isset($vendor) && isset($vendor->id)){
-                    if(!in_array(182, $vendors)){
+                    if(!in_array($vendor->id, $vendors)){
                         $listData =collect();
                         return view('frontend/vendor-'.$page)->with(['show_range' => $show_range, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands]);
                        
