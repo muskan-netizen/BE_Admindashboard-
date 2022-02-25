@@ -197,7 +197,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="status" class="control-label">{{__("Status")}}</label>
                                     <select class="form-control" name="status" id="campaign_status">
@@ -208,7 +208,7 @@
                                         <strong></strong>
                                     </span>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>

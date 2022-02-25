@@ -265,7 +265,7 @@ class CampaignController extends BaseController
         $campaign->schedule_datetime = $request->schedule_datetime;
         $campaign->request_user_count = $request->request_user_count;
         $campaign->request_time_difference = $request->request_time_gap;
-        $campaign->status = $request->status;
+        $campaign->status = 1;
         if($request->type==3)
         {
             if ($request->hasFile('push_image')) {
