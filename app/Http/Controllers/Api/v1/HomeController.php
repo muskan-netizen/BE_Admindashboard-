@@ -171,7 +171,7 @@ class HomeController extends BaseController
     {
         try {
             $vends = [];
-            $vends = [];
+            $venderIds = [];
             $homeData = [];
             $user = Auth::user();
             $langId = $user->language;
@@ -222,7 +222,9 @@ class HomeController extends BaseController
             if($venderFilterbest && ($venderFilterbest == 1) ){
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
+            $allVendorData = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
+            $venderIds = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
 
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
@@ -341,7 +343,7 @@ class HomeController extends BaseController
             }
 
             $isVendorArea = 0;
-            $categories = $this->categoryNav($langId, $vends);
+            $categories = $this->categoryNav($langId,  $venderIds);
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
             $homeData['reqData'] = $request->all();
@@ -368,6 +370,7 @@ class HomeController extends BaseController
         }
     }
 
+  
     public function getEditedOrders(Request $request){
         // Get user Edited Orders from Temp Cart
         $user = Auth::user();
