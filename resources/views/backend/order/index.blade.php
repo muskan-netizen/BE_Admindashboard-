@@ -477,10 +477,10 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     $("#history-orders").html("(" + response.data.orders_history + ")");
 
                  }
-                 setTimeout(autoloaddashboad(), 5000);
+                 setTimeout(autoloaddashboad(), 15000);
             },
             error: function(data) {
-               autoloaddashboad();
+               setTimeout(autoloaddashboad(), 15000);
             },
         });
     }
