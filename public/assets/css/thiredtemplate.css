@@ -175,8 +175,6 @@ header#al_new_design.site-header.fixed-bar .al_new_mobile_header_address_map .lo
 
 .container.al_mobile-header{max-width: 100%;}
 .al_new_wrapper_design #myCarousel {border-radius: 20px;}
-}
-@media(max-width: 420px){
 .al_new_wrapper_design .al_custom_brand .brand-box .brand-ing {height: 150px;width: 150px;}
 .al_new_wrapper_design .top-header.site-topbar.al_custom_head {padding-bottom: 0;height: auto;}
 .location-bar.d-inline-flex.align-items-center.position-relative{border:none;}
