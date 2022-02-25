@@ -102,37 +102,19 @@ class SendCampaignNotification extends Command
                     //test email
                     $sendto = "testu00091@gmail.com";
                     $subject = "Test subject for email notification";
-                    $body = "test body message";
+                    $body = "test body message from notification";
 
                     $email_data = [
-                        // 'code' => $otp,
-                        // 'link' => "link",
                         'email' => $sendto,
-                        'mail_from' => $client_preferences->mail_from,
-                        'client_name' => $client_preferences->mail_from,
-                        //'logo' => $client->logo['original'],
+                        'mail_from' => $client_preferences->mail_from,                        
                         'subject' => $subject,
-                        //'customer_name' => ucwords($user->name),
                         'email_template_content' => $body,
-                        // 'cartData' => $cartDetails,
-                        // 'user_address' => $address,
+                        'send_to_cc' => 0
                     ];
-                    $email_data['send_to_cc'] = 0;
-                    
-                    // $res = $this->testOrderMail($email_data);
-                    // dd($res);
                     dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
-                    
-
-
-
-
-
                     //$this->sendEmail($client_preferences,$sendto,$subject,$body);
                     foreach($notifications as $singlenotification)
                     {
-                        
-
                         $type = $singlenotification->notofication_type;
                         //	type => 1 sms, 2 email, 3 push notification
                         switch ($type) {
@@ -149,6 +131,14 @@ class SendCampaignNotification extends Command
                                     $body = "Hi " . $singlenotification->user->name . ", " . $singlenotification->campaign->sms_text;
                                     if (!empty($client_preferences->sms_provider)) {
                                         $send = $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
+                                        if($send)
+                                        {
+                                            //remove notification if success
+                                            CampaignRoster::where('id',$singlenotification->id)->delete();
+                                        }else{
+                                            //change status if failed
+                                            CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                        }    
                                     }
                                     
                                 } catch (\Exception $ex) {
@@ -161,7 +151,24 @@ class SendCampaignNotification extends Command
                                         $useremail = $singlenotification->user->email;
                                         $email_subject = $singlenotification->campaign->email_subject;
                                         $email_body = $singlenotification->campaign->email_body;
-                                        $this->sendEmail($client_preferences,$useremail,$email_subject,$email_body);
+                                        
+                                        $email_data = [
+                                            'email' => $useremail,
+                                            'mail_from' => $client_preferences->mail_from,                        
+                                            'subject' => $email_subject,
+                                            'email_template_content' => $email_body,
+                                            'send_to_cc' => 0
+                                        ];
+                                        $sendemail = dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                                        if($sendemail)
+                                        {
+                                            //remove notification if success
+                                            CampaignRoster::where('id',$singlenotification->id)->delete();
+                                        }else{
+                                           //change status if failed
+                                            CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                        }
+                                        //$this->sendEmail($client_preferences,$useremail,$email_subject,$email_body);
                                     }
                                 } catch (\Exception $ex) {
                                 }
@@ -198,16 +205,16 @@ class SendCampaignNotification extends Command
                                 $result = curl_exec($ch);
                                 // Log::info($result);
                                 curl_close($ch);
-
-                                //change status if failed
-                                CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-
-                                //remove notification if success
-                                CampaignRoster::where('id',$singlenotification->id)->delete();
-                            
+                                if($result)
+                                {
+                                    //remove notification if success
+                                    CampaignRoster::where('id',$singlenotification->id)->delete();
+                                }else{
+                                    //change status if failed
+                                    CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                }                            
                             break;
                         }
-
                     }
                 }               
                 
@@ -251,47 +258,47 @@ class SendCampaignNotification extends Command
         return '1';
 	}
 
-    protected function sendEmail($client_preferences,$sendto,$subject,$body){
+    // protected function sendEmail($client_preferences,$sendto,$subject,$body){
         
-        $mailfrom = $client_preferences->mail_from;
-        $confirured = $this->setMailDetail($client_preferences->mail_driver, $client_preferences->mail_host, $client_preferences->mail_port, $client_preferences->mail_username, $client_preferences->mail_password, $client_preferences->mail_encryption);
-        // Mail::to($this->details['email'])->send($data);
+    //     $mailfrom = $client_preferences->mail_from;
+    //     $confirured = $this->setMailDetail($client_preferences->mail_driver, $client_preferences->mail_host, $client_preferences->mail_port, $client_preferences->mail_username, $client_preferences->mail_password, $client_preferences->mail_encryption);
+    //     // Mail::to($this->details['email'])->send($data);
         
             
-            //$sendto =  $user->email;
-            //$client_name = 'Sales';
-            //$mail_from = $data->mail_from;
-            try {                
-                $data = [
-                    'link' => "link",
-                    'email' => $sendto,
-                    'mail_from' => $client_preferences->mail_from,
-                    // 'client_name' => $client_name,
-                    // 'logo' => $client->logo['original'],
-                    'subject' => $subject,
-                    //'customer_name' => $name,
-                    'email_template_content' => $body,
-                ];
-                Mail::to($sendto)->send($data);
-            } catch (\Exception $e) {
-            }
+    //         //$sendto =  $user->email;
+    //         //$client_name = 'Sales';
+    //         //$mail_from = $data->mail_from;
+    //         try {                
+    //             $data = [
+    //                 'link' => "link",
+    //                 'email' => $sendto,
+    //                 'mail_from' => $client_preferences->mail_from,
+    //                 // 'client_name' => $client_name,
+    //                 // 'logo' => $client->logo['original'],
+    //                 'subject' => $subject,
+    //                 //'customer_name' => $name,
+    //                 'email_template_content' => $body,
+    //             ];
+    //             Mail::to($sendto)->send($data);
+    //         } catch (\Exception $e) {
+    //         }
         
-    }
+    // }
 
-    public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){
-        $config = array(
-            'pretend' => false,
-            'host' => $mail_host,
-            'port' => $mail_port,
-            'driver' => $mail_driver,
-            'username' => $mail_username,
-            'password' => $mail_password,
-            'encryption' => $mail_encryption,
-            'sendmail' => '/usr/sbin/sendmail -bs',
-        );
-        Config::set('mail', $config);
-        $app = App::getInstance();
-        $app->register('Illuminate\Mail\MailServiceProvider');
-        return true;
-    }
+    // public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){
+    //     $config = array(
+    //         'pretend' => false,
+    //         'host' => $mail_host,
+    //         'port' => $mail_port,
+    //         'driver' => $mail_driver,
+    //         'username' => $mail_username,
+    //         'password' => $mail_password,
+    //         'encryption' => $mail_encryption,
+    //         'sendmail' => '/usr/sbin/sendmail -bs',
+    //     );
+    //     Config::set('mail', $config);
+    //     $app = App::getInstance();
+    //     $app->register('Illuminate\Mail\MailServiceProvider');
+    //     return true;
+    // }
 }
