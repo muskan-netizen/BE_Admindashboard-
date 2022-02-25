@@ -282,7 +282,10 @@ class CategoryController extends FrontController{
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
             $vendors = array();
             if(Session::has('vendors')){
+                
                 $vendors = Session::get('vendors');
+                $vendors = $vendors->toArray();
+                
             }
             // pr($vendors);
             $products = Product::with(['vendor', 'media.image', 'category',

@@ -450,6 +450,7 @@ class UserhomeController extends FrontController
             ->pluck('vendor_id')->toArray();
 
         if (($latitude) && ($longitude)) {
+            
             Session::put('vendors', $vendor_ids);
         }
 
