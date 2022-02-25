@@ -79,7 +79,13 @@ class KongapayController extends Controller
       Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'tip','date'=>date('Y-m-d')]);
      
       $request->amt = $request->amt*100;
-      $returnUrl = route('kongapay.successTip');
+      if(isset($request->app) && !empty($request->app))
+      {
+        $returnUrl = route('kongapay.successTip',['subscription_id='.$time]);
+      }else{ 
+        $returnUrl = route('kongapay.successTip');
+      }
+      
      }elseif($request->from == 'subscription')
      {
       $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
@@ -156,7 +162,7 @@ class KongapayController extends Controller
         $params = $params .'&app=2&transaction_id=W_'.time();
        }elseif($action == 'subscription'){
         //app = 2 is for wallet
-       $params = $params .'&app=2&subscription_id='.'S_'.time().'_'.$request->subscription_id;
+       $params = $params .'&app=3&subscription_id='.'S_'.time().'_'.$request->subscription_id;
       }
 
        return $this->successResponse(url($request->serverUrl.'payment/kongapay/api/'.$params)); 
@@ -275,7 +281,7 @@ class KongapayController extends Controller
     {
       $user = auth()->user();
       $data = Payment::where('transaction_id',$request->merchant_reference)->first();
-      if(isset($request->merchant_reference) && $request->code=='00' && $request->status == 'success')
+      if(isset($request->merchant_reference) && $request->status == 'success')
           {
             $subscription = explode('_',$request->merchant_reference);
             $request->request->add(['user_id' => $user->id, 'payment_option_id' => 20, 'amount' => $data->balance_transaction, 'transaction_id' => $request->merchant_reference]);
@@ -308,7 +314,7 @@ class KongapayController extends Controller
     public function completeOrderTip(Request $request)
     {
       $data = Payment::where('transaction_id',$request->merchant_reference)->first();
-      if(isset($request->merchant_reference) && $request->code=='00' && $request->status == 'success')
+      if(isset($request->merchant_reference) && $request->status == 'success')
           {
             $order_number = explode('_',$request->merchant_reference);
             $request->request->add(['user_id' => auth()->id(), 'order_number' => $order_number[2], 'tip_amount' => $data->balance_transaction, 'transaction_id' => $request->merchant_reference]);
