@@ -145,7 +145,7 @@ box-shadow: 0 0 9px rgb(0 0 0 / 20%);
 .al_new_mobile_header_address_map {
     margin: 0 10px 10px;
 }
-header#al_new_design.site-header.fixed-bar .al_count_tabs_new_design.al_tab_mobile .location-bar {
+header#al_new_design.site-header.fixed-bar .al_new_mobile_header_address_map .location-bar {
     display: none !important;
 }
 
