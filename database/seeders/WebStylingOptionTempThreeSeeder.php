@@ -6,7 +6,11 @@ use Illuminate\Database\Seeder;
 use DB;
 use App\Models\WebStylingOption;
 
-class WebStylingOption3Seeder extends Seeder
+<<<<<<< HEAD:database/seeders/WebStylingOptionTempThreeSeeder.php
+class WebStylingOptionTempThreeSeeder extends Seeder
+=======
+class WebStylingOptionThreeSeeder extends Seeder
+>>>>>>> f9223c08b9b174a9f199d7c83588054c52c74356:database/seeders/WebStylingOptionThreeSeeder.php
 {
     /**
      * Run the database seeds.

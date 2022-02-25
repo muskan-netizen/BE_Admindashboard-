@@ -16,3 +16,8 @@ query.php
 storage/debugbar/
 composer.lock
 package-lock.json
+<<<<<<< HEAD
+/storage
+=======
+storage
+>>>>>>> f9223c08b9b174a9f199d7c83588054c52c74356
