@@ -429,7 +429,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
     function autoloaddashboad(){
         //console.log('dasd');
         var typ=  $("a.nav-link.active").data('rel');
-        console.log('kuch bhi');
+        console.log('Test');
         init(typ, "{{ route('orders.filter') }}", '', false);
         
     }
