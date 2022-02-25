@@ -176,7 +176,7 @@ $pages = \App\Models\Page::with([
                             @endif
                         </div>
 
-                        <div class="al_count_tabs_new_design al_tab_mobile position-fixed d-block d-sm-none ">
+                        <div class="al_count_tabs_new_design al_tab_mobile position-fixed d-block d-sm-none">
                             @if($mod_count > 1)
                             <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods d-flex justify-content-around" id="top-tab" role="tablist">
                                 @if($client_preference_detail->delivery_check==1) @php $Delivery=getNomenclatureName('Delivery', true); $Delivery=($Delivery==='Delivery') ? __('Delivery') : $Delivery; @endphp
