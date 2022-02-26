@@ -324,7 +324,7 @@ class KongapayController extends Controller
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
 
-            if(isset($request->subscription_id) && !empty($request->subscription_id))
+            if(isset($request->order_no) && !empty($request->order_no))
               {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order_number[2].'&action=tip';
                 return Redirect::to($returnUrl); 
@@ -335,7 +335,7 @@ class KongapayController extends Controller
           }else{
             $data->delete();
 
-              if(isset($request->subscription_id) && !empty($request->subscription_id))
+              if(isset($request->order_no) && !empty($request->order_no))
               {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=tip';
                 return Redirect::to($returnUrl); 
