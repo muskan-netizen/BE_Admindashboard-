@@ -761,7 +761,7 @@ class CartController extends FrontController
                             $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                             foreach($deliveries as $k=> $opt)
                                 {
-                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['courier_name'].', Rate : '.$opt['rate'].'</option>';
+                                    $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
                                 }
                             $select .= '</select>';
                                 if($code){
@@ -806,10 +806,15 @@ class CartController extends FrontController
                         ->where('is_live', 1)
                         ->first();
                     $doller_compare = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
+
+                    $up_prods = '';
+                    if(!empty($product->upSell))
                     $up_prods = $this->metaProduct($langId, $doller_compare, 'upSell', $product->upSell);
                     if($up_prods){
                         $upSell_products->push($up_prods);
                     }
+                    $cross_prods = '';
+                    if(!empty($product->crossSell))
                     $cross_prods = $this->metaProduct($langId, $doller_compare, 'crossSell', $product->crossSell);
                     if($cross_prods){
                         $crossSell_products->push($cross_prods);

@@ -297,8 +297,11 @@
                 $(".loader_box").show();
             },
             complete: function() {
-
                 $(".loader_box").hide();
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+               
             }
         });
     }

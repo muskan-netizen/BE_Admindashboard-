@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, ProductVariantImage, UserWishlist};
+use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, ProductVariantImage, UserWishlist};
 
 class StoreController extends BaseController{
     use ApiResponser;
@@ -1063,9 +1063,11 @@ class StoreController extends BaseController{
 				if(!$Category_translation){
 					$Category_translation = Category_translation::where('category_id', $vendor_category->category->id)->first();
 				}
+				$category_detail = Category::where('id',$vendor_category->category->id)->first();
 				$category_list []= array(
 					'id' => $vendor_category->category->id,
 					'name' => $Category_translation ? $Category_translation->name : $vendor_category->category->slug,
+					'cat_image' => $category_detail->image ?? "",
 					'type_id' => $vendor_category->category->type_id,
 					'is_selected' => $is_selected_category_id == $vendor_category->category_id ? true : false
 				);

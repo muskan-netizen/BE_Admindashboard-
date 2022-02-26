@@ -134,13 +134,16 @@ class HomeController extends BaseController
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
 
-            $payment_codes = ['stripe', 'razorpay', 'checkout'];
+            $payment_codes = ['stripe', 'stripe_fpx', 'razorpay', 'checkout'];
             $payment_creds = PaymentOption::select('code', 'credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
                 foreach ($payment_creds as $creds) {
                     $creds_arr = json_decode($creds->credentials);
                     if ($creds->code == 'stripe') {
                         $homeData['profile']->preferences->stripe_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
+                    }
+                    if ($creds->code == 'stripe_fpx') {
+                        $homeData['profile']->preferences->stripe_fpx_publishable_key = (isset($creds_arr->publishable_key) && (!empty($creds_arr->publishable_key))) ? $creds_arr->publishable_key : '';
                     }
                     if ($creds->code == 'razorpay') {
                         $homeData['profile']->preferences->razorpay_api_key = (isset($creds_arr->api_key) && (!empty($creds_arr->api_key))) ? $creds_arr->api_key : '';
@@ -168,7 +171,7 @@ class HomeController extends BaseController
     {
         try {
             $vends = [];
-            $vends = [];
+            $venderIds = [];
             $homeData = [];
             $user = Auth::user();
             $langId = $user->language;
@@ -219,7 +222,9 @@ class HomeController extends BaseController
             if($venderFilterbest && ($venderFilterbest == 1) ){
                 $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
+            $allVendorData = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
+            $venderIds = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
 
             foreach ($vendorData as $vendor) {
                 unset($vendor->products);
@@ -338,7 +343,7 @@ class HomeController extends BaseController
             }
 
             $isVendorArea = 0;
-            $categories = $this->categoryNav($langId, $vends);
+            $categories = $this->categoryNav($langId,  $venderIds);
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
             $homeData['reqData'] = $request->all();
@@ -365,6 +370,7 @@ class HomeController extends BaseController
         }
     }
 
+  
     public function getEditedOrders(Request $request){
         // Get user Edited Orders from Temp Cart
         $user = Auth::user();

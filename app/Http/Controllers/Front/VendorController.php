@@ -655,6 +655,7 @@ class VendorController extends FrontController
         $keyword = $request->input('keyword');
         $vid = $request->input('vendor');
         $vCat = $request->input('vendor_category');
+        $order_type = $request->input('order_type');
         $langId = Session::get('customerLanguage');
         $preferences = Session::get('preferences');
 
@@ -714,14 +715,16 @@ class VendorController extends FrontController
                     $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                     $q2->where('apt.language_id', $langId);
                 }
-            ])
-            ->select('id', 'sku', 'description', 'category_id', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+            ])->select('products.id', 'products.sku','products.title', 'products.url_slug','products.weight_unit','products.category_id', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
+            ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
+            ->join('product_translations', 'product_translations.product_id', '=', 'products.id');
+           
             if($keyword){
                 $products->where(function ($q) use ($keyword, $langId) {
                     $q->where(function ($q1) use ($keyword) {
-                        $q1->where('sku', 'LIKE', '%' . $keyword . '%')
-                        ->orWhere('url_slug', 'LIKE', '%' . $keyword . '%')
-                        ->orWhere('title', 'LIKE', '%' . $keyword . '%');
+                        $q1->where('products.sku', 'LIKE', '%' . $keyword . '%')
+                        ->orWhere('products.url_slug', 'LIKE', '%' . $keyword . '%')
+                        ->orWhere('products.title', 'LIKE', '%' . $keyword . '%');
                     });
                     $q->orWhereHas('translation', function ($q1) use ($keyword, $langId) {
                         $q1->where(function ($q2) use ($keyword) {
@@ -735,10 +738,31 @@ class VendorController extends FrontController
                     $query->whereIn('tag_id',$tagId);
                  });
             }
+
         if(count($vendorCategory) > 0){
             $products = $products->whereIn('category_id', $vendorCategory);
         }
-        $products = $products->where('is_live', 1)->where('vendor_id', $vid)->get();
+        // Sorting
+        if (!empty($order_type) && $request->order_type == 'rating') {
+            $products = $products->orderBy('products.averageRating', 'desc');
+        }elseif (!empty($order_type) && $order_type == 'low_to_high') {
+            $products = $products->orderBy('product_variants.price', 'asc');
+        }elseif (!empty($order_type) && $order_type == 'high_to_low') {
+            $products = $products->orderBy('product_variants.price', 'desc'); 
+        }elseif (!empty($order_type) && $order_type == 'newly_added') {
+            $products = $products->orderBy('products.id', 'desc');
+        }elseif (!empty($order_type) && $order_type == 'a_to_z') {
+            $products = $products->orderBy('product_translations.title', 'asc');
+        }elseif (!empty($order_type) && $order_type == 'z_to_a') {
+            $products = $products->orderBy('product_translations.title', 'desc');
+        }else{
+            //
+        }
+        // End Sorting
+        $products = $products->where('is_live', 1)
+        ->groupBy('products.id')
+        ->where('vendor_id', $vid)->get();
+
 
         $vendor_categories = collect();
         $category_list = [];
@@ -801,9 +825,8 @@ class VendorController extends FrontController
             }
         }
         $tags = Tag::with('primary')->get();
-        // dd($vendor_categories->toArray());
         $listData = $vendor_categories;
-        $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData,'tagId'=>$tagId])->render();
+        $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData,'tagId'=>$tagId, 'input'=>$request->all()])->render();
         return response()->json(array('status'=>'Success', 'html'=>$returnHTML));
     }
 

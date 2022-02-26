@@ -73,6 +73,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/create/stripe_fpx', 'Front\StripeGatewayController@createStripeFPXPaymentIntent')->name('payment.create.stripe_fpx');
 	Route::get('payment/retrieve/stripe_fpx', 'Front\StripeGatewayController@retrieveStripeFPXPaymentIntent')->name('payment.retrieve.stripe_fpx');
 	Route::post('payment/webhook/stripe_fpx', 'Front\StripeGatewayController@stripeFPXWebhook')->name('payment.webhook.stripe_fpx');
+	Route::get('payment/webview/stripe_fpx', 'Front\StripeGatewayController@paymentWebViewStripeFPX')->name('payment.webview.stripe_fpx');
+	Route::get('payment/webview/response/stripe_fpx', 'Front\StripeGatewayController@webViewResponseStripeFPX')->name('payment.webview.response.stripe_fpx');
 
 	// Paypal
 	Route::post('payment/paypal', 'Front\PaypalGatewayController@paypalPurchase')->name('payment.paypalPurchase');
@@ -141,7 +143,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//KongaPay routes
 	Route::post('payment/kongapay', 'Front\KongapayController@createHash')->name('kongapay.createHash');
-	Route::match(['get','post'],'payment/kongapay/result', 'Front\KongapayController@completeOrderCart')->name('kongapay.successCart');
+	Route::any('payment/kongapay/api', 'Front\KongapayController@webViewPay')->name('kongapay.webview');
+	Route::match(['get','post'],'payment/kongapay/result/{from?}', 'Front\KongapayController@completeOrderCart')->name('kongapay.successCart');
 	Route::match(['get','post'],'payment/kongapay/walletResult', 'Front\KongapayController@completeOrderWallet')->name('kongapay.successWallet');
 	Route::match(['get','post'],'payment/kongapay/tipResult', 'Front\KongapayController@completeOrderTip')->name('kongapay.successTip');
 	Route::match(['get','post'],'payment/kongapay/subsResult', 'Front\KongapayController@completeOrderSubs')->name('kongapay.successSubs');
@@ -193,6 +196,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('page/{slug}', 'Front\UserhomeController@getExtraPage')->name('extrapage');
 
 	Route::post('/homePageData', 'Front\UserhomeController@postHomePageData')->name('homePageData');
+	Route::post('/postHomePageDataSingle', 'Front\UserhomeController@postHomePageDataSingle')->name('postHomePageDataSingle');
+	Route::post('/homePageDataNew', 'Front\UserhomeController@postHomePageDataNew')->name('homePageDataNew');
 	Route::post('/homePageDataCategoryMenu', 'Front\UserhomeController@homePageDataCategoryMenu')->name('homePageDataCategoryMenu');
 	Route::post('/theme', 'Front\UserhomeController@setTheme')->name('config.update');
 	Route::get('/getConfig', 'Front\UserhomeController@getConfig')->name('config.get');

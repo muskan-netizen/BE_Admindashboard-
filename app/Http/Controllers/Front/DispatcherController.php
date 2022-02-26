@@ -385,7 +385,6 @@ class DispatcherController extends FrontController
                 curl_close($ch);
                 pr( $result);
                // return $result;
-
         }
     }
     /******************    ---- send notification to user -----   ******************/
