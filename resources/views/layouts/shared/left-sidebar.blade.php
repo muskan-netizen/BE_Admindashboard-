@@ -92,7 +92,7 @@
                             @endif
                             {{-- @if(in_array('order_cancel_requests',$allowed) || Auth::user()->is_superadmin == 1)
                                 <li>
-                                    <a href="{{route('order.cancel.requests')}}">
+                                    <a href="{{route('cancel-order.requests')}}">
                                         <span class="icon-extra"></span>
                                         <span> {{ __('Order Cancel') }} </span>
                                     </a>
@@ -428,12 +428,12 @@
                             @endif
 
                             @if(Auth::user()->is_superadmin == 1)
-                                {{-- <li>
+                                <li>
                                     <a href="{{ route('campaign.index')}}">
                                         <span class="icon-celebrity"></span>
                                         <span> {{ __("Campaigns") }} </span>
                                     </a>
-                                </li> --}}
+                                </li>
                             @endif
                         </ul>
                     </li>
