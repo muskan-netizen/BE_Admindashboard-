@@ -283,7 +283,7 @@ $(document).ready(function () {
                         layouts.forEach(function(obj, index) {
                             setTimeout(function(){
                                 myFunctionGetDataHomePage(obj, index);
-                            }, 2000 * (index + 1));
+                            }, 500 * (index + 1));
                         });
 
                         
@@ -383,7 +383,13 @@ $(document).ready(function () {
                break;  
             case 'recent_orders':
                 getHomePageDataSingleBySingle(item);
-               break;   
+               break; 
+            case 'pickup_delivery':
+                getHomePageDataSingleBySingle(item);
+               break;
+            case 'dynamic_page':
+                getHomePageDataSingleBySingle(item);
+               break;        
           }
        
         $(".shimmer_effect_"+item).hide();
@@ -693,10 +699,10 @@ $(document).ready(function () {
 
                           let vendors = response.data.vendors;
                         
-                            if (vendors.length > 0) {console.log('set');
+                            if (vendors.length > 0) {
                                 $('#our_vendor_main_div').removeClass('d-none');
                                 $(".no-store-wrapper").hide();
-                            } else {console.log('set2');
+                            } else {
                                 $('#our_vendor_main_div').addClass('d-none');
                                 $(".no-store-wrapper").show();
                             }

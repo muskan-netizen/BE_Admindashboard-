@@ -417,7 +417,7 @@
 		</section> @endif @endforeach </div>
 </section>
 
-<section class="no-store-wrapper mb-3">
+<section class="no-store-wrapper mb-3" style="display: none;">
 	<div class="container"> @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
 		<div class="row">
 			<div class="col-12 text-center"> <img class="no-store-image mt-2 mb-2 blur-up lazyload" data-src="{{getImageUrl(asset('images/no-stores.svg'),'250/250')}}" style="max-height: 250px;"> </div>
