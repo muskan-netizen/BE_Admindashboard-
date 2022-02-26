@@ -61,7 +61,12 @@ class ProductController extends FrontController{
                 $productVendorId = $product->vendor_id;
                 if(Session::has('vendors')){
                     $vendors = Session::get('vendors');
-                 //   $vendors = $vendors->toArray();
+                    if(is_array($vendors)){
+
+                    }
+                    else
+                    $vendors = $vendors->toArray();
+
                     if(!in_array($productVendorId, $vendors)){
                         $is_available = false;
                         // abort(404);
