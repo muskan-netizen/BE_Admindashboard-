@@ -63,7 +63,9 @@
     $(document).on('click', '.submitAddForm', function(e) {
         e.preventDefault();
         var form = document.getElementById('save_loyality_form');
+        let email_body = CKEDITOR.instances.email_body.getData();        
         var formData = new FormData(form);
+        formData.append("email_body", email_body);
         var url = "{{route('campaign.store')}}";
         saveData(formData, 'add', url);
     });

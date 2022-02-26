@@ -244,7 +244,10 @@ class OrderController extends BaseController
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
             $order->scheduled_date_time = !empty($order->scheduled_date_time) ? dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone) : '';
             foreach ($order->vendors as $vendor) {
+                if(isset($vendor) && !empty($vendor->vendor_id))
                 $vendor->vendor_detail_url = route('order.show.detail', [$order->id, @$vendor->vendor_id]);
+                else
+                $vendor->vendor_detail_url = '#';
                 $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
                 $vendor->order_status = $vendor_order_status ? __($vendor_order_status->OrderStatusOption->title) : '';
                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';

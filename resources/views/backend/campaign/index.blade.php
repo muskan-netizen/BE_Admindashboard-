@@ -127,7 +127,7 @@
                                         {{$campaign->total_request_count}}
                                     </td>
                                     <td> 
-                                        {{-- {{$campaign->request_time_difference}} --}}
+                                        {{$campaign->livecount}}
                                     </td>
                                     <td> 
                                         <div class="form-ul" style="width: 60px;">
