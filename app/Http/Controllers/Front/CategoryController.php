@@ -284,7 +284,7 @@ class CategoryController extends FrontController{
             if(Session::has('vendors')){
                 
                 $vendors = Session::get('vendors');
-                $vendors = $vendors->toArray();
+             //   $vendors = $vendors->toArray();
                 
             }
             // pr($vendors);
