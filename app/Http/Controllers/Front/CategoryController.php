@@ -60,8 +60,9 @@ class CategoryController extends FrontController{
             $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
 
             if( is_array($vendors) &&  (count($vendors) > 0) ){
-                $vendors = $vendors->toArray();
+               
                 Session::put('vendors', $vendors);
+                $vendors = $vendors->toArray();
                 //remake child categories array
                 if($category->childs->isNotEmpty()){
                     $childArray = array();
