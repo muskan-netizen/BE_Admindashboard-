@@ -383,7 +383,13 @@ $(document).ready(function () {
                break;  
             case 'recent_orders':
                 getHomePageDataSingleBySingle(item);
-               break;   
+               break; 
+            case 'pickup_delivery':
+                getHomePageDataSingleBySingle(item);
+               break;
+            case 'dynamic_page':
+                getHomePageDataSingleBySingle(item);
+               break;        
           }
        
         $(".shimmer_effect_"+item).hide();
