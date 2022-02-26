@@ -331,8 +331,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('/review/delect/{id}', 'Client\ReviewController@destroy')->name('review.delete');
 
         // Cancel order requests routes
-        Route::get('order/cancel/requests', 'Client\OrderCancelRequestsController@index')->name('order.cancel.requests');
-        Route::get('order/cancel/requests/filter', 'Client\OrderCancelRequestsController@orderCancelRequestsFilter')->name('order.cancel.requests.filter');
+        Route::get('cancel-order/requests', 'Client\OrderCancelRequestsController@index')->name('cancel-order.requests');
+        Route::get('cancel-order/requests/filter', 'Client\OrderCancelRequestsController@filter')->name('cancel-order.requests.filter');
     });
 });
 
