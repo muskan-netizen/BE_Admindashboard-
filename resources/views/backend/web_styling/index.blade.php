@@ -5,7 +5,7 @@
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.css">
 @endsection
 @section('content')
-<div class="web-style">
+<div class="web-style col-12">
     <div class="row">
         <div class="col-12">
             <div class="col-sm-8">
