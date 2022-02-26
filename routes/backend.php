@@ -328,6 +328,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('notification', 'Client\UserController@customNotification')->name('customer.notification');
         Route::post('sendnotification', 'Client\UserController@sendNotification')->name('send.notification');
         Route::get('/review/delect/{id}', 'Client\ReviewController@destroy')->name('review.delete');
+
+        // Cancel order requests routes
+        Route::get('order/cancel/requests', 'Client\OrderCancelRequestsController@index')->name('order.cancel.requests');
+        Route::get('order/cancel/requests/filter', 'Client\OrderCancelRequestsController@orderCancelRequestsFilter')->name('order.cancel.requests.filter');
     });
 });
 

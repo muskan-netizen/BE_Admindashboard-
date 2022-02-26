@@ -16,9 +16,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
-
-
 	Route::get('dispatch-order-status-update-details/{id?}', 'Front\DispatcherController@dispatchOrderDetails')->name('dispatch-order-update-details'); // Order Status update Dispatch details
+	Route::get('dispatch-order-cancel-request/{id?}', 'Front\DispatcherController@dispatchOrderCancelRequest')->name('dispatch-order-cancel-request'); // Order Status update Dispatch details
 
     Route::get('testsms', 'Front\FrontController@testsms');
 
