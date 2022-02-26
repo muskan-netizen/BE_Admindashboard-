@@ -445,7 +445,7 @@ $pages = \App\Models\Page::with([
                      @endforeach
                   </ul>
                </div>
-               <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-between" >
+               <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider d-flex justify-content-center" >
                   @foreach($navCategories as $cate)
                   @if($cate['name'])
                   <li class="al_main_category" data-aos="zoom-in">

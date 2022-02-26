@@ -201,6 +201,7 @@ class FrontController extends Controller
                 $vendors[] = $value->id;
             }
         }
+        $vendors = $vendors->toArray();
         Session::put('vendors', $vendors);
         return $vendors;
     }

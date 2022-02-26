@@ -72,7 +72,7 @@ class User extends Authenticatable implements Wallet, WalletFloat
     public function device(){
        return $this->hasMany('App\Models\UserDevice');
     }
-   
+    
 
     public function getImageAttribute($value)
     {

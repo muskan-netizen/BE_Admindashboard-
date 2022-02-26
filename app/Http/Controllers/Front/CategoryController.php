@@ -60,6 +60,7 @@ class CategoryController extends FrontController{
             $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
 
             if( is_array($vendors) &&  (count($vendors) > 0) ){
+                $vendors = $vendors->toArray();
                 Session::put('vendors', $vendors);
                 //remake child categories array
                 if($category->childs->isNotEmpty()){
@@ -281,7 +282,10 @@ class CategoryController extends FrontController{
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
             $vendors = array();
             if(Session::has('vendors')){
+                
                 $vendors = Session::get('vendors');
+                $vendors = $vendors->toArray();
+                
             }
             // pr($vendors);
             $products = Product::with(['vendor', 'media.image', 'category',

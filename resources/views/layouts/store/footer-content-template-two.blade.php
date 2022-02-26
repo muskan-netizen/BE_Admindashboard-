@@ -11,10 +11,10 @@ if(session()->has('applocale')){
 @endphp
 </article>
     <footer id="footer" class="footer-light">
-        <section class="section-b-space light-layout pt-3 pb-0">
+        <section class="section-b-space light-layout pb-0">
             <div class="container">
 
-                <div class="row footer-theme partition-f py-lg-4 pb-1">
+                <div class="row footer-theme partition-f py-lg-3 py-2">
                     @if($client_preference_detail->show_contact_us == 1)
                     <div class="col-12 d-block d-md-none">
                         <div class="footer-contant">
