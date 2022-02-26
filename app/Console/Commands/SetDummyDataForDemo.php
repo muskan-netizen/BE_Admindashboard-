@@ -46,8 +46,8 @@ class SetDummyDataForDemo extends Command
      */
     public function handle()
     {   
-        $code_array = ['2f3120','d1b1a0','d2cca0','638bd1','d8473d','574467','c8fbba','fb78f0','6865aa','2d98b5'];
-        $domain_array = ['grub','gusto','punnet','suel','voltaic','elixir','homeric','gokab','zest','ace'];
+        $code_array = ['d1b1a0','d2cca0','638bd1','d8473d','574467','c8fbba','fb78f0','6865aa','2d98b5'];
+        $domain_array = ['gusto','punnet','suel','voltaic','elixir','homeric','gokab','zest','ace'];
         $clients = Client::select('database_name', 'sub_domain')->whereIN('code',$code_array)->whereIN('sub_domain',$domain_array)->get();
         foreach ($clients as $client) {
                 $this->migrateDefaultDataDaily($client);

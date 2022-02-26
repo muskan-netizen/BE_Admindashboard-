@@ -322,6 +322,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::resource('campaign', 'Client\CampaignController');
         Route::get('campaign-push-option', 'Client\CampaignController@GetPushOptions')->name('campaign.pushoptions');
+        //Route::get('test-notification', 'Client\CampaignController@testnotification');
         // Route::post('celebrity/changeStatus', 'Client\CelebrityController@changeStatus')->name('celebrity.changeStatus');
         // Route::post('celebrity/getBrands', 'Client\CelebrityController@getBrandList')->name('celebrity.getBrands');
 

@@ -195,6 +195,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('page/{slug}', 'Front\UserhomeController@getExtraPage')->name('extrapage');
 
 	Route::post('/homePageData', 'Front\UserhomeController@postHomePageData')->name('homePageData');
+	Route::post('/postHomePageDataSingle', 'Front\UserhomeController@postHomePageDataSingle')->name('postHomePageDataSingle');
+	Route::post('/homePageDataNew', 'Front\UserhomeController@postHomePageDataNew')->name('homePageDataNew');
 	Route::post('/homePageDataCategoryMenu', 'Front\UserhomeController@homePageDataCategoryMenu')->name('homePageDataCategoryMenu');
 	Route::post('/theme', 'Front\UserhomeController@setTheme')->name('config.update');
 	Route::get('/getConfig', 'Front\UserhomeController@getConfig')->name('config.get');

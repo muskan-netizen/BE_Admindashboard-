@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use DB;
 use App\Models\WebStylingOption;
 
-class WebStylingOption3Seeder extends Seeder
+class WebStylingOptionTempThreeSeeder extends Seeder
 {
     /**
      * Run the database seeds.

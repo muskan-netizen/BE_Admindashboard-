@@ -4,20 +4,14 @@ namespace App\Console\Commands;
 
 use App\Models\Client;
 use App\Mail\OrderSuccessEmail;
-use Mail;
 use Config;
-use App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 use App\Models\ClientPreference;
 use App\Models\Campaign;
 use App\Models\CampaignRoster;
-// use App\Models\OrderVendor;
-// use App\Models\Vendor;
 use App\Models\UserDevice;
 use App\Models\User;
-// use App\Models\NotificationTemplate;
-// use App\Models\AutoRejectOrderCron;
 use Log;
 use Carbon\Carbon;
 use Twilio\Rest\Client as TwilioClient;
@@ -85,36 +79,38 @@ class SendCampaignNotification extends Command
                 $headers = [
                     'Authorization: key=' . $from,
                     'Content-Type: application/json',
-                ];             
+                ];  
+                // CampaignRoster::where('id',6287)->delete();
                 $notifications = CampaignRoster::where('notification_time', '<=', $intervalTime)->where('status',0)->with('campaign','user')->get();
                 if($notifications)
                 {
-
-                    //test sms
-                    $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
-                        $to = '+919996687653';
-                        $provider = $client_preferences->sms_provider;
-                        $body = "Hi ".$client_preferences->sms_key;
+                    // //test sms
+                    // $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+                    //     $to = '+919996687653';
+                    //     $provider = $client_preferences->sms_provider;
+                    //     $body = "Hi ".$client_preferences->sms_key;
                         
-                        $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
+                    //     $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
                         
 
-                    //test email
-                    $sendto = "testu00091@gmail.com";
-                    $subject = "Test subject for email notification";
-                    $body = "test body message from notification";
+                    // //test email
+                    // $sendto = "testu00091@gmail.com";
+                    // $subject = "Test subject for email notification";
+                    // $body = "test body message from notification";
 
-                    $email_data = [
-                        'email' => $sendto,
-                        'mail_from' => $client_preferences->mail_from,                        
-                        'subject' => $subject,
-                        'email_template_content' => $body,
-                        'send_to_cc' => 0
-                    ];
-                    dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
-                    //$this->sendEmail($client_preferences,$sendto,$subject,$body);
+                    // $email_data = [
+                    //     'email' => $sendto,
+                    //     'mail_from' => $client_preferences->mail_from,                        
+                    //     'subject' => $subject,
+                    //     'email_template_content' => $body,
+                    //     'send_to_cc' => 0
+                    // ];
+                    // dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                    // //$this->sendEmail($client_preferences,$sendto,$subject,$body);
+                    CampaignRoster::where('id',6290)->delete();
                     foreach($notifications as $singlenotification)
                     {
+                        //CampaignRoster::where('id',6290)->delete();
                         $type = $singlenotification->notofication_type;
                         //	type => 1 sms, 2 email, 3 push notification
                         switch ($type) {
@@ -133,8 +129,14 @@ class SendCampaignNotification extends Command
                                         $send = $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
                                         if($send)
                                         {
-                                            //remove notification if success
-                                            CampaignRoster::where('id',$singlenotification->id)->delete();
+                                            if($send==2)
+                                            {
+                                                //change status if failed
+                                                CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
+                                            }else{
+                                                //remove notification if success
+                                                CampaignRoster::where('id',$singlenotification->id)->delete();
+                                            } 
                                         }else{
                                             //change status if failed
                                             CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
@@ -178,7 +180,7 @@ class SendCampaignNotification extends Command
                                 //$redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/viewcart";
                                 $redirect_URL = $singlenotification->campaign->push_url_option_value;
                                 $data = [
-                                    "registration_ids" => $singlenotification->device_token,
+                                    "registration_ids" => [$singlenotification->device_token],
                                     "notification" => [
                                         'title' => $singlenotification->campaign->push_title,
                                         'body'  => $singlenotification->campaign->push_message_body,
