@@ -532,7 +532,7 @@ class CategoryController extends FrontController{
         }
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
 
-        $products = $products->paginate($pagiNate);
+        $products = $products->groupBy('product.id')->paginate($pagiNate);
 
         if(!empty($products)){
             foreach ($products as $key => $value) {
