@@ -322,12 +322,17 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::resource('campaign', 'Client\CampaignController');
         Route::get('campaign-push-option', 'Client\CampaignController@GetPushOptions')->name('campaign.pushoptions');
+        //Route::get('test-notification', 'Client\CampaignController@testnotification');
         // Route::post('celebrity/changeStatus', 'Client\CelebrityController@changeStatus')->name('celebrity.changeStatus');
         // Route::post('celebrity/getBrands', 'Client\CelebrityController@getBrandList')->name('celebrity.getBrands');
 
         Route::get('notification', 'Client\UserController@customNotification')->name('customer.notification');
         Route::post('sendnotification', 'Client\UserController@sendNotification')->name('send.notification');
         Route::get('/review/delect/{id}', 'Client\ReviewController@destroy')->name('review.delete');
+
+        // Cancel order requests routes
+        Route::get('cancel-order/requests', 'Client\OrderCancelRequestsController@index')->name('cancel-order.requests');
+        Route::get('cancel-order/requests/filter', 'Client\OrderCancelRequestsController@filter')->name('cancel-order.requests.filter');
     });
 });
 

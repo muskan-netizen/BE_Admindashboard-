@@ -60,7 +60,9 @@ class CategoryController extends FrontController{
             $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
 
             if( is_array($vendors) &&  (count($vendors) > 0) ){
+               
                 Session::put('vendors', $vendors);
+                Log::info($vendors);
                 //remake child categories array
                 if($category->childs->isNotEmpty()){
                     $childArray = array();
@@ -205,7 +207,7 @@ class CategoryController extends FrontController{
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
 
         if(strtolower($type) == 'vendor'){
-            $preferences= (object)Session::get('preferences');
+            $preferences= ClientPreference::first();
             $vendorData = Vendor::with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $latitude = Session::get('latitude') ?? '';
@@ -281,7 +283,10 @@ class CategoryController extends FrontController{
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
             $vendors = array();
             if(Session::has('vendors')){
+                
                 $vendors = Session::get('vendors');
+             //   $vendors = $vendors->toArray();
+                
             }
             // pr($vendors);
             $products = Product::with(['vendor', 'media.image', 'category',

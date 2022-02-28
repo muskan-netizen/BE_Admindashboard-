@@ -81,7 +81,7 @@ class KongapayController extends Controller
       $request->amt = $request->amt*100;
       if(isset($request->app) && !empty($request->app))
       {
-        $returnUrl = route('kongapay.successTip',['subscription_id='.$time]);
+        $returnUrl = route('kongapay.successTip',['order_no='.$time]);
       }else{ 
         $returnUrl = route('kongapay.successTip');
       }
@@ -163,6 +163,9 @@ class KongapayController extends Controller
        }elseif($action == 'subscription'){
         //app = 2 is for wallet
        $params = $params .'&app=3&subscription_id='.'S_'.time().'_'.$request->subscription_id;
+      }elseif($action == 'tip'){
+        //app = 2 is for wallet
+       $params = $params .'&app=3&order_no='.$request->order_number;
       }
 
        return $this->successResponse(url($request->serverUrl.'payment/kongapay/api/'.$params)); 
@@ -321,10 +324,25 @@ class KongapayController extends Controller
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
 
-            return Redirect::to(route('user.orders'))->with('success', $request->message);
+            if(isset($request->order_no) && !empty($request->order_no))
+              {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order_number[2].'&action=tip';
+                return Redirect::to($returnUrl); 
+              }else{
+                return Redirect::to(route('user.orders'))->with('success', $request->message);
+              }
+
           }else{
             $data->delete();
-            return Redirect::to(route('user.orders'))->with('error', $request->message);
+
+              if(isset($request->order_no) && !empty($request->order_no))
+              {
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->merchant_reference.'&action=tip';
+                return Redirect::to($returnUrl); 
+              }else{
+                return Redirect::to(route('user.orders'))->with('error', $request->message);
+              }
+
           }
         return $this->successResponse($request->getTransactionReference());
 

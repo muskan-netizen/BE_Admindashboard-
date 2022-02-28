@@ -80,4 +80,8 @@ class OrderVendor extends Model{
 	public function tempCart(){
 	    return $this->hasOne('App\Models\TempCart' , 'order_vendor_id', 'id'); 
 	}
+
+	public function cancel_request(){
+        return $this->hasOne('App\Models\OrderCancelRequest', 'order_vendor_id', 'id')->orderBy('updated_at', 'desc');
+    }
 }

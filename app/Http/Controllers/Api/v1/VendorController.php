@@ -2079,4 +2079,247 @@ class VendorController extends BaseController{
         return $this->successResponse($vendorData);
     }
 
+
+    # optimize product by vendpr
+
+    public function productsByVendorOptimize(Request $request, $vid = 0){
+        try {
+            if($vid == 0){
+                return response()->json(['error' => 'No record found.'], 404);
+            }
+            $user = Auth::user();
+            $userid = $user->id;
+            $latitude = $user->latitude;
+            $longitude = $user->longitude;
+            $limit = $request->has('limit') ? $request->limit : 12;
+            $page = $request->has('page') ? $request->page : 12;
+            $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+            $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
+            $langId = $user->language;
+            $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'slug', 'show_slot',
+                        'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery','closed_store_order_scheduled')
+                        ->withAvg('product', 'averageRating');
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                //3961 for miles and 6371 for kilometers
+                $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                $vendor = $vendor->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                        cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                        sin( radians(' . $latitude . ') ) *
+                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
+            }
+            $vendor = $vendor->where('id', $vid)->first();
+            if(!$vendor){
+                return response()->json(['error' => 'No record found.'], 200);
+            }
+
+            $vendor->is_vendor_closed = 0;
+            if($vendor->show_slot == 0){
+                if( ($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty()) ){
+                    $vendor->is_vendor_closed = 1;
+                }else{
+                    $vendor->is_vendor_closed = 0;
+                    if($vendor->slotDate->isNotEmpty()){
+                        $vendor->opening_time = Carbon::parse($vendor->slotDate->first()->start_time)->format('g:i A');
+                        $vendor->closing_time = Carbon::parse($vendor->slotDate->first()->end_time)->format('g:i A');
+                    }elseif($vendor->slot->isNotEmpty()){
+                        $vendor->opening_time = Carbon::parse($vendor->slot->first()->start_time)->format('g:i A');
+                        $vendor->closing_time = Carbon::parse($vendor->slot->first()->end_time)->format('g:i A');
+                    }
+                }
+            }
+
+            $slotsDate = 0;
+            if($vendor->is_vendor_closed){
+                $slotsDate = findSlot('',$vendor->id,'');
+                $vendor->delaySlot = $slotsDate;
+                $vendor->closed_store_order_scheduled = (($slotsDate)?$vendor->closed_store_order_scheduled:0);
+            }else{
+                $vendor->delaySlot = 0;
+                $vendor->closed_store_order_scheduled = 0;
+            }
+
+            if($vendor->closed_store_order_scheduled == 1 && $vendor->is_vendor_closed == 1)
+            {
+                $vendor->scheduled_time = findSlot('',$vid);
+            }
+
+            $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
+            $vendor->is_show_products_with_category = ($vendor->vendor_templete_id == 5) ? 1 : 0;
+            $categoriesList = '';
+
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
+            }
+
+            $code = $request->header('code');
+            $client = Client::where('code',$code)->first();
+            $vendor->share_link = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/vendor/".$vendor->slug;
+            $variantSets =  ProductVariantSet::with(['options' => function($zx) use($langId){
+                                $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
+                                $zx->select('variant_options.*', 'vt.title');
+                                $zx->where('vt.language_id', $langId);
+                            }])->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id')
+                            ->join('variant_translations as vt','vt.variant_id','vr.id')
+                            ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
+                            ->where('vt.language_id', $langId)
+                            ->whereIn('product_id', function($qry) use($vid){
+                            $qry->select('id')->from('products')
+                                ->where('vendor_id', $vid);
+                            })
+                        ->groupBy('product_variant_sets.variant_type_id')->get();
+                    // ->join('product_categories as pc', 'pc.product_id', 'products.id')
+                    // ->whereNotIn('pc.category_id', function($qr) use($vid){
+                    //             $qr->select('category_id')->from('vendor_categories')
+                    //                 ->where('vendor_id', $vid)->where('status', 0);
+                    // })
+
+                    $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
+
+            if($vendor->vendor_templete_id == 5){
+                $vendor_categories = VendorCategory::where('vendor_id', $vid)->with(['category.translation' => function($q) use($langId){
+                    $q->where('category_translations.language_id', $langId);
+                }])->whereHas('category.products')->with(['category.products' => function ($q)use($langId,$userid, $multipli){
+                        $q->where('is_live', 1)->with([
+                            'category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                            ->where('category_translations.language_id', $langId);
+                        }, 
+                        'inwishlist' => function($qry) use($userid){
+                            $qry->where('user_id', $userid);
+                        },
+                        'media.image',
+                        'addOn' => function ($q1) use ($langId) {
+                            $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                            $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                            $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                            $q1->where('set.status', 1)->where('ast.language_id', $langId);
+                        },
+                        'addOn.setoptions' => function ($q2) use ($langId) {
+                            $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                            $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                            $q2->where('apt.language_id', $langId);
+                        },
+                        'translation' => function($q) use($langId){
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id')->where('language_id', $langId)->take(1);
+                        },
+                        'variant' => function($q) use($langId, $multipli){
+                            $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"),)->orderBy('quantity', 'desc');
+                            // $q->groupBy('product_id');
+                        },'variant.checkIfInCartApp', 'checkIfInCartApp',
+                         'tags.tag.translations' => function ($q) use ($langId) {
+                            $q->where('language_id', $langId);
+                        }
+                    ])->with(['variantSet' => function ($z) use ($langId) {
+                                        $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                                        $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+                                        $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                                        $z->where('vt.language_id', $langId);
+                                        $z->orderBy('product_variant_sets.variant_type_id', 'asc');
+                                    },'variantSet.option2'=> function ($zx) use ($langId) {
+                                        $zx->where('vt.language_id', $langId);
+                                    }])->select('*',DB::raw("'$multipli' as variant_multiplier"));
+                    }])->where('status', 1)->get();
+               
+                $listData =  array_values($vendor_categories->toArray());
+            }
+            else{
+                $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
+                    $q->where('category_translations.language_id', $langId);
+                }])->where('vendor_id', $vendor->id)->where('status', 1)->get();
+
+                foreach($vendorCategories as $key => $category){
+                    if($category->category){
+                        $categoriesList = $categoriesList . ($category->category->translation->first()->name ?? '');
+                        if( $key !=  $vendorCategories->count()-1 ){
+                            $categoriesList = $categoriesList . ', ';
+                        }
+                    }
+                }
+                $products = Product::with(['category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
+                            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                            ->where('category_translations.language_id', $langId);
+                        }, 'inwishlist' => function($qry) use($userid){
+                            $qry->where('user_id', $userid);
+                        },
+                        'media.image',
+                        'addOn' => function($q1) use($langId){
+                            $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                            $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                            $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                            $q1->where('set.status', 1)->where('ast.language_id', $langId);
+                        },
+                        'addOn.setoptions' => function($q2) use($langId){
+                            $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                            $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                            $q2->where('apt.language_id', $langId);
+                        },
+                        'translation' => function($q) use($langId){
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                        },
+                        'variant' => function($q) use($langId){
+                            $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'barcode');
+                            // $q->groupBy('product_id');
+                        }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
+                        'tags.tag.translations' => function ($q) use ($langId) {
+                            $q->where('language_id', $langId);
+                        }
+                    ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 'products.batch_count')
+                    ->where('products.vendor_id', $vid)
+                    ->where('products.is_live', 1)->paginate($limit, $page);
+                if(!empty($products)){
+                    foreach ($products as $key => $product) {
+                        foreach ($product->addOn as $key => $value) {
+                            foreach ($value->setoptions as $k => $v) {
+                                if($v->price == 0){
+                                    $v->is_free = true;
+                                }else{
+                                    $v->is_free = false;
+                                }
+                                $v->multiplier = $clientCurrency->doller_compare;
+                            }
+                        }
+
+                        $p_id = $product->id;
+                        $variantData = $product->with(['variantSet' => function ($z) use ($langId, $p_id) {
+                            $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                            $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+                            $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                            $z->where('vt.language_id', $langId);
+                            $z->where('product_variant_sets.product_id', $p_id)->orderBy('product_variant_sets.variant_type_id', 'asc');
+                        },'variantSet.options'=> function($zx) use($langId, $p_id){
+                            $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
+                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
+                            ->where('pvs.product_id', $p_id)
+                            ->where('vt.language_id', $langId);
+                        }])->where('id', $p_id)->first();
+                        $product->variantSet = $variantData->variantSet;
+                        // $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+                        $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+                        $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
+                        $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html),ENT_QUOTES) : '';
+                        $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
+                        $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                        $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+                        $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
+                        $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
+                        foreach ($product->variant as $k => $v) {
+                            $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
+                        }
+                    }
+                }
+            }
+            $vendor->categoriesList = $categoriesList;
+            $response['vendor'] = $vendor;
+            $response['products'] = ($vendor->vendor_templete_id != 5) ? $products : [];
+            $response['categories'] = ($vendor->vendor_templete_id == 5) ? $listData : [];
+            $response['filterData'] = $variantSets;
+            return response()->json(['data' => $response]);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
+        }
+    }
+
 }

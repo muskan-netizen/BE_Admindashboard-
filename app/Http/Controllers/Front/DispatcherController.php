@@ -10,7 +10,7 @@ use Auth;
 use Session;
 use DB;
 use App\Http\Traits\ApiResponser;
-use App\Models\{Order, OrderProduct, OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate,ProductVariantSet};
+use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate,ProductVariantSet};
 
 class DispatcherController extends FrontController
 {
@@ -206,7 +206,8 @@ class DispatcherController extends FrontController
                             $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $language_id);
                         },
-                        'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus'
+                        'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus',
+                        'vendors.cancel_request'
                     ])
                     ->where(function ($q1) {
                         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
@@ -226,7 +227,9 @@ class DispatcherController extends FrontController
                             'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating',
                             'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
                                 $qry->where('language_id', $language_id);
-                            }, 'vendors.dineInTable.category'
+                            }, 
+                            'vendors.dineInTable.category',
+                            'vendors.cancel_request'
                         ]
                     )
                     ->where(function ($q1) {
@@ -451,6 +454,50 @@ class DispatcherController extends FrontController
             }
         }
 
+    }
+
+    /******************    ---- create order cancel request from dispatch (Need to dispatcher_status_option_id ) -----   ******************/
+    public function dispatchOrderCancelRequest(Request $request, $domain = '', $web_hook_code){
+        try{
+            DB::beginTransaction();
+            $checkiftokenExist = OrderVendor::with('cancel_request')->where('web_hook_code', $web_hook_code)->first();
+            
+            if($checkiftokenExist){
+                $user = Auth::user();
+                
+                if($checkiftokenExist->dispatcher_status_option_id == 6){
+                    return response()->json(['status' => 'Error', 'message' => __('Order has already been delivered')]);
+                }
+                if($checkiftokenExist->order_status_option_id == 3){
+                    return response()->json(['status' => 'Error', 'message' => __('Order has already been rejected by vendor')]);
+                }
+                if($checkiftokenExist->cancel_request && $checkiftokenExist->cancel_request->status == 0){
+                    return response()->json(['status' => 'Error', 'message' => __('Cancel request has already been submitted')]);
+                }
+                if($checkiftokenExist->cancel_request && $checkiftokenExist->cancel_request->status == 1){
+                    return response()->json(['status' => 'Error', 'message' => __('Cancel request has already been processed')]);
+                }
+                
+                $reject_reason = urldecode($request->reject_reason);
+
+                $order_cancel_request = new OrderCancelRequest();
+                $order_cancel_request->order_id = $checkiftokenExist->order_id;
+                $order_cancel_request->order_vendor_id = $checkiftokenExist->id;
+                $order_cancel_request->vendor_id = $checkiftokenExist->vendor_id;
+                $order_cancel_request->reject_reason = $reject_reason;
+                $order_cancel_request->status = 0;
+                $order_cancel_request->save();
+                DB::commit();
+                return $this->successResponse('', __('Request for order cancellation has been submitted'));
+            }
+            else{
+                DB::rollback();
+                return response()->json(['status' => 'Error', 'message' => __('Invalid Order Token')]);
+            }
+        }
+        catch(\Exception $ex){
+            return $this->errorResponse($ex->getMessage(), $ex->getCode());
+        }
     }
 
 }

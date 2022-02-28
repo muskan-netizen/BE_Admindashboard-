@@ -162,3 +162,11 @@ header#al_new_design.site-header.fixed-bar{box-shadow:0 0 8px rgb(0 0 0 / 30%)}h
 .al_count_tabs_new_design li a.nav-link img{width: 100%;}
 
 }
+    .al_z_index{display:none}.al_mobile_menu{display:block}.al_mobile_menu .navbar-collapse{background-color:#fff;width:100%;max-width:200px;height:100vh;right:-200px;top:0;-webkit-transition:.5s;transition:.5s;box-shadow:0 0 7px rgba(0 0 0 / 30%);z-index:0}.al_mobile_menu .navbar-collapse.show{right:0}.al_new_wrapper_design .al_mobile_menu .onhover-dropdown{padding-left:30px;padding-right:30px;display:block}.al_new_wrapper_design .al_mobile_menu .onhover-dropdown:before{right:30px}.al_mobile_menu .navbar-toggler{z-index:9;position:relative}
+}
+
+.home-slider-wrapper .banner-img-outer img {
+    max-height: 300px;
+    object-fit: cover;
+    max-width: 1370px;
+    }

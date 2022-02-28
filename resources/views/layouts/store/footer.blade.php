@@ -47,6 +47,8 @@
     var add_to_whishlist_url = "{{ route('addWishlist') }}";
     var show_cart_url = "{{ route('showCart') }}";
     var home_page_data_url = "{{ route('homePageData') }}";
+    var home_page_data_url_new = "{{ route('homePageDataNew') }}";
+    var postHomePageDataSingle = "{{ route('postHomePageDataSingle') }}";
     var home_page_data_url_category_menu = "{{ route('homePageDataCategoryMenu') }}";
     var client_preferences_url = "{{ route('getClientPreferences') }}";
     var check_isolate_single_vendor_url = "{{ route('checkIsolateSingleVendor') }}";

@@ -164,6 +164,7 @@ body .switchery>small {width: 20px;height: 20px;}
 .list-view .common-product-box {display: flex!important;align-items: center; margin-bottom: 15px;}
 .product-addon-modal .modal-content {border-radius: 15px;overflow: hidden;}
 ul#header_cart_main_ul li .buttons a.view-cart{font-size: 14px;}
+
 .home-slider-wrapper .banner-img-outer img {
     max-height: 300px;
     object-fit: cover;
@@ -195,3 +196,4 @@ display: none;
 width: 100%;
 }
 }
+    }
