@@ -53,7 +53,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="">{{ __('Price') }}</label>
-                            <input class="form-control" type="number" name="price" min="0" value="{{ $plan->price }}" required="required">
+                            <input class="form-control" type="number" name="price" min="0" value="{{ decimal_format($plan->price) }}" required="required">
                         </div>
                     </div>
                     <div class="col-md-6">

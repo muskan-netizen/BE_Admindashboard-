@@ -85,6 +85,7 @@ class LoyaltyController extends Controller{
             $order->created_date = dateTimeInUserTimeZone($order->created_at, $timezone);
             $order->loyalty_points_earned = $order->loyalty_points_earned ? $order->loyalty_points_earned : '0.00';
             $order->payment_option_title =  __($order->paymentOption->title);
+            $order->payable_amount = decimal_format($order->payable_amount,",");
         }
         return Datatables::of($orders)
             ->addIndexColumn()

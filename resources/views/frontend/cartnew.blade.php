@@ -63,7 +63,7 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h3 class="page-title text-uppercase">{{__('Cart')}}</h3>
+                <h3 class="page-title text-uppercase mt-4">{{__('Cart')}}</h3>
             </div>
             <div class="cart_response mt-3 mb-3 d-none">
                 <div class="alert p-0" role="alert"></div>

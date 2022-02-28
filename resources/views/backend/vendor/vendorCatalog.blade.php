@@ -299,7 +299,7 @@
                                                                 </td>
                                                                 <td> {{ $product->variant->first() ? $product->variant->first()->quantity : 0 }}
                                                                 </td>
-                                                                <td> {{ $product->variant->first() ? $product->variant->first()->price : 0 }}
+                                                                <td> {{ $product->variant->first() ? decimal_format($product->variant->first()->price) : 0 }}
                                                                 </td>
                                                             @endif
                                                             <td> {{ $product->is_live == 1 ? 'Published' : 'Draft' }}

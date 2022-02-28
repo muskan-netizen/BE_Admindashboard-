@@ -8,7 +8,7 @@
             <form id="addCategoryForm" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body" id="AddCategoryBox">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light addCategorySubmit">Submit</button>
@@ -30,7 +30,7 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body" id="editCategoryBox">
-                    
+
                 </div>
 
                 <div class="modal-footer">
@@ -81,13 +81,13 @@
                                         </span>
                                     </div>
                                 </div>
-                            </div>                            
+                            </div>
                             <div class="row rowYK">
                                 <div class="col-md-12">
                                     <h5>Variant Title</h5>
                                 </div>
                                 <div class="col-md-12" style="overflow-x: auto;">
-                                    <table class="table table-borderless mb-0" id="banner-datatable" >
+                                    <table class="table table-responsive al_table_responsive_data table-borderless" id="banner-datatable" >
                                         <tr>
                                             @foreach($languages as $langs)
                                                 <td>{{$langs->langName}}</td>
@@ -99,7 +99,7 @@
                                                 {!! Form::hidden('language_id[]', $langs->langId) !!}
                                                 {!! Form::text('title[]', null, ['class' => 'form-control']) !!}
                                             </td>
-                                            @endforeach 
+                                            @endforeach
                                         </tr>
                                     </table>
                                 </div>
@@ -110,7 +110,7 @@
                                     <h5>{{ __("Variant Options") }}</h5>
                                 </div>
                                 <div class="col-md-12" style="overflow-x: auto;">
-                                    <table class="table table-borderless mb-0" id="banner-datatable" >
+                                    <table class="table table-resposive al_table_responsive_data table-borderless" id="banner-datatable" >
                                         <tr>
                                             <td>{{ __("Color Code") }}</td>
                                             @foreach($languages as $langs)
@@ -125,14 +125,14 @@
                                             <td>
                                                 <input type="text" name="opt_color_{{$langs->langId}}" class="form-control">
                                             </td>
-                                            @endforeach 
+                                            @endforeach
                                         </tr>
                                     </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light addVariantSubmit">{{ __("Submit") }}</button>
@@ -152,7 +152,7 @@
             <form id="editVariantForm" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body" id="editVariantBox">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light editVariantSubmit">{{ __("Submit") }}</button>
@@ -173,7 +173,7 @@
             <form id="addBrandForm" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body" id="AddBrandBox">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light addBrandSubmit">{{ __("Submit") }}</button>
@@ -193,7 +193,7 @@
             <form id="editBrandForm" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body" id="editBrandBox">
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-info waves-effect waves-light editBrandSubmit">{{ __("Submit") }}</button>
