@@ -11,8 +11,6 @@
 
 @section('content')
 <!-- Start Content-->
-<div class="container-fluid">
-
     <div class="content dashboard-boxes">
 
         <!-- Start Content-->
@@ -256,8 +254,7 @@
         </div> <!-- container -->
 
     </div>
-
-</div> <!-- container -->
+ <!-- container -->
 
 <div id="add-subscription-plan" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addVendorSubscription_Label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">

@@ -227,7 +227,7 @@
 </script><!-- recent_orders_template end -->
 
 <!-- shimmer_effect start -->
-<section class="section-b-space p-t-0 pt-4 ratio_asos">
+<section class="section-b-space_  p-0 ratio_asos">
 	<div class="container mb-5 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">
@@ -351,7 +351,7 @@
 
 	</div>
 
-	
+
 	</div>
 </section>
 <!-- shimmer_effect end -->
