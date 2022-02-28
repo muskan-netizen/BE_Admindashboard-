@@ -10,19 +10,11 @@
 			<div class="carousel-inner">
 				@foreach($banners as $key => $banner)
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
-					@if($key == 0)
-					<div class="carousel-item active">
-					<a class="banner-img-outer" href="{{$url??'#'}}">
-						<img alt="" title="" class="blur-up lazyload w-100" src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
-					</a>
+					<div class="carousel-item {{$key == 0 ? 'active' : ''}}">
+						<a class="banner-img-outer" href="{{$url??'#'}}">
+							<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+						</a>
 					</div>
-					@else
-					<div class="carousel-item ">
-					<a class="banner-img-outer" href="{{$url??'#'}}">
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
-					</a>
-					</div>
-					@endif
 				@endforeach
 
 			</div>
@@ -227,7 +219,7 @@
 </script><!-- recent_orders_template end -->
 
 <!-- shimmer_effect start -->
-<section class="section-b-space_  p-0 ratio_asos">
+<section class="section-b-space p-0 ratio_asos">
 	<div class="container mb-5 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">
@@ -452,10 +444,4 @@
 @section('script')
 <script src="{{asset('front-assets/js/jquery.exitintent.js')}}"></script>
 <script src="{{asset('front-assets/js/fly-cart.js')}}"></script>
-<script type="text/javascript">
-	$(document).ready(function() {
-	  $('.al_offset-top').css({'margin-top': $('.site-header').innerHeight()});
-	  $('.al_offset-top-home').css({'margin-top': $('.site-header').innerHeight()});
-	});
-</script>
 @endsection
