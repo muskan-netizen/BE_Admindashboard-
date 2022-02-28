@@ -385,24 +385,52 @@ class UserController extends BaseController
         $user = $user->update($userdata);
         return redirect()->back()->with('success', 'Client Updated successfully!');
     }
+    // public function changePassword(Request $request)
+    // {        
+    //     $client = User::where('id', Auth::id())->first();
+    //     $validator = Validator::make($request->all(), [
+    //         'old_password' => 'required',
+    //         'password' => 'required|confirmed|min:6',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return redirect()->back()->withErrors($validator);
+    //     }
+    //     if (Hash::check($request->old_password, $client->password)) {
+    //         $client->password = Hash::make($request->password);
+    //         $client->save();
+    //         $clientData = 'empty';
+    //         return redirect()->back()->with('success', 'Password Changed successfully!');
+    //     } else {
+    //         $request->session()->flash('error', 'Wrong Old Password');
+    //         return redirect()->back();
+    //     }
+    // }
+
     public function changePassword(Request $request)
-    {
+    {        
         $client = User::where('id', Auth::id())->first();
         $validator = Validator::make($request->all(), [
             'old_password' => 'required',
             'password' => 'required|confirmed|min:6',
         ]);
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator);
+           $message = $validator->getMessageBag()->toArray();
+           $data = array('type'=>'error','message'=>$message['password'][0]);
+           return json_encode($data);
         }
         if (Hash::check($request->old_password, $client->password)) {
             $client->password = Hash::make($request->password);
             $client->save();
             $clientData = 'empty';
-            return redirect()->back()->with('success', 'Password Changed successfully!');
+            //return redirect()->back()->with('success', 'Password Changed successfully!');
+            $data = array('type'=>'success','message'=>'Password Changed successfully!');
+            return json_encode($data);   
         } else {
-            $request->session()->flash('error', 'Wrong Old Password');
-            return redirect()->back();
+            $data = array('type'=>'error','message'=>'Wrong Old Password');
+            return json_encode($data);   
+           
+            // $request->session()->flash('error', 'Wrong Old Password');
+            // return redirect()->back();
         }
     }
 
