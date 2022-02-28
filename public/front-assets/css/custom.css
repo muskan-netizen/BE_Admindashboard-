@@ -164,10 +164,15 @@ body .switchery>small {width: 20px;height: 20px;}
 .list-view .common-product-box {display: flex!important;align-items: center; margin-bottom: 15px;}
 .product-addon-modal .modal-content {border-radius: 15px;overflow: hidden;}
 ul#header_cart_main_ul li .buttons a.view-cart{font-size: 14px;}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 87f5b7c558188be1b70c6a4efa10811790a40f59
 .home-slider-wrapper .banner-img-outer img {
     max-height: 300px;
     object-fit: cover;
     max-width: 1370px;
+<<<<<<< HEAD
 }
 .suppliers-box:hover .timing-box_al li img{transform: scale(1);}
 .timing-box_al{display:flex;justify-content:space-between}
@@ -195,3 +200,6 @@ display: none;
 width: 100%;
 }
 }
+=======
+    }
+>>>>>>> 87f5b7c558188be1b70c6a4efa10811790a40f59
