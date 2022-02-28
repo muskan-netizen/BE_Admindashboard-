@@ -148,8 +148,8 @@ $preference = $client_preference_detail;
     </nav>
 
     <nav class="al_new_mobile_header d-block d-sm-none">
-        <div class="al_new_mobile_header_top d-flex justify-content-between">
-            <a class="navbar-brand mr-xl-3 mr-0" style="min-width:150px;" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
+        <div class="al_new_mobile_header_top d-flex justify-content-between align-items-center">
+            <a class="navbar-brand mr-xl-3 mr-0 ml-0" style="min-width:150px;" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
             <div class="al_mobile_menu">
                 <a class="al_toggle-menu" href="#">
                     <i></i>
@@ -158,39 +158,75 @@ $preference = $client_preference_detail;
                 </a>
                 <div class="al_menu-drawer" id="navbarsfoodTemplate">
                     <ul class="header-dropdown ml-auto">
-                        @if($client_preference_detail->header_quick_link == 1)
-                        <li class="onhover-dropdown quick-links quick-links">
-
-                            <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
-                            </a>
+                        <li class="onhover-dropdown_al mobile-account_al">
                             <ul class="onhover-show-div">
-                                @foreach($pages as $page)
-                                @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
-                                @if(isset($last_mile_common_set) && $last_mile_common_set != false)
-                                <li>
-                                    <a href="{{route('extrapage',['slug' => $page->slug])}}">
-                                        @if(isset($page->translations) && $page->translations->first()->title != null)
-                                        {{ $page->translations->first()->title ?? ''}}
-                                        @else
-                                        {{ $page->primary->title ?? ''}}
-                                        @endif
-                                    </a>
-                                </li>
-                                @endif
+                                @if(Auth::user())
+                                    @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
+                                    <li>
+                                        <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
+                                    </li>
+                                    @endif
+                                    <li>
+                                        <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
+                                    </li>
+                                    <li>
+                                        <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
+                                    </li>
                                 @else
                                 <li>
-                                    <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
-                                        @if(isset($page->translations) && $page->translations->first()->title != null)
-                                        {{ $page->translations->first()->title ?? ''}}
-                                        @else
-                                        {{ $page->primary->title ?? ''}}
-                                        @endif
-                                    </a>
+                                    <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
+                                </li>
+                                <li>
+                                    <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
                                 </li>
                                 @endif
-                                @endforeach
                             </ul>
                         </li>
+                        @if($client_preference_detail->show_wishlist == 1)
+                        <li class="onhover-dropdown_al mobile-wishlist_al">
+                            <a href="{{route('user.wishlists')}}">
+                                Wishlists
+                            </a>
+                        </li>
+                        @endif
+
+                        @if($client_preference_detail->cart_enable == 1)
+                        <li class="onhover-dropdown_al onhover-div mobile-cart">
+                            <a href="{{route('showCart')}}" style="position: relative">
+                                Viewcart
+                                <span class="cart_qty_cls" style="display:none"></span>
+                            </a>
+                            <ul class="show-div shopping-cart"></ul>
+                        </li>
+                        @endif
+
+                        @if($client_preference_detail->header_quick_link == 1)
+                        @foreach($pages as $page)
+                        @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
+                        @if(isset($last_mile_common_set) && $last_mile_common_set != false)
+                        <li class="onhover-dropdown_al">
+                            <a href="{{route('extrapage',['slug' => $page->slug])}}">
+                                @if(isset($page->translations) && $page->translations->first()->title != null)
+                                {{ $page->translations->first()->title ?? ''}}
+                                @else
+                                {{ $page->primary->title ?? ''}}
+                                @endif
+                            </a>
+                        </li>
+                        @endif
+                        @else
+                        <li class="onhover-dropdown_al">
+                            <a href="{{route('extrapage',['slug' => $page->slug])}}" target="_blank">
+                                @if(isset($page->translations) && $page->translations->first()->title != null)
+                                {{ $page->translations->first()->title ?? ''}}
+                                @else
+                                {{ $page->primary->title ?? ''}}
+                                @endif
+                            </a>
+                        </li>
+                        @endif
+                        @endforeach
+
                         @endif
                         <li class="onhover-dropdown change-language">
                             <a href="javascript:void(0)">{{$applocale}}
@@ -221,49 +257,6 @@ $preference = $client_preference_detail;
                                 @endforeach
                             </ul>
                         </li>
-
-                        <li class="onhover-dropdown mobile-account_al"> <i class="fa fa-user" aria-hidden="true"></i>
-                            {{__('My Account')}}
-                            <ul class="onhover-show-div">
-                                @if(Auth::user())
-                                    @if(Auth::user()->is_superadmin == 1 || Auth::user()->is_admin == 1)
-                                        <li>
-                                            <a href="{{route('client.dashboard')}}" data-lng="en">{{__('Control Panel')}}</a>
-                                        </li>
-                                    @endif
-                                    <li>
-                                        <a href="{{route('user.profile')}}" data-lng="en">{{__('Profile')}}</a>
-                                    </li>
-                                    <li>
-                                        <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
-                                    </li>
-                                @else
-                                <li>
-                                    <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
-                                </li>
-                                <li>
-                                    <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
-                                </li>
-                                @endif
-                            </ul>
-                        </li>
-                        @if($client_preference_detail->show_wishlist == 1)
-                        <li class="onhover-dropdown mobile-wishlist_al">
-                            <a href="{{route('user.wishlists')}}">
-                                <span class="fa fa-heart" aria-hidden="true"></span>
-                                Wishlists
-                            </a>
-                        </li>
-                        @endif
-                        @if($client_preference_detail->cart_enable == 1)
-                        <li class="onhover-dropdown onhover-div mobile-cart">
-                            <a href="{{route('showCart')}}" style="position: relative">
-                                <span class="ti-shopping-cart"></span> Viewcart
-                                <span class="cart_qty_cls" style="display:none"></span>
-                            </a>
-                            <ul class="show-div shopping-cart"></ul>
-                        </li>
-                        @endif
                     </ul>
                 </div>
             </div>
