@@ -226,10 +226,6 @@
 <script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
-@if (Auth::check())
-@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
-<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
-<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
 <script>
         $(function() {
             $(".al_toggle-menu").click(function() {
@@ -238,6 +234,10 @@
             });
         });
     </script>
+@if (Auth::check())
+@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
+<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
 <script>
 
     // var tag = document.createElement('script');
