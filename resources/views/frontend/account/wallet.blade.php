@@ -106,7 +106,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                                 <div class="row align-items-center">
                                     <div class="col-md-6 text-md-left text-center mb-md-0 mb-4">
                                         <h5 class="text-17 mb-2 mt-0">{{__('Available Balance')}}</h5>
-                                        <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">@money(Auth::user()->balanceFloat * $clientCurrency->doller_compare)</span></div>
+                                        <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">{{decimal_format(Auth::user()->balanceFloat * $clientCurrency->doller_compare)}}</span></div>
                                     </div>
                                     <div class="col-md-6 text-md-right text-center">
                                         <button type="button" class="btn btn-solid" id="topup_wallet_btn" data-toggle="modal" data-target="#topup_wallet">{{__('Topup Wallet')}}</button>
@@ -134,7 +134,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                                     <tr>
                                         <td> {{dateTimeInUserTimeZone($ut->created_at, $timezone)}}</td>
                                         <td  class="name_">{!!$reason[0]!!}</td>
-                                        <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}@money(sprintf("%.2f",$amount))</b></td>
+                                        <td class="text-right {{ ($ut->type == 'deposit') ? 'text-success' : (($ut->type == 'withdraw') ? 'text-danger' : '') }}"><b>{{Session::get('currencySymbol')}}{{decimal_format($amount)}}</b></td>
                                     </tr>
                                     @empty
                                     <tr><td align="center" colspan="4">{{__('No Transaction history exists')}}</td></tr>
@@ -202,7 +202,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
         @method('POST')
         <div class="modal-body pb-0">
             <div class="form-group">
-                <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">@money(Auth::user()->balanceFloat * $clientCurrency->doller_compare)</span></div>
+                <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">{{decimal_format(Auth::user()->balanceFloat * $clientCurrency->doller_compare)}}</span></div>
             </div>
             <div class="form-group">
                 <h5 class="text-17 mb-2">{{__('Topup Wallet')}}</h5>
@@ -256,7 +256,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * $clientCurre
                 <h5 class="text-17 mb-2">{{__('Available Balance')}}</h5>
               </div>
               <div class="form-group">
-                  <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">@money($user_wallet_balance)</span></div>
+                  <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">{{decimal_format($user_wallet_balance)}}</span></div>
               </div>
 
               @if($user_wallet_balance <= 0)
