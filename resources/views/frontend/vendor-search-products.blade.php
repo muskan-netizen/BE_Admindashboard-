@@ -224,10 +224,10 @@
                         @endif
 
                         <p class="mb-1 product_price">
-                            {{ Session::get('currencySymbol') . number_format($prod->variant_price * $prod->variant_multiplier, 2, '.', '') }}
+                            {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier) }}
                             @if ($prod->variant[0]->compare_at_price > 0)
                                 <span
-                                    class="org_price ml-1 font-14">{{ Session::get('currencySymbol') . number_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier, 2, '.', '') }}</span>
+                                    class="org_price ml-1 font-14">{{ Session::get('currencySymbol') . decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
                             @endif
                         </p>
                         <div class="member_no d-block mb-0">

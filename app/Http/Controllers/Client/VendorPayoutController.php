@@ -214,7 +214,7 @@ class VendorPayoutController extends BaseController{
         $client_currency = ClientCurrency::with('currency')->where('is_primary', 1)->first();
         $currency_symbol = $client_currency->currency->symbol ?? '$';
 
-        return view('backend.payment.vendorPayoutRequests')->with(['total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions), 'pending_payout_value'=>$pending_payout_value, 'completed_payout_value'=>$completed_payout_value, 'pending_payout_count'=>$pending_payout_count, 'completed_payout_count'=>$completed_payout_count, 'payout_options'=>$payout_options, 'currency_symbol'=>$currency_symbol]);
+        return view('backend.payment.vendorPayoutRequests')->with(['total_order_value' => decimal_format($total_order_value), 'total_admin_commissions' => decimal_format($total_admin_commissions), 'pending_payout_value'=>decimal_format($pending_payout_value), 'completed_payout_value'=>decimal_format($completed_payout_value), 'pending_payout_count'=>$pending_payout_count, 'completed_payout_count'=>$completed_payout_count, 'payout_options'=>$payout_options, 'currency_symbol'=>$currency_symbol]);
     }
 
     public function vendorPayoutRequestsFilter(Request $request){
@@ -238,7 +238,7 @@ class VendorPayoutController extends BaseController{
             $payout->date = dateTimeInUserTimeZone($payout->created_at, $user->timezone);
             $payout->vendorName = $payout->vendor->name;
             $payout->requestedBy = ucfirst($payout->user->name);
-            $payout->amount = $payout->amount;
+            $payout->amount = decimal_format($payout->amount);
             $payout->type = $payout->payoutOption->title;
         }
         return Datatables::of($vendor_payouts)

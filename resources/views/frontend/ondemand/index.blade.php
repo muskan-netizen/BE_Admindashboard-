@@ -85,7 +85,7 @@
                                                                     <p class="mb-1">{!! (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku !!}</p>
                                                                     <div class="d-flex align-items-center justify-content-between">
                                                                         <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
-                                                                            {{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}
+                                                                            {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
                                                                         @endif</h5>
 
 
@@ -194,7 +194,7 @@
                                                     <div class="col-12">
                                                         <div class="d-flex align-items-center justify-content-between">
                                                                 <h5 class="my-sm-0 my-3">@if($data->inquiry_only == 0)
-                                                                    {{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}
+                                                                    {{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}
                                                                 @endif</h5>
 
                                                                 @if(isset($data->variant[0]->checkIfInCart) && count($data->variant[0]->checkIfInCart) > 0)
