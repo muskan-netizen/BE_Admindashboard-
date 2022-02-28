@@ -57,9 +57,6 @@ article#page-container {position: relative;min-height: 100vh;overflow-x: hidden;
 article#page-container  section .vendors  section{padding: 20px 0 !important;margin-bottom: 0 !important;}
 article#content-wrap {padding-bottom:278px;}
 footer#footer {position: absolute;bottom: 0;width: 100%;height: 278px;}
-@media (max-width: 767px) {
-
-}
  /* Footer height */
 article#page-container .offset-top,
 article#page-container .offset-top.inner-pages-offset{margin: 0;}
