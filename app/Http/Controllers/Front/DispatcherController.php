@@ -206,7 +206,8 @@ class DispatcherController extends FrontController
                             $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $language_id);
                         },
-                        'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus'
+                        'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus',
+                        'vendors.cancel_request'
                     ])
                     ->where(function ($q1) {
                         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
@@ -226,7 +227,9 @@ class DispatcherController extends FrontController
                             'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating',
                             'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
                                 $qry->where('language_id', $language_id);
-                            }, 'vendors.dineInTable.category'
+                            }, 
+                            'vendors.dineInTable.category',
+                            'vendors.cancel_request'
                         ]
                     )
                     ->where(function ($q1) {
