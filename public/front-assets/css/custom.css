@@ -218,6 +218,7 @@ display: none;
 .al_template_two .homepage-address {
 width: 100%;
 }
+}
 @media(max-width:767px){
 footer#footer {position: relative;height: auto;}
 article#content-wrap {padding-bottom:20px;}
