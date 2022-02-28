@@ -249,10 +249,9 @@ window.initializeSlider = function initializeSlider() {
         slidesToShow: 4,
         slidesToScroll: 3,
         responsive: [
-            {breakpoint: 1367,settings: {slidesToShow: 4,slidesToScroll: 2,infinite: true}},
-            {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 1}},
-            {breakpoint: 767,settings: {slidesToShow: 2,slidesToScroll: 1}},
-            {breakpoint: 360,settings: {slidesToShow: 1,slidesToScroll: 1}}
+            {breakpoint: 1367,settings: {slidesToScroll: 2,infinite: true}},
+            {breakpoint: 991,settings: {slidesToScroll: 2}},
+            {breakpoint: 767,settings: {slidesToScroll: 1}}
         ]
     });
     $('.suppliers-slider').slick({
@@ -267,8 +266,7 @@ window.initializeSlider = function initializeSlider() {
         responsive: [
             {breakpoint: 1199,settings: {slidesToShow: 4,slidesToScroll: 3,infinite: true,dots: false,centerMode: false,}},
             {breakpoint: 991,settings: {slidesToShow: 3,slidesToScroll: 3,dots: false,centerMode: true,}},
-            {breakpoint: 767,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}},
-            {breakpoint: 576,settings: {slidesToShow: 1,slidesToScroll: 1,dots: false,centerMode: true,}}
+            {breakpoint: 767,settings: {slidesToShow: 2,slidesToScroll: 1,dots: false,centerMode: true,}}
         ]
     });
     $('.al_t2_suppliers-slider').slick({
@@ -353,8 +351,8 @@ window.initializeSlider = function initializeSlider() {
 
 
 window.initializeSliderNew = function initializeSliderNew() {
-    
-    
+
+
 
     $(".product-4-featured_products").slick({
         dots: false,

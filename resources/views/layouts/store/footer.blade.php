@@ -231,6 +231,7 @@
             $(".al_toggle-menu").click(function() {
                 $(this).toggleClass("active");
                 $('.al_menu-drawer').toggleClass("open");
+                $('#page-container').toggleClass("al_fixed");
             });
         });
     </script>
