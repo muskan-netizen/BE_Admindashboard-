@@ -248,7 +248,7 @@ class ProductsImport implements ToCollection{
                                     ->where('cl.is_active', 1)
                                     ->where('tag_translations.name', 'LIKE', $tagtitle);
                                 })->first();
-                              
+
 
                                 if(!$vendorTagtitle){
                                     $error[] = "Row " . $i . " : Tags doesn't exist";
@@ -359,8 +359,8 @@ class ProductsImport implements ToCollection{
                                         ->where('cl.is_active', 1)
                                         ->where('tag_translations.name', 'LIKE', $tagtitle);
                                     })->first();
-    
-    
+
+
                                     if($vendorTagtitle){
                                         $tagSetArray= [
                                                         'product_id' => $product,
@@ -370,7 +370,7 @@ class ProductsImport implements ToCollection{
                                     }
                                 }
                             }
-                           
+
 
 
                             $client_lang = ClientLanguage::where('is_primary', 1)->first();
@@ -483,7 +483,7 @@ class ProductsImport implements ToCollection{
                         else{
                             $product_id = Product::where('sku', $da[0])->first();
                             $delete = ProductAddon::where('product_id', $product_id->id)->delete();
-                            $delete = ProductTag::where('product_id', $product)->delete();
+                            $delete = ProductTag::where('product_id', $product_id->id)->delete();
                             foreach (explode(',', $da[23]) as $titleKey => $Addontitle) {
                                 $vendorAddonSetExists =AddonSet::where('title', "LIKE", $Addontitle)->first();
                                 if($vendorAddonSetExists){
@@ -503,11 +503,11 @@ class ProductsImport implements ToCollection{
                                          ->where('cl.is_active', 1)
                                          ->where('tag_translations.name', 'LIKE', $tagtitle);
                                      })->first();
-     
-     
+
+
                                      if($vendorTagtitle){
                                          $tagSetArray= [
-                                                         'product_id' => $product,
+                                                         'product_id' => $product_id->id,
                                                          'tag_id' => $vendorTagtitle->id
                                                      ];
                                          ProductTag::insert($tagSetArray);
