@@ -190,9 +190,6 @@ function dateTimeInUserTimeZone24($date, $timezone, $showDate=true, $showTime=tr
     return $date->isoFormat($format);
     }
 
-function helper_number_formet($number){
-    return number_format($number,2);
-}
 function productvariantQuantity($variantId ,$type=1){
     if($type==1){
         $ProductVariant =  ProductVariant::where('id',$variantId)
@@ -696,4 +693,13 @@ function getDollarCompareAmount($amount, $customerCurrency='')
     $amount = ($amount / $divider) * $primaryCurrency->doller_compare;
     $amount = number_format($amount, 2,'.','');
     return $amount;
+}
+
+// Number Format according to Client preferences
+function decimal_format($number,$format="")
+{
+    $preference = session()->get('preferences');
+    $digits = $preference['digit_after_decimal'];
+    return number_format($number,$digits,'.',$format);
+
 }

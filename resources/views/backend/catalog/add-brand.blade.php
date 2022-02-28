@@ -37,7 +37,7 @@
                 <h5>{{ __("Brand Title") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
-                <table class="table table-borderless mb-0" id="banner-datatable">
+                <table class="table table-borderless table-responsive al_table_responsive_data mb-0" id="banner-datatable">
                     <tr>
                         @foreach($languages as $langs)
                         <th>{{$langs->language->name}}</th>

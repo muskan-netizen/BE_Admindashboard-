@@ -26,7 +26,7 @@
                       
                     </div>
                     <div class="col-md-4 text-md-center order-1 mb-1 mb-md-0">
-                        <div class="items-price">{{Session::get('currencySymbol').(number_format($vendor_product->variant->first()->price  * $clientCurrency->doller_compare,2))}}</div>
+                        <div class="items-price">{{Session::get('currencySymbol').(decimal_format($vendor_product->variant->first()->price  * $clientCurrency->doller_compare))}}</div>
                         @php
                             $total_price = $total_price + $vendor_product->variant->first()->price;
                         @endphp
@@ -42,7 +42,7 @@
     
         <div class="row al_total_sum d-flex justify-content-between border-top pl-4 pr-4 py-3">
             <button class="btn btn-solid w-50 login_continue_btn" type="button">{{__('Add')}}</button>
-            <p>{{Session::get('currencySymbol').(number_format($total_price  * $clientCurrency->doller_compare,2))}}</p>
+            <p>{{Session::get('currencySymbol').(decimal_format($total_price  * $clientCurrency->doller_compare))}}</p>
         </div>
 </div>
 </div>

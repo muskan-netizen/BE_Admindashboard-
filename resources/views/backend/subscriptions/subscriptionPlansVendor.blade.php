@@ -11,8 +11,6 @@
 
 @section('content')
 <!-- Start Content-->
-<div class="container-fluid">
-
     <div class="content dashboard-boxes">
 
         <!-- Start Content-->
@@ -145,7 +143,7 @@
                                                             </td>
                                                             <td><a href="javascript:void(0)" class="editSubscriptionPlanBtn" data-id="{{$plan->slug}}">{{$plan->title}}</a></td>
                                                             <td>{{$plan->Description}}</td>
-                                                            <td>${{$plan->price}}</td>
+                                                            <td>${{decimal_format($plan->price)}}</td>
                                                             <td>{{__($plan->features)}}</td>
                                                             <td>{{__(ucfirst($plan->frequency))}}</td>
                                                             <td>
@@ -256,8 +254,7 @@
         </div> <!-- container -->
 
     </div>
-
-</div> <!-- container -->
+ <!-- container -->
 
 <div id="add-subscription-plan" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addVendorSubscription_Label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
