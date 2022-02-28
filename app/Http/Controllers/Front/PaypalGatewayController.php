@@ -53,7 +53,7 @@ class PaypalGatewayController extends FrontController
                 $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->order_number;
             }
             $response = $this->gateway->purchase([
-                'currency' => 'USD', //$this->currency,
+                'currency' => $this->currency, //'USD',
                 'amount' => $amount,
                 'cancelUrl' => url($request->cancelUrl),
                 'returnUrl' => url($request->returnUrl . $returnUrlParams),

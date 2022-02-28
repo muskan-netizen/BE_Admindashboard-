@@ -2,20 +2,23 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Client;
-use Config;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
-use App\Models\ClientPreference;
-use App\Models\OrderVendor;
-use App\Models\Vendor;
-use App\Models\UserDevice;
+use Illuminate\Support\Facades\DB;
+
 use App\Models\User;
-use App\Models\NotificationTemplate;
-use App\Models\AutoRejectOrderCron;
-use Log;
-use Carbon\Carbon;
 use App\Models\Order;
+use App\Models\Vendor;
+use App\Models\Client;
+use App\Models\OrderVendor;
+use App\Models\UserDevice;
+use App\Models\ClientPreference;
+use App\Models\VendorOrderStatus;
+use App\Models\AutoRejectOrderCron;
+use App\Models\NotificationTemplate;
+
+use Log;
+use Config;
+use Carbon\Carbon;
 
 class AutoRejectOrders extends Command
 {
@@ -80,6 +83,18 @@ class AutoRejectOrders extends Command
                     $orderVendorDetail = OrderVendor::on($database_name)->find($order_value->order_vendor_id);
                     $orderVendorDetail->order_status_option_id = 3;
                     $orderVendorDetail->save();
+                    $order_status_check = VendorOrderStatus::where('order_id',$orderVendorDetail->order_id)->where('vendor_id', $orderVendorDetail->vendor_id)->where('order_status_option_id', 3)->first();
+                   
+                    
+                    if(!$order_status_check){
+                        $vendor_order_status = new VendorOrderStatus();
+                        $vendor_order_status->order_id = $orderVendorDetail->order_id;
+                        $vendor_order_status->vendor_id = $orderVendorDetail->vendor_id;
+                        $vendor_order_status->order_vendor_id = $order_value->order_vendor_id;
+                        $vendor_order_status->order_status_option_id = 3;
+                        $vendor_order_status->save();
+                        Log::info($vendor_order_status->order_id);
+                    }
                     $orderDetail = Order::on($database_name)->find($orderVendorDetail->order_id);
                     AutoRejectOrderCron::where(['order_vendor_id' => $order_value->order_vendor_id, 'database_name' => $client->database_name])->delete();
                     if ($orderVendorDetail->payment_option_id != 1) {

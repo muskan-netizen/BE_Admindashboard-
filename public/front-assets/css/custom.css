@@ -210,7 +210,6 @@ body .top-header .header-dropdown li span:last-child {display: inline-block;}
 .cab-booking-header .top-header .header-dropdown li a, .cab-booking-header .top-header .header-dropdown li {font-size: 11px;}
 }
 
-
 @media(max-width:991px){
 .al_template_one .onhover-dropdown:before,
 .al_template_two .onhover-dropdown:before {

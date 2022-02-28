@@ -262,7 +262,7 @@
                                         </div>
                                     </div>
                                     <div class="displayProducts"> 
-                                        <div class="col-12 text-right">Sort By : 
+                                        <div class="col-12 text-right mt-2">Sort By : 
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="featured">Featured</option>
                                                 <option value="a_to_z">A to Z</option>

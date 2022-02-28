@@ -197,6 +197,7 @@ article#page-container .offset-top.inner-pages-offset{margin: 0;display: none;} 
 }
 
 @media(max-width: 991px){
+
 .al_count_tabs_new_design li.navigation-tab-item {margin-right: 10px;}
 .al_new_wrapper_design .inner-pages-offset {margin-top: 0;}
 .al_new_wrapper_design .al_mobile_menu .onhover-dropdown_al li {padding: 8px 0 0;}
@@ -242,5 +243,3 @@ width: 50px;
     border-radius: 20px;
 }
 }
-
-

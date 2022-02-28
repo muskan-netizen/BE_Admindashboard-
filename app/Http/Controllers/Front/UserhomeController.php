@@ -450,7 +450,7 @@ class UserhomeController extends FrontController
             ->pluck('vendor_id')->toArray();
 
         if (($latitude) && ($longitude)) {
-            
+
             Session::put('vendors', $vendor_ids);
         }
 
@@ -597,10 +597,10 @@ class UserhomeController extends FrontController
         $activeOrders = [];
 
         if (in_array('recent_ordersx', $enable_layout)) {     # if enable brands section in
-           
+
             $user = Auth::user();
 
-            if ($user) {    
+            if ($user) {
                     $activeOrders = Order::with([
                         'vendors' => function ($q) {
                             $q->where('order_status_option_id', '!=', 6);
@@ -659,8 +659,8 @@ class UserhomeController extends FrontController
             'active_orders' => $activeOrders
         ];
 
-       
-        
+
+
         return $this->successResponse($data);
     }
 
@@ -670,9 +670,7 @@ class UserhomeController extends FrontController
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
-            'vendor' => function ($q) use ($type) {
-                $q->where($type, 1);
-            },
+            'vendor',
             'media' => function ($q) {
                 $q->groupBy('product_id');
             }, 'media.image',
@@ -694,7 +692,10 @@ class UserhomeController extends FrontController
         if ($pndCategories) {
             $products = $products->whereNotIn('category_id', $pndCategories);
         }
-        $products = $products->where('is_live', 1)->take(10)->inRandomOrder()->get();
+        $products = $products->whereHas('vendor', function($q) use ($type){
+                    $q->where('status',1);
+                    $q->where($type, 1);
+                })->where('is_live', 1)->take(10)->inRandomOrder()->get();
         if (!empty($products)) {
             foreach ($products as $key => $value) {
                 foreach ($value->variant as $k => $v) {
@@ -703,6 +704,7 @@ class UserhomeController extends FrontController
             }
         }
         return $products;
+        //pr( $products->toArray());
     }
 
     public function changePrimaryData(Request $request)
@@ -869,14 +871,14 @@ class UserhomeController extends FrontController
     #post Home Page Data New
     public function postHomePageDataNew(Request $request)
     {
-       
+
         $enable_layout = CabBookingLayout::where('is_active',1)->orderBy('order_by','asc')->pluck('slug')->toArray();
-       
+
         $data = [
             'data' => $enable_layout
         ];
 
-       
+
         return $this->successResponse($data);
     }
 
@@ -884,7 +886,7 @@ class UserhomeController extends FrontController
 
     #post Home Page Data Single
     public function postHomePageDataSingle(Request $request)
-    {   
+    {
 
         $slug = $request->slug??null;
         $vendor_ids = [];
@@ -929,7 +931,7 @@ class UserhomeController extends FrontController
         if(isset($slug) && $slug == 'recent_orders')
         $recent_orders_title = CabBookingLayoutTranslation::where('language_id',$language_id)->whereHas('layout',function($q){$q->where('slug','recent_orders');})->value('title');
 
-     
+
          if(isset($slug) && $slug == 'brands'){     # if enable brands section in
             $brands = Brand::select('id', 'image', 'title')->with(['translation' => function ($q) use ($language_id) {
                 $q->where('language_id', $language_id);
@@ -961,7 +963,7 @@ class UserhomeController extends FrontController
                             Session::put('selectedAddress', $preferences->Default_location_name);
                         }
                     }
-                    
+
                 }
                 if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                     if (!empty($latitude) && !empty($longitude)) {
@@ -1016,7 +1018,7 @@ class UserhomeController extends FrontController
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 $vendors = $vendors->sortBy('lineOfSightDistance')->values()->all();
             }
-           
+
 
             if (($latitude) && ($longitude)) {
                 Session::put('vendors', $vendor_ids);
@@ -1024,8 +1026,8 @@ class UserhomeController extends FrontController
         }else{
             $vendors = [];
         }
-            
-        
+
+
 
         if (isset($slug) && $slug == 'trending_vendors') {
             $now = Carbon::now()->toDateTimeString();
@@ -1198,17 +1200,17 @@ class UserhomeController extends FrontController
         else
         $feature_product_detail = [];
 
-      
-        
-       
+
+
+
 
         $activeOrders = [];
 
         if (isset($slug) && $slug == 'recent_orders'){    # if enable recent_orders section in
-           
+
             $user = Auth::user();
 
-            if ($user) {    
+            if ($user) {
                     $activeOrders = Order::whereHas('vendors', function ($q) {
                         $q->where('order_status_option_id', '!=', 6);
                     })->with([
@@ -1217,11 +1219,11 @@ class UserhomeController extends FrontController
                         },
                         'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
                             $qry->where('language_id', $language_id);
-                        }, 'vendors.dineInTable.category', 
+                        }, 'vendors.dineInTable.category',
                         'address'
                     ])->where('orders.user_id', $user->id)
                         ->orderBy('orders.id', 'DESC')
-                        ->take(5)->get(); 
+                        ->take(5)->get();
                         foreach ($activeOrders as $order) {
                             foreach ($order->vendors as $vendor) {
                                 // dd($vendor->toArray());
@@ -1254,7 +1256,7 @@ class UserhomeController extends FrontController
                         }
             }
 
-          
+
         }else{
 
         }
@@ -1268,7 +1270,7 @@ class UserhomeController extends FrontController
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
             'active_orders' => $activeOrders
         ];
-       
+
         return $this->successResponse($data);
     }
 }

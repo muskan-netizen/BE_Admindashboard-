@@ -548,7 +548,7 @@ class CategoryController extends FrontController{
         }
         $listData = $products;
 
-        $returnHTML = view('frontend.ajax.productList')->with(['listData' => $listData])->render();
+        $returnHTML = view('frontend.ajax.productList')->with(['data'=>$request->all(),'listData' => $listData])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 

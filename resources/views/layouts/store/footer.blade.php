@@ -107,6 +107,7 @@
 // Client Detail
     var client_company_name = "{{getClientDetail()->company_name}}";
     var client_logo_url = "{{getClientDetail()->logo_image_url}}";
+    var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
 
 // is restricted
     var is_age_restricted ="{{$client_preference_detail->age_restriction}}";
@@ -157,7 +158,6 @@
 
     var NumberFormatHelper = { formatPrice: function(x,format=1){
         if(x){
-            var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
             if(digit_count)
             {
                 x = parseFloat(x).toFixed(digit_count);
