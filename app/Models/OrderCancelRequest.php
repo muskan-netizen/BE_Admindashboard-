@@ -13,4 +13,26 @@ class OrderCancelRequest extends Model
         return $this->belongsTo('App\Models\Order', 'order_id', 'id');
     }
 
+    public function order_vendor(){
+        return $this->belongsTo('App\Models\OrderVendor', 'order_vendor_id', 'id');
+    }
+
+    public function vendor(){
+        return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id');
+    }
+
+    public function updated_by_user(){
+        return $this->belongsTo('App\Models\User', 'updated_by', 'id');
+    }
+
+    public function getStatusAttribute($value){
+        if($value == 1){
+            return 'Approved';
+        }elseif($value == 2){
+            return 'Rejected';
+        }else{
+            return 'Pending';
+        }
+    }
+
 }
