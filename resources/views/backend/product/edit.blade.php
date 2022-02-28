@@ -220,11 +220,11 @@
                     <div class="row mb-2">
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}
-                            {!! Form::text('price', $product->variant[0]->price, ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            {!! Form::text('price', decimal_format($product->variant[0]->price), ['class'=>'form-control', 'id' => 'price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         <div class="col-4 mb-2">
                             {!! Form::label('title', __('Compare at price (Optional)'), ['class' => 'control-label']) !!}
-                            {!! Form::text('compare_at_price', $product->variant[0]->compare_at_price, ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            {!! Form::text('compare_at_price', decimal_format($product->variant[0]->compare_at_price), ['class'=>'form-control', 'id' => 'compare_at_price', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                       
                         @if($product->vendor->need_container_charges == 1)

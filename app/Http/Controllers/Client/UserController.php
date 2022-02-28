@@ -108,7 +108,7 @@ class UserController extends BaseController
                 }
             })
             ->addColumn('balanceFloat', function($users) {
-                return $users->balanceFloat;
+                return decimal_format($users->balanceFloat);
             })
             ->addColumn('edit_url', function($users) {
                 return route('customer.new.edit', $users->id);

@@ -406,7 +406,7 @@
         @method('POST')
         <div class="modal-body pb-0">
             <div class="form-group">
-                <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">@money(Auth::user()->balanceFloat * (isset($clientCurrency->doller_compare)?$clientCurrency->doller_compare:1))</span></div>
+                <div class="text-36">{{Session::get('currencySymbol')}}<span class="wallet_balance">{{decimal_format(Auth::user()->balanceFloat * (isset($clientCurrency->doller_compare)?$clientCurrency->doller_compare:1))}}</span></div>
             </div>
             <div class="form-group">
                 <h5 class="text-17 mb-2">{{__('Topup Wallet')}}</h5>

@@ -672,7 +672,7 @@ $(document).ready(function () {
                                 $(".recent-orders").slick('destroy');
                                 }
                                 let recent_orders_template = _.template($('#recent_orders_template').html());
-                                $(".render_recent_orders").append(recent_orders_template({ recent_orders: response.data.active_orders}));
+                                $(".render_recent_orders").append(recent_orders_template({ Helper: NumberFormatHelper, recent_orders: response.data.active_orders}));
                                 $(".recent-orders").slick({
                                     arrows: true,
                                     dots: false,

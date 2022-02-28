@@ -160,7 +160,7 @@
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
                                                                     <?php $multiply = $new['variant_multiplier']; ?>
-                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                    {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                 @endif
                                                             </b>
 
@@ -198,7 +198,7 @@
                                                         @if($new['inquiry_only'] == 0)
                                                             <h4 class="mt-1">
                                                                 <//?php $multiply = $new['variant_multiplier']; ?>
-                                                                {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                             </h4>
                                                         @endif
                                                     </a>
@@ -298,7 +298,7 @@
                                                                     <p>{{ $data->translation_description }}</p>
                                                                 @endif
                                                                 @if($data->inquiry_only == 0)
-                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                 @endif
                                                             </div>
                                                         </div>

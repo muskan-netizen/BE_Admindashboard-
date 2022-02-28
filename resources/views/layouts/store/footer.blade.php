@@ -155,9 +155,19 @@
         var defaultLocationName = "{{$client_preference_detail->Default_location_name}}";
     @endif
 
-    var NumberFormatHelper = { formatPrice: function(x){
+    var NumberFormatHelper = { formatPrice: function(x,format=1){
         if(x){
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
+            if(digit_count)
+            {
+                x = parseFloat(x).toFixed(digit_count);
+            }
+            if(format == 1)
+            {
+                var parts = x.split(".");
+                return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ((parts[1] !== undefined) ? "." + parts[1] : "");
+                // return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
         }
         return x;
         }
@@ -216,10 +226,6 @@
 <script type="text/javascript" src="{{asset('js/sweetalert2.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/pages/form-pickers.init.js')}}"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
-@if (Auth::check())
-@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
-<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
-<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
 <script>
         $(function() {
             $(".al_toggle-menu").click(function() {
@@ -228,6 +234,10 @@
             });
         });
     </script>
+@if (Auth::check())
+@if(Session::has('preferences') && !empty(Session::get('preferences')['fcm_api_key']))
+<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
 <script>
 
     // var tag = document.createElement('script');
