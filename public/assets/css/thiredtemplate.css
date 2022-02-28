@@ -2,6 +2,7 @@
 html,
 body{
     overflow-x: hidden;
+    scroll-behavior: smooth;
     font-family: 'Varela Round', sans-serif !important;background-color: #fff;
 }
 .al_new_wrapper_design{font-family: 'Varela Round', sans-serif !important;background-color: #fff;}
@@ -84,7 +85,7 @@ header#al_new_design.site-header.fixed-bar{box-shadow:0 0 8px rgb(0 0 0 / 30%)}h
 .dark .al_new_wrapper_design .collection-collapse-block{background-color:transparent}.dark .al_new_wrapper_design .al_vendor_product_page .offer-slider .common-product-box{background-color:transparent;border:none!important}.dark .al_new_wrapper_design .al_vendor_product_page a.common-product-box:hover{border:1px solid #e8e8e8}.dark .al_new_wrapper_design .product-bottom-bar{background-color:transparent}.dark #al_new_design .pixelstrap a,.dark #al_new_design .pixelstrap a:active,.dark #al_new_design .pixelstrap a:hover,.dark #al_new_design .pixelstrap li a{color:#2b2b2b}.dark .al_new_wrapper_design,.dark .top-header.site-topbar.al_custom_head,body.dark,html .dark,.dark .al_custom_head_map_box{background-color:#2b2b2b}.dark .al_new_wrapper_design .new-pages a.suppliers-box.d-block,.dark .al_new_wrapper_design .suppliers-box .suppliers-img-outer,.dark .product-card-box.position-relative.al{background-color:transparent;border:1px solid transparent!important}.dark .al_new_wrapper_design .new-pages a.suppliers-box.d-block:hover,.dark .product-card-box.position-relative.al:hover{border:1px solid!important;box-shadow:none}.dark .menu-navigation_al{background-color:#fff}.dark .al_custom_vendors_sec h6,.dark .al_new_wrapper_design .al_custom_brand .brand-box h6,.dark .al_new_wrapper_design .product-description h6.card_title,.dark .al_new_wrapper_design h2{color:#fff}.dark .al_new_wrapper_design .product-card-box.position-relative.al .common-product-box{border:none!important;display:block}.dark .al_new_wrapper_design .product-card-box.position-relative.al .common-product-box:hover{border:none!important}.dark .al_custom_head_map_box{border:1px solid #e5e8eb4f}body.dark a.fav-button{background-color:#fff}.dark .al_new_wrapper_design .radius-bar{border:1px solid #e5e8eb4f;background-color:transparent}.dark .al_new_wrapper_design .al_white_bg_round{background-color:transparent;border-right:0!important;box-shadow:none}.dark .al_new_wrapper_design h2.category-head{background-color:#2b2b2b}.dark .al_new_wrapper_design .card-box,.dark .al_new_wrapper_design .dashboard-left .block-content,.dark .al_new_wrapper_design .delivery_box,.dark .al_new_wrapper_design .footer-card,.dark .al_new_wrapper_design .outer-box{background:#2b2b2b}.dark .al_new_wrapper_design .common-product-box,.dark .al_new_wrapper_design .product-card-box{background-color:#2b2b2b;border:1px solid transparent!important}.dark .al_new_wrapper_design .common-product-box:hover,.dark .al_new_wrapper_design .product-card-box:hover{box-shadow:none;border:1px solid!important}.dark .al_new_wrapper_design .search_bar .icon-nav .btn.btn-solid:hover{background-color:#fff;color:#777!important}.dark .al_new_wrapper_design .top-header .header-dropdown .onhover-dropdown .onhover-show-div li{background-color:#232323}.dark .al_new_wrapper_design .new-pages a.suppliers-box.d-block .supplier-rating h6.mb-1.ellips{color:#fff}.dark .al_new_wrapper_design .tip_label{background-color:transparent}.dark .al_new_wrapper_design #placeorder_form .card-box{box-shadow:none}.dark .al_new_wrapper_design #cart_table .number .input-number{background-color:transparent;color:#fff}.dark .al_new_wrapper_design .search_bar .icon-nav .btn.btn-solid span#cart_qty_span{position:absolute;top:-10px;background-color:var(--theme-deafult);width:auto;border-radius:15px;height:30px;line-height:30px;color:#fff;padding:0 10px}body.dark .al_new_wrapper_design .product-box,body.dark .al_new_wrapper_design .suppliers-box{background-color:#2b2b2b;box-shadow:none}.dark .al_new_wrapper_design .product-timing small{color:#fff}.dark .al_new_wrapper_design #product_addon_modal input.addon-input-number{background-color:transparent;color:#fff}.dark .al_new_wrapper_design .search_bar .icon-nav .btn.btn-solid span#cart_qty_span:empty{display:none}.dark .al_new_wrapper_design .name_location{box-shadow:none}.dark .al_new_wrapper_design .name_location h4{color:#fff}.dark .al_new_wrapper_design .al_t2_suppliers-slider .product-card-box:hover{border:1px solid transparent!important}.dark .al_new_wrapper_design .al_vendor_product_page a.common-product-box{background-color:transparent}.dark .al_new_wrapper_design .al_vendor_product_page .offer-slider .common-product-box{border:1px solid transparent!important}.dark .al_new_wrapper_design .al_vendor_product_page .offer-slider .common-product-box:hover{border:1px solid #fff!important;box-shadow:none}
 .dark .al_new_wrapper_design .ratio_asos .top-banner-wrapper .top-banner-content h4 {color: #fff;}
 .al_new_wrapper_design .section-b-space {padding-top: 20px!important;}
-.dark .top-header .header-dropdown .onhover-dropdown .onhover-show-div li a {color: #fff;}
+.dark .top-header .header-dropdown .onhover-dropdown .onhover-show-div li a {color: #fff !important;}
 .home-slider-wrapper .banner-img-outer img {max-height: 300px;max-width: 1370px;object-fit: cover;}
 .dark .al_new_wrapper_design .sm-horizontal {background-color: #fff;}
 .dark .al_menu-drawer{background-color: #232323;}
@@ -92,7 +93,18 @@ header#al_new_design.site-header.fixed-bar{box-shadow:0 0 8px rgb(0 0 0 / 30%)}h
 .dark .al_new_wrapper_design,  body.dark, html .dark{overflow-x: hidden;}
 li.onhover-dropdown.quick-links.quick-links {min-width: 170px;}
 .dark  .al_count_tabs_new_design.al_tab_mobile{background-color: #232323;}
-
+.dark .vendor-signup h2,
+.dark  .vendor-signup .al_details_vendor, .dark  .vendor-signup .al_vendor_signup {
+    background-color: #232323;
+    border: 1px solid #232323;
+}
+.dark .dd-list .dd3-content {
+    background: #404040;
+}
+.dark  .vendor-signup .file>label,.dark   .file.upload-new>label{border: 1px solid #404040}
+body.dark .switchery {
+    background-color: #363636 !important;
+}
 /* mobile header */
 .al_new_mobile_header .location-bar.d-inline-flex.align-items-center.position-relative {
 border-right: none;
@@ -163,15 +175,19 @@ article#page-container .site-header {position: relative;}
 article#page-container header.site-header.fixed-bar{position: fixed;}
 article#page-container {position: relative;min-height: 100vh;overflow-x: hidden;}
 article#page-container  section .vendors  section{padding: 20px 0 !important;margin-bottom: 0 !important;}
-article#content-wrap {padding-bottom:278px;}
-footer#footer {position: absolute;bottom: 0;width: 100%;height: 278px;}
+article#content-wrap {padding-bottom:228px;}
+footer#footer {position: absolute;bottom: 0;width: 100%;height: 228px;}
  /* Footer height */
  article#page-container .al_offset-top-home,
 article#page-container .offset-top,
 article#page-container .offset-top.inner-pages-offset{margin: 0;display: none;}
-
 /* fixed footer all pages start */
 
+/* shimmer_effect start */
+/* Shimmer effect Start Form Here */
+.shimmer_effect .menu-slider span .loading{width:calc(100% - 20px);height:10px;display:block;margin:auto}.shimmer_effect{overflow:hidden}.grid-row.grid-4-4{display:grid;grid-template-columns:repeat(5,1fr);grid-gap:20px}.shimmer_effect .card_image{width:100%;height:100%}.shimmer_effect .card_image.loading{width:100%;height:100px;margin-bottom:10px}.shimmer_effect .card_title.loading{width:50%;height:10px;margin:10px 0;border-radius:3px;position:relative}.shimmer_effect .card_content.loading{width:80%;height:10px;margin:10px 0;border-radius:3px;position:relative}.shimmer_effect .card_description{padding:8px;font-size:16px}.shimmer_effect .card_description.loading{height:2rem;margin:10px 0;border-radius:3px}.shimmer_effect .loading{position:relative;background:#cccccc86;overflow:hidden}.shimmer_effect .loading:after{content:"";display:block;position:absolute;top:0;width:100%;height:100%;transform:translateX(-100px);background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);animation:loading .8s infinite}.shimmer_effect h2.h2-heading{width:260px;height:20px}.shimmer_effect .card_icon{width:30px;height:30px;-webkit-border-radius:50px;-moz-border-radius:50px;border-radius:50px}.shimmer_effect .card_price{width:50px;height:20px}.shimmer_effect .card_line{height:1px;width:100%;margin:10px 0}@keyframes loading{100%{transform:translateX(100%)}}.custom-checkbox .custom-control-input:checked~.custom-control-label::after{background-color:var(--theme-deafult)}
+
+/* shimmer_effect end */
 
 
 
