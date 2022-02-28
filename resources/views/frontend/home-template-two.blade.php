@@ -14,7 +14,7 @@
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item {{$key == 0 ? 'active' : ''}}">
 						<a class="banner-img-outer" href="{{$url??'#'}}">
-							<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
+							<img alt="" title="" class="blur-up lazyload w-100" src="{{$banner->image['proxy_url'] . '1370/300' . $banner->image['image_path']}}">
 						</a>
 					</div>
 				@endforeach
@@ -31,6 +31,7 @@
 		</div>
 	</div>
 </section>
+
  @endif
 <!-- shimmer_effect start -->
 <section class="section-b-space_  p-0 ratio_asos">
