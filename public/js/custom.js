@@ -2419,23 +2419,23 @@ $(document).ready(function() {
 
     });
 
-    function setTipAmount(tip, amount_payable, currency) {
+    function setTipAmount(tip, amount_payable, currency) { 
         if (tip != 'custom') {
             if ((tip == '') || (isNaN(tip))) {
                 tip = 0;
             }
             amount_payable = parseFloat(amount_payable) + parseFloat(tip);
-            $("#cart_tip_amount").val(parseFloat(tip).toFixed(2));
-            $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(2));
+            $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
+            $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
         } else {
-            $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable).toFixed(2));
+            $("#cart_total_payable_amount").text(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
             $("#cart_tip_amount").val(0);
             $(".custom_tip").removeClass("d-none");
             $("#custom_tip_amount").focus();
         }
-        $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(2));
+        $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
     }
     $(document).on('keyup', '#custom_tip_amount', function() {
         var tip = $(this).val();
@@ -2446,9 +2446,9 @@ $(document).ready(function() {
         var currency = amount_elem.attr('data-curr');
         var amount_payable = amount_elem.val();
         amount_payable = parseFloat(amount_payable) + parseFloat(tip);
-        $("#cart_tip_amount").val(parseFloat(tip).toFixed(2));
-        $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(2));
-        $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(2));
+        $("#cart_tip_amount").val(parseFloat(tip).toFixed(parseInt(digit_count)));
+        $("#cart_total_payable_amount").html(currency + parseFloat(amount_payable).toFixed(parseInt(digit_count)));
+        $("input[name='cart_total_payable_amount']").val(parseFloat(amount_payable).toFixed(parseInt(digit_count)));
     });
     $(document).on('click', '.qty-minus', function() {
         let base_price = $(this).data('base_price');
@@ -2918,7 +2918,7 @@ $(document).ready(function() {
             url: update_qty_url,
             data: { "quantity": quantity, "cartproduct_id": cartproduct_id },
             success: function(response) {
-                var latest_price = parseFloat(parseInt(base_price) * parseInt(quantity)).toFixed(2);
+                var latest_price = parseFloat(parseInt(base_price) * parseInt(quantity)).toFixed(parseInt(digit_count));
                 $('#product_total_amount_' + cartproduct_id).html('$' + latest_price);
                 if( $(iconElem).hasClass('remove-customize') && $(iconElem).hasClass('m-open') ){
                     $(iconElem).next().val(quantity);
@@ -2994,7 +2994,7 @@ $(document).ready(function() {
                 total_addon_price = parseFloat(total_addon_price) + parseFloat(addonPrice);
             }
         });
-        let addon_variant_price = (parseInt(addon_variant_qty) * (parseFloat(addonVariantPriceVal) + parseFloat(total_addon_price))).toFixed(2);
+        let addon_variant_price = (parseInt(addon_variant_qty) * (parseFloat(addonVariantPriceVal) + parseFloat(total_addon_price))).toFixed(parseInt(digit_count));
         $(".addon_variant_price").text(addon_variant_price);
     }
 
