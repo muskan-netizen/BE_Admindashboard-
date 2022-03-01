@@ -94,7 +94,7 @@ class AutoRejectOrders extends Command
                             "order_status_option_id" => 3,
                             "created_at" => Carbon::now(),
                             "updated_at" => Carbon::now(),
-                        ]
+                        ];
                         VendorOrderStatus::on($database_name)->insert($dataStatus);
                     }
                     $orderDetail = Order::on($database_name)->find($orderVendorDetail->order_id);
