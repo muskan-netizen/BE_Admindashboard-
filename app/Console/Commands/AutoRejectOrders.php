@@ -84,7 +84,7 @@ class AutoRejectOrders extends Command
                     $orderVendorDetail = OrderVendor::on($database_name)->find($order_value->order_vendor_id);
                     $orderVendorDetail->order_status_option_id = 3;
                     $orderVendorDetail->save();
-                    $order_status_check = VendorOrderStatus::where('order_id',$orderVendorDetail->order_id)->where('vendor_id', $orderVendorDetail->vendor_id)->where('order_status_option_id', 3)->first();
+                    $order_status_check = VendorOrderStatus::on($database_name)->where('order_id',$orderVendorDetail->order_id)->where('vendor_id', $orderVendorDetail->vendor_id)->where('order_status_option_id', 3)->first();
                     if(!$order_status_check){
                         $vendor_order_status = new VendorOrderStatus();
                         $vendor_order_status->order_id = $orderVendorDetail->order_id;
