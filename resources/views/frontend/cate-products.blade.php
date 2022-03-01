@@ -1,4 +1,4 @@
-@extends('layouts.store', [ 
+@extends('layouts.store', [
 'title' => (!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->name : $category->slug,
 'meta_title'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_title:'',
 'meta_keyword'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_keyword:'',
@@ -261,8 +261,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="displayProducts"> 
-                                        <div class="col-12 text-right mt-2">Sort By : 
+                                    <div class="displayProducts">
+                                        <div class="col-12 text-right mt-2">Sort By :
                                             <select name="order_type" id='order_type' class="sortingFilter p-1">
                                                 <option value="featured">Featured</option>
                                                 <option value="a_to_z">A to Z</option>
@@ -285,7 +285,7 @@
                                                     }
                                                     $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
                                                 }*/ ?>
-                                                <div class="col-xl-3 col-6 col-grid-box mt-3">
+                                                <div class="col-xl-3 col-md-4 col-grid-box mt-3">
                                                     <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" class="product-box scale-effect mt-0">
                                                         <div class="product-image p-0">
                                                             <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
