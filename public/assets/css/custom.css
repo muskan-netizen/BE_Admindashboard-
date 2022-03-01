@@ -68,6 +68,12 @@ body .dropify-wrapper .dropify-clear{top:auto;bottom:5px}button.btn.btn-secondar
 #sidebar-menu .menuitem-active .active svg, #sidebar-menu .menuitem-active .active svg path {
     fill: #fff !important;
 }
+.language-input.style-4 {
+    overflow: auto;
+    max-width: fit-content;
+    width: 500px;
+}
+.content-page .content{padding-top: 0;}
 :root {
     --textDark_color: #744c3f;
     --card_color_a: #fef5d9;
