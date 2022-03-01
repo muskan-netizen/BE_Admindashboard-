@@ -128,7 +128,7 @@ li.onhover-dropdown.mobile-wishlist_al:before {display: none;}
 /* fixed footer all pages start */
 article#page-container .site-header {position: relative;}
 article#page-container header.site-header.fixed-bar{position: fixed;}
-article#page-container {position: relative;min-height: 100vh;}
+article#page-container {position: relative;min-height: 100vh;overflow: hidden;}
 article#page-container  section .vendors  section{padding: 20px 0 !important;margin-bottom: 0 !important;}
 article#content-wrap {padding-bottom:228px;}
 footer#footer {position: absolute;bottom: 0;width: 100%;height: 228px;}
