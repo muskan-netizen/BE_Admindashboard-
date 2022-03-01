@@ -7,106 +7,13 @@
             }
         });
         setTimeout(function(){$('#approved-requests').trigger('click');}, 200);
-        $(document).on('click', '#edit_vendor_modal #update_vendor_modal', function(e) {
-            e.preventDefault();
-            let myForm = document.getElementById('update_vendor_form');
-            let formData = new FormData(myForm);
-            var vendor_id = $("#edit_vendor_modal input[name='vendor_id']").val();
-            var vendor_update_url =  base_url+'/client/vendor/'+vendor_id;
-            $.ajax({
-                type: "POST",
-                data: formData,
-                contentType: false,
-                processData: false,
-                url: vendor_update_url,
-                headers: {Accept: "application/json"},
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $("#edit_vendor_modal .close").click();
-                        $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                        setTimeout(function(){location.reload();}, 2500);
-                    } else {
-                        $(".show_all_error.invalid-feedback").show();
-                        $(".show_all_error.invalid-feedback").text(response.message);
-                    }
-                    return response;
-                },
-                beforeSend: function(){
-                    $(".loader_box").show();
-                },
-                complete: function(){
-                    $(".loader_box").hide();
-                },
-                error: function(response) {
-                    if (response.status === 422) {
-                        let errors = response.responseJSON.errors;
-                        Object.keys(errors).forEach(function(key) {
-                            $("#" + key + "Input input").addClass("is-invalid");
-                            $("#" + key + "Input span.invalid-feedback").children("strong").text(errors[key][0]);
-                            $("#" + key + "Input span.invalid-feedback").show();
-                        });
-                    } else {
-                        $(".show_all_error.invalid-feedback").show();
-                        $(".show_all_error.invalid-feedback").text('Something went wrong, Please try Again.');
-                    }
-                    return response;
-                }
-            });
-        });
-        $(document).on("click",".edit_vendor",function() {
-            var vendor_id = $(this).data('vendor_id');
-            $.ajax({
-                data: '',
-                type: "get",
-                dataType: 'json',
-                url: base_url+"/client/vendor/"+vendor_id+"/edit",
-                success: function (data) {
-                    $('#edit_vendor_modal').modal('show');
-                    $('.selectize-select').selectize();
-                    $('#edit_vendor_modal #editVendorBox').html(data.html);
-                    dine = document.getElementsByClassName('dine_in');
-                    var switchery = new Switchery(dine[0]);
-                    take = document.getElementsByClassName('takeaway');
-                    var switchery = new Switchery(take[0]);
-                    delivery = document.getElementsByClassName('delivery');
-                    var switchery = new Switchery(delivery[0]);
-                    autocompletesWraps.push('edit');
-                    loadMap(autocompletesWraps);
-                    $('.dropify').dropify();
-                }
-            });
-        });
+        
         $(document).on("click",".nav-link",function() {
             let rel= $(this).data('rel');
             let status= $(this).data('status');
             initDataTable(rel, status);
         });
-        $(document).on("click",".delete-vendor",function() {
-            var destroy_url = $(this).data('destroy_url');
-            var id = $(this).data('rel');
-            Swal.fire({
-                title: "Are you sure?",
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: 'Ok',
-            }).then((result) => {
-                if(result.value)
-                {
-                    $.ajax({
-                        type: "POST",
-                        dataType: 'json',
-                        url: destroy_url,
-                        data:{'_method':'DELETE'},
-                        success: function(response) {
-                            if (response.status == "Success") {
-                                $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
-                                window.location.reload();
-                            }
-                        }
-                    });
-                }
-            });
-        });
+        
         function initDataTable(table, status) {
             var dynamic_columns = [
                 {data: 'order_number', name: 'order_number', orderable: false, searchable: true,"mRender": function ( data, type, full ) {
@@ -169,6 +76,59 @@
                 columns: dynamic_columns
             });
         }
+
+        $(document).on('click', '.complete_request_btn', function(e) {
+            let id = $(this).attr('data-id');
+            let status = $(this).attr('data-status');
+            let title = $(this).attr('title');
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You really want to "+ title +" this request?",
+                icon: 'warning',
+                iconColor: '{{getClientPreferenceDetail()->web_color}}',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, '+ title + ' it!',
+                confirmButtonColor: '{{getClientPreferenceDetail()->web_color}}'
+            }).then((result) => {
+                if(result.value)
+                {
+                    $.ajax({
+                        type: "POST",
+                        data: {id: id, status: status},
+                        url: cancel_request_update_url,
+                        headers: {Accept: "application/json"},
+                        success: function(response) {
+                            if (response.status == 'Success') {
+                                $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                                setTimeout(function(){location.reload();}, 2500);
+                            } else {
+                                Swal.fire({
+                                    text: response.message,
+                                    icon : "error",
+                                    button: "OK",
+                                });
+                                return false;
+                            }
+                        },
+                        beforeSend: function(){
+                            $(".loader_box").show();
+                        },
+                        complete: function(){
+                            $(".loader_box").hide();
+                        },
+                        error: function(response) {
+                            let error = response.responseJSON;
+                            Swal.fire({
+                                text: error.message,
+                                icon : "error",
+                                button: "OK",
+                            });
+                            return false;
+                        }
+                    });
+                }
+            });
+        });
     });
 
 </script>

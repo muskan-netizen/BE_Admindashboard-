@@ -67,6 +67,9 @@
                             @if($order->total_service_fee > 0)
                                 <li>{{__('Service Fee')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_service_fee * @$clientCurrency->doller_compare)}}</span></li>
                             @endif
+                            @if($order->total_container_charges > 0)
+                                <li>{{__('Container Charges')}} <span>{{Session::get('currencySymbol')}}@money($order->total_container_charges * @$clientCurrency->doller_compare)</span></li>
+                            @endif
                             @if($order->total_delivery_fee > 0)
                                 <li>{{__('Delivery Fee')}} <span>{{Session::get('currencySymbol')}}{{decimal_format($order->total_delivery_fee * @$clientCurrency->doller_compare)}}</span></li>
                             @endif

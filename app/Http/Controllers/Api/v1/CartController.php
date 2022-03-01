@@ -1305,7 +1305,7 @@ class CartController extends BaseController
                                         'sku' => ucfirst($prod->pvariant->sku),
                                     );
                                 }
-                            }
+                            } 
                             $prod->taxdata = $taxData;
                             if ($action == 'delivery') {
                                 if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
