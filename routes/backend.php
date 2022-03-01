@@ -333,6 +333,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         // Cancel order requests routes
         Route::get('cancel-order/requests', 'Client\OrderCancelRequestsController@index')->name('cancel-order.requests');
         Route::get('cancel-order/requests/filter', 'Client\OrderCancelRequestsController@filter')->name('cancel-order.requests.filter');
+        Route::post('cancel-order/request/status/update', 'Client\OrderCancelRequestsController@updateStatus')->name('cancel-order.request.status.update');
     });
 });
 

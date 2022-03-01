@@ -147,6 +147,7 @@
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
 <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script type="text/javascript">
+    var cancel_request_update_url = "{{ route('cancel-order.request.status.update') }}";
 </script>
 @include('backend.order_cancel_requests.pagescript')
 <script type="text/javascript">
