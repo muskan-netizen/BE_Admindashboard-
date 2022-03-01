@@ -7,8 +7,13 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
 
 @endphp
-<div class="top-header site-topbar al_template_two d-none d-md-flex">
-    <div class="container">
+<style>
+    .modal-backdrop {
+        z-index: 1;
+    }
+</style>
+<div class="top-header site-topbar al_template_two p-0 pt-sm-1">
+    <div class="container d-sm-block d-none">
         <div class="row d-flex align-items-center">
             <div class="col-md-4  col-lg-6  d-flex align-items-center">
             @if($client_preference_detail->show_contact_us == 1)
@@ -139,27 +144,6 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
             <ul class="header-dropdown icon-nav d-flex justify-content-around">
                 <li class="onhover-div mobile-setting">
                     <div data-toggle="modal" data-target="#setting_modal"><i class="ti-settings"></i></div>
-                    <!-- <div class="show-div setting">
-                        <h6>language</h6>
-                        <ul>
-                            <li><a href="#">english</a></li>
-                            <li><a href="#">french</a></li>
-                        </ul>
-                        <h6>currency</h6>
-                        <ul class="list-inline">
-                            @foreach($currencyList as $key => $listc)
-                                <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
-                                    <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
-                                </li>
-                            @endforeach
-                        </ul>
-                        <h6>Change Theme</h6>
-                        @if($client_preference_detail->show_dark_mode == 1)
-                        <ul class="list-inline">
-                            <li><a class="theme-layout-version" href="javascript:void(0)">Dark</a></li>
-                        </ul>
-                        @endif
-                    </div> -->
                 </li>
 
                 <li class="onhover-dropdown mobile-account  d-inline d-sm-none"> <i class="fa fa-user" aria-hidden="true"></i>
@@ -225,6 +209,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
     </div>
 
 </div>
+
 <!-- Modal -->
 <div class="modal fade mobile-setting" id="setting_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="setting-modalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">

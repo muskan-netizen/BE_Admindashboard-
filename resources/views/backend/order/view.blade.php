@@ -264,6 +264,7 @@ $timezone = Auth::user()->timezone;
                                     @php
                                     $taxable_amount = $vendor->taxable_amount;
                                     $vendor_service_fee = $vendor->service_fee_percentage_amount;
+                                    $container_charges = $vendor->total_container_charges;
                                     $sub_total += $product->total_amount;
                                     $revenue += ($vendor->service_fee_percentage_amount + $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount);
                                     @endphp
@@ -338,6 +339,14 @@ $timezone = Auth::user()->timezone;
                                             <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor_service_fee)}}</td>
                                         </tr>
                                     @endif
+
+                                    @if($container_charges > 0)
+                                        <tr>
+                                            <th scope="row" colspan="4" class="text-end">{{ __("Container Charges") }} :</th>
+                                            <td>{{$clientCurrency->currency->symbol}}@money($container_charges)</td>
+                                        </tr>
+                                    @endif
+
                                     @if(Auth::user()->is_superadmin)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>

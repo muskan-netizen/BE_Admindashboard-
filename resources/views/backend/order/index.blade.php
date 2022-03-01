@@ -115,8 +115,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% _.each(vendor.products, function(product, pr){%>
                                                         <div class="col-4 text-center mb-2">
                                                             <div class="list-img" style="height:50px;">
-                                                                <img style="height:50px;" src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
+                                                                <img style="height:50px;" data-placement="right" data-toggle="tooltip" title="<%= product.product_name %>" src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
                                                                 <span class="item_no position-absolute">x<%= product.quantity %></span>
+                                                                
                                                             </div>
                                                             <!-- <h6 class="mx-1 mb-0 mt-1 ellips">Vendor Name</h6>    -->
                                                             <label class="items_price">{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(product.price) %></label>
@@ -148,6 +149,16 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                         <% } %>
                                                     </li>
                                                     <% } %>
+                                                    <% if(vendor.total_container_charges > 0 || vendor.total_container_charges < 0) { %>
+                                                        <li class="d-flex align-items-center justify-content-between">
+                                                            <label class="m-0">{{ __('Container Charges') }}</label>
+                                                            <% if(vendor.total_container_charges !== null) { %>
+                                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.total_container_charges) %></span>
+                                                            <% }else { %>
+                                                                <span>{{$clientCurrency->currency->symbol}} 0.00</span>
+                                                            <% } %>
+                                                        </li>
+                                                        <% } %>
                                                     <% if(vendor.taxable_amount > 0 || vendor.taxable_amount < 0) { %>
                                                         <li class="d-flex align-items-center justify-content-between">
                                                             <label class="m-0">{{ __('Tax') }}</label>
@@ -233,6 +244,16 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_delivery_fee) %></span>
                                     </li>
                                     <% } %>
+                                    <% if(order.total_container_charges > 0 || order.total_container_charges < 0) { %>
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Total Container Charges') }}</label>
+                                            <% if(order.total_container_charges !== null) { %>
+                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_container_charges) %></span>
+                                            <% }else { %>
+                                                <span>{{$clientCurrency->currency->symbol}} 0.00</span>
+                                            <% } %>
+                                        </li>
+                                        <% } %>
                                     <% if(order.tip_amount > 0 || order.tip_amount < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                             <label class="m-0">{{__('Tip Amount')}}</label>

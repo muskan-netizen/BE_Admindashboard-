@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag};
+use App\Models\{Client, ClientPreference, MapProvider, SmsProvider, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -31,6 +31,7 @@ class ClientPreferenceController extends BaseController{
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         $driver_registration_documents = DriverRegistrationDocument::with('primary')->get();
 
+      
         $last_mile_teams = [];
         $laundry_teams = [];
         # if last mile on
@@ -46,7 +47,22 @@ class ClientPreferenceController extends BaseController{
 
         $tags = Tag::with('primary')->get();
         $slots = ClientSlot::get();
-        return view('backend/setting/config')->with(['tags' => $tags,'slots'=>$slots,'laundry_teams' => $laundry_teams,'last_mile_teams' => $last_mile_teams,'client' => $client, 'preference' => $preference, 'mapTypes'=> $mapTypes, 'smsTypes' => $smsTypes, 'client_languages' => $client_languages, 'file_types' => $file_types, 'vendor_registration_documents' => $vendor_registration_documents, 'driver_registration_documents' => $driver_registration_documents, 'file_types_driver' => $file_types_driver]);
+        return view('backend/setting/config')->with([
+                                                'tags' => $tags,
+                                                'slots'=>$slots,
+                                                'laundry_teams' => $laundry_teams,
+                                                'last_mile_teams' => $last_mile_teams,
+                                                'client' => $client,
+                                                'preference' => $preference,
+                                                'mapTypes'=> $mapTypes,
+                                                'smsTypes' => $smsTypes, 
+                                                'client_languages' => $client_languages,
+                                                'file_types' => $file_types,
+                                                'vendor_registration_documents' => $vendor_registration_documents,
+                                               
+                                                'driver_registration_documents' => $driver_registration_documents, 
+                                                'file_types_driver' => $file_types_driver
+                                            ]);
     }
 
     public function getCustomizePage(ClientPreference $clientPreference){
@@ -76,6 +92,9 @@ class ClientPreferenceController extends BaseController{
         }
         $tags = Tag::with('primary')->get();
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
+
+        $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
+
         if($preference->reffered_by_amount == null){
             $reffer_by = 0;
         }else{
@@ -86,12 +105,13 @@ class ClientPreferenceController extends BaseController{
         }else{
             $reffer_to = $preference->reffered_to_amount;
         }
+       // pr($user_registration_documents->toArray());
         $client_languages = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
                     ->where('client_languages.client_code', Auth::user()->code)
                     ->where('client_languages.is_active', 1)
                     ->orderBy('client_languages.is_primary', 'desc')->get();
-        return view('backend.setting.customize', compact('client','nomenclature_value','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to'));
+        return view('backend.setting.customize', compact('client','nomenclature_value','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to'));
     }
 
     public function referandearnUpdate(Request $request, $code){
