@@ -275,10 +275,10 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.status == "Success") {
-                  
+
                     var path = window.location.pathname;
                     if (path == '/') {
-                        
+
                         const layouts = response.data.data;
                         layouts.forEach(function(obj, index) {
                             setTimeout(function(){
@@ -286,9 +286,9 @@ $(document).ready(function () {
                             }, 500 * (index + 1));
                         });
 
-                        
+
                         // let vendors = response.data.vendors;
-                       
+
                         // let banner_template = _.template($('#banner_template').html());
                         // let vendors_template = _.template($('#vendors_template').html());
                         // let products_template = _.template($('#products_template').html());
@@ -336,7 +336,7 @@ $(document).ready(function () {
                         //     $('.render_full_recent_orders').addClass('d-none');
                         // }
                         // initializeSlider();
-                        
+
                     }
                     else {
                         if ((latitude) && (longitude) && (selected_address)) {
@@ -357,17 +357,17 @@ $(document).ready(function () {
 
     function myFunctionGetDataHomePage(item, index) {
         $(".shimmer_effect_"+item).show();
-             
+
         switch (item) {
             case 'trending_vendors':
                 getHomePageDataSingleBySingle(item);
                 break;
             case 'vendors':
                     getHomePageDataSingleBySingle(item);
-                break;    
+                break;
             case 'featured_products':
                 getHomePageDataSingleBySingle(item);
-                
+
               break;
             case 'new_products':
                 getHomePageDataSingleBySingle(item);
@@ -380,18 +380,18 @@ $(document).ready(function () {
                break;
             case 'brands':
                 getHomePageDataSingleBySingle(item);
-               break;  
+               break;
             case 'recent_orders':
                 getHomePageDataSingleBySingle(item);
-               break; 
+               break;
             case 'pickup_delivery':
                 getHomePageDataSingleBySingle(item);
                break;
             case 'dynamic_page':
                 getHomePageDataSingleBySingle(item);
-               break;        
+               break;
           }
-       
+
         $(".shimmer_effect_"+item).hide();
     }
 
@@ -429,15 +429,15 @@ $(document).ready(function () {
             dataType: 'json',
             url: postHomePageDataSingle,
             beforeSend: function(){
-             
+
             },
             success: function (response) {
                 if (response.status == "Success") {
                     var path = window.location.pathname;
                     if (path == '/') {
-                      
+
                         let products_template = _.template($('#products_template').html());
-                              
+
                         switch (item) {
                             case 'trending_vendors':
                                 if($('.suppliers-slider-trending_vendors').hasClass('slick-initialized')){
@@ -533,7 +533,7 @@ $(document).ready(function () {
                                         {
                                             breakpoint: 767,
                                             settings: {
-                                                slidesToShow: 1,
+                                                slidesToShow: 2,
                                                 slidesToScroll: 1,
                                                 dots: false,
                                                 centerMode: true,
@@ -542,7 +542,7 @@ $(document).ready(function () {
                                         {
                                             breakpoint: 576,
                                             settings: {
-                                                slidesToShow: 1,
+                                                slidesToShow: 2,
                                                 slidesToScroll: 1,
                                                 dots: false,
                                                 centerMode: true,
@@ -557,7 +557,7 @@ $(document).ready(function () {
                                 if($('.product-4-featured_products').hasClass('slick-initialized')){
                                     $(".product-4-featured_products").slick('destroy');
                                     $("#featured_products").html('');
-                               
+
                                 }
                                 $(".render_featured_products").append(products_template({ products: response.data.feature_products, type: featured_product_language }));
                                 $(".product-4-featured_products").slick({
@@ -638,7 +638,7 @@ $(document).ready(function () {
                                      $("#best_sellers").html('');
                                 }
                                 $(".render_best_sellers").append(products_template({ products: response.data.new_products, type: best_seller_product_language}));
-                          
+
                                 if (response.data.new_products.length > 0) {
                                     $('.render_full_best_sellers').removeClass('d-none');
                                 } else {
@@ -666,13 +666,13 @@ $(document).ready(function () {
                                         {breakpoint: 360,settings: {slidesToShow: 1,slidesToScroll: 1}}
                                     ]
                                 });
-                               break;  
+                               break;
                             case 'recent_orders':
                                 if($('.recent-orders').hasClass('slick-initialized')){
                                 $(".recent-orders").slick('destroy');
                                 }
                                 let recent_orders_template = _.template($('#recent_orders_template').html());
-                                $(".render_recent_orders").append(recent_orders_template({ recent_orders: response.data.active_orders}));
+                                $(".render_recent_orders").append(recent_orders_template({ Helper: NumberFormatHelper, recent_orders: response.data.active_orders}));
                                 $(".recent-orders").slick({
                                     arrows: true,
                                     dots: false,
@@ -694,11 +694,11 @@ $(document).ready(function () {
                                 } else {
                                     $('.render_full_recent_orders').addClass('d-none');
                                 }
-                               break;   
+                               break;
                           }
 
                           let vendors = response.data.vendors;
-                        
+
                             if (vendors.length > 0) {
                                 $('#our_vendor_main_div').removeClass('d-none');
                                 $(".no-store-wrapper").hide();
@@ -706,7 +706,7 @@ $(document).ready(function () {
                                 $('#our_vendor_main_div').addClass('d-none');
                                 $(".no-store-wrapper").show();
                             }
-                         
+
                     }
                     else {
                         if ((latitude) && (longitude) && (selected_address)) {

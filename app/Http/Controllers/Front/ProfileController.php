@@ -186,9 +186,11 @@ class ProfileController extends FrontController
      */
     public function submitChangePassword(Request $request, $domain = ''){
         $request->validate([
+            'old_password' => 'required',
             'new_password' => 'required|string|min:6',
             'confirm_password' => 'required|same:new_password',
         ],[
+            'old_password.required' => __('The old password field is required.'),
             'new_password.required' => __('The new password field is required.'),
             'new_password.min' => __('The new password must be at least 6 characters.'),
             'confirm_password.required' => __('The confirm password field is required.'),
@@ -196,8 +198,12 @@ class ProfileController extends FrontController
         ]);
         $user = User::where('id', Auth::user()->id)->first();
         if ($user){
-            $user->password = Hash::make($request['new_password']);
-            $user->save();
+            if (Hash::check($request['old_password'], $user->password)) {
+                $user->password = Hash::make($request['new_password']);
+                $user->save();
+            }else{
+                return redirect()->route('user.changePassword')->with('error', __('Your Old password is incorrect'));
+            }
         }
         return redirect()->route('user.profile')->with('success', __('Your Password has been changed successfully'));
     }

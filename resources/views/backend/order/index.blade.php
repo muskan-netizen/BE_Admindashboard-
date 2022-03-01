@@ -148,6 +148,16 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                         <% } %>
                                                     </li>
                                                     <% } %>
+                                                    <% if(vendor.total_container_charges > 0 || vendor.total_container_charges < 0) { %>
+                                                        <li class="d-flex align-items-center justify-content-between">
+                                                            <label class="m-0">{{ __('Container Charges') }}</label>
+                                                            <% if(vendor.total_container_charges !== null) { %>
+                                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(vendor.total_container_charges) %></span>
+                                                            <% }else { %>
+                                                                <span>{{$clientCurrency->currency->symbol}} 0.00</span>
+                                                            <% } %>
+                                                        </li>
+                                                        <% } %>
                                                     <% if(vendor.taxable_amount > 0 || vendor.taxable_amount < 0) { %>
                                                         <li class="d-flex align-items-center justify-content-between">
                                                             <label class="m-0">{{ __('Tax') }}</label>
@@ -233,6 +243,16 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_delivery_fee) %></span>
                                     </li>
                                     <% } %>
+                                    <% if(order.total_container_charges > 0 || order.total_container_charges < 0) { %>
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Total Container Charges') }}</label>
+                                            <% if(order.total_container_charges !== null) { %>
+                                            <span>{{$clientCurrency->currency->symbol}}<%= Helper.formatPrice(order.total_container_charges) %></span>
+                                            <% }else { %>
+                                                <span>{{$clientCurrency->currency->symbol}} 0.00</span>
+                                            <% } %>
+                                        </li>
+                                        <% } %>
                                     <% if(order.tip_amount > 0 || order.tip_amount < 0) { %>
                                         <li class="d-flex align-items-center justify-content-between">
                                             <label class="m-0">{{__('Tip Amount')}}</label>

@@ -54,7 +54,7 @@ class OrderController extends Controller{
             }
         }
         $total_order_count = $vendor_orders->count();
-        return view('backend.accounting.order', compact('vendors','order_status_options', 'dispatcher_status_options'))->with(['total_earnings_by_vendors' => number_format($total_earnings_by_vendors, 2), 'total_delivery_fees' => number_format($total_delivery_fees, 2), 'total_cash_to_collected' => number_format($total_cash_to_collected, 2), 'total_order_count' => $total_order_count, 2]);
+        return view('backend.accounting.order', compact('vendors','order_status_options', 'dispatcher_status_options'))->with(['total_earnings_by_vendors' => decimal_format($total_earnings_by_vendors), 'total_delivery_fees' => decimal_format($total_delivery_fees), 'total_cash_to_collected' => decimal_format($total_cash_to_collected), 'total_order_count' => $total_order_count, 2]);
     }
     public function filter(Request $request){
         $user = Auth::user();

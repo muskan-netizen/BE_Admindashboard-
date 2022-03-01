@@ -184,7 +184,7 @@
 												<% if(vendor.vendor_id==product.vendor_id){%>
 													<li class="text-center"> <img class="blur-up lazyload" data-src="<%=product.image_url %>" alt="" title=""> <span class="item_no position-absolute">x <%=product.quantity %></span>
 														<label class="items_price">{{Session::get('currencySymbol')}}
-															<%=product.price * product.pricedoller_compare %>
+															<%= Helper.formatPrice(product.price * product.pricedoller_compare) %>
 														</label>
 													</li>
 													<% product_total_price=product.price * product.doller_compare; product_total_count +=product.quantity * product_total_price; product_taxable_amount +=product.taxable_amount; total_tax_order_price +=product.taxable_amount; %>
@@ -195,14 +195,14 @@
 									<div class="col-md-5 mt-md-0 mt-sm-2">
 										<ul class="price_box_bottom m-0 p-0">
 											<li class="d-flex align-items-center justify-content-between">
-												<label class="m-0">{{__('Product Total')}}</label> <span>{{Session::get('currencySymbol')}}<%=(vendor.subtotal_amount)%></span> </li>
+												<label class="m-0">{{__('Product Total')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.subtotal_amount) %></span> </li>
 											<li class="d-flex align-items-center justify-content-between">
-												<label class="m-0">{{__('Coupon Discount')}}</label> <span>{{Session::get('currencySymbol')}}<%=(vendor.discount_amount)%></span> </li>
+												<label class="m-0">{{__('Coupon Discount')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.discount_amount) %></span> </li>
 											<li class="d-flex align-items-center justify-content-between">
-												<label class="m-0">{{__('Delivery Fee')}}</label> <span>{{Session::get('currencySymbol')}}<%=(vendor.delivery_fee)%></span> </li>
+												<label class="m-0">{{__('Delivery Fee')}}</label> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.delivery_fee) %></span> </li>
 											<li class="grand_total d-flex align-items-center justify-content-between">
 												<label class="m-0">{{__('Amount')}}</label>
-												<% product_subtotal_amount=product_total_count - vendor.discount_amount + vendor.delivery_fee; subtotal_order_price +=product_subtotal_amount; %> <span>{{Session::get('currencySymbol')}}<%=(vendor.payable_amount)%></span> </li>
+												<% product_subtotal_amount=product_total_count - vendor.discount_amount + vendor.delivery_fee; subtotal_order_price +=product_subtotal_amount; %> <span>{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor.payable_amount) %></span> </li>
 										</ul>
 									</div>
 								</div>
@@ -210,7 +210,7 @@
 					<% }); %>
 						<% }); %>
 </script>
-<section class="section-b-space_ p-0 ratio_asos">
+<section class="section-b-space p-t-0 pt-4 ratio_asos  shimmer_effect">
 	<div class="container mb-5 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">

@@ -160,7 +160,7 @@
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
                                                                     <?php $multiply = $new['variant_multiplier']; ?>
-                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                    {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                 @endif
                                                             </b>
 
@@ -198,7 +198,7 @@
                                                         @if($new['inquiry_only'] == 0)
                                                             <h4 class="mt-1">
                                                                 <//?php $multiply = $new['variant_multiplier']; ?>
-                                                                {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                             </h4>
                                                         @endif
                                                     </a>
@@ -261,7 +261,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="displayProducts">
+                                    <div class="displayProducts"> 
+                                        <div class="col-12 text-right mt-2">Sort By : 
+                                            <select name="order_type" id='order_type' class="sortingFilter p-1">
+                                                <option value="featured">Featured</option>
+                                                <option value="a_to_z">A to Z</option>
+                                                <option value="z_to_a">Z to A</option>
+                                                <option value="low_to_high">Cost : Low to High</option>
+                                                <option value="high_to_low">Cost : High to Low</option>
+                                                <option value="rating">Avg. Customer Review</option>
+                                                <option value="newly_added">Newest Arrivals</option>
+                                            </select>
+                                        </div>
                                         <div class="product-wrapper-grid">
                                             <div class="row margin-res">
                                               @if($listData->isNotEmpty())
@@ -298,7 +309,7 @@
                                                                     <p>{{ $data->translation_description }}</p>
                                                                 @endif
                                                                 @if($data->inquiry_only == 0)
-                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                 @endif
                                                             </div>
                                                         </div>
@@ -346,6 +357,9 @@
     $('.productFilter').click(function(){
         filterProducts();
     });
+    $('.sortingFilter').click(function(){
+        filterProducts();
+    });
     function filterProducts(){
         var brands = [];
         var variants = [];
@@ -363,6 +377,7 @@
             }
         });
         var range = $('.rangeSliderPrice').val();
+        var order_type = $('.sortingFilter').val();
 
         ajaxCall = $.ajax({
             type: "post",
@@ -373,7 +388,8 @@
                 "brands": brands,
                 "variants": variants,
                 "options": options,
-                "range": range
+                "range": range,
+                "order_type" : order_type,
             },
             beforeSend : function() {
                 if(ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {

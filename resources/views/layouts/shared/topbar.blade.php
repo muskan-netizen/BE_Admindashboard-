@@ -204,13 +204,14 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <form method="post" action="{{route('client.password.update')}}">
+                <form id="change_password_form" method="post" action="{{route('client.password.update')}}">
                     @csrf
 
                     <h4 class="header-title">{{ __("Change Password") }}</h4>
                     <p class="sub-header">
                         {{-- <code>Organization details</code>/Change Password. --}}
                     </p>
+                    <div class="pwd-msg"></div>                    
                     <div class="row">
                         <div class="col">
                             <div class="form-group mb-2">

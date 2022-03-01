@@ -289,6 +289,9 @@ class VendorController extends FrontController
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if(Session::has('vendors')){
                 $vendors = Session::get('vendors');
+                if(is_array($vendors))
+                $vendors = $vendors;
+                else
                 $vendors = $vendors->toArray();
                 if(!in_array($vendor->id, $vendors)){
                     $listData = collect();
@@ -518,7 +521,7 @@ class VendorController extends FrontController
             $AddonData->translation_description = ($AddonData->translation->isNotEmpty()) ? strip_tags($AddonData->translation->first()->body_html) : '';
             $AddonData->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
             $variant_price = ($AddonData->variant->isNotEmpty()) ? $AddonData->variant->first()->price : 0;
-            $AddonData->variant_price = number_format(($variant_price * $AddonData->variant_multiplier), 2, '.', '');
+            $AddonData->variant_price = decimal_format(($variant_price * $AddonData->variant_multiplier));
         }
             // dd($AddonData);
         return response()->json(array('status' => 'Success', 'data' => $AddonData));

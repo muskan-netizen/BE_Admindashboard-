@@ -53,7 +53,7 @@ class PaypalGatewayController extends BaseController
                 $returnUrlParams = $returnUrlParams . '&ordernumber=' . $request->order_number;
             }
             $response = $this->gateway->purchase([
-                'currency' => 'USD', //$this->currency,
+                'currency' => $this->currency,//'USD', //
                 'amount' => $amount,
                 'cancelUrl' => url($request->cancelUrl),
                 'returnUrl' => url($request->returnUrl . $returnUrlParams),
@@ -82,7 +82,7 @@ class PaypalGatewayController extends BaseController
             if ($request->has('tip')) {
                 $returnUrlParams = $returnUrlParams . '&tip=' . $request->tip;
             }
-            
+
             $transaction = $this->gateway->completePurchase(array(
                 'amount'                => $amount,
                 'payer_id'              => $request->PayerID,

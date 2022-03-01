@@ -317,4 +317,14 @@ class BaseController extends Controller
         }
         return $plural ? $searchTerm : rtrim($searchTerm, 's');
     }
+
+    # check if last mile delivery on
+    public function checkIfLastMileOn()
+    {
+        $preference = ClientPreference::first();
+        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+            return $preference;
+        else
+            return false;
+    }
 }
