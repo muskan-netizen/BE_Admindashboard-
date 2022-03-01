@@ -76,6 +76,7 @@ class AutoRejectOrders extends Command
                 ];
                 Config::set("database.connections.$database_name", $default);
                 // DB::setDefaultConnection($database_name);
+                Log::info($database_name);
                 $client_preferences = ClientPreference::on($database_name)->first();
                 $notification_content = NotificationTemplate::on($database_name)->where(['id' => 6])->first();
                 $selected_database_orders = AutoRejectOrderCron::where('auto_reject_time', '<=', $intervalTime)->where(['database_name' => $client->database_name])->get();
@@ -84,8 +85,6 @@ class AutoRejectOrders extends Command
                     $orderVendorDetail->order_status_option_id = 3;
                     $orderVendorDetail->save();
                     $order_status_check = VendorOrderStatus::where('order_id',$orderVendorDetail->order_id)->where('vendor_id', $orderVendorDetail->vendor_id)->where('order_status_option_id', 3)->first();
-                   
-                    
                     if(!$order_status_check){
                         $vendor_order_status = new VendorOrderStatus();
                         $vendor_order_status->order_id = $orderVendorDetail->order_id;
