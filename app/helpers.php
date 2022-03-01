@@ -699,7 +699,6 @@ function getDollarCompareAmount($amount, $customerCurrency='')
 function decimal_format($number,$format="")
 {
     $preference = session()->get('preferences');
-    $digits = $preference['digit_after_decimal'];
+    $digits = $preference['digit_after_decimal'] ?? 2;
     return number_format($number,$digits,'.',$format);
-
 }

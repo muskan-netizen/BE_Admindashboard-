@@ -100,7 +100,7 @@ class Product extends Model{
     /* for app */
 
     public function variants(){
-      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode');
+      return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'quantity', 'price', 'barcode','container_charges');
     }
 
     public function reviews(){
