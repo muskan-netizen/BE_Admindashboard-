@@ -90,14 +90,14 @@
                                     </a>
                                 </li>
                             @endif
-                            {{-- @if(in_array('order_cancel_requests',$allowed) || Auth::user()->is_superadmin == 1)
+                            @if(in_array('order_cancel_requests',$allowed) || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="{{route('cancel-order.requests')}}">
                                         <span class="icon-extra"></span>
                                         <span> {{ __('Order Cancel') }} </span>
                                     </a>
                                 </li>
-                            @endif --}}
+                            @endif
                             @if(in_array('vendors',$allowed) || Auth::user()->is_superadmin == 1)
                                 <li>
                                     <a href="{{route('vendor.index')}}">
@@ -428,12 +428,12 @@
                             @endif
 
                             @if(Auth::user()->is_superadmin == 1)
-                                <li>
+                                {{-- <li>
                                     <a href="{{ route('campaign.index')}}">
                                         <span class="icon-celebrity"></span>
                                         <span> {{ __("Campaigns") }} </span>
                                     </a>
-                                </li>
+                                </li> --}}
                             @endif
                         </ul>
                     </li>
