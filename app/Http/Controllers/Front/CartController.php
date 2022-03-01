@@ -621,12 +621,14 @@ class CartController extends FrontController
             $PromoFreeDeliver = 0;
             $PromoDelete = 0;
             $d = 0;
+            $total_container_charges = 0 ;
             foreach ($cartData as $ven_key => $vendorData) {
                 $is_promo_code_available = 0;
                 $vendor_products_total_amount = $payable_amount = $taxable_amount = $subscription_discount = $discount_amount = $discount_percent = $deliver_charge = $delivery_fee_charges = $delivery_fee_charges_static =  $deliver_charges_lalmove = 0.00;
                 $delivery_count = 0;
                 $delivery_count_lm = 0;
                 $coupon_amount_used = 0;
+               
 
                 if(Session::has('vendorTable')){
                     if((Session::has('vendorTableVendorId')) && (Session::get('vendorTableVendorId') == $vendorData->vendor_id)){
@@ -679,21 +681,29 @@ class CartController extends FrontController
                     $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                     $price_in_currency = $prod->pvariant->price;
                     $price_in_doller_compare = $prod->pvariant->price;
+                    $container_charges_in_currency = $prod->pvariant->container_charges;
+                    $container_charges_in_doller_compare = $prod->pvariant->container_charges;
                     if($customerCurrency){
                         $price_in_currency = $prod->pvariant->price / $divider;
                         $price_in_doller_compare = $price_in_currency * $customerCurrency->doller_compare;
+
+                        $container_charges_in_currency = $prod->pvariant->container_charges / $divider;
+                        $container_charges_in_doller_compare = $container_charges_in_currency * $customerCurrency->doller_compare;
                     }
                     $quantity_price = $price_in_doller_compare * $prod->quantity;
+                    $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                     $prod->pvariant->price_in_cart = $prod->pvariant->price;
                     $prod->pvariant->price = number_format($price_in_currency, 2, '.', '');
+                    $prod->pvariant->container_charges = number_format($container_charges_in_currency, 2, '.', '');
                     $prod->image_url = $this->loadDefaultImage();
                     $prod->pvariant->media_one = isset($prod->pvariant->media) ? $prod->pvariant->media->first() : [];
                     $prod->pvariant->media_second = isset($prod->product->media) ? $prod->product->media->first() : [];
                     $prod->pvariant->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
                     $prod->quantity_price = number_format($quantity_price, 2, '.', '');
-                    $payable_amount = $payable_amount + $quantity_price;
+                    $prod->quantity_container_charges = number_format($quantity_container_charges, 2, '.', '');
+                    $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
-
+                    $total_container_charges = $total_container_charges + $quantity_container_charges;
                     $taxData = array();
                     if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                         foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
@@ -747,6 +757,7 @@ class CartController extends FrontController
                         if($prod->product->dropoff_delay_hrs_min > $delay_date)
                         $dropoff_delay_date = $prod->product->dropoff_delay_hrs_min;
                     }
+                    
                     $select = '';
 
                     if($action == 'delivery'){
@@ -855,7 +866,7 @@ class CartController extends FrontController
                                 $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
                             }
 
-                            if( ($minimum_spend <= $payable_amount ) && ($maximum_spend >= $payable_amount)    )
+                            if( ($minimum_spend <= $payable_amount ) && ($maximum_spend >= $payable_amount))
                             {
                                 if ($vendorData->coupon->promo->promo_type_id == 2) {
                                     $total_discount_percent = $vendorData->coupon->promo->amount;
@@ -1086,7 +1097,8 @@ class CartController extends FrontController
             $cart->tip_5_percent = number_format((0.05 * $total_payable_amount), 2, '.', '');
             $cart->tip_10_percent = number_format((0.1 * $total_payable_amount), 2, '.', '');
             $cart->tip_15_percent = number_format((0.15 * $total_payable_amount), 2, '.', '');
-
+            $cart->total_container_charges = number_format(($total_container_charges), 2, '.', '');
+          
 
             $cart->action = $action;
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();

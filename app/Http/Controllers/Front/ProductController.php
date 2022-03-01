@@ -61,9 +61,8 @@ class ProductController extends FrontController{
                 $productVendorId = $product->vendor_id;
                 if(Session::has('vendors')){
                     $vendors = Session::get('vendors');
-                    if(is_array($vendors)){
-
-                    }
+                    if(is_array($vendors))
+                    $vendors = $vendors;
                     else
                     $vendors = $vendors->toArray();
 

@@ -210,7 +210,7 @@
 					<% }); %>
 						<% }); %>
 </script>
-<section class="section-b-space p-t-0 pt-4 ratio_asos">
+<section class="section-b-space p-t-0 pt-4 ratio_asos  shimmer_effect">
 	<div class="container mb-5 shimmer_effect">
 		<div class="row">
 			<div class="col-12 cards">
