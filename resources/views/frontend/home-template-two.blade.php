@@ -9,7 +9,7 @@
 <section class="home-slider-wrapper pt-md-3" data-aos="zoom-in">
 	<div class="container">
 		<div id="myCarousel" class="carousel slide" data-ride="carousel">
-			<div class="carousel-inner">
+			<div class="carousel-inner slides2" data-visible="2">
 				@foreach($banners as $key => $banner)
 					@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
 					<div class="carousel-item {{$key == 0 ? 'active' : ''}}">
@@ -29,6 +29,7 @@
 				<span class="sr-only">Next</span>
 			</a>
 		</div>
+
 	</div>
 </section>
 
