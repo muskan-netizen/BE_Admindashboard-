@@ -791,7 +791,11 @@ class CustomerAuthController extends FrontController
             $vendor->status = 0;
             $vendor->name = $request->name;
             $vendor->email = $request->email;
-            $vendor->phone_no = $user->phone_no;
+            $vendor->phone_no = $user->phone_number;
+            $vendor->city = $request->city;
+            $vendor->state = $request->state;
+            $vendor->country = $request->country;
+            $vendor->pincode = $request->pincode;
             $vendor->address = $request->address;
             $vendor->website = $request->website;
             $vendor->latitude = $request->latitude;
