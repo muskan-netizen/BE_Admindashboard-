@@ -716,7 +716,7 @@ class CartController extends BaseController
                                     if (!empty($deliver_charge) && $delivery_count == 0) {
                                         $delivery_count = 1;
                                         $prod->deliver_charge = number_format($deliver_charge, 2, '.', '');
-                                        $payable_amount = $payable_amount + $deliver_charge;
+                                       // $payable_amount = $payable_amount + $deliver_charge;
                                         $order_sub_total = $order_sub_total + $deliver_charge;
                                         $delivery_fee_charges = $deliver_charge;
                                     }
@@ -1305,7 +1305,7 @@ class CartController extends BaseController
                                         'sku' => ucfirst($prod->pvariant->sku),
                                     );
                                 }
-                            } 
+                            }
                             $prod->taxdata = $taxData;
                             if ($action == 'delivery') {
                                 if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
