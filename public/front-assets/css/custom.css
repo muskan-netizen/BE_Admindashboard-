@@ -136,6 +136,14 @@ body .al_footer_template_two .footer-theme .sub-title .contact-list li i{top: 8p
 .al_template_one.site-topbar .location-bar h2:after {right: 0px;}
 /* mobile menu css end here */
 
+/* template two common css */
+.al_new_wrapper_design .rating-number,
+body .al_new_wrapper_design .inner_spacing .rating {
+    top: 14px;
+    right: 14px;
+}
+/* template two common css */
+
 /* Responsiveness Css Start From Here */
 @media (max-width: 1919px) {
 .pixelstrap a,.pixelstrap a:hover,.pixelstrap a:active {font-size: 13px;}.pixelstrap a .sub-arrow {right: 5px;}.common_card .card {width: calc(100% - 20px);}
