@@ -115,7 +115,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                                     <% _.each(vendor.products, function(product, pr){%>
                                                         <div class="col-4 text-center mb-2">
                                                             <div class="list-img" style="height:50px;">
-                                                                <img style="height:50px;" tabindex="0" data-toggle="tooltip" title="<%= product.product_name %>" src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
+                                                                <img style="height:50px;" data-placement="right" data-toggle="tooltip" title="<%= product.product_name %>" src="<%= product.image_path.proxy_url %>74/100<%= product.image_path.image_path %>">
                                                                 <span class="item_no position-absolute">x<%= product.quantity %></span>
                                                                 
                                                             </div>

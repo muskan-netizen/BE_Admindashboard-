@@ -94,6 +94,9 @@ class UserController extends BaseController
             ->addColumn('wallet', function($users) {
                 return $users->wallet;
             })
+            ->addColumn('signup_date', function($users) {
+                return dateTimeInUserTimeZone($users->created_at, $users->timezone); 
+            })
             ->addColumn('login_type_value', function($users) {
                 if (!empty($users->facebook_auth_id)) {
                     return $users->facebook_auth_id;
