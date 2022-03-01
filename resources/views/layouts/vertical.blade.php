@@ -81,9 +81,19 @@
     var Default_latitude  =  {{ $Default_latitude }};
     var Default_longitude =  {{ $Default_longitude }};
 
-    var NumberFormatHelper = { formatPrice: function(x){
+    var NumberFormatHelper = { formatPrice: function(x,format=1){
         if(x){
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
+            if(digit_count)
+            {
+                x = parseFloat(x).toFixed(digit_count);
+            }
+            if(format == 1)
+            {
+                var parts = x.split(".");
+                return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ((parts[1] !== undefined) ? "." + parts[1] : "");
+                // return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
         }
         return x;
         }
