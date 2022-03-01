@@ -80,7 +80,7 @@
             <form method="POST" class="" action="{{route('configure.update', Auth::user()->code)}}"> 
                 @csrf
                 <input type="hidden" name="send_to" id="send_to" value="customize">
-                <input type="hidden" name="verify_config" id="verify_config" value="1">
+                <input type="hidden" name="verify_vendor_type" id="verify_vendor_type" value="1">
                 <div class="card-box mb-2">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h4 class="header-title mb-0">{{ __("Vendor Type") }}</h4>
@@ -117,12 +117,12 @@
                 @csrf
                 <div class="card-box mb-0 h-100 pb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">{{ __("Date & Time") }}</h4>
+                        <h4 class="header-title mb-0">{{ __("Format") }}</h4>
                         <input type="hidden" name="send_to" id="send_to" value="customize">
                         <button class="btn btn-info d-block" type="submit"> {{ __("Save") }} </button>
                     </div>
                     <p class="sub-header">
-                        {{ __("View and update the date & time format.") }}
+                        {{ __("View and update the date, time & decimal format.") }}
                     </p>
                     <div class="row mb-2">
                         <div class="col-md-12">
@@ -153,6 +153,24 @@
                                     </option>
                                     <option value="24" {{ ($preference && $preference->time_format =="24")? "selected" : "" }}>24 {{ __("hours") }}
                                     </option>
+                                </select>
+                                @if($errors->has('time_format'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('time_format') }}</strong>
+                                </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group mb-2">
+                                <label for="time_format">{{ __("Decimal Format (Digit After Decimal)") }}</label>
+                                <select class="form-control al_box_height al_box_height" id="digit_after_decimal" name="digit_after_decimal">
+                                    <option value="0" {{ ($preference && $preference->digit_after_decimal == 0)? "selected" : "" }}> {{ __("No Decimal") }}
+                                    </option>
+                                    @for($i=1; $i<=8; $i++)
+                                    <option value="{{$i}}" {{ ($preference && $preference->digit_after_decimal == $i)? "selected" : "" }}>{{$i}} {{ __("Digit") }}
+                                    </option>
+                                    @endfor
                                 </select>
                                 @if($errors->has('time_format'))
                                 <span class="text-danger" role="alert">
@@ -270,7 +288,7 @@
     <div class="row">
       <!-- User Authentication start-->
       <div class="col-md-3 mb-3">
-        <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
+        <form method="POST" action="{{route('configure.update', Auth::user()->code)}}"> 
             <input type="hidden" name="verify_config" id="verify_config" value="1">
             <input type="hidden" name="send_to" id="send_to" value="customize">
             @csrf
@@ -514,11 +532,11 @@
                         </div>
                         <div class="col-xl-12 my-2" id="addCur-160">
                         <label class="primaryCurText">{{ __("Referred To Amount") }} = </label>
-                        <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', $reffer_to ?? '')}}" min="0">
+                        <input class="form-control" type="number" id="reffered_to_amount" name="reffered_to_amount" value="{{ old('reffered_to_amount', decimal_format($reffer_to) ?? '')}}" min="0" step="any"> 
                         </div>
                         <div class="col-xl-12 mb-2 mt-3" id="addCur-160">
                         <label class="primaryCurText">{{ __("Referred By Amount") }} = </label>
-                        <input class="form-control" type="number" name="reffered_by_amount" id="reffered_by_amount" value="{{ old('reffered_by_amount', $reffer_by ?? '')}}" min="0">
+                        <input class="form-control" type="number" name="reffered_by_amount" id="reffered_by_amount" value="{{ old('reffered_by_amount', decimal_format($reffer_by) ?? '')}}" min="0" step="any">
                         </div>
                     </div>
                 </form>
@@ -818,7 +836,29 @@
                               </div>
                            </div>
                         </div>
-                        @forelse($client_languages as $k => $client_language)
+                        <div class="col-md-12 selector-option-al ">
+                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
+                                <tr class="trForClone">
+
+                                    @foreach($client_languages as $langs)
+                                        <th>{{$langs->langName}}</th>
+                                    @endforeach
+                                    <th></th>
+                                </tr>
+                                <tbody id="table_body">
+                                        <tr>
+                                    @foreach($client_languages as $key => $langs)
+                                        <td>
+                                            <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
+                                            <input class="form-control" name="name[{{$k}}]" type="text" id="vendor_registration_document_name_{{$client_language->langId}}">
+                                        </td>
+                                    @endforeach
+                                    <td class="lasttd"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- @forelse($client_languages as $k => $client_language)
                         <div class="col-md-6 mb-2">
                            <div class="row">
                               <div class="col-12">
@@ -834,7 +874,7 @@
                            </div>
                         </div>
                         @empty
-                        @endforelse
+                        @endforelse -->
                         <div id="selector_div" class="col-md-12 d-none">
                             <div class="card">
                             <div class="card-box mb-0 ">
@@ -852,8 +892,8 @@
                                 </div>
                                 <div id="option_div">
 
-                                        <div class="selector-option table-responsive">
-                                            <table class="table table-borderless mb-0 optionTableAdd" id="selector-datatable">
+                                        <div class="selector-option-al ">
+                                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
                                                 <tr class="trForClone">
 
                                                     @foreach($client_languages as $langs)
@@ -909,25 +949,49 @@
                            <input type="file" accept="image/*" data-plugins="dropify" name="icon" class="dropify"  />
                            <label class="logo-size text-right w-100">{{ __("Icon Size") }} 100X100</label>
                        </div>
+                    </div>
+                        <div class="row">
+                            <div class="col-12 selector-option-al ">
+                                <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
+                                    <tr class="trForClone">
 
-                        @forelse($client_languages as $k => $client_language)
-                        <div class="col-md-6 mb-2">
-                           <div class="row">
-                              <div class="col-12">
-                                 <div class="form-group position-relative">
-                                    <label for="">{{ __("Name") }} ({{$client_language->langName}})</label>
-                                    <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
-                                    <input class="form-control" name="name[{{$k}}]" type="text" id="product_tag_name_{{$client_language->langId}}">
-                                 </div>
-                                 @if($k == 0)
-                                    <span class="text-danger error-text product_tag_err"></span>
-                                 @endif
-                              </div>
-                           </div>
+                                        @foreach($client_languages as $langs)
+                                            <th>{{$langs->langName}}</th>
+                                        @endforeach
+                                        <th></th>
+                                    </tr>
+                                    <tbody >
+                                        <tr>
+                                        @foreach($client_languages as $key => $langs)
+                                            <td>
+                                                <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
+                                                <input class="form-control" name="name[{{$k}}]" type="text" id="product_tag_name_{{$client_language->langId}}">
+                                            </td>
+                                            @if($key == 0)
+                                            <span class="text-danger error-text product_tag_err"></span>
+                                            @endif
+                                            @endforeach
+                                            <td class="lasttd"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <!-- @forelse($client_languages as $k => $client_language)
+                            <div class="col-3">
+                                <div class="form-group position-relative">
+                                <label for="">{{ __("Name") }} ({{$client_language->langName}})</label>
+                                <input class="form-control" name="language_id[{{$k}}]" type="hidden" value="{{$client_language->langId}}">
+                                <input class="form-control" name="name[{{$k}}]" type="text" id="product_tag_name_{{$client_language->langId}}">
+                                </div>
+                                @if($k == 0)
+                                <span class="text-danger error-text product_tag_err"></span>
+                                @endif
+                            </div>
+                            @empty
+                            @endforelse -->
                         </div>
-                        @empty
-                        @endforelse
-                     </div>
+
+
                   </div>
                </form>
             </div>

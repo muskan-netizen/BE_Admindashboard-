@@ -34,7 +34,7 @@
 
             <form class="vendor-signup col-md-12" id="vendor_signup_form">
                 <!-- al_new_vendor_form -->
-               
+
                 <!-- al_new_vendor_form -->
 
                 <!-- vendor_form other form-->
@@ -188,12 +188,12 @@
                                         <span class="invalid-feedback"></span>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <div class="col-md-12 mb-1">
+                                        <div class="col-md-12 mb-1 p-0">
                                             <label for="validationCustom02">{{__('Website')}}</label>
                                             <input type="text" class="form-control" name="website" value="">
                                             <span class="valid-feedback"></span>
                                         </div>
-                                        <div class="col-md-12 " id="addressInput">
+                                        <div class="col-md-12 p-0" id="addressInput">
                                             <label for="validationCustom01">{{__('Address')}}</label>
                                             <input type="text" class="form-control" name="address" value="" id="vendor_address">
                                             <input type="hidden" class="form-control" name="longitude" value="" id="vendor_longitude">

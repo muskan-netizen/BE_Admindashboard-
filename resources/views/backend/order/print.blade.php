@@ -89,14 +89,14 @@
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{ $product->quantity }}</p>
                                 </td>
                                 <td style="width: 20%">
-                                    <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($product->price) </p>
+                                    <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}{{decimal_format($product->price)}} </p>
                                     @if($product->product_variant_sets)
                                     <p style="vertical-align: top; margin: 0;padding: 10px;"></p>
                                     @endif
                                     @if($product->addon && $add_count) 
                                         <ul style="padding-left: 10px;margin: 0;">
                                             @foreach($product->addon as $key=>$addon)
-                                            <li style="list-style: none;font-size: 14px;font-family: Lato,sans-serif;">{{$clientCurrency->currency->symbol}}{{ $addon->option->price_in_cart }} </li>
+                                            <li style="list-style: none;font-size: 14px;font-family: Lato,sans-serif;">{{$clientCurrency->currency->symbol}}{{ decimal_format($addon->option->price_in_cart) }} </li>
                                             @endforeach
                                         </ul>                                           
                                         
@@ -105,7 +105,7 @@
                                    
                                 </td>
                                 <td>
-                                    <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($product->total_amount)</p>
+                                    <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}{{decimal_format($product->total_amount)}}</p>
                                 </td>
                             </tr>
                             @endif
@@ -115,32 +115,32 @@
                                 <td scope="row" colspan="4">
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif;">{{__('Delivery Fee')}} :</b></p>
                                 </td>
-                                <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($vendor->delivery_fee)</p></td>
+                                <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->delivery_fee)}}</p></td>
                             </tr>
                             <tr>
                                 <td scope="row" colspan="4">
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Sub Total") }} :</b></p>
                                 </td>
-                                <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($sub_total)</p></td>
+                                <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}{{decimal_format($sub_total)}}</p></td>
                             </tr>
                             <tr>
                                 <td scope="row" colspan="4">
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif;">{{__('Total Discount')}} :</b></p>
                                 </td>
-                                <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($vendor->discount_amount)</p></td>
+                                <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->discount_amount)}}</p></td>
                             </tr>
                             <tr>
                                 <td scope="row" colspan="4">
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Estimated Tax") }} :</b></p>
                                 </td>
-                                <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($taxable_amount)</p></td>
+                                <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}{{decimal_format($taxable_amount)}}</p></td>
                             </tr>
                             @if($vendor_service_fee > 0)
                             <tr>
                                 <td scope="row" colspan="4">
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Service Fee") }} :</b></p>
                                 </td>
-                                <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px;">{{$clientCurrency->currency->symbol}}@money($vendor_service_fee)</p></td>
+                                <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px;">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor_service_fee)}}</p></td>
                             </tr>
                             @endif
                             <!-- <tr>
@@ -167,7 +167,7 @@
                                 <td scope="row" colspan="4">
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Total") }} :</b></p>
                                 </td>
-                                <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare)</p></td>
+                                <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</p></td>
                             </tr>
                         </tbody>
                         @endforeach

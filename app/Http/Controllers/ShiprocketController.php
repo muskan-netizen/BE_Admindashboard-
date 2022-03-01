@@ -212,9 +212,9 @@ class ShiprocketController extends Controller
 					'name' => $items->product_name, //Required
 					'sku' => $items->product->sku ?? $items->id, //Required
 					'units' => $items->quantity,
-					'selling_price' => helper_number_formet($items->price),
+					'selling_price' => decimal_format($items->price),
 					'discount' => '',
-					'tax' => helper_number_formet($items->taxable_amount),
+					'tax' => decimal_format($items->taxable_amount),
 					'hsn' => '',
 					);
 					$weight[] = $items->product->weight;

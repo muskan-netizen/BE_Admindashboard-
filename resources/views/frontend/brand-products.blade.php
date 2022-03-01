@@ -151,7 +151,7 @@
                                                             <b>
                                                                 @if($new['inquiry_only'] == 0)
                                                                     <?php $multiply = $new['variant_multiplier']; ?>
-                                                                    {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}}
+                                                                    {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
                                                                 @endif
                                                             </b>
 
@@ -182,7 +182,7 @@
                                                     @if($new['inquiry_only'] == 0)
                                                     <h4 class="mt-1">
                                                         <//?php $multiply = $new['variant_multiplier']; ?>
-                                                        {{ Session::get('currencySymbol').' '.(number_format($new['variant_price'] * $multiply,2))}} </h4>
+                                                        {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}} </h4>
                                                     @endif
                                                     @if($client_preference_detail)
                                                         @if($client_preference_detail->rating_check == 1)
@@ -278,7 +278,7 @@
                                                                     <h3>{{ $data->translation_title }}</h3>
                                                                 </a>
                                                                 <h6 class="mt-0"><b>{{$data->vendor->name}}</b></h6>
-                                                                <h4 class="mt-1">{{Session::get('currencySymbol').(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                <h4 class="mt-1">{{Session::get('currencySymbol').(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                 @if($client_preference_detail && $client_preference_detail->rating_check == 1 && $data->averageRating > 0)
                                                                     <span class="rating-number">{{ number_format($data->averageRating, 1, '.', '') }} <i class="fa fa-star text-white p-0"></i></span>
                                                                 @endif
@@ -335,7 +335,7 @@
                                                                     <p>{{ $data->translation_description }}</p>
                                                                 @endif
                                                                 @if($data->inquiry_only == 0)
-                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(number_format($data->variant_price * $data->variant_multiplier,2))}}</h4>
+                                                                    <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                                                 @endif
                                                             </div>
                                                         </div>

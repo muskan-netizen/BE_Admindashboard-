@@ -74,6 +74,11 @@
                             <span>{!! \Session::get('success') !!}</span>
                         </div>
                     @endif
+                    @if (\Session::has('error'))
+                    <div class="alert alert-danger">
+                        <span>{!! \Session::get('error') !!}</span>
+                    </div>
+                @endif
                     @if ( ($errors) && (count($errors) > 0) )
                         <div class="alert alert-danger">
                             <ul class="m-0">
@@ -107,6 +112,15 @@
                         <div class="outer-box"> 
                     <form name="register" id="register" action="{{route('user.submitChangePassword')}}" class="theme-form" method="post"> @csrf
                         <div class="form-row mb-2">
+                            <div class="col-md-12 mb-3">
+                                <label for="review">{{__('Old Password')}}</label>
+                                <input type="password" class="form-control mb-0" id="review" placeholder="{{__('Current Password')}}" name="old_password">
+                                @if($errors->has('old_password'))
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $errors->first('old_password') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
                             <div class="col-md-12 mb-3">
                                 <label for="review">{{__('Password')}}</label>
                                 <input type="password" class="form-control mb-0" id="review" placeholder="{{__('Password')}}" name="new_password">

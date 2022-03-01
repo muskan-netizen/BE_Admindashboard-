@@ -19,7 +19,7 @@
 
        <style type="text/css">
 .loader_box {position: fixed;width: 100%;height: 100%;background: #00000075;top: 0;z-index:99999;left: 0;}
-.spinner-border{position: absolute;top: 50%;left: 0;right: 0;margin: 0 auto !important;display: block;}
+.spinner-border{color: <?php echo getClientPreferenceDetail()->web_color; ?> !important; position: absolute;top: 50%;left: 0;right: 0;margin: 0 auto !important;display: block;}
        </style>
 
     </head>
@@ -81,9 +81,19 @@
     var Default_latitude  =  {{ $Default_latitude }};
     var Default_longitude =  {{ $Default_longitude }};
 
-    var NumberFormatHelper = { formatPrice: function(x){
+    var NumberFormatHelper = { formatPrice: function(x,format=1){
         if(x){
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
+            if(digit_count)
+            {
+                x = parseFloat(x).toFixed(digit_count);
+            }
+            if(format == 1)
+            {
+                var parts = x.split(".");
+                return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ((parts[1] !== undefined) ? "." + parts[1] : "");
+                // return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
         }
         return x;
         }

@@ -56,6 +56,8 @@ else if($client_preference_detail->show_dark_mode == 2){
  </style>
 @endif
 <body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
+<article id="page-container">
+   <article id="content-wrap">
 @if(isset($set_template)  && $set_template->template_id == 3)
 
   <article class="al_new_wrapper_design">
@@ -63,7 +65,7 @@ else if($client_preference_detail->show_dark_mode == 2){
 
   @endif
 <header>
-    <div class="mobile-fix-option"></div>
+    <div class="mobile-fix-option_al"></div>
     @if(isset($set_template)  && $set_template->template_id == 1)
     @include('layouts.store/left-sidebar-template-one')
     @elseif(isset($set_template)  && $set_template->template_id == 2)

@@ -354,40 +354,42 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 <div class="loader" id="order_list_order">
     <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
 </div>
-<div class="row">
-    <div class="col-sm-12 col-lg-12 tab-product pt-0">
-        <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="pending_order-tab" data-toggle="tab" href="#pending_orders" role="tab" aria-selected="false" data-rel="pending_orders">
-                    <i class="icofont icofont-man-in-glasses"></i>{{ __('Pending Orders') }} <sup class="total-items" id="pending-orders">({{$pending_order_count}})</sup>
-                </a>
-                <div class="material-border"></div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
-                    <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
-                </a>
-                <div class="material-border"></div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
-                    <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders">({{$past_order_count}})</sup>
-                </a>
-                <div class="material-border"></div>
-            </li>
-        </ul>
-        <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
-            <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
-            <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
-            <div class="tab-pane fade past-order position-relative h-100" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
-                <div class="error-msg mt-3">
-                    <img class="mb-2" src="{{asset('images/no-order.svg')}}">
-                    <p>{{ __("You don't have orders right now.") }}</p>
+        <div class="col-12">
+            <div class="row">
+                <div class="col-sm-12 col-lg-12 tab-product pt-0">
+                    <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="pending_order-tab" data-toggle="tab" href="#pending_orders" role="tab" aria-selected="false" data-rel="pending_orders">
+                                <i class="icofont icofont-man-in-glasses"></i>{{ __('Pending Orders') }} <sup class="total-items" id="pending-orders">({{$pending_order_count}})</sup>
+                            </a>
+                            <div class="material-border"></div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
+                                <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
+                            </a>
+                            <div class="material-border"></div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
+                                <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders">({{$past_order_count}})</sup>
+                            </a>
+                            <div class="material-border"></div>
+                        </li>
+                    </ul>
+                    <div class="tab-content nav-material  order_data_box scroll-style" id="top-tabContent">
+                        <div class="tab-pane fade past-order show active position-relative h-100" id="pending_orders" role="tabpanel" aria-labelledby="pending_order-tab"></div>
+                        <div class="tab-pane fade position-relative h-100" id="active_orders" role="tabpanel" aria-labelledby="active_orders_tab"></div>
+                        <div class="tab-pane fade past-order position-relative h-100" id="orders_history" role="tabpanel" aria-labelledby="orders_history_tab">
+                            <div class="error-msg mt-3">
+                                <img class="mb-2" src="{{asset('images/no-order.svg')}}">
+                                <p>{{ __("You don't have orders right now.") }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
     </div>
-</div>
 </div>
 
 
@@ -451,7 +453,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         var typ=  $("a.nav-link.active").data('rel');
         console.log('Test');
         init(typ, "{{ route('orders.filter') }}", '', false);
-        
+
     }
 
     function init(filter_order_status, url, search_keyword = "", isOnload = false) {
@@ -501,7 +503,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                  setTimeout(function() {
                     autoloaddashboad()
                 }, 7000);
-                
+
             },
             error: function(data) {
                 setTimeout(function() {

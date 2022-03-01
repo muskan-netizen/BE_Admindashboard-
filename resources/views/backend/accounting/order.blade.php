@@ -142,16 +142,23 @@
             }
         });
         function getPercentageAmount(percent,amouny){
-            var totalPercent = (amouny/percent);
 
-            return numberWithCommas(parseFloat(totalPercent).toFixed(2));
+            var totalPercent = (percent/amouny * 100);
+
+            return parseFloat(totalPercent).toFixed(2);
         }
 
 
         function numberWithCommas(x) {
         // x=x.toFixed(2)
             if(x > 0){
-                return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
+                if(digit_count)
+                {
+                    x = parseFloat(x).toFixed(digit_count);
+                }
+                var parts = x.split(".");
+                return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ((parts[1] !== undefined) ? "." + parts[1] : "");
             }else{
                 return 0;
             }

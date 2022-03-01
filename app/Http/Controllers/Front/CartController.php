@@ -693,14 +693,14 @@ class CartController extends FrontController
                     $quantity_price = $price_in_doller_compare * $prod->quantity;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                     $prod->pvariant->price_in_cart = $prod->pvariant->price;
-                    $prod->pvariant->price = number_format($price_in_currency, 2, '.', '');
-                    $prod->pvariant->container_charges = number_format($container_charges_in_currency, 2, '.', '');
+                    $prod->pvariant->price = decimal_format($price_in_currency);
+                    $prod->pvariant->container_charges = decimal_format($container_charges_in_currency);
                     $prod->image_url = $this->loadDefaultImage();
                     $prod->pvariant->media_one = isset($prod->pvariant->media) ? $prod->pvariant->media->first() : [];
                     $prod->pvariant->media_second = isset($prod->product->media) ? $prod->product->media->first() : [];
                     $prod->pvariant->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
-                    $prod->quantity_price = number_format($quantity_price, 2, '.', '');
-                    $prod->quantity_container_charges = number_format($quantity_container_charges, 2, '.', '');
+                    $prod->quantity_price = decimal_format($quantity_price);
+                    $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                     $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
@@ -712,8 +712,8 @@ class CartController extends FrontController
                             $product_tax = $quantity_price * $rate / 100;
                             $taxData[$tckey]['identifier'] = $tax_value->identifier;
                             $taxData[$tckey]['rate'] = $rate;
-                            $taxData[$tckey]['tax_amount'] = number_format($tax_amount, 2, '.', '');
-                            $taxData[$tckey]['product_tax'] = number_format($product_tax, 2, '.', '');
+                            $taxData[$tckey]['tax_amount'] = decimal_format($tax_amount);
+                            $taxData[$tckey]['product_tax'] = decimal_format($product_tax);
                             $taxable_amount = $taxable_amount + $product_tax;
                             $payable_amount = $payable_amount + $product_tax;
                         }
@@ -729,9 +729,9 @@ class CartController extends FrontController
                                     $opt_price_in_currency = $addons->option->price / $divider;
                                     $opt_price_in_doller_compare = $opt_price_in_currency * $customerCurrency->doller_compare;
                                 }
-                                $opt_quantity_price = number_format($opt_price_in_doller_compare * $prod->quantity, 2, '.', '');
+                                $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $prod->quantity);
                                 $addons->option->price_in_cart = $addons->option->price;
-                                $addons->option->price = number_format($opt_price_in_currency, 2, '.', '');
+                                $addons->option->price = decimal_format($opt_price_in_currency);
                                 $addons->option->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
                                 $addons->option->quantity_price = $opt_quantity_price;
                                 $payable_amount = $payable_amount + $opt_quantity_price;
@@ -874,7 +874,7 @@ class CartController extends FrontController
                                     $payable_amount -= $total_discount_percent;
                                     $coupon_amount_used = $total_discount_percent;
                                 } else {
-                                    $gross_amount = number_format(($payable_amount - $taxable_amount), 2, '.', '');
+                                    $gross_amount = decimal_format($payable_amount - $taxable_amount);
                                     $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
                                     $payable_amount -= $percentage_amount;
                                     $coupon_amount_used = $percentage_amount;
@@ -932,17 +932,17 @@ class CartController extends FrontController
 
                 //end applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
-                $vendorData->coupon_amount_used = number_format($coupon_amount_used, 2, '.', '');
-                $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
-                $vendorData->delivery_fee_charges = number_format($delivery_fee_charges, 2, '.', '');
-                //$vendorData->delivery_fee_charges_static = number_format($delivery_fee_charges_static, 2, '.', '');;
+                $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
+                $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
+                $vendorData->delivery_fee_charges = decimal_format($delivery_fee_charges);
+                //$vendorData->delivery_fee_charges_static = decimal_format($delivery_fee_charges_static);;
 
-                $vendorData->payable_amount = number_format($payable_amount, 2, '.', '');
-                $vendorData->discount_amount = number_format($discount_amount, 2, '.', '');
-                $vendorData->discount_percent = number_format($discount_percent, 2, '.', '');
-                $vendorData->taxable_amount = number_format($taxable_amount, 2, '.', '');
-                $vendorData->product_total_amount = number_format(($payable_amount - $taxable_amount), 2, '.', '');
-                $vendorData->product_sub_total_amount = number_format($subtotal_amount, 2, '.', '');
+                $vendorData->payable_amount = decimal_format($payable_amount);
+                $vendorData->discount_amount = decimal_format($discount_amount);
+                $vendorData->discount_percent = decimal_format($discount_percent);
+                $vendorData->taxable_amount = decimal_format($taxable_amount);
+                $vendorData->product_total_amount = decimal_format($payable_amount - $taxable_amount);
+                $vendorData->product_sub_total_amount = decimal_format($subtotal_amount);
                 $vendorData->isDeliverable = 1;
                 $vendorData->promo_free_deliver = $PromoFreeDeliver;
                 $vendorData->is_vendor_closed = $is_vendor_closed;
@@ -1014,7 +1014,7 @@ class CartController extends FrontController
             }
             if (!empty($subscription_features)) {
                 $total_discount_amount = $total_discount_amount + $total_subscription_discount;
-                $cart->total_subscription_discount = number_format($total_subscription_discount, 2, '.', '');
+                $cart->total_subscription_discount = decimal_format($total_subscription_discount);
             }
             $total_payable_amount = $total_payable_amount - $total_discount_amount;
             if ($loyalty_amount_saved > 0) {
@@ -1034,7 +1034,7 @@ class CartController extends FrontController
                         $wallet_amount_used = $total_payable_amount;
                     }
                     $total_payable_amount = $total_payable_amount - $wallet_amount_used;
-                    $cart->wallet_amount_used = number_format($wallet_amount_used, 2, '.', '');
+                    $cart->wallet_amount_used = decimal_format($wallet_amount_used);
                 }
             }
 
@@ -1087,18 +1087,17 @@ class CartController extends FrontController
                 $cart->vendor_id =  0;
             }
             $cart->slotsCnt = count((array)$slots);
-            $cart->total_service_fee = number_format($total_service_fee, 2, '.', '');
-            $cart->loyalty_amount = number_format($loyalty_amount_saved, 2, '.', '');
-            $cart->gross_amount = number_format(($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount), 2, '.', '');
-            $cart->new_gross_amount = number_format(($total_payable_amount + $total_discount_amount), 2, '.', '');
-            $cart->total_payable_amount = number_format($total_payable_amount, 2, '.', '');
-            $cart->total_discount_amount = number_format($total_discount_amount, 2, '.', '');
-            $cart->total_taxable_amount = number_format($total_taxable_amount, 2, '.', '');
-            $cart->tip_5_percent = number_format((0.05 * $total_payable_amount), 2, '.', '');
-            $cart->tip_10_percent = number_format((0.1 * $total_payable_amount), 2, '.', '');
-            $cart->tip_15_percent = number_format((0.15 * $total_payable_amount), 2, '.', '');
-            $cart->total_container_charges = number_format(($total_container_charges), 2, '.', '');
-          
+            $cart->total_service_fee = decimal_format($total_service_fee);
+            $cart->loyalty_amount = decimal_format($loyalty_amount_saved);
+            $cart->gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
+            $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
+            $cart->total_payable_amount = decimal_format($total_payable_amount);
+            $cart->total_discount_amount = decimal_format($total_discount_amount);
+            $cart->total_taxable_amount = decimal_format($total_taxable_amount);
+            $cart->tip_5_percent = decimal_format(0.05 * $total_payable_amount);
+            $cart->tip_10_percent = decimal_format(0.10 * $total_payable_amount);
+            $cart->tip_15_percent = decimal_format(0.15 * $total_payable_amount);
+            $cart->total_container_charges = decimal_format($total_container_charges);
 
             $cart->action = $action;
             $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $user_allAddresses, 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'preferences' => $preferences])->render();
@@ -1236,7 +1235,7 @@ class CartController extends FrontController
                 }
                 $cart->variant_price = $variant_price;
                 $cart->addon_set = $addon_set;
-                $cart->total_variant_price = number_format($cart->quantity * $variant_price, 2, '.', '');
+                $cart->total_variant_price = decimal_format($cart->quantity * $variant_price);
 
                 if($cart->vendor->show_slot == 0){
                     if( ($cart->vendor->slotDate->isEmpty()) && ($cart->vendor->slot->isEmpty()) ){
@@ -1448,7 +1447,7 @@ class CartController extends FrontController
                 //Dispatcher Delivery changes code
                 $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
                 if (!empty($deliver_charge)){
-                    $deliver_charge = number_format($deliver_charge, 2, '.', '');
+                    $deliver_charge = decimal_format($deliver_charge);
                     $option[] = array(
                         'type'=>'D',
                         'courier_name'=>__('Dispatcher'),
@@ -1467,7 +1466,7 @@ class CartController extends FrontController
             $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
             if($deliver_lalmove_fee>0)
             {
-                $deliver_charge_lalamove = number_format($deliver_lalmove_fee, 2, '.', '');
+                $deliver_charge_lalamove = decimal_format($deliver_lalmove_fee);
 
                 $optionLala[] = array(
                     'type'=>'L',
@@ -1500,7 +1499,7 @@ class CartController extends FrontController
                     $deliver_dunzo_fee = $dunzo->getQuotations($vendorData->vendor_id,$address);
                     if($deliver_dunzo_fee>0)
                     {
-                        $deliver_charge_dunzo = number_format($deliver_dunzo_fee, 2, '.', '');
+                        $deliver_charge_dunzo = decimal_format($deliver_dunzo_fee);
                         $optionDunzo[] = array(
                             'type'=>'DU',
                             'courier_name'=>__('Dunzo'),
@@ -1522,7 +1521,7 @@ class CartController extends FrontController
                       $deliver_ahoy_fee = $ahoy->getPreOrderFee($vendorData->vendor_id,$address);
                       if($deliver_ahoy_fee>0)
                       {
-                          $deliver_charge_ahoy = number_format($deliver_ahoy_fee, 2, '.', '');
+                          $deliver_charge_ahoy = decimal_format($deliver_ahoy_fee);
                           $optionAhoy[] = array(
                               'type'=>'M',
                               'courier_name'=>__('Ahoy'),
@@ -1543,9 +1542,9 @@ class CartController extends FrontController
              # for static fees
 
                 if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){
-                    $deliveryCharges = number_format($vendorData->vendor->delivery_fee_maximum, 2, '.', '');
+                    $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_maximum);
                 }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
-                    $deliveryCharges = number_format($vendorData->vendor->delivery_fee_minimum, 2, '.', '');
+                    $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_minimum);
                 }
 
                 $option[] = array(

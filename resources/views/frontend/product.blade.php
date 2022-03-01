@@ -236,9 +236,9 @@
                                         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
                                         @if($product->inquiry_only == 0)
                                             <h3 id="productPriceValue" class="mb-md-3">
-                                                <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{(number_format($product->variant[0]->price * $product->variant[0]->multiplier,2))}}</span></b>
+                                                <b class="mr-1">{{Session::get('currencySymbol')}}<span class="product_fixed_price">{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}</span></b>
                                                 @if($product->variant[0]->compare_at_price > 0 )
-                                                    <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{(number_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier,2))}}</span></span>
+                                                    <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price">{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}</span></span>
                                                 @endif
                                             </h3>
                                         @endif
@@ -347,9 +347,9 @@
                                                     <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
                                                         @foreach($addon->setoptions as $k => $option)
                                                         <div class="checkbox checkbox-success form-check-inline mb-1">
-                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price}}" data-fixed_price="{{number_format($product->variant[0]->price * $product->variant[0]->multiplier,2)}}" data-original_price="{{number_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier,2)}}">
-                                                            <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').$option->price.')' }}">
-                                                                {{$option->title .' ('.Session::get('currencySymbol').$option->price.')' }}</label>
+                                                            <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
+                                                            <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
+                                                                {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}</label>
                                                         </div>
                                                         @endforeach
                                                     </div>
@@ -389,7 +389,7 @@
                                                         <div class="checkbox checkbox-success form-check-inline">
                                                             <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
                                                             <label class="pl-2" for="inlineCheckbox_{{$row.'_'.$k}}">
-                                                                {{$option->title .' ($'.$option->price.')' }}</label>
+                                                                {{$option->title .' ($'.decimal_format($option->price).')' }}</label>
                                                         </div>
                                                         @endforeach
                                                     </td>
@@ -582,9 +582,9 @@
     <input type="hidden" name="variant_id" id="prod_variant_id" value="<%= variant.id %>">
     <% if(variant.product.inquiry_only == 0) { %>
         <h3 id="productPriceValue" class="mb-md-3">
-            <b class="mr-1"><span class="product_fixed_price">{{Session::get('currencySymbol')}}<%= variant.productPrice %></span></b>
+            <b class="mr-1"><span class="product_fixed_price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(variant.productPrice) %></span></b>
             <% if(variant.compare_at_price > 0 ) { %>
-                <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price"><%= variant.compare_at_price %></span></span>
+                <span class="org_price">{{Session::get('currencySymbol')}}<span class="product_original_price"><%= Helper.formatPrice(variant.compare_at_price) %></span></span>
             <% } %>
         </h3>
     <% } %>

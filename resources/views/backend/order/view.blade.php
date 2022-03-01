@@ -277,42 +277,42 @@ $timezone = Auth::user()->timezone;
                                         </td>
                                         <td>{{ $product->quantity }}</td>
                                         <td>
-                                            {{$clientCurrency->currency->symbol}}@money($product->price)
+                                            {{$clientCurrency->currency->symbol}}{{decimal_format($product->price)}}
                                             @if($product->addon->isNotEmpty())
                                                 <hr class="my-2">
                                                 @foreach($product->addon as $addon)
-                                                    <p class="p-0 m-0">{{$clientCurrency->currency->symbol}}{{ $addon->option->price_in_cart }}</p>
+                                                    <p class="p-0 m-0">{{$clientCurrency->currency->symbol}}{{ decimal_format($addon->option->price_in_cart) }}</p>
                                                 @endforeach
                                             @endif
                                         </td>
 
-                                        <td>{{$clientCurrency->currency->symbol}}@money($product->total_amount)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($product->total_amount)}}</td>
                                     </tr>
                                     @endif
                                     @endforeach
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{__('Delivery Fee')}} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->delivery_fee)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->delivery_fee)}}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Sub Total") }} :</th>
                                         <td>
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}@money($sub_total)</div>
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($sub_total)}}</div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{__('Total Discount')}} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->discount_amount)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->discount_amount)}}</td>
                                     </tr>
 
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Estimated Tax") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($taxable_amount)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($taxable_amount)}}</td>
                                     </tr>
                                     @if($vendor_service_fee > 0)
                                         <tr>
                                             <th scope="row" colspan="4" class="text-end">{{ __("Service Fee") }} :</th>
-                                            <td>{{$clientCurrency->currency->symbol}}@money($vendor_service_fee)</td>
+                                            <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor_service_fee)}}</td>
                                         </tr>
                                     @endif
 
@@ -326,17 +326,17 @@ $timezone = Auth::user()->timezone;
                                     @if(Auth::user()->is_superadmin)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{$client_head->name}} {{ __("Revenue") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($revenue)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($revenue)}}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
-                                        <td>{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)</td>
+                                        <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare - $revenue - $vendor->delivery_fee)}}</td>
                                     </tr>
                                     @endif
                                     @if(number_format($vendor->orderDetail->loyalty_points_used) > 0)
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Redemmed Loyality Points") }} :</th>
-                                        <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}@money($vendor->orderDetail->loyalty_amount_saved??0.00))</td>
+                                        <td style="width:200px;">{{$vendor->orderDetail->loyalty_points_used??0.00}} ({{$clientCurrency->currency->symbol}}{{decimal_format($vendor->orderDetail->loyalty_amount_saved??0.00)}})</td>
                                     </tr>
                                     @endif
                                     @if($vendor->reject_reason)
@@ -348,7 +348,7 @@ $timezone = Auth::user()->timezone;
                                     <tr>
                                         <th scope="row" colspan="4" class="text-end">{{ __("Total") }} :</th>
                                         <td>
-                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare)</div>
+                                            <div class="fw-bold">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->payable_amount * $clientCurrency->doller_compare)}}</div>
                                         </td>
                                     </tr>
                                 </tbody>

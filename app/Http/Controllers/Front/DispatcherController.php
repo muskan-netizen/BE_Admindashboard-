@@ -206,7 +206,8 @@ class DispatcherController extends FrontController
                             $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $language_id);
                         },
-                        'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus'
+                        'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating', 'vendors.allStatus',
+                        'vendors.cancel_request'
                     ])
                     ->where(function ($q1) {
                         $q1->where('payment_status', 1)->whereNotIn('payment_option_id', [1]);
@@ -226,7 +227,9 @@ class DispatcherController extends FrontController
                             'vendors.products.pvariant.vset.optionData.trans', 'vendors.products.addon', 'vendors.coupon', 'address', 'vendors.products.productRating',
                             'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
                                 $qry->where('language_id', $language_id);
-                            }, 'vendors.dineInTable.category'
+                            }, 
+                            'vendors.dineInTable.category',
+                            'vendors.cancel_request'
                         ]
                     )
                     ->where(function ($q1) {
@@ -245,9 +248,9 @@ class DispatcherController extends FrontController
                     $order->created_date = dateTimeInUserTimeZone($order->created_at, $user->timezone);
                     $order->tip_amount = $order->tip_amount;
                     $order->tip = array(
-                        ['label' => '5%', 'value' => number_format((0.05 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')],
-                        ['label' => '10%', 'value' => number_format((0.1 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')],
-                        ['label' => '15%', 'value' => number_format((0.15 * ($order->payable_amount - $order->total_discount_calculate)), 2, '.', '')]
+                        ['label' => '5%', 'value' => decimal_format(0.05 * ($order->payable_amount - $order->total_discount_calculate))],
+                        ['label' => '10%', 'value' => decimal_format(0.1 * ($order->payable_amount - $order->total_discount_calculate))],
+                        ['label' => '15%', 'value' => decimal_format(0.15 * ($order->payable_amount - $order->total_discount_calculate))]
                     );
                     foreach ($order->vendors as $vendor) {
                         $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order_id)->where('vendor_id', $vendor->vendor->id)->orderBy('id', 'DESC')->first();
