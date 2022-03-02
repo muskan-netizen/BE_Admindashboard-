@@ -10,7 +10,7 @@ Route::get('/debug-sentry', function () {
 
 Route::group(['middleware' => ['domain']], function () {
 	Route::post('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
-	Route::post('webhook/shiprocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
+	Route::post('webhook/ship-rocket','ShiprocketController@shiprocketWebhook')->name('webshiprocket');
 	Route::post('webhook/dunzo','DunzoController@dunzoWebhook')->name('dunzoWebhook');
 	Route::post('webhook/ahoy','AhoyController@ahoyWebhook')->name('ahoyWebhook');
 

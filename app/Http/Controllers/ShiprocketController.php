@@ -319,6 +319,11 @@ class ShiprocketController extends Controller
 
         $trackingId = '';
         $json = json_decode($request->getContent());
+
+		if($request && isset($json->shipment_status_id)){
+			Webhook::create(['tracking_order_id'=>(($json->awb)?$json->awb:''),'response'=>$request->getContent()]);
+		   }
+		   
         if(isset($json->shipment_status_id) && $json->shipment_status_id == '1')
         {
             $awb = $json->awb;
@@ -344,10 +349,6 @@ class ShiprocketController extends Controller
             $awb = $json->awb;
             $details = OrderVendor::where('ship_awb_id',$awb)->first();
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
-        }
-
-        if($request && isset($json->shipment_status_id)){
-         Webhook::create(['tracking_order_id'=>(($json->awb)?$json->awb:''),'response'=>$request->getContent()]);
         }
 
         return response([],200);

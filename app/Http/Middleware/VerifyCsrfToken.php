@@ -18,7 +18,7 @@ class VerifyCsrfToken extends Middleware
         'payment/mobbex/notify',
         'payment/webhook/stripe_fpx',
         'webhook/lalamove',
-        'webhook/shiprocket',
+        'webhook/ship-rocket',
         'passbase/webhook',
         'webhook/dunzo',
         'webhook/ahoy',
