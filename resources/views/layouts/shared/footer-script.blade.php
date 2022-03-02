@@ -239,7 +239,7 @@ if (Session::has('toaster')) {
         }
         else if (Notification.permission === "granted") {
             if(payload && payload.data && payload.data.data){
-                if(payload.data.type && (payload.data.type=="order_created" || payload.data.type=="order_cancellation_request")){
+                if(payload.data.type && payload.data.type=="order_created"){
                     var payload_data = JSON.parse(payload.data.data);
                     console.log('firepase msg order number');
                     console.log(payload_data.order_number);
