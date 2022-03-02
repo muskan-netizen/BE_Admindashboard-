@@ -66,9 +66,9 @@ class OrderCancelRequestsController extends BaseController
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         
         $req = OrderCancelRequest::with(['order', 'vendor', 'order_vendor', 'updated_by_user'])->where('status', $request->status);
-        if (Auth::user()->is_superadmin == 0) {
-            $req = $req->whereHas('order_vendor.vendor.permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
+        if ($user->is_superadmin == 0) {
+            $req = $req->whereHas('order_vendor.vendor.permissionToUser', function ($query) use($user) {
+                $query->where('user_id', $user->id);
             });
         }
         $req = $req->orderBy('id', 'desc');
