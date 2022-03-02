@@ -240,6 +240,12 @@ class DunzoController extends Controller
 
         $trackingId = '';
         $json = json_decode($request->getContent());
+
+        if($request && isset($json->order_uuid)){
+            //is for Dunzo webhook 
+            Webhook::create(['tracking_order_id'=>(($json->order_uuid)?$json->order_uuid:''),'response'=>$request->getContent()]);
+           
+
         if(isset($json->order_status_id) && $json->order_status_id == '3')
         {
             $awb = $json->order_uuid;
@@ -263,9 +269,40 @@ class DunzoController extends Controller
             VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
         }
 
-        if($request && isset($json->order_status_id)){
-         Webhook::create(['tracking_order_id'=>(($json->order_uuid)?$json->order_uuid:''),'response'=>$request->getContent()]);
+    }else{
+        //shiprocket webhook
+
+        Webhook::create(['tracking_order_id'=>(($json->awb)?$json->awb:''),'response'=>$request->getContent()]);
+		   
+		   
+        if(isset($json->shipment_status_id) && $json->shipment_status_id == '1')
+        {
+            $awb = $json->awb;
+            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'1']);
+        }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '3')
+        {
+			$awb = $json->awb;
+            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'2']);
+        }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '19')
+        {
+			$awb = $json->awb;
+            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
+        }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '42')
+        {
+			$awb = $json->awb;
+            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
+        }elseif(isset($json->shipment_status_id) && $json->shipment_status_id == '7')
+        {
+            $awb = $json->awb;
+            $details = OrderVendor::where('ship_awb_id',$awb)->first();
+            VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
         }
+
+    }
 
         return response([],200);
 

@@ -2,7 +2,7 @@
 $clientData = \App\Models\Client::select('id', 'logo')
     ->where('id', '>', 0)
     ->first();
-$urlImg = $clientData ? $clientData->logo['image_fit'] . '150/92' . $clientData->logo['image_path'] : ' ';
+$urlImg = $clientData ? $clientData->logo['original'] : ' ';
 $languageList = \App\Models\ClientLanguage::with('language')
     ->where('is_active', 1)
     ->orderBy('is_primary', 'desc')

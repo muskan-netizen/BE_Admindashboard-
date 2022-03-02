@@ -256,7 +256,7 @@
                         </div>
                         <div class="form-row">
                             <div class="col-md-6 mb-2">
-                                <label for="house_number">{{ __('House / Apartment/ Flat number') }}</label>
+                                <label for="house_number">{{ __('House / Apartment/ Flat No.') }}</label>
                                 <input type="text" class="form-control" id="house_number" placeholder="{{ __('House / Apartment/ Flat number') }}" name="house_number" value="<%= ((typeof address != 'undefined') && (address.house_number != null)) ? address.house_number : '' %>">
                                 <span class="text-danger" id="house_number_error"></span>
                             </div>
