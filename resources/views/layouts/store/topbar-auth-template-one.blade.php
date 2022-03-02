@@ -1,6 +1,6 @@
 @php
 $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
-$urlImg = $clientData->logo['image_fit'].'150/60'.$clientData->logo['image_path'];
+$urlImg = $clientData ? $clientData->logo['original'] : ' ';
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('language_id', session()->get('customerLanguage') ??1);}])->whereHas('translations', function($q) {$q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguage') ??1]);})->orderBy('order_by','ASC')->get();
@@ -18,7 +18,7 @@ $preference = $client_preference_detail;
         <div class="row align-items-center justify-content-between">
             <div class="col-sm-4">
                 <div class="d-flex align-items-center justify-content-lg-start">
-                    <a class="navbar-brand mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{$urlImg}}" height="50" ></a>
+                    <a class="navbar-brand mr-sm-3 d-block d-sm-none" href="{{ route('userHome') }}"><img alt="" src="{{$urlImg}}" height="60" ></a>
                     @if(isset($preference))
                     @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
                             <div class="location-bar d-flex align-items-center justify-content-start m-0 p-0 dropdown-toggle order-1 ellips" href="#edit-address" data-toggle="modal">
