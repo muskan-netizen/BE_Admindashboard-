@@ -375,4 +375,4 @@ $("#change_password_form").submit(function(e){
 
     });
 });
-</script>
+</script> 
