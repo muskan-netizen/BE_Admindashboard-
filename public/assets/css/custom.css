@@ -73,6 +73,7 @@ body .dropify-wrapper .dropify-clear{top:auto;bottom:5px}button.btn.btn-secondar
     max-width: fit-content;
     width: 500px;
 }
+
 .content-page .content{padding-top: 0;}
 :root {
     --textDark_color: #744c3f;

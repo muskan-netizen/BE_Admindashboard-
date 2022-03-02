@@ -102,10 +102,17 @@ li.onhover-dropdown.quick-links.quick-links {min-width: 170px;}
 .dark .dd-list .dd3-content {background: #404040;}
 .dark  .vendor-signup .file>label,.dark   .file.upload-new>label{border: 1px solid #404040}
 body.dark .switchery {background-color: #363636 !important;}
-/* mobile header */
-.al_new_mobile_header .location-bar.d-inline-flex.align-items-center.position-relative {
-border-right: none;
+.dark .al_new_wrapper_design .order_detail.order_detail_data.card-box{background-color: #363636;}
+.dark .al_new_wrapper_design .grand_total label, .dark .al_new_wrapper_design .grand_total span {color: #fff;}
+.dark .al_new_wrapper_design select {
+    color: #2d2d2d;
 }
+.al_new_wrapper_design .collection-filter .inner_spacing {
+    width: 100%!important;
+}
+/* mobile header */
+
+.al_new_mobile_header .location-bar.d-inline-flex.align-items-center.position-relative {border-right: none;}
 .al_new_mobile_header  .onhover-dropdown:before {content: "\f107";font-family: FontAwesome;position: absolute;right: 3px;}
 .mobile-wishlist_al span{font-family: themify;color: #999!important;}
 .al_count_tabs_new_design.al_tab_mobile {bottom: 0;background-color: #fff;box-shadow: 0 0 10px rgb(0 0 0 / 20%);width: 100%;left: 0;}
