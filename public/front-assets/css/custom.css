@@ -54,7 +54,7 @@ body .product-right .product-buttons a:last-child {margin-left: 0;}
 /* fixed footer all pages start */
 article#page-container .site-header {position: relative;}
 article#page-container header.site-header.fixed-bar{position: fixed;}
-article#page-container {position: relative;min-height: 100vh;overflow-x: hidden;}
+article#page-container {position: relative;min-height: 100vh;overflow: hidden;}
 article#content-wrap {padding-bottom:278px;}
 footer#footer {position: absolute;bottom: 0;width: 100%;height: 278px;}
  /* Footer height */
@@ -132,13 +132,12 @@ body .al_footer_template_two .footer-theme .sub-title .contact-list li i{top: 8p
 /* template two common css */
 .al_new_wrapper_design .rating-number,
 body .al_new_wrapper_design .inner_spacing .rating {top: 14px;right: 14px;}
-body #page-container .footer-theme .sub-title .contact-list li span {    padding-left: 0;}
 .al_new_wrapper_design .modal-header {border-radius: 0;}
-.al_new_wrapper_design .modal-content {border-radius: 0 !important;}
-.al_new_wrapper_design .modal-content::before{position: absolute;content: "";height: 100%;width: 100%;right: 30px;top:30px;z-index: -1;background-color: #000;}
 .al_menu-drawer.open .cart_qty_cls {top: -3px;right: -40px;}
 body .round_img .dropify-wrapper {height: 150px!important;}
-
+.language-input.style-4 {overflow: auto;max-width: fit-content;width: 500px;}
+body #page-container .al_new_wrapper_design .footer-theme .sub-title .contact-list li span {padding-left: 0;}
+body #page-container .footer-theme .sub-title .contact-list li span {padding-left: 40px;}
 /* template two common css */
 
 /* Responsiveness Css Start From Here */

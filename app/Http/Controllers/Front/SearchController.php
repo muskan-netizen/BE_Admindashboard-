@@ -15,7 +15,7 @@ class SearchController extends FrontController{
         $response = [];
         $keyword = $request->input('keyword');
         $language_id = Session::get('customerLanguage');
-        $preferences = Session::get('preferences');
+        $preferences = getClientPreferenceDetail();
         $latitude = session('latitude');
         $longitude = session('longitude');
         $selectedAddress = session('selectedPlaceId');
