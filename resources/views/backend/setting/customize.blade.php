@@ -401,6 +401,8 @@
             </div>
         </div><!-- Vendor Registration Documents end -->
     </div>
+
+    
     <div class="col-md-4">
         <form method="POST" class="h-100" action="{{route('referandearn.update', Auth::user()->code)}}">
             @csrf
@@ -458,6 +460,60 @@
         </form><!-- Tags for Product end -->
       </div>
    </div>
+   <div class="col-md-5">
+    <!-- User Registration Documents start -->
+    <div class="card-box pb-2">
+        <div class="d-flex align-items-center justify-content-between">
+           <h4 class="header-title m-0">{{ __("User Registration Documents") }}</h4>
+           <a class="btn btn-info d-block" id="add_user_registration_document_modal_btn">
+              <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
+           </a>
+        </div>
+        <div class="table-responsive mt-3 mb-1">
+           <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
+              <thead>
+                 <tr>
+                    <th>{{ __("Name") }}</th>
+                    <th>{{ __("Type") }}</th>
+                    <th>{{ __("Is Required?") }}</th>
+                    <th>{{ __("Action") }}</th>
+                 </tr>
+              </thead>
+              <tbody id="post_list">
+                 @forelse($user_registration_documents as $user_registration_documents)
+                 <tr>
+                    <td>
+                       <a class="edit_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}" href="javascript:void(0)">
+                          {{$user_registration_documents->primary ? $user_registration_documents->primary->name : ''}}
+                       </a>
+                    </td>
+                    <td>{{$user_registration_documents->file_type}}</td>
+                    <td>{{ ($user_registration_documents->is_required == 1)?__('Yes'):__('No') }}</td>
+                    <td>
+                       <div>
+                          <div class="inner-div" style="float: left;">
+                             <a class="action-icon edit_user_registration_document_btn" data-user_registration_document_id="{{$user_registration_documents->id}}" href="javascript:void(0)">
+                                <i class="mdi mdi-square-edit-outline"></i>
+                             </a>
+                          </div>
+                          <div class="inner-div">
+                             <button type="button" class="btn btn-primary-outline action-icon delete_user_registration_document_btn" data-vendor_registration_document_id="{{$user_registration_documents->id}}">
+                                <i class="mdi mdi-delete"></i>
+                             </button>
+                          </div>
+                       </div>
+                    </td>
+                 </tr>
+                 @empty
+                 <tr align="center">
+                    <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
+                 </tr>
+                 @endforelse
+              </tbody>
+           </table>
+        </div>
+    </div><!-- USer Registration Documents end -->
+</div>
     <div class="row">
         <div class="col-lg-3 col-lg-3 mb-3">
             <form method="POST" action="{{route('client.updateDomain', Auth::user()->code)}}">
@@ -799,6 +855,78 @@
     </div>
 </div>
 <!-- Add Vendor Registration Document Modal -->
+<div id="add_user_registration_document_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-bottom al">
+               <h4 class="modal-title" id="standard-modalLabel">{{ __("Add Vendor Registration Document") }}</h4>
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+               <form id="userRegistrationDocumentForm" method="POST" action="javascript:void(0)">
+                  @csrf
+                  <div id="save_social_media">
+                     <input type="hidden" name="user_registration_document_id" value="">
+                     <div class="row">
+                        <div class="col-md-6">
+                           <div class="form-group position-relative">
+                              <label for="">Type</label>
+                              <div class="input-group mb-2">
+                                 <select class="form-control" name="file_type" id="user_file_type_select">
+                                    <option value="Text">Text</option>
+                                    <option value="Image">Image</option>
+                                    <option value="Pdf">PDF</option>
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-6">
+                           <div class="form-group position-relative">
+                              <label for="">Is Required?</label>
+                              <div class="input-group mb-2">
+                                 <select class="form-control" name="is_required">
+                                    <option value="1">{{__('Yes')}}</option>
+                                    <option value="0">{{__('No')}}</option>
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-12 selector-option-al ">
+                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
+                                <tr class="trForClone">
+
+                                    @foreach($client_languages as $langs)
+                                        <th>{{$langs->langName}}</th>
+                                    @endforeach
+                                    <th></th>
+                                </tr>
+                                <tbody id="table_body">
+                                        <tr>
+                                    @foreach($client_languages as $lankey => $User_langs)
+                                        <td>
+                                            <input class="form-control" name="language_id[{{$lankey}}]" type="hidden" value="{{$User_langs->langId}}">
+                                            <input class="form-control" name="name[{{$lankey}}]" type="text" id="user_registration_document_name_{{$User_langs->langId}}">
+                                        </td>
+                                    @endforeach
+                                    <td class="lasttd"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary submitSaveUserRegistrationDocument">{{ __("Save") }}</button>
+            </div>
+         </div>
+      </div>
+   </div>
+
+
+<!-- Add Vendor Registration Document Modal -->
 <div id="add_vendor_registration_document_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  standard-modalLabel aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
@@ -930,6 +1058,7 @@
       </div>
    </div>
 <!--End Add Vendor Registration Document Modal -->
+
 <!-- modal for product tags -->
    <div id="add_product_tag_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -1084,6 +1213,81 @@
         $('#add_vendor_registration_document_modal').modal('show');
         $('#add_vendor_registration_document_modal #standard-modalLabel').html('Add Vendor Registration Document');
     });
+
+    //user document model
+    $('#add_user_registration_document_modal_btn').click(function(e) {
+        document.getElementById("userRegistrationDocumentForm").reset();
+        $('#add_user_registration_document_modal input[name=user_registration_document_id]').val("");
+        $('#add_user_registration_document_modal').modal('show');
+        $('#add_user_registration_document_modal #standard-modalLabel').html('Add User Registration Document');
+    });
+    
+
+    $(document).on('click', '.submitSaveUserRegistrationDocument', function(e) {
+        // alert('af');
+        // return false;
+        var user_registration_document_id = $("#add_user_registration_document_modal input[name=user_registration_document_id]").val();
+        
+        if (user_registration_document_id) {
+            var post_url = "{{ route('user.registration.document.update') }}";
+        } else {
+            var post_url = "{{ route('user.registration.document.create') }}";
+        }
+        var form_data = new FormData(document.getElementById("userRegistrationDocumentForm"));
+        $.ajax({
+            url: post_url,
+            method: 'POST',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+               if (response.status == 'Success') {
+                  $('#add_or_edit_social_media_modal').modal('hide');
+                  $.NotificationApp.send("Success", response.message, "top-right", "#5ba035", "success");
+                  setTimeout(function() {
+                     location.reload()
+                  }, 2000);
+               } else {
+                  $.NotificationApp.send("Error", response.message, "top-right", "#ab0535", "error");
+               }
+            },
+            error: function(response) {
+               $('#add_vendor_registration_document_modal .social_media_url_err').html('The default language name field is required.');
+            }
+        });
+    });
+    $(document).on("click", ".edit_user_registration_document_btn", function() {
+        let user_registration_document_id = $(this).data('user_registration_document_id');
+        editUserRegistrationForm(user_registration_document_id);
+    });
+    function editUserRegistrationForm(user_registration_document_id){
+        let language_id = $('#option_client_language').val();
+         $('#add_user_registration_document_modal input[name=user_registration_document_id]').val(user_registration_document_id);
+         $.ajax({
+            method: 'GET',
+            data: {
+               user_registration_document_id: user_registration_document_id,
+               language_id:language_id
+            },
+            url: "{{ route('user.registration.document.edit') }}",
+            success: function(response) {
+               if (response.status = 'Success') {
+                  
+                  $(document).find("#add_user_registration_document_modal select[name=file_type]").val(response.data.file_type).change();
+
+                  $("#add_user_registration_document_modal input[name=user_registration_document_id]").val(response.data.id);
+                  $(document).find("#add_user_registration_document_modal select[name=is_required]").val(response.data.is_required).change();
+                  $('#add_user_registration_document_modal #standard-modalLabel').html('Update User Registration Document');
+                  $('#add_user_registration_document_modal').modal('show');
+                  $.each(response.data.translations, function( index, value ) {
+                    $('#add_user_registration_document_modal #user_registration_document_name_'+value.language_id).val(value.name);
+                  });
+               }
+            },
+            error: function() {}
+        });
+    }
+
     $(document).on('click', '.submitSaveVendorRegistrationDocument', function(e) {
         var vendor_registration_document_id = $("#add_vendor_registration_document_modal input[name=vendor_registration_document_id]").val();
         if (vendor_registration_document_id) {
