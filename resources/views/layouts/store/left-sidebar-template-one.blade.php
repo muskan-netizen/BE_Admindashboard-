@@ -2,7 +2,7 @@
 $clientData = \App\Models\Client::select('id', 'logo')
     ->where('id', '>', 0)
     ->first();
-$urlImg = $clientData ? $clientData->logo['image_fit'] . '150/92' . $clientData->logo['image_path'] : ' ';
+$urlImg = $clientData ? $clientData->logo['original'] : ' ';
 $languageList = \App\Models\ClientLanguage::with('language')
     ->where('is_active', 1)
     ->orderBy('is_primary', 'desc')
@@ -32,7 +32,7 @@ $pages = \App\Models\Page::with([
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-sm-3 col-md-2">
-                    <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img class="img-fluid" alt=""
+                    <a class="navbar-brand mr-0" href="{{ route('userHome') }}"><img height="60" alt=""
                             src="{{ $urlImg }}"></a>
                 </div>
                 <div class="col-sm-9 col-md-10 top-header bg-transparent">
@@ -152,7 +152,7 @@ $pages = \App\Models\Page::with([
             <div class="col-lg-12">
                <div class="row mobile-header align-items-center justify-content-between my-sm-2">
                   <div class="logo ">
-                     <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" href="{{route('userHome')}}"><img class="img-fluid" alt="" src="{{$urlImg}}" ></a>
+                     <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" href="{{route('userHome')}}"><img height="60"  alt="" src="{{$urlImg}}" ></a>
                   </div>
                   <div class="al_count_tabs">
                      @if($mod_count > 1)
@@ -385,7 +385,7 @@ $pages = \App\Models\Page::with([
     </div>
 
     <!-- <div class="col-12 col-sm-4 d-sm-flex align-items-center justify-content-sm-between">
-                     <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" href="{{ route('userHome') }}"><img class="img-fluid" alt="" src="{{ $urlImg }}" ></a>
+                     <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" href="{{ route('userHome') }}"><img alt="" src="{{ $urlImg }}"  height="60"></a>
                      <div class="d-flex justify-content-center">
                         @if (Session::get('preferences')) @if( (isset(Session::get('preferences')->is_hyperlocal)) && (Session::get('preferences')->is_hyperlocal==1) )
                         <div class="location-bar d-none align-items-center justify-content-start mb-2 my-lg-0" href="#edit-address" data-toggle="modal">
