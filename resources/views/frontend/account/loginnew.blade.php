@@ -350,7 +350,7 @@
                     var response = $.parseJSON(error.responseText);
                     // let error_messages = response.message;
 
-                    if((response.data.user_exists != undefined) && (response.data.user_exists == false)){
+                    if((response.data != null) && (response.data.user_exists != undefined) && (response.data.user_exists == false)){
                         Swal.fire({
                             title: "{{__('User Not Found')}}",
                             text: response.message,

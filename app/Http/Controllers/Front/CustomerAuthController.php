@@ -482,6 +482,7 @@ class CustomerAuthController extends FrontController
                 if (Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1])) {
                     $userid = Auth::id();
                     $Authuser = Auth::user();
+                    $update_last_login = User::where('id',$userid)->update(['last_login_at' => Carbon::now()->toDateTimeString()]);
                     if($request->has('access_token')){
                         if($request->access_token){
                             $user_device = UserDevice::where('user_id', $userid)->where('device_token', $request->access_token)->first();
@@ -791,7 +792,11 @@ class CustomerAuthController extends FrontController
             $vendor->status = 0;
             $vendor->name = $request->name;
             $vendor->email = $request->email;
-            $vendor->phone_no = $user->phone_no;
+            $vendor->phone_no = $user->phone_number;
+            $vendor->city = $request->city;
+            $vendor->state = $request->state;
+            $vendor->country = $request->country;
+            $vendor->pincode = $request->pincode;
             $vendor->address = $request->address;
             $vendor->website = $request->website;
             $vendor->latitude = $request->latitude;

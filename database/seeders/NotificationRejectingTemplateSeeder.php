@@ -23,5 +23,9 @@ class NotificationRejectingTemplateSeeder extends Seeder
             NotificationTemplate::updateOrCreate(['id' => 12],['label' => "Order Modified (Customer)", 'slug' => 'order-modified-customer', 'subject' => "Order Modified", 'content' => "Your order ({order_id}) has been modified", 'tags' => "{order_id}"]);
         }
 
+        if(!NotificationTemplate::find(13)){
+            NotificationTemplate::updateOrCreate(['id' => 13],['label' => "Order Cancellation Request (Owner)", 'slug' => 'order-cancellation-request', 'subject' => "Order Cancellation Request", 'content' => "Order ({order_id}) cancellation request has been received", 'tags' => "{order_id}"]);
+        }
+
     }
 }

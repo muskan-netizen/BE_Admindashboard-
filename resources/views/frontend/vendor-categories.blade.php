@@ -85,7 +85,7 @@
                                 <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
                             </span>
                         </h5>
-                        <div class="offer-slider">
+                        <div class="offer-slider ">
                             @if(!empty($newProducts) && count($newProducts) > 0)
                                 @foreach($newProducts as $newProds)
                                     @foreach($newProds as $new)

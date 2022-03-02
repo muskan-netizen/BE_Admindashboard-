@@ -423,7 +423,7 @@
                         <div class="row  <%= ve ==0 ? 'mt-0' : 'mt-2'%>" id="latest_single_order_div<%= k %><%= ve %>">
                             <div class="col-12 order-hover-btn">
 
-                                <div id="update-single-status">
+                                <div id="update-single-status" class="my-2">
                                     <% if(vendor.order_status_option_id == 1) { %>
                                         <button class="update_order_status btn-info" data-full_div="#latest_full_order_div<%= k %>"  data-single_div="#latest_single_order_div<%= k %><%= ve %>" data-count="<%= ve %>" data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>"  data-status_option_id="2" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __('Accept') }}</button>
                                         <button class="update_order_status btn-danger" data-full_div="#latest_full_order_div<%= k %>"  data-single_div="#latest_single_order_div<%= k %><%= ve %>"  data-count="<%= ve %>"   data-order_id="<%= order.id %>"  data-vendor_id="<%= vendor.vendor_id %>" data-status_option_id="3" data-order_vendor_id="<%= vendor.order_vendor_id %>">{{ __("Reject") }}</button>

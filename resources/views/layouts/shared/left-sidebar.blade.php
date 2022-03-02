@@ -4,7 +4,7 @@
             $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
             $clientData = \App\Models\Client::select('id', 'logo')->where('id', '>', 0)->first();
             if($clientData){
-                $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'];
+                $urlImg = $clientData ? $clientData->logo['original'] : ' ';
             }
             $marketing_permissions = array("banner", "promocode", "loyalty_cards");
             $subscription_permissions = array("subscription_plans_customers", "subscription_plans_vendors");
@@ -94,7 +94,7 @@
                                 <li>
                                     <a href="{{route('cancel-order.requests')}}">
                                         <span class="icon-extra"></span>
-                                        <span> {{ __('Order Cancel') }} </span>
+                                        <span> {{ __('Cancel Order Requests') }} </span>
                                     </a>
                                 </li>
                             @endif
