@@ -94,7 +94,7 @@
                                 <li>
                                     <a href="{{route('cancel-order.requests')}}">
                                         <span class="icon-extra"></span>
-                                        <span> {{ __('Order Cancel') }} </span>
+                                        <span> {{ __('Cancel Order Requests') }} </span>
                                     </a>
                                 </li>
                             @endif

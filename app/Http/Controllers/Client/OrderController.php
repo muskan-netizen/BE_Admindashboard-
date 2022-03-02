@@ -325,7 +325,8 @@ class OrderController extends BaseController
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
                 $qry->where('language_id', $langId);
             },
-            'vendors.dineInTable.category'
+            'vendors.dineInTable.category',
+            'vendors.cancel_request'
         ))->findOrFail($order_id);
         foreach ($order->vendors as $key => $vendor) {
             foreach ($vendor->products as $key => $product) {
