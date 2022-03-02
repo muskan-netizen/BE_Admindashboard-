@@ -138,7 +138,7 @@
                                                 </div>
                                                 {{--<i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>--}}
                                             </div>
-                                            <div class="media-body align-self-center col-sm-9">
+                                            <div class="media-body align-self-center col-sm-8">
                                                 <div class="inner_spacing px-0">
                                                     <div class="product-description">
                                                         <div class="d-flex align-items-center justify-content-between">

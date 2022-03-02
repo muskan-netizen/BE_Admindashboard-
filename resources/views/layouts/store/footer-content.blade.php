@@ -11,7 +11,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <div class="col-lg-2 d-flex align-items-center justify-content-center justify-content-md-start">
                         <div class="footer-logo mb-0">
                             <a href="{{ route('userHome') }}">
-                                <img class="img-fluid blur-up lazyload" src="{{$urlImg}}">
+                                <img class="img-fluid blur-up lazyload" src="{{$urlImg}}" height="50">
                             </a>
                         </div>
                     </div>
