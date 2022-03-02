@@ -83,7 +83,7 @@
 
 
                                         <a class="row common-product-box scale-effect text-center border-bottom pb-2 mt-2" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                            <div class="img-outer-box position-relative col-sm-4 p-0">
+                                            <div class="img-outer-box position-relative col-sm-4 pr-0">
                                                 <img  class="blur-up lazyload w-100" data-src="{{$imagePath}}" alt="">
                                                 <div class="pref-timing">
                                                     <!--<span>5-10 min</span>-->

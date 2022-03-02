@@ -132,15 +132,12 @@ body .al_footer_template_two .footer-theme .sub-title .contact-list li i{top: 8p
 /* template two common css */
 .al_new_wrapper_design .rating-number,
 body .al_new_wrapper_design .inner_spacing .rating {top: 14px;right: 14px;}
-body #page-container .footer-theme .sub-title .contact-list li span {    padding-left: 0;}
 .al_new_wrapper_design .modal-header {border-radius: 0;}
 .al_menu-drawer.open .cart_qty_cls {top: -3px;right: -40px;}
 body .round_img .dropify-wrapper {height: 150px!important;}
-.language-input.style-4 {
-    overflow: auto;
-    max-width: fit-content;
-    width: 500px;
-}
+.language-input.style-4 {overflow: auto;max-width: fit-content;width: 500px;}
+body #page-container .al_new_wrapper_design .footer-theme .sub-title .contact-list li span {padding-left: 0;}
+body #page-container .footer-theme .sub-title .contact-list li span {padding-left: 40px;}
 /* template two common css */
 
 /* Responsiveness Css Start From Here */
